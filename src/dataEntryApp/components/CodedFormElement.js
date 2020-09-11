@@ -11,6 +11,8 @@ import Checkbox from "./Checkbox";
 import Radio from "./Radio";
 import Box from "@material-ui/core/Box";
 import { useTranslation } from "react-i18next";
+import Colors from "../Colors";
+import { isEmpty } from "lodash";
 
 export const CodedFormElement = ({
   groupName,
@@ -36,13 +38,16 @@ export const CodedFormElement = ({
     validationResult => validationResult.formIdentifier === uuid
   );
 
+  const color = item =>
+    isChecked(item) && item.abnormal ? Colors.ValidationError : Colors.DefaultPrimary;
+
   return (
     <FormControl
       component="fieldset"
       {...props}
       style={{ width: "80%", marginBottom: "-20px" }}
       required={mandatory}
-      error={(validationResult && !validationResult.success) || errorMsg}
+      error={(validationResult && !validationResult.success) || !isEmpty(errorMsg)}
     >
       <FormLabel component="legend">{t(groupName)}</FormLabel>
       <FormGroup>
@@ -67,6 +72,7 @@ export const CodedFormElement = ({
                   )
                 }
                 label={t(item.name)}
+                style={{ color: color(item) }}
               />{" "}
             </Box>
           ))}

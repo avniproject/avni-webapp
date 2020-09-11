@@ -15,7 +15,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ observations, additionalRows }) => {
+const Summary = ({ observations, additionalRows, form }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -43,6 +43,7 @@ const Summary = ({ observations, additionalRows }) => {
           <Observations
             observations={observations ? observations : []}
             additionalRows={additionalRows ? additionalRows : []}
+            form={form}
           />
         </List>
         {/* <Button color="primary">{t("void")}</Button>

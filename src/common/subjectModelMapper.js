@@ -15,9 +15,11 @@ import {
   EncounterType,
   Gender,
   AddressLevel,
-  SubjectType
+  SubjectType,
+  ConceptAnswer
 } from "avni-models";
 import { types } from "../common/store/conceptReducer";
+import { map } from "lodash";
 
 // subject Dashboard common functionality
 export const mapIndividual = individualDetails => {
@@ -55,25 +57,40 @@ export const mapObservation = objservationList => {
       return mapConcept(observation);
     });
 };
+
+function getAnswers(observationJson) {
+  return map(observationJson.concept["answers"], ca => {
+    const conceptAnswer = General.assignFields(ca, new ConceptAnswer(), ["abnormal"]);
+    conceptAnswer.concept = General.assignFields(ca, new Concept(), ["uuid", "name"]);
+    return conceptAnswer;
+  });
+}
+
 // included redux store functionality
 export const mapConcept = observationJson => {
   if (observationJson) {
     const observation = new Observation();
-    const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
+    const concept = General.assignFields(observationJson.concept, new Concept(), [
+      "uuid",
+      "name",
+      "lowAbsolute",
+      "lowNormal"
+    ]);
     concept.datatype = observationJson.concept["dataType"];
+    concept.hiNormal = observationJson.concept["highNormal"];
+    concept.hiAbsolute = observationJson.concept["highAbsolute"];
+    concept.answers = getAnswers(observationJson);
+
     let valueuuid;
-    let isAbnormalValue;
     if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
       valueuuid = [];
 
       observationJson.value.forEach(observation => {
         valueuuid.push(observation.uuid);
-        isAbnormalValue = observation.abnormal;
         store.dispatch({ type: types.ADD_CONCEPT, value: observation });
       });
     } else if (concept.datatype === "Coded") {
       valueuuid = observationJson.value.uuid;
-      isAbnormalValue = observationJson.value.abnormal;
       store.dispatch({ type: types.ADD_CONCEPT, value: observationJson.value });
     } else {
       valueuuid = observationJson.value;
@@ -81,7 +98,6 @@ export const mapConcept = observationJson => {
     const value = concept.getValueWrapperFor(valueuuid);
     observation.concept = concept;
     observation.valueJSON = value;
-    observation.abnormal = isAbnormalValue;
     return observation;
   }
 };

@@ -9,7 +9,7 @@ import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Observations = ({ observations, additionalRows }) => {
+const Observations = ({ observations, additionalRows, form }) => {
   if (isEmpty(observations)) {
     return <div />;
   }
@@ -35,28 +35,28 @@ const Observations = ({ observations, additionalRows }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const rows = observations.map((element, index) => {
+  const renderObs = (value, isAbnormal) => {
+    return isAbnormal ? (
+      <span className={classes.abnormalColor}>
+        {" "}
+        <ErrorIcon /> {value}
+      </span>
+    ) : (
+      value
+    );
+  };
+
+  const orderedObs = isNil(form) ? observations : form.orderObservations(observations);
+
+  const rows = orderedObs.map((obs, index) => {
     return (
       <TableRow key={index}>
         <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-          {t(element.concept["name"])}
+          {t(obs.concept["name"])}
         </TableCell>
         <TableCell align="left" width="50%">
           <div>
-            {element.concept && element.concept.datatype === "Coded" ? (
-              element.abnormal === true ? (
-                <span className={classes.abnormalColor}>
-                  {" "}
-                  <ErrorIcon /> {t(Observation.valueAsString(element, conceptService, i))}
-                </span>
-              ) : (
-                t(Observation.valueAsString(element, conceptService, i))
-              )
-            ) : element.concept ? (
-              Observation.valueAsString(element, conceptService, i)
-            ) : (
-              "" + element.value.toLocaleDateString("en-US")
-            )}
+            {renderObs(t(Observation.valueAsString(obs, conceptService, i)), obs.isAbnormal())}
           </div>
         </TableCell>
       </TableRow>

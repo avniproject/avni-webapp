@@ -296,7 +296,7 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {isOnSummaryPage ? (
-              <Summary observations={observations} additionalRows={additionalRows} />
+              <Summary observations={observations} additionalRows={additionalRows} form={form} />
             ) : (
               <Form
                 current={currentFormElementGroup}
