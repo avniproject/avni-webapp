@@ -8,6 +8,7 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @JsonPropertyOrder({"name", "uuid", "dataType", "answers", "order", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit", "unique", "organisationUUID"})
@@ -34,6 +35,17 @@ public class ConceptContract extends ReferenceDataContract {
         conceptContract.setVoided(concept.isVoided());
         conceptContract.setActive(concept.getActive());
         conceptContract.setKeyValues(concept.getKeyValues());
+        conceptContract.setLowAbsolute(concept.getLowAbsolute());
+        conceptContract.setLowNormal(concept.getLowNormal());
+        conceptContract.setHighAbsolute(concept.getHighAbsolute());
+        conceptContract.setHighNormal(concept.getHighNormal());
+        List<ConceptContract> answerConceptList = concept.getConceptAnswers().stream()
+                .map(it -> {
+                    ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
+                    cc.setAbnormal(it.isAbnormal());
+                    return cc;
+                }).collect(Collectors.toList());
+        conceptContract.setAnswers(answerConceptList);
         return conceptContract;
     }
 
