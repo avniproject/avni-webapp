@@ -1,15 +1,11 @@
 package org.openchs.web;
 
-import org.openchs.application.Form;
-import org.openchs.application.FormElement;
 import org.openchs.application.FormMapping;
-import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.JsonObject;
-import org.openchs.report.AggregateReportResult;
-import org.openchs.report.CodedConceptReportGenerator;
-import org.openchs.report.NonCodedConceptReportGenerator;
+import org.openchs.report.AvniReportRepository;
+import org.openchs.report.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,58 +15,52 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ReportingController {
 
     private final FormMappingRepository formMappingRepository;
-    private final ConceptRepository conceptRepository;
-    private final CodedConceptReportGenerator codedConceptReportGenerator;
-    private final NonCodedConceptReportGenerator nonCodedConceptReportGenerator;
+    private final AvniReportRepository avniReportRepository;
+    private final ReportService reportService;
 
     @Autowired
     public ReportingController(FormMappingRepository formMappingRepository,
-                               ConceptRepository conceptRepository,
-                               CodedConceptReportGenerator codedConceptReportGenerator,
-                               NonCodedConceptReportGenerator nonCodedConceptReportGenerator) {
+                               AvniReportRepository avniReportRepository,
+                               ReportService reportService) {
         this.formMappingRepository = formMappingRepository;
-        this.conceptRepository = conceptRepository;
-        this.codedConceptReportGenerator = codedConceptReportGenerator;
-        this.nonCodedConceptReportGenerator = nonCodedConceptReportGenerator;
+        this.avniReportRepository = avniReportRepository;
+        this.reportService = reportService;
     }
 
 
-    @RequestMapping(value = "/report/aggregate", method = RequestMethod.GET)
+    @RequestMapping(value = "/report/aggregate/codedConcepts", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public JsonObject getReportData(@RequestParam("conceptId") Long conceptId,
-                                    @RequestParam("formMappingId") Long formMappingId) {
+    public List<JsonObject> getReportData(@RequestParam("formMappingId") Long formMappingId) {
         FormMapping formMapping = formMappingRepository.findById(formMappingId).orElse(null);
         if (formMapping == null) {
             throw new EntityNotFoundException(String.format("Form mapping not found for ID %d", formMappingId));
         }
-        Concept concept = conceptRepository.findById(conceptId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Concept not found for ID %d", conceptId)));
-
-        List<AggregateReportResult> aggregateReportResults = getAggregateReportResults(formMapping, concept);
-        return new JsonObject()
-                .with("conceptName", concept.getName())
-                .with("data", aggregateReportResults)
-                .with("isPie", isPieGraph(concept, formMapping.getForm()));
-    }
-
-    private Boolean isPieGraph(Concept concept, Form form) {
-        FormElement formElement = form.getAllFormElements()
+        return formMapping.getForm().getAllCodedFormElements()
                 .stream()
-                .filter(fe -> fe.getConcept().getUuid().equals(concept.getUuid()))
-                .findFirst()
-                .get();
-        return formElement.isMandatory() && concept.isCoded();
+                .map(fe -> {
+                    Concept concept = fe.getConcept();
+                    return new JsonObject()
+                            .with("concept", concept)
+                            .with("data", avniReportRepository.generateAggregatesForCodedConcept(concept, formMapping))
+                            .with("isPie", fe.isMandatory() && concept.isCoded());
+                })
+                .collect(Collectors.toList());
     }
 
-    private List<AggregateReportResult> getAggregateReportResults(FormMapping formMapping, Concept concept) {
-        if (concept.isCoded()) {
-            return codedConceptReportGenerator.generateAggregateReport(concept, formMapping);
-        } else
-            return nonCodedConceptReportGenerator.generateAggregateReport(concept, formMapping);
+    @RequestMapping(value = "/report/aggregate/activities", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public JsonObject getRegistrationAggregate() {
+        return new JsonObject()
+                .with("registrations", reportService.allRegistrations())
+                .with("enrolments", reportService.allEnrolments())
+                .with("completedVisits", reportService.completedVisits());
+
+
     }
 }

@@ -9,20 +9,19 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class CodedConceptReportGenerator implements AvniReportGenerator {
+public class AvniReportRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final ReportHelper reportHelper;
 
     @Autowired
-    public CodedConceptReportGenerator(NamedParameterJdbcTemplate jdbcTemplate,
-                                       ReportHelper reportHelper) {
+    public AvniReportRepository(NamedParameterJdbcTemplate jdbcTemplate,
+                                ReportHelper reportHelper) {
         this.jdbcTemplate = jdbcTemplate;
         this.reportHelper = reportHelper;
     }
 
-    @Override
-    public List<AggregateReportResult> generateAggregateReport(Concept concept, FormMapping formMapping) {
+    public List<AggregateReportResult> generateAggregatesForCodedConcept(Concept concept, FormMapping formMapping) {
         String query = "with base_result as (\n" +
                 "    select unnest(case\n" +
                 "                      when jsonb_typeof(${obsColumn} -> ${conceptUUID}) = 'array'\n" +
@@ -39,4 +38,22 @@ public class CodedConceptReportGenerator implements AvniReportGenerator {
         String queryWithConceptUUID = query.replace("${conceptUUID}", "'" + concept.getUuid() + "'");
         return jdbcTemplate.query(reportHelper.buildQuery(formMapping, queryWithConceptUUID), new AggregateReportMapper());
     }
+
+    public List<AggregateReportResult> generateAggregatesForEntityByType(String entity, String operationalType, String operationalTypeIdColumn, String dynamicWhere) {
+        String baseQuery = "select o.name as indicator,\n" +
+                "       count(*) as count\n" +
+                "from ${entity} e\n" +
+                "         join ${operational_type} o on e.${operational_type_id} = o.${operational_type_id}\n" +
+                "where e.is_voided = false\n" +
+                "  and o.is_voided = false\n" +
+                "  ${dynamic_where}\n" +
+                "group by o.name";
+        String query = baseQuery
+                .replace("${entity}", entity)
+                .replace("${operational_type}", operationalType)
+                .replace("${operational_type_id}", operationalTypeIdColumn)
+                .replace("${dynamic_where}", dynamicWhere);
+        return jdbcTemplate.query(query, new AggregateReportMapper());
+    }
+
 }
