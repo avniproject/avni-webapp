@@ -4,7 +4,9 @@ export const types = {
   SET_UPLOAD_JOB_STATUSES: `${prefix}SET_UPLOAD_JOB_STATUSES`,
   GET_UPLOAD_JOB_STATUSES: `${prefix}GET_UPLOAD_JOB_STATUSES`,
   SET_OPERATIONAL_MODULES: `${prefix}SET_OPERATIONAL_MODULES`,
-  GET_OPERATIONAL_MODULES: `${prefix}GET_OPERATIONAL_MODULES`
+  GET_OPERATIONAL_MODULES: `${prefix}GET_OPERATIONAL_MODULES`,
+  GET_ACTIVITY_REPORT: `${prefix}GET_ACTIVITY_REPORT`,
+  SET_ACTIVITY_REPORT: `${prefix}SET_ACTIVITY_REPORT`
 };
 
 export const setUploadStatus = exportJobStatuses => ({
@@ -26,6 +28,15 @@ export const getOperationalModules = () => ({
   type: types.GET_OPERATIONAL_MODULES
 });
 
+export const getActivityReport = () => ({
+  type: types.GET_ACTIVITY_REPORT
+});
+
+export const setActivityReport = activityReport => ({
+  type: types.SET_ACTIVITY_REPORT,
+  activityReport
+});
+
 const initialState = {};
 
 // reducer
@@ -41,6 +52,13 @@ export default function(state = initialState, action) {
       return {
         ...state,
         operationalModules: action.operationalModules
+      };
+    }
+    case types.SET_ACTIVITY_REPORT: {
+      console.log("activityreport =>>", action.activityReport);
+      return {
+        ...state,
+        activityReport: action.activityReport
       };
     }
     default:

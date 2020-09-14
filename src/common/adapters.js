@@ -113,7 +113,8 @@ export const mapOperationalModules = json => ({
   encounterTypes: json.encounterTypes.map(mapEncounterType),
   programs: json.programs.map(mapProgram),
   subjectTypes: json.subjectTypes.map(mapSubjectType),
-  addressLevelTypes: json.addressLevelTypes
+  addressLevelTypes: json.addressLevelTypes,
+  forms: json.forms
 });
 
 export const mapOrganisationConfig = json => {

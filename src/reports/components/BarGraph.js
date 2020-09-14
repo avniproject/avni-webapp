@@ -2,10 +2,10 @@ import { ResponsiveBar } from "@nivo/bar";
 import React from "react";
 import { Grid } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import { ModelGeneral as General } from "avni-models";
 import Box from "@material-ui/core/Box";
+import _ from "lodash";
 
-const BarGraph = ({ data, title }) => {
+const BarGraph = ({ data, title, id }) => {
   const dataLength = data.length;
   const layout = dataLength > 20 ? "horizontal" : "vertical";
   const xLabel = dataLength > 20 ? "Count" : "Indicator";
@@ -13,6 +13,7 @@ const BarGraph = ({ data, title }) => {
   const height = dataLength > 20 ? dataLength * 23 : 500;
   const enableGridY = dataLength <= 20;
   const enableGridX = dataLength > 20;
+  const maxLengthIndicator = _.maxBy(data, ({ indicator }) => indicator.length).indicator.length;
 
   return (
     <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
@@ -25,13 +26,18 @@ const BarGraph = ({ data, title }) => {
         <Grid item>
           <div style={{ height: height, flex: 1 }}>
             <ResponsiveBar
-              key={General.randomUUID()}
+              key={id}
               data={data}
               keys={["count"]}
               indexBy={"indicator"}
               tooltip={({ data }) => `${data.indicator} : ${data.count}`}
               layout={layout}
-              margin={{ top: 10, right: 130, bottom: 50, left: 100 }}
+              margin={{
+                top: 10,
+                right: 10 * maxLengthIndicator,
+                bottom: 5 * maxLengthIndicator,
+                left: 50
+              }}
               padding={0.3}
               innerPadding={0.3}
               colors={{ scheme: "nivo" }}
@@ -42,10 +48,10 @@ const BarGraph = ({ data, title }) => {
               axisBottom={{
                 tickSize: 5,
                 tickPadding: 5,
-                tickRotation: 0,
+                tickRotation: -45,
                 legend: `${xLabel}`,
                 legendPosition: "middle",
-                legendOffset: 32
+                legendOffset: 4 * maxLengthIndicator
               }}
               axisLeft={{
                 tickSize: 5,
@@ -53,7 +59,7 @@ const BarGraph = ({ data, title }) => {
                 tickRotation: 0,
                 legend: `${yLabel}`,
                 legendPosition: "middle",
-                legendOffset: -60
+                legendOffset: -45
               }}
               labelSkipWidth={12}
               labelSkipHeight={12}
