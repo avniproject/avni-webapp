@@ -176,6 +176,7 @@ class FormDetails extends Component {
           createFlag: dataGroupFlag,
           formType: form.formType,
           subjectType: form.subjectType,
+          disableForm: form.organisationId === 1,
           dataLoaded: true
         });
         if (dataGroupFlag) {
@@ -432,7 +433,8 @@ class FormDetails extends Component {
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
           onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
           updateFormElementGroupRule: this.updateFormElementGroupRule,
-          entityName: this.getEntityNameForRules()
+          entityName: this.getEntityNameForRules(),
+          disableGroup: this.state.disableForm
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -1180,6 +1182,7 @@ class FormDetails extends Component {
               value={this.state.name}
               style={{ width: "50%" }}
               autoComplete="off"
+              disabled={this.state.disableForm}
             />
           </Grid>
           {this.state.createFlag && (
@@ -1190,6 +1193,7 @@ class FormDetails extends Component {
                 color="secondary"
                 onClick={this.btnGroupClick}
                 style={{ marginTop: "30px", marginBottom: "2px" }}
+                disabled={this.state.disableForm}
               >
                 Add Group
               </Button>
@@ -1205,7 +1209,7 @@ class FormDetails extends Component {
                   marginTop: "30px",
                   marginBottom: "2px"
                 }}
-                disabledFlag={!this.state.detectBrowserCloseEvent}
+                disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
                 fullWidth={true}
               />
             </Grid>
@@ -1259,6 +1263,7 @@ class FormDetails extends Component {
               onRuleUpdate={this.onRuleUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
               entityName={this.getEntityNameForRules()}
+              disabled={this.state.disableForm}
             />
           </div>
         </Grid>

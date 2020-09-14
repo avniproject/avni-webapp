@@ -56,6 +56,7 @@ const useStyles = makeStyles(theme => ({
 function FormElementTabs(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const disableFormElement = props.disableFormElement;
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -103,6 +104,7 @@ function FormElementTabs(props) {
             borderStyle: "solid",
             borderWidth: "1px"
           }}
+          disabled={disableFormElement}
         />
         {/* </div> */}
       </TabPanel>

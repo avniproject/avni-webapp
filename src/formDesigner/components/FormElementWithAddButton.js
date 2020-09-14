@@ -50,6 +50,7 @@ function FormElementWithAddButton(props) {
             aria-label="add"
             onClick={event => props.btnGroupAdd(props.groupIndex, props.index)}
             size="small"
+            disabled={props.disableFormElement}
           >
             <AddIcon />
           </Fab>

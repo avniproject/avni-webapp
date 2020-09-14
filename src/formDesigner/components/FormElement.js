@@ -139,10 +139,11 @@ function FormElement(props) {
   const panel = "panel" + props.groupIndex.toString + props.index.toString();
 
   const [dragElement, setDragElement] = React.useState(false);
+  const disableFormElement = props.disableFormElement;
 
   const DragHandler = props => (
     <div style={{ height: 5 }} {...props}>
-      <div hidden={!dragElement}>
+      <div hidden={!dragElement || disableFormElement}>
         <DragHandleIcon color={"disabled"} />
       </div>
     </div>
@@ -223,13 +224,14 @@ function FormElement(props) {
                   style={{ display: "inline-block" }}
                   required={props.formElementData.mandatory}
                   classes={{ asterisk: classes.asterisk }}
+                  disabled={disableFormElement}
                 >
                   {props.formElementData.name}
                 </InputLabel>
               </Typography>
             </Grid>
             <Grid item sm={1} direction={"row"}>
-              <IconButton aria-label="delete" onClick={handleDelete}>
+              <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement}>
                 <DeleteIcon />
               </IconButton>
               <ToolTip

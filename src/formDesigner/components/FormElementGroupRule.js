@@ -4,7 +4,7 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import { sampleFormElementGroupRule } from "../common/SampleRule";
 
-export const FormElementGroupRule = ({ rule, onChange, index }) => {
+export const FormElementGroupRule = ({ rule, onChange, index, disable }) => {
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Editor
@@ -20,6 +20,7 @@ export const FormElementGroupRule = ({ rule, onChange, index }) => {
           borderStyle: "solid",
           borderWidth: "1px"
         }}
+        disabled={disable}
       />
     </Box>
   );

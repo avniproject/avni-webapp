@@ -187,13 +187,15 @@ function FormElementGroup(props) {
           onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
           onDragInlineCodedConceptAnswer: props.onDragInlineCodedConceptAnswer,
-          entityName: props.entityName
+          entityName: props.entityName,
+          disableFormElement: props.disableGroup
         };
         formElements.push(
           <Draggable
             key={"Element" + props.index + "" + index}
             draggableId={"Group" + props.index + "Element" + index}
             index={index}
+            isDragDisabled={props.disableGroup}
           >
             {provided => (
               <div {...provided.draggableProps} ref={provided.innerRef}>
@@ -211,10 +213,11 @@ function FormElementGroup(props) {
   };
 
   const [dragGroup, setDragGroup] = React.useState(false);
+  const disableGroup = props.disableGroup;
 
   const DragHandler = props => (
     <div style={{ height: 5 }} {...props}>
-      <div hidden={!dragGroup}>
+      <div hidden={!dragGroup || disableGroup}>
         <DragHandleIcon color={"disabled"} />
       </div>
     </div>
@@ -225,6 +228,7 @@ function FormElementGroup(props) {
       key={"Element" + props.index}
       draggableId={"Element" + props.index}
       index={props.index}
+      isDragDisabled={disableGroup}
     >
       {provided => (
         <div
@@ -279,6 +283,7 @@ function FormElementGroup(props) {
                             value={props.groupData.name}
                             onChange={event => eventCall(props.index, "name", event.target.value)}
                             autoComplete="off"
+                            disabled={disableGroup}
                           />
                         </FormControl>
                       </Typography>
@@ -289,7 +294,11 @@ function FormElementGroup(props) {
                       </Typography>
                     </Grid>
                     <Grid item sm={1}>
-                      <IconButton aria-label="delete" onClick={handleDelete}>
+                      <IconButton
+                        aria-label="delete"
+                        onClick={handleDelete}
+                        disabled={disableGroup}
+                      >
                         <DeleteIcon />
                       </IconButton>
                       <ToolTip
@@ -338,6 +347,7 @@ function FormElementGroup(props) {
                             variant="contained"
                             color="secondary"
                             onClick={separateAddElement}
+                            disabled={disableGroup}
                           >
                             Add Question
                           </Button>
@@ -350,6 +360,7 @@ function FormElementGroup(props) {
                       rule={props.groupData.rule}
                       onChange={props.updateFormElementGroupRule}
                       index={props.index}
+                      disable={disableGroup}
                     />
                   </Grid>
                 </Grid>
@@ -363,6 +374,7 @@ function FormElementGroup(props) {
               onClick={separateAddGroup}
               className={classes.absolute}
               size="small"
+              disabled={disableGroup}
             >
               <AddIcon />
             </Fab>

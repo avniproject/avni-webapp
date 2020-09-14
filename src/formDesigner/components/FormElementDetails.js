@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const showDatePicker = (cssClasses, props) => {
+const showDatePicker = (cssClasses, props, disableFormElement) => {
   return (
     <Grid container item sm={12}>
       <AvniFormLabel
@@ -61,9 +61,19 @@ const showDatePicker = (cssClasses, props) => {
         }
         row
       >
-        <FormControlLabel value="Calendar" control={<Radio />} label="Calendar" />
+        <FormControlLabel
+          value="Calendar"
+          control={<Radio />}
+          label="Calendar"
+          disabled={disableFormElement}
+        />
 
-        <FormControlLabel value="Spinner" control={<Radio />} label="Spinner" />
+        <FormControlLabel
+          value="Spinner"
+          control={<Radio />}
+          label="Spinner"
+          disabled={disableFormElement}
+        />
       </RadioGroup>
     </Grid>
   );
@@ -85,6 +95,7 @@ export const BackButton = props => {
 function FormElementDetails(props) {
   const classes = useStyles();
   const { t } = useTranslation();
+  const disableFormElement = props.disableFormElement;
 
   const cssClasses = {
     label: {
@@ -139,6 +150,7 @@ function FormElementDetails(props) {
               props.index
             )
           }
+          disabled={disableFormElement}
         />
       </FormControl>
       <Paper style={{ width: "100%", marginBottom: "15px" }}>
@@ -163,6 +175,7 @@ function FormElementDetails(props) {
               onClick={event =>
                 props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)
               }
+              disabled={disableFormElement}
             >
               Select from library
             </Button>
@@ -175,6 +188,7 @@ function FormElementDetails(props) {
               onClick={event =>
                 props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
               }
+              disabled={disableFormElement}
             >
               Create new
             </Button>
@@ -345,7 +359,14 @@ function FormElementDetails(props) {
                             </a>
                           }
                           onDelete={event =>
-                            props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
+                            disableFormElement
+                              ? _.noop()
+                              : props.handleExcludedAnswers(
+                                  d.name,
+                                  true,
+                                  props.groupIndex,
+                                  props.index
+                                )
                           }
                         />
                       );
@@ -372,7 +393,7 @@ function FormElementDetails(props) {
             {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
               <div style={{ color: "red" }}>Please select type</div>
             )}
-            <FormControl fullWidth>
+            <FormControl fullWidth disabled={disableFormElement}>
               <AvniFormLabel label={"Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_CODED_TYPE"} />
               <Select
                 name="type"
@@ -407,7 +428,9 @@ function FormElementDetails(props) {
                       </a>
                     }
                     onDelete={event =>
-                      props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
+                      disableFormElement
+                        ? _.noop()
+                        : props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
                     }
                   />
                 );
@@ -437,6 +460,7 @@ function FormElementDetails(props) {
               }
               margin="normal"
               InputProps={{ inputProps: { min: 0 } }}
+              disabled={disableFormElement}
             />
             {props.formElementData.errorMessage &&
               props.formElementData.errorMessage.durationLimitInSecs && (
@@ -445,7 +469,7 @@ function FormElementDetails(props) {
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.formControl} disabled={disableFormElement}>
               <AvniFormLabel
                 label={"Video Quality"}
                 toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"}
@@ -493,6 +517,7 @@ function FormElementDetails(props) {
               }
               margin="normal"
               InputProps={{ inputProps: { min: 0 } }}
+              disabled={disableFormElement}
             />
             {props.formElementData.errorMessage && props.formElementData.errorMessage.maxHeight && (
               <div style={{ color: "red" }}>Please enter positive number</div>
@@ -516,6 +541,7 @@ function FormElementDetails(props) {
               }
               margin="normal"
               InputProps={{ inputProps: { min: 0 } }}
+              disabled={disableFormElement}
             />
             {props.formElementData.errorMessage && props.formElementData.errorMessage.maxWidth && (
               <div style={{ color: "red" }}>Please enter positive number</div>
@@ -523,7 +549,7 @@ function FormElementDetails(props) {
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.formControl} disabled={disableFormElement}>
               <AvniFormLabel
                 label={"Image Quality"}
                 toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"}
@@ -552,7 +578,8 @@ function FormElementDetails(props) {
         </Grid>
       )}
 
-      {props.formElementData.concept.dataType === "Date" && showDatePicker(cssClasses, props)}
+      {props.formElementData.concept.dataType === "Date" &&
+        showDatePicker(cssClasses, props, disableFormElement)}
 
       {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
         <Grid container item sm={12}>
@@ -562,7 +589,7 @@ function FormElementDetails(props) {
             toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"}
           />
 
-          <FormControl component="fieldset">
+          <FormControl component="fieldset" disabled={disableFormElement}>
             <FormGroup row>
               <FormControlLabel
                 control={
@@ -675,7 +702,8 @@ function FormElementDetails(props) {
         </Grid>
       )}
 
-      {props.formElementData.concept.dataType === "DateTime" && showDatePicker(cssClasses, props)}
+      {props.formElementData.concept.dataType === "DateTime" &&
+        showDatePicker(cssClasses, props, disableFormElement)}
 
       {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
         <Grid item sm={12}>
@@ -685,7 +713,7 @@ function FormElementDetails(props) {
               Validation Regex and description key both must be empty or both must be filled
             </div>
           )}
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled={disableFormElement}>
             <AvniFormLabel
               label={"Validation Regex"}
               toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"}
@@ -703,7 +731,7 @@ function FormElementDetails(props) {
               }
             />
           </FormControl>
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled={disableFormElement}>
             <AvniFormLabel
               label={"Validation Description Key"}
               toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"}
@@ -725,7 +753,10 @@ function FormElementDetails(props) {
       )}
       <Grid container item sm={12}>
         <Grid item sm={6}>
-          <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}>
+          <AvniFormControl
+            toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
+            disabled={disableFormElement}
+          >
             <FormControlLabel
               control={
                 <Checkbox
@@ -750,7 +781,10 @@ function FormElementDetails(props) {
           {["Numeric", "Text", "Date", "DateTime"].includes(
             props.formElementData.concept.dataType
           ) && (
-            <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}>
+            <AvniFormControl
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}
+              disabled={disableFormElement}
+            >
               <FormControlLabel
                 control={
                   <Checkbox
@@ -776,7 +810,7 @@ function FormElementDetails(props) {
       </Grid>
       {props.formElementData.concept.dataType === "Id" && (
         <Grid item sm={6}>
-          <FormControl fullWidth>
+          <FormControl fullWidth disabled={disableFormElement}>
             <AvniFormLabel
               label={"Identifier Source"}
               toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"}

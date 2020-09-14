@@ -16,7 +16,7 @@ import {
   sampleVisitScheduleRule
 } from "../common/SampleRule";
 
-const FormRule = ({ title, value, onValueChange }) => {
+const FormRule = ({ title, value, onValueChange, disabled }) => {
   const [expanded, setExpanded] = useState(false);
   const onToggleExpand = () => setExpanded(!expanded);
 
@@ -46,35 +46,40 @@ const FormRule = ({ title, value, onValueChange }) => {
             borderStyle: "solid",
             borderWidth: "1px"
           }}
+          disabled={disabled}
         />
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
 };
 
-const FormLevelRules = props => {
+const FormLevelRules = ({ disabled, ...props }) => {
   return (
     <div>
       <FormRule
         title={"Decision Rule"}
         value={props.form.decisionRule || sampleDecisionRule(props.entityName)}
         onValueChange={event => props.onRuleUpdate("decisionRule", event)}
+        disabled={disabled}
       />
       <FormRule
         title={"Visit Schedule Rule"}
         value={props.form.visitScheduleRule || sampleVisitScheduleRule(props.entityName)}
         onValueChange={event => props.onRuleUpdate("visitScheduleRule", event)}
+        disabled={disabled}
       />
       <FormRule
         title={"Validation Rule"}
         value={props.form.validationRule || sampleValidationRule(props.entityName)}
         onValueChange={event => props.onRuleUpdate("validationRule", event)}
+        disabled={disabled}
       />
       {props.form.formType === "ProgramEnrolment" && (
         <FormRule
           title={"Checklist Rule"}
           value={props.form.checklistsRule || sampleChecklistRule()}
           onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
+          disabled={disabled}
         />
       )}
     </div>
