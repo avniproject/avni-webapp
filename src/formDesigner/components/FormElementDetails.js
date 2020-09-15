@@ -250,9 +250,13 @@ function FormElementDetails(props) {
                 {!props.formElementData.newFlag && (
                   <>
                     <FormLabel style={{ fontSize: "13px" }}>Concept*</FormLabel>
-                    <a href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}>
-                      {props.formElementData.concept.name}
-                    </a>
+                    {disableFormElement ? (
+                      props.formElementData.concept.name
+                    ) : (
+                      <a href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}>
+                        {props.formElementData.concept.name}
+                      </a>
+                    )}
                   </>
                 )}
               </FormControl>
@@ -354,9 +358,13 @@ function FormElementDetails(props) {
                         <Chip
                           key={d.name}
                           label={
-                            <a href={`#/appDesigner/concept/${d.uuid}/show`}>
-                              <span style={{ color: "black" }}>{d.name}</span>
-                            </a>
+                            disableFormElement ? (
+                              d.name
+                            ) : (
+                              <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                                <span style={{ color: "black" }}>{d.name}</span>
+                              </a>
+                            )
                           }
                           onDelete={event =>
                             disableFormElement
@@ -423,9 +431,13 @@ function FormElementDetails(props) {
                   <Chip
                     key={d.name}
                     label={
-                      <a href={`#/appDesigner/concept/${d.uuid}/show`}>
-                        <span style={{ color: "black" }}>{d.name}</span>
-                      </a>
+                      disableFormElement ? (
+                        d.name
+                      ) : (
+                        <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                          <span style={{ color: "black" }}>{d.name}</span>
+                        </a>
+                      )
                     }
                     onDelete={event =>
                       disableFormElement
