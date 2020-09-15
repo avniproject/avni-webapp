@@ -65,6 +65,7 @@ const ProgramEnrol = ({
   setInitialState,
   setEnrolDateValidation,
   enrolDateValidation,
+  exitDateValidation,
   load
 }) => {
   const { t } = useTranslation();
@@ -133,7 +134,7 @@ const ProgramEnrol = ({
                     />
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
-              ) : enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
+              ) : enrolForm && programEnrolment && programEnrolment.programExitDateTime ? (
                 <ProgramExitEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Typography
@@ -149,10 +150,14 @@ const ProgramEnrol = ({
                       size="small"
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
-                      name="enrolmentDateTime"
-                      value={new Date(programEnrolment.enrolmentDateTime)}
+                      name="programExitDateTime"
+                      value={new Date(programEnrolment.programExitDateTime)}
+                      error={!isEmpty(exitDateValidation) && !first(exitDateValidation).success}
+                      helperText={
+                        !isEmpty(exitDateValidation) && t(first(exitDateValidation).messageKey)
+                      }
                       onChange={date => {
-                        updateProgramEnrolment("enrolmentDateTime", new Date(date));
+                        updateProgramEnrolment("programExitDateTime", new Date(date));
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -179,6 +184,7 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment,
   enrolDateValidation: state.dataEntry.enrolmentReducer.enrolDateValidation,
+  exitDateValidation: state.dataEntry.enrolmentReducer.exitDateValidation,
   load: state.dataEntry.enrolmentReducer.load
 });
 

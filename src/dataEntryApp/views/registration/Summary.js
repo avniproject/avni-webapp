@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableRow, Typography, List, Grid } from "@
 import Observations from "../../../common/components/Observations";
 import { LineBreak } from "../../../common/components/utils";
 import { useTranslation } from "react-i18next";
+import { isEmpty } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -36,7 +37,7 @@ const Summary = ({ observations, additionalRows, form }) => {
 
       <LineBreak num={2} />
       <Typography variant="button" display="block" gutterBottom>
-        {t("OBSERVATIONS")}
+        {!isEmpty(observations) ? t("OBSERVATIONS") : ""}
       </Typography>
       <Grid item xs={8}>
         <List>

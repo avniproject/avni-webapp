@@ -132,11 +132,18 @@ export default function(state = initialState, action) {
       };
     }
     case types.UPDATE_PROGRAM_ENROLMENT: {
+      const newState = {};
       const programEnrolment = state.programEnrolment.cloneForEdit();
       programEnrolment[action.field] = action.value;
+      if (action.field === "programExitDateTime") {
+        newState.exitDateValidation = programEnrolment
+          .validateExit()
+          .filter(({ success }) => !success);
+      }
+      newState.programEnrolment = programEnrolment;
       return {
         ...state,
-        programEnrolment
+        ...newState
       };
     }
     case types.SET_ENROL_DATE_VALIDATION: {

@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { filter, isEmpty } from "lodash";
+import { filter, isEmpty, isNil } from "lodash";
 import { LineBreak, withParams } from "../../../common/components/utils";
 import { Redirect, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
@@ -8,7 +8,7 @@ import Form from "../../components/Form";
 import Summary from "./Summary";
 import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { FormElementGroup, ValidationResults } from "avni-models";
+import { FormElementGroup, ValidationResults, StaticFormElementGroup } from "avni-models";
 import { InternalLink, RelativeLink } from "common/components/utils";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 
@@ -212,9 +212,10 @@ const FormWizard = ({
 
   const from = match.queryParams.from;
   const currentPageNumber = match.queryParams.page ? parseInt(match.queryParams.page) : 1;
-  const formElementGroups = form
-    .getFormElementGroups()
-    .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
+  const formElementGroups =
+    isNil(form) || isNil(form.firstFormElementGroup)
+      ? new Array(new StaticFormElementGroup(form))
+      : form.getFormElementGroups().filter(feg => !isEmpty(feg.nonVoidedFormElements()));
   const formElementGroupsLength = formElementGroups.length;
 
   const isOnSummaryPage = currentPageNumber > formElementGroupsLength;
