@@ -1,6 +1,5 @@
 package org.openchs.service;
 
-import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.IndividualRepository;
@@ -11,16 +10,12 @@ import org.openchs.web.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.singletonList;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 
@@ -120,6 +115,7 @@ public class IndividualService {
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
             enrolmentContract.setProgramEncounters(constructProgramEncounters(programEnrolment.getProgramEncounters()));
             enrolmentContract.setVoided(programEnrolment.isVoided());
+            enrolmentContract.setProgramName(programEnrolment.getProgram().getName());
             List<ObservationContract> observationContractsList = observationService.constructObservations(programEnrolment.getObservations());
             enrolmentContract.setObservations(observationContractsList);
             if (programEnrolment.getProgramExitObservations() != null) {

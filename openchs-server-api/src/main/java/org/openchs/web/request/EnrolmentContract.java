@@ -23,6 +23,17 @@ public class EnrolmentContract extends ReferenceDataContract{
     private List<ObservationContract> observations = new ArrayList<>();
     private String programColor;
 
+
+    private String programName;
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+
     public String getProgramColor() {
         return programColor;
     }
