@@ -73,7 +73,8 @@ export default ({
   handleUpdateComponent,
   enableReadOnly,
   voidSubject,
-  unVoidSubject
+  unVoidSubject,
+  registrationForm
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -127,6 +128,7 @@ export default ({
             enableReadOnly={enableReadOnly}
             voidSubject={voidSubject}
             unVoidSubject={unVoidSubject}
+            registrationForm={registrationForm}
           />
         </Paper>
       </TabContent>

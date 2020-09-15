@@ -218,6 +218,7 @@ export const mapOperationalProgram = enrolment => {
   const operationalProgram = General.assignFields(enrolment, new Program(), [
     "operationalProgramName"
   ]);
+  operationalProgram.name = enrolment.programName;
   operationalProgram.uuid = enrolment.programUuid;
   return operationalProgram;
 };

@@ -4,6 +4,7 @@ import { mapProfile } from "../../common/subjectModelMapper";
 import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile } from "./selectors";
+import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
 
 export default function*() {
   yield all([subjectProfileFetchWatcher, voidSubjectWatcher, unVoidSubjectWatcher].map(fork));
@@ -15,9 +16,11 @@ export function* subjectProfileFetchWatcher() {
 
 export function* subjectProfileFetchWorker({ subjectUUID }) {
   yield put.resolve(setLoad(false));
+  yield put.resolve(setRegistrationForm());
   yield put.resolve(setSubjectProfile());
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
+  yield put.resolve(getRegistrationForm(subjectProfile.subjectType.name));
   yield put(setSubjectProfile(subjectProfile));
   yield put.resolve(setLoad(true));
 }

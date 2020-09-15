@@ -4,16 +4,16 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import Observations from "common/components/Observations";
 import { mapObservation } from "common/subjectModelMapper";
-import { Table, TableBody, List, Box } from "@material-ui/core";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import { Box } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import moment from "moment/moment";
 import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
 import { selectFormMappingForProgramEncounter } from "../../sagas/programEncounterSelector";
 import { connect } from "react-redux";
+import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer";
+import Observations from "../../../common/components/Observations";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -71,10 +71,52 @@ const mapStateToProps = (state, props) => ({
       props.encounter.encounterType.uuid,
       state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
       state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
-    )(state)
+    )(state),
+  encounterForms: state.dataEntry.subjectProgram.encounterForms
 });
 
 const EditVisit = connect(mapStateToProps)(EditVisitLink);
+
+const EncounterObs = ({
+  encounter,
+  isForProgramEncounters,
+  encounterFormMapping,
+  programEncounterFormMapping,
+  encounterForms,
+  getEncounterForm
+}) => {
+  const formMapping = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
+  const formUUID = formMapping.formUUID;
+  const requiredFormDetails = _.find(encounterForms, ef => ef.formUUID === formUUID);
+
+  React.useEffect(() => {
+    if (!requiredFormDetails) {
+      getEncounterForm(formUUID);
+    }
+  }, []);
+
+  return requiredFormDetails ? (
+    <Observations
+      observations={
+        encounter.encounterDateTime ? encounter.observations : encounter.cancelObservations || []
+      }
+      form={requiredFormDetails.form}
+      customKey={encounter.uuid}
+      key={encounter.uuid}
+    />
+  ) : (
+    <CustomizedBackdrop load={!_.isEmpty(requiredFormDetails)} />
+  );
+};
+
+const mapDispatchToProps = {
+  getEncounterForm
+};
+
+const EncounterObservations = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EncounterObs);
 
 const NewCompletedVisitsTable = ({
   apiUrl,
@@ -186,22 +228,15 @@ const NewCompletedVisitsTable = ({
       }}
       detailPanel={[
         {
-          icon: KeyboardArrowDownIcon,
-          openIcon: KeyboardArrowUpIcon,
+          icon: "keyboard_arrow_down",
+          openIcon: "keyboard_arrow_up",
           render: row => {
             return (
-              <Box margin={1}>
-                <Table size="small" aria-label="purchases">
-                  <TableBody>
-                    <List>
-                      <Observations
-                        observations={
-                          row.encounterDateTime ? row.observations : row.cancelObservations || []
-                        }
-                      />
-                    </List>
-                  </TableBody>
-                </Table>
+              <Box margin={1} key={row.uuid}>
+                <EncounterObservations
+                  encounter={row}
+                  isForProgramEncounters={isForProgramEncounters}
+                />
               </Box>
             );
           }

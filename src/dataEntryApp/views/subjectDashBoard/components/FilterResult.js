@@ -217,6 +217,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
         <FormGroup row>
           {encounterTypes.map(visitType => (
             <FormControlLabel
+              key={visitType.uuid}
               control={
                 <Checkbox
                   checked={selectedVisitTypes != null ? selectedVisitTypes[visitType.uuid] : false}

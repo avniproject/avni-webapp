@@ -118,8 +118,8 @@ const CompleteVisit = ({
       <Fragment>
         <Breadcrumbs path={match.path} />
         <Paper className={classes.searchBox}>
-          <Grid container spacing={3}>
-            <Grid item xs={6} alignItems="flex-start">
+          <Grid container spacing={3} alignItems="flex-start">
+            <Grid item xs={6}>
               <Typography variant="h6" gutterBottom className={classes.completedVsits}>
                 {t("completedVisits")}
               </Typography>

@@ -85,7 +85,8 @@ const SubjectDashboardProfileTab = ({
   path,
   enableReadOnly,
   voidSubject,
-  unVoidSubject
+  unVoidSubject,
+  registrationForm
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -139,7 +140,10 @@ const SubjectDashboardProfileTab = ({
         <ExpansionPanelDetails>
           <Grid item xs={12}>
             <List>
-              <Observations observations={profile ? profile.observations : []} />
+              <Observations
+                observations={profile ? profile.observations : []}
+                form={registrationForm}
+              />
             </List>
             {!enableReadOnly ? (
               <Button color="primary" onClick={() => setVoidConfirmation(true)}>

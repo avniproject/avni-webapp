@@ -31,6 +31,7 @@ import { store } from "../../../../common/store/createStore";
 import { types } from "../../../reducers/completedVisitsReducer";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -139,8 +140,16 @@ const ProgramView = ({
   handleUpdateComponent,
   enableReadOnly,
   subjectTypeUuid,
-  subjectVoided
+  subjectVoided,
+  programEnrolmentForm,
+  getProgramEnrolmentForm,
+  subjectProfile
 }) => {
+  React.useEffect(() => {
+    const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
+    getProgramEnrolmentForm(subjectProfile.subjectType.name, programData.program.name, formType);
+  }, [programData]);
+
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -259,6 +268,7 @@ const ProgramView = ({
                         ]
                       : ""
                   }
+                  form={programEnrolmentForm}
                 />
               </List>
               {!enableReadOnly ? (
@@ -452,11 +462,14 @@ const ProgramView = ({
 };
 
 const mapStateToProps = state => ({
-  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
+  programEnrolmentForm: state.dataEntry.subjectProgram.programEnrolmentForm
 });
 
 const mapDispatchToProps = {
-  undoExitEnrolment
+  undoExitEnrolment,
+  getProgramEnrolmentForm
 };
 
 export default withRouter(

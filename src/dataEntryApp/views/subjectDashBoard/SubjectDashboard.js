@@ -36,7 +36,8 @@ const SubjectDashboard = ({
   enableReadOnly,
   voidSubject,
   unVoidSubject,
-  load
+  load,
+  registrationForm
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -65,6 +66,7 @@ const SubjectDashboard = ({
           enableReadOnly={enableReadOnly}
           voidSubject={voidSubject}
           unVoidSubject={unVoidSubject}
+          registrationForm={registrationForm}
         />
       </Paper>
     );
@@ -90,7 +92,8 @@ const mapStateToProps = state => ({
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
   enableReadOnly: selectEnableReadonly(state),
-  load: state.dataEntry.loadReducer.load
+  load: state.dataEntry.loadReducer.load,
+  registrationForm: state.dataEntry.registration.registrationForm
 });
 
 const mapDispatchToProps = {

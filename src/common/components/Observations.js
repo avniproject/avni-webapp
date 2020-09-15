@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Observations = ({ observations, additionalRows, form }) => {
+const Observations = ({ observations, additionalRows, form, customKey }) => {
   if (isEmpty(observations)) {
     return <div />;
   }
@@ -50,7 +50,7 @@ const Observations = ({ observations, additionalRows, form }) => {
 
   const rows = orderedObs.map((obs, index) => {
     return (
-      <TableRow key={index}>
+      <TableRow key={`${index}-${customKey}`}>
         <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
           {t(obs.concept["name"])}
         </TableCell>
