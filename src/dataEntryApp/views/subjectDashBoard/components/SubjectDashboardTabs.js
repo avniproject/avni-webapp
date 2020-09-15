@@ -74,12 +74,13 @@ export default ({
   enableReadOnly,
   voidSubject,
   unVoidSubject,
-  registrationForm
+  registrationForm,
+  tab
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(tab || 0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

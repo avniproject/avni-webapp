@@ -66,6 +66,11 @@ const DataEntry = ({
               component={SubjectDashboard}
               key={`${Math.random()}`}
             />
+            <Route
+              exact
+              path={`${path}/subject/subjectProfile`}
+              component={(...props) => <SubjectDashboard tab={1} {...props} />}
+            />
             {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
             <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />

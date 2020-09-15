@@ -51,6 +51,7 @@ const RemoveRelative = props => {
   const { t } = useTranslation();
   const classes = useStyles();
   const close = () => {};
+  const history = useHistory();
 
   const removeClick = () => {
     const RelationData = {
@@ -64,6 +65,7 @@ const RemoveRelative = props => {
     (async function fetchData() {
       await setTimeout(() => {
         props.getSubjectProfile(props.relationAuuid);
+        history.push(`/app/subject/subjectProfile?uuid=${props.relationAuuid}`);
       }, 500);
       // await props.getSubjectProfile(props.relationAuuid);
     })();

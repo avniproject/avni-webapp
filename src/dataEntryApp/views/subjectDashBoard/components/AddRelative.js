@@ -178,11 +178,11 @@ const AddRelative = ({
     (async function fetchData() {
       await getSubjectProfile(match.queryParams.uuid);
     })();
-    history.goBack();
+    history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
   };
   const cancelRelation = () => {
     sessionStorage.removeItem("selectedRelativeslist");
-    history.goBack();
+    history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
   };
 
   useEffect(() => {

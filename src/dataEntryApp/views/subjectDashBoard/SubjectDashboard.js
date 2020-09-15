@@ -37,7 +37,8 @@ const SubjectDashboard = ({
   voidSubject,
   unVoidSubject,
   load,
-  registrationForm
+  registrationForm,
+  tab
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -67,6 +68,7 @@ const SubjectDashboard = ({
           voidSubject={voidSubject}
           unVoidSubject={unVoidSubject}
           registrationForm={registrationForm}
+          tab={tab}
         />
       </Paper>
     );
