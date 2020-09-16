@@ -234,7 +234,7 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
 /*
 Takes observations and returns updated observations. It do not modify the passed parameters.
  */
-function updateObservations(observations, formElement, value) {
+function updateObservations(observations = [], formElement, value) {
   const observationHolder = new ObservationsHolder(observations);
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
     const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
