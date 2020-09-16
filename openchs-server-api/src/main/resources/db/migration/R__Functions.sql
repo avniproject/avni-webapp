@@ -571,3 +571,14 @@ BEGIN
     RETURN 1;
 END
 $BODY$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION concept_name(TEXT) RETURNS TEXT
+    stable
+    strict
+    language sql
+as
+$$
+SELECT name
+FROM concept
+WHERE uuid = $1;
+$$;

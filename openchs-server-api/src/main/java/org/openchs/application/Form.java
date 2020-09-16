@@ -94,6 +94,11 @@ public class Form extends OrganisationAwareEntity {
         return getAllFormElements().stream().filter(fe->!fe.isVoided()).collect(Collectors.toList());
     }
 
+    @JsonIgnore
+    public List<FormElement> getAllCodedFormElements() {
+        return getApplicableFormElements().stream().filter(fe -> fe.getConcept().isCoded()).collect(Collectors.toList());
+    }
+
     public String getDecisionRule() {
         return decisionRule;
     }
@@ -120,11 +125,11 @@ public class Form extends OrganisationAwareEntity {
 
     public String getChecklistsRule() {
         return checklistsRule;
-        
+
     }
-    
+
     public void setChecklistsRule(String checklistsRule) {
         this.checklistsRule = checklistsRule;
     }
-    
+
 }

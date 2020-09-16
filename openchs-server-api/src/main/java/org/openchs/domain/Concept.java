@@ -267,4 +267,8 @@ public class Concept extends OrganisationAwareEntity {
     public void setActive(Boolean active) {
         this.active = Optional.ofNullable(active).orElse(true);
     }
+
+    public Boolean isCoded() {
+        return ConceptDataType.Coded.toString().equals(this.dataType);
+    }
 }
