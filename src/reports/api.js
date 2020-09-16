@@ -13,5 +13,7 @@ export default {
     httpClient
       .fetchJson(httpClient.withParams("/export/status", { size: 10, ...params }))
       .then(r => r.json),
-  downloadFile: filename => httpClient.downloadFile("")
+  downloadFile: filename => httpClient.downloadFile(""),
+  getActivityReport: () =>
+    httpClient.fetchJson(`/report/aggregate/activities`).then(res => res.json)
 };

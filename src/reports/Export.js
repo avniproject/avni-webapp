@@ -15,13 +15,13 @@ import DateFnsUtils from "@date-io/date-fns";
 import Box from "@material-ui/core/Box";
 import { DateSelector } from "./DateSelector";
 import { ExportOptions } from "./ExportOptions";
-import { sideBarOptions } from "./ReportUtils";
 import ReportTypes from "./ReportTypes";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "../dataEntryApp/components/Radio";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import AddressLevelsByType from "../common/components/AddressLevelsByType";
+import { reportSideBarOptions } from "./Common";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -229,7 +229,7 @@ const Export = ({
     <ScreenWithAppBar
       appbarTitle={`Longitudinal Export`}
       enableLeftMenuButton={true}
-      sidebarOptions={sideBarOptions}
+      sidebarOptions={reportSideBarOptions}
     >
       {operationalModules && (
         <div>

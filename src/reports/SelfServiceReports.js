@@ -1,6 +1,6 @@
 import React from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { sideBarOptions } from "./ReportUtils";
+import { reportSideBarOptions } from "./Common";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -34,7 +34,7 @@ const SelfServiceReports = () => {
     <ScreenWithAppBar
       appbarTitle={`Self Service Reports`}
       enableLeftMenuButton={true}
-      sidebarOptions={sideBarOptions}
+      sidebarOptions={reportSideBarOptions}
     >
       <Grid container alignItems={"center"} spacing={3}>
         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>

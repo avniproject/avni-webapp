@@ -12,8 +12,8 @@ import Translations from "../translations";
 import Export from "../reports/Export";
 import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 import Tutorials from "../tutorials/Tutorials";
-import CannedReports from "../reports/CannedReports";
 import SelfServiceReports from "../reports/SelfServiceReports";
+import CannedReport from "../reports/cannedReport/CannedReport";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -96,7 +96,7 @@ const Routes = ({ user, organisation }) => (
       path="/cannedreports"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
-      component={WithProps({ user, organisation }, CannedReports)}
+      component={WithProps({ user, organisation }, CannedReport)}
     />
     <RestrictedRoute
       exact
