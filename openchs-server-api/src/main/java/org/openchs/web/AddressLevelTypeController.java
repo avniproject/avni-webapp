@@ -53,7 +53,11 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> createAddressLevelType(@RequestBody AddressLevelTypeContract contract) {
-        AddressLevelType addressLevelType = locationService.createAddressLevel(contract);
+        //Do not allow to create location type when there is already another location type with the same name
+        if (addressLevelTypeRepository.findByName(contract.getName()) != null)
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Location Type with name %s already exists", contract.getName())));
+
+        AddressLevelType addressLevelType = locationService.createAddressLevelType(contract);
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
 
@@ -63,7 +67,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     public ResponseEntity<?> save(@RequestBody List<AddressLevelTypeContract> addressLevelTypeContracts) {
         for (AddressLevelTypeContract addressLevelTypeContract : addressLevelTypeContracts) {
             logger.info(String.format("Processing addressLevelType request: %s", addressLevelTypeContract.getUuid()));
-            locationService.createAddressLevel(addressLevelTypeContract);
+            locationService.createAddressLevelType(addressLevelTypeContract);
         }
         return ResponseEntity.ok(null);
     }
@@ -73,6 +77,11 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     @Transactional
     public ResponseEntity<?> updateAddressLevelType(@PathVariable("id") Long id, @RequestBody AddressLevelTypeContract contract) {
         AddressLevelType addressLevelType = addressLevelTypeRepository.findByUuid(contract.getUuid());
+        AddressLevelType addressLevelTypeWithSameName = addressLevelTypeRepository.findByName(contract.getName());
+        //Do not allow to change location type name when there is already another location type with the same name
+        if (addressLevelTypeWithSameName != null && addressLevelTypeWithSameName.getUuid() != addressLevelType.getUuid())
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Location Type with name %s already exists", contract.getName())));
+
         addressLevelType.setName(contract.getName());
         addressLevelType.setLevel(contract.getLevel());
         Set<AddressLevel> addressLevels = addressLevelType.getAddressLevels();

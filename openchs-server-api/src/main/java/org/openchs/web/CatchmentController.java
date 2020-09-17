@@ -105,6 +105,11 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @Transactional
     public ResponseEntity<?> updateCatchment(@PathVariable("id") Long id, @RequestBody CatchmentContract catchmentContract) throws Exception {
         Catchment catchment = catchmentRepository.findOne(id);
+        Catchment catchmentWithSameName = catchmentRepository.findByName(catchmentContract.getName());
+        //Do not allow to change catchment name when there is already another catchment with the same name
+        if (catchmentWithSameName != null && catchmentWithSameName.getId() != catchment.getId())
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Catchment with name %s already exists", catchmentContract.getName())));
+
         catchment.setName(catchmentContract.getName());
         catchment.clearAddressLevels();
         for (Long locationId : catchmentContract.getLocationIds()) {

@@ -153,7 +153,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
             case "addressLevelTypes.json":
                 AddressLevelTypeContract[] addressLevelTypeContracts = convertString(fileData, AddressLevelTypeContract[].class);
                 for (AddressLevelTypeContract addressLevelTypeContract : addressLevelTypeContracts) {
-                    locationService.createAddressLevel(addressLevelTypeContract);
+                    locationService.createAddressLevelType(addressLevelTypeContract);
                 }
                 break;
             case "locations.json":

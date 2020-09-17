@@ -161,7 +161,7 @@ public class LocationService {
                 || (!location.isTopLevel() && !location.getParent().containsSubLocation(title, type));
     }
 
-    public AddressLevelType createAddressLevel(AddressLevelTypeContract contract) {
+    public AddressLevelType createAddressLevelType(AddressLevelTypeContract contract) {
         AddressLevelType addressLevelType = addressLevelTypeRepository.findByUuid(contract.getUuid());
         if (addressLevelType == null) {
             addressLevelType = new AddressLevelType();
