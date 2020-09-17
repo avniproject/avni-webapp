@@ -1,9 +1,10 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Describe the bug**
@@ -42,9 +43,7 @@ If applicable, add screenshots to help explain your problem.
 **Additional context**
 Add any other context about the problem here.
 
-**Developer Checklist**
-Developer fixing the bug should fill this checklist.
-
+**Developer Checklist**(Developer fixing the bug should fill this checklist)
 - Does the fix require extensive regression testing?
   - [ ] Yes
   - [ ] No
