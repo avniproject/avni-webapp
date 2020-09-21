@@ -26,6 +26,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         const v = e.target.value;
         isEmpty(v) ? update() : update(v);
       }}
+      disabled={!fe.editable}
     />
   );
 };

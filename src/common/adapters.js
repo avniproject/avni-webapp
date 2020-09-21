@@ -39,7 +39,7 @@ export const mapFormElement = (json, formElementGroup) => {
   const formElement = General.assignFields(
     json,
     new FormElement(),
-    ["uuid", "name", "displayOrder", "mandatory", "type", "voided"],
+    ["uuid", "name", "displayOrder", "mandatory", "type", "voided", "rule"],
     []
   );
   formElement.formElementGroup = formElementGroup;
@@ -55,7 +55,8 @@ export const mapFormElementGroup = (json, form) => {
     "name",
     "displayOrder",
     "display",
-    "voided"
+    "voided",
+    "rule"
   ]);
   formElementGroup.formElements = map(json.applicableFormElements, feJson =>
     mapFormElement(feJson, formElementGroup)
@@ -105,6 +106,7 @@ export const mapSubjectType = json => {
   subjectType.name = json.operationalSubjectTypeName;
   subjectType.uuid = json.uuid;
   subjectType.voided = !!json.voided;
+  subjectType.type = json.type;
   return subjectType;
 };
 

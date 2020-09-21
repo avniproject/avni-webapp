@@ -4,7 +4,15 @@ import { FormElementGroup } from "./FormElementGroup";
 
 import { withRouter } from "react-router-dom";
 
-const Form = ({ current, obsHolder, updateObs, children, validationResults }) => {
+const Form = ({
+  current,
+  obsHolder,
+  updateObs,
+  children,
+  validationResults,
+  filteredFormElements,
+  entity
+}) => {
   return (
     <Fragment>
       <FormElementGroup
@@ -13,6 +21,8 @@ const Form = ({ current, obsHolder, updateObs, children, validationResults }) =>
         obsHolder={obsHolder}
         updateObs={updateObs}
         validationResults={validationResults}
+        filteredFormElements={filteredFormElements}
+        entity={entity}
       >
         {current}
       </FormElementGroup>

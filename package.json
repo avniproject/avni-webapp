@@ -54,7 +54,10 @@
     "redux": "^4.0.1",
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "openchs-models": "0.2.39",
+    "rules-config": "github:openchs/rules-config#08202533ec3f3a55977946c69d204f3df8080e61",
+    "avni-health-modules": "0.0.3"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
@@ -84,7 +87,6 @@
     "chai": "^4.2.0",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^3.0.1",
-    "openchs-models": "0.2.10",
     "prettier": "1.17.1",
     "pretty-quick": "^1.11.1",
     "redux-saga-test-plan": "^3.7.0",

@@ -1,49 +1,51 @@
 import {
+  FormElementGroup,
   Individual,
   ObservationsHolder,
-  Concept,
   ProgramEnrolment,
   SubjectType
 } from "avni-models";
 import {
-  setSubject,
   getRegistrationForm,
+  saveComplete,
+  selectAddressLevelType,
   setLoaded,
   setRegistrationForm,
-  types as subjectTypes,
-  saveComplete,
+  setSubject,
   setValidationResults,
-  selectAddressLevelType
+  types as subjectTypes
 } from "../reducers/registrationReducer";
 import SubjectService from "../services/SubjectService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
-import { all, call, fork, takeEvery, put, select, takeLatest } from "redux-saga/effects";
+import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { getGenders, getOperationalModules } from "../reducers/metadataReducer";
 import {
   selectRegistrationFormMappingForSubjectType,
-  selectSubjectTypeFromName,
-  selectRegistrationSubject
+  selectRegistrationSubject,
+  selectSubjectTypeFromName
 } from "./selectors";
 import {
   selectEnrolmentFormMappingForSubjectType,
-  selectProgram,
-  selectEnrolmentSubject
+  selectEnrolmentSubject,
+  selectProgram
 } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
-  setEnrolForm,
-  setProgramEnrolment,
   saveProgramComplete,
-  types as enrolmentTypes,
+  setEnrolForm,
   setInitialState,
-  setLoaded as setEnrolmentLoaded
+  setLoaded as setEnrolmentLoaded,
+  setProgramEnrolment,
+  types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
 import _ from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { setFilteredFormElements } from "../reducers/RulesReducer";
+import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
@@ -187,29 +189,6 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setLoaded());
 }
 
-function validate(formElement, value, observations, validationResults) {
-  let isNullForMultiselect = false;
-  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    const observationHolder = new ObservationsHolder(observations);
-    const answers =
-      observationHolder.findObservation(formElement.concept) &&
-      observationHolder.findObservation(formElement.concept).getValue();
-
-    isNullForMultiselect = _.isNil(answers);
-  }
-
-  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
-
-  _.remove(
-    validationResults,
-    existingValidationResult =>
-      existingValidationResult.formIdentifier === validationResult.formIdentifier
-  );
-
-  validationResults.push(validationResult);
-  return validationResults;
-}
-
 function* loadEditRegistrationPageWatcher() {
   yield takeLatest(subjectTypes.ON_LOAD_EDIT, loadEditRegistrationPageWorker);
 }
@@ -231,46 +210,43 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   yield put.resolve(setLoaded());
 }
 
-/*
-Takes observations and returns updated observations. It do not modify the passed parameters.
- */
-function updateObservations(observations = [], formElement, value) {
-  const observationHolder = new ObservationsHolder(observations);
-  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
-  } else if (
-    formElement.concept.datatype === Concept.dataType.Coded &&
-    formElement.isSingleSelect()
-  ) {
-    observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
-  } else if (
-    formElement.concept.datatype === Concept.dataType.Duration &&
-    !_.isNil(formElement.durationOptions)
-  ) {
-    observationHolder.updateCompositeDurationValue(formElement.concept, value);
-  } else if (
-    formElement.concept.datatype === Concept.dataType.Date &&
-    !_.isNil(formElement.durationOptions)
-  ) {
-    //  addOrUpdatePrimitiveObs
-    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
-  } else {
-    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
-  }
-  return observationHolder.observations;
-}
-
 function* updateObsWatcher() {
   yield takeEvery(subjectTypes.UPDATE_OBS, updateObsWorker);
 }
 
 export function* updateObsWorker({ formElement, value }) {
+  yield put.resolve(setFilteredFormElements());
   const subject = yield select(state => state.dataEntry.registration.subject);
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  subject.observations = updateObservations(subject.observations, formElement, value);
+  const observations = formElementService.updateObservations(
+    subject.observations,
+    formElement,
+    value
+  );
+  const observationsHolder = new ObservationsHolder(observations);
+  const formElementStatuses = getFormElementStatuses(
+    subject,
+    formElement.formElementGroup,
+    observationsHolder
+  );
+  const filteredFormElements = FormElementGroup._sortedFormElements(
+    formElement.formElementGroup.filterElements(formElementStatuses)
+  );
+  yield put(setFilteredFormElements(filteredFormElements));
+  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  subject.observations = observationsHolder.observations;
+
   yield put(setSubject(subject));
   yield put(
-    setValidationResults(validate(formElement, value, subject.observations, validationResults))
+    setValidationResults(
+      formElementService.validate(
+        formElement,
+        value,
+        subject.observations,
+        validationResults,
+        formElementStatuses
+      )
+    )
   );
 }
 
@@ -287,7 +263,7 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
 
-  programEnrolment.programExitObservations = updateObservations(
+  programEnrolment.programExitObservations = formElementService.updateObservations(
     programEnrolment.programExitObservations,
     formElement,
     value
@@ -296,7 +272,12 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
     setValidationResults(
-      validate(formElement, value, programEnrolment.programExitObservations, validationResults)
+      formElementService.validate(
+        formElement,
+        value,
+        programEnrolment.programExitObservations,
+        validationResults
+      )
     )
   );
 }
@@ -306,7 +287,7 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
 
-  programEnrolment.observations = updateObservations(
+  programEnrolment.observations = formElementService.updateObservations(
     programEnrolment.observations,
     formElement,
     value
@@ -315,7 +296,12 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
     setValidationResults(
-      validate(formElement, value, programEnrolment.programExitObservations, validationResults)
+      formElementService.validate(
+        formElement,
+        value,
+        programEnrolment.observations,
+        validationResults
+      )
     )
   );
 }

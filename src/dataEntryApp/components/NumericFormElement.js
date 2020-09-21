@@ -49,6 +49,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
           const v = e.target.value;
           isEmpty(v) ? update(null) : update(parseInt(v));
         }}
+        disabled={!fe.editable}
       />
     </Fragment>
   );

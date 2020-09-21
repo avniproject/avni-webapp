@@ -119,6 +119,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
           "aria-label": "change date",
           color: "primary"
         }}
+        disabled={!fe.editable}
       />
     </MuiPickersUtilsProvider>
   );
@@ -187,6 +188,7 @@ export const DateAndDurationFormElement = ({
             "aria-label": "change date",
             color: "primary"
           }}
+          disabled={!fe.editable}
         />
       </MuiPickersUtilsProvider>
       <div>

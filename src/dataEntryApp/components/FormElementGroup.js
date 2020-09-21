@@ -1,22 +1,27 @@
-import _, { invoke, get } from "lodash";
+import { get, isNil } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
-import { ObservationsHolder } from "avni-models";
+import { filterFormElements } from "../services/FormElementService";
 
 export const FormElementGroup = ({
   children: feg,
   obsHolder,
   updateObs,
   parentChildren,
-  validationResults
+  validationResults,
+  filteredFormElements,
+  entity
 }) => {
+  const formElements = isNil(filteredFormElements)
+    ? filterFormElements(feg, entity)
+    : filteredFormElements;
   return (
     <div>
       <LineBreak num={1} />
       {parentChildren && feg.isFirst ? parentChildren : ""}
 
-      {feg.getFormElements().map(fe => {
+      {formElements.map(fe => {
         const observation = obsHolder.findObservation(fe.concept);
         const observationValue = observation
           ? observation.concept.isDurationConcept()
