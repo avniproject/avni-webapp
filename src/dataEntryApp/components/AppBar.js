@@ -27,6 +27,7 @@ import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 import Icon from "@material-ui/core/Icon";
+import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -107,7 +108,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
+const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -268,6 +269,9 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
               {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>
           </div>
+          <IconButton onClick={() => history.push("/home")} aria-label="Home">
+            <HomeIcon />
+          </IconButton>
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"
