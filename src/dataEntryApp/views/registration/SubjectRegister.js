@@ -29,6 +29,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
+import { setFilteredFormElements } from "../../reducers/RulesReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -161,8 +162,7 @@ const DefaultPage = props => {
 
     //needs to used when village location is set
     //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
-
-    if (props.subject.subjectType.isIndividual()) {
+    if (props.subject.subjectType.isPerson()) {
       if (
         !(
           _.isEmpty(subjectRegErrors.FIRST_NAME) &&
@@ -497,13 +497,16 @@ const mapFormStateToProps = state => ({
   subject: state.dataEntry.registration.subject,
   onSaveGoto: "/app/search",
   validationResults: state.dataEntry.registration.validationResults,
-  registrationFlow: true
+  registrationFlow: true,
+  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  entity: state.dataEntry.registration.subject
 });
 
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveSubject,
-  setValidationResults
+  setValidationResults,
+  setFilteredFormElements
 };
 
 const RegistrationForm = withRouter(

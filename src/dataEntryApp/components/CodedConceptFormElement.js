@@ -6,7 +6,7 @@ export const CodedConceptFormElement = ({ children: fe, validationResults, uuid,
   return (
     <CodedFormElement
       groupName={fe.name}
-      items={sortBy(fe.concept.answers, "answerOrder").map(answer =>
+      items={sortBy(fe.getAnswers(), "answerOrder").map(answer =>
         assign(answer.concept, { abnormal: answer.abnormal })
       )}
       multiSelect={fe.type === "MultiSelect"}

@@ -7,6 +7,7 @@ import {
 } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";
+import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 let subject = Individual.createEmptyInstance();
 subject.subjectType = SubjectType.create("Individual");
@@ -23,13 +24,16 @@ const mapFormStateToProps = state => ({
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  validationResults: state.dataEntry.registration.validationResults
+  validationResults: state.dataEntry.registration.validationResults,
+  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  entity: state.dataEntry.enrolmentReducer.programEnrolment
 });
 //need to change observations
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveProgramEnrolment,
-  setValidationResults
+  setValidationResults,
+  setFilteredFormElements
 };
 
 const ProgramExitEnrolmentForm = withRouter(

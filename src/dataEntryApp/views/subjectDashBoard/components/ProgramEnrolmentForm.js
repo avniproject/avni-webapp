@@ -4,6 +4,7 @@ import { ObservationsHolder, Individual, SubjectType } from "avni-models";
 import { updateObs, saveProgramEnrolment } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";
+import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 let subject = Individual.createEmptyInstance();
 subject.subjectType = SubjectType.create("Individual");
@@ -18,13 +19,16 @@ const mapFormStateToProps = state => ({
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   staticValidationResults: state.dataEntry.enrolmentReducer.enrolDateValidation,
   validationResults: state.dataEntry.registration.validationResults,
-  message: `${state.dataEntry.enrolmentReducer.programEnrolment.program.name} Enrolment Saved`
+  message: `${state.dataEntry.enrolmentReducer.programEnrolment.program.name} Enrolment Saved`,
+  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  entity: state.dataEntry.enrolmentReducer.programEnrolment
 });
 
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveProgramEnrolment,
-  setValidationResults
+  setValidationResults,
+  setFilteredFormElements
 };
 
 const ProgramEnrolmentForm = withRouter(

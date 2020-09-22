@@ -15,12 +15,19 @@ import {
   selectFormMappingForCancelEncounter
 } from "./encounterSelector";
 import { mapForm } from "../../common/adapters";
-import { Encounter, Individual, ModelGeneral as General } from "avni-models";
+import {
+  Encounter,
+  Individual,
+  ModelGeneral as General,
+  ObservationsHolder,
+  FormElementGroup
+} from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
-import formElementService from "../services/FormElementService";
+import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
+import { setFilteredFormElements } from "../reducers/RulesReducer";
 
 export default function*() {
   yield all(
@@ -92,16 +99,34 @@ export function* updateEncounterObsWorker({ formElement, value }) {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
   const validationResults = state.dataEntry.encounterReducer.validationResults;
-  encounter.observations = formElementService.updateObservations(
+  const observations = formElementService.updateObservations(
     encounter.observations,
     formElement,
     value
   );
+  const observationsHolder = new ObservationsHolder(observations);
+  const formElementStatuses = getFormElementStatuses(
+    encounter,
+    formElement.formElementGroup,
+    observationsHolder
+  );
+  const filteredFormElements = FormElementGroup._sortedFormElements(
+    formElement.formElementGroup.filterElements(formElementStatuses)
+  );
+  yield put(setFilteredFormElements(filteredFormElements));
+  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  encounter.observations = observationsHolder.observations;
 
   yield put(setEncounter(encounter));
   yield put(
     setValidationResults(
-      formElementService.validate(formElement, value, encounter.observations, validationResults)
+      formElementService.validate(
+        formElement,
+        value,
+        encounter.observations,
+        validationResults,
+        formElementStatuses
+      )
     )
   );
 }
@@ -148,11 +173,24 @@ export function* updateCancelEncounterObsWorker({ formElement, value }) {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
   const validationResults = state.dataEntry.encounterReducer.validationResults;
-  encounter.cancelObservations = formElementService.updateObservations(
+  const cancelObservations = formElementService.updateObservations(
     encounter.cancelObservations,
     formElement,
     value
   );
+
+  const observationsHolder = new ObservationsHolder(cancelObservations);
+  const formElementStatuses = getFormElementStatuses(
+    encounter,
+    formElement.formElementGroup,
+    observationsHolder
+  );
+  const filteredFormElements = FormElementGroup._sortedFormElements(
+    formElement.formElementGroup.filterElements(formElementStatuses)
+  );
+  yield put(setFilteredFormElements(filteredFormElements));
+  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  encounter.cancelObservations = observationsHolder.observations;
 
   yield put(setEncounter(encounter));
   yield put(
@@ -161,7 +199,8 @@ export function* updateCancelEncounterObsWorker({ formElement, value }) {
         formElement,
         value,
         encounter.cancelObservations,
-        validationResults
+        validationResults,
+        formElementStatuses
       )
     )
   );

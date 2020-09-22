@@ -8,6 +8,7 @@ import {
   saveEncounter,
   setValidationResults
 } from "dataEntryApp/reducers/encounterReducer";
+import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.encounterReducer.encounterForm,
@@ -30,13 +31,16 @@ const mapFormStateToProps = state => ({
         "DD-MMM-YYYY"
       )
     }
-  ]
+  ],
+  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  entity: state.dataEntry.encounterReducer.encounter
 });
 
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveEncounter,
-  setValidationResults
+  setValidationResults,
+  setFilteredFormElements
 };
 
 const EncounterForm = withRouter(
