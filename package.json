@@ -57,7 +57,7 @@
     "uuid": "^3.3.2",
     "openchs-models": "0.2.39",
     "rules-config": "github:openchs/rules-config#08202533ec3f3a55977946c69d204f3df8080e61",
-    "avni-health-modules": "0.0.3"
+    "avni-health-modules": "0.0.4"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
