@@ -8,6 +8,7 @@ import {
   saveEncounter,
   setValidationResults
 } from "dataEntryApp/reducers/encounterReducer";
+import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.encounterReducer.encounterForm,
@@ -28,13 +29,16 @@ const mapFormStateToProps = state => ({
       label: "Cancel Date",
       value: moment(state.dataEntry.encounterReducer.encounter.cancelDateTime).format("DD-MMM-YYYY")
     }
-  ]
+  ],
+  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  entity: state.dataEntry.programEncounterReducer.programEncounter
 });
 
 const mapFormDispatchToProps = {
   updateObs: updateCancelObs,
   onSave: saveEncounter,
-  setValidationResults
+  setValidationResults,
+  setFilteredFormElements
 };
 
 const CancelEncounterForm = withRouter(

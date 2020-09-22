@@ -263,11 +263,23 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
 
-  programEnrolment.programExitObservations = formElementService.updateObservations(
+  const programExitObservations = formElementService.updateObservations(
     programEnrolment.programExitObservations,
     formElement,
     value
   );
+  const observationsHolder = new ObservationsHolder(programExitObservations);
+  const formElementStatuses = getFormElementStatuses(
+    programEnrolment,
+    formElement.formElementGroup,
+    observationsHolder
+  );
+  const filteredFormElements = FormElementGroup._sortedFormElements(
+    formElement.formElementGroup.filterElements(formElementStatuses)
+  );
+  yield put(setFilteredFormElements(filteredFormElements));
+  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  programEnrolment.programExitObservations = observationsHolder.observations;
 
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
@@ -276,7 +288,8 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
         formElement,
         value,
         programEnrolment.programExitObservations,
-        validationResults
+        validationResults,
+        formElementStatuses
       )
     )
   );
@@ -287,11 +300,23 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
 
-  programEnrolment.observations = formElementService.updateObservations(
+  const observations = formElementService.updateObservations(
     programEnrolment.observations,
     formElement,
     value
   );
+  const observationsHolder = new ObservationsHolder(observations);
+  const formElementStatuses = getFormElementStatuses(
+    programEnrolment,
+    formElement.formElementGroup,
+    observationsHolder
+  );
+  const filteredFormElements = FormElementGroup._sortedFormElements(
+    formElement.formElementGroup.filterElements(formElementStatuses)
+  );
+  yield put(setFilteredFormElements(filteredFormElements));
+  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  programEnrolment.observations = observationsHolder.observations;
 
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
@@ -300,7 +325,8 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
         formElement,
         value,
         programEnrolment.observations,
-        validationResults
+        validationResults,
+        formElementStatuses
       )
     )
   );

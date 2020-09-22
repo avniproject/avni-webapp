@@ -227,10 +227,12 @@ const FormWizard = ({
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
-  const indexOfGroup = findIndex(
-    form.getFormElementGroups(),
-    feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
-  );
+  const indexOfGroup = firstGroupWithAtLeastOneVisibleElement
+    ? findIndex(
+        form.getFormElementGroups(),
+        feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
+      )
+    : -1;
   const currentPageNumber = match.queryParams.page
     ? parseInt(match.queryParams.page)
     : getPageNumber(indexOfGroup);
@@ -240,7 +242,9 @@ const FormWizard = ({
   const { t } = useTranslation();
 
   const formElementGroups =
-    isNil(form) || isNil(form.firstFormElementGroup)
+    isNil(form) ||
+    isNil(form.firstFormElementGroup) ||
+    isNil(firstGroupWithAtLeastOneVisibleElement)
       ? new Array(new StaticFormElementGroup(form))
       : form.getFormElementGroups().filter(feg => !isEmpty(feg.nonVoidedFormElements()));
   const formElementGroupsLength = formElementGroups.length;
@@ -288,9 +292,7 @@ const FormWizard = ({
       handleNext(event, nextGroup, nextPage);
     } else {
       setFilteredFormElements(filteredFormElements);
-      let currentUrlParams = new URLSearchParams(window.location.search);
-      currentUrlParams.set("from", from);
-      currentUrlParams.set("type", type);
+      let currentUrlParams = new URLSearchParams(history.location.search);
       currentUrlParams.set("page", nextPage);
       history.push(history.location.pathname + "?" + currentUrlParams.toString());
     }
@@ -308,10 +310,8 @@ const FormWizard = ({
       handlePrevious(event, previousGroup, previousPage);
     } else {
       setFilteredFormElements(filteredFormElements);
-      let currentUrlParams = new URLSearchParams(window.location.search);
-      currentUrlParams.set("type", type);
+      let currentUrlParams = new URLSearchParams(history.location.search);
       if (previousPage !== 0) {
-        currentUrlParams.set("from", from);
         currentUrlParams.set("page", previousPage);
         history.push(history.location.pathname + "?" + currentUrlParams.toString());
       } else {
