@@ -378,3 +378,27 @@ left join concept_concept_answer concept_answer on concept_answer.concept_uuid =
 where form_id = '480' and form_group.is_voided = false and group_element.is_voided= false
 group by  form_group.name,group_element.name, concept.data_type,is_mandatory, form_group.display_order,group_element.display_order
 order by  form_group.display_order, group_element.display_order;
+
+
+--- To find out if there are audits of any meta data not belonging to the given org
+--- Useful when a metadata http sync request is returning truncated data
+select fea.last_modified_by_id,
+       fe.id,
+       fe.name,
+       fe.is_voided,
+       fega.last_modified_by_id,
+       fa.last_modified_by_id,
+       ca.last_modified_by_id
+from form_element fe
+       join form_element_group feg on fe.form_element_group_id = feg.id
+       join form f on feg.form_id = f.id
+       join concept c on fe.concept_id = c.id
+       join audit fea on fea.id = fe.audit_id
+       join audit fega on fega.id = feg.audit_id
+       join audit fa on fa.id = f.audit_id
+       join audit ca on ca.id = c.audit_id
+where fe.organisation_id = :orgId
+  and (fega.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null)
+  or fea.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null)
+  or fa.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null)
+  or ca.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null));
