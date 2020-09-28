@@ -26,6 +26,7 @@ public class ConceptContract extends ReferenceDataContract {
     private boolean unique = false;
     private Double order;
     private KeyValues keyValues;
+    private Integer locationGranularity;
 
     public static ConceptContract create(Concept concept) {
         ConceptContract conceptContract = new ConceptContract();
@@ -39,6 +40,7 @@ public class ConceptContract extends ReferenceDataContract {
         conceptContract.setLowNormal(concept.getLowNormal());
         conceptContract.setHighAbsolute(concept.getHighAbsolute());
         conceptContract.setHighNormal(concept.getHighNormal());
+        conceptContract.setLocationGranularity(concept.getLocationGranularity());
         List<ConceptContract> answerConceptList = concept.getConceptAnswers().stream()
                 .map(it -> {
                     ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
@@ -148,6 +150,14 @@ public class ConceptContract extends ReferenceDataContract {
 
     public void setOrder(Double order) {
         this.order = order;
+    }
+
+    public Integer getLocationGranularity() {
+        return locationGranularity;
+    }
+
+    public void setLocationGranularity(Integer locationGranularity) {
+        this.locationGranularity = locationGranularity;
     }
 
     @Override

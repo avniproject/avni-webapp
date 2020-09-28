@@ -13,7 +13,7 @@ import org.joda.time.DateTime;
 import java.util.Set;
 
 @Projection(name = "ConceptProjection", types = {Concept.class})
-@JsonPropertyOrder({"id", "uuid", "name", "dataType", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "conceptAnswers", "KeyValues"})
+@JsonPropertyOrder({"id", "uuid", "name", "dataType", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "conceptAnswers", "locationGranularity", "KeyValues"})
 public interface ConceptProjection extends BaseProjection {
 
     String getName();
@@ -31,6 +31,8 @@ public interface ConceptProjection extends BaseProjection {
     String getUnit();
 
     KeyValues getKeyValues();
+
+    Integer getLocationGranularity();
 
     Boolean getVoided();
 

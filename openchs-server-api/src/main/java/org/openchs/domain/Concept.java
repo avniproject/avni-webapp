@@ -71,6 +71,7 @@ public class Concept extends OrganisationAwareEntity {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+    private Integer locationGranularity;
 
     public static Concept create(String name, String dataType) {
         return create(name, dataType, UUID.randomUUID().toString());
@@ -153,6 +154,14 @@ public class Concept extends OrganisationAwareEntity {
 
     public void setKeyValues(KeyValues keyValues) {
         this.keyValues = keyValues;
+    }
+
+    public Integer getLocationGranularity() {
+        return locationGranularity;
+    }
+
+    public void setLocationGranularity(Integer locationGranularity) {
+        this.locationGranularity = locationGranularity;
     }
 
     public ConceptAnswer findConceptAnswerByName(String answerConceptName) {

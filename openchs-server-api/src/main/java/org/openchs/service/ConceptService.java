@@ -144,6 +144,9 @@ public class ConceptService {
             case Numeric:
                 concept = createNumericConcept(concept, conceptRequest);
                 break;
+            case Location:
+                concept.setLocationGranularity(conceptRequest.getLocationGranularity());
+                break;
         }
         return concept;
     }
