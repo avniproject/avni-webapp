@@ -1,17 +1,13 @@
 package org.openchs.web;
 
-import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.EncounterType;
 import org.openchs.domain.ProgramEncounter;
-import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.ProgramEncounterService;
 import org.openchs.service.UserService;
 import org.openchs.util.S;
-import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.response.ProgramEncounterResponse;
@@ -28,13 +24,11 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
@@ -104,10 +98,10 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
+        programEncounterService.saveProgramEncounter(request);
         if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
-            programEncounterService.saveVisitSchedules(request.getProgramEnrolmentUUID(),request.getVisitSchedules());
+            programEncounterService.saveVisitSchedules(request.getProgramEnrolmentUUID(),request.getVisitSchedules(), request.getUuid());
         }
-        programEncounterService.saveProgramEncounters(request);
     }
 
     @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)

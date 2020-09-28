@@ -3,12 +3,10 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
-import org.openchs.geo.Point;
 import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.*;
 import org.openchs.util.S;
 import org.openchs.web.request.EnrolmentContract;
-import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.openchs.web.response.ProgramEnrolmentResponse;
@@ -30,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -100,13 +95,11 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
-        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
-            programEncounterService.saveVisitSchedules(request.getUuid(),request.getVisitSchedules());
-        }
         programEnrolmentService.programEnrolmentSave(request);
+        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+            programEncounterService.saveVisitSchedules(request.getUuid(),request.getVisitSchedules(), null);
+        }
     }
-
-
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")

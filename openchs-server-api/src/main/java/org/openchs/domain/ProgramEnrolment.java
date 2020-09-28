@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "program_enrolment")
@@ -80,6 +81,26 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
             programEncounters = new HashSet<>();
         }
         return programEncounters;
+    }
+
+    public Stream<ProgramEncounter> getEncounters(boolean removeCancelledEncounters) {
+        return this.nonVoidedEncounters().filter(enc -> removeCancelledEncounters ? enc.getCancelDateTime() == null : true);
+    }
+
+    public Stream<ProgramEncounter> getEncountersOfType(String encounterTypeName, boolean removeCancelledEncounters) {
+        return this.getEncounters(removeCancelledEncounters).filter(enc -> enc.getEncounterType().getName().equals(encounterTypeName));
+    }
+
+    public Stream<ProgramEncounter> nonVoidedEncounters() {
+        return this.getProgramEncounters().stream().filter(enc -> !enc.isVoided());
+    }
+
+    public Stream<ProgramEncounter> scheduledEncounters() {
+        return this.getEncounters(true).filter(enc -> enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
+    }
+
+    public Stream<ProgramEncounter> scheduledEncountersOfType(String encounterTypeName) {
+        return this.scheduledEncounters().filter(scheduledEncounter -> scheduledEncounter.getEncounterType().getName().equals(encounterTypeName));
     }
 
     public void setProgramEncounters(Set<ProgramEncounter> programEncounters) {
