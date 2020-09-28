@@ -5,6 +5,7 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.*;
@@ -24,6 +25,7 @@ public class ProgramEncounterConstructionService {
 
     private final Logger logger;
     private final ObservationConstructionService observationConstructionService;
+    private final ObservationService observationService;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final EncounterTypeRepository encounterTypeRepository;
     private final ProgramEncounterRepository programEncounterRepository;
@@ -33,12 +35,14 @@ public class ProgramEncounterConstructionService {
     @Autowired
     public ProgramEncounterConstructionService(
             ObservationConstructionService observationConstructionService,
+            ObservationService observationService,
             ProgramEnrolmentRepository programEnrolmentRepository,
             EncounterTypeRepository encounterTypeRepository,
             ProgramEnrolmentConstructionService programEnrolmentConstructionService,
             IndividualRepository individualRepository,
             ProgramEncounterRepository programEncounterRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
+        this.observationService = observationService;
         this.observationConstructionService = observationConstructionService;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.encounterTypeRepository = encounterTypeRepository;
@@ -47,29 +51,30 @@ public class ProgramEncounterConstructionService {
         this.programEncounterRepository = programEncounterRepository;
     }
 
-    public ProgramEncounterContractWrapper constructProgramEncounterContract(ProgramEncounterRequestEntity programEncounterRequestEntity) {
+    public ProgramEncounterContractWrapper constructProgramEncounterContract(ProgramEncounterRequestEntity request) {
         ProgramEncounterContractWrapper programEncounterContractWrapper = new ProgramEncounterContractWrapper();
-        programEncounterContractWrapper.setUuid(programEncounterRequestEntity.getUuid());
-        programEncounterContractWrapper.setEncounterDateTime(programEncounterRequestEntity.getEncounterDateTime());
-        programEncounterContractWrapper.setEarliestVisitDateTime(programEncounterRequestEntity.getEarliestVisitDateTime());
-        programEncounterContractWrapper.setMaxVisitDateTime(programEncounterRequestEntity.getMaxVisitDateTime());
-        programEncounterContractWrapper.setCancelDateTime(programEncounterRequestEntity.getCancelDateTime());
-        if(programEncounterRequestEntity.getObservations() != null){
-            programEncounterContractWrapper.setObservations(programEncounterRequestEntity.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+        programEncounterContractWrapper.setName(request.getName());
+        programEncounterContractWrapper.setUuid(request.getUuid());
+        programEncounterContractWrapper.setEncounterDateTime(request.getEncounterDateTime());
+        programEncounterContractWrapper.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
+        programEncounterContractWrapper.setMaxVisitDateTime(request.getMaxVisitDateTime());
+        programEncounterContractWrapper.setCancelDateTime(request.getCancelDateTime());
+        if(request.getObservations() != null){
+            programEncounterContractWrapper.setObservations(request.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
-        if(programEncounterRequestEntity.getCancelObservations() != null){
-            programEncounterContractWrapper.setCancelObservations(programEncounterRequestEntity.getCancelObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+        if(request.getCancelObservations() != null){
+            programEncounterContractWrapper.setCancelObservations(request.getCancelObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
-        if(programEncounterRequestEntity.getProgramEnrolmentUUID() != null) {
-            ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEncounterRequestEntity.getProgramEnrolmentUUID());
+        if(request.getProgramEnrolmentUUID() != null) {
+            ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID());
             ProgramEnrolmentContractWrapper enrolmentContract = constructEnrolments(programEnrolment);
-            Set<ProgramEncountersContract> encountersContractList = constructEncountersExcludingSelf(programEnrolment.getProgramEncounters(), programEncounterRequestEntity.getUuid());
+            Set<ProgramEncountersContract> encountersContractList = constructEncountersExcludingSelf(programEnrolment.getProgramEncounters(), request.getUuid());
             enrolmentContract.setProgramEncounters(encountersContractList);
-            programEncounterContractWrapper.setProgramEnrolment(enrolmentContract);
             enrolmentContract.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
+            programEncounterContractWrapper.setProgramEnrolment(enrolmentContract);
         }
-        if(programEncounterRequestEntity.getEncounterTypeUUID() != null) {
-            programEncounterContractWrapper.setEncounterType(constructEncounterType(programEncounterRequestEntity.getEncounterTypeUUID()));
+        if(request.getEncounterTypeUUID() != null) {
+            programEncounterContractWrapper.setEncounterType(constructEncounterType(request.getEncounterTypeUUID()));
         }
         return programEncounterContractWrapper;
     }
@@ -116,6 +121,14 @@ public class ProgramEncounterConstructionService {
         enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
         enrolmentContract.setVoided(programEnrolment.isVoided());
+
+        if(programEnrolment.getObservations() != null){
+            enrolmentContract.setObservations(observationService.constructObservations(programEnrolment.getObservations()));
+        }
+        if(programEnrolment.getProgramExitObservations() != null) {
+            enrolmentContract.setExitObservations(observationService.constructObservations(programEnrolment.getProgramExitObservations()));
+        }
+
         return enrolmentContract;
     }
 

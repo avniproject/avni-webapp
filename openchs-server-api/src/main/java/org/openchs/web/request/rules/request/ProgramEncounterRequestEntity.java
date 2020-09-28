@@ -22,6 +22,8 @@ public class ProgramEncounterRequestEntity {
 
     private String programEnrolmentUUID;
 
+    private String name;
+
     public DateTime getCancelDateTime() {
         return cancelDateTime;
     }
@@ -100,5 +102,13 @@ public class ProgramEncounterRequestEntity {
 
     public void setProgramEnrolmentUUID(String programEnrolmentUUID) {
         this.programEnrolmentUUID = programEnrolmentUUID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
