@@ -6,6 +6,7 @@ import api from "../api";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getGroupUsers, getAllUsers } from "../reducers";
+import Grid from "@material-ui/core/Grid";
 
 const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers, ...props }) => {
   const [otherUsers, setOtherUsers] = React.useState([]);
@@ -72,9 +73,35 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
     { title: "Email", field: "email", searchable: false }
   ];
   return (
-    <div>
+    <div style={{ width: "100%" }}>
+      <h6>Select users to add to this group:</h6>
+      <Grid container spacing={2} style={{ width: "100%" }}>
+        <Grid item xs={10}>
+          <Select
+            name="addUserList"
+            ref={otherUsersOptionsRef}
+            isMulti
+            isSearchable
+            options={otherUsersOptions}
+            onChange={onUserListChange}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={event => addUserToGroupHandler(event)}
+            disabled={buttonDisabled}
+            fullWidth={true}
+          >
+            Add user(s)
+          </Button>
+        </Grid>
+      </Grid>
+      <br />
+      <hr />
       <MaterialTable
-        title=""
+        title="Group Members"
         columns={columns}
         data={groupUsers}
         actions={[
@@ -94,27 +121,6 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
           header: { actions: "Remove" }
         }}
       />
-      <br />
-      <hr />
-      Select users to add to this group:
-      <br />
-      <Select
-        name="addUserList"
-        ref={otherUsersOptionsRef}
-        isMulti
-        isSearchable
-        options={otherUsersOptions}
-        onChange={onUserListChange}
-      />
-      <br />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={event => addUserToGroupHandler(event)}
-        disabled={buttonDisabled}
-      >
-        Add user(s)
-      </Button>
     </div>
   );
 };

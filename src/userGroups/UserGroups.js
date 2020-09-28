@@ -13,6 +13,7 @@ import FormControl from "@material-ui/core/FormControl";
 import api from "./api";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniAlert } from "../common/components/AvniAlert";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -50,10 +51,31 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
     setOpenModal(false);
   };
 
+  const showCumulativePrivilegesInfo = () => {
+    //more than one group configured + Everyone group has all privileges on + at least one other group without all privileges.
+    return (
+      groups !== undefined &&
+      groups.length > 1 &&
+      groups.filter(group => group.name === "Everyone" && group.hasAllPrivileges === true).length >
+        0 &&
+      groups.filter(group => group.name !== "Everyone" && group.hasAllPrivileges !== true).length >
+        0
+    );
+  };
+
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <DocumentationContainer filename={"UserGroup.md"}>
         <Title title={"User Groups"} />
+        {showCumulativePrivilegesInfo() ? (
+          <AvniAlert severity={"info"} variant={"outlined"}>
+            It appears you would like to use fine grained access control.
+            <br />
+            Since privileges are cumulative across groups, you will need to turn off 'All
+            privileges' in the Everyone group for your custom configuration to work.
+          </AvniAlert>
+        ) : null}
+        <br />
         <Modal
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
