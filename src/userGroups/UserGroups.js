@@ -74,9 +74,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
             Since privileges are cumulative across groups, you will need to turn off 'All
             privileges' in the Everyone group for your custom configuration to work.
           </AvniAlert>
-        ) : (
-          ""
-        )}
+        ) : null}
         <br />
         <Modal
           aria-labelledby="simple-modal-title"

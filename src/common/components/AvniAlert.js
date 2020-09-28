@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
   outlinedwarning: {
     color: "rgb(102,60,0)",
     border: "1px solid #ff9800",
-    "& $icon": {
+    icon: {
       color: "#ff9800"
     },
     padding: theme.spacing(1)
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   outlinedinfo: {
     color: "rgb(13,60,97)",
     border: "1px solid #2196f3",
-    "& $icon": {
+    icon: {
       color: "#2196f3"
     },
     padding: theme.spacing(1)
