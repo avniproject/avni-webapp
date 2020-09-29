@@ -24,4 +24,6 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
 
     @Query(value = "select * from address_level_type where id not in (select distinct parent_id from address_level_type where parent_id is not null) and is_voided = false", nativeQuery = true)
     List<AddressLevelType> getAllLowestAddressLevelTypes();
+
+    AddressLevelType findByLevel(@Param("level") Double level);
 }
