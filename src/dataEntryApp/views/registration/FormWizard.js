@@ -232,6 +232,8 @@ const FormWizard = ({
         form.getFormElementGroups(),
         feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
       )
+    : registrationFlow
+    ? 1
     : -1;
   const currentPageNumber = match.queryParams.page
     ? parseInt(match.queryParams.page)
@@ -242,9 +244,10 @@ const FormWizard = ({
   const { t } = useTranslation();
 
   const formElementGroups =
-    isNil(form) ||
-    isNil(form.firstFormElementGroup) ||
-    isNil(firstGroupWithAtLeastOneVisibleElement)
+    (isNil(form) ||
+      isNil(form.firstFormElementGroup) ||
+      isNil(firstGroupWithAtLeastOneVisibleElement)) &&
+    !registrationFlow
       ? new Array(new StaticFormElementGroup(form))
       : form.getFormElementGroups().filter(feg => !isEmpty(feg.nonVoidedFormElements()));
   const formElementGroupsLength = formElementGroups.length;
@@ -254,6 +257,13 @@ const FormWizard = ({
   if (!isOnSummaryPage) {
     currentFormElementGroup = formElementGroups[currentPageNumber - 1];
   }
+
+  const isFirstGroup = currentFormElementGroup && currentFormElementGroup.isFirst;
+
+  const isFirstPage =
+    firstGroupWithAtLeastOneVisibleElement && currentFormElementGroup
+      ? currentFormElementGroup.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
+      : isFirstGroup;
 
   const handleNext = (event, feg, page) => {
     const filteredFormElement = filterFormElements(feg, entity);
@@ -298,15 +308,26 @@ const FormWizard = ({
     }
   };
 
-  const handlePrevious = (event, feg, page) => {
-    const previousGroup = isOnSummaryPage ? form.getLastFormElementElementGroup() : feg.previous();
+  const getPreviousGroup = feg => (feg && feg.previous()) || [];
+
+  const handlePrevious = (event, feg, currentPage) => {
+    const previousGroup =
+      currentPage > formElementGroupsLength
+        ? form.getLastFormElementElementGroup()
+        : getPreviousGroup(feg);
     const { filteredFormElements, formElementStatuses } = !isEmpty(previousGroup)
       ? filterFormElementsWithStatus(previousGroup, entity)
       : { filteredFormElements: null };
-    const previousPage = page - 1;
-    if (!isEmpty(previousGroup) && isEmpty(filteredFormElements)) {
-      obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), filteredFormElements);
-      obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+    const previousPage = currentPage - 1;
+    if (
+      (!isEmpty(previousGroup) || registrationFlow) &&
+      isEmpty(filteredFormElements) &&
+      previousPage > 0
+    ) {
+      if (!isEmpty(previousGroup)) {
+        obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), filteredFormElements);
+        obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+      }
       handlePrevious(event, previousGroup, previousPage);
     } else {
       setFilteredFormElements(filteredFormElements);
@@ -315,7 +336,8 @@ const FormWizard = ({
         currentUrlParams.set("page", previousPage);
         history.push(history.location.pathname + "?" + currentUrlParams.toString());
       } else {
-        const pathName = subject ? "/app/register" : history.location.pathname;
+        const pathName = registrationFlow ? "/app/register" : history.location.pathname;
+        currentUrlParams.delete("page");
         history.push(pathName + "?" + currentUrlParams.toString());
       }
     }
@@ -347,7 +369,7 @@ const FormWizard = ({
                 to={goBackToRegistrationDefaultPage ? from : null}
                 params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                 text={t("previous")}
-                disabled={!registrationFlow && currentPageNumber === 1}
+                disabled={!registrationFlow && isFirstPage}
                 onClick={e => handlePrevious(e, currentFormElementGroup, currentPageNumber)}
               />
               <label className={classes.toppagenum}>{pageCounter}</label>
@@ -377,6 +399,7 @@ const FormWizard = ({
                 children={children}
                 filteredFormElements={filteredFormElements}
                 entity={entity}
+                renderParent={isFirstPage}
               />
             )}
 
@@ -387,7 +410,7 @@ const FormWizard = ({
                   to={goBackToRegistrationDefaultPage ? from : null}
                   params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                   text={t("previous")}
-                  disabled={!registrationFlow && currentPageNumber === 1}
+                  disabled={!registrationFlow && isFirstPage}
                   onClick={e => handlePrevious(e, currentFormElementGroup, currentPageNumber)}
                 />
               </Box>

@@ -11,7 +11,8 @@ export const FormElementGroup = ({
   parentChildren,
   validationResults,
   filteredFormElements,
-  entity
+  entity,
+  renderParent
 }) => {
   const formElements = isNil(filteredFormElements)
     ? filterFormElements(feg, entity)
@@ -19,7 +20,7 @@ export const FormElementGroup = ({
   return (
     <div>
       <LineBreak num={1} />
-      {parentChildren && feg.isFirst ? parentChildren : ""}
+      {parentChildren && renderParent ? parentChildren : ""}
 
       {formElements.map(fe => {
         const observation = obsHolder.findObservation(fe.concept);

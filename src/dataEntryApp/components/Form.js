@@ -11,7 +11,8 @@ const Form = ({
   children,
   validationResults,
   filteredFormElements,
-  entity
+  entity,
+  renderParent
 }) => {
   return (
     <Fragment>
@@ -23,6 +24,7 @@ const Form = ({
         validationResults={validationResults}
         filteredFormElements={filteredFormElements}
         entity={entity}
+        renderParent={renderParent}
       >
         {current}
       </FormElementGroup>

@@ -24,12 +24,12 @@ import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
-import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import { setFilteredFormElements } from "../../reducers/RulesReducer";
+import Stepper from "./Stepper";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -177,7 +177,11 @@ const DefaultPage = props => {
       }
     } else {
       if (
-        !(_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE))
+        !(
+          _.isEmpty(subjectRegErrors.FIRST_NAME) &&
+          _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
+          _.isEmpty(subjectRegErrors.LOWEST_ADDRESS_LEVEL)
+        )
       ) {
         event.preventDefault();
       }
@@ -189,8 +193,62 @@ const DefaultPage = props => {
     .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
   const totalNumberOfPages = formElementGroups.length + 2;
 
+  function renderAddress() {
+    return (
+      <>
+        <LineBreak num={1} />
+        <RadioButtonsGroup
+          label={t("Address*")}
+          items={props.addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
+          value={props.selectedAddressLevelType.id}
+          onChange={item => props.selectAddressLevelType(item)}
+        />
+        <div>
+          {props.selectedAddressLevelType.id === -1 ? null : (
+            <div>
+              <LocationAutosuggest
+                selectedLocation={props.subject.lowestAddressLevel.name || ""}
+                errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
+                onSelect={location => {
+                  props.updateSubject(
+                    "lowestAddressLevel",
+                    AddressLevel.create({
+                      uuid: location.uuid,
+                      title: location.title,
+                      level: location.level,
+                      typeString: location.typeString
+                    })
+                  );
+                  props.subject.lowestAddressLevel = AddressLevel.create({
+                    uuid: location.uuid,
+                    title: location.title,
+                    level: location.level,
+                    typeString: location.typeString
+                  });
+                  setValidationResultToError(props.subject.validateAddress());
+                }}
+                //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
+                //   setValidationResultToError(props.subject.validateAddress());
+                // }
+
+                // }
+                subjectProps={props}
+                placeholder={props.selectedAddressLevelType.name}
+                typeId={props.selectedAddressLevelType.id}
+              />
+            </div>
+          )}
+          {subjectRegErrors.LOWEST_ADDRESS_LEVEL && (
+            <span className={classes.errmsg}>{t(subjectRegErrors.LOWEST_ADDRESS_LEVEL)}</span>
+          )}
+        </div>
+      </>
+    );
+  }
+
   return (
     <div>
+      <Stepper subjectTypeName={props.subject.subjectType.name} />
       <LineBreak num={1} />
       <div>
         {props.subject && (
@@ -266,7 +324,7 @@ const DefaultPage = props => {
                 </MuiPickersUtilsProvider>
 
                 <LineBreak num={1} />
-                {get(props, "subject.subjectType.name") === "Individual" && (
+                {props.subject.subjectType.isPerson() && (
                   <React.Fragment>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t("firstName")}
@@ -337,58 +395,11 @@ const DefaultPage = props => {
                         setValidationResultToError(props.subject.validateGender());
                       }}
                     />
-                    <LineBreak num={1} />
-                    <RadioButtonsGroup
-                      label={t("Address*")}
-                      items={props.addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
-                      value={props.selectedAddressLevelType.id}
-                      onChange={item => props.selectAddressLevelType(item)}
-                    />
-                    <div>
-                      {props.selectedAddressLevelType.id === -1 ? null : (
-                        <div>
-                          <LocationAutosuggest
-                            selectedLocation={props.subject.lowestAddressLevel.name || ""}
-                            errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
-                            onSelect={location => {
-                              props.updateSubject(
-                                "lowestAddressLevel",
-                                AddressLevel.create({
-                                  uuid: location.uuid,
-                                  title: location.title,
-                                  level: location.level,
-                                  typeString: location.typeString
-                                })
-                              );
-                              props.subject.lowestAddressLevel = AddressLevel.create({
-                                uuid: location.uuid,
-                                title: location.title,
-                                level: location.level,
-                                typeString: location.typeString
-                              });
-                              setValidationResultToError(props.subject.validateAddress());
-                            }}
-                            //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
-                            //   setValidationResultToError(props.subject.validateAddress());
-                            // }
-
-                            // }
-                            subjectProps={props}
-                            placeholder={props.selectedAddressLevelType.name}
-                            typeId={props.selectedAddressLevelType.id}
-                          />
-                        </div>
-                      )}
-                      {subjectRegErrors.LOWEST_ADDRESS_LEVEL && (
-                        <span className={classes.errmsg}>
-                          {t(subjectRegErrors.LOWEST_ADDRESS_LEVEL)}
-                        </span>
-                      )}
-                    </div>
+                    {renderAddress()}
                   </React.Fragment>
                 )}
 
-                {get(props, "subject.subjectType.name") !== "Individual" && (
+                {!props.subject.subjectType.isPerson() && (
                   <React.Fragment>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {/* {t("Name")} */}
@@ -410,6 +421,7 @@ const DefaultPage = props => {
                         setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
+                    {renderAddress()}
                   </React.Fragment>
                 )}
                 <LineBreak num={1} />
@@ -537,7 +549,6 @@ const SubjectRegister = props => {
     <Fragment>
       <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
-        <Stepper />
         <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
         <Route path={`${match.path}/form`} component={() => <RegistrationForm />} />
       </Paper>
