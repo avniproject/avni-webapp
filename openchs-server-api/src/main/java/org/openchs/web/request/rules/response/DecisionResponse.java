@@ -1,22 +1,22 @@
 package org.openchs.web.request.rules.response;
 
-import java.util.ArrayList;
-import java.util.List;
-public class DecisionResponse implements Decisions
-{
+public class DecisionResponse {
     private String name;
-    private List<String> value;
+    private Object value;
 
-    public void setName(String name){
-        this.name = name;
-    }
-    public String getName(){
+    public String getName() {
         return this.name;
     }
-    public void setValue(List<String> value){
-        this.value = value;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public List<String> getValue(){
+
+    public Object getValue() {
         return this.value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 }

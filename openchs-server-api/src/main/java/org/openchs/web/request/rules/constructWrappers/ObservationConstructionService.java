@@ -6,6 +6,7 @@ import org.openchs.dao.GenderRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
+import org.openchs.domain.ConceptDataType;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ObservationContract;
 import org.openchs.web.request.rules.request.ObservationRequestEntity;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ public class ObservationConstructionService {
         this.conceptRepository = conceptRepository;
     }
 
-    public ObservationContract constructObservation(ObservationRequestEntity observationRequestEntity){
+    public ObservationContract constructObservation(ObservationRequestEntity observationRequestEntity) {
         Concept concept = conceptRepository.findByUuid(observationRequestEntity.getConceptUUID());
         ObservationContract observationContract = new ObservationContract();
         ConceptContract conceptContract = new ConceptContract();
@@ -49,9 +51,9 @@ public class ObservationConstructionService {
         return observationContract;
     }
 
-    private List<ConceptContract> parseConceptAnswer(Set<ConceptAnswer> conceptAnswers){
+    private List<ConceptContract> parseConceptAnswer(Set<ConceptAnswer> conceptAnswers) {
         List<ConceptContract> conceptContractList = new ArrayList<>();
-        conceptAnswers.stream().forEach( x -> {
+        conceptAnswers.stream().forEach(x -> {
             ConceptContract conceptContract = new ConceptContract();
             conceptContract.setName(x.getAnswerConcept().getName());
             conceptContract.setUuid(x.getAnswerConcept().getUuid());
@@ -61,27 +63,33 @@ public class ObservationConstructionService {
         return conceptContractList;
     }
 
-    private ConceptContract generateConceptContract(String name){
+    private ConceptContract generateConceptContract(String name) {
         Concept concept = conceptRepository.findByName(name);
-        ConceptContract conceptContract = ConceptContract.create(concept);
-        return conceptContract;
+        return ConceptContract.create(concept);
     }
 
-    public List<ObservationContract> responseObservation(List<DecisionResponse> decisionConceptValue){
-        return decisionConceptValue.stream().map( concept -> {
-            if(!concept.getValue().isEmpty()) {
-                ObservationContract observationContract = new ObservationContract();
-                observationContract.setConcept(generateConceptContract(concept.getName()));
-                List<String> values = concept.getValue();
-                List<ConceptContract> answerConceptList = values.stream().map(value -> {
-                    ConceptContract cc = generateConceptContract(value);
-                    cc.setAbnormal(cc.isAbnormal());
-                    return cc;
-                }).collect(Collectors.toList());
-                observationContract.setValue(answerConceptList != null && answerConceptList.size() == 1 ? answerConceptList.get(0) : answerConceptList);
-                return observationContract;
-            }
-            return null;
-        }).filter( observation -> observation != null).collect(Collectors.toList());
+    public List<ObservationContract> responseObservation(List<DecisionResponse> decisionConceptValue) {
+        return decisionConceptValue.stream()
+                .map(decision -> decision.getValue() != null ? getObservationContract(decision) : null)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private ObservationContract getObservationContract(DecisionResponse decision) {
+        ObservationContract observationContract = new ObservationContract();
+        Concept concept = conceptRepository.findByName(decision.getName());
+        observationContract.setConcept(ConceptContract.create(concept));
+        if (concept.getDataType().equals(ConceptDataType.Coded.name())) {
+            List<String> decisionValues = (List<String>) decision.getValue();
+            List<ConceptContract> answerConceptList = decisionValues.stream().map(value -> {
+                ConceptContract contract = generateConceptContract(value);
+                contract.setAbnormal(contract.isAbnormal());
+                return contract;
+            }).collect(Collectors.toList());
+            observationContract.setValue(answerConceptList);
+        } else {
+            observationContract.setValue(decision.getValue());
+        }
+        return observationContract;
     }
 }
