@@ -127,6 +127,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
             formRequest.validate();
+            formService.updateLowestAddressLevelTypeIfRequired(formRequest);
             formService.saveForm(formRequest);
         } catch (InvalidObjectException | FormBuilderException e) {
             e.printStackTrace();
