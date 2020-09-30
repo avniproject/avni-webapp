@@ -63,7 +63,7 @@ public class FormService {
         Double lowestAddressLevelType = null;
         for (FormElementGroupContract formElementGroup : formRequest.getFormElementGroups()) {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
-                if (formElement.getConcept().getDataType().equals(String.valueOf(ConceptDataType.Location))) {
+                if (formElement.getConcept().getDataType() != null && formElement.getConcept().getDataType().equals(String.valueOf(ConceptDataType.Location))) {
                     try {
                         double elementLowestAddressLevelType = Double.parseDouble(formElement.getConcept().getKeyValues().get(KeyType.lowestAddressLevelType).getValue().toString());
                         if (lowestAddressLevelType == null || lowestAddressLevelType > elementLowestAddressLevelType) {
