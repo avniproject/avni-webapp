@@ -53,7 +53,7 @@ public class LocationHierarchyController implements RestControllerResourceProces
 
             AddressLevelType addressLevelType = addressLevelTypeRepository.findByLevel(lowestAddressLevelType);
 
-            return wrap(locationRepository.findByIsVoidedFalseAndAuditLastModifiedDateTimeAfterAndTypeLessThanEqual(lastModifiedDateTime, addressLevelType, pageable));
+            return wrap(locationRepository.findByAuditLastModifiedDateTimeAfterAndTypeLessThanEqual(lastModifiedDateTime, addressLevelType, pageable));
         } catch (Exception exception) {
             logger.error(exception.getMessage());
             return null;

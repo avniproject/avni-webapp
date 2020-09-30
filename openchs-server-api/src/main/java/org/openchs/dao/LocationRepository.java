@@ -40,7 +40,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 
-    Page<AddressLevel> findByIsVoidedFalseAndAuditLastModifiedDateTimeAfterAndTypeLessThanEqual(DateTime lastModifiedDateTime, AddressLevelType addressLevelType, Pageable pageable);
+    Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeLessThanEqual(DateTime lastModifiedDateTime, AddressLevelType addressLevelType, Pageable pageable);
 
     @Override
     default Page<AddressLevel> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
