@@ -91,7 +91,7 @@ public class OrganisationConfigService {
     }
 
     @Transactional
-    public OrganisationConfig updateOrganisationSettings(JsonObject settings) throws JSONException {
+    public OrganisationConfig updateOrganisationSettings(JsonObject settings) {
         long organisationId = UserContextHolder.getUserContext().getOrganisationId();
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
         if (organisationConfig == null) {
@@ -106,26 +106,18 @@ public class OrganisationConfigService {
         return organisationConfigRepository.save(organisationConfig);
     }
 
-    public JsonObject updateOrganisationConfigSettings(JsonObject newSettings, JsonObject currentSettings) throws JSONException {
-        JSONObject settingsJson = new JSONObject(newSettings.toString());
-        settingsJson.keys().forEachRemaining(key -> {
-            try {
-                currentSettings.put((String) key, settingsJson.get((String) key));
-            } catch (JSONException jsonException) {
-                jsonException.printStackTrace();
-            }
-        });
+    public JsonObject updateOrganisationConfigSettings(JsonObject newSettings, JsonObject currentSettings) {
+        newSettings.keySet().forEach(key -> currentSettings.put(key, newSettings.get(key)));
         return currentSettings;
     }
 
     @Transactional
-    public OrganisationConfig updateOrganisationConfig(OrganisationConfigRequest request, OrganisationConfig organisationConfig) throws JSONException {
+    public OrganisationConfig updateOrganisationConfig(OrganisationConfigRequest request, OrganisationConfig organisationConfig) {
 
-        organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         if (request.getWorklistUpdationRule() != null)
             organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
         if (request.getSettings() != null)
-            updateOrganisationConfigSettings(request.getSettings(), organisationConfig.getSettings());
+            organisationConfig.setSettings(updateOrganisationConfigSettings(request.getSettings(), organisationConfig.getSettings()));
 
         return organisationConfigRepository.save(organisationConfig);
     }
