@@ -7,8 +7,7 @@ import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
-import org.openchs.web.request.ConceptContract;
-import org.openchs.web.request.ObservationContract;
+import org.openchs.web.request.*;
 import org.openchs.web.request.rules.request.ObservationRequestEntity;
 import org.openchs.web.request.rules.response.DecisionResponse;
 import org.slf4j.Logger;
@@ -38,18 +37,25 @@ public class ObservationConstructionService {
         this.conceptRepository = conceptRepository;
     }
 
-    public ObservationContract constructObservation(ObservationRequestEntity observationRequestEntity) {
+    public ObservationModelContract constructObservation(ObservationRequestEntity observationRequestEntity) {
         Concept concept = conceptRepository.findByUuid(observationRequestEntity.getConceptUUID());
-        ObservationContract observationContract = new ObservationContract();
-        ConceptContract conceptContract = new ConceptContract();
-        conceptContract.setName(concept.getName());
-        conceptContract.setUuid(concept.getUuid());
-        conceptContract.setDataType(concept.getDataType());
-        conceptContract.setAnswers(parseConceptAnswer(concept.getConceptAnswers()));
-        observationContract.setConcept(conceptContract);
+        ObservationModelContract observationContract = new ObservationModelContract();
         observationContract.setValue(observationRequestEntity.getValue());
+        ConceptModelContract conceptModelContract = ConceptModelContract.fromConcept(concept);
+        observationContract.setConcept(conceptModelContract);
         return observationContract;
     }
+
+    public ObservationModelContract constructObservation(ObservationContract observationContract) {
+        Concept concept = conceptRepository.findByUuid(observationContract.getConcept().getUuid());
+        ObservationModelContract observationModelContract = new ObservationModelContract();
+        observationModelContract.setValue(observationContract.getValue());
+        ConceptModelContract conceptModelContract = ConceptModelContract.fromConcept(concept);
+        observationModelContract.setConcept(conceptModelContract);
+        return observationModelContract;
+    }
+
+
 
     private List<ConceptContract> parseConceptAnswer(Set<ConceptAnswer> conceptAnswers) {
         List<ConceptContract> conceptContractList = new ArrayList<>();

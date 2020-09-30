@@ -1,17 +1,89 @@
 package org.openchs.web.request.rules.RulesContractWrapper;
 
-import org.openchs.web.request.EnrolmentContract;
-import org.openchs.web.request.ObservationContract;
-import org.openchs.web.request.ProgramEncountersContract;
+import org.joda.time.DateTime;
+import org.openchs.web.request.*;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramEncounterContractWrapper extends ProgramEncountersContract {
-    private List<ObservationContract> observations;
+public class ProgramEncounterContractWrapper {
+    private List<ObservationModelContract> observations = new ArrayList<>();
     private RuleRequestEntity rule;
     private ProgramEnrolmentContractWrapper programEnrolment;
     private List<VisitSchedule> visitSchedules;
+    private String name;
+    private String uuid;
+    private DateTime cancelDateTime;
+    private DateTime earliestVisitDateTime;
+    private DateTime maxVisitDateTime;
+    private List<ObservationModelContract> cancelObservations = new ArrayList<>();
+    private EncounterTypeContract encounterType;
+    private DateTime encounterDateTime;
+
+    public DateTime getEncounterDateTime() {
+        return encounterDateTime;
+    }
+
+    public void setEncounterDateTime(DateTime encounterDateTime) {
+        this.encounterDateTime = encounterDateTime;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public DateTime getCancelDateTime() {
+        return cancelDateTime;
+    }
+
+    public void setCancelDateTime(DateTime cancelDateTime) {
+        this.cancelDateTime = cancelDateTime;
+    }
+
+    public DateTime getEarliestVisitDateTime() {
+        return earliestVisitDateTime;
+    }
+
+    public void setEarliestVisitDateTime(DateTime earliestVisitDateTime) {
+        this.earliestVisitDateTime = earliestVisitDateTime;
+    }
+
+    public DateTime getMaxVisitDateTime() {
+        return maxVisitDateTime;
+    }
+
+    public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
+        this.maxVisitDateTime = maxVisitDateTime;
+    }
+
+    public List<ObservationModelContract> getCancelObservations() {
+        return cancelObservations;
+    }
+
+    public void setCancelObservations(List<ObservationModelContract> cancelObservations) {
+        this.cancelObservations = cancelObservations;
+    }
+
+    public EncounterTypeContract getEncounterType() {
+        return encounterType;
+    }
+
+    public void setEncounterType(EncounterTypeContract encounterType) {
+        this.encounterType = encounterType;
+    }
 
     public List<VisitSchedule> getVisitSchedules() {
         return visitSchedules;
@@ -29,11 +101,11 @@ public class ProgramEncounterContractWrapper extends ProgramEncountersContract {
         this.programEnrolment = programEnrolment;
     }
 
-    public List<ObservationContract> getObservations() {
+    public List<ObservationModelContract> getObservations() {
         return observations;
     }
 
-    public void setObservations(List<ObservationContract> observations) {
+    public void setObservations(List<ObservationModelContract> observations) {
         this.observations = observations;
     }
 

@@ -4,17 +4,16 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
-import org.openchs.web.request.EncounterTypeContract;
-import org.openchs.web.request.GenderContract;
-import org.openchs.web.request.ProgramEncountersContract;
-import org.openchs.web.request.SubjectTypeContract;
+import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.LowestAddressLevelContract;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
+import org.openchs.web.request.rules.request.ObservationRequestEntity;
 import org.openchs.web.request.rules.request.ProgramEnrolmentRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,7 +79,11 @@ public class ProgramEnrolmentConstructionService {
         if (individual == null)  {
             return null;
         }
-        individualContractWrapper.setObservations(observationService.constructObservations(individual.getObservations()));
+        List<ObservationContract> observationContracts = observationService.constructObservations(individual.getObservations());
+        List<ObservationModelContract> observationModelContracts = observationContracts.stream()
+                .map(observationConstructionService::constructObservation)
+                .collect(Collectors.toList());
+        individualContractWrapper.setObservations(observationModelContracts);
         individualContractWrapper.setUuid(individual.getUuid());
         individualContractWrapper.setFirstName(individual.getFirstName());
         individualContractWrapper.setLastName(individual.getLastName());

@@ -1,14 +1,91 @@
 package org.openchs.web.request.rules.RulesContractWrapper;
 
-import org.openchs.web.request.EnrolmentContract;
+import org.joda.time.DateTime;
+import org.openchs.web.request.ObservationModelContract;
+import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class ProgramEnrolmentContractWrapper extends EnrolmentContract {
+public class ProgramEnrolmentContractWrapper {
     private IndividualContractWrapper subject;
     private RuleRequestEntity rule;
     private List<VisitSchedule> visitSchedules;
+    private DateTime enrolmentDateTime;
+    private DateTime programExitDateTime;
+    private String uuid;
+    private Boolean voided;
+    private Set<ProgramEncountersContract> programEncounters = new HashSet<>();
+    private List<ObservationModelContract> observations = new ArrayList<>();
+    private List<ObservationModelContract> exitObservations = new ArrayList<>();
+    private String operationalProgramName;
+
+    public String getOperationalProgramName() {
+        return operationalProgramName;
+    }
+
+    public void setOperationalProgramName(String operationalProgramName) {
+        this.operationalProgramName = operationalProgramName;
+    }
+
+    public DateTime getEnrolmentDateTime() {
+        return enrolmentDateTime;
+    }
+
+    public void setEnrolmentDateTime(DateTime enrolmentDateTime) {
+        this.enrolmentDateTime = enrolmentDateTime;
+    }
+
+    public DateTime getProgramExitDateTime() {
+        return programExitDateTime;
+    }
+
+    public void setProgramExitDateTime(DateTime programExitDateTime) {
+        this.programExitDateTime = programExitDateTime;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public Boolean getVoided() {
+        return voided;
+    }
+
+    public void setVoided(Boolean voided) {
+        this.voided = voided;
+    }
+
+    public Set<ProgramEncountersContract> getProgramEncounters() {
+        return programEncounters;
+    }
+
+    public void setProgramEncounters(Set<ProgramEncountersContract> programEncounters) {
+        this.programEncounters = programEncounters;
+    }
+
+    public List<ObservationModelContract> getObservations() {
+        return observations;
+    }
+
+    public void setObservations(List<ObservationModelContract> observations) {
+        this.observations = observations;
+    }
+
+    public List<ObservationModelContract> getExitObservations() {
+        return exitObservations;
+    }
+
+    public void setExitObservations(List<ObservationModelContract> exitObservations) {
+        this.exitObservations = exitObservations;
+    }
 
     public RuleRequestEntity getRule() {
         return rule;

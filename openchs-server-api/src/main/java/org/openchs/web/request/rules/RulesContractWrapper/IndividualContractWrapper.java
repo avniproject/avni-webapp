@@ -3,6 +3,7 @@ package org.openchs.web.request.rules.RulesContractWrapper;
 import org.joda.time.LocalDate;
 import org.openchs.web.request.GenderContract;
 import org.openchs.web.request.ObservationContract;
+import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.SubjectTypeContract;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
 
@@ -23,7 +24,7 @@ public class IndividualContractWrapper {
 
     private LowestAddressLevelContract lowestAddressLevel;
 
-    private List<ObservationContract> observations;
+    private List<ObservationModelContract> observations;
 
     private boolean voided;
 
@@ -109,11 +110,11 @@ public class IndividualContractWrapper {
         this.lowestAddressLevel = lowestAddressLevel;
     }
 
-    public List<ObservationContract> getObservations() {
+    public List<ObservationModelContract> getObservations() {
         return observations;
     }
 
-    public void setObservations(List<ObservationContract> observations) {
+    public void setObservations(List<ObservationModelContract> observations) {
         this.observations = observations;
     }
 

@@ -7,6 +7,8 @@ import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.EncounterTypeContract;
+import org.openchs.web.request.ObservationContract;
+import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.*;
 import org.openchs.web.request.rules.request.EncounterRequestEntity;
@@ -123,13 +125,22 @@ public class ProgramEncounterConstructionService {
         enrolmentContract.setVoided(programEnrolment.isVoided());
 
         if(programEnrolment.getObservations() != null){
-            enrolmentContract.setObservations(observationService.constructObservations(programEnrolment.getObservations()));
+            List<ObservationContract> observationContracts = observationService.constructObservations(programEnrolment.getObservations());
+            enrolmentContract.setObservations(getObservationModelContracts(observationContracts));
         }
         if(programEnrolment.getProgramExitObservations() != null) {
-            enrolmentContract.setExitObservations(observationService.constructObservations(programEnrolment.getProgramExitObservations()));
+            List<ObservationContract> observationContracts = observationService.constructObservations(programEnrolment.getProgramExitObservations());
+            enrolmentContract.setExitObservations(getObservationModelContracts(observationContracts));
         }
 
         return enrolmentContract;
+    }
+
+    private List<ObservationModelContract> getObservationModelContracts(List<ObservationContract> observationContracts) {
+        return observationContracts
+                .stream()
+                .map(observationConstructionService::constructObservation)
+                .collect(Collectors.toList());
     }
 
 
