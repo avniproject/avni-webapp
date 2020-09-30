@@ -162,9 +162,12 @@ public class RuleService {
     }
 
     public RuleResponseEntity visitScheduleRuleProgramEnrolmentWorkFlow(RequestEntityWrapper requestEntityWrapper){
-        String ruleType = requestEntityWrapper.getRule().getRuleType().toLowerCase();
+        RuleRequestEntity rule = requestEntityWrapper.getRule();
+        Form form = formRepository.findByUuid(rule.getFormUuid());
+        rule.setCode(form.getVisitScheduleRule());
+        String ruleType = rule.getRuleType().toLowerCase();
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
-        programEnrolmentContractWrapper.setRule(requestEntityWrapper.getRule());
+        programEnrolmentContractWrapper.setRule(rule);
         programEnrolmentContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid()));
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENROLMENT_RULE.getRuleName(),programEnrolmentContractWrapper);
         return ruleResponseEntity;

@@ -1,64 +1,59 @@
 package org.openchs.web.request.rules.constructWrappers;
 
-import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
-import org.openchs.web.request.*;
+import org.openchs.service.ObservationService;
+import org.openchs.web.request.EncounterTypeContract;
+import org.openchs.web.request.GenderContract;
+import org.openchs.web.request.ProgramEncountersContract;
+import org.openchs.web.request.SubjectTypeContract;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.LowestAddressLevelContract;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
 import org.openchs.web.request.rules.request.ProgramEnrolmentRequestEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.singletonList;
-
 @Service
 public class ProgramEnrolmentConstructionService {
-    private final Logger logger;
     private final ObservationConstructionService observationConstructionService;
     private final IndividualRepository individualRepository;
-    private final ConceptRepository conceptRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private final ObservationService observationService;
 
     @Autowired
     public ProgramEnrolmentConstructionService(
             ObservationConstructionService observationConstructionService,
             IndividualRepository individualRepository,
-            ConceptRepository conceptRepository,
-            ProgramEnrolmentRepository programEnrolmentRepository) {
-        logger = LoggerFactory.getLogger(this.getClass());
+            ProgramEnrolmentRepository programEnrolmentRepository,
+            ObservationService observationService) {
         this.observationConstructionService = observationConstructionService;
         this.individualRepository = individualRepository;
-        this.conceptRepository = conceptRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.observationService = observationService;
     }
 
 
-    public ProgramEnrolmentContractWrapper constructProgramEnrolmentContract(ProgramEnrolmentRequestEntity programEnrolmentRequestEntity) {
+    public ProgramEnrolmentContractWrapper constructProgramEnrolmentContract(ProgramEnrolmentRequestEntity request) {
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = new ProgramEnrolmentContractWrapper();
-        programEnrolmentContractWrapper.setEnrolmentDateTime(programEnrolmentRequestEntity.getEnrolmentDateTime());
-        programEnrolmentContractWrapper.setProgramExitDateTime(programEnrolmentRequestEntity.getProgramExitDateTime());
-        programEnrolmentContractWrapper.setUuid(programEnrolmentRequestEntity.getUuid());
-        programEnrolmentContractWrapper.setVoided(programEnrolmentRequestEntity.isVoided());
-        if(programEnrolmentRequestEntity.getObservations() != null){
-            programEnrolmentContractWrapper.setObservations(programEnrolmentRequestEntity.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+        programEnrolmentContractWrapper.setEnrolmentDateTime(request.getEnrolmentDateTime());
+        programEnrolmentContractWrapper.setProgramExitDateTime(request.getProgramExitDateTime());
+        programEnrolmentContractWrapper.setUuid(request.getUuid());
+        programEnrolmentContractWrapper.setVoided(request.isVoided());
+        if(request.getObservations() != null){
+            programEnrolmentContractWrapper.setObservations(request.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
-        if(programEnrolmentRequestEntity.getProgramExitObservations() != null){
-            programEnrolmentContractWrapper.setExitObservations(programEnrolmentRequestEntity.getProgramExitObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+        if(request.getProgramExitObservations() != null){
+            programEnrolmentContractWrapper.setExitObservations(request.getProgramExitObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
-        if(programEnrolmentRequestEntity.getIndividualUUID() != null) {
-            programEnrolmentContractWrapper.setSubject(getSubjectInfo(individualRepository.findByUuid(programEnrolmentRequestEntity.getIndividualUUID())));
+        if(request.getIndividualUUID() != null) {
+            programEnrolmentContractWrapper.setSubject(getSubjectInfo(individualRepository.findByUuid(request.getIndividualUUID())));
         }
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentRequestEntity.getUuid());
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getUuid());
         Set<ProgramEncountersContract> encountersContractList = constructEncounters(programEnrolment.getProgramEncounters());
         programEnrolmentContractWrapper.setProgramEncounters(encountersContractList);
         return programEnrolmentContractWrapper;
@@ -85,8 +80,7 @@ public class ProgramEnrolmentConstructionService {
         if (individual == null)  {
             return null;
         }
-        List<ObservationContract> observationContractsList = constructObservations(individual.getObservations());
-        individualContractWrapper.setObservations(observationContractsList);
+        individualContractWrapper.setObservations(observationService.constructObservations(individual.getObservations()));
         individualContractWrapper.setUuid(individual.getUuid());
         individualContractWrapper.setFirstName(individual.getFirstName());
         individualContractWrapper.setLastName(individual.getLastName());
@@ -122,30 +116,5 @@ public class ProgramEnrolmentConstructionService {
     private GenderContract constructGenderContract(Gender gender) {
         GenderContract genderContract = new GenderContract(gender.getUuid(),gender.getName());
         return genderContract;
-    }
-
-    public List<ObservationContract> constructObservations(@NotNull ObservationCollection observationCollection) {
-        return observationCollection.entrySet().stream().map(entry -> {
-            ObservationContract observationContract = new ObservationContract();
-            Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
-            ConceptContract conceptContract = ConceptContract.create(questionConcept);
-            observationContract.setConcept(conceptContract);
-            Object value = entry.getValue();
-            if (questionConcept.getDataType().equalsIgnoreCase(ConceptDataType.Coded.toString())) {
-                List<String> answers = value instanceof List ? (List<String>) value : singletonList(value.toString());
-                List<ConceptContract> answerConceptList = questionConcept.getConceptAnswers().stream()
-                        .filter(it ->
-                                answers.contains(it.getAnswerConcept().getUuid())
-                        ).map(it -> {
-                            ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
-                            cc.setAbnormal(it.isAbnormal());
-                            return cc;
-                        }).collect(Collectors.toList());
-                observationContract.setValue(answerConceptList != null && answerConceptList.size() == 1 ? answerConceptList.get(0) : answerConceptList);
-            } else {
-                observationContract.setValue(value);
-            }
-            return observationContract;
-        }).collect(Collectors.toList());
     }
 }
