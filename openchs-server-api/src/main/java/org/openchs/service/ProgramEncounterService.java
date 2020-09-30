@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -98,7 +100,7 @@ public class ProgramEncounterService {
                 throw new Exception("Next scheduled visit is for encounter type=" + visitSchedule.getName() + " that doesn't exist");
             }
             ProgramEncounter programEncounter = createEmptyProgramEncounter(programEnrolment, encounterType);
-            allScheduleEncountersByType.add(programEncounter);
+            allScheduleEncountersByType = Arrays.asList(programEncounter);
         }
         allScheduleEncountersByType.stream().forEach(programEncounter -> {
             updateProgramEncounterWithVisitSchedule(programEncounter, visitSchedule);

@@ -66,7 +66,7 @@ public class RuleController {
     @RequestMapping(value = "/web/decisionrule", method = RequestMethod.POST)
     ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
-        if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
+        if (requestEntityWrapper.getRule().getWorkFlowType() != null) {
             switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
                 case INDIVIDUAL:
                     ruleResponseEntity = ruleService.decisionRuleIndividualWorkFlow(requestEntityWrapper);
@@ -82,11 +82,11 @@ public class RuleController {
                     break;
             }
         }
-        if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);
-        }else if(HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())){
+        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
             return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
-        }else{
+        } else {
             return ResponseEntity.badRequest().body(ruleResponseEntity);
         }
     }
@@ -94,7 +94,7 @@ public class RuleController {
     @RequestMapping(value = "/web/visitrule", method = RequestMethod.POST)
     ResponseEntity<?> visitScheduleRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
-        if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
+        if (requestEntityWrapper.getRule().getWorkFlowType() != null) {
             switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
                 case PROGRAM_ENROLMENT:
                     ruleResponseEntity = ruleService.visitScheduleRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
@@ -102,18 +102,16 @@ public class RuleController {
                 case PROGRAM_ENCOUNTER:
                     ruleResponseEntity = ruleService.visitScheduleRuleProgramEncounterWorkFlow(requestEntityWrapper);
                     break;
-                /* Encounter VisitSchedule , Not in scope of 2nd Release
-                case "encounter":
+                case ENCOUNTER:
                     ruleResponseEntity = ruleService.visitScheduleRuleEncounterWorkFlow(requestEntityWrapper);
                     break;
-                */
             }
         }
-        if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);
-        }else if(HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())){
+        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
             return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
-        }else{
+        } else {
             return ResponseEntity.badRequest().body(ruleResponseEntity);
         }
     }

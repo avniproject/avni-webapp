@@ -4,6 +4,7 @@ public class RuleRequestEntity {
     private String formUuid;
     private String ruleType;
     private String workFlowType;
+    private String code;
 
     public String getFormUuid() {
         return formUuid;
@@ -27,5 +28,13 @@ public class RuleRequestEntity {
 
     public void setWorkFlowType(String workFlowType) {
         this.workFlowType = workFlowType;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

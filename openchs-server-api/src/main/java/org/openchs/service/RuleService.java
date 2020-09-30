@@ -2,6 +2,7 @@ package org.openchs.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jettison.json.JSONException;
+import org.openchs.application.Form;
 import org.openchs.application.RuleType;
 import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
@@ -19,6 +20,7 @@ import org.openchs.web.request.rules.constructWrappers.ObservationConstructionSe
 import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstructionService;
 import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
+import org.openchs.web.request.rules.request.RuleRequestEntity;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.request.rules.validateRules.DecisionRuleValidation;
 import org.openchs.web.validation.ValidationException;
@@ -56,6 +58,7 @@ public class RuleService {
     private final ProgramEncounterConstructionService programEncounterConstructionService;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private final ObservationConstructionService observationConstructionService;
+    private final FormRepository formRepository;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -86,6 +89,7 @@ public class RuleService {
         this.programEncounterConstructionService = programEncounterConstructionService;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
         this.observationConstructionService = observationConstructionService;
+        this.formRepository = formRepository;
     }
 
     @Transactional
@@ -167,18 +171,24 @@ public class RuleService {
     }
 
     public RuleResponseEntity visitScheduleRuleProgramEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper) {
-        String ruleType = requestEntityWrapper.getRule().getRuleType().toLowerCase();
+        RuleRequestEntity rule = requestEntityWrapper.getRule();
+        Form form = formRepository.findByUuid(rule.getFormUuid());
+        rule.setCode(form.getVisitScheduleRule());
+        String ruleType = rule.getRuleType().toLowerCase();
         ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
         programEncounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(requestEntityWrapper.getProgramEncounterRequestEntity().getProgramEnrolmentUUID()));
-        programEncounterContractWrapper.setRule(requestEntityWrapper.getRule());
+        programEncounterContractWrapper.setRule(rule);
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/" + ruleType + "_" + RuleEnum.PROGRAM_ENCOUNTER_RULE.getRuleName(), programEncounterContractWrapper);
         return ruleResponseEntity;
     }
 
     public RuleResponseEntity visitScheduleRuleEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
-        String ruleType = requestEntityWrapper.getRule().getRuleType().toLowerCase();
+        RuleRequestEntity rule = requestEntityWrapper.getRule();
+        Form form = formRepository.findByUuid(rule.getFormUuid());
+        rule.setCode(form.getVisitScheduleRule());
+        String ruleType = rule.getRuleType().toLowerCase();
         EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
-        encounterContractWrapper.setRule(requestEntityWrapper.getRule());
+        encounterContractWrapper.setRule(rule);
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper);
         return ruleResponseEntity;
     }
