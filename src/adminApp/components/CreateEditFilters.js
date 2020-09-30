@@ -157,9 +157,9 @@ export const CreateEditFilters = props => {
     const data = getNewFilterData(_.pickBy(newFilter, _.identity));
 
     http
-      .post("/organisationConfig", data)
+      .put("/organisationConfig", data)
       .then(response => {
-        if (response.status === 201) {
+        if (response.status === 200 || response.status === 201) {
           setMessageStatus({ message: "Filter updated", display: true });
           setSnackBarStatus(true);
         }

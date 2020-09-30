@@ -28,7 +28,7 @@ export const CreateEditLanguages = props => {
 
   const saveLanguage = () => {
     http
-      .post("/organisationConfig", {
+      .put("/organisationConfig", {
         uuid: setting.uuid,
         settings: {
           languages: _.isNil(lang) ? [] : lang.map(l => l.value),
@@ -38,7 +38,7 @@ export const CreateEditLanguages = props => {
         worklistUpdationRule: worklistUpdationRule
       })
       .then(response => {
-        if (response.status === 201) {
+        if (response.status === 200 || response.status === 201) {
           setMessageStatus({ message: "Language updated", display: true });
           setSnackBarStatus(true);
         }

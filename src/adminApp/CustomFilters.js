@@ -149,8 +149,8 @@ const customFilters = ({
           },
           worklistUpdationRule: worklistUpdationRule
         };
-        http.post("/organisationConfig", newSettings).then(response => {
-          if (response.status === 201) {
+        http.put("/organisationConfig", newSettings).then(response => {
+          if (response.status === 200 || response.status === 201) {
             setSettings(newSettings);
           }
         });

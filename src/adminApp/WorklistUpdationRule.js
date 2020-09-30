@@ -68,13 +68,13 @@ export const WorklistUpdationRule = () => {
 
   const onSaveWorklistUpdationRule = event => {
     http
-      .post("/organisationConfig", {
+      .put("/organisationConfig", {
         uuid: settings.uuid,
         settings: settings.settings,
         worklistUpdationRule: worklistUpdationRule
       })
       .then(response => {
-        if (response.status === 201) {
+        if (response.status === 200 || response.status === 201) {
           setNotificationAlert(true);
           setEnableRuleSave(false);
         }
