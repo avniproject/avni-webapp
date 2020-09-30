@@ -49,6 +49,10 @@ public class OrganisationConfigService {
         return organisationConfig;
     }
 
+    public OrganisationConfig getOrganisationConfig(Organisation organisation) {
+        return organisationConfigRepository.findByOrganisationId(organisation.getId());
+    }
+
     public LinkedHashMap<String, Object> getOrganisationSettings(Long organisationId) throws JSONException {
         JsonObject jsonObject = organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
         LinkedHashMap<String, Object> organisationSettingsConceptListMap = new LinkedHashMap<>();
@@ -76,7 +80,7 @@ public class OrganisationConfigService {
             LinkedHashMap<String, Object> organisationSettings = getOrganisationSettings(UserContextHolder.getUserContext().getOrganisationId());
             Double currentLowestAddressLevelType = Double.parseDouble(String.valueOf(organisationSettings.get(OrganisationConfigSettingKeys.lowestAddressLevelType)));
             if (lowestAddressLevelType < currentLowestAddressLevelType) {
-                JSONObject settings = new JSONObject();
+                JsonObject settings = new JsonObject();
                 settings.put(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType), lowestAddressLevelType);
                 return updateOrganisationSettings(settings);
             }
@@ -87,7 +91,7 @@ public class OrganisationConfigService {
     }
 
     @Transactional
-    public OrganisationConfig updateOrganisationSettings(JSONObject settings) throws JSONException {
+    public OrganisationConfig updateOrganisationSettings(JsonObject settings) throws JSONException {
         long organisationId = UserContextHolder.getUserContext().getOrganisationId();
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
         if (organisationConfig == null) {
@@ -97,8 +101,13 @@ public class OrganisationConfigService {
         organisationConfig.setUuid(UUID.randomUUID().toString());
         organisationConfig.updateLastModifiedDateTime();
 
-        JSONObject settingsJson = new JSONObject(settings.toString());
-        JsonObject currentSettings = organisationConfig.getSettings();
+        organisationConfig.setSettings(updateOrganisationConfigSettings(settings, organisationConfig.getSettings()));
+
+        return organisationConfigRepository.save(organisationConfig);
+    }
+
+    public JsonObject updateOrganisationConfigSettings(JsonObject newSettings, JsonObject currentSettings) throws JSONException {
+        JSONObject settingsJson = new JSONObject(newSettings.toString());
         settingsJson.keys().forEachRemaining(key -> {
             try {
                 currentSettings.put((String) key, settingsJson.get((String) key));
@@ -106,8 +115,18 @@ public class OrganisationConfigService {
                 jsonException.printStackTrace();
             }
         });
+        return currentSettings;
+    }
 
-        organisationConfig.setSettings(currentSettings);
+    @Transactional
+    public OrganisationConfig updateOrganisationConfig(OrganisationConfigRequest request, OrganisationConfig organisationConfig) throws JSONException {
+
+        organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
+        if (request.getWorklistUpdationRule() != null)
+            organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
+        if (request.getSettings() != null)
+            updateOrganisationConfigSettings(request.getSettings(), organisationConfig.getSettings());
+
         return organisationConfigRepository.save(organisationConfig);
     }
 }
