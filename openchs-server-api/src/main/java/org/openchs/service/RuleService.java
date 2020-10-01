@@ -6,6 +6,7 @@ import org.openchs.application.Form;
 import org.openchs.application.RuleType;
 import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
+import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.RestClient;
@@ -21,8 +22,9 @@ import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstruct
 import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
+import org.openchs.web.request.rules.response.RuleError;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
-import org.openchs.web.request.rules.validateRules.DecisionRuleValidation;
+import org.openchs.web.request.rules.validateRules.RuleValidationService;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +33,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +53,12 @@ public class RuleService {
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final RestClient restClient;
     private final IndividualConstructionService individualConstructionService;
-    private final DecisionRuleValidation decisionRuleValidation;
+    private final RuleValidationService ruleValidationService;
     private final ProgramEncounterConstructionService programEncounterConstructionService;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private final ObservationConstructionService observationConstructionService;
     private final FormRepository formRepository;
+    private final RuleFailureLogRepository ruleFailureLogRepository;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -69,11 +69,12 @@ public class RuleService {
                        ProgramEnrolmentRepository programEnrolmentRepository,
                        RestClient restClient,
                        IndividualConstructionService individualConstructionService,
-                       DecisionRuleValidation decisionRuleValidation,
+                       RuleValidationService ruleValidationService,
                        ProgramEncounterConstructionService programEncounterConstructionService,
                        ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                       ObservationConstructionService observationConstructionService
-    ) {
+                       ObservationConstructionService observationConstructionService,
+                       RuleFailureLogRepository ruleFailureLogRepository) {
+        this.ruleFailureLogRepository = ruleFailureLogRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
@@ -85,7 +86,7 @@ public class RuleService {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.restClient = restClient;
         this.individualConstructionService = individualConstructionService;
-        this.decisionRuleValidation = decisionRuleValidation;
+        this.ruleValidationService = ruleValidationService;
         this.programEncounterConstructionService = programEncounterConstructionService;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
         this.observationConstructionService = observationConstructionService;
@@ -166,8 +167,9 @@ public class RuleService {
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
         programEnrolmentContractWrapper.setRule(rule);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Enrolment",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
         programEnrolmentContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid()));
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENROLMENT_RULE.getRuleName(),programEnrolmentContractWrapper);
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENROLMENT_RULE.getRuleName(),programEnrolmentContractWrapper, ruleFailureLog);
         return ruleResponseEntity;
     }
 
@@ -177,7 +179,8 @@ public class RuleService {
         ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
         programEncounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(requestEntityWrapper.getProgramEncounterRequestEntity().getProgramEnrolmentUUID()));
         programEncounterContractWrapper.setRule(rule);
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/" + ruleType + "_" + RuleEnum.PROGRAM_ENCOUNTER_RULE.getRuleName(), programEncounterContractWrapper);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Encounter",requestEntityWrapper.getProgramEncounterRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/" + ruleType + "_" + RuleEnum.PROGRAM_ENCOUNTER_RULE.getRuleName(), programEncounterContractWrapper, ruleFailureLog);
         return ruleResponseEntity;
     }
 
@@ -186,7 +189,8 @@ public class RuleService {
         String ruleType = rule.getRuleType().toLowerCase();
         EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
         encounterContractWrapper.setRule(rule);
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Encounter",requestEntityWrapper.getEncounterRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper, ruleFailureLog);
         return ruleResponseEntity;
     }
 
@@ -195,10 +199,10 @@ public class RuleService {
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
         programEnrolmentContractWrapper.setRule(rule);
-        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Enrolment",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENROLMENT_RULE.getRuleName(),programEnrolmentContractWrapper);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Enrolment",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENROLMENT_RULE.getRuleName(),programEnrolmentContractWrapper, ruleFailureLog);
         if("success".equals(ruleResponseEntity.getStatus())) {
-            ruleResponseEntity.getData().setEnrolmentDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(), ruleFailureLog));
+            ruleResponseEntity.getData().setEnrolmentDecisions(ruleValidationService.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(), ruleFailureLog));
             ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEnrolmentDecisions()));
         }
         return ruleResponseEntity;
@@ -209,10 +213,10 @@ public class RuleService {
         String ruleType = rule.getRuleType().toLowerCase();
         EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
         encounterContractWrapper.setRule(rule);
-        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Encounter",requestEntityWrapper.getEncounterRequestEntity().getUuid());
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Encounter",requestEntityWrapper.getEncounterRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper, ruleFailureLog);
         if("success".equals(ruleResponseEntity.getStatus())) {
-            ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(), ruleFailureLog));
+            ruleResponseEntity.getData().setEncounterDecisions(ruleValidationService.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(), ruleFailureLog));
             ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
         }
         return ruleResponseEntity;
@@ -223,10 +227,10 @@ public class RuleService {
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
         programEncounterContractWrapper.setRule(rule);
-        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Encounter",requestEntityWrapper.getProgramEncounterRequestEntity().getUuid());
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENCOUNTER_RULE.getRuleName(),programEncounterContractWrapper);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Encounter",requestEntityWrapper.getProgramEncounterRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENCOUNTER_RULE.getRuleName(),programEncounterContractWrapper, ruleFailureLog);
         if("success".equals(ruleResponseEntity.getStatus())) {
-            ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(), ruleFailureLog));
+            ruleResponseEntity.getData().setEncounterDecisions(ruleValidationService.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(), ruleFailureLog));
             ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
         }
         return ruleResponseEntity;
@@ -237,10 +241,10 @@ public class RuleService {
         String ruleType = rule.getRuleType().toLowerCase();
         IndividualContractWrapper individualContractWrapper = individualConstructionService.constructIndividualContract(requestEntityWrapper.getIndividualRequestEntity());
         individualContractWrapper.setRule(rule);
-        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Individual",requestEntityWrapper.getIndividualRequestEntity().getUuid());
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.INDIVIDUAL_RULE.getRuleName(),individualContractWrapper);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Individual",requestEntityWrapper.getIndividualRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.INDIVIDUAL_RULE.getRuleName(),individualContractWrapper, ruleFailureLog);
         if("success".equals(ruleResponseEntity.getStatus())) {
-            ruleResponseEntity.getData().setRegistrationDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(), ruleFailureLog));
+            ruleResponseEntity.getData().setRegistrationDecisions(ruleValidationService.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(), ruleFailureLog));
             ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getRegistrationDecisions()));
         }
         return ruleResponseEntity;
@@ -260,26 +264,45 @@ public class RuleService {
         return rule;
     }
 
-    private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject){
+    private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            String decisionResponse = restClient.post(url,contractObject,httpHeaders);
+            String decisionResponse = restClient.post(url, contractObject, httpHeaders);
             RuleResponseEntity ruleResponseEntity = mapper.readValue(decisionResponse, RuleResponseEntity.class);
+            if (ruleResponseEntity.getStatus().equals("failure")) {
+                RuleError ruleError = ruleResponseEntity.getError();
+                saveRuleError(ruleFailureLog, ruleError.getMessage(), ruleError.getStack());
+            }
             return ruleResponseEntity;
+        } catch (Exception e) {
+            saveRuleError(ruleFailureLog, e.getMessage(), getStackTrace(e));
+            return getFailureRuleResponseEntity(e);
         }
-        catch (HttpClientErrorException e){
-            RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
-            ruleResponseEntity.setMessage(e.getStatusText());
-            ruleResponseEntity.setStatus(e.getStatusCode().toString());
-            return ruleResponseEntity;
-        } catch (Exception e){
-            RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
-            ruleResponseEntity.setMessage("SomeThing went wrong at server side");
-            ruleResponseEntity.setStatus("failure");
-            return ruleResponseEntity;
-        }
+    }
+
+    private RuleResponseEntity getFailureRuleResponseEntity(Exception e) {
+        RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
+        RuleError ruleError = new RuleError();
+        ruleError.setMessage(e.getMessage());
+        ruleError.setStack(getStackTrace(e));
+        ruleResponseEntity.setStatus("failure");
+        ruleResponseEntity.setError(ruleError);
+        return ruleResponseEntity;
+    }
+
+    private String getStackTrace(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
+
+    private void saveRuleError(RuleFailureLog ruleFailureLog, String message, String stack) {
+        ruleFailureLog.setErrorMessage(message);
+        ruleFailureLog.setStacktrace(stack);
+        ruleFailureLogRepository.save(ruleFailureLog);
     }
 
 

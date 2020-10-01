@@ -20,7 +20,7 @@ public class ConceptModelContract {
     private Boolean voided;
     private List<ConceptAnswerModelContract> answers;
 
-    static public ConceptModelContract fromConcept(Concept concept) {
+    public static ConceptModelContract fromConcept(Concept concept) {
         ConceptModelContract conceptModelContract = new ConceptModelContract();
         conceptModelContract.setUuid(concept.getUuid());
         conceptModelContract.setName(concept.getName());

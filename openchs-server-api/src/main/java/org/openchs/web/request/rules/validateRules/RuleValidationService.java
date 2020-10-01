@@ -18,13 +18,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class DecisionRuleValidation {
+public class RuleValidationService {
     private final Logger logger;
     private final ConceptRepository conceptRepository;
     private final RuleFailureLogRepository ruleFailureLogRepository;
 
     @Autowired
-    public DecisionRuleValidation(
+    public RuleValidationService(
             ConceptRepository conceptRepository,
             RuleFailureLogRepository ruleFailureLogRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -35,6 +35,7 @@ public class DecisionRuleValidation {
 
     public RuleFailureLog generateRuleFailureLog(RequestEntityWrapper requestEntityWrapper, String source, String entityType, String entityUuid) {
         RuleFailureLog ruleFailureLog = new RuleFailureLog();
+        ruleFailureLog.assignUUIDIfRequired();
         ruleFailureLog.setFormId(requestEntityWrapper.getRule().getFormUuid());
         ruleFailureLog.setRuleType(requestEntityWrapper.getRule().getRuleType());
         ruleFailureLog.setEntityId(entityUuid);
@@ -48,6 +49,7 @@ public class DecisionRuleValidation {
                 .stream()
                 .filter(decision -> checkConceptForRule(decision.getName(), ruleFailureLog))
                 .map(decision -> filterDecisionValuesForCodedConcept(decision, ruleFailureLog))
+                .filter(decision -> decision.getValue() != null)
                 .collect(Collectors.toList());
     }
 
@@ -59,7 +61,7 @@ public class DecisionRuleValidation {
                     .stream()
                     .filter(conceptName -> checkConceptForRule(conceptName, ruleFailureLog))
                     .collect(Collectors.toList());
-            decision.setValue(filteredValues);
+            decision.setValue(filteredValues.isEmpty() ? null : filteredValues);
         }
         return decision;
     }

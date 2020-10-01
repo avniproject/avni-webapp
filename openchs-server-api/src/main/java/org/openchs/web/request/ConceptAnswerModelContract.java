@@ -11,7 +11,7 @@ public class ConceptAnswerModelContract {
     private Boolean unique;
     private Boolean voided;
 
-    static public ConceptAnswerModelContract fromConceptAnswer(ConceptAnswer answer) {
+    public static ConceptAnswerModelContract fromConceptAnswer(ConceptAnswer answer) {
         ConceptAnswerModelContract conceptAnswerModelContract = new ConceptAnswerModelContract();
         conceptAnswerModelContract.setUuid(answer.getUuid());
         conceptAnswerModelContract.setAbnormal(answer.isAbnormal());

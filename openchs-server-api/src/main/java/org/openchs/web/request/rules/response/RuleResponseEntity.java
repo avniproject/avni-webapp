@@ -9,13 +9,21 @@ import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RuleResponseEntity{
+public class RuleResponseEntity {
     private String status;
     private DecisionResponseEntity data;
     private List<VisitSchedule> visitSchedules;
     private List<ObservationContract> observation;
     private List<ProgramEncountersContract> programEncounters;
-    private String message;
+    private RuleError error;
+
+    public RuleError getError() {
+        return error;
+    }
+
+    public void setError(RuleError error) {
+        this.error = error;
+    }
 
     public List<ProgramEncountersContract> getProgramEncounters() {
         return programEncounters;
@@ -41,11 +49,12 @@ public class RuleResponseEntity{
         this.observation = observation;
     }
 
-    public void setStatus(String status){
-        this.status = status;
-    }
-    public String getStatus(){
+    public String getStatus() {
         return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public DecisionResponseEntity getData() {
@@ -54,13 +63,5 @@ public class RuleResponseEntity{
 
     public void setData(DecisionResponseEntity data) {
         this.data = data;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }
