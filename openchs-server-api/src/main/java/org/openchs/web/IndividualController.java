@@ -103,7 +103,9 @@ public class IndividualController extends AbstractController<Individual> impleme
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         individualRepository.save(individual);
-        encounterService.saveVisitSchedules(individualRequest.getUuid(), individualRequest.getVisitSchedules(), null);
+        if(individualRequest.getVisitSchedules() != null && individualRequest.getVisitSchedules().size() > 0) {
+            encounterService.saveVisitSchedules(individualRequest.getUuid(), individualRequest.getVisitSchedules(), null);
+        }
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
     }
 
