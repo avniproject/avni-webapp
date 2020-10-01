@@ -64,6 +64,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/web/decisionrule", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if (requestEntityWrapper.getRule().getWorkFlowType() != null) {
@@ -92,6 +93,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/web/visitrule", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> visitScheduleRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if (requestEntityWrapper.getRule().getWorkFlowType() != null) {
