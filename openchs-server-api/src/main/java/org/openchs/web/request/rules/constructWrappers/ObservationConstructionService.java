@@ -29,10 +29,7 @@ public class ObservationConstructionService {
 
     @Autowired
     public ObservationConstructionService(
-            ConceptRepository conceptRepository,
-            GenderRepository genderRepository,
-            SubjectTypeRepository subjectTypeRepository,
-            AddressLevelTypeRepository addressLevelTypeRepository) {
+            ConceptRepository conceptRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
     }
@@ -46,28 +43,6 @@ public class ObservationConstructionService {
         return observationContract;
     }
 
-    public ObservationModelContract constructObservation(ObservationContract observationContract) {
-        Concept concept = conceptRepository.findByUuid(observationContract.getConcept().getUuid());
-        ObservationModelContract observationModelContract = new ObservationModelContract();
-        observationModelContract.setValue(observationContract.getValue());
-        ConceptModelContract conceptModelContract = ConceptModelContract.fromConcept(concept);
-        observationModelContract.setConcept(conceptModelContract);
-        return observationModelContract;
-    }
-
-
-
-    private List<ConceptContract> parseConceptAnswer(Set<ConceptAnswer> conceptAnswers) {
-        List<ConceptContract> conceptContractList = new ArrayList<>();
-        conceptAnswers.stream().forEach(x -> {
-            ConceptContract conceptContract = new ConceptContract();
-            conceptContract.setName(x.getAnswerConcept().getName());
-            conceptContract.setUuid(x.getAnswerConcept().getUuid());
-            conceptContract.setDataType(x.getAnswerConcept().getDataType());
-            conceptContractList.add(conceptContract);
-        });
-        return conceptContractList;
-    }
 
     private ConceptContract generateConceptContract(String name) {
         Concept concept = conceptRepository.findByName(name);

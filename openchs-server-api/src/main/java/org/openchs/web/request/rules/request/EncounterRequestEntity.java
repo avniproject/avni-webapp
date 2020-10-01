@@ -25,6 +25,8 @@ public class EncounterRequestEntity {
 
     private DateTime maxVisitDateTime;
 
+    private String name;
+
     public DateTime getCancelDateTime() {
         return cancelDateTime;
     }
@@ -103,5 +105,13 @@ public class EncounterRequestEntity {
 
     public void setIndividualUUID(String individualUUID) {
         this.individualUUID = individualUUID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

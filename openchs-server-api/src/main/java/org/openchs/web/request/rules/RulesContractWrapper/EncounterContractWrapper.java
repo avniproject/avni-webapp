@@ -1,6 +1,8 @@
 package org.openchs.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.Encounter;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
@@ -116,4 +118,17 @@ public class EncounterContractWrapper {
     public void setSubject(IndividualContractWrapper subject) {
         this.subject = subject;
     }
+
+    public static EncounterContractWrapper fromEncounter(Encounter encounter, ObservationService observationService) {
+        EncounterContractWrapper contract = new EncounterContractWrapper();
+        contract.setUuid(encounter.getUuid());
+        contract.setName(encounter.getName());
+        contract.setEncounterDateTime(encounter.getEncounterDateTime());
+        contract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
+        contract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
+        contract.setCancelDateTime(encounter.getCancelDateTime());
+        contract.setObservations(observationService.constructObservationModelContracts(encounter.getObservations()));
+        return contract;
+    }
+
 }

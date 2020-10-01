@@ -2,9 +2,8 @@ package org.openchs.service;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.*;
-import org.openchs.web.request.ConceptContract;
-import org.openchs.web.request.ObservationContract;
-import org.openchs.web.request.ObservationRequest;
+import org.openchs.web.request.*;
+import org.openchs.web.request.rules.constructWrappers.ObservationConstructionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -110,6 +109,23 @@ public class ObservationService {
         if(question.getConceptAnswers().stream().noneMatch(ans -> ans.getAnswerConcept().getUuid().equals(uuid))) {
             throw new IllegalArgumentException(String.format("Concept answer '%s' not found in Concept '%s'", uuid, question.getUuid()));
         }
+    }
+
+    public List<ObservationModelContract> constructObservationModelContracts(@NotNull ObservationCollection observationCollection) {
+        List<ObservationContract> observationContracts = this.constructObservations(observationCollection);
+        List<ObservationModelContract> observationModelContracts = observationContracts.stream()
+                .map(this::constructObservation)
+                .collect(Collectors.toList());
+        return observationModelContracts;
+    }
+
+    public ObservationModelContract constructObservation(ObservationContract observationContract) {
+        Concept concept = conceptRepository.findByUuid(observationContract.getConcept().getUuid());
+        ObservationModelContract observationModelContract = new ObservationModelContract();
+        observationModelContract.setValue(observationContract.getValue());
+        ConceptModelContract conceptModelContract = ConceptModelContract.fromConcept(concept);
+        observationModelContract.setConcept(conceptModelContract);
+        return observationModelContract;
     }
 
     public List<ObservationContract> constructObservations(@NotNull ObservationCollection observationCollection) {

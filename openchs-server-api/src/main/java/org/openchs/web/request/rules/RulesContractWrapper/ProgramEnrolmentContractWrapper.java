@@ -1,6 +1,8 @@
 package org.openchs.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.ProgramEnrolment;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
@@ -109,5 +111,16 @@ public class ProgramEnrolmentContractWrapper {
 
     public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
         this.visitSchedules = visitSchedules;
+    }
+
+    public static ProgramEnrolmentContractWrapper fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService) {
+        ProgramEnrolmentContractWrapper contract = new ProgramEnrolmentContractWrapper();
+        contract.setUuid(enrolment.getUuid());
+        contract.setEnrolmentDateTime(enrolment.getEnrolmentDateTime());
+        contract.setProgramExitDateTime(enrolment.getProgramExitDateTime());
+        contract.setOperationalProgramName(enrolment.getProgram().getOperationalProgramName());
+        contract.setObservations(observationService.constructObservationModelContracts(enrolment.getObservations()));
+        contract.setExitObservations(observationService.constructObservationModelContracts(enrolment.getProgramExitObservations()));
+        return contract;
     }
 }
