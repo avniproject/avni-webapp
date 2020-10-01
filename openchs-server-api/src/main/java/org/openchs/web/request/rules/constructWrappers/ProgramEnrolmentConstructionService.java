@@ -52,9 +52,9 @@ public class ProgramEnrolmentConstructionService {
         if(request.getIndividualUUID() != null) {
             programEnrolmentContractWrapper.setSubject(getSubjectInfo(individualRepository.findByUuid(request.getIndividualUUID())));
         }
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getUuid());
-        Set<ProgramEncountersContract> encountersContractList = constructEncounters(programEnrolment.getProgramEncounters());
-        programEnrolmentContractWrapper.setProgramEncounters(encountersContractList);
+//        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getUuid());
+//        Set<ProgramEncountersContract> encountersContractList = constructEncounters(programEnrolment.getProgramEncounters());
+//        programEnrolmentContractWrapper.setProgramEncounters(encountersContractList);
         return programEnrolmentContractWrapper;
     }
 

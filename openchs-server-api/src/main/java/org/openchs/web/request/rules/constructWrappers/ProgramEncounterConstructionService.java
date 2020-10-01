@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -83,7 +84,7 @@ public class ProgramEncounterConstructionService {
 
     public List<VisitSchedule> constructProgramEnrolmentVisitScheduleContract(String uuid){
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
-        return programEnrolment.getProgramEncounters().stream().map( programEncounter -> {
+        return programEnrolment == null ? new ArrayList<>() : programEnrolment.getProgramEncounters().stream().map(programEncounter -> {
             VisitSchedule visitSchedule = new VisitSchedule();
             visitSchedule.setEarliestDate(programEncounter.getEarliestVisitDateTime());
             visitSchedule.setMaxDate(programEncounter.getMaxVisitDateTime());
