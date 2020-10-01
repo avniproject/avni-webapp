@@ -1,9 +1,7 @@
 package org.openchs.web.request.rules.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.openchs.web.request.EncounterContract;
 import org.openchs.web.request.ObservationContract;
-import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 
 import java.util.List;
@@ -14,7 +12,6 @@ public class RuleResponseEntity {
     private DecisionResponseEntity data;
     private List<VisitSchedule> visitSchedules;
     private List<ObservationContract> observation;
-    private List<ProgramEncountersContract> programEncounters;
     private RuleError error;
 
     public RuleError getError() {
@@ -23,14 +20,6 @@ public class RuleResponseEntity {
 
     public void setError(RuleError error) {
         this.error = error;
-    }
-
-    public List<ProgramEncountersContract> getProgramEncounters() {
-        return programEncounters;
-    }
-
-    public void setProgramEncounters(List<ProgramEncountersContract> programEncounters) {
-        this.programEncounters = programEncounters;
     }
 
     public List<VisitSchedule> getVisitSchedules() {

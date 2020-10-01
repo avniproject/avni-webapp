@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.poi.util.StringUtil;
 import org.codehaus.jettison.json.JSONException;
 import org.openchs.application.Form;
 import org.openchs.application.RuleType;
@@ -165,6 +166,9 @@ public class RuleService {
 
     public RuleResponseEntity visitScheduleRuleProgramEnrolmentWorkFlow(RequestEntityWrapper requestEntityWrapper){
         RuleRequestEntity rule = getRuleRequestEntityWithVisitScheduleRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
         programEnrolmentContractWrapper.setRule(rule);
@@ -176,6 +180,9 @@ public class RuleService {
 
     public RuleResponseEntity visitScheduleRuleProgramEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper) {
         RuleRequestEntity rule = getRuleRequestEntityWithVisitScheduleRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
         programEncounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(requestEntityWrapper.getProgramEncounterRequestEntity().getProgramEnrolmentUUID()));
@@ -187,6 +194,9 @@ public class RuleService {
 
     public RuleResponseEntity visitScheduleRuleEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
         RuleRequestEntity rule = getRuleRequestEntityWithVisitScheduleRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
         encounterContractWrapper.setRule(rule);
@@ -213,6 +223,9 @@ public class RuleService {
 
     public RuleResponseEntity decisionRuleProgramEnrolmentWorkFlow(RequestEntityWrapper requestEntityWrapper){
         RuleRequestEntity rule = getRuleRequestEntityWithDecisionRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
         programEnrolmentContractWrapper.setRule(rule);
@@ -227,6 +240,9 @@ public class RuleService {
 
     public RuleResponseEntity decisionRuleEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
         RuleRequestEntity rule = getRuleRequestEntityWithDecisionRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
         encounterContractWrapper.setRule(rule);
@@ -241,6 +257,9 @@ public class RuleService {
 
     public RuleResponseEntity decisionRuleProgramEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
         RuleRequestEntity rule = getRuleRequestEntityWithDecisionRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
         programEncounterContractWrapper.setRule(rule);
@@ -255,6 +274,9 @@ public class RuleService {
 
     public RuleResponseEntity decisionRuleIndividualWorkFlow(RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleRequestEntity rule = getRuleRequestEntityWithDecisionRuleCode(requestEntityWrapper);
+        if (StringUtils.isEmpty(rule.getCode())) {
+            return emptySuccessEntity();
+        }
         String ruleType = rule.getRuleType().toLowerCase();
         IndividualContractWrapper individualContractWrapper = individualConstructionService.constructIndividualContract(requestEntityWrapper.getIndividualRequestEntity());
         individualContractWrapper.setRule(rule);
@@ -267,6 +289,11 @@ public class RuleService {
         return ruleResponseEntity;
     }
 
+    private RuleResponseEntity emptySuccessEntity(){
+        RuleResponseEntity entity = new RuleResponseEntity();
+        entity.setStatus("success");
+        return entity;
+    }
     private RuleRequestEntity getRuleRequestEntityWithVisitScheduleRuleCode(RequestEntityWrapper requestEntityWrapper) {
         RuleRequestEntity rule = requestEntityWrapper.getRule();
         Form form = formRepository.findByUuid(rule.getFormUuid());
