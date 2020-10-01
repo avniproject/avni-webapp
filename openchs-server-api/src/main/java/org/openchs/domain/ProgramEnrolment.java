@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
@@ -83,22 +84,27 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
         return programEncounters;
     }
 
+    @JsonIgnore
     public Stream<ProgramEncounter> getEncounters(boolean removeCancelledEncounters) {
         return this.nonVoidedEncounters().filter(enc -> removeCancelledEncounters ? enc.getCancelDateTime() == null : true);
     }
 
+    @JsonIgnore
     public Stream<ProgramEncounter> getEncountersOfType(String encounterTypeName, boolean removeCancelledEncounters) {
         return this.getEncounters(removeCancelledEncounters).filter(enc -> enc.getEncounterType().getName().equals(encounterTypeName));
     }
 
+    @JsonIgnore
     public Stream<ProgramEncounter> nonVoidedEncounters() {
         return this.getProgramEncounters().stream().filter(enc -> !enc.isVoided());
     }
 
+    @JsonIgnore
     public Stream<ProgramEncounter> scheduledEncounters() {
         return this.getEncounters(true).filter(enc -> enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
     }
 
+    @JsonIgnore
     public Stream<ProgramEncounter> scheduledEncountersOfType(String encounterTypeName) {
         return this.scheduledEncounters().filter(scheduledEncounter -> scheduledEncounter.getEncounterType().getName().equals(encounterTypeName));
     }

@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "individual")
@@ -219,5 +220,30 @@ public class Individual extends OrganisationAwareEntity {
     public List<Program> getActivePrograms() {
         return programEnrolments.stream().filter(x -> !x.isVoided()).filter(x -> x.getProgramExitDateTime() == null)
                 .map(x -> x.getProgram()).collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public Stream<Encounter> getEncounters(boolean removeCancelledEncounters) {
+        return this.nonVoidedEncounters().filter(enc -> removeCancelledEncounters ? enc.getCancelDateTime() == null : true);
+    }
+
+    @JsonIgnore
+    public Stream<Encounter> getEncountersOfType(String encounterTypeName, boolean removeCancelledEncounters) {
+        return this.getEncounters(removeCancelledEncounters).filter(enc -> enc.getEncounterType().getName().equals(encounterTypeName));
+    }
+
+    @JsonIgnore
+    public Stream<Encounter> nonVoidedEncounters() {
+        return this.getEncounters().stream().filter(enc -> !enc.isVoided());
+    }
+
+    @JsonIgnore
+    public Stream<Encounter> scheduledEncounters() {
+        return this.getEncounters(true).filter(enc -> enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
+    }
+
+    @JsonIgnore
+    public Stream<Encounter> scheduledEncountersOfType(String encounterTypeName) {
+        return this.scheduledEncounters().filter(scheduledEncounter -> scheduledEncounter.getEncounterType().getName().equals(encounterTypeName));
     }
 }

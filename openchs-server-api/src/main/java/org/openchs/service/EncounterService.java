@@ -3,8 +3,11 @@ package org.openchs.service;
 import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
+import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.*;
+import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
+import org.openchs.web.request.rules.constant.EntityEnum;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -26,12 +32,16 @@ public class EncounterService {
     private EncounterRepository encounterRepository;
     private ObservationService observationService;
     private IndividualRepository individualRepository;
+    private RuleFailureLogRepository ruleFailureLogRepository;
+    private EncounterTypeRepository encounterTypeRepository;
 
     @Autowired
-    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository) {
+    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository, RuleFailureLogRepository ruleFailureLogRepository, EncounterTypeRepository encounterTypeRepository) {
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.individualRepository = individualRepository;
+        this.ruleFailureLogRepository = ruleFailureLogRepository;
+        this.encounterTypeRepository = encounterTypeRepository;
     }
 
     public EncounterContract getEncounterByUuid(String uuid) {
@@ -80,5 +90,57 @@ public class EncounterService {
                 encountersContract.setCancelObservations(observationService.constructObservations(encounter.getCancelObservations()));
             }
         return  encountersContract;
+    }
+
+    public List<Encounter> scheduledEncountersByType(Individual individual, String encounterTypeName, String currentEncounterUuid) {
+        Stream<Encounter> scheduledEncounters = individual.scheduledEncountersOfType(encounterTypeName).filter(enc -> !enc.getUuid().equals(currentEncounterUuid));
+        return scheduledEncounters.collect(Collectors.toList());
+    }
+
+    public void saveVisitSchedules(String individualUuid, List<VisitSchedule> visitSchedules, String currentEncounterUuid) {
+        Individual individual = individualRepository.findByUuid(individualUuid);
+        for (VisitSchedule visitSchedule : visitSchedules) {
+            try {
+                saveVisitSchedule(individual, visitSchedule, currentEncounterUuid);
+            } catch (Exception e) {
+                //TODO: Pass proper form id below to error log
+                RuleFailureLog ruleFailureLog = RuleFailureLog.createInstance(individualUuid, "Save : Visit Schedule Rule", individualUuid, "Save : " + EntityEnum.PROGRAM_ENCOUNTER_ENTITY.getEntityName(), "Web", e);
+                ruleFailureLogRepository.save(ruleFailureLog);
+            }
+        }
+    }
+
+    public void saveVisitSchedule(Individual individual, VisitSchedule visitSchedule, String currentEncounterUuid) throws Exception {
+        List<Encounter> allScheduleEncountersByType = scheduledEncountersByType(individual, visitSchedule.getEncounterType(), currentEncounterUuid);
+        if (allScheduleEncountersByType.isEmpty() || "createNew".equals(visitSchedule.getVisitCreationStrategy())) {
+            EncounterType encounterType = encounterTypeRepository.findByName(visitSchedule.getEncounterType());
+            if (encounterType == null) {
+                throw new Exception("Next scheduled visit is for encounter type=" + visitSchedule.getName() + " that doesn't exist");
+            }
+            Encounter encounter = createEmptyEncounter(individual, encounterType);
+            allScheduleEncountersByType = Arrays.asList(encounter);
+        }
+        allScheduleEncountersByType.stream().forEach(encounter -> {
+            updateEncounterWithVisitSchedule(encounter, visitSchedule);
+            encounterRepository.save(encounter);
+        });
+    }
+
+    public void updateEncounterWithVisitSchedule(Encounter encounter, VisitSchedule visitSchedule) {
+        encounter.setEarliestVisitDateTime(visitSchedule.getEarliestDate());
+        encounter.setMaxVisitDateTime(visitSchedule.getMaxDate());
+        encounter.setName(visitSchedule.getName());
+    }
+
+    public Encounter createEmptyEncounter(Individual individual, EncounterType encounterType) {
+        Encounter encounter = new Encounter();
+        encounter.setEncounterType(encounterType);
+        encounter.setIndividual(individual);
+        encounter.setEncounterDateTime(null);
+        encounter.setUuid(UUID.randomUUID().toString());
+        encounter.setVoided(false);
+        encounter.setObservations(new ObservationCollection());
+        encounter.setCancelObservations(new ObservationCollection());
+        return encounter;
     }
 }

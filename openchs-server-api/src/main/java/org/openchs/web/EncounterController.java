@@ -156,6 +156,7 @@ public class EncounterController extends AbstractController<Encounter> implement
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         encounterRepository.save(encounter);
+        encounterService.saveVisitSchedules(individual.getUuid(), request.getVisitSchedules(), request.getUuid());
         logger.info(String.format("Saved encounter with uuid %s", request.getUuid()));
     }
 
