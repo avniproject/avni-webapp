@@ -20,6 +20,7 @@ import org.openchs.web.request.rules.constructWrappers.IndividualConstructionSer
 import org.openchs.web.request.rules.constructWrappers.ObservationConstructionService;
 import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstructionService;
 import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
+import org.openchs.web.request.rules.request.IndividualRequestEntity;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
 import org.openchs.web.request.rules.response.RuleError;
@@ -191,6 +192,22 @@ public class RuleService {
         encounterContractWrapper.setRule(rule);
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Encounter",requestEntityWrapper.getEncounterRequestEntity().getUuid());
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper, ruleFailureLog);
+        return ruleResponseEntity;
+    }
+
+    public RuleResponseEntity visitScheduleRuleIndividualWorkFlow(RequestEntityWrapper requestEntityWrapper){
+        RuleRequestEntity rule = getRuleRequestEntityWithVisitScheduleRuleCode(requestEntityWrapper);
+        String ruleType = rule.getRuleType().toLowerCase();
+        IndividualRequestEntity individualRequestEntity = requestEntityWrapper.getIndividualRequestEntity();
+        IndividualContractWrapper individualContractWrapper = individualConstructionService.constructIndividualContract(individualRequestEntity);
+        individualContractWrapper.setRule(rule);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(
+                requestEntityWrapper,
+                "Web",
+                "Rules : Individual",
+                individualRequestEntity.getUuid()
+        );
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.INDIVIDUAL_RULE.getRuleName(),individualContractWrapper, ruleFailureLog);
         return ruleResponseEntity;
     }
 

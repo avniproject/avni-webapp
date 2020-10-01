@@ -1,10 +1,13 @@
 package org.openchs.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.LocalDate;
+import org.openchs.dao.GenderRepository;
+import org.openchs.domain.Gender;
 import org.openchs.web.request.GenderContract;
 import org.openchs.web.request.ObservationContract;
 import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.SubjectTypeContract;
+import org.openchs.web.request.rules.request.IndividualRequestEntity;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
 
 import java.util.List;

@@ -107,6 +107,9 @@ public class RuleController {
                 case ENCOUNTER:
                     ruleResponseEntity = ruleService.visitScheduleRuleEncounterWorkFlow(requestEntityWrapper);
                     break;
+                case INDIVIDUAL:
+                    ruleResponseEntity = ruleService.visitScheduleRuleIndividualWorkFlow(requestEntityWrapper);
+                    break;
             }
         }
         if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {

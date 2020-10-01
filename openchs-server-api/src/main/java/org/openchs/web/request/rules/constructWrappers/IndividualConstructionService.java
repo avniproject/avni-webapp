@@ -45,6 +45,7 @@ public class IndividualConstructionService {
         individualContract.setUuid(individualRequestEntity.getUuid());
         individualContract.setFirstName(individualRequestEntity.getFirstName());
         individualContract.setLastName(individualRequestEntity.getLastName());
+        individualContract.setRegistrationDate(individualRequestEntity.getRegistrationDate());
         individualContract.setDateOfBirth(individualRequestEntity.getDateOfBirth());
         if(individualRequestEntity.getGenderUUID() != null){
             individualContract.setGender(constructGenderContract(individualRequestEntity.getGenderUUID()));
