@@ -13,6 +13,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +42,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 
-    Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeLessThanEqual(DateTime lastModifiedDateTime, AddressLevelType addressLevelType, Pageable pageable);
+    Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
 
     @Override
     default Page<AddressLevel> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {

@@ -6,13 +6,12 @@ import org.codehaus.jettison.json.JSONObject;
 import org.openchs.application.OrganisationConfigSettingKeys;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
-import org.openchs.domain.JsonObject;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.OrganisationConfig;
+import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.web.request.OrganisationConfigRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +25,17 @@ public class OrganisationConfigService {
     private final OrganisationConfigRepository organisationConfigRepository;
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
+    private final LocationHierarchyService locationHierarchyService;
 
     @Autowired
-    public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository, ProjectionFactory projectionFactory, ConceptRepository conceptRepository) {
+    public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository,
+                                     ProjectionFactory projectionFactory,
+                                     ConceptRepository conceptRepository,
+                                     @Lazy LocationHierarchyService locationHierarchyService) {
         this.organisationConfigRepository = organisationConfigRepository;
         this.projectionFactory = projectionFactory;
         this.conceptRepository = conceptRepository;
+        this.locationHierarchyService = locationHierarchyService;
     }
 
     @Transactional
@@ -75,15 +79,18 @@ public class OrganisationConfigService {
         return organisationSettingsConceptListMap;
     }
 
-    public OrganisationConfig updateLowestAddressLevelTypeSettingIfRequired(Double lowestAddressLevelType) {
+    public JsonObject getOrganisationSettingsJson(Long organisationId) {
+        return organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
+    }
+
+    @Transactional
+    public OrganisationConfig updateLowestAddressLevelTypeSetting(HashSet<String> locationConceptUuids) {
         try {
-            LinkedHashMap<String, Object> organisationSettings = getOrganisationSettings(UserContextHolder.getUserContext().getOrganisationId());
-            Double currentLowestAddressLevelType = Double.parseDouble(String.valueOf(organisationSettings.get(OrganisationConfigSettingKeys.lowestAddressLevelType)));
-            if (lowestAddressLevelType < currentLowestAddressLevelType) {
-                JsonObject settings = new JsonObject();
-                settings.put(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType), lowestAddressLevelType);
-                return updateOrganisationSettings(settings);
-            }
+            JsonObject organisationSettings = getOrganisationSettingsJson(UserContextHolder.getUserContext().getOrganisationId());
+
+            JsonObject settings = new JsonObject();
+            settings.put(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType), locationHierarchyService.determineAddressHierarchiesToBeSaved(organisationSettings, locationConceptUuids));
+            return updateOrganisationSettings(settings);
         } catch (Exception exception) {
             exception.printStackTrace();
         }

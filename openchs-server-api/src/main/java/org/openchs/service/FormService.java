@@ -11,9 +11,9 @@ import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormElementGroupContract;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.InvalidObjectException;
+import java.util.HashSet;
 
 @Service
 public class FormService {
@@ -59,24 +59,17 @@ public class FormService {
         return form;
     }
 
-    public void updateLowestAddressLevelTypeIfRequired(FormContract formRequest) throws InvalidObjectException {
-        Double lowestAddressLevelType = null;
+    public void checkIfLocationConceptsHaveBeenUsed(FormContract formRequest) {
+        HashSet<String> locationConceptUuids = new HashSet<>();
         for (FormElementGroupContract formElementGroup : formRequest.getFormElementGroups()) {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 if (formElement.getConcept().getDataType() != null && formElement.getConcept().getDataType().equals(String.valueOf(ConceptDataType.Location))) {
-                    try {
-                        double elementLowestAddressLevelType = Double.parseDouble(formElement.getConcept().getKeyValues().get(KeyType.lowestAddressLevelType).getValue().toString());
-                        if (lowestAddressLevelType == null || lowestAddressLevelType > elementLowestAddressLevelType) {
-                            lowestAddressLevelType = elementLowestAddressLevelType;
-                        }
-                    } catch (Exception e) {
-                        throw new InvalidObjectException("Elements with type Location require a lowestAddressLevelType keyvalue attribute to be present on the Concept");
-                    }
+                    locationConceptUuids.add(formElement.getConcept().getKeyValues().getKeyValue(KeyType.lowestAddressLevelType).toString());
                 }
             }
         }
-        if (lowestAddressLevelType != null) {
-            organisationConfigService.updateLowestAddressLevelTypeSettingIfRequired(lowestAddressLevelType);
+        if (!locationConceptUuids.isEmpty()) {
+            organisationConfigService.updateLowestAddressLevelTypeSetting(locationConceptUuids);
         }
     }
 }

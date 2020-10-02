@@ -1,14 +1,11 @@
 package org.openchs.web;
 
-import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
-import org.openchs.application.OrganisationConfigSettingKeys;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
-import org.openchs.framework.security.UserContextHolder;
-import org.openchs.service.LocationService;
+import org.openchs.service.LocationHierarchyService;
 import org.openchs.service.OrganisationConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +17,21 @@ import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 public class LocationHierarchyController implements RestControllerResourceProcessor<AddressLevel> {
 
     private final LocationRepository locationRepository;
     private final Logger logger;
-    private final LocationService locationService;
-    private final OrganisationConfigService organisationConfigService;
+    private final LocationHierarchyService locationHierarchyService;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
 
     @Autowired
-    public LocationHierarchyController(LocationRepository locationRepository, LocationService locationService, OrganisationConfigService organisationConfigService, AddressLevelTypeRepository addressLevelTypeRepository) {
+    public LocationHierarchyController(LocationRepository locationRepository, LocationHierarchyService locationHierarchyService, OrganisationConfigService organisationConfigService, AddressLevelTypeRepository addressLevelTypeRepository) {
         this.locationRepository = locationRepository;
-        this.locationService = locationService;
-        this.organisationConfigService = organisationConfigService;
+        this.locationHierarchyService = locationHierarchyService;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -45,18 +43,16 @@ public class LocationHierarchyController implements RestControllerResourceProces
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             Pageable pageable) {
         try {
-            JSONObject jsonObj = new JSONObject(organisationConfigService.getOrganisationSettings(UserContextHolder.getUserContext().getOrganisationId())
-                    .get("organisationConfig").toString());
-
-            String lowestLevel = jsonObj.getString(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType));
-            Double lowestAddressLevelType = Double.parseDouble(lowestLevel);
-
-            AddressLevelType addressLevelType = addressLevelTypeRepository.findByLevel(lowestAddressLevelType);
-
-            return wrap(locationRepository.findByAuditLastModifiedDateTimeAfterAndTypeLessThanEqual(lastModifiedDateTime, addressLevelType, pageable));
+            ArrayList<Long> addressLevelTypeIds = (ArrayList<Long>) locationHierarchyService.getLowestAddressLevelTypeHierarchiesForOrganisation();
+            if (addressLevelTypeIds != null) {
+                List<AddressLevelType> addressLevelTypes = addressLevelTypeRepository.findAllByIdIn(addressLevelTypeIds);
+                return wrap(locationRepository.findByAuditLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes, pageable));
+            }
         } catch (Exception exception) {
+            exception.printStackTrace();
             logger.error(exception.getMessage());
             return null;
         }
+        return null;
     }
 }
