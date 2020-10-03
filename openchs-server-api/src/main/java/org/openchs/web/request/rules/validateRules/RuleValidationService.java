@@ -56,10 +56,10 @@ public class RuleValidationService {
     private DecisionResponse filterDecisionValuesForCodedConcept(DecisionResponse decision, RuleFailureLog ruleFailureLog) {
         Concept concept = conceptRepository.findByName(decision.getName());
         if (concept.getDataType().equals(ConceptDataType.Coded.name())) {
-            List<String> values = (List<String>) decision.getValue();
-            List<String> filteredValues = values
+            List<Object> values = (List<Object>) decision.getValue();
+            List<Object> filteredValues = values
                     .stream()
-                    .filter(conceptName -> checkConceptForRule(conceptName, ruleFailureLog))
+                    .filter(conceptName -> checkConceptForRule(conceptName.toString(), ruleFailureLog))
                     .collect(Collectors.toList());
             decision.setValue(filteredValues.isEmpty() ? null : filteredValues);
         }

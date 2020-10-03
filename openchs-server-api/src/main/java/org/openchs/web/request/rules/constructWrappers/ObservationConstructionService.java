@@ -61,9 +61,9 @@ public class ObservationConstructionService {
         Concept concept = conceptRepository.findByName(decision.getName());
         observationContract.setConcept(ConceptContract.create(concept));
         if (concept.getDataType().equals(ConceptDataType.Coded.name())) {
-            List<String> decisionValues = (List<String>) decision.getValue();
+            List<Object> decisionValues = (List<Object>) decision.getValue();
             List<ConceptContract> answerConceptList = decisionValues.stream().map(value -> {
-                ConceptContract contract = generateConceptContract(value);
+                ConceptContract contract = generateConceptContract(value.toString());
                 contract.setAbnormal(contract.isAbnormal());
                 return contract;
             }).collect(Collectors.toList());
