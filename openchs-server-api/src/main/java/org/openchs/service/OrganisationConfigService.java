@@ -3,16 +3,18 @@ package org.openchs.service;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.openchs.application.OrganisationConfigSettingKeys;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
-import org.openchs.domain.JsonObject;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.OrganisationConfig;
+import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.web.request.OrganisationConfigRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,13 +25,19 @@ public class OrganisationConfigService {
     private final OrganisationConfigRepository organisationConfigRepository;
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
+    private final LocationHierarchyService locationHierarchyService;
 
     @Autowired
-    public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository, ProjectionFactory projectionFactory,ConceptRepository conceptRepository) {
+    public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository,
+                                     ProjectionFactory projectionFactory,
+                                     ConceptRepository conceptRepository,
+                                     @Lazy LocationHierarchyService locationHierarchyService) {
         this.organisationConfigRepository = organisationConfigRepository;
         this.projectionFactory = projectionFactory;
-        this.conceptRepository=conceptRepository;
+        this.conceptRepository = conceptRepository;
+        this.locationHierarchyService = locationHierarchyService;
     }
+
     @Transactional
     public OrganisationConfig saveOrganisationConfig(OrganisationConfigRequest request, Organisation organisation) {
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
@@ -44,25 +52,80 @@ public class OrganisationConfigService {
         organisationConfigRepository.save(organisationConfig);
         return organisationConfig;
     }
-    public LinkedHashMap<String,Object> getOrganisationSettings(Long organisationId) throws JSONException {
+
+    public OrganisationConfig getOrganisationConfig(Organisation organisation) {
+        return organisationConfigRepository.findByOrganisationId(organisation.getId());
+    }
+
+    public LinkedHashMap<String, Object> getOrganisationSettings(Long organisationId) throws JSONException {
         JsonObject jsonObject = organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
-        LinkedHashMap<String,Object> organisationSettingsConceptListMap = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> organisationSettingsConceptListMap = new LinkedHashMap<>();
         List<String> conceptUuidList = new ArrayList<>();
-        JSONObject jsonObj=new JSONObject(jsonObject.toString());
-        JSONArray jsonArray=  jsonObj.getJSONArray("searchFilters");
-        String uuid=null;
-        for(int i=0;i<jsonArray.length();i++) {
-            if(jsonArray.getJSONObject(i).has("conceptUUID")) {
+        JSONObject jsonObj = new JSONObject(jsonObject.toString());
+        JSONArray jsonArray = jsonObj.getJSONArray("searchFilters");
+        String uuid = null;
+        for (int i = 0; i < jsonArray.length(); i++) {
+            if (jsonArray.getJSONObject(i).has("conceptUUID")) {
                 uuid = jsonArray.getJSONObject(i).getString("conceptUUID");
                 if (null != uuid && !"".equals(uuid.trim()))
                     conceptUuidList.add(uuid.trim());
             }
         }
-        List<ConceptProjection> conceptList= conceptRepository.getAllConceptByUuidIn(conceptUuidList).stream()
-                    .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
-                    .collect(Collectors.toList());
+        List<ConceptProjection> conceptList = conceptRepository.getAllConceptByUuidIn(conceptUuidList).stream()
+                .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
+                .collect(Collectors.toList());
         organisationSettingsConceptListMap.put("organisationConfig", jsonObject);
         organisationSettingsConceptListMap.put("conceptList", conceptList);
         return organisationSettingsConceptListMap;
+    }
+
+    public JsonObject getOrganisationSettingsJson(Long organisationId) {
+        return organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
+    }
+
+    @Transactional
+    public OrganisationConfig updateLowestAddressLevelTypeSetting(HashSet<String> locationConceptUuids) {
+        try {
+            JsonObject organisationSettings = getOrganisationSettingsJson(UserContextHolder.getUserContext().getOrganisationId());
+
+            JsonObject settings = new JsonObject();
+            settings.put(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType), locationHierarchyService.determineAddressHierarchiesToBeSaved(organisationSettings, locationConceptUuids));
+            return updateOrganisationSettings(settings);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    @Transactional
+    public OrganisationConfig updateOrganisationSettings(JsonObject settings) {
+        long organisationId = UserContextHolder.getUserContext().getOrganisationId();
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
+        if (organisationConfig == null) {
+            organisationConfig = new OrganisationConfig();
+        }
+        organisationConfig.setOrganisationId(organisationId);
+        organisationConfig.setUuid(UUID.randomUUID().toString());
+        organisationConfig.updateLastModifiedDateTime();
+
+        organisationConfig.setSettings(updateOrganisationConfigSettings(settings, organisationConfig.getSettings()));
+
+        return organisationConfigRepository.save(organisationConfig);
+    }
+
+    public JsonObject updateOrganisationConfigSettings(JsonObject newSettings, JsonObject currentSettings) {
+        newSettings.keySet().forEach(key -> currentSettings.put(key, newSettings.get(key)));
+        return currentSettings;
+    }
+
+    @Transactional
+    public OrganisationConfig updateOrganisationConfig(OrganisationConfigRequest request, OrganisationConfig organisationConfig) {
+
+        if (request.getWorklistUpdationRule() != null)
+            organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
+        if (request.getSettings() != null)
+            organisationConfig.setSettings(updateOrganisationConfigSettings(request.getSettings(), organisationConfig.getSettings()));
+
+        return organisationConfigRepository.save(organisationConfig);
     }
 }

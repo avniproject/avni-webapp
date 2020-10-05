@@ -3,6 +3,7 @@ package org.openchs.service;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.openchs.application.FormElement;
+import org.openchs.application.KeyType;
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;

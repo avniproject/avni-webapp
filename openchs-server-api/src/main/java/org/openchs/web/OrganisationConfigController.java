@@ -33,5 +33,23 @@ public class OrganisationConfigController implements RestControllerResourceProce
         return new ResponseEntity<>(organisationConfig, HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/organisationConfig", method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    public ResponseEntity update(@RequestBody OrganisationConfigRequest request) {
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        OrganisationConfig organisationConfig = organisationConfigService.getOrganisationConfig(organisation);
+        if (organisationConfig == null ) {
+            return save(request);
+        } else {
+            try {
+                organisationConfigService.updateOrganisationConfig(request, organisationConfig);
+                return new ResponseEntity<>(organisationConfig, HttpStatus.OK);
+            } catch(Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
+    }
 
 }

@@ -7,6 +7,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -19,9 +21,15 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevelType> findByIdIn(@Param("ids") Long[] ids);
 
+    List<AddressLevelType> findAllByIdIn(Collection<Long> id);
+
     @Query("select a.name from AddressLevelType a where a.isVoided = false")
     List<String> getAllNames();
 
     @Query(value = "select * from address_level_type where id not in (select distinct parent_id from address_level_type where parent_id is not null) and is_voided = false", nativeQuery = true)
     List<AddressLevelType> getAllLowestAddressLevelTypes();
+
+    List<AddressLevelType> findByUuidIn(Collection<@NotNull String> uuid);
+
+    AddressLevelType findByParent(AddressLevelType parent);
 }
