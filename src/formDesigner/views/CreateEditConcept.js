@@ -6,6 +6,7 @@ import http from "common/utils/httpClient";
 import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
+import { LocationConcept } from "../components/LocationConcept";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -60,6 +61,10 @@ class CreateEditConcept extends Component {
       error: {},
       defaultSnackbarStatus: true,
       keyValues: [],
+      addressLevelTypes: [],
+      chosenLowestAddressLevelType: "",
+      chosenHighestAddressLevelType: "",
+      isLocationWithinCatchment: false,
       redirectShow: false,
       redirectOnDelete: false,
       active: false
@@ -112,6 +117,15 @@ class CreateEditConcept extends Component {
             creationDateTime: response.data.createdDateTime,
             lastModifiedDateTime: response.data.lastModifiedDateTime,
             keyValues: response.data.keyValues,
+            chosenLowestAddressLevelType: response.data.keyValues
+              .filter(keyValue => keyValue.key === "lowestAddressLevelTypeUUID")
+              .map(keyValue => keyValue.value),
+            chosenHighestAddressLevelType: response.data.keyValues
+              .filter(keyValue => keyValue.key === "highestAddressLevelTypeUUID")
+              .map(keyValue => keyValue.value),
+            isLocationWithinCatchment: response.data.keyValues
+              .filter(keyValue => keyValue.key === "isWithinCatchment")
+              .map(keyValue => keyValue.value),
             answers
           });
         })
@@ -119,6 +133,25 @@ class CreateEditConcept extends Component {
           console.log(error);
         });
     }
+    http
+      .get("/addressLevelType/?page=0&size=10&sort=level%2CDESC")
+      .then(response => {
+        if (response.status === 200) {
+          const addressLevelTypes = response.data.content.map(addressLevelType => ({
+            label: addressLevelType.name,
+            value: addressLevelType.uuid
+          }));
+          this.setState({
+            ...this.state,
+            addressLevelTypes
+          });
+        } else {
+          console.error(`Response code for /addressLevelType call: ${response.status}`);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
@@ -462,6 +495,17 @@ class CreateEditConcept extends Component {
     const keyValues = this.state.keyValues;
     keyValues[index] = this.castValueToBooleanOrInt(keyValue);
     this.setState({ ...this.state, keyValues });
+    if (this.state.dataType === "Location") {
+      if (keyValue.key === "lowestAddressLevelTypeUUID") {
+        this.setState({ ...this.state, chosenLowestAddressLevelType: keyValue.value });
+      }
+      if (keyValue.key === "highestAddressLevelTypeUUID") {
+        this.setState({ ...this.state, chosenHighestAddressLevelType: keyValue.value });
+      }
+      if (keyValue.key === "isWithinCatchment") {
+        this.setState({ ...this.state, isLocationWithinCatchment: keyValue.value });
+      }
+    }
   };
 
   onAddNewKeyValue = () => {
@@ -543,6 +587,37 @@ class CreateEditConcept extends Component {
         </DragDropContext>
       );
     }
+
+    if (this.state.dataType === "Location") {
+      dataType = (
+        <LocationConcept
+          options={this.state.addressLevelTypes.map(addressLevelType => (
+            <MenuItem value={addressLevelType.value} key={addressLevelType.value}>
+              {addressLevelType.label}
+            </MenuItem>
+          ))}
+          onKeyValueChange={this.onKeyValueChange}
+          lowestAddressLevelType={this.state.chosenLowestAddressLevelType}
+          highestAddressLevelType={this.state.chosenHighestAddressLevelType}
+          isWithinCatchment={
+            this.state.isLocationWithinCatchment === "true" ||
+            this.state.isLocationWithinCatchment === true
+          }
+          keyValues={this.state.keyValues}
+        />
+      );
+    } else {
+      this.setState();
+    }
+
+    // if (this.state.dataType === "Subject") {
+    //   dataType = (
+    //     <SubjectConcept
+    //       onNumericConceptAttributeAssignment={this.onNumericConceptAttributeAssignment}
+    //       numericDataTypeAttributes={this.state}
+    //     />
+    //   );
+    // }
 
     return (
       <Box boxShadow={2} p={2} bgcolor="background.paper">
