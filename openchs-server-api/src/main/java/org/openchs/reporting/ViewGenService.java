@@ -255,15 +255,11 @@ public class ViewGenService {
             String conceptName = concept.getName();
             switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
-                    if (formElement.isSingleSelect()) {
-                        return String.format("single_select_coded(%s->>'%s')::TEXT as \"%s\"",
-                                obsColumn, conceptUUID, conceptName);
-                    }
                     if (spreadMultiSelectObs) {
                         return spreadMultiSelectSQL(obsColumn, concept);
                     }
-                    return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s\"",
-                            obsColumn, conceptUUID, conceptName);
+                    return String.format("get_coded_string_value(%s->'%s', concepts.map)::TEXT as \"%s\"",
+                                obsColumn, conceptUUID, conceptName);
                 }
                 case Date:
                 case DateTime: {

@@ -1,4 +1,5 @@
 --[Data Extract Report]
+with concepts as (select hstore(array_agg(uuid), array_agg(name)) map from concept)
 SELECT programEnrolment.id                                                                    "program_enrolment_id",
        oet.name                                                                               "encounter_type_name",
        oet.encounter_type_id                                                                  "encounter_type_id",
@@ -15,6 +16,7 @@ SELECT programEnrolment.id                                                      
        programEncounter.cancel_location                                                       "cancel_location",
        ${programEncounterCancellation}
 FROM program_encounter programEncounter
+         CROSS JOIN concepts
          LEFT OUTER JOIN operational_encounter_type oet on programEncounter.encounter_type_id = oet.encounter_type_id
          LEFT OUTER JOIN program_enrolment programEnrolment
                          ON programEncounter.program_enrolment_id = programEnrolment.id
