@@ -10,6 +10,7 @@ import org.openchs.service.OrganisationConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.PagedResources;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -53,6 +55,6 @@ public class LocationHierarchyController implements RestControllerResourceProces
             logger.error(exception.getMessage());
             return null;
         }
-        return null;
+        return wrap(new PageImpl<>(Collections.emptyList()));
     }
 }

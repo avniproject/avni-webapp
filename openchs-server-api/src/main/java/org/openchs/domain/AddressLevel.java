@@ -82,6 +82,14 @@ public class AddressLevel extends OrganisationAwareEntity {
         return parent != null ? parent.getId() : null;
     }
 
+    public String  getParentUuid() {
+        return parent == null ? null : parent.getUuid();
+    }
+
+    public String getTypeUuid() {
+        return this.getType().getUuid();
+    }
+
     public void setParent(AddressLevel parent) {
         this.parent = parent;
     }
