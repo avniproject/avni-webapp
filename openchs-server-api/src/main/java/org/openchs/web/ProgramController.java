@@ -12,7 +12,7 @@ import org.openchs.service.FormMappingParameterObject;
 import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
 import org.openchs.service.ProgramService;
-import org.openchs.util.ApiException;
+import org.openchs.util.BadRequestError;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ProgramRequest;
 import org.openchs.web.request.webapp.ProgramContractWeb;
@@ -185,7 +185,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @ResponseBody
     public List<ProgramContractWeb> getEligiblePrograms(@RequestParam String subjectUuid) {
         Individual individual = individualRepository.findByUuid(subjectUuid);
-        if (individual == null) throw new ApiException("Subject %s not found", subjectUuid);
+        if (individual == null) throw new BadRequestError("Subject %s not found", subjectUuid);
         List<Program> eligiblePrograms = programService.getEligiblePrograms(individual);
         List<OperationalProgram> operationalPrograms = new ArrayList<>();
         for (Program p : eligiblePrograms) {

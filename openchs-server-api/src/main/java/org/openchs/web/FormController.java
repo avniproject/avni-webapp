@@ -13,7 +13,7 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.FormWebProjection;
 import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
-import org.openchs.util.ApiException;
+import org.openchs.util.BadRequestError;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormMappingContract;
@@ -176,7 +176,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 
     private void validateCreate(CreateUpdateFormRequest request) {
         if (formRepository.findByNameIgnoreCase(request.getName()) != null) {
-            throw new ApiException("Form with name %s already exists", request.getName());
+            throw new BadRequestError("Form with name %s already exists", request.getName());
         }
     }
 
@@ -206,11 +206,11 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     private Form validateUpdateMetadata(CreateUpdateFormRequest request, String requestUUID) {
         Form byUuid = formRepository.findByUuid(requestUUID);
         if (byUuid == null) {
-            throw new ApiException("Form with uuid %s does not exist", requestUUID);
+            throw new BadRequestError("Form with uuid %s does not exist", requestUUID);
         }
         Form byName = formRepository.findByNameIgnoreCase(request.getName());
         if (byName != null && !byName.getUuid().equals(requestUUID)) {
-            throw new ApiException("Can not update form name to %s because form by that name already exists", request.getName());
+            throw new BadRequestError("Can not update form name to %s because form by that name already exists", request.getName());
         }
         return byUuid;
     }

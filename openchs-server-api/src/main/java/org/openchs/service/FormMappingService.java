@@ -12,7 +12,7 @@ import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
-import org.openchs.util.ApiException;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.FormMappingContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -164,7 +164,7 @@ public class FormMappingService {
     private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String encounterTypeUuid) {
         if (formType.isLinkedToEncounterType() && encounterTypeUuid != null) {
             EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
-            if (encounterType == null) throw new ApiException("Encounter Type %s not found", encounterTypeUuid);
+            if (encounterType == null) throw new BadRequestError("Encounter Type %s not found", encounterTypeUuid);
             formMapping.setEncounterType(encounterType);
         }
     }
@@ -178,7 +178,7 @@ public class FormMappingService {
 
     private void setSubjectTypeIfRequired(FormMapping formMapping, String requestSubjectType) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(requestSubjectType);
-        if (subjectType == null) throw new ApiException("Subject type %s not found", requestSubjectType);
+        if (subjectType == null) throw new BadRequestError("Subject type %s not found", requestSubjectType);
         formMapping.setSubjectType(subjectType);
     }
 

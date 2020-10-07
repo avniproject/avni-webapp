@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.UUID;
 
 @Entity
@@ -78,6 +80,13 @@ public class RuleFailureLog extends OrganisationAwareEntity{
         this.source = source;
     }
 
+    private static String getStackTrace(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
+
     public static RuleFailureLog createInstance(String formUuid,String ruleType,String entityId,String entityType,String source,Exception e){
         RuleFailureLog ruleFailureLog = new RuleFailureLog();
         ruleFailureLog.setFormId(formUuid);
@@ -86,7 +95,7 @@ public class RuleFailureLog extends OrganisationAwareEntity{
         ruleFailureLog.setEntityType(entityType);
         ruleFailureLog.setSource(source);
         ruleFailureLog.setErrorMessage(e.getMessage() != null ? e.getMessage() : "");
-        ruleFailureLog.setStacktrace(e.getStackTrace().toString());
+        ruleFailureLog.setStacktrace(getStackTrace(e));
         ruleFailureLog.setUuid(UUID.randomUUID().toString());
         return ruleFailureLog;
     }

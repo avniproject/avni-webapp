@@ -4,7 +4,7 @@ import com.bugsnag.Bugsnag;
 import com.bugsnag.Report;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.util.ApiException;
+import org.openchs.util.BadRequestError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +74,7 @@ public class ErrorInterceptors extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<String> unknownException(Exception e) {
-        if (e instanceof ApiException) {
+        if (e instanceof BadRequestError) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } else if (e instanceof ResourceNotFoundException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

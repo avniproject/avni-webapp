@@ -58,7 +58,7 @@ public class Individual extends OrganisationAwareEntity {
     private Set<ProgramEnrolment> programEnrolments = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
-    private Set<Encounter> encounters;
+    private Set<Encounter> encounters = new HashSet<>();
 
     @Column
     @Type(type = "observations")

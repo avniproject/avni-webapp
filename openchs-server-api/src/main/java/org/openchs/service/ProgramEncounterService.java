@@ -8,17 +8,16 @@ import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
-import org.openchs.web.request.rules.constant.EntityEnum;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -83,21 +82,16 @@ public class ProgramEncounterService {
     public void saveVisitSchedules(String programEnrolmentUuid, List<VisitSchedule> visitSchedules, String currentProgramEncounterUuid) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUuid);
         for (VisitSchedule visitSchedule : visitSchedules) {
-            try {
-                saveVisitSchedule(programEnrolment, visitSchedule, currentProgramEncounterUuid);
-            } catch (Exception e) {
-                RuleFailureLog ruleFailureLog = RuleFailureLog.createInstance(programEnrolmentUuid, "Save : Visit Schedule Rule", programEnrolmentUuid, "Save : " + EntityEnum.PROGRAM_ENCOUNTER_ENTITY.getEntityName(), "Web", e);
-                ruleFailureLogRepository.save(ruleFailureLog);
-            }
+            saveVisitSchedule(programEnrolment, visitSchedule, currentProgramEncounterUuid);
         }
     }
 
-    public void saveVisitSchedule(ProgramEnrolment programEnrolment, VisitSchedule visitSchedule, String currentProgramEncounterUuid) throws Exception {
+    public void saveVisitSchedule(ProgramEnrolment programEnrolment, VisitSchedule visitSchedule, String currentProgramEncounterUuid) {
         List<ProgramEncounter> allScheduleEncountersByType = scheduledEncountersByType(programEnrolment, visitSchedule.getEncounterType(), currentProgramEncounterUuid);
         if (allScheduleEncountersByType.isEmpty() || "createNew".equals(visitSchedule.getVisitCreationStrategy())) {
             EncounterType encounterType = encounterTypeRepository.findByName(visitSchedule.getEncounterType());
             if (encounterType == null) {
-                throw new Exception("Next scheduled visit is for encounter type=" + visitSchedule.getName() + " that doesn't exist");
+                throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getName());
             }
             ProgramEncounter programEncounter = createEmptyProgramEncounter(programEnrolment, encounterType);
             allScheduleEncountersByType = Arrays.asList(programEncounter);

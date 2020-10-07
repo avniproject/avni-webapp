@@ -5,9 +5,9 @@ import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.*;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
-import org.openchs.web.request.rules.constant.EntityEnum;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -100,22 +100,16 @@ public class EncounterService {
     public void saveVisitSchedules(String individualUuid, List<VisitSchedule> visitSchedules, String currentEncounterUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
         for (VisitSchedule visitSchedule : visitSchedules) {
-            try {
-                saveVisitSchedule(individual, visitSchedule, currentEncounterUuid);
-            } catch (Exception e) {
-                //TODO: Pass proper form id below to error log
-                RuleFailureLog ruleFailureLog = RuleFailureLog.createInstance(individualUuid, "Save : Visit Schedule Rule", individualUuid, "Save : " + EntityEnum.PROGRAM_ENCOUNTER_ENTITY.getEntityName(), "Web", e);
-                ruleFailureLogRepository.save(ruleFailureLog);
-            }
+            saveVisitSchedule(individual, visitSchedule, currentEncounterUuid);
         }
     }
 
-    public void saveVisitSchedule(Individual individual, VisitSchedule visitSchedule, String currentEncounterUuid) throws Exception {
+    public void saveVisitSchedule(Individual individual, VisitSchedule visitSchedule, String currentEncounterUuid) {
         List<Encounter> allScheduleEncountersByType = scheduledEncountersByType(individual, visitSchedule.getEncounterType(), currentEncounterUuid);
         if (allScheduleEncountersByType.isEmpty() || "createNew".equals(visitSchedule.getVisitCreationStrategy())) {
             EncounterType encounterType = encounterTypeRepository.findByName(visitSchedule.getEncounterType());
             if (encounterType == null) {
-                throw new Exception("Next scheduled visit is for encounter type=" + visitSchedule.getName() + " that doesn't exist");
+                throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getName());
             }
             Encounter encounter = createEmptyEncounter(individual, encounterType);
             allScheduleEncountersByType = Arrays.asList(encounter);

@@ -5,7 +5,7 @@ import org.openchs.dao.individualRelationship.IndividualRelationGenderMappingRep
 import org.openchs.dao.individualRelationship.IndividualRelationRepository;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
-import org.openchs.util.ApiException;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.GenderContract;
 import org.openchs.web.request.IndividualRelationContract;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +123,7 @@ public class IndividualRelationService {
     private void assertNoExistingRelation(String name) {
         IndividualRelation existingRelation = individualRelationRepository.findByName(name);
         if (existingRelation != null) {
-            throw new ApiException(String.format("Relation %s already exists", name));
+            throw new BadRequestError(String.format("Relation %s already exists", name));
         }
     }
 }
