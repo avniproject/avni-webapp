@@ -29,7 +29,9 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
           });
         } catch (e) {
           console.error(
-            `Rule-Failure for formElement name: ${formElement.name} Error message : ${e}`
+            `Rule-Failure for formElement name: ${formElement.name} Error message: ${
+              e.message
+            } stack: ${e.stack}`
           );
         }
       })
