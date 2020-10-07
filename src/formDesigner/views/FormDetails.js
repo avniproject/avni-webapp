@@ -955,11 +955,7 @@ class FormDetails extends Component {
         }
       })
       .catch(error => {
-        if (error.response.status === 500) {
-          formElement.inlineConceptErrorMessage["inlineConceptError"] = "Concept already exist";
-        } else {
-          formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
-        }
+        formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
 
         this.setState({
           form: clonedForm
