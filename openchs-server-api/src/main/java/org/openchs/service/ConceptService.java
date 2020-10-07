@@ -1,7 +1,5 @@
 package org.openchs.service;
 
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
 import org.openchs.application.FormElement;
 import org.openchs.application.KeyType;
 import org.openchs.dao.ConceptAnswerRepository;
@@ -11,6 +9,7 @@ import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.BadRequestError;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
@@ -164,7 +163,7 @@ public class ConceptService {
     private Concept saveOrUpdate(ConceptContract conceptRequest) throws AnswerConceptNotFoundException {
         if (conceptRequest == null) return null;
         if (conceptExistsWithSameNameAndDifferentUUID(conceptRequest)) {
-            throw new RuntimeException(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
+            throw new BadRequestError(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
         }
         logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
 
