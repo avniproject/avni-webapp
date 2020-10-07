@@ -19,7 +19,7 @@ import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 import { Audit } from "./Audit";
 
 const useStyles = makeStyles({
-  table: {
+  tableContainer: {
     minWidth: 650
   }
 });

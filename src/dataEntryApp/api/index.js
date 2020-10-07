@@ -99,5 +99,7 @@ export default {
   fetchProgramEnrolment: enrolmentUuid =>
     httpClient.fetchJson(`/web/programEnrolment/${enrolmentUuid}`).then(response => {
       return response.json;
-    })
+    }),
+  fetchVisitSchedules: requestBody =>
+    httpClient.post("/web/visitrule", requestBody).then(response => response.data.visitSchedules)
 };

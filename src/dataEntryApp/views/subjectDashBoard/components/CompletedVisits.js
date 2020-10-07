@@ -21,7 +21,7 @@ const useStyle = makeStyles(theme => ({
     marginTop: theme.spacing(3),
     overflowX: "auto"
   },
-  table: {
+  tableContainer: {
     minWidth: 1000,
     padding: "5px"
   },

@@ -12,7 +12,7 @@ import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
 import { selectFormMappingForProgramEncounter } from "../../sagas/programEncounterSelector";
 import { connect } from "react-redux";
 import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer";
-import Observations from "../../../common/components/Observations";
+import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({

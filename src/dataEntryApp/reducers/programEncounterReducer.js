@@ -1,3 +1,5 @@
+import { fetchVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+
 const prefix = "app/dataEntry/reducer/programEncounter/";
 
 export const types = {
@@ -111,6 +113,23 @@ export const editCancelProgramEncounter = programEncounterUuid => ({
   type: types.EDIT_CANCEL_PROGRAM_ENCOUNTER,
   programEncounterUuid
 });
+
+export const fetchProgramEncounterVisitSchedules = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const requestEntity = state.dataEntry.programEncounterReducer.programEncounter.toResource;
+    dispatch(
+      fetchVisitSchedules({
+        programEncounterRequestEntity: requestEntity,
+        rule: {
+          formUuid: state.dataEntry.programEncounterReducer.programEncounterForm.uuid,
+          ruleType: "VisitSchedule",
+          workFlowType: "ProgramEncounter"
+        }
+      })
+    );
+  };
+};
 
 const initialState = {
   saved: false,

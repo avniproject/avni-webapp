@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import Observations from "common/components/Observations";
+import Observations from "dataEntryApp/components/Observations";
 import Button from "@material-ui/core/Button";
 import { InternalLink, LineBreak } from "../../../../common/components/utils";
 import moment from "moment/moment";

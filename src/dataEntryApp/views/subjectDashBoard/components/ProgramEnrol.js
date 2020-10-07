@@ -9,8 +9,9 @@ import {
   updateProgramEnrolment,
   setProgramEnrolment,
   setInitialState,
-  setEnrolDateValidation
-} from "../../../reducers/programEnrolReducer";
+  setEnrolDateValidation,
+  fetchEnrolmentVisitSchedules
+} from "dataEntryApp/reducers/programEnrolReducer";
 import { isNil, isEmpty, first } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -95,7 +96,10 @@ const ProgramEnrol = ({
               programEnrolment &&
               programEnrolment.enrolmentDateTime &&
               formType === "ProgramEnrolment" ? (
-                <ProgramEnrolmentForm formType={formType}>
+                <ProgramEnrolmentForm
+                  formType={formType}
+                  fetchVisitSchedules={fetchEnrolmentVisitSchedules}
+                >
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Typography
                       variant="body1"

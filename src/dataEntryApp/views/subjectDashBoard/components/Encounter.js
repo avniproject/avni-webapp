@@ -15,8 +15,9 @@ import {
   resetState,
   createEncounter,
   createEncounterForScheduled,
-  editEncounter
-} from "../../../reducers/encounterReducer";
+  editEncounter,
+  fetchEncounterVisitSchedules
+} from "dataEntryApp/reducers/encounterReducer";
 import encounterService from "../../../services/EncounterService";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -56,7 +57,7 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
-              <EncounterForm>
+              <EncounterForm fetchVisitSchedules={fetchEncounterVisitSchedules}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography
                     variant="body1"

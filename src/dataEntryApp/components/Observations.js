@@ -5,20 +5,17 @@ import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { Observation } from "avni-models";
-import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService";
+import { ConceptService, i18n } from "../services/ConceptService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
 import { isEmpty, isNil } from "lodash";
+import useCommonStyles from "dataEntryApp/styles/commonStyles";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
     paddingBottom: "0px",
     paddingTop: "0px"
-  },
-  table: {
-    borderRadius: "3px",
-    boxShadow: "0px 0px 1px"
   },
   abnormalColor: {
     color: "#ff4f33"
@@ -34,6 +31,7 @@ const Observations = ({ observations, additionalRows, form, customKey }) => {
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
+  const commonStyles = useCommonStyles();
 
   const renderObs = (value, isAbnormal) => {
     return isAbnormal ? (
@@ -80,7 +78,7 @@ const Observations = ({ observations, additionalRows, form, customKey }) => {
   return (
     <div>
       <Fragment>
-        <Table className={classes.table} size="small" aria-label="a dense table">
+        <Table className={commonStyles.tableContainer} size="small" aria-label="a dense table">
           <TableBody>{rows}</TableBody>
         </Table>
       </Fragment>

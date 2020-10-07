@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { mapObservation } from "../../../../common/subjectModelMapper";
-import Observations from "../../../../common/components/Observations";
+import Observations from "dataEntryApp/components/Observations";
 import { useTranslation } from "react-i18next";
 import moment from "moment/moment";
 import {
@@ -17,8 +17,8 @@ import {
   stableSort,
   getComparator
 } from "../../../../dataEntryApp/components/TableHeaderSorting";
-import { TablePaginationActions } from "../../../../dataEntryApp/components/TablePagination";
-import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { TablePaginationActions } from "dataEntryApp/components/TablePagination";
+import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -26,7 +26,7 @@ const useStyle = makeStyles(theme => ({
     marginTop: theme.spacing(3),
     overflowX: "auto"
   },
-  table: {
+  tableContainer: {
     minWidth: 1000,
     padding: "5px"
   },
@@ -228,7 +228,7 @@ const CompletedVisitsTable = ({
     <div>
       <CustomizedBackdrop load={load} />
       <Table
-        className={classes.table}
+        className={classes.tableContainer}
         aria-labelledby="tableTitle"
         size={dense ? "small" : "medium"}
         aria-label="enhanced table"

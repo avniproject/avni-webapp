@@ -88,7 +88,7 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     padding: 25
   },
-  table: {
+  tableContainer: {
     marginTop: "10px"
   },
   tableView: {
@@ -212,7 +212,7 @@ const AddRelative = ({
                     <div className={classes.tableView}>
                       <Grid alignItems="center" container spacing={1}>
                         <Grid item xs={6}>
-                          <Table aria-label="caption table" className={classes.table}>
+                          <Table aria-label="caption table" className={classes.tableContainer}>
                             <TableHead>
                               <TableRow className={classes.tableHeader}>
                                 <TableCell className={classes.tableCell} style={{ width: "25%" }}>

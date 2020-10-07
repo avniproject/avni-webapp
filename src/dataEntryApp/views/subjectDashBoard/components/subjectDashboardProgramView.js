@@ -8,7 +8,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
-import Observations from "../../../../common/components/Observations";
+import Observations from "dataEntryApp/components/Observations";
 import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
@@ -107,7 +107,7 @@ const useStyles = makeStyles(theme => ({
       color: "#555555"
     }
   },
-  table: {
+  tableContainer: {
     border: "1px solid rgba(224, 224, 224, 1)"
   },
   abnormalColor: {

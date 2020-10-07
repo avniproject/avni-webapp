@@ -29,6 +29,7 @@ import { mapProfile } from "../../common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
+import { selectVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
 
 export default function*() {
   yield all(
@@ -150,7 +151,9 @@ export function* saveProgramEncounterWatcher() {
 export function* saveProgramEncounterWorker() {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
+  const visitSchedules = yield select(selectVisitSchedules);
   let resource = programEncounter.toResource;
+  resource.visitSchedules = visitSchedules;
   yield call(api.saveProgramEncouter, resource);
   yield put(saveProgramEncounterComplete());
 }

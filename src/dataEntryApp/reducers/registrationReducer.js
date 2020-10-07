@@ -1,3 +1,5 @@
+import { fetchVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+
 const prefix = "app/dataEntry/reducer/registration/";
 
 export const types = {
@@ -88,6 +90,23 @@ export const setValidationResults = validationResults => ({
 export const getValidationResults = () => ({
   type: types.GET_VALIDATION_RESULTS
 });
+
+export const fetchRegistrationVisitSchedules = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const individualRequestEntity = state.dataEntry.registration.subject.toResource;
+    dispatch(
+      fetchVisitSchedules({
+        individualRequestEntity,
+        rule: {
+          formUuid: state.dataEntry.registration.registrationForm.uuid,
+          ruleType: "VisitSchedule",
+          workFlowType: "Individual"
+        }
+      })
+    );
+  };
+};
 
 const initialState = {
   saved: false,

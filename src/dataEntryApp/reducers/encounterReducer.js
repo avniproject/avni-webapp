@@ -1,3 +1,5 @@
+import { fetchVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+
 const prefix = "app/dataEntry/reducer/encounter/";
 
 export const types = {
@@ -105,6 +107,23 @@ export const editCancelEncounter = encounterUuid => ({
   type: types.EDIT_CANCEL_ENCOUNTER,
   encounterUuid
 });
+
+export const fetchEncounterVisitSchedules = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const requestEntity = state.dataEntry.encounterReducer.encounter.toResource;
+    dispatch(
+      fetchVisitSchedules({
+        encounterRequestEntity: requestEntity,
+        rule: {
+          formUuid: state.dataEntry.encounterReducer.encounterForm.uuid,
+          ruleType: "VisitSchedule",
+          workFlowType: "Encounter"
+        }
+      })
+    );
+  };
+};
 
 const initialState = {
   saved: false,

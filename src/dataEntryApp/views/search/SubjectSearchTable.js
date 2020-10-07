@@ -22,7 +22,7 @@ const useStyle = makeStyles(theme => ({
     flexShrink: 0,
     marginLeft: theme.spacing(2.5)
   },
-  table: {
+  tableContainer: {
     minWidth: 1000
   },
   searchCreateToolbar: {
@@ -154,7 +154,7 @@ export const SubjectsTable = ({
 
   return subjectsListObj ? (
     <div>
-      <Table className={classes.table} aria-label="custom pagination table">
+      <Table className={classes.tableContainer} aria-label="custom pagination table">
         <EnhancedTableHead
           headername={tableHeaderNames}
           classes={classes}

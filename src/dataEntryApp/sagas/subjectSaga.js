@@ -27,7 +27,7 @@ import {
 } from "./selectors";
 import {
   selectEnrolmentFormMappingForSubjectType,
-  selectEnrolmentSubject,
+  selectProgramEnrolment,
   selectProgram
 } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
@@ -46,6 +46,7 @@ import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
+import { selectVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
@@ -130,7 +131,9 @@ export function* dataEntryLoadRegistrationFormWatcher() {
 
 export function* saveSubjectWorker() {
   const subject = yield select(selectRegistrationSubject);
+  const visitSchedules = yield select(selectVisitSchedules);
   let resource = subject.toResource;
+  resource.visitSchedules = visitSchedules;
   yield call(api.saveSubject, resource);
   yield put(saveComplete());
 }
@@ -140,8 +143,11 @@ export function* saveSubjectWatcher() {
 }
 
 export function* saveProgramEnrolmentWorker() {
-  const programEnrolment = yield select(selectEnrolmentSubject);
+  const programEnrolment = yield select(selectProgramEnrolment);
+  const visitSchedules = yield select(selectVisitSchedules);
+
   let resource = programEnrolment.toResource;
+  resource.visitSchedules = visitSchedules;
 
   yield call(api.saveProgram, resource);
   yield put(saveProgramComplete());

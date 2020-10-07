@@ -39,5 +39,5 @@ export const selectEnrolmentFormMappingForSubjectType = (
   )(state);
 };
 
-export const selectEnrolmentSubject = state =>
+export const selectProgramEnrolment = state =>
   get(state, "dataEntry.enrolmentReducer.programEnrolment");

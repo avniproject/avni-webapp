@@ -16,6 +16,7 @@ import encounterReducer from "./encounterReducer";
 import loadReducer from "./loadReducer";
 import searchFilterReducer from "./searchFilterReducer";
 import rulesReducer from "./RulesReducer";
+import visitScheduleReducer from "./visitScheduleReducer";
 
 export default combineReducers({
   search,
@@ -34,5 +35,6 @@ export default combineReducers({
   encounterReducer,
   loadReducer,
   searchFilterReducer,
-  rulesReducer
+  rulesReducer,
+  visitScheduleReducer
 });

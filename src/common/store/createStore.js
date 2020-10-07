@@ -3,6 +3,7 @@ import createSagaMiddleware from "redux-saga";
 import { formMiddleware } from "react-admin";
 import { routerMiddleware } from "react-router-redux";
 import { createHashHistory } from "history";
+import thunkMiddleware from "redux-thunk";
 
 import { isDevEnv } from "../constants";
 import rootReducer from "../../rootApp/rootReducer";
@@ -21,6 +22,7 @@ const configureStore = initialState => {
     initialState,
     composeEnhancers(
       applyMiddleware(
+        thunkMiddleware,
         sagaMiddleware,
         formMiddleware,
         routerMiddleware(adminHistory, appDesignerHistory)

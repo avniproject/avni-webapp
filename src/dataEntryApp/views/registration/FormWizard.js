@@ -202,7 +202,8 @@ const FormWizard = ({
   filteredFormElements,
   entity,
   setFilteredFormElements,
-  history
+  history,
+  fetchVisitSchedules
 }) => {
   if (!form) return <div />;
 
@@ -389,7 +390,12 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {isOnSummaryPage ? (
-              <Summary observations={observations} additionalRows={additionalRows} form={form} />
+              <Summary
+                observations={observations}
+                additionalRows={additionalRows}
+                form={form}
+                fetchVisitSchedules={fetchVisitSchedules}
+              />
             ) : (
               <Form
                 current={currentFormElementGroup}

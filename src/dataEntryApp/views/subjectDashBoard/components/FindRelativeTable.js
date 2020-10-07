@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     marginBottom: theme.spacing(2)
   },
-  table: {
+  tableContainer: {
     minWidth: 750
   },
   visuallyHidden: {
@@ -68,7 +68,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
 
       {subjectData && subjectData.content && subjectData.content.length !== 0 ? (
         <Table
-          className={classes.table}
+          className={classes.tableContainer}
           aria-labelledby="tableTitle"
           // size={dense ? "small" : "medium"}
           aria-label="enhanced table"

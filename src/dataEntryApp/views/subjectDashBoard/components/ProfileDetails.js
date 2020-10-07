@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: "20px",
     marginBottom: "8px"
   },
-  table: {
+  tableContainer: {
     marginTop: "10px"
   },
   tableView: {
@@ -215,7 +215,7 @@ const ProfileDetails = ({
           <AccountCircle className={classes.iconStyle} />
         </Grid>
         <Grid item xs={4}>
-          <Table aria-label="caption table" className={classes.table}>
+          <Table aria-label="caption table" className={classes.tableContainer}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
                 {isEqual(profileDetails.subjectType.name, "Individual") && (

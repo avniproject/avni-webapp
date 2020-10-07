@@ -10,7 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { bold } from "ansi-colors";
 import moment from "moment/moment";
-import Observations from "../../../../common/components/Observations";
+import Observations from "dataEntryApp/components/Observations";
 import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";

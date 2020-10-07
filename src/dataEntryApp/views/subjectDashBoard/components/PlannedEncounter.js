@@ -104,8 +104,8 @@ const PlannedEncounter = ({
           <ListItem className={classes.listItem}>
             <ListItemText
               className={classes.ListItemText}
-              title={t(encounter.encounterType.name)}
-              primary={truncate(t(encounter.encounterType.name))}
+              title={t(encounter.name)}
+              primary={truncate(t(encounter.name))}
             />
           </ListItem>
           <ListItem className={classes.listItem}>

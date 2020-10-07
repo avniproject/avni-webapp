@@ -1,3 +1,5 @@
+import { fetchVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+
 const prefix = "app/dataEntry/reducer/enrol/";
 
 export const types = {
@@ -95,6 +97,23 @@ export const setEnrolDateValidation = enrolDateValidation => ({
 export const setLoaded = () => ({
   type: types.SET_LOADED
 });
+
+export const fetchEnrolmentVisitSchedules = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const requestEntity = state.dataEntry.enrolmentReducer.programEnrolment.toResource;
+    dispatch(
+      fetchVisitSchedules({
+        programEnrolmentRequestEntity: requestEntity,
+        rule: {
+          formUuid: state.dataEntry.enrolmentReducer.enrolForm.uuid,
+          ruleType: "VisitSchedule",
+          workFlowType: "ProgramEnrolment"
+        }
+      })
+    );
+  };
+};
 
 const initialState = {
   saved: false,
