@@ -27,6 +27,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
+import { SubjectConcept } from "../components/SubjectConcept";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -68,7 +69,8 @@ class CreateEditConcept extends Component {
       readOnlyKeys: [
         "isWithinCatchment",
         "lowestAddressLevelTypeUUIDs",
-        "highestAddressLevelTypeUUID"
+        "highestAddressLevelTypeUUID",
+        "subjectTypeUUID"
       ]
     };
   }
@@ -354,6 +356,15 @@ class CreateEditConcept extends Component {
           }
         }
 
+        if (this.state.dataType === "Subject") {
+          const subjectType = this.state.keyValues.find(
+            keyValue => keyValue.key === "subjectTypeUUID"
+          );
+          if (subjectType === undefined || subjectType.value === "") {
+            error["subjectTypeRequired"] = true;
+          }
+        }
+
         const emptyKeyValues = filter(
           this.state.keyValues,
           ({ key, value }) => key === "" || value === ""
@@ -617,14 +628,16 @@ class CreateEditConcept extends Component {
       );
     }
 
-    // if (this.state.dataType === "Subject") {
-    //   dataType = (
-    //     <SubjectConcept
-    //       onNumericConceptAttributeAssignment={this.onNumericConceptAttributeAssignment}
-    //       numericDataTypeAttributes={this.state}
-    //     />
-    //   );
-    // }
+    if (this.state.dataType === "Subject") {
+      dataType = (
+        <SubjectConcept
+          updateKeyValues={this.onKeyValueChange}
+          keyValues={this.state.keyValues}
+          error={this.state.error}
+          isCreatePage={this.props.isCreatePage}
+        />
+      );
+    }
 
     return (
       <Box boxShadow={2} p={2} bgcolor="background.paper">
