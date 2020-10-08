@@ -6,6 +6,7 @@ import http from "common/utils/httpClient";
 import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
+import { LocationConcept } from "../components/LocationConcept";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -26,6 +27,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
+import { SubjectConcept } from "../components/SubjectConcept";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -62,7 +64,13 @@ class CreateEditConcept extends Component {
       keyValues: [],
       redirectShow: false,
       redirectOnDelete: false,
-      active: false
+      active: false,
+      readOnlyKeys: [
+        "isWithinCatchment",
+        "lowestAddressLevelTypeUUIDs",
+        "highestAddressLevelTypeUUID",
+        "subjectTypeUUID"
+      ]
     };
   }
 
@@ -114,6 +122,8 @@ class CreateEditConcept extends Component {
             keyValues: response.data.keyValues,
             answers
           });
+
+          //TODO handle location datatype key values for 'show' screen
         })
         .catch(error => {
           console.log(error);
@@ -196,7 +206,14 @@ class CreateEditConcept extends Component {
     this.setState({
       [stateHandler]: e.target.value
     });
+    this.resetKeyValuesIfNeeded(stateHandler, e);
   };
+
+  resetKeyValuesIfNeeded(stateHandler, e) {
+    if (this.props.isCreatePage && stateHandler === "dataType" && e.target.value !== "Location") {
+      this.setState({ keyValues: [] });
+    }
+  }
 
   postCodedData(answers) {
     answers.map(function(answer, index) {
@@ -290,13 +307,6 @@ class CreateEditConcept extends Component {
         if (parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
           error["normalValidation"] = true;
         }
-        const emptyKeyValues = filter(
-          this.state.keyValues,
-          ({ key, value }) => key === "" || value === ""
-        );
-        if (emptyKeyValues.length > 0) {
-          error["keyValueError"] = true;
-        }
 
         this.state.dataType === "Coded" &&
           answers.forEach(answer => {
@@ -307,6 +317,39 @@ class CreateEditConcept extends Component {
               answer["isEmptyAnswer"] = false;
             }
           });
+
+        if (this.state.dataType === "Location") {
+          const lowestLevelKeyValue = this.state.keyValues.find(
+            keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs"
+          );
+          if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
+            error["lowestAddressLevelRequired"] = true;
+          }
+
+          const highestLevelKeyValue = this.state.keyValues.find(
+            keyValue => keyValue.key === "highestAddressLevelTypeUUID"
+          );
+          if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
+            this.onDeleteKeyValue(2);
+          }
+        }
+
+        if (this.state.dataType === "Subject") {
+          const subjectType = this.state.keyValues.find(
+            keyValue => keyValue.key === "subjectTypeUUID"
+          );
+          if (subjectType === undefined || subjectType.value === "") {
+            error["subjectTypeRequired"] = true;
+          }
+        }
+
+        const emptyKeyValues = filter(
+          this.state.keyValues,
+          ({ key, value }) => key === "" || value === ""
+        );
+        if (emptyKeyValues.length > 0) {
+          error["keyValueError"] = true;
+        }
 
         this.setState({
           error: error,
@@ -458,9 +501,16 @@ class CreateEditConcept extends Component {
     return { key: trim(key), value: castedValue };
   };
 
+  handleObjectValue = ({ key, value }) => {
+    return { key: trim(key), value: value };
+  };
+
   onKeyValueChange = (keyValue, index) => {
     const keyValues = this.state.keyValues;
-    keyValues[index] = this.castValueToBooleanOrInt(keyValue);
+    keyValues[index] =
+      typeof keyValue.value === "object"
+        ? this.handleObjectValue(keyValue)
+        : this.castValueToBooleanOrInt(keyValue);
     this.setState({ ...this.state, keyValues });
   };
 
@@ -541,6 +591,28 @@ class CreateEditConcept extends Component {
             onToggleAnswerField={this.onToggleAnswerField}
           />
         </DragDropContext>
+      );
+    }
+
+    if (this.state.dataType === "Location") {
+      dataType = (
+        <LocationConcept
+          updateKeyValues={this.onKeyValueChange}
+          keyValues={this.state.keyValues}
+          error={this.state.error}
+          isCreatePage={this.props.isCreatePage}
+        />
+      );
+    }
+
+    if (this.state.dataType === "Subject") {
+      dataType = (
+        <SubjectConcept
+          updateKeyValues={this.onKeyValueChange}
+          keyValues={this.state.keyValues}
+          error={this.state.error}
+          isCreatePage={this.props.isCreatePage}
+        />
       );
     }
 
@@ -630,6 +702,7 @@ class CreateEditConcept extends Component {
               onAddNewKeyValue={this.onAddNewKeyValue}
               onDeleteKeyValue={this.onDeleteKeyValue}
               error={this.state.error.keyValueError}
+              readOnlyKeys={this.state.readOnlyKeys}
             />
           </div>
 

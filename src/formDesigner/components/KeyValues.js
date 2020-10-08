@@ -33,7 +33,8 @@ export default function KeyValues({
   onKeyValueChange,
   onAddNewKeyValue,
   onDeleteKeyValue,
-  error
+  error,
+  readOnlyKeys = []
 }) {
   const classes = useStyles();
   return (
@@ -46,6 +47,7 @@ export default function KeyValues({
               label="Key"
               variant="outlined"
               value={key}
+              disabled={readOnlyKeys.includes(key)}
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onKeyValueChange(
@@ -62,6 +64,7 @@ export default function KeyValues({
               label="Value"
               variant="outlined"
               value={value}
+              disabled={readOnlyKeys.includes(key)}
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onKeyValueChange(
@@ -78,6 +81,7 @@ export default function KeyValues({
             aria-label="delete"
             onClick={() => onDeleteKeyValue(index)}
             style={{ marginTop: 10 }}
+            disabled={readOnlyKeys.includes(key)}
           >
             <DeleteIcon fontSize="inherit" />
           </IconButton>
