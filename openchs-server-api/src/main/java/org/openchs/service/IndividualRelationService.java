@@ -121,7 +121,7 @@ public class IndividualRelationService {
     }
 
     private void assertNoExistingRelation(String name) {
-        IndividualRelation existingRelation = individualRelationRepository.findByName(name);
+        IndividualRelation existingRelation = individualRelationRepository.findByNameIgnoreCase(name);
         if (existingRelation != null) {
             throw new BadRequestError(String.format("Relation %s already exists", name));
         }
