@@ -62,7 +62,6 @@ class CreateEditConcept extends Component {
       error: {},
       defaultSnackbarStatus: true,
       keyValues: [],
-      addressLevelTypes: [],
       redirectShow: false,
       redirectOnDelete: false,
       active: false,
@@ -130,27 +129,6 @@ class CreateEditConcept extends Component {
           console.log(error);
         });
     }
-    http
-      .get("/addressLevelType/?page=0&size=10&sort=level%2CDESC")
-      .then(response => {
-        if (response.status === 200) {
-          const addressLevelTypes = response.data.content.map(addressLevelType => ({
-            label: addressLevelType.name,
-            value: addressLevelType.uuid,
-            level: addressLevelType.level,
-            parent: addressLevelType.parent
-          }));
-          this.setState({
-            ...this.state,
-            addressLevelTypes
-          });
-        } else {
-          console.error(`Response code for /addressLevelType call: ${response.status}`);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
   }
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
@@ -619,7 +597,6 @@ class CreateEditConcept extends Component {
     if (this.state.dataType === "Location") {
       dataType = (
         <LocationConcept
-          addressLevelTypes={this.state.addressLevelTypes}
           updateKeyValues={this.onKeyValueChange}
           keyValues={this.state.keyValues}
           error={this.state.error}

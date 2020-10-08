@@ -6,6 +6,7 @@ import { AvniSelect } from "../../common/components/AvniSelect";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import _ from "lodash";
+import http from "../../common/utils/httpClient";
 
 const useStyles = makeStyles(theme => ({
   width: 195,
@@ -19,6 +20,34 @@ const useStyles = makeStyles(theme => ({
 
 export const LocationConcept = props => {
   const classes = useStyles();
+
+  const [addressLevelTypes, setAddressLevelTypes] = React.useState([]);
+  const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = React.useState(new Map());
+  const [isWithinCatchment, setWithinCatchment] = React.useState(false);
+  const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = React.useState([]);
+  const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] = React.useState([]);
+  const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
+
+  React.useEffect(() => {
+    http
+      .get("/addressLevelType/?page=0&size=10&sort=level%2CDESC")
+      .then(response => {
+        if (response.status === 200) {
+          const addressLevelTypes = response.data.content.map(addressLevelType => ({
+            label: addressLevelType.name,
+            value: addressLevelType.uuid,
+            level: addressLevelType.level,
+            parent: addressLevelType.parent
+          }));
+          setAddressLevelTypes(addressLevelTypes);
+        } else {
+          console.error(`Response code for /addressLevelType call: ${response.status}`);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
   React.useEffect(() => {
     if (props.isCreatePage || props.keyValues.length === 0) {
@@ -46,21 +75,15 @@ export const LocationConcept = props => {
     }
   }, [props.keyValues]);
 
-  const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = React.useState(new Map());
-  const [isWithinCatchment, setWithinCatchment] = React.useState(false);
-  const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = React.useState([]);
-  const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] = React.useState([]);
-  const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
-
   React.useEffect(() => {
     setAddressLevelTypeHierarchy(generateAddressLevelTypeHierarchy());
-    setHighestAddressLevelTypeOptions(props.addressLevelTypes);
-  }, [props.addressLevelTypes]);
+    setHighestAddressLevelTypeOptions(addressLevelTypes);
+  }, [addressLevelTypes]);
 
   function generateAddressLevelTypeHierarchy() {
     let hierarchy = new Map();
 
-    props.addressLevelTypes.forEach(addressLevelType => {
+    addressLevelTypes.forEach(addressLevelType => {
       let currentElement = addressLevelType.parent;
       let currentTypeHierarchy = [];
       let i = 0;
@@ -110,7 +133,7 @@ export const LocationConcept = props => {
       intersection = _.intersection(intersection, addressLevelTypeHierarchy.get(levelType));
     });
 
-    const highestOptions = props.addressLevelTypes.filter(addressLevelType =>
+    const highestOptions = addressLevelTypes.filter(addressLevelType =>
       intersection.includes(addressLevelType.value)
     );
     setHighestAddressLevelTypeOptions(highestOptions);
@@ -152,13 +175,13 @@ export const LocationConcept = props => {
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24, marginBottom: 24 }}
             onChange={updateLowestAddressLevelTypes}
-            options={props.addressLevelTypes.map(addressLevelType => (
+            options={addressLevelTypes.map(addressLevelType => (
               <MenuItem value={addressLevelType.value} key={addressLevelType.value}>
                 {addressLevelType.label}
               </MenuItem>
             ))}
             value={lowestAddressLevelTypes}
-            label="Lowest Location Level *"
+            label="Lowest Location Level(s) *"
             multiple
             toolTipKey="APP_DESIGNER_CONCEPT_LOWEST_LOCATION_LEVEL"
           />
