@@ -1,9 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   width: 195,
@@ -18,90 +20,173 @@ const useStyles = makeStyles(theme => ({
 export const LocationConcept = props => {
   const classes = useStyles();
 
-  if (props.keyValues.length === 0) {
-    //Initialize if keyvalues don't exist
-    props.onKeyValueChange(
+  React.useEffect(() => {
+    if (props.isCreatePage || props.keyValues.length === 0) {
+      updateIsWithinCatchment();
+    } else {
+      const withinCatchment =
+        props.keyValues.find(keyValue => keyValue.key === "isWithinCatchment") !== undefined
+          ? props.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value
+          : false;
+      setWithinCatchment(withinCatchment === true || withinCatchment === "true");
+
+      const lowest =
+        props.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs") !==
+        undefined
+          ? props.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs").value
+          : undefined;
+      setLowestAddressLevelTypes(lowest !== undefined ? lowest : []);
+
+      const highest =
+        props.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID") !==
+        undefined
+          ? props.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID").value
+          : undefined;
+      setHighestAddressLevelType(highest !== undefined ? highest : "");
+    }
+  }, [props.keyValues]);
+
+  const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = React.useState(new Map());
+  const [isWithinCatchment, setWithinCatchment] = React.useState(false);
+  const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = React.useState([]);
+  const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] = React.useState([]);
+  const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
+
+  React.useEffect(() => {
+    setAddressLevelTypeHierarchy(generateAddressLevelTypeHierarchy());
+    setHighestAddressLevelTypeOptions(props.addressLevelTypes);
+  }, [props.addressLevelTypes]);
+
+  function generateAddressLevelTypeHierarchy() {
+    let hierarchy = new Map();
+
+    props.addressLevelTypes.forEach(addressLevelType => {
+      let currentElement = addressLevelType.parent;
+      let currentTypeHierarchy = [];
+      let i = 0;
+      while (currentElement != null) {
+        currentTypeHierarchy[i] = currentElement.uuid;
+        currentElement = currentElement.parent;
+        i++;
+      }
+      hierarchy.set(addressLevelType.value, currentTypeHierarchy);
+    });
+
+    return hierarchy;
+  }
+
+  const updateIsWithinCatchment = event => {
+    const updateValue = event === undefined ? false : event.target.checked;
+    setWithinCatchment(updateValue);
+    props.updateKeyValues(
       {
         key: "isWithinCatchment",
-        value: false
+        value: updateValue
       },
       0
     );
-    props.onKeyValueChange(
+  };
+
+  const updateLowestAddressLevelTypes = event => {
+    const lowestAddressLevelTypeUUIDs = event.target.value;
+    setLowestAddressLevelTypes(lowestAddressLevelTypeUUIDs);
+    props.updateKeyValues(
       {
-        key: "lowestAddressLevelTypeUUID",
-        value: props.options[props.options.length - 1].key
+        key: "lowestAddressLevelTypeUUIDs",
+        value: lowestAddressLevelTypeUUIDs
       },
       1
     );
-    props.onKeyValueChange(
+  };
+
+  React.useEffect(() => {
+    refreshHighestAddressLevelTypeOptions();
+  }, [lowestAddressLevelTypes, addressLevelTypeHierarchy]);
+
+  function refreshHighestAddressLevelTypeOptions() {
+    if (addressLevelTypeHierarchy.size === 0) return;
+    let intersection = Array.from(addressLevelTypeHierarchy.keys());
+    lowestAddressLevelTypes.forEach(levelType => {
+      intersection = _.intersection(intersection, addressLevelTypeHierarchy.get(levelType));
+    });
+
+    const highestOptions = props.addressLevelTypes.filter(addressLevelType =>
+      intersection.includes(addressLevelType.value)
+    );
+    setHighestAddressLevelTypeOptions(highestOptions);
+    props.error["noCommonAncestor"] =
+      highestOptions.length === 0 &&
+      lowestAddressLevelTypes.length !== 1 &&
+      lowestAddressLevelTypes[0].parent !== null;
+    if (highestAddressLevelType !== "" && !intersection.includes(highestAddressLevelType)) {
+      updateHighestAddressLevelType();
+    }
+  }
+
+  const updateHighestAddressLevelType = event => {
+    const updateValue = event === undefined ? "" : event.target.value;
+
+    setHighestAddressLevelType(updateValue);
+    props.updateKeyValues(
       {
         key: "highestAddressLevelTypeUUID",
-        value: props.options[0].key
+        value: updateValue
       },
       2
     );
-  }
+  };
 
   return (
     <>
+      <br />
       <Grid container justify="flex-start">
-        <Grid item sm={12}>
-          <FormControlLabel
-            control={
-              <AvniSwitch
-                onChange={event =>
-                  props.onKeyValueChange(
-                    {
-                      key: "isWithinCatchment",
-                      value: event.target.checked
-                    },
-                    0
-                  )
-                }
-                checked={props.isWithinCatchment}
-                toolTipKey="APP_DESIGNER_CONCEPT_LOCATION_WITHIN_CATCHMENT"
-              />
-            }
-            label="Location is within Catchment"
+        <Grid item xs={12} sm={12}>
+          <AvniSwitch
+            onChange={updateIsWithinCatchment}
+            checked={isWithinCatchment}
+            toolTipKey="APP_DESIGNER_CONCEPT_LOCATION_WITHIN_CATCHMENT"
+            name="Location is available within user's Catchment"
           />
         </Grid>
-        <Grid item sm={12}>
+        <Grid item xs={12} sm={12}>
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24, marginBottom: 24 }}
-            onChange={event =>
-              props.onKeyValueChange(
-                {
-                  key: "lowestAddressLevelTypeUUID",
-                  value: event.target.value
-                },
-                1
-              )
-            }
-            options={props.options}
-            value={props.lowestAddressLevelType}
-            label="Lowest Location Level"
-            toolTipKey="APP_DESIGNER_CONCEPT_LOCATION_LEVEL"
+            onChange={updateLowestAddressLevelTypes}
+            options={props.addressLevelTypes.map(addressLevelType => (
+              <MenuItem value={addressLevelType.value} key={addressLevelType.value}>
+                {addressLevelType.label}
+              </MenuItem>
+            ))}
+            value={lowestAddressLevelTypes}
+            label="Lowest Location Level *"
+            multiple
+            toolTipKey="APP_DESIGNER_CONCEPT_LOWEST_LOCATION_LEVEL"
           />
+          {props.error.lowestAddressLevelRequired && (
+            <FormHelperText error>*Required</FormHelperText>
+          )}
+          {props.error.noCommonAncestor && (
+            <FormHelperText error>
+              No common higher location between selected lower levels.
+            </FormHelperText>
+          )}
         </Grid>
-        <Grid item sm={12}>
-          <AvniSelect
-            style={{ width: "400px", height: 40, marginTop: 24, marginBottom: 24 }}
-            onChange={event =>
-              props.onKeyValueChange(
-                {
-                  key: "highestAddressLevelTypeUUID",
-                  value: event.target.value
-                },
-                2
-              )
-            }
-            options={props.options}
-            value={props.highestAddressLevelType}
-            label="Highest Location Level"
-            toolTipKey="APP_DESIGNER_CONCEPT_LOCATION_LEVEL"
-          />
-        </Grid>
+        {lowestAddressLevelTypes.length > 0 && (
+          <Grid item xs={12} sm={12}>
+            <AvniSelect
+              style={{ width: "400px", height: 40, marginTop: 24 }}
+              onChange={updateHighestAddressLevelType}
+              options={highestAddressLevelTypeOptions.map(addressLevelType => (
+                <MenuItem value={addressLevelType.value} key={addressLevelType.value}>
+                  {addressLevelType.label}
+                </MenuItem>
+              ))}
+              value={highestAddressLevelType}
+              label="Highest Location Level"
+              toolTipKey="APP_DESIGNER_CONCEPT_HIGHEST_LOCATION_LEVEL"
+            />
+          </Grid>
+        )}
       </Grid>
     </>
   );

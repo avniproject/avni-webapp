@@ -62,12 +62,14 @@ class CreateEditConcept extends Component {
       defaultSnackbarStatus: true,
       keyValues: [],
       addressLevelTypes: [],
-      chosenLowestAddressLevelType: "",
-      chosenHighestAddressLevelType: "",
-      isLocationWithinCatchment: false,
       redirectShow: false,
       redirectOnDelete: false,
-      active: false
+      active: false,
+      readOnlyKeys: [
+        "isWithinCatchment",
+        "lowestAddressLevelTypeUUIDs",
+        "highestAddressLevelTypeUUID"
+      ]
     };
   }
 
@@ -117,17 +119,10 @@ class CreateEditConcept extends Component {
             creationDateTime: response.data.createdDateTime,
             lastModifiedDateTime: response.data.lastModifiedDateTime,
             keyValues: response.data.keyValues,
-            chosenLowestAddressLevelType: response.data.keyValues
-              .filter(keyValue => keyValue.key === "lowestAddressLevelTypeUUID")
-              .map(keyValue => keyValue.value),
-            chosenHighestAddressLevelType: response.data.keyValues
-              .filter(keyValue => keyValue.key === "highestAddressLevelTypeUUID")
-              .map(keyValue => keyValue.value),
-            isLocationWithinCatchment: response.data.keyValues
-              .filter(keyValue => keyValue.key === "isWithinCatchment")
-              .map(keyValue => keyValue.value),
             answers
           });
+
+          //TODO handle location datatype key values for 'show' screen
         })
         .catch(error => {
           console.log(error);
@@ -139,7 +134,9 @@ class CreateEditConcept extends Component {
         if (response.status === 200) {
           const addressLevelTypes = response.data.content.map(addressLevelType => ({
             label: addressLevelType.name,
-            value: addressLevelType.uuid
+            value: addressLevelType.uuid,
+            level: addressLevelType.level,
+            parent: addressLevelType.parent
           }));
           this.setState({
             ...this.state,
@@ -229,7 +226,14 @@ class CreateEditConcept extends Component {
     this.setState({
       [stateHandler]: e.target.value
     });
+    this.resetKeyValuesIfNeeded(stateHandler, e);
   };
+
+  resetKeyValuesIfNeeded(stateHandler, e) {
+    if (this.props.isCreatePage && stateHandler === "dataType" && e.target.value !== "Location") {
+      this.setState({ keyValues: [] });
+    }
+  }
 
   postCodedData(answers) {
     answers.map(function(answer, index) {
@@ -323,13 +327,6 @@ class CreateEditConcept extends Component {
         if (parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
           error["normalValidation"] = true;
         }
-        const emptyKeyValues = filter(
-          this.state.keyValues,
-          ({ key, value }) => key === "" || value === ""
-        );
-        if (emptyKeyValues.length > 0) {
-          error["keyValueError"] = true;
-        }
 
         this.state.dataType === "Coded" &&
           answers.forEach(answer => {
@@ -340,6 +337,30 @@ class CreateEditConcept extends Component {
               answer["isEmptyAnswer"] = false;
             }
           });
+
+        if (this.state.dataType === "Location") {
+          const lowestLevelKeyValue = this.state.keyValues.find(
+            keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs"
+          );
+          if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
+            error["lowestAddressLevelRequired"] = true;
+          }
+
+          const highestLevelKeyValue = this.state.keyValues.find(
+            keyValue => keyValue.key === "highestAddressLevelTypeUUID"
+          );
+          if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
+            this.onDeleteKeyValue(2);
+          }
+        }
+
+        const emptyKeyValues = filter(
+          this.state.keyValues,
+          ({ key, value }) => key === "" || value === ""
+        );
+        if (emptyKeyValues.length > 0) {
+          error["keyValueError"] = true;
+        }
 
         this.setState({
           error: error,
@@ -491,21 +512,17 @@ class CreateEditConcept extends Component {
     return { key: trim(key), value: castedValue };
   };
 
+  handleObjectValue = ({ key, value }) => {
+    return { key: trim(key), value: value };
+  };
+
   onKeyValueChange = (keyValue, index) => {
     const keyValues = this.state.keyValues;
-    keyValues[index] = this.castValueToBooleanOrInt(keyValue);
+    keyValues[index] =
+      typeof keyValue.value === "object"
+        ? this.handleObjectValue(keyValue)
+        : this.castValueToBooleanOrInt(keyValue);
     this.setState({ ...this.state, keyValues });
-    if (this.state.dataType === "Location") {
-      if (keyValue.key === "lowestAddressLevelTypeUUID") {
-        this.setState({ ...this.state, chosenLowestAddressLevelType: keyValue.value });
-      }
-      if (keyValue.key === "highestAddressLevelTypeUUID") {
-        this.setState({ ...this.state, chosenHighestAddressLevelType: keyValue.value });
-      }
-      if (keyValue.key === "isWithinCatchment") {
-        this.setState({ ...this.state, isLocationWithinCatchment: keyValue.value });
-      }
-    }
   };
 
   onAddNewKeyValue = () => {
@@ -591,23 +608,13 @@ class CreateEditConcept extends Component {
     if (this.state.dataType === "Location") {
       dataType = (
         <LocationConcept
-          options={this.state.addressLevelTypes.map(addressLevelType => (
-            <MenuItem value={addressLevelType.value} key={addressLevelType.value}>
-              {addressLevelType.label}
-            </MenuItem>
-          ))}
-          onKeyValueChange={this.onKeyValueChange}
-          lowestAddressLevelType={this.state.chosenLowestAddressLevelType}
-          highestAddressLevelType={this.state.chosenHighestAddressLevelType}
-          isWithinCatchment={
-            this.state.isLocationWithinCatchment === "true" ||
-            this.state.isLocationWithinCatchment === true
-          }
+          addressLevelTypes={this.state.addressLevelTypes}
+          updateKeyValues={this.onKeyValueChange}
           keyValues={this.state.keyValues}
+          error={this.state.error}
+          isCreatePage={this.props.isCreatePage}
         />
       );
-    } else {
-      this.setState();
     }
 
     // if (this.state.dataType === "Subject") {
@@ -705,6 +712,7 @@ class CreateEditConcept extends Component {
               onAddNewKeyValue={this.onAddNewKeyValue}
               onDeleteKeyValue={this.onDeleteKeyValue}
               error={this.state.error.keyValueError}
+              readOnlyKeys={this.state.readOnlyKeys}
             />
           </div>
 
