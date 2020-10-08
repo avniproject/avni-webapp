@@ -13,7 +13,7 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
         encounterResponse.put("ID", encounter.getUuid());
         encounterResponse.put("Encounter type", encounter.getEncounterType().getName());
 
-        encounterResponse.put("Subject ID", encounter.getUuid());
+        encounterResponse.put("Subject ID", encounter.getIndividual().getUuid());
         encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
 
         Response.putIfPresent(encounterResponse, "Encounter location", encounter.getEncounterLocation());
