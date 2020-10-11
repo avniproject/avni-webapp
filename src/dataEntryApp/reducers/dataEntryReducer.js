@@ -17,6 +17,7 @@ import loadReducer from "./loadReducer";
 import searchFilterReducer from "./searchFilterReducer";
 import rulesReducer from "./RulesReducer";
 import visitScheduleReducer from "./visitScheduleReducer";
+import decisionRuleReducer from "./decisionRuleReducer";
 
 export default combineReducers({
   search,
@@ -36,5 +37,6 @@ export default combineReducers({
   loadReducer,
   searchFilterReducer,
   rulesReducer,
-  visitScheduleReducer
+  visitScheduleReducer,
+  decisionRuleReducer
 });

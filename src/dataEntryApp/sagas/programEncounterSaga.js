@@ -24,12 +24,14 @@ import {
   FormElementGroup
 } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
-import { mapProgramEncounter } from "common/subjectModelMapper";
-import { mapProfile } from "../../common/subjectModelMapper";
+import { mapProgramEncounter, mapProgramEnrolment, mapProfile } from "common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
-import { selectVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+import {
+  selectVisitSchedules,
+  selectVisitSchedulesNew
+} from "dataEntryApp/reducers/visitScheduleReducer";
 
 export default function*() {
   yield all(
@@ -73,7 +75,7 @@ export function* createProgramEncounterWatcher() {
   yield takeLatest(types.CREATE_PROGRAM_ENCOUNTER, createProgramEncounterWorker);
 }
 export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) {
-  const programEnrolmentJson = yield call(api.fetchProgramEnrolment, enrolUuid);
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolments, enrolUuid);
   const state = yield select();
 
   /*create new encounter obj */
@@ -98,7 +100,7 @@ export function* createProgramEncounterForScheduledWatcher() {
 export function* createProgramEncounterForScheduledWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(
-    api.fetchProgramEnrolment,
+    api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
   const programEncounter = mapProgramEncounter(programEncounterJson);
@@ -151,7 +153,7 @@ export function* saveProgramEncounterWatcher() {
 export function* saveProgramEncounterWorker() {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  const visitSchedules = yield select(selectVisitSchedules);
+  const visitSchedules = yield select(selectVisitSchedulesNew);
   let resource = programEncounter.toResource;
   resource.visitSchedules = visitSchedules;
   yield call(api.saveProgramEncouter, resource);
@@ -164,7 +166,7 @@ function* editProgramEncounterWatcher() {
 export function* editProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(
-    api.fetchProgramEnrolment,
+    api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
   yield setProgramEncounterDetails(mapProgramEncounter(programEncounterJson), programEnrolmentJson);
@@ -172,22 +174,21 @@ export function* editProgramEncounterWorker({ programEncounterUuid }) {
 
 export function* setProgramEncounterDetails(programEncounter, programEnrolmentJson) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolmentJson.subjectUuid);
+  const subject = mapProfile(subjectProfileJson);
   const formMapping = yield select(
     selectFormMappingForProgramEncounter(
       programEncounter.encounterType.uuid,
-      programEnrolmentJson.program.uuid,
+      programEnrolmentJson.programUuid,
       subjectProfileJson.subjectType.uuid
     )
   );
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  const programEnrolment = new ProgramEnrolment();
-  programEnrolment.uuid = programEnrolmentJson.uuid;
-  programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
+  const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
   yield put.resolve(setProgramEncounter(programEncounter));
   yield put.resolve(setProgramEncounterForm(mapForm(programEncounterForm)));
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(setSubjectProfile(subject));
 }
 
 function* updateEncounterCancelObsWatcher() {
@@ -235,7 +236,7 @@ export function* createCancelProgramEncounterWatcher() {
 export function* createCancelProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(
-    api.fetchProgramEnrolment,
+    api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
   const programEncounter = mapProgramEncounter(programEncounterJson);
@@ -250,7 +251,7 @@ export function* editCancelProgramEncounterWatcher() {
 export function* editCancelProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(
-    api.fetchProgramEnrolment,
+    api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
   yield setCancelProgramEncounterDetails(
@@ -261,20 +262,19 @@ export function* editCancelProgramEncounterWorker({ programEncounterUuid }) {
 
 export function* setCancelProgramEncounterDetails(programEncounter, programEnrolmentJson) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolmentJson.subjectUuid);
+  const subject = mapProfile(subjectProfileJson);
   const formMapping = yield select(
     selectFormMappingForCancelProgramEncounter(
       programEncounter.encounterType.uuid,
-      programEnrolmentJson.program.uuid,
+      programEnrolmentJson.programUuid,
       subjectProfileJson.subjectType.uuid
     )
   );
   const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  const programEnrolment = new ProgramEnrolment();
-  programEnrolment.uuid = programEnrolmentJson.uuid;
-  programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
+  const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
   yield put.resolve(setProgramEncounter(programEncounter));
   yield put.resolve(setProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(setSubjectProfile(subject));
 }

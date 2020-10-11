@@ -28,7 +28,10 @@ import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
-import { selectVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+import {
+  selectVisitSchedules,
+  selectVisitSchedulesNew
+} from "dataEntryApp/reducers/visitScheduleReducer";
 
 export default function*() {
   yield all(
@@ -138,7 +141,7 @@ export function* saveEncounterWatcher() {
 export function* saveEncounterWorker() {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
-  const visitSchedules = yield select(selectVisitSchedules);
+  const visitSchedules = yield select(selectVisitSchedulesNew);
   let resource = encounter.toResource;
   resource.visitSchedules = visitSchedules;
   yield call(api.saveEncounter, resource);

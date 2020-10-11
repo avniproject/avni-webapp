@@ -14,7 +14,8 @@ import {
   editCancelEncounter,
   updateEncounter,
   setEncounterDateValidation,
-  resetState
+  resetState,
+  fetchEncounterVisitSchedules
 } from "../../../reducers/encounterReducer";
 import encounterService from "../../../services/EncounterService";
 import CancelEncounterForm from "./CancelEncounterForm";
@@ -50,7 +51,7 @@ const CancelEncounter = ({ match, encounter, enconterDateValidation, ...props })
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.cancelEncounterForm && encounter && props.subjectProfile ? (
-              <CancelEncounterForm>
+              <CancelEncounterForm fetchVisitSchedules={fetchEncounterVisitSchedules}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography
                     variant="body1"

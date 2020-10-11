@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -11,6 +11,8 @@ import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
 import { isEmpty, isNil } from "lodash";
 import useCommonStyles from "dataEntryApp/styles/commonStyles";
+import clsx from "clsx";
+import Colors from "dataEntryApp/Colors";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -19,19 +21,22 @@ const useStyles = makeStyles(theme => ({
   },
   abnormalColor: {
     color: "#ff4f33"
+  },
+  highlightBackground: {
+    backgroundColor: Colors.HighlightBackgroundColor
   }
 }));
 
-const Observations = ({ observations, additionalRows, form, customKey }) => {
-  if (isEmpty(observations)) {
-    return <div />;
-  }
-
+const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
   const conceptService = new ConceptService();
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
   const commonStyles = useCommonStyles();
+
+  if (isNil(observations)) {
+    return <div />;
+  }
 
   const renderObs = (value, isAbnormal) => {
     return isAbnormal ? (
@@ -75,13 +80,17 @@ const Observations = ({ observations, additionalRows, form, customKey }) => {
       );
     });
 
-  return (
+  return isEmpty(rows) ? (
+    <div />
+  ) : (
     <div>
-      <Fragment>
-        <Table className={commonStyles.tableContainer} size="small" aria-label="a dense table">
-          <TableBody>{rows}</TableBody>
-        </Table>
-      </Fragment>
+      <Table
+        className={clsx(commonStyles.tableContainer, highlight && classes.highlightBackground)}
+        size="small"
+        aria-label="a dense table"
+      >
+        <TableBody>{rows}</TableBody>
+      </Table>
     </div>
   );
 };
@@ -91,7 +100,8 @@ Observations.propTypes = {
   additionalRows: PropTypes.arrayOf({
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired
-  })
+  }),
+  highlight: PropTypes.bool
 };
 
 export default Observations;

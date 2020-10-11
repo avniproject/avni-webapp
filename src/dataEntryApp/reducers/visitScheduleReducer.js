@@ -1,8 +1,11 @@
 import api from "dataEntryApp/api/index";
 
 export const selectVisitSchedules = state => state.dataEntry.visitScheduleReducer.visitSchedules;
-export const selectIsFetching = state => state.dataEntry.visitScheduleReducer.isFetching;
-export const selectError = state => state.dataEntry.visitScheduleReducer.error;
+export const selectVisitSchedulesNew = state =>
+  state.dataEntry.visitScheduleReducer.visitSchedules.visitSchedules;
+export const selectFetchingVisitSchedules = state =>
+  state.dataEntry.visitScheduleReducer.isFetching;
+export const selectVisitSchedulesError = state => state.dataEntry.visitScheduleReducer.error;
 
 const prefix = "app/dataEntry/reducer/visitSchedule/";
 
@@ -30,7 +33,7 @@ export const fetchVisitSchedules = requestBody => {
   return dispatch => {
     dispatch(requestVisitSchedules());
     return api
-      .fetchVisitSchedules(requestBody)
+      .fetchRulesResult(requestBody)
       .then(visitSchedules => {
         dispatch(setVisitSchedules(visitSchedules));
       })
@@ -42,7 +45,7 @@ export const fetchVisitSchedules = requestBody => {
 
 export default function(
   state = {
-    visitSchedules: [],
+    visitSchedules: {},
     isFetching: false,
     error: null
   },
@@ -60,7 +63,7 @@ export default function(
     case types.REQUEST_VISIT_SCHEDULES: {
       return {
         ...state,
-        visitSchedules: [],
+        visitSchedules: {},
         isFetching: true,
         error: null
       };
@@ -68,7 +71,7 @@ export default function(
     case types.SET_ERROR: {
       return {
         ...state,
-        visitSchedules: [],
+        visitSchedules: {},
         isFetching: false,
         error: action.error
       };

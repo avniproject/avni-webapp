@@ -101,5 +101,9 @@ export default {
       return response.json;
     }),
   fetchVisitSchedules: requestBody =>
-    httpClient.post("/web/visitrule", requestBody).then(response => response.data.visitSchedules)
+    httpClient.post("/web/visitrule", requestBody).then(response => response.data.visitSchedules),
+  fetchDecisions: requestBody =>
+    httpClient.post("/web/decisionrule", requestBody).then(response => response.data),
+  fetchRulesResult: requestBody =>
+    httpClient.post("/web/rules", requestBody).then(response => response.data)
 };

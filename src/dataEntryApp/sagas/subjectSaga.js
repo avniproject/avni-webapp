@@ -46,7 +46,11 @@ import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
-import { selectVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+import {
+  selectVisitSchedules,
+  selectVisitSchedulesNew
+} from "dataEntryApp/reducers/visitScheduleReducer";
+import { selectDecisions } from "dataEntryApp/reducers/decisionRuleReducer";
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
@@ -77,8 +81,7 @@ function* setupNewEnrolmentWorker({
   //subject.subjectType = SubjectType.create("Individual");
   if (formType === "ProgramEnrolment" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
-    programEnrolment = mapProgramEnrolment(programEnrolment);
-    programEnrolment.individual = subject;
+    programEnrolment = mapProgramEnrolment(programEnrolment, subject);
     programEnrolment.programExitObservations = [];
     _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
@@ -87,8 +90,7 @@ function* setupNewEnrolmentWorker({
     yield put.resolve(setProgramEnrolment(programEnrolment));
   } else if (formType === "ProgramExit" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
-    programEnrolment = mapProgramEnrolment(programEnrolment);
-    programEnrolment.individual = subject;
+    programEnrolment = mapProgramEnrolment(programEnrolment, subject);
 
     if (!programEnrolment.programExitObservations) {
       programEnrolment.programExitObservations = [];
@@ -98,10 +100,9 @@ function* setupNewEnrolmentWorker({
     yield put.resolve(setProgramEnrolment(programEnrolment));
   } else {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
-    programEnrolment = mapProgramEnrolment(programEnrolment);
+    programEnrolment = mapProgramEnrolment(programEnrolment, subject);
     programEnrolment.programExitObservations = [];
     programEnrolment.programExitDateTime = new Date();
-    programEnrolment.individual = subject;
     _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
   }
@@ -131,7 +132,8 @@ export function* dataEntryLoadRegistrationFormWatcher() {
 
 export function* saveSubjectWorker() {
   const subject = yield select(selectRegistrationSubject);
-  const visitSchedules = yield select(selectVisitSchedules);
+  const visitSchedules = yield select(selectVisitSchedulesNew);
+
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
   yield call(api.saveSubject, resource);
@@ -144,7 +146,7 @@ export function* saveSubjectWatcher() {
 
 export function* saveProgramEnrolmentWorker() {
   const programEnrolment = yield select(selectProgramEnrolment);
-  const visitSchedules = yield select(selectVisitSchedules);
+  const visitSchedules = yield select(selectVisitSchedulesNew);
 
   let resource = programEnrolment.toResource;
   resource.visitSchedules = visitSchedules;
@@ -158,16 +160,14 @@ export function* saveProgramEnrolmentWatcher() {
 }
 
 export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
-  let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
-  programEnrolment = mapProgramEnrolment(programEnrolment);
-  programEnrolment.programExitDateTime = undefined;
-  programEnrolment.programExitObservations = [];
-
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
   subject.subjectType = SubjectType.create("Individual");
 
-  programEnrolment.individual = subject;
+  let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+  programEnrolment = mapProgramEnrolment(programEnrolment, subject);
+  programEnrolment.programExitDateTime = undefined;
+  programEnrolment.programExitObservations = [];
 
   let resource = programEnrolment.toResource;
   yield call(api.saveProgram, resource);

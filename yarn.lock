@@ -2634,10 +2634,10 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.4.tgz#5e8719a723f246b45a6e0063b74c0bbb7d31e6f7"
-  integrity sha512-reBX37VA/slIE0hmteKLk3pXBOUU0K0zeD8vhmQeI78hyBP489Hax9f48klfZsqxbZHA8d1M+HGEUXZ6Lw53Sw==
+avni-health-modules@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.5.tgz#870b6700aa93f43989c37754c384235a23b82381"
+  integrity sha512-WHqdEQEny28BzWALZno2j4LnedEtIJGxajirysBZcrYLogKWRCyyahMU/8TKZU0jl8e3tcvLmyclEy0kHfmLDg==
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"

@@ -30,7 +30,10 @@ import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import { setFilteredFormElements } from "../../reducers/RulesReducer";
 import Stepper from "./Stepper";
-import { fetchRegistrationVisitSchedules } from "dataEntryApp/reducers/registrationReducer";
+import {
+  fetchRegistrationDecisions,
+  fetchRegistrationVisitSchedules
+} from "dataEntryApp/reducers/registrationReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {

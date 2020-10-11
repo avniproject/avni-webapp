@@ -1,4 +1,5 @@
 import { fetchVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+import { fetchDecisions } from "dataEntryApp/reducers/decisionRuleReducer";
 
 const prefix = "app/dataEntry/reducer/registration/";
 
@@ -101,6 +102,23 @@ export const fetchRegistrationVisitSchedules = () => {
         rule: {
           formUuid: state.dataEntry.registration.registrationForm.uuid,
           ruleType: "VisitSchedule",
+          workFlowType: "Individual"
+        }
+      })
+    );
+  };
+};
+
+export const fetchRegistrationDecisions = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const individualRequestEntity = state.dataEntry.registration.subject.toResource;
+    dispatch(
+      fetchDecisions({
+        individualRequestEntity,
+        rule: {
+          formUuid: state.dataEntry.registration.registrationForm.uuid,
+          ruleType: "Decision",
           workFlowType: "Individual"
         }
       })
