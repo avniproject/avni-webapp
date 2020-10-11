@@ -120,4 +120,17 @@ public class RuleController {
             return ResponseEntity.badRequest().body(ruleResponseEntity);
         }
     }
+
+    @RequestMapping(value = "/web/rules", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
+    ResponseEntity<?> executeServerSideRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
+        RuleResponseEntity ruleResponseEntity = ruleService.executeServerSideRules(requestEntityWrapper);
+        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+            return ResponseEntity.ok().body(ruleResponseEntity);
+        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
+            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.badRequest().body(ruleResponseEntity);
+        }
+    }
 }
