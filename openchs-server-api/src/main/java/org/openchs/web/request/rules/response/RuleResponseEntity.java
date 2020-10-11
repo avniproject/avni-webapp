@@ -9,7 +9,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RuleResponseEntity {
     private String status;
-    private DecisionResponseEntity data;
+    private DecisionResponseEntity decisions;
     private List<VisitSchedule> visitSchedules;
     private List<ObservationContract> observation;
     private RuleError error;
@@ -46,11 +46,11 @@ public class RuleResponseEntity {
         this.status = status;
     }
 
-    public DecisionResponseEntity getData() {
-        return data;
+    public DecisionResponseEntity getDecisions() {
+        return decisions;
     }
 
-    public void setData(DecisionResponseEntity data) {
-        this.data = data;
+    public void setDecisions(DecisionResponseEntity data) {
+        this.decisions = data;
     }
 }
