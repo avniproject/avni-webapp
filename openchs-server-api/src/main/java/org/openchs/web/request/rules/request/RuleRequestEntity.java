@@ -5,6 +5,8 @@ public class RuleRequestEntity {
     private String ruleType;
     private String workFlowType;
     private String code;
+    private String decisionCode;
+    private String visitScheduleCode;
 
     public String getFormUuid() {
         return formUuid;
@@ -36,5 +38,21 @@ public class RuleRequestEntity {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getDecisionCode() {
+        return decisionCode;
+    }
+
+    public void setDecisionCode(String decisionCode) {
+        this.decisionCode = decisionCode;
+    }
+
+    public String getVisitScheduleCode() {
+        return visitScheduleCode;
+    }
+
+    public void setVisitScheduleCode(String visitScheduleCode) {
+        this.visitScheduleCode = visitScheduleCode;
     }
 }
