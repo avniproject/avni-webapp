@@ -158,18 +158,16 @@ export function* editEncounterWorker({ encounterUuid }) {
 }
 
 export function* setEncounterDetails(encounter, subjectProfileJson) {
+  const subject = mapProfile(subjectProfileJson);
   const formMapping = yield select(
     selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
   );
   const encounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  const individual = new Individual();
-  individual.uuid = subjectProfileJson.uuid;
-  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
-  encounter.individual = individual;
+  encounter.individual = subject;
 
   yield put.resolve(setEncounter(encounter));
   yield put.resolve(setEncounterForm(mapForm(encounterForm)));
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(setSubjectProfile(subject));
 }
 
 function* updateCancelEncounterObsWatcher() {
@@ -234,6 +232,7 @@ export function* editCancelEncounterWorker({ encounterUuid }) {
 }
 
 export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
+  const subject = mapProfile(subjectProfileJson);
   const cancelFormMapping = yield select(
     selectFormMappingForCancelEncounter(
       encounter.encounterType.uuid,
@@ -241,12 +240,9 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
     )
   );
   const cancelEncounterForm = yield call(api.fetchForm, cancelFormMapping.formUUID);
-  const individual = new Individual();
-  individual.uuid = subjectProfileJson.uuid;
-  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
-  encounter.individual = individual;
+  encounter.individual = subject;
 
   yield put.resolve(setEncounter(encounter));
   yield put.resolve(setEncounterForm(mapForm(cancelEncounterForm)));
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(setSubjectProfile(subject));
 }
