@@ -124,10 +124,12 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         Arrays.stream(userContracts).forEach(userContract -> {
             logger.info(String.format("Saving user with UUID/Name %s/%s", userContract.getUuid(), userContract.getName()));
             User user = userContract.getUuid() == null ? userRepository.findByUsername(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
+            boolean newUser = false;
             if (user == null) {
                 user = new User();
                 user.setUuid(userContract.getUuid() == null ? UUID.randomUUID().toString() : userContract.getUuid());
                 user.setUsername(userContract.getName());
+                newUser = true;
             }
             Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
             user.setCatchment(catchment);
@@ -151,6 +153,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             user.setEmail(userContract.getEmail());
             user.setAuditInfo(userService.getCurrentUser());
             User savedUser = userService.save(user);
+            if (newUser) userService.addToDefaultUserGroup(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
             cognitoService.createUserIfNotExists(savedUser);
         });
