@@ -91,5 +91,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
 
         cognitoService.createUser(user);
         userService.save(user);
+        userService.addToDefaultUserGroup(user);
     }
 }
