@@ -28,6 +28,7 @@ public class SubjectTypeContractWeb {
     private String registrationFormUuid;
     private String type;
     private String subjectSummaryRule;
+    private List<String> locationTypeUUIDs;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -48,6 +49,14 @@ public class SubjectTypeContractWeb {
         contract.setType(operationalSubjectType.getType().name());
         contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
         return contract;
+    }
+
+    public List<String> getLocationTypeUUIDs() {
+        return locationTypeUUIDs;
+    }
+
+    public void setLocationTypeUUIDs(List<String> locationTypeUUIDs) {
+        this.locationTypeUUIDs = locationTypeUUIDs;
     }
 
     public String getType() {

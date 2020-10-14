@@ -1,15 +1,20 @@
 package org.openchs.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.openchs.application.KeyType;
 import org.openchs.application.OrganisationConfigSettingKeys;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.ConceptProjection;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.OrganisationConfigRequest;
+import org.openchs.web.request.webapp.SubjectTypeSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.projection.ProjectionFactory;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +32,7 @@ public class OrganisationConfigService {
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
     private final LocationHierarchyService locationHierarchyService;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository,
@@ -36,6 +43,7 @@ public class OrganisationConfigService {
         this.projectionFactory = projectionFactory;
         this.conceptRepository = conceptRepository;
         this.locationHierarchyService = locationHierarchyService;
+        objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
     @Transactional
@@ -128,4 +136,38 @@ public class OrganisationConfigService {
 
         return organisationConfigRepository.save(organisationConfig);
     }
+
+    public Object getSettingsByKey(String key) {
+        Long organisationId = UserContextHolder.getUserContext().getOrganisationId();
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
+        return organisationConfig.getSettings().getOrDefault(key, Collections.EMPTY_LIST);
+    }
+
+    public void saveCustomRegistrationLocations(List<String> locationTypeUUIDs, SubjectType subjectType) {
+        Long organisationId = UserContextHolder.getUserContext().getOrganisationId();
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
+        JsonObject organisationConfigSettings = organisationConfig.getSettings();
+        String settingsKeyName = KeyType.customRegistrationLocations.toString();
+        List<SubjectTypeSetting> updatedCustomRegistrationLocations = getUpdatedCustomRegistrationLocations(locationTypeUUIDs, subjectType, organisationConfigSettings, settingsKeyName);
+        organisationConfigSettings.put(settingsKeyName, updatedCustomRegistrationLocations);
+        organisationConfigRepository.save(organisationConfig);
+    }
+
+    private List<SubjectTypeSetting> getUpdatedCustomRegistrationLocations(List<String> locationTypeUUIDs, SubjectType subjectType, JsonObject organisationConfigSettings, String settingsKeyName) {
+        List<SubjectTypeSetting> savedSettings = objectMapper.convertValue(organisationConfigSettings.getOrDefault(settingsKeyName, Collections.EMPTY_LIST), new TypeReference<List<SubjectTypeSetting>>() {});
+        List<SubjectTypeSetting> otherSubjectTypeSettings = filterSubjectTypeSettingsBasedOn(savedSettings, setting -> !setting.getSubjectTypeUUID().equals(subjectType.getUuid()));
+        SubjectTypeSetting subjectTypeSetting = new SubjectTypeSetting();
+        subjectTypeSetting.setSubjectTypeUUID(subjectType.getUuid());
+        subjectTypeSetting.setLocationTypeUUIDs(locationTypeUUIDs);
+        otherSubjectTypeSettings.add(subjectTypeSetting);
+        return filterSubjectTypeSettingsBasedOn(otherSubjectTypeSettings, setting -> setting.getLocationTypeUUIDs() != null);
+    }
+
+    private List<SubjectTypeSetting> filterSubjectTypeSettingsBasedOn(List<SubjectTypeSetting> subjectTypeSettings, Predicate<SubjectTypeSetting> predicate) {
+        return subjectTypeSettings
+                .stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+    }
+
 }
