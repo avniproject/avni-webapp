@@ -1,6 +1,9 @@
 package org.openchs.web;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.FormType;
+import org.openchs.application.KeyType;
 import org.openchs.application.Subject;
 import org.openchs.dao.GroupRoleRepository;
 import org.openchs.dao.OperationalSubjectTypeRepository;
@@ -8,12 +11,11 @@ import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.GroupRole;
 import org.openchs.domain.OperationalSubjectType;
 import org.openchs.domain.SubjectType;
-import org.openchs.service.FormMappingParameterObject;
-import org.openchs.service.FormMappingService;
-import org.openchs.service.FormService;
-import org.openchs.service.SubjectTypeService;
+import org.openchs.service.*;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.SubjectTypeContract;
+import org.openchs.web.request.webapp.SubjectTypeSetting;
 import org.openchs.web.request.webapp.GroupRoleContract;
 import org.openchs.web.request.webapp.SubjectTypeContractWeb;
 import org.slf4j.Logger;
@@ -28,7 +30,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,19 +44,24 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     private SubjectTypeRepository subjectTypeRepository;
     private FormService formService;
     private FormMappingService formMappingService;
+    private OrganisationConfigService organisationConfigService;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public SubjectTypeController(SubjectTypeRepository subjectTypeRepository,
                                  OperationalSubjectTypeRepository operationalSubjectTypeRepository,
                                  SubjectTypeService subjectTypeService,
                                  GroupRoleRepository groupRoleRepository,
-                                 FormService formService, FormMappingService formMappingService) {
+                                 FormService formService, FormMappingService formMappingService,
+                                 OrganisationConfigService organisationConfigService) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.subjectTypeService = subjectTypeService;
         this.groupRoleRepository = groupRoleRepository;
         this.formService = formService;
         this.formMappingService = formMappingService;
+        this.organisationConfigService = organisationConfigService;
+        objectMapper = ObjectMapperSingleton.getObjectMapper();
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -80,6 +89,13 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         if (operationalSubjectType.isVoided())
             return ResponseEntity.notFound().build();
         SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
+        List<SubjectTypeSetting> customRegistrationLocations = objectMapper.convertValue(organisationConfigService.getSettingsByKey(KeyType.customRegistrationLocations.toString()), new TypeReference<List<SubjectTypeSetting>>() {});
+        Optional<List<String>> locationUUIDs = customRegistrationLocations
+                .stream()
+                .filter(s -> s.getSubjectTypeUUID().equals(operationalSubjectType.getSubjectTypeUUID()))
+                .map(SubjectTypeSetting::getLocationTypeUUIDs)
+                .findFirst();
+        subjectTypeContractWeb.setLocationTypeUUIDs(locationUUIDs.orElse(null));
         return new ResponseEntity<>(subjectTypeContractWeb, HttpStatus.OK);
     }
 
@@ -129,7 +145,10 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
                         String.format("%s Registration", subjectType.getName()),
                         FormType.IndividualProfile));
 
-        return ResponseEntity.ok(SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType));
+        organisationConfigService.saveCustomRegistrationLocations(request.getLocationTypeUUIDs(), subjectType);
+        SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
+        subjectTypeContractWeb.setLocationTypeUUIDs(request.getLocationTypeUUIDs());
+        return ResponseEntity.ok(subjectTypeContractWeb);
     }
 
     @PutMapping(value = "/web/subjectType/{id}")
@@ -172,7 +191,10 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
                 formService.getOrCreateForm(request.getRegistrationFormUuid(),
                         String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
 
-        return ResponseEntity.ok(SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType));
+        organisationConfigService.saveCustomRegistrationLocations(request.getLocationTypeUUIDs(), subjectType);
+        SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
+        subjectTypeContractWeb.setLocationTypeUUIDs(request.getLocationTypeUUIDs());
+        return ResponseEntity.ok(subjectTypeContractWeb);
     }
 
     @DeleteMapping(value = "/web/subjectType/{id}")
