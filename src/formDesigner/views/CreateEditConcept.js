@@ -122,8 +122,6 @@ class CreateEditConcept extends Component {
             keyValues: response.data.keyValues,
             answers
           });
-
-          //TODO handle location datatype key values for 'show' screen
         })
         .catch(error => {
           console.log(error);
@@ -597,10 +595,11 @@ class CreateEditConcept extends Component {
     if (this.state.dataType === "Location") {
       dataType = (
         <LocationConcept
-          updateKeyValues={this.onKeyValueChange}
+          updateConceptKeyValues={this.onKeyValueChange}
           keyValues={this.state.keyValues}
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
+          inlineConcept={false}
         />
       );
     }
@@ -612,6 +611,7 @@ class CreateEditConcept extends Component {
           keyValues={this.state.keyValues}
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
+          inlineConcept={false}
         />
       );
     }

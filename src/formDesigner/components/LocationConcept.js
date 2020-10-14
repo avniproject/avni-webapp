@@ -23,7 +23,7 @@ export const LocationConcept = props => {
 
   const [addressLevelTypes, setAddressLevelTypes] = React.useState([]);
   const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = React.useState(new Map());
-  const [isWithinCatchment, setWithinCatchment] = React.useState(false);
+  const [isWithinCatchment, setWithinCatchment] = React.useState(true);
   const [lowestAddressLevelTypes, setLowestAddressLevelTypes] = React.useState([]);
   const [highestAddressLevelTypeOptions, setHighestAddressLevelTypeOptions] = React.useState([]);
   const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
@@ -56,7 +56,7 @@ export const LocationConcept = props => {
       const withinCatchment =
         props.keyValues.find(keyValue => keyValue.key === "isWithinCatchment") !== undefined
           ? props.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value
-          : false;
+          : true;
       setWithinCatchment(withinCatchment === true || withinCatchment === "true");
 
       const lowest =
@@ -80,6 +80,14 @@ export const LocationConcept = props => {
     setHighestAddressLevelTypeOptions(addressLevelTypes);
   }, [addressLevelTypes]);
 
+  React.useEffect(() => {
+    refreshHighestAddressLevelTypeOptions();
+  }, [lowestAddressLevelTypes, addressLevelTypeHierarchy]);
+
+  React.useEffect(() => {
+    defaultLowestAddressLevelIfSingleHierarchy();
+  }, [addressLevelTypeHierarchy]);
+
   function generateAddressLevelTypeHierarchy() {
     let hierarchy = new Map();
 
@@ -98,33 +106,65 @@ export const LocationConcept = props => {
     return hierarchy;
   }
 
+  function defaultLowestAddressLevelIfSingleHierarchy() {
+    if (addressLevelTypeHierarchy === undefined || addressLevelTypeHierarchy.size === 0) return;
+    let isSingleHierarchy = true;
+
+    const addressLevelTypeEntries = addressLevelTypeHierarchy.entries();
+
+    let i = 0;
+    let uuid = "";
+    while (i < addressLevelTypeHierarchy.size) {
+      let entry = addressLevelTypeEntries.next();
+      if (entry !== undefined && entry.value !== undefined) {
+        uuid = entry.value[0];
+        //this works because the hierarchy is sorted
+        isSingleHierarchy = i === entry.value[1].length;
+        i++;
+      }
+    }
+    if (isSingleHierarchy) {
+      setLowestAddressLevelTypes([uuid]);
+    }
+  }
+
   const updateIsWithinCatchment = event => {
-    const updateValue = event === undefined ? false : event.target.checked;
+    const updateValue = event === undefined ? true : event.target.checked;
     setWithinCatchment(updateValue);
-    props.updateKeyValues(
-      {
-        key: "isWithinCatchment",
-        value: updateValue
-      },
-      0
-    );
+    props.inlineConcept
+      ? props.updateConceptKeyValues(
+          props.groupIndex,
+          "isWithinCatchment",
+          updateValue,
+          props.index
+        )
+      : props.updateConceptKeyValues(
+          {
+            key: "isWithinCatchment",
+            value: updateValue
+          },
+          0
+        );
   };
 
   const updateLowestAddressLevelTypes = event => {
     const lowestAddressLevelTypeUUIDs = event.target.value;
     setLowestAddressLevelTypes(lowestAddressLevelTypeUUIDs);
-    props.updateKeyValues(
-      {
-        key: "lowestAddressLevelTypeUUIDs",
-        value: lowestAddressLevelTypeUUIDs
-      },
-      1
-    );
+    props.inlineConcept
+      ? props.updateConceptKeyValues(
+          props.groupIndex,
+          "lowestAddressLevelTypeUUIDs",
+          lowestAddressLevelTypeUUIDs,
+          props.index
+        )
+      : props.updateConceptKeyValues(
+          {
+            key: "lowestAddressLevelTypeUUIDs",
+            value: lowestAddressLevelTypeUUIDs
+          },
+          1
+        );
   };
-
-  React.useEffect(() => {
-    refreshHighestAddressLevelTypeOptions();
-  }, [lowestAddressLevelTypes, addressLevelTypeHierarchy]);
 
   function refreshHighestAddressLevelTypeOptions() {
     if (addressLevelTypeHierarchy.size === 0) return;
@@ -150,20 +190,27 @@ export const LocationConcept = props => {
     const updateValue = event === undefined ? "" : event.target.value;
 
     setHighestAddressLevelType(updateValue);
-    props.updateKeyValues(
-      {
-        key: "highestAddressLevelTypeUUID",
-        value: updateValue
-      },
-      2
-    );
+    props.inlineConcept
+      ? props.updateConceptKeyValues(
+          props.groupIndex,
+          "highestAddressLevelTypeUUID",
+          updateValue,
+          props.index
+        )
+      : props.updateConceptKeyValues(
+          {
+            key: "highestAddressLevelTypeUUID",
+            value: updateValue
+          },
+          2
+        );
   };
 
   return (
     <>
       <br />
       <Grid container justify="flex-start">
-        <Grid item xs={12} sm={12}>
+        <Grid item={true} xs={12} sm={12}>
           <AvniSwitch
             onChange={updateIsWithinCatchment}
             checked={isWithinCatchment}
@@ -171,7 +218,7 @@ export const LocationConcept = props => {
             name="Location is available within user's Catchment"
           />
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid item={true} xs={12} sm={12}>
           <AvniSelect
             style={{ width: "400px", height: 40, marginTop: 24, marginBottom: 24 }}
             onChange={updateLowestAddressLevelTypes}
@@ -195,7 +242,7 @@ export const LocationConcept = props => {
           )}
         </Grid>
         {lowestAddressLevelTypes.length > 0 && (
-          <Grid item xs={12} sm={12}>
+          <Grid item={true} xs={12} sm={12}>
             <AvniSelect
               style={{ width: "400px", height: 40, marginTop: 24 }}
               onChange={updateHighestAddressLevelType}

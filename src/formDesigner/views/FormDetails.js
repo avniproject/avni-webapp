@@ -79,6 +79,8 @@ class FormDetails extends Component {
     this.validateForm = this.validateForm.bind(this);
     this.handleConceptFormLibrary = this.handleConceptFormLibrary.bind(this);
     this.handleInlineNumericAttributes = this.handleInlineNumericAttributes.bind(this);
+    this.handleInlineLocationAttributes = this.handleInlineLocationAttributes.bind(this);
+    this.handleInlineSubjectAttributes = this.handleInlineSubjectAttributes.bind(this);
   }
 
   onUpdateFormName = name => {
@@ -431,6 +433,8 @@ class FormDetails extends Component {
           onToggleInlineConceptCodedAnswerAttribute: this.onToggleInlineConceptCodedAnswerAttribute,
           onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
+          handleInlineLocationAttributes: this.handleInlineLocationAttributes,
+          handleInlineSubjectAttributes: this.handleInlineSubjectAttributes,
           onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
           updateFormElementGroupRule: this.updateFormElementGroupRule,
           entityName: this.getEntityNameForRules(),
@@ -474,6 +478,9 @@ class FormDetails extends Component {
           draft.form.formElementGroups[index].formElements[
             elementIndex
           ].inlineCodedAnswers = this.assignEmptyFormElementMetaData().inlineCodedAnswers;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineLocationDataTypeKeyValues = this.assignEmptyFormElementMetaData().inlineLocationDataTypeKeyValues;
           draft.form.formElementGroups[index].formElements[elementIndex].inlineConceptName = "";
           draft.form.formElementGroups[index].formElements[elementIndex].inlineConceptDataType = "";
           draft.form.formElementGroups[index].formElements[
@@ -630,6 +637,26 @@ class FormDetails extends Component {
     );
   }
 
+  handleInlineLocationAttributes(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex][
+          "inlineLocationDataTypeKeyValues"
+        ][propertyName] = value;
+      })
+    );
+  }
+
+  handleInlineSubjectAttributes(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex][
+          "inlineSubjectDataTypeKeyValues"
+        ][propertyName] = value;
+      })
+    );
+  }
+
   assignEmptyFormElementMetaData = () => {
     return {
       uuid: UUID.v4(),
@@ -666,7 +693,17 @@ class FormDetails extends Component {
       ],
       showConceptLibrary: "",
       inlineConceptName: "",
-      inlineConceptDataType: ""
+      inlineConceptDataType: "",
+      inlineLocationDataTypeKeyValues: {
+        isWithinCatchment: true,
+        lowestAddressLevelTypeUUIDs: [],
+        highestAddressLevelTypeUUID: "",
+        error: {}
+      },
+      inlineSubjectDataTypeKeyValues: {
+        subjectTypeUUID: "",
+        error: {}
+      }
     };
   };
 
@@ -968,7 +1005,9 @@ class FormDetails extends Component {
     let clonedFormElement =
       clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex];
     let absoluteValidation = false,
-      normalValidation = false;
+      normalValidation = false,
+      locationValidation = false,
+      subjectValidation = false;
 
     const inlineConceptObject = {
       name: clonedFormElement.inlineConceptName,
@@ -984,6 +1023,47 @@ class FormDetails extends Component {
           : clonedFormElement["inlineNumericDataTypeAttributes"].unit,
       answers: clonedFormElement["inlineCodedAnswers"]
     };
+
+    if (inlineConceptObject.dataType === "Location") {
+      if (
+        clonedFormElement["inlineLocationDataTypeKeyValues"].lowestAddressLevelTypeUUIDs.length ===
+        0
+      ) {
+        locationValidation = true;
+      } else {
+        const keyValues = [];
+        keyValues[0] = {
+          key: "isWithinCatchment",
+          value: clonedFormElement["inlineLocationDataTypeKeyValues"].isWithinCatchment
+        };
+        keyValues[1] = {
+          key: "lowestAddressLevelTypeUUIDs",
+          value: clonedFormElement["inlineLocationDataTypeKeyValues"].lowestAddressLevelTypeUUIDs
+        };
+        if (
+          !isEmpty(clonedFormElement["inlineLocationDataTypeKeyValues"].highestAddressLevelTypeUUID)
+        ) {
+          keyValues[2] = {
+            key: "highestAddressLevelTypeUUID",
+            value: clonedFormElement["inlineLocationDataTypeKeyValues"].highestAddressLevelTypeUUID
+          };
+        }
+        inlineConceptObject.keyValues = keyValues;
+      }
+    }
+
+    if (inlineConceptObject.dataType === "Subject") {
+      if (isEmpty(clonedFormElement["inlineSubjectDataTypeKeyValues"].subjectTypeUUID)) {
+        subjectValidation = true;
+      } else {
+        const keyValues = [];
+        keyValues[0] = {
+          key: "subjectTypeUUID",
+          value: clonedFormElement["inlineSubjectDataTypeKeyValues"].subjectTypeUUID
+        };
+        inlineConceptObject.keyValues = keyValues;
+      }
+    }
 
     if (inlineConceptObject.dataType === "Numeric") {
       if (
@@ -1017,7 +1097,9 @@ class FormDetails extends Component {
       inlineConceptObject.dataType !== "" &&
       inlineConceptObject.name.trim() !== "" &&
       normalValidation === false &&
-      absoluteValidation === false
+      absoluteValidation === false &&
+      locationValidation === false &&
+      subjectValidation === false
     ) {
       clonedFormElement.inlineConceptErrorMessage["name"] = "";
       clonedFormElement.inlineConceptErrorMessage["dataType"] = "";
@@ -1106,6 +1188,12 @@ class FormDetails extends Component {
       clonedFormElement.inlineNumericDataTypeAttributes.error[
         "absoluteValidation"
       ] = absoluteValidation;
+      clonedFormElement.inlineLocationDataTypeKeyValues.error[
+        "lowestAddressLevelRequired"
+      ] = locationValidation;
+      clonedFormElement.inlineSubjectDataTypeKeyValues.error[
+        "subjectTypeRequired"
+      ] = subjectValidation;
 
       this.setState({
         form: clonedForm

@@ -29,12 +29,32 @@ function ConceptDetails(props) {
   const [editAlert, setEditAlert] = useState(false);
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
-
+  const [addressLevelTypes, setAddressLevelTypes] = useState([]);
+  const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
   useEffect(() => {
     http
       .get("/web/concept/" + props.match.params.uuid)
       .then(response => {
         setData(response.data);
+        if (response.data.dataType === "Location") {
+          http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
+            if (response.status === 200) {
+              const addressLevelTypes = response.data.content.map(addressLevelType => ({
+                label: addressLevelType.name,
+                value: addressLevelType.uuid,
+                level: addressLevelType.level,
+                parent: addressLevelType.parent
+              }));
+              setAddressLevelTypes(addressLevelTypes);
+            }
+          });
+        }
+
+        if (response.data.dataType === "Subject") {
+          http.get("/web/operationalModules").then(response => {
+            setSubjectTypeOptions(response.data.subjectTypes);
+          });
+        }
       })
       .catch(error => {
         console.log(error);
@@ -153,6 +173,74 @@ function ConceptDetails(props) {
                   );
                 })}
               {data.conceptAnswers === undefined && <RemoveIcon />}
+            </div>
+          )}
+          {data.dataType === "Location" && addressLevelTypes.length > 0 && (
+            <div>
+              <p />
+              <div>
+                <FormLabel style={{ fontSize: "13px" }}>Within Catchment</FormLabel>
+                <br />
+                <span style={{ fontSize: "15px" }}>
+                  {data.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value ===
+                  "true"
+                    ? "Yes"
+                    : "No"}
+                </span>
+              </div>
+              <p />
+              <div>
+                <FormLabel style={{ fontSize: "13px" }}>Lowest Location Level(s)</FormLabel>
+                <br />
+                <span style={{ fontSize: "15px" }}>
+                  {addressLevelTypes
+                    .filter(addressLevelType =>
+                      data.keyValues
+                        .find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs")
+                        .value.includes(addressLevelType.value)
+                    )
+                    .map(
+                      (addressLevelType, index, array) =>
+                        addressLevelType.label + (index === array.length - 1 ? "" : ", ")
+                    )}
+                </span>
+              </div>
+              <p />
+              <div>
+                <FormLabel style={{ fontSize: "13px" }}>Highest Location Level</FormLabel>
+                <br />
+                <span style={{ fontSize: "15px" }}>
+                  {data.keyValues.find(
+                    keyValue => keyValue.key === "highestAddressLevelTypeUUID"
+                  ) !== undefined ? (
+                    addressLevelTypes.find(
+                      addressLevelType =>
+                        data.keyValues.find(
+                          keyValue => keyValue.key === "highestAddressLevelTypeUUID"
+                        ).value === addressLevelType.value
+                    ).label
+                  ) : (
+                    <RemoveIcon />
+                  )}
+                </span>
+              </div>
+            </div>
+          )}
+          {data.dataType === "Subject" && subjectTypeOptions.length > 0 && (
+            <div>
+              <div>
+                <FormLabel style={{ fontSize: "13px" }}>Subject Type</FormLabel>
+                <br />
+                <span style={{ fontSize: "15px" }}>
+                  {
+                    subjectTypeOptions.find(
+                      subjectType =>
+                        data.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID")
+                          .value === subjectType.uuid
+                    ).name
+                  }
+                </span>
+              </div>
             </div>
           )}
 
