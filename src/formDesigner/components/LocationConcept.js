@@ -124,7 +124,7 @@ export const LocationConcept = props => {
       }
     }
     if (isSingleHierarchy) {
-      setLowestAddressLevelTypes([uuid]);
+      updateLowestAddressLevelTypes(undefined, [uuid]);
     }
   }
 
@@ -147,8 +147,8 @@ export const LocationConcept = props => {
         );
   };
 
-  const updateLowestAddressLevelTypes = event => {
-    const lowestAddressLevelTypeUUIDs = event.target.value;
+  const updateLowestAddressLevelTypes = (event, uuids) => {
+    const lowestAddressLevelTypeUUIDs = event !== undefined ? event.target.value : uuids;
     setLowestAddressLevelTypes(lowestAddressLevelTypeUUIDs);
     props.inlineConcept
       ? props.updateConceptKeyValues(
