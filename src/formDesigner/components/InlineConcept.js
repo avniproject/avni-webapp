@@ -11,6 +11,8 @@ import { BackButton } from "./FormElementDetails";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { LocationConcept } from "./LocationConcept";
+import { SubjectConcept } from "./SubjectConcept";
 
 function InlineConcept(props) {
   return (
@@ -20,7 +22,7 @@ function InlineConcept(props) {
           {props.formElementData.inlineConceptErrorMessage.inlineConceptError}
         </div>
       )}
-      <Grid item sm={12}>
+      <Grid item={true} sm={12}>
         <FormControl fullWidth>
           <AvniFormLabel label={"Concept Name"} toolTipKey={"APP_DESIGNER_CONCEPT_NAME"} />
           <Input
@@ -43,7 +45,7 @@ function InlineConcept(props) {
           {props.formElementData.inlineConceptErrorMessage.name}
         </div>
       )}
-      <Grid item sm={12}>
+      <Grid item={true} sm={12}>
         <AvniSelect
           label="Datatype *"
           value={props.formElementData.inlineConceptDataType}
@@ -128,6 +130,35 @@ function InlineConcept(props) {
           >
             Add new answer
           </Button>
+          <br />
+        </>
+      )}
+
+      {props.formElementData.inlineConceptDataType === "Location" && (
+        <>
+          <LocationConcept
+            updateConceptKeyValues={props.handleInlineLocationAttributes}
+            keyValues={[]}
+            error={props.formElementData.inlineLocationDataTypeKeyValues.error}
+            isCreatePage={true}
+            inlineConcept={true}
+            groupIndex={props.groupIndex}
+            index={props.index}
+          />
+          <br />
+        </>
+      )}
+
+      {props.formElementData.inlineConceptDataType === "Subject" && (
+        <>
+          <SubjectConcept
+            updateKeyValues={props.handleInlineSubjectAttributes}
+            error={props.formElementData.inlineSubjectDataTypeKeyValues.error}
+            isCreatePage={true}
+            inlineConcept={true}
+            groupIndex={props.groupIndex}
+            index={props.index}
+          />
           <br />
         </>
       )}

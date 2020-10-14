@@ -20,5 +20,7 @@ export const inlineConceptDataType = [
   "Duration",
   "Image",
   "Id",
-  "Video"
+  "Video",
+  "Subject",
+  "Location"
 ];

@@ -31,15 +31,28 @@ export const SubjectConcept = props => {
       });
   }, []);
 
+  React.useEffect(() => {
+    if (props.isCreatePage || props.keyValues === undefined || props.keyValues.length === 0) {
+    } else {
+      const subjectType =
+        props.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID") !== undefined
+          ? props.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID").value
+          : undefined;
+      setSubjectType(subjectType !== undefined ? subjectType : "");
+    }
+  }, [props.keyValues]);
+
   const updateSubjectType = event => {
     setSubjectType(event.target.value);
-    props.updateKeyValues(
-      {
-        key: "subjectTypeUUID",
-        value: event.target.value
-      },
-      0
-    );
+    props.inlineConcept
+      ? props.updateKeyValues(props.groupIndex, "subjectTypeUUID", event.target.value, props.index)
+      : props.updateKeyValues(
+          {
+            key: "subjectTypeUUID",
+            value: event.target.value
+          },
+          0
+        );
   };
 
   return (

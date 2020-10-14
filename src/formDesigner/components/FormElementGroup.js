@@ -186,6 +186,8 @@ function FormElementGroup(props) {
             props.onToggleInlineConceptCodedAnswerAttribute,
           onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
+          handleInlineLocationAttributes: props.handleInlineLocationAttributes,
+          handleInlineSubjectAttributes: props.handleInlineSubjectAttributes,
           onDragInlineCodedConceptAnswer: props.onDragInlineCodedConceptAnswer,
           entityName: props.entityName,
           disableFormElement: props.disableGroup

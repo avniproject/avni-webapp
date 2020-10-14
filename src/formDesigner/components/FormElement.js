@@ -24,6 +24,7 @@ import NoteIcon from "@material-ui/icons/Note";
 import Tooltip from "@material-ui/core/Tooltip";
 import ImageIcon from "@material-ui/icons/Image";
 import VideocamIcon from "@material-ui/icons/Videocam";
+import PinDropIcon from "@material-ui/icons/PinDrop";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
@@ -131,6 +132,8 @@ export const dataTypeIcons = {
   Duration: <TimerIcon />,
   Video: <VideocamIcon />,
   Id: <b>Id</b>,
+  Location: <PinDropIcon />,
+  Subject: <b>ST</b>,
   "": <b />
 };
 
@@ -193,7 +196,9 @@ function FormElement(props) {
                   "Time",
                   "Duration",
                   "Video",
-                  "Id"
+                  "Id",
+                  "Location",
+                  "Subject"
                 ].includes(props.formElementData.concept.dataType) && (
                   <div className={classes.iconDataType}>
                     <Tooltip title={props.formElementData.concept.dataType}>
