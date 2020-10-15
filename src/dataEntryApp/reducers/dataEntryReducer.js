@@ -16,8 +16,7 @@ import encounterReducer from "./encounterReducer";
 import loadReducer from "./loadReducer";
 import searchFilterReducer from "./searchFilterReducer";
 import rulesReducer from "./RulesReducer";
-import visitScheduleReducer from "./visitScheduleReducer";
-import decisionRuleReducer from "./decisionRuleReducer";
+import serverSideRulesReducer from "./serverSideRulesReducer";
 
 export default combineReducers({
   search,
@@ -37,6 +36,5 @@ export default combineReducers({
   loadReducer,
   searchFilterReducer,
   rulesReducer,
-  visitScheduleReducer,
-  decisionRuleReducer
+  serverSideRulesReducer
 });

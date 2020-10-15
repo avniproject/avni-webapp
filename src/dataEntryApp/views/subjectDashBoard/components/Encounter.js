@@ -16,7 +16,7 @@ import {
   createEncounter,
   createEncounterForScheduled,
   editEncounter,
-  fetchEncounterVisitSchedules
+  fetchEncounterRulesResponse
 } from "dataEntryApp/reducers/encounterReducer";
 import encounterService from "../../../services/EncounterService";
 import EncounterForm from "./EncounterForm";
@@ -57,7 +57,7 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
-              <EncounterForm fetchVisitSchedules={fetchEncounterVisitSchedules}>
+              <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography
                     variant="body1"

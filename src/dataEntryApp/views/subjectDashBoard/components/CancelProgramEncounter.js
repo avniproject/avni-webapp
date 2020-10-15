@@ -17,7 +17,7 @@ import {
   resetState,
   createCancelProgramEncounter,
   editCancelProgramEncounter,
-  fetchProgramEncounterVisitSchedules
+  fetchProgramEncounterRulesResponse
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -54,7 +54,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? (
-              <CancelProgramEncounterForm fetchVisitSchedules={fetchProgramEncounterVisitSchedules}>
+              <CancelProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography
                     variant="body1"

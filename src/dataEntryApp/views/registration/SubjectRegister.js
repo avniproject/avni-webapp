@@ -30,10 +30,7 @@ import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import { setFilteredFormElements } from "../../reducers/RulesReducer";
 import Stepper from "./Stepper";
-import {
-  fetchRegistrationDecisions,
-  fetchRegistrationVisitSchedules
-} from "dataEntryApp/reducers/registrationReducer";
+import { fetchRegistrationRulesResponse } from "dataEntryApp/reducers/registrationReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -556,9 +553,7 @@ const SubjectRegister = props => {
         <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
         <Route
           path={`${match.path}/form`}
-          component={() => (
-            <RegistrationForm fetchVisitSchedules={fetchRegistrationVisitSchedules} />
-          )}
+          component={() => <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse} />}
         />
       </Paper>
     </Fragment>

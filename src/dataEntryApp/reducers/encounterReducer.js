@@ -1,4 +1,4 @@
-import { fetchVisitSchedules } from "dataEntryApp/reducers/visitScheduleReducer";
+import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
 
 const prefix = "app/dataEntry/reducer/encounter/";
 
@@ -108,12 +108,12 @@ export const editCancelEncounter = encounterUuid => ({
   encounterUuid
 });
 
-export const fetchEncounterVisitSchedules = () => {
+export const fetchEncounterRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
     const requestEntity = state.dataEntry.encounterReducer.encounter.toResource;
     dispatch(
-      fetchVisitSchedules({
+      fetchRulesResponse({
         encounterRequestEntity: requestEntity,
         rule: {
           formUuid: state.dataEntry.encounterReducer.encounterForm.uuid,

@@ -8,10 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
 import Box from "@material-ui/core/Box";
 import {
-  selectFetchingVisitSchedules,
-  selectVisitSchedules,
-  selectVisitSchedulesError
-} from "dataEntryApp/reducers/visitScheduleReducer";
+  selectFetchingRulesResponse,
+  selectRulesResponse,
+  selectError
+} from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
@@ -23,28 +23,28 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ observations, additionalRows, form, fetchVisitSchedules }) => {
+const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const visitSchedules = useSelector(selectVisitSchedules);
-  const fetchingVisitSchedules = useSelector(selectFetchingVisitSchedules);
-  const visitSchedulesError = useSelector(selectVisitSchedulesError);
+  const rulesResponse = useSelector(selectRulesResponse);
+  const fetchingRulesResponse = useSelector(selectFetchingRulesResponse);
+  const rulesError = useSelector(selectError);
 
   useEffect(() => {
-    dispatch(fetchVisitSchedules());
+    dispatch(fetchRulesResponse());
   }, []);
 
-  if (visitSchedulesError) {
-    return <div>Server Error: {`${visitSchedulesError}`}</div>;
+  if (rulesError) {
+    return <div>Server Error: {`${rulesError}`}</div>;
   }
 
-  if (fetchingVisitSchedules) {
+  if (fetchingRulesResponse) {
     return <CustomizedBackdrop load={false} />;
   }
 
-  const decisionsResult = visitSchedules.decisions;
+  const decisionsResult = rulesResponse.decisions;
   let decisions = [];
 
   if (decisionsResult) {
@@ -61,13 +61,13 @@ const Summary = ({ observations, additionalRows, form, fetchVisitSchedules }) =>
 
   return (
     <div className={classes.form}>
-      {!isEmpty(visitSchedules.visitSchedules) && (
+      {!isEmpty(rulesResponse.visitSchedules) && (
         <Box pb={6}>
           <Typography variant="button" display="block" gutterBottom>
             {t("Visits being scheduled")}
           </Typography>
           <Box pt={1} className={classes.tableContainer}>
-            <ScheduledVisitsTable visitSchedules={visitSchedules.visitSchedules} />
+            <ScheduledVisitsTable visitSchedules={rulesResponse.visitSchedules} />
           </Box>
         </Box>
       )}

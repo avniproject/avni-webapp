@@ -29,9 +29,9 @@ import formElementService, { getFormElementStatuses } from "../services/FormElem
 import { setLoad } from "../reducers/loadReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
-  selectVisitSchedules,
-  selectVisitSchedulesNew
-} from "dataEntryApp/reducers/visitScheduleReducer";
+  selectRulesResponse,
+  selectVisitSchedules
+} from "dataEntryApp/reducers/serverSideRulesReducer";
 
 export default function*() {
   yield all(
@@ -141,7 +141,7 @@ export function* saveEncounterWatcher() {
 export function* saveEncounterWorker() {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
-  const visitSchedules = yield select(selectVisitSchedulesNew);
+  const visitSchedules = yield select(selectVisitSchedules);
   let resource = encounter.toResource;
   resource.visitSchedules = visitSchedules;
   yield call(api.saveEncounter, resource);

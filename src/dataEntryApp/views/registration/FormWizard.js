@@ -203,7 +203,7 @@ const FormWizard = ({
   entity,
   setFilteredFormElements,
   history,
-  fetchVisitSchedules
+  fetchRulesResponse
 }) => {
   if (!form) return <div />;
 
@@ -394,7 +394,7 @@ const FormWizard = ({
                 observations={observations}
                 additionalRows={additionalRows}
                 form={form}
-                fetchVisitSchedules={fetchVisitSchedules}
+                fetchRulesResponse={fetchRulesResponse}
               />
             ) : (
               <Form

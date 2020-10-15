@@ -10,7 +10,7 @@ import {
   setProgramEnrolment,
   setInitialState,
   setEnrolDateValidation,
-  fetchEnrolmentVisitSchedules
+  fetchEnrolmentRulesResponse
 } from "dataEntryApp/reducers/programEnrolReducer";
 import { isNil, isEmpty, first } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -98,7 +98,7 @@ const ProgramEnrol = ({
               formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm
                   formType={formType}
-                  fetchVisitSchedules={fetchEnrolmentVisitSchedules}
+                  fetchRulesResponse={fetchEnrolmentRulesResponse}
                 >
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Typography
@@ -141,7 +141,7 @@ const ProgramEnrol = ({
               ) : enrolForm && programEnrolment && programEnrolment.programExitDateTime ? (
                 <ProgramExitEnrolmentForm
                   formType={formType}
-                  fetchVisitSchedules={fetchEnrolmentVisitSchedules}
+                  fetchRulesResponse={fetchEnrolmentRulesResponse}
                 >
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Typography

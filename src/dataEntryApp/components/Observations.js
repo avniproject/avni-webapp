@@ -38,7 +38,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return <div />;
   }
 
-  const renderObs = (value, isAbnormal) => {
+  const renderValue = (value, isAbnormal) => {
     return isAbnormal ? (
       <span className={classes.abnormalColor}>
         {" "}
@@ -59,7 +59,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         </TableCell>
         <TableCell align="left" width="50%">
           <div>
-            {renderObs(t(Observation.valueAsString(obs, conceptService, i)), obs.isAbnormal())}
+            {renderValue(t(Observation.valueAsString(obs, conceptService, i)), obs.isAbnormal())}
           </div>
         </TableCell>
       </TableRow>
@@ -71,10 +71,10 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       rows.unshift(
         <TableRow key={observations.length + index}>
           <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-            {row.label}
+            {t(row.label)}
           </TableCell>
           <TableCell align="left" width="50%">
-            <div>{row.value}</div>
+            <div>{renderValue(t(row.value), row.abnormal)}</div>
           </TableCell>
         </TableRow>
       );
@@ -99,7 +99,8 @@ Observations.propTypes = {
   observations: PropTypes.arrayOf(Observation).isRequired,
   additionalRows: PropTypes.arrayOf({
     label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
+    value: PropTypes.string.isRequired,
+    abnormal: PropTypes.bool
   }),
   highlight: PropTypes.bool
 };

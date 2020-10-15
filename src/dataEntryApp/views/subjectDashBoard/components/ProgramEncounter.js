@@ -21,7 +21,7 @@ import {
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import programEncounterService from "../../../services/ProgramEncounterService";
-import { fetchProgramEncounterVisitSchedules } from "dataEntryApp/reducers/programEncounterReducer";
+import { fetchProgramEncounterRulesResponse } from "dataEntryApp/reducers/programEncounterReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,7 +60,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.programEncounterForm && programEncounter && props.subjectProfile ? (
-              <ProgramEncounterForm fetchVisitSchedules={fetchProgramEncounterVisitSchedules}>
+              <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography
                     variant="body1"

@@ -100,10 +100,6 @@ export default {
     httpClient.fetchJson(`/web/programEnrolment/${enrolmentUuid}`).then(response => {
       return response.json;
     }),
-  fetchVisitSchedules: requestBody =>
-    httpClient.post("/web/visitrule", requestBody).then(response => response.data.visitSchedules),
-  fetchDecisions: requestBody =>
-    httpClient.post("/web/decisionrule", requestBody).then(response => response.data),
-  fetchRulesResult: requestBody =>
+  getRulesResponse: requestBody =>
     httpClient.post("/web/rules", requestBody).then(response => response.data)
 };

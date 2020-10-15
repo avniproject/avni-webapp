@@ -47,10 +47,9 @@ import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import {
-  selectVisitSchedules,
-  selectVisitSchedulesNew
-} from "dataEntryApp/reducers/visitScheduleReducer";
-import { selectDecisions } from "dataEntryApp/reducers/decisionRuleReducer";
+  selectDecisions,
+  selectVisitSchedules
+} from "dataEntryApp/reducers/serverSideRulesReducer";
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
@@ -132,7 +131,7 @@ export function* dataEntryLoadRegistrationFormWatcher() {
 
 export function* saveSubjectWorker() {
   const subject = yield select(selectRegistrationSubject);
-  const visitSchedules = yield select(selectVisitSchedulesNew);
+  const visitSchedules = yield select(selectVisitSchedules);
 
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
@@ -145,14 +144,20 @@ export function* saveSubjectWatcher() {
 }
 
 export function* saveProgramEnrolmentWorker() {
-  const programEnrolment = yield select(selectProgramEnrolment);
-  const visitSchedules = yield select(selectVisitSchedulesNew);
+  try {
+    const programEnrolment = yield select(selectProgramEnrolment);
+    const visitSchedules = yield select(selectVisitSchedules);
+    const decisions = yield select(selectDecisions);
 
-  let resource = programEnrolment.toResource;
-  resource.visitSchedules = visitSchedules;
+    let resource = programEnrolment.toResource;
+    resource.visitSchedules = visitSchedules;
+    resource.decisions = decisions;
 
-  yield call(api.saveProgram, resource);
-  yield put(saveProgramComplete());
+    yield call(api.saveProgram, resource);
+    yield put(saveProgramComplete());
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export function* saveProgramEnrolmentWatcher() {
