@@ -6,6 +6,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.projection.UserWebProjection;
 import org.openchs.service.AccountAdminService;
 import org.openchs.service.CognitoIdpService;
 import org.openchs.service.UserService;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,7 @@ public class UserController {
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
+    private final ProjectionFactory projectionFactory;
 
     @Value("${openchs.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -56,7 +59,7 @@ public class UserController {
                           UserService userService,
                           CognitoIdpService cognitoService,
                           FacilityRepository facilityRepository,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ProjectionFactory projectionFactory) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
@@ -67,6 +70,7 @@ public class UserController {
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
+        this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -294,9 +298,10 @@ public class UserController {
     @GetMapping(value = "/user/search/findAll")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
-    public List<User> getAll() {
+    public List<UserWebProjection> getAll() {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        return userRepository.findAllByOrganisationIdAndIsVoidedFalse(organisation.getId());
+        return userRepository.findAllByOrganisationIdAndIsVoidedFalse(organisation.getId())
+                .stream().map(t -> projectionFactory.createProjection(UserWebProjection.class, t)).collect(Collectors.toList());
     }
 
     private List<Long> getOwnedAccountIds(User user) {

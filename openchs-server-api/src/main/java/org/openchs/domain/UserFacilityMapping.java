@@ -1,6 +1,8 @@
 package org.openchs.domain;
 
 import org.hibernate.annotations.BatchSize;
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 
@@ -31,4 +33,10 @@ public class UserFacilityMapping extends OrganisationAwareEntity {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Projection(name = "UserFacilityMappingProjection", types = {UserFacilityMapping.class})
+    public interface UserFacilityMappingProjection extends BaseProjection {
+        Facility getFacility();
+    }
+
 }
