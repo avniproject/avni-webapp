@@ -1,6 +1,6 @@
 import Types from "./SubjectType/Types";
 import { default as UUID } from "uuid";
-import _, { map } from "lodash";
+import _, { map, isEmpty } from "lodash";
 
 export function programReducer(program, action) {
   switch (action.type) {
@@ -111,10 +111,13 @@ export function subjectTypeReducer(subjectType, action) {
         memberSubjectType: Types.isHousehold(action.payload.type)
           ? _.map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
           : "",
-        subjectSummaryRule: action.payload.subjectSummaryRule
+        subjectSummaryRule: action.payload.subjectSummaryRule,
+        locationTypeUUIDs: action.payload.locationTypeUUIDs
       };
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };
+    case "locationTypes":
+      return { ...subjectType, locationTypeUUIDs: action.payload };
     default:
       return subjectType;
   }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import http from "../../common/utils/httpClient";
 
 export const useFormMappings = cb =>
@@ -9,6 +9,16 @@ export const useFormMappings = cb =>
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
         cb(formMap, response.data.forms, response.data.subjectTypes);
+      })
+      .catch(error => {});
+  }, []);
+
+export const useLocationType = cb =>
+  useEffect(() => {
+    http
+      .get("/web/addressLevelType")
+      .then(response => {
+        cb(response.data);
       })
       .catch(error => {});
   }, []);

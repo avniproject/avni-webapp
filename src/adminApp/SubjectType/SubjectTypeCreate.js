@@ -9,7 +9,7 @@ import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import GroupRoles from "./GroupRoles";
 import { validateGroup } from "./GroupHandlers";
-import { useFormMappings } from "./effects";
+import { useFormMappings, useLocationType } from "./effects";
 import _ from "lodash";
 import { findRegistrationForms } from "../domain/formMapping";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -25,6 +25,7 @@ import {
   sampleSubjectSummaryRule
 } from "../../formDesigner/common/SampleRule";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { AdvancedSettings } from "./AdvancedSettings";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -35,6 +36,7 @@ const SubjectTypeCreate = props => {
   const [id, setId] = useState();
   const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
+  const [locationTypes, setLocationsTypes] = useState([]);
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormMappings(formMap);
@@ -42,6 +44,7 @@ const SubjectTypeCreate = props => {
   };
 
   useFormMappings(consumeFormMappingResult);
+  useLocationType(types => setLocationsTypes(types));
 
   const onSubmit = event => {
     event.preventDefault();
@@ -153,6 +156,12 @@ const SubjectTypeCreate = props => {
                   borderStyle: "solid",
                   borderWidth: "1px"
                 }}
+              />
+              <p />
+              <AdvancedSettings
+                levelUUIDs={subjectType.locationTypeUUIDs}
+                setLevelUUIDs={uuids => dispatch({ type: "locationTypes", payload: uuids })}
+                locationTypes={locationTypes}
               />
               <div />
               {nameValidation && (

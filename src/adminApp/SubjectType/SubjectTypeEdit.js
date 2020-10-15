@@ -12,7 +12,7 @@ import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import GroupRoles from "./GroupRoles";
 import { validateGroup } from "./GroupHandlers";
-import { useFormMappings } from "./effects";
+import { useFormMappings, useLocationType } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
 import _ from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -26,6 +26,7 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
+import { AdvancedSettings } from "./AdvancedSettings";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -39,6 +40,7 @@ const SubjectTypeEdit = props => {
   const [formMappings, setFormMappings] = useState([]);
   const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
   const [subjectTypes, setSubjectTypes] = useState([]);
+  const [locationTypes, setLocationsTypes] = useState([]);
 
   const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
@@ -47,6 +49,7 @@ const SubjectTypeEdit = props => {
   };
 
   useFormMappings(consumeFormMappingResult);
+  useLocationType(types => setLocationsTypes(types));
 
   useEffect(() => {
     http
@@ -84,7 +87,8 @@ const SubjectTypeEdit = props => {
             groupRoles: subjectType.groupRoles,
             registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
             type: subjectType.type,
-            subjectSummaryRule: subjectType.subjectSummaryRule
+            subjectSummaryRule: subjectType.subjectSummaryRule,
+            locationTypeUUIDs: subjectType.locationTypeUUIDs
           })
           .then(response => {
             if (response.status === 200) {
@@ -214,6 +218,12 @@ const SubjectTypeEdit = props => {
               borderStyle: "solid",
               borderWidth: "1px"
             }}
+          />
+          <p />
+          <AdvancedSettings
+            levelUUIDs={subjectType.locationTypeUUIDs}
+            setLevelUUIDs={uuids => dispatch({ type: "locationTypes", payload: uuids })}
+            locationTypes={locationTypes}
           />
           <div />
           {nameValidation && (

@@ -10,18 +10,21 @@ import Grid from "@material-ui/core/Grid";
 import _, { get } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
-import { useFormMappings } from "./effects";
+import { useFormMappings, useLocationType } from "./effects";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 import { Audit } from "../../formDesigner/components/Audit";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { AdvancedSettingShow } from "./AdvancedSettingShow";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
+  const [locationTypes, setLocationsTypes] = useState([]);
 
   useFormMappings(setFormMappings);
+  useLocationType(types => setLocationsTypes(types));
   useEffect(() => {
     http
       .get("/web/subjectType/" + props.match.params.id)
@@ -96,6 +99,12 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
+            {subjectType.locationTypeUUIDs && (
+              <AdvancedSettingShow
+                locationTypes={locationTypes}
+                selectedUUIDs={subjectType.locationTypeUUIDs}
+              />
+            )}
             <Audit {...subjectType} />
           </div>
           {editAlert && <Redirect to={"/appDesigner/subjectType/" + props.match.params.id} />}
