@@ -398,36 +398,36 @@ function FormElementDetails(props) {
           </div>
         )}
       </Paper>
-      {props.formElementData.concept.dataType === "Coded" ||
+      {(props.formElementData.concept.dataType === "Coded" ||
         props.formElementData.concept.dataType === "Subject" ||
-        (props.formElementData.concept.dataType === "Location" && (
-          <>
-            <Grid item sm={6}>
-              {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
-                <div style={{ color: "red" }}>Please select type</div>
-              )}
-              <FormControl fullWidth disabled={disableFormElement}>
-                <AvniFormLabel label={"Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_CODED_TYPE"} />
-                <Select
-                  name="type"
-                  value={props.formElementData.type}
-                  onChange={event =>
-                    props.handleGroupElementChange(
-                      props.groupIndex,
-                      "type",
-                      event.target.value,
-                      props.index
-                    )
-                  }
-                  required
-                >
-                  <MenuItem value="SingleSelect">SingleSelect</MenuItem>
-                  <MenuItem value="MultiSelect">MultiSelect</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </>
-        ))}
+        props.formElementData.concept.dataType === "Location") && (
+        <>
+          <Grid item sm={6}>
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
+              <div style={{ color: "red" }}>Please select type</div>
+            )}
+            <FormControl fullWidth disabled={disableFormElement}>
+              <AvniFormLabel label={"Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_CODED_TYPE"} />
+              <Select
+                name="type"
+                value={props.formElementData.type}
+                onChange={event =>
+                  props.handleGroupElementChange(
+                    props.groupIndex,
+                    "type",
+                    event.target.value,
+                    props.index
+                  )
+                }
+                required
+              >
+                <MenuItem value="SingleSelect">SingleSelect</MenuItem>
+                <MenuItem value="MultiSelect">MultiSelect</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </>
+      )}
       {props.formElementData.concept.dataType === "Coded" && (
         <>
           <br />
