@@ -8,6 +8,7 @@ import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.service.LocationService;
 import org.openchs.web.request.AddressLevelTypeContract;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
@@ -26,6 +27,8 @@ public class AddressLevelTypeControllerUnitTest {
     private LocationService locationService;
     @Mock
     private LocationRepository locationRepository;
+    @Mock
+    private ProjectionFactory projectionFactory;
 
     private AddressLevelTypeController addressLevelTypeController;
     private static final String FOO_UUID = "e8fc567b-6301-4f90-9b5e-349d4d411553";
@@ -34,7 +37,7 @@ public class AddressLevelTypeControllerUnitTest {
     @Before
     public void setup() {
         initMocks(this);
-        addressLevelTypeController = new AddressLevelTypeController(addressLevelTypeRepository, locationRepository, locationService);
+        addressLevelTypeController = new AddressLevelTypeController(addressLevelTypeRepository, locationRepository, locationService, projectionFactory);
         AddressLevelType foo = new AddressLevelType();
         foo.setUuid(FOO_UUID);
         foo.setName("foo");

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class AddressLevelTypeController extends AbstractController<AddressLevelType> {
@@ -28,12 +30,14 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     private final LocationRepository locationRepository;
     private Logger logger;
     private LocationService locationService;
+    private final ProjectionFactory projectionFactory;
 
     @Autowired
-    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationRepository locationRepository, LocationService locationService) {
+    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationRepository locationRepository, LocationService locationService, ProjectionFactory projectionFactory) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.locationService = locationService;
+        this.projectionFactory = projectionFactory;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -42,6 +46,16 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     @ResponseBody
     public Page<AddressLevelType> getAllNonVoidedAddressLevelType(Pageable pageable) {
         return addressLevelTypeRepository.findPageByIsVoidedFalse(pageable);
+    }
+
+    @GetMapping(value = "/web/addressLevelType")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @ResponseBody
+    public List<AddressLevelType.AddressLevelTypeProjection> findAll() {
+        return addressLevelTypeRepository.findAllByIsVoidedFalse()
+                .stream()
+                .map(t -> projectionFactory.createProjection(AddressLevelType.AddressLevelTypeProjection.class, t))
+                .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/addressLevelType/{id}")
