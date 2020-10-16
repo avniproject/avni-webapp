@@ -40,6 +40,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByTitleIgnoreCaseAndTypeAndParentIsNull(String title, AddressLevelType addressLevelType);
 
+    AddressLevel findByTitleIgnoreCaseAndTypeIn(String title, Collection<AddressLevelType> type);
+
     List<AddressLevel> findByCatchments(Catchment catchment);
 
     Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);

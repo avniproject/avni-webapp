@@ -149,4 +149,6 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     Page<Individual> findIndividuals(String subjectTypeUUID, List<Long> locationIds, Pageable pageable);
 
     Individual findByLegacyId(String legacyId);
+
+    Individual findByLegacyIdAndSubjectType(String legacyId, SubjectType subjectType);
 }

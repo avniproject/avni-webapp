@@ -1,17 +1,10 @@
 package org.openchs.importer.batch.csv.creator;
 
 import org.apache.commons.io.FileUtils;
-import org.openchs.application.Form;
-import org.openchs.application.FormElement;
-import org.openchs.application.FormElementType;
-import org.openchs.application.FormType;
-import org.openchs.dao.AddressLevelTypeRepository;
-import org.openchs.dao.ConceptRepository;
+import org.openchs.application.*;
+import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
-import org.openchs.domain.AddressLevelType;
-import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptDataType;
-import org.openchs.domain.ObservationCollection;
+import org.openchs.domain.*;
 import org.openchs.importer.batch.csv.writer.header.Headers;
 import org.openchs.importer.batch.model.Row;
 import org.openchs.service.ObservationService;
@@ -46,15 +39,21 @@ public class ObservationCreator {
     private FormRepository formRepository;
     private ObservationService observationService;
     private S3Service s3Service;
+    private SubjectTypeRepository subjectTypeRepository;
+    private IndividualRepository individualRepository;
+    private LocationRepository locationRepository;
 
     @Autowired
     public ObservationCreator(AddressLevelTypeRepository addressLevelTypeRepository,
-                              ConceptRepository conceptRepository, FormRepository formRepository, ObservationService observationService, S3Service s3Service) {
+                              ConceptRepository conceptRepository, FormRepository formRepository, ObservationService observationService, S3Service s3Service, SubjectTypeRepository subjectTypeRepository, IndividualRepository individualRepository, LocationRepository locationRepository) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.conceptRepository = conceptRepository;
         this.formRepository = formRepository;
         this.observationService = observationService;
         this.s3Service = s3Service;
+        this.subjectTypeRepository = subjectTypeRepository;
+        this.individualRepository = individualRepository;
+        this.locationRepository = locationRepository;
     }
 
     public List<Concept> getConceptHeaders(Headers fixedHeaders, String[] fileHeaders) {
@@ -85,7 +84,7 @@ public class ObservationCreator {
             ObservationRequest observationRequest = new ObservationRequest();
             observationRequest.setConceptName(concept.getName());
             observationRequest.setConceptUUID(concept.getUuid());
-                Object oldValue = oldObservations == null ? null : oldObservations.getOrDefault(concept.getUuid(), null);
+            Object oldValue = oldObservations == null ? null : oldObservations.getOrDefault(concept.getUuid(), null);
             try {
                 observationRequest.setValue(getObservationValue(concept, rowValue, formType, errorMsgs, oldValue));
             } catch (Exception ex) {
@@ -97,29 +96,37 @@ public class ObservationCreator {
         return observationService.createObservations(observationRequests);
     }
 
+    private FormElement getFormElementForObservationConcept(Concept concept, FormType formType) throws Exception {
+        List<Form> applicableForms = formRepository.findAllByFormType(formType);
+        if (applicableForms.size() == 0)
+            throw new Exception(String.format("No forms of type %s found", formType));
+
+        return applicableForms.stream()
+                .map(Form::getAllFormElements)
+                .flatMap(List::stream)
+                .filter(fel -> fel.getConcept().equals(concept))
+                .findFirst()
+                .orElseThrow(() -> new Exception("No form element linked to concept found"));
+    }
+
+    private String[] splitMultiSelectAnswer(String answerValue) {
+        /* For multi-select answers, expected input format would be:
+           1. Answer 1, Answer 2, ...
+           2. Answer 1, "Answer2, has, commas", Answer 3, ...
+           ... etc.
+        */
+        return Stream.of(answerValue.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))
+                .map(value -> value.trim().replaceAll("\"", ""))
+                .toArray(String[]::new);
+    }
+
     private Object getObservationValue(Concept concept, String answerValue, FormType formType, List<String> errorMsgs, Object oldValue) throws Exception {
         switch (ConceptDataType.valueOf(concept.getDataType())) {
             case Coded:
-                List<Form> applicableForms = formRepository.findAllByFormType(formType);
-                if (applicableForms.size() == 0)
-                    throw new Exception(String.format("No forms of type %s found", formType));
-
-                FormElement formElement = applicableForms.stream()
-                        .map(Form::getAllFormElements)
-                        .flatMap(List::stream)
-                        .filter(fel -> fel.getConcept().equals(concept))
-                        .findFirst()
-                        .orElseThrow(() -> new Exception("No form element linked to concept found"));
+                FormElement formElement = getFormElementForObservationConcept(concept, formType);
 
                 if (formElement.getType().equals(FormElementType.MultiSelect.name())) {
-                    /* For multi-select answers, expected input format would be:
-                       1. Answer 1, Answer 2, ...
-                       2. Answer 1, "Answer2, has, commas", Answer 3, ...
-                       ... etc.
-                    */
-                    String[] providedAnswers = Stream.of(answerValue.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))
-                            .map(value -> value.trim().replaceAll("\"", ""))
-                            .toArray(String[]::new);
+                    String[] providedAnswers = splitMultiSelectAnswer(answerValue);
                     return Stream.of(providedAnswers)
                             .map(answer -> concept.findAnswerConcept(answer).getUuid())
                             .collect(Collectors.toList());
@@ -134,6 +141,37 @@ public class ObservationCreator {
             case Image:
             case Video:
                 return (answerValue.trim().equals("")) ? null : processMediaObservation(answerValue, errorMsgs, oldValue);
+            case Subject:
+                SubjectType subjectType = subjectTypeRepository.findByUuid(concept.getKeyValues().get(KeyType.subjectTypeUUID).getValue().toString());
+
+                FormElement subjectFormElement = getFormElementForObservationConcept(concept, formType);
+
+                if (subjectFormElement.getType().equals(FormElementType.MultiSelect.name())) {
+                    String[] providedAnswers = splitMultiSelectAnswer(answerValue);
+
+                    return Stream.of(providedAnswers)
+                            .map(answer -> individualRepository.findByLegacyIdAndSubjectType(answer, subjectType).getUuid())
+                            .collect(Collectors.toList());
+                } else {
+                    return individualRepository.findByLegacyIdAndSubjectType(answerValue, subjectType).getUuid();
+                }
+            case Location:
+                FormElement locationFormElement = getFormElementForObservationConcept(concept, formType);
+
+                List<String> lowestLevelUuids = (List<String>) concept.getKeyValues().get(KeyType.lowestAddressLevelTypeUUIDs).getValue();
+
+                List<AddressLevelType> lowestLevels = lowestLevelUuids.stream()
+                        .map(uuid -> addressLevelTypeRepository.findByUuid(uuid))
+                        .collect(Collectors.toList());
+
+                if (locationFormElement.getType().equals(FormElementType.MultiSelect.name())) {
+                    String[] providedAnswers = splitMultiSelectAnswer(answerValue);
+                    return Stream.of(providedAnswers)
+                            .map(answer -> locationRepository.findByTitleIgnoreCaseAndTypeIn(answer, lowestLevels).getUuid())
+                            .collect(Collectors.toList());
+                } else {
+                    return locationRepository.findByTitleIgnoreCaseAndTypeIn(answerValue, lowestLevels).getUuid();
+                }
             default:
                 return answerValue;
         }
