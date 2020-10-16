@@ -18,7 +18,7 @@ import {
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
-import _, { get, sortBy, isEmpty } from "lodash";
+import _, { get, sortBy, isEmpty, find } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
@@ -195,12 +195,22 @@ const DefaultPage = props => {
   const totalNumberOfPages = formElementGroups.length + 2;
 
   function renderAddress() {
+    const {
+      customRegistrationLocations,
+      addressLevelTypes,
+      subject: { subjectType: { uuid } = null } = {}
+    } = props;
+    const { addressLevels = {} } = find(
+      customRegistrationLocations,
+      ({ subjectTypeUUID }) => subjectTypeUUID === uuid
+    );
+    const addressLevelTypesToRender = isEmpty(addressLevels) ? addressLevelTypes : addressLevels;
     return (
       <>
         <LineBreak num={1} />
         <RadioButtonsGroup
           label={t("Address*")}
-          items={props.addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
+          items={addressLevelTypesToRender.map(a => ({ id: a.id, name: a.name }))}
           value={props.selectedAddressLevelType.id}
           onChange={item => props.selectAddressLevelType(item)}
         />
@@ -470,6 +480,8 @@ const mapStateToProps = state => ({
   user: state.app.user,
   genders: state.dataEntry.metadata.genders,
   addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
+  customRegistrationLocations:
+    state.dataEntry.metadata.operationalModules.customRegistrationLocations,
   form: state.dataEntry.registration.registrationForm,
   subject: state.dataEntry.registration.subject,
   loaded: state.dataEntry.registration.loaded,
@@ -544,7 +556,7 @@ const SubjectRegister = props => {
       }
       props.saveCompleteFalse();
     })();
-  }, []);
+  }, [match.queryParams.type]);
 
   return (
     <Fragment>

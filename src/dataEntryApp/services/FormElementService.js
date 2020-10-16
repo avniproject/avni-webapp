@@ -3,7 +3,7 @@ import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } fr
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
-  updateObservations(observations, formElement, value) {
+  updateObservations(observations = [], formElement, value) {
     const observationHolder = new ObservationsHolder(observations);
     if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
       const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);

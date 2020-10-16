@@ -69,7 +69,7 @@ function NewMenu({ operationalModules }) {
         <label className={classes.FormLabel}>{t("register")}</label>
         {operationalModules.subjectTypes.map((element, index) => {
           return (
-            <React.Fragment>
+            <React.Fragment key={index}>
               <InternalLink
                 key={index}
                 to={`/app/register?type=${element.name}`}

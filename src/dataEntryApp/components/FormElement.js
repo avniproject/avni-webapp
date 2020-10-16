@@ -42,7 +42,8 @@ export const FormElement = ({
   return (
     <div>
       <LineBreak num={1} />
-      <Element {...props} />
+      {/*this check can be removed later when DEA supports all the data types (Location and Subject are not supported yet)*/}
+      {Element && <Element {...props} />}
       {/* <LineBreak num={1} /> */}
     </div>
   );
