@@ -41,7 +41,8 @@ export const fetchRulesResponse = requestBody => {
         dispatch(setRulesResponse(rulesResponse));
       })
       .catch(err => {
-        console.log("Error in executing rule", err);
+        const errorData = err.response.data.error ? err.response.data.error : err.response.data;
+        console.log("Error in executing rule", JSON.stringify(errorData));
         dispatch(setError(err));
       });
   };
