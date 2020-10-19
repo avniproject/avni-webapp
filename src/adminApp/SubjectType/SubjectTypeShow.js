@@ -7,7 +7,7 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
-import _, { get } from "lodash";
+import _, { get, isEmpty } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings, useLocationType } from "./effects";
@@ -99,7 +99,7 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
-            {subjectType.locationTypeUUIDs && (
+            {!isEmpty(subjectType.locationTypeUUIDs) && (
               <AdvancedSettingShow
                 locationTypes={locationTypes}
                 selectedUUIDs={subjectType.locationTypeUUIDs}
