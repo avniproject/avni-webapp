@@ -10377,10 +10377,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@0.2.39:
-  version "0.2.39"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.39.tgz#bdd3bc77e958964478fc4d739d73d82dfe76f49d"
-  integrity sha512-2vGJcPjW0vXJqOgTkHZGw5fs/eNAfs5hoHX9rvmrrfSpeJGYZZNqAD7+C1NYuASybblqllM+eYtEQHt0/e2xSA==
+openchs-models@0.2.45, openchs-models@^0.2.25:
+  version "0.2.45"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.45.tgz#b43b43d626af371a670e942a1f6fd975bbe13b22"
+  integrity sha512-i6qI4hfNSmyKHtqe9Ts3M0a9bml5SP+B1vUI+jlYckMa+N1XUOZDyFpKKIBRR+7rU+wunk8uYqM52x68RgBc7w==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -13117,9 +13117,9 @@ rsvp@^3.3.3:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.6.2.tgz#2e96491599a96cde1b515d5674a8f7a91452926a"
   integrity sha512-OfWGQTb9vnwRjwtA2QwpG2ICclHC3pgXZO5xt8H2EfgDquO0qVdSb5T88L4qJVAEugbS56pAuV4XZM58UX8ulw==
 
-"rules-config@github:openchs/rules-config#db9d68448cbc6c9122ca2aa03eb42c64f590d02c":
+"rules-config@github:openchs/rules-config#2c40bb37641694070de1566f96b9bd6a2c27007b":
   version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/db9d68448cbc6c9122ca2aa03eb42c64f590d02c"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/2c40bb37641694070de1566f96b9bd6a2c27007b"
   dependencies:
     babel-cli "^6.26.0"
     babel-loader "^7.1.4"
@@ -13133,10 +13133,11 @@ rsvp@^3.3.3:
     lodash "^4.17.11"
     mocha "^5.2.0"
     moment "^2.22.2"
+    openchs-models "^0.2.25"
     superagent "^3.8.3"
     test "^0.6.0"
     uglifyjs-webpack-plugin "^1.2.5"
-    webpack "^3.5.5"
+    webpack "^3.12.0"
     webpack-cli "^3.0.3"
     webpack-node-externals "1.6.0"
 
@@ -15055,7 +15056,7 @@ webpack@4.28.3:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^3.5.5:
+webpack@^3.12.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.12.0.tgz#3f9e34360370602fcf639e97939db486f4ec0d74"
   integrity sha512-Sw7MdIIOv/nkzPzee4o0EdvCuPmxT98+vVpIvwtcwcF1Q4SDSNp92vwcKc4REe7NItH9f1S4ra9FuQ7yuYZ8bQ==

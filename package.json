@@ -32,7 +32,7 @@
     "material-ui-rc-color-picker": "^1.0.4",
     "moment": "^2.22.2",
     "openchs-idi": "github:openchs/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
-    "openchs-models": "0.2.39",
+    "openchs-models": "0.2.45",
     "popper.js": "^1.14.3",
     "prismjs": "^1.17.1",
     "prop-types": "^15.7.2",
@@ -61,7 +61,7 @@
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
-    "rules-config": "github:openchs/rules-config#db9d68448cbc6c9122ca2aa03eb42c64f590d02c",
+    "rules-config": "github:openchs/rules-config#2c40bb37641694070de1566f96b9bd6a2c27007b",
     "uuid": "^3.3.2"
   },
   "scripts": {
