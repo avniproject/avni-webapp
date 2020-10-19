@@ -8,7 +8,7 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { mapObservation } from "../../../../common/subjectModelMapper";
+import { mapObservations } from "../../../../common/subjectModelMapper";
 import Observations from "dataEntryApp/components/Observations";
 import { useTranslation } from "react-i18next";
 import moment from "moment/moment";
@@ -177,7 +177,7 @@ const CompletedVisitsTable = ({
         encounterDateTime: a.encounterDateTime
           ? moment(a.encounterDateTime).format("DD-MM-YYYY")
           : "-",
-        observations: mapObservation(a.observations)
+        observations: mapObservations(a.observations)
       };
       allVisitsListObj.push(sub);
     });

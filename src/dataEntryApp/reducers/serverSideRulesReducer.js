@@ -1,4 +1,6 @@
 import api from "dataEntryApp/api/index";
+import { flatten } from "lodash";
+import { mapObservations } from "common/subjectModelMapper";
 
 const prefix = "app/dataEntry/reducer/serverSideRules/";
 
@@ -28,10 +30,19 @@ export const fetchRulesResponse = requestBody => {
     return api
       .getRulesResponse(requestBody)
       .then(rulesResponse => {
+        let decisionObservations = flatten([
+          rulesResponse.decisions.enrolmentObservations,
+          rulesResponse.decisions.encounterObservations,
+          rulesResponse.decisions.registrationObservations
+        ]);
+        decisionObservations = mapObservations(decisionObservations);
+        rulesResponse.decisionObservations = decisionObservations;
+
         dispatch(setRulesResponse(rulesResponse));
       })
       .catch(err => {
-        dispatch(setError(err.message));
+        console.log("Error in executing rule", err);
+        dispatch(setError(err));
       });
   };
 };

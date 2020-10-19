@@ -132,9 +132,12 @@ export function* dataEntryLoadRegistrationFormWatcher() {
 export function* saveSubjectWorker() {
   const subject = yield select(selectRegistrationSubject);
   const visitSchedules = yield select(selectVisitSchedules);
+  const decisions = yield select(selectDecisions);
 
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
+  resource.decisions = decisions;
+
   yield call(api.saveSubject, resource);
   yield put(saveComplete());
 }
@@ -143,11 +146,12 @@ export function* saveSubjectWatcher() {
   yield takeLatest(subjectTypes.SAVE_SUBJECT, saveSubjectWorker);
 }
 
-export function* saveProgramEnrolmentWorker() {
+export function* saveProgramEnrolmentWorker(params) {
   try {
     const programEnrolment = yield select(selectProgramEnrolment);
     const visitSchedules = yield select(selectVisitSchedules);
     const decisions = yield select(selectDecisions);
+    decisions.exit = params.isExit;
 
     let resource = programEnrolment.toResource;
     resource.visitSchedules = visitSchedules;

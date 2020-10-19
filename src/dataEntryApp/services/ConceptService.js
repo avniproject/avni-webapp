@@ -1,15 +1,21 @@
-import { store } from "../../common/store/createStore";
+class ConceptService {
+  constructor() {
+    this.concepts = [];
+  }
 
-export class ConceptService {
-  
   getConceptByUUID(conceptUuid) {
     if (conceptUuid !== null || conceptUuid !== undefined) {
-      let conceptList = store.getState().dataEntry.conceptReducer.concepts;
-      let concept = conceptList.find(x => x.uuid === conceptUuid);
+      let concept = this.concepts.find(x => x.uuid === conceptUuid);
       return concept;
     }
   }
+
+  addConcept(concept) {
+    this.concepts.push(concept);
+  }
 }
+
+export const conceptService = new ConceptService();
 
 export class i18n {
   t(concept) {

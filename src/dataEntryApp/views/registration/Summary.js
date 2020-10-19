@@ -13,6 +13,7 @@ import {
   selectError
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
+import { mapObservations } from "common/subjectModelMapper";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -36,31 +37,27 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
     dispatch(fetchRulesResponse());
   }, []);
 
-  if (rulesError) {
-    return <div>Server Error: {`${rulesError}`}</div>;
-  }
-
   if (fetchingRulesResponse) {
     return <CustomizedBackdrop load={false} />;
   }
 
-  const decisionsResult = rulesResponse.decisions;
-  let decisions = [];
-
-  if (decisionsResult) {
-    decisions = flatten([
-      decisionsResult.enrolmentDecisions,
-      decisionsResult.encounterDecisions,
-      decisionsResult.registrationDecisions
-    ]);
-    decisions = decisions.map(d => {
-      const value = Array.isArray(d.value) ? join(d.value, ",") : d.value;
-      return { label: d.name, value };
-    });
-  }
-
   return (
     <div className={classes.form}>
+      {!isEmpty(rulesResponse.decisionObservations) && (
+        <Box pb={6}>
+          <Typography variant="button" display="block" gutterBottom>
+            {t("System Recommendations")}
+          </Typography>
+          <Box pt={1} className={classes.tableContainer}>
+            <Observations
+              observations={rulesResponse.decisionObservations}
+              additionalRows={[]}
+              highlight
+            />
+          </Box>
+        </Box>
+      )}
+
       {!isEmpty(rulesResponse.visitSchedules) && (
         <Box pb={6}>
           <Typography variant="button" display="block" gutterBottom>
@@ -68,17 +65,6 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
           </Typography>
           <Box pt={1} className={classes.tableContainer}>
             <ScheduledVisitsTable visitSchedules={rulesResponse.visitSchedules} />
-          </Box>
-        </Box>
-      )}
-
-      {!isEmpty(decisions) && (
-        <Box pb={6}>
-          <Typography variant="button" display="block" gutterBottom>
-            {t("System Recommendations")}
-          </Typography>
-          <Box pt={1} className={classes.tableContainer}>
-            <Observations observations={[]} additionalRows={decisions} highlight />
           </Box>
         </Box>
       )}

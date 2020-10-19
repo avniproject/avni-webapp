@@ -1,5 +1,3 @@
-import { store } from "../../src/common/store/createStore";
-
 import {
   Individual,
   ModelGeneral as General,
@@ -18,10 +16,9 @@ import {
   SubjectType,
   ConceptAnswer
 } from "avni-models";
-import { types } from "../common/store/conceptReducer";
 import { map } from "lodash";
+import { conceptService } from "dataEntryApp/services/ConceptService";
 
-// subject Dashboard common functionality
 export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
     individualDetails,
@@ -35,8 +32,6 @@ export const mapIndividual = individualDetails => {
   individual.gender = gender;
 
   const subjectType = new SubjectType();
-  // subjectType.uuid = individualDetails.subjectType.uuid;
-  // subjectType.name = individualDetails.subjectType.name;
   if (individualDetails.subjectType) {
     subjectType.uuid = individualDetails.subjectType.uuid;
     subjectType.name = individualDetails.subjectType.name;
@@ -51,51 +46,47 @@ export const mapIndividual = individualDetails => {
 
   return individual;
 };
-export const mapObservation = objservationList => {
-  if (objservationList)
-    return objservationList.map(observation => {
-      return mapConcept(observation);
+
+export const mapObservations = observations => {
+  if (observations)
+    return observations.map(observation => {
+      return mapObservation(observation);
     });
 };
 
-function getAnswers(observationJson) {
-  return map(observationJson.concept["answers"], ca => {
-    const conceptAnswer = General.assignFields(ca, new ConceptAnswer(), ["abnormal"]);
-    conceptAnswer.concept = General.assignFields(ca, new Concept(), ["uuid", "name"]);
+function getAnswers(answersJson) {
+  return map(answersJson, answerJson => {
+    const conceptAnswer = new ConceptAnswer();
+    conceptAnswer.answerOrder = answerJson.order;
+    conceptAnswer.abnormal = answerJson.abnormal;
+    conceptAnswer.unique = answerJson.unique;
+    conceptAnswer.voided = !!answerJson.voided;
+    conceptAnswer.concept = mapConcept(answerJson);
     return conceptAnswer;
   });
 }
 
-// included redux store functionality
-export const mapConcept = observationJson => {
+export const mapConcept = conceptJson => {
+  const concept = General.assignFields(conceptJson, new Concept(), [
+    "uuid",
+    "name",
+    "lowAbsolute",
+    "lowNormal"
+  ]);
+  concept.datatype = conceptJson["dataType"];
+  concept.hiNormal = conceptJson["highNormal"];
+  concept.hiAbsolute = conceptJson["highAbsolute"];
+  concept.answers = getAnswers(conceptJson["answers"]);
+  conceptService.addConcept(concept);
+  return concept;
+};
+
+export const mapObservation = observationJson => {
   if (observationJson) {
     const observation = new Observation();
-    const concept = General.assignFields(observationJson.concept, new Concept(), [
-      "uuid",
-      "name",
-      "lowAbsolute",
-      "lowNormal"
-    ]);
-    concept.datatype = observationJson.concept["dataType"];
-    concept.hiNormal = observationJson.concept["highNormal"];
-    concept.hiAbsolute = observationJson.concept["highAbsolute"];
-    concept.answers = getAnswers(observationJson);
+    const concept = mapConcept(observationJson.concept);
 
-    let valueuuid;
-    if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
-      valueuuid = [];
-
-      observationJson.value.forEach(observation => {
-        valueuuid.push(observation.uuid);
-        store.dispatch({ type: types.ADD_CONCEPT, value: observation });
-      });
-    } else if (concept.datatype === "Coded") {
-      valueuuid = observationJson.value.uuid;
-      store.dispatch({ type: types.ADD_CONCEPT, value: observationJson.value });
-    } else {
-      valueuuid = observationJson.value;
-    }
-    const value = concept.getValueWrapperFor(valueuuid);
+    const value = concept.getValueWrapperFor(observationJson.value);
     observation.concept = concept;
     observation.valueJSON = value;
     return observation;
@@ -106,7 +97,7 @@ export const mapConcept = observationJson => {
 export const mapProfile = subjectProfile => {
   if (subjectProfile) {
     let individual = mapIndividual(subjectProfile);
-    individual.observations = mapObservation(subjectProfile["observations"]);
+    individual.observations = mapObservations(subjectProfile["observations"]);
     individual.relationships = mapRelationships(subjectProfile["relationships"]);
     return individual;
   }
@@ -118,8 +109,8 @@ export const mapProgramEnrolment = (json, subject) => {
   if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
   if (json.programExitDateTime)
     programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
-  programEnrolment.programExitObservations = mapObservation(json.exitObservations);
-  programEnrolment.observations = mapObservation(json.observations) || [];
+  programEnrolment.programExitObservations = mapObservations(json.exitObservations);
+  programEnrolment.observations = mapObservations(json.observations) || [];
   const program = new Program();
   program.uuid = json.programUuid;
   programEnrolment.program = program;
@@ -190,9 +181,9 @@ export const mapEnrolments = enrolmentList => {
         ["uuid"],
         ["programExitDateTime", "enrolmentDateTime"]
       );
-      programEnrolment.observations = mapObservation(enrolment["observations"]);
+      programEnrolment.observations = mapObservations(enrolment["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
-      programEnrolment.exitObservations = mapObservation(enrolment["exitObservations"]);
+      programEnrolment.exitObservations = mapObservations(enrolment["exitObservations"]);
       programEnrolment.program = mapOperationalProgram(enrolment);
       programEnrolment.uuid = enrolment.uuid;
       programEnrolment.id = enrolment.id;
@@ -254,8 +245,10 @@ export const mapProgramEncounter = programEncounter => {
       ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
-    programEncounterObj.observations = mapObservation(programEncounter["observations"]);
-    programEncounterObj.cancelObservations = mapObservation(programEncounter["cancelObservations"]);
+    programEncounterObj.observations = mapObservations(programEncounter["observations"]);
+    programEncounterObj.cancelObservations = mapObservations(
+      programEncounter["cancelObservations"]
+    );
     programEncounterObj.subjectUuid = programEncounter["subjectUUID"];
     programEncounterObj.enrolmentUuid = programEncounter["enrolmentUUID"];
     return programEncounterObj;
@@ -271,8 +264,8 @@ export const mapEncounter = encounterDetails => {
       ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
-    encounter.observations = mapObservation(encounterDetails["observations"]);
-    encounter.cancelObservations = mapObservation(encounterDetails["cancelObservations"]);
+    encounter.observations = mapObservations(encounterDetails["observations"]);
+    encounter.cancelObservations = mapObservations(encounterDetails["cancelObservations"]);
     encounter.subjectUuid = encounterDetails["subjectUUID"];
     return encounter;
   }

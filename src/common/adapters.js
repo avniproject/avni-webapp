@@ -14,8 +14,7 @@ import {
   SubjectType
 } from "avni-models";
 import { get, isEmpty, isNil, map } from "lodash";
-import { store } from "../../src/common/store/createStore";
-import { types } from "../common/store/conceptReducer";
+import { conceptService } from "dataEntryApp/services/ConceptService";
 
 export const mapConceptAnswer = json => {
   const conceptAnswer = new ConceptAnswer();
@@ -31,7 +30,7 @@ export const mapConceptAnswer = json => {
 export const mapConcept = json => {
   const concept = Concept.fromResource(json);
   concept.answers = map(json.conceptAnswers, mapConceptAnswer);
-  store.dispatch({ type: types.ADD_CONCEPT, value: concept });
+  conceptService.addConcept(concept);
   return concept;
 };
 

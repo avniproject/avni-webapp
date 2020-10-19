@@ -4,7 +4,7 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { mapObservation } from "common/subjectModelMapper";
+import { mapObservations } from "common/subjectModelMapper";
 import { Box } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import moment from "moment/moment";
@@ -33,8 +33,8 @@ function usePrevious(value) {
 const formatDate = aDate => (aDate ? moment(aDate).format("DD-MM-YYYY") : "-");
 
 const transformApiResponse = response => {
-  response.observations = mapObservation(response.observations);
-  response.cancelObservations = mapObservation(response.cancelObservations);
+  response.observations = mapObservations(response.observations);
+  response.cancelObservations = mapObservations(response.cancelObservations);
 };
 
 const EditVisitLink = ({

@@ -5,7 +5,6 @@ import metadata from "./metadataReducer";
 import subjectProfile from "./subjectDashboardReducer";
 import subjectGenerel from "./generalSubjectDashboardReducer";
 import subjectProgram from "./programSubjectDashboardReducer";
-import { conceptReducer } from "../../common/store/conceptReducer";
 import programs from "./programReducer";
 import enrolmentReducer from "./programEnrolReducer";
 import viewVisitReducer from "./viewVisitReducer";
@@ -25,7 +24,6 @@ export default combineReducers({
   subjectProfile,
   subjectGenerel,
   subjectProgram,
-  conceptReducer,
   programs,
   enrolmentReducer,
   viewVisitReducer,

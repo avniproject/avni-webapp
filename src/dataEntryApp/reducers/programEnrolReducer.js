@@ -34,8 +34,9 @@ export const saveSubject = () => ({
   type: types.SAVE_SUBJECT
 });
 
-export const saveProgramEnrolment = () => ({
-  type: types.SAVE_PROGRAM_ENROLMENT
+export const saveProgramEnrolment = isExit => ({
+  type: types.SAVE_PROGRAM_ENROLMENT,
+  isExit
 });
 
 export const onLoad = (

@@ -26,7 +26,7 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
-  onSave: saveProgramEnrolment,
+  onSave: () => saveProgramEnrolment(false),
   setValidationResults,
   setFilteredFormElements
 };

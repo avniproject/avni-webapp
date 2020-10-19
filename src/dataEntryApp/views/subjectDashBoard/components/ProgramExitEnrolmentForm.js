@@ -28,12 +28,15 @@ const mapFormStateToProps = state => ({
   filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
   entity: state.dataEntry.enrolmentReducer.programEnrolment
 });
-//need to change observations
-const mapFormDispatchToProps = {
-  updateObs,
-  onSave: saveProgramEnrolment,
-  setValidationResults,
-  setFilteredFormElements
+
+const mapFormDispatchToProps = dispatch => {
+  return {
+    updateObs: (formElement, value) => dispatch(updateObs(formElement, value)),
+    onSave: () => dispatch(saveProgramEnrolment(true)),
+    setValidationResults: validationResults => dispatch(setValidationResults(validationResults)),
+    setFilteredFormElements: filteredFormElements =>
+      dispatch(setFilteredFormElements(filteredFormElements))
+  };
 };
 
 const ProgramExitEnrolmentForm = withRouter(

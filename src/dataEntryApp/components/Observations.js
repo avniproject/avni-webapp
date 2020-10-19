@@ -5,7 +5,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { Observation } from "avni-models";
-import { ConceptService, i18n } from "../services/ConceptService";
+import { conceptService, i18n } from "../services/ConceptService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
-  const conceptService = new ConceptService();
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
