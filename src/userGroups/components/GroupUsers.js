@@ -115,7 +115,10 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
         ]}
         options={{
           actionsColumnIndex: 3,
-          searchFieldAlignment: "left"
+          searchFieldAlignment: "left",
+          headerStyle: {
+            zIndex: 0
+          }
         }}
         localization={{
           header: { actions: "Remove" }
