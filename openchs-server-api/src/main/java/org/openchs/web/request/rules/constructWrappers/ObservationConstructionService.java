@@ -1,11 +1,7 @@
 package org.openchs.web.request.rules.constructWrappers;
 
-import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.GenderRepository;
-import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.request.ObservationRequestEntity;
@@ -15,10 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

@@ -6,6 +6,7 @@ import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
+import org.openchs.domain.ObservationCollection;
 import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
 import org.openchs.service.EncounterService;
@@ -16,6 +17,7 @@ import org.openchs.web.request.EncounterContract;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncountersContract;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.response.EncounterResponse;
 import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
@@ -154,6 +156,17 @@ public class EncounterController extends AbstractController<Encounter> implement
         PointRequest cancelLocation = request.getCancelLocation();
         if (cancelLocation != null)
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
+
+        Decisions decisions = request.getDecisions();
+        if(decisions != null) {
+            ObservationCollection observationsFromDecisions = observationService
+                    .createObservationsFromDecisions(decisions.getEncounterDecisions());
+            if(decisions.isCancel()) {
+                encounter.getCancelObservations().putAll(observationsFromDecisions);
+            } else {
+                encounter.getObservations().putAll(observationsFromDecisions);
+            }
+        }
 
         encounterRepository.save(encounter);
         if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {

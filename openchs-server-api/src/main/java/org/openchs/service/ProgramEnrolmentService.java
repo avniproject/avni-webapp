@@ -8,6 +8,7 @@ import org.openchs.geo.Point;
 import org.openchs.web.AbstractController;
 import org.openchs.web.IndividualController;
 import org.openchs.web.request.*;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,17 @@ public class ProgramEnrolmentService {
             programEnrolment.setExitLocation(new Point(exitLocation.getX(), exitLocation.getY()));
         programEnrolment.setObservations(observationService.createObservations(request.getObservations()));
         programEnrolment.setProgramExitObservations(observationService.createObservations(request.getProgramExitObservations()));
+
+        Decisions decisions = request.getDecisions();
+        if(decisions != null) {
+            ObservationCollection observationsFromDecisions = observationService
+                    .createObservationsFromDecisions(decisions.getEnrolmentDecisions());
+            if(decisions.isExit()) {
+                programEnrolment.getProgramExitObservations().putAll(observationsFromDecisions);
+            } else {
+                programEnrolment.getObservations().putAll(observationsFromDecisions);
+            }
+        }
 
         if (programEnrolment.isNew()) {
             Individual individual = individualRepository.findByUuid(request.getIndividualUUID());

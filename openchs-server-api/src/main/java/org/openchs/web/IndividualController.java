@@ -2,15 +2,13 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.AddressLevel;
-import org.openchs.domain.Gender;
-import org.openchs.domain.Individual;
-import org.openchs.domain.SubjectType;
+import org.openchs.domain.*;
 import org.openchs.geo.Point;
 import org.openchs.projection.IndividualWebProjection;
 import org.openchs.service.*;
 import org.openchs.util.S;
 import org.openchs.web.request.*;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.response.ResponsePage;
 import org.openchs.web.response.SubjectResponse;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualSearchService individualSearchService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService,EncounterService encounterService,IndividualSearchService individualSearchService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService, EncounterService encounterService, IndividualSearchService individualSearchService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -62,7 +60,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.encounterService = encounterService;
-        this.individualSearchService=individualSearchService;
+        this.individualSearchService = individualSearchService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -102,8 +100,14 @@ public class IndividualController extends AbstractController<Individual> impleme
 
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
+        Decisions decisions = individualRequest.getDecisions();
+        if (decisions != null) {
+            ObservationCollection observationsFromDecisions = observationService
+                    .createObservationsFromDecisions(decisions.getRegistrationDecisions());
+            individual.getObservations().putAll(observationsFromDecisions);
+        }
         individualRepository.save(individual);
-        if(individualRequest.getVisitSchedules() != null && individualRequest.getVisitSchedules().size() > 0) {
+        if (individualRequest.getVisitSchedules() != null && individualRequest.getVisitSchedules().size() > 0) {
             encounterService.saveVisitSchedules(individualRequest.getUuid(), individualRequest.getVisitSchedules(), null);
         }
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
@@ -134,13 +138,13 @@ public class IndividualController extends AbstractController<Individual> impleme
         IndividualRepository repo = this.individualRepository;
         return repo.findAll(
                 where(repo.getFilterSpecForName(name))
-                .and(repo.getFilterSpecForSubjectTypeId(subjectTypeUUID))
-                .and(repo.getFilterSpecForVoid(false))
+                        .and(repo.getFilterSpecForSubjectTypeId(subjectTypeUUID))
+                        .and(repo.getFilterSpecForVoid(false))
                 , pageable)
                 .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
     }
 
-    @PostMapping(value= "/web/searchAPI/v2")
+    @PostMapping(value = "/web/searchAPI/v2")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> getSearch(@RequestBody String searchQuery) {
@@ -191,9 +195,9 @@ public class IndividualController extends AbstractController<Individual> impleme
             @PathVariable String uuid,
             @RequestParam(value = "encounterDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime encounterDateTime,
             @RequestParam(value = "earliestVisitDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime earliestVisitDateTime,
-            @RequestParam(value = "encounterTypeUuids",required = false) String encounterTypeUuids,
+            @RequestParam(value = "encounterTypeUuids", required = false) String encounterTypeUuids,
             Pageable pageable) {
-        return encounterService.getAllCompletedEncounters(uuid,encounterTypeUuids,encounterDateTime,earliestVisitDateTime,pageable);
+        return encounterService.getAllCompletedEncounters(uuid, encounterTypeUuids, encounterDateTime, earliestVisitDateTime, pageable);
     }
 
     @Override

@@ -93,15 +93,17 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @GetMapping(value = "/web/concept/usage/{uuid}")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @ResponseBody
-    public ConceptUsageContract getConceptUsage(@PathVariable String uuid) {
+    public ResponseEntity<ConceptUsageContract> getConceptUsage(@PathVariable String uuid) {
         ConceptUsageContract conceptUsageContract = new ConceptUsageContract();
         Concept concept = conceptRepository.findByUuid(uuid);
+        if (concept == null)
+            return ResponseEntity.notFound().build();
         if (ConceptDataType.NA.toString().equals(concept.getDataType())) {
             conceptService.addDependentConcepts(conceptUsageContract, concept);
         } else {
             conceptService.addDependentFormDetails(conceptUsageContract, concept);
         }
-        return conceptUsageContract;
+        return ResponseEntity.ok(conceptUsageContract);
     }
 
     @GetMapping(value = "/codedConcepts")

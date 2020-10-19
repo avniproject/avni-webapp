@@ -2,8 +2,10 @@ package org.openchs.service;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.*;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.*;
-import org.openchs.web.request.rules.constructWrappers.ObservationConstructionService;
+import org.openchs.web.request.rules.RulesContractWrapper.Decision;
+import org.openchs.web.request.rules.response.DecisionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,92 @@ public class ObservationService {
                 .collect(Collectors
                         .toConcurrentMap((it -> it.getKey().getUuid()), SimpleEntry::getValue, (oldVal, newVal) -> newVal));
         return new ObservationCollection(completedObservationRequests);
+    }
+
+    public ObservationCollection createObservationsFromDecisions(List<Decision> decisions) {
+        Map<String, Object> observations = new HashMap<>();
+        for (Decision decision : decisions) {
+            String conceptName = decision.getName();
+            Concept concept = conceptRepository.findByName(conceptName);
+            if (concept == null) {
+                throw new NullPointerException(String.format("Concept with name=%s not found", conceptName));
+            }
+            String conceptUUID = concept.getUuid();
+            String dataType = concept.getDataType();
+            Object value;
+            Object decisionValue = decision.getValue();
+            switch (ConceptDataType.valueOf(dataType)) {
+                case Coded: {
+                    //TODO: validate that value is part of the concept answers set.
+                    if (decisionValue instanceof Collection<?>) {
+                        List<String> array = (List) decisionValue;
+                        value = array.stream().map(answerConceptName -> {
+                            Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                            if (answerConcept == null)
+                                throw new NullPointerException(String.format("Answer concept with name=%s not found", answerConceptName));
+                            return answerConcept.getUuid();
+                        }).toArray();
+                    } else {
+                        String answerConceptName = (String) decisionValue;
+                        Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                        if (answerConcept == null)
+                            throw new NullPointerException(String.format("Answer concept with name=%s not found", answerConceptName));
+                        value = answerConcept.getUuid();
+                    }
+                    break;
+                }
+                default: {
+                    value = decisionValue;
+                    break;
+                }
+            }
+            observations.put(conceptUUID, value);
+        }
+        return new ObservationCollection(observations);
+    }
+
+    public List<ObservationContract> createObservationContractsFromDecisions(List<DecisionResponse> decisions) {
+        List<ObservationContract> observationContracts = new ArrayList<>();
+        for (DecisionResponse decision : decisions) {
+            ObservationContract observationContract = new ObservationContract();
+            String conceptName = decision.getName();
+            Concept concept = conceptRepository.findByName(conceptName);
+            if (concept == null) {
+                throw new BadRequestError(String.format("Concept with name=%s not found", conceptName));
+            }
+            String dataType = concept.getDataType();
+            Object value;
+            Object decisionValue = decision.getValue();
+            switch (ConceptDataType.valueOf(dataType)) {
+                case Coded: {
+                    //TODO: validate that value is part of the concept answers set.
+                    if (decisionValue instanceof Collection<?>) {
+                        List<String> array = (List) decisionValue;
+                        value = array.stream().map(answerConceptName -> {
+                            Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                            if (answerConcept == null)
+                                throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
+                            return answerConcept.getUuid();
+                        }).toArray();
+                    } else {
+                        String answerConceptName = (String) decisionValue;
+                        Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                        if (answerConcept == null)
+                            throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
+                        value = answerConcept.getUuid();
+                    }
+                    break;
+                }
+                default: {
+                    value = decisionValue;
+                    break;
+                }
+            }
+            observationContract.setConcept(concept.toConceptContract());
+            observationContract.setValue(value);
+            observationContracts.add(observationContract);
+        }
+        return observationContracts;
     }
 
     public Object getObservationValue(String conceptName, ProgramEncounter programEncounter) {
@@ -106,7 +194,7 @@ public class ObservationService {
     }
 
     private void validateAnswer(Concept question, String uuid) {
-        if(question.getConceptAnswers().stream().noneMatch(ans -> ans.getAnswerConcept().getUuid().equals(uuid))) {
+        if (question.getConceptAnswers().stream().noneMatch(ans -> ans.getAnswerConcept().getUuid().equals(uuid))) {
             throw new IllegalArgumentException(String.format("Concept answer '%s' not found in Concept '%s'", uuid, question.getUuid()));
         }
     }
@@ -134,32 +222,7 @@ public class ObservationService {
             Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
             ConceptContract conceptContract = ConceptContract.create(questionConcept);
             observationContract.setConcept(conceptContract);
-            Object value = entry.getValue();
-            if (questionConcept.getDataType().equalsIgnoreCase(ConceptDataType.Coded.toString())) {
-                List<String> answers = value instanceof List ? (List<String>) value : singletonList(value.toString());
-                if (value instanceof List) {
-                    List<ConceptContract> answerConceptList = questionConcept.getConceptAnswers().stream()
-                            .filter(it ->
-                                    answers.contains(it.getAnswerConcept().getUuid())
-                            ).map(it -> {
-                                ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
-                                cc.setAbnormal(it.isAbnormal());
-                                return cc;
-                            }).collect(Collectors.toList());
-                    observationContract.setValue(answerConceptList);
-                } else {
-                    ConceptAnswer conceptAnswer = questionConcept.getConceptAnswers().stream()
-                            .filter(it -> value.equals(it.getAnswerConcept().getUuid())).findFirst().orElse(null);
-                    if(conceptAnswer != null) {
-                        ConceptContract cc = ConceptContract.create(conceptAnswer.getAnswerConcept());
-                        cc.setAbnormal(conceptAnswer.isAbnormal());
-                        observationContract.setValue(cc);
-                    }
-
-                }
-            } else {
-                observationContract.setValue(value);
-            }
+            observationContract.setValue(entry.getValue());
             return observationContract;
         }).collect(Collectors.toList());
     }

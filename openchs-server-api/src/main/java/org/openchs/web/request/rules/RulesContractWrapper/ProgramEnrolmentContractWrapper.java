@@ -15,7 +15,7 @@ import java.util.Set;
 public class ProgramEnrolmentContractWrapper {
     private IndividualContractWrapper subject;
     private RuleRequestEntity rule;
-    private List<VisitSchedule> visitSchedules;
+    private List<VisitSchedule> visitSchedules = new ArrayList<>();
     private DateTime enrolmentDateTime;
     private DateTime programExitDateTime;
     private String uuid;

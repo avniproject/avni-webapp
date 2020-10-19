@@ -13,6 +13,7 @@ import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEncountersContract;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,17 @@ public class ProgramEncounterService {
         PointRequest cancelLocation = request.getCancelLocation();
         if (cancelLocation != null)
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
+
+        Decisions decisions = request.getDecisions();
+        if(decisions != null) {
+            ObservationCollection observationsFromDecisions = observationService
+                    .createObservationsFromDecisions(decisions.getEncounterDecisions());
+            if(decisions.isCancel()) {
+                encounter.getCancelObservations().putAll(observationsFromDecisions);
+            } else {
+                encounter.getObservations().putAll(observationsFromDecisions);
+            }
+        }
 
         programEncounterRepository.save(encounter);
         logger.info(String.format("Saved programEncounter with uuid %s", request.getUuid()));

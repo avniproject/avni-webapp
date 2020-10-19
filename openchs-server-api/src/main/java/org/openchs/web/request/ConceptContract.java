@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.KeyValues;
 import org.openchs.domain.Concept;
+import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,13 +41,16 @@ public class ConceptContract extends ReferenceDataContract {
         conceptContract.setLowNormal(concept.getLowNormal());
         conceptContract.setHighAbsolute(concept.getHighAbsolute());
         conceptContract.setHighNormal(concept.getHighNormal());
-        List<ConceptContract> answerConceptList = concept.getConceptAnswers().stream()
-                .map(it -> {
-                    ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
-                    cc.setAbnormal(it.isAbnormal());
-                    return cc;
+        List<ConceptContract> answerConceptContracts = concept.getConceptAnswers().stream()
+                .map((ConceptAnswer answer) -> {
+                    Concept answerConcept = answer.getAnswerConcept();
+                    ConceptContract answerConceptContract = ConceptContract.create(answerConcept);
+                    answerConceptContract.setOrder(answer.getOrder());
+                    answerConceptContract.setAbnormal(answer.isAbnormal());
+                    answerConceptContract.setUnique(answer.isUnique());
+                    return answerConceptContract;
                 }).collect(Collectors.toList());
-        conceptContract.setAnswers(answerConceptList);
+        conceptContract.setAnswers(answerConceptContracts);
         return conceptContract;
     }
 

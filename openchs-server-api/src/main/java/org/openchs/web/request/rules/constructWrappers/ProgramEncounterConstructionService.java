@@ -95,6 +95,19 @@ public class ProgramEncounterConstructionService {
         }).collect(Collectors.toList());
     }
 
+    public List<VisitSchedule> constructIndividualVisitScheduleContract(String uuid) {
+        Individual individual = individualRepository.findByUuid(uuid);
+        return individual == null ? new ArrayList<>() : individual.getEncounters().stream().map(encounter -> {
+            VisitSchedule visitSchedule = new VisitSchedule();
+            visitSchedule.setEarliestDate(encounter.getEarliestVisitDateTime());
+            visitSchedule.setMaxDate(encounter.getMaxVisitDateTime());
+            visitSchedule.setName(encounter.getName());
+            visitSchedule.setUuid(encounter.getUuid());
+            visitSchedule.setEncounterType(encounter.getEncounterType().getOperationalEncounterTypeName());
+            return visitSchedule;
+        }).collect(Collectors.toList());
+    }
+
     private EncounterTypeContract constructEncounterType(String encounterTypeUuid) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         EncounterTypeContract encounterTypeContract = new EncounterTypeContract();

@@ -22,6 +22,8 @@ public class EncounterContractWrapper {
     private DateTime encounterDateTime;
     private List<ObservationModelContract> cancelObservations;
     private Boolean voided;
+    private List<VisitSchedule> visitSchedules;
+
 
     public Boolean getVoided() {
         return voided;
@@ -131,4 +133,11 @@ public class EncounterContractWrapper {
         return contract;
     }
 
+    public List<VisitSchedule> getVisitSchedules() {
+        return visitSchedules;
+    }
+
+    public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
+        this.visitSchedules = visitSchedules;
+    }
 }

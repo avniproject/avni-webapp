@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 public class EncounterRequest extends AbstractEncounterRequest {
     private String individualUUID;
     private List<VisitSchedule> visitSchedules;
+    private Decisions decisions;
 
     public String getIndividualUUID() {
         return individualUUID;
@@ -24,5 +26,13 @@ public class EncounterRequest extends AbstractEncounterRequest {
 
     public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
         this.visitSchedules = visitSchedules;
+    }
+
+    public Decisions getDecisions() {
+        return decisions;
+    }
+
+    public void setDecisions(Decisions decisions) {
+        this.decisions = decisions;
     }
 }

@@ -41,6 +41,8 @@ public class IndividualContractWrapper {
 
     private List<EncounterContractWrapper> encounters;
 
+    private List<VisitSchedule> visitSchedules;
+
     public List<ProgramEnrolmentContractWrapper> getEnrolments() {
         return enrolments;
     }
@@ -151,5 +153,13 @@ public class IndividualContractWrapper {
 
     public void setRule(RuleRequestEntity rule) {
         this.rule = rule;
+    }
+
+    public List<VisitSchedule> getVisitSchedules() {
+        return visitSchedules;
+    }
+
+    public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
+        this.visitSchedules = visitSchedules;
     }
 }

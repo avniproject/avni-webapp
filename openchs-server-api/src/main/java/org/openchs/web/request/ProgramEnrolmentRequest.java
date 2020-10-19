@@ -1,6 +1,8 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.web.request.rules.RulesContractWrapper.Decision;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 
 import java.util.List;
@@ -10,6 +12,7 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
     private List<ObservationRequest> observations;
     private List<ObservationRequest> programExitObservations;
     private List<VisitSchedule> visitSchedules;
+    private Decisions decisions;
 
     public List<VisitSchedule> getVisitSchedules() {
         return visitSchedules;
@@ -53,5 +56,13 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
         ObservationRequest observation = findObservation(conceptName);
         if (observation == null) return null;
         return observation.getValue();
+    }
+
+    public Decisions getDecisions() {
+        return decisions;
+    }
+
+    public void setDecisions(Decisions decisions) {
+        this.decisions = decisions;
     }
 }

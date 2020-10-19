@@ -63,64 +63,6 @@ public class RuleController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/web/decisionrule", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
-    ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
-        RuleResponseEntity ruleResponseEntity = null;
-        if (requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
-                case INDIVIDUAL:
-                    ruleResponseEntity = ruleService.decisionRuleIndividualWorkFlow(requestEntityWrapper);
-                    break;
-                case PROGRAM_ENCOUNTER:
-                    ruleResponseEntity = ruleService.decisionRuleProgramEncounterWorkFlow(requestEntityWrapper);
-                    break;
-                case PROGRAM_ENROLMENT:
-                    ruleResponseEntity = ruleService.decisionRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
-                    break;
-                case ENCOUNTER:
-                    ruleResponseEntity = ruleService.decisionRuleEncounterWorkFlow(requestEntityWrapper);
-                    break;
-            }
-        }
-        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
-            return ResponseEntity.ok().body(ruleResponseEntity);
-        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
-            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
-        } else {
-            return ResponseEntity.badRequest().body(ruleResponseEntity);
-        }
-    }
-
-    @RequestMapping(value = "/web/visitrule", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
-    ResponseEntity<?> visitScheduleRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
-        RuleResponseEntity ruleResponseEntity = null;
-        if (requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
-                case PROGRAM_ENROLMENT:
-                    ruleResponseEntity = ruleService.visitScheduleRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
-                    break;
-                case PROGRAM_ENCOUNTER:
-                    ruleResponseEntity = ruleService.visitScheduleRuleProgramEncounterWorkFlow(requestEntityWrapper);
-                    break;
-                case ENCOUNTER:
-                    ruleResponseEntity = ruleService.visitScheduleRuleEncounterWorkFlow(requestEntityWrapper);
-                    break;
-                case INDIVIDUAL:
-                    ruleResponseEntity = ruleService.visitScheduleRuleIndividualWorkFlow(requestEntityWrapper);
-                    break;
-            }
-        }
-        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
-            return ResponseEntity.ok().body(ruleResponseEntity);
-        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
-            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
-        } else {
-            return ResponseEntity.badRequest().body(ruleResponseEntity);
-        }
-    }
-
     @RequestMapping(value = "/web/rules", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> executeServerSideRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {

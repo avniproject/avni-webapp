@@ -2,6 +2,7 @@ package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
+import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private String programEnrolmentUUID;
     private List<VisitSchedule> visitSchedules;
+    private Decisions decisions;
 
     public String getProgramEnrolmentUUID() {
         return programEnrolmentUUID;
@@ -37,4 +39,11 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         return programEncounterRequest;
     }
 
+    public Decisions getDecisions() {
+        return decisions;
+    }
+
+    public void setDecisions(Decisions decisions) {
+        this.decisions = decisions;
+    }
 }
