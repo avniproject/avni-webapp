@@ -151,7 +151,7 @@ export function* saveProgramEnrolmentWorker(params) {
     const programEnrolment = yield select(selectProgramEnrolment);
     const visitSchedules = yield select(selectVisitSchedules);
     const decisions = yield select(selectDecisions);
-    decisions.exit = params.isExit;
+    if (decisions) decisions.exit = params.isExit;
 
     let resource = programEnrolment.toResource;
     resource.visitSchedules = visitSchedules;
