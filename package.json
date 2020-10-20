@@ -66,7 +66,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
+    "start": "react-scripts --max_old_space_size=2048 start",
     "build": "react-scripts --max_old_space_size=4096 build",
     "build:development": "env-cmd -f .env.development yarn run build",
     "test": "react-scripts test",

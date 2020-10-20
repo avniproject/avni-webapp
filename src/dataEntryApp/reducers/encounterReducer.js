@@ -48,8 +48,9 @@ export const updateObs = (formElement, value) => ({
   value
 });
 
-export const saveEncounter = () => ({
-  type: types.SAVE_ENCOUNTER
+export const saveEncounter = isCancel => ({
+  type: types.SAVE_ENCOUNTER,
+  isCancel
 });
 
 export const saveEncounterComplete = () => ({

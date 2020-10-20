@@ -38,7 +38,7 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs: updateCancelObs,
-  onSave: saveProgramEncounter,
+  onSave: () => saveProgramEncounter(true),
   setValidationResults,
   setFilteredFormElements
 };

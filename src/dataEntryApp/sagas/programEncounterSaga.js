@@ -29,7 +29,7 @@ import formElementService, { getFormElementStatuses } from "../services/FormElem
 import { setLoad } from "../reducers/loadReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
-  selectRulesResponse,
+  selectDecisions,
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 
@@ -150,12 +150,18 @@ export function* updateEncounterObsWorker({ formElement, value }) {
 export function* saveProgramEncounterWatcher() {
   yield takeLatest(types.SAVE_PROGRAM_ENCOUNTER, saveProgramEncounterWorker);
 }
-export function* saveProgramEncounterWorker() {
+export function* saveProgramEncounterWorker(params) {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
+
   const visitSchedules = yield select(selectVisitSchedules);
+  const decisions = yield select(selectDecisions);
+  if (decisions) decisions.cancel = params.isCancel;
+
   let resource = programEncounter.toResource;
   resource.visitSchedules = visitSchedules;
+  resource.decisions = decisions;
+
   yield call(api.saveProgramEncouter, resource);
   yield put(saveProgramEncounterComplete());
 }
