@@ -71,7 +71,9 @@
     "build:development": "env-cmd -f .env.development yarn run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prettier-all": "prettier --write \"src/**/*.js\""
+    "prettier-all": "prettier --write \"src/**/*.js\"",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open"
   },
   "husky": {
     "hooks": {
@@ -90,6 +92,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.1.0",
     "chai": "^4.2.0",
+    "cypress": "^5.1.0",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^3.0.1",
     "prettier": "1.17.1",

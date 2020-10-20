@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  cypress: cypress-io/cypress@1.26.0
 commands:
   deploy:
     description: "Deployment of webapp"
@@ -122,6 +124,12 @@ workflows:
   version: 2
   test_and_build:
     jobs:
+      - cypress/run:
+          yarn: true
+          store_artifacts: true
+          post-steps:
+            - store_test_results:
+                path: cypress/results
       - app_test
       - app_build:
           requires:
