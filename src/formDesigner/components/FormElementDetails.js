@@ -399,8 +399,7 @@ function FormElementDetails(props) {
         )}
       </Paper>
       {(props.formElementData.concept.dataType === "Coded" ||
-        props.formElementData.concept.dataType === "Subject" ||
-        props.formElementData.concept.dataType === "Location") && (
+        props.formElementData.concept.dataType === "Subject") && (
         <>
           <Grid item sm={6}>
             {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
