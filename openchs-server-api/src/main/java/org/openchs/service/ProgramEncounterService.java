@@ -13,6 +13,7 @@ import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEncountersContract;
+import org.openchs.web.request.rules.RulesContractWrapper.Decision;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 import org.slf4j.LoggerFactory;
@@ -131,7 +132,8 @@ public class ProgramEncounterService {
             return;
 
         encounter.setEncounterDateTime(request.getEncounterDateTime());
-        encounter.setProgramEnrolment(programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID()));
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID());
+        encounter.setProgramEnrolment(programEnrolment);
         encounter.setEncounterType(encounterType);
         encounter.setObservations(observationService.createObservations(request.getObservations()));
         encounter.setName(request.getName());
@@ -147,14 +149,20 @@ public class ProgramEncounterService {
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         Decisions decisions = request.getDecisions();
-        if(decisions != null) {
+        if (decisions != null) {
             ObservationCollection observationsFromDecisions = observationService
                     .createObservationsFromDecisions(decisions.getEncounterDecisions());
-            if(decisions.isCancel()) {
+            if (decisions.isCancel()) {
                 encounter.getCancelObservations().putAll(observationsFromDecisions);
             } else {
                 encounter.getObservations().putAll(observationsFromDecisions);
             }
+            List<Decision> enrolmentDecisions = decisions.getEnrolmentDecisions();
+            if (enrolmentDecisions != null) {
+                ObservationCollection enrolmentObservations = observationService.createObservationsFromDecisions(enrolmentDecisions);
+                programEnrolment.getObservations().putAll(enrolmentObservations);
+            }
+
         }
 
         programEncounterRepository.save(encounter);
