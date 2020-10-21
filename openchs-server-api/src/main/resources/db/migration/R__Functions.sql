@@ -56,13 +56,7 @@ CREATE OR REPLACE FUNCTION create_audit()
           FOREACH uuidTxt IN ARRAY values
      LOOP
        select replace(uuidTxt,'"','') into uuidTxt;
-        returnSql:=returnSql ||
-                   '(case when JSONB_TYPEOF( ' || trim(tableAlise) || '.observations -> ' || '''' ||
-                   trim(uuidkey) || ''') = ''array''
-                            then ' || trim(tableAlise) || '.observations -> ' || '''' || trim(uuidkey) || ''' @>
-                                 to_jsonb(' || '''' || trim(uuidTxt) || '''' || '::text)
-                        else ' || trim(tableAlise) || '.observations ->> ' || '''' || trim(uuidkey) || ''' =
-                             ' || '''' || trim(uuidTxt) || ''' end)';
+        returnSql:=returnSql || trim(tableAlise) || '.observations ->>  ' ||''''|| trim(uuidkey) ||''''|| ' like ' || '''' || '%' || trim(uuidTxt) ||'%'||'''';
   		IF  (iteration<(arrayLength-1)) THEN
   		returnSql:=returnSql || ' OR ';
 
@@ -76,7 +70,7 @@ CREATE OR REPLACE FUNCTION create_audit()
     LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION get_outer_query(searchjson text, latestVisitFilter text)
+CREATE OR REPLACE FUNCTION get_outer_query(searchjson text)
   RETURNS text AS
 $BODY$
 DECLARE
@@ -150,22 +144,7 @@ select searchJSON::json->>'pageElement' into pageElement;
 	    limitVal:=numberOfRecordPerPage::numeric;
 	    offsetVal:=((pageNumber + 1) *limitVal)-limitVal;
 
-	    sqlOuterQuery:=' SELECT id,
-           firstname,
-           lastname,
-           fullname,
-           uuid,
-           title_lineage,
-           subject_type_name,
-           gender_name,
-           date_of_birth date,
-           enrolments,
-           age,
-           total_elements
-    FROM cte
-         RIGHT JOIN (SELECT count(*) FROM cte '|| latestVisitFilter || ') c(total_elements) ON true' ||
-                       latestVisitFilter ||
-                       'ORDER  BY cte.'|| trim (sortColumn) ||' '||sortOrder||'  LIMIT '|| limitVal ||' OFFSET '|| offsetVal;
+	    sqlOuterQuery:=' SELECT * FROM  ( TABLE  cte  ORDER  BY cte.'||trim(sortColumn) ||' '||sortOrder||'  LIMIT '|| limitVal ||' OFFSET '|| offsetVal  ||' ) sub RIGHT  JOIN (SELECT count(*) FROM cte) c(total_elements) ON true ';
         RETURN sqlOuterQuery;
 END;
 $BODY$
@@ -191,6 +170,7 @@ maxDate  text;
 valueTxt text;
 uuidKey text;
 textConceptObj text;
+registrationDateVal JSONB;
 searchScope text;
 conceptDataType text;
 searchAll text;
@@ -198,38 +178,17 @@ widgetType text;
 minValue text;
 maxValue  text;
 sqlRoleQuery text;
-fetchLatestEncounter boolean;
-fetchLatestProgramEncounter boolean;
-latestVisitCondition text;
-partitionedEncounterCTE text;
-partitionedProgramEncounterCTE text;
 BEGIN
 sqlRoleQuery:='set role ';
 IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = dbUser) THEN
     EXECUTE sqlRoleQuery || quote_ident(trim(dbUser));
 END IF;
 whereClause:=' where true=true ';
-fetchLatestEncounter := false;
-fetchLatestProgramEncounter := false;
-latestVisitCondition := ' where true=true ';
-partitionedEncounterCTE := 'partitioned_encounter as (
-    select *,
-           row_number()
-           over (partition by individual_id, encounter_type_id order by encounter_date_time desc ) visit_number
-    from encounter
-    where encounter_date_time notnull
-)';
-partitionedProgramEncounterCTE := 'partitioned_program_encounter as (
-    select enc.*,
-           row_number()
-           over (partition by individual_id, encounter_type_id order by encounter_date_time desc ) visit_number
-    from program_encounter enc
-             join program_enrolment pe on enc.program_enrolment_id = pe.id
-    where encounter_date_time notnull
-)';
 select searchText::JSONB into searchJSON;-- to cast json text to jsonb object
-sqlQueryBase:='select distinct ind.id::text as id, ind.first_name::text as firstname ,ind.last_name::text as lastname,concat(ind.first_name,'' '',ind.last_name)::text as fullname,ind.uuid::text as uuid,tlv.title_lineage::text as title_lineage ,st.name::text as subject_type_name,gender.name ::text as gender_name,ind.date_of_birth::date as date_of_birth,enrolments.program_name::text as enrolments, date_part(''year''::text, age(now(), ind.date_of_birth::timestamp with time zone))::numeric as age, enc.visit_number as encounter_visit_number, penc.visit_number as program_encounter_visit_number   from individual ind ';
-sqlQueryJoins:='  LEFT JOIN gender gender ON ind.gender_id=gender.id INNER JOIN subject_type st ON st.id =ind.subject_type_id INNER JOIN title_lineage_locations_view tlv ON tlv.lowestpoint_id = ind.address_id LEFT JOIN individual_program_enrolment_search_view enrolments ON ind.id=enrolments.individual_id LEFT JOIN partitioned_encounter enc ON enc.individual_id=ind.id LEFT JOIN program_enrolment penr ON penr.individual_id=ind.id LEFT JOIN partitioned_program_encounter penc ON penr.id = penc.program_enrolment_id   ';
+sqlQueryBase:='select distinct ind.id::text as id, ind.first_name::text as firstname ,ind.last_name::text as lastname,concat(ind.first_name,'' '',ind.last_name)::text as fullname,ind.uuid::text as uuid,tlv.title_lineage::text as title_lineage ,st.name::text as subject_type_name,gender.name ::text as gender_name,ind.date_of_birth::date as date_of_birth,enrolments.program_name::text as enrolments, date_part(''year''::text, age(now(), ind.date_of_birth::timestamp with time zone))::numeric as age   from individual ind ';
+sqlQueryJoins:='  LEFT JOIN gender gender ON ind.gender_id=gender.id INNER JOIN subject_type st ON st.id =ind.subject_type_id INNER JOIN title_lineage_locations_view tlv ON tlv.lowestpoint_id = ind.address_id LEFT JOIN individual_program_enrolment_search_view enrolments ON ind.id=enrolments.individual_id LEFT JOIN encounter enc ON enc.individual_id=ind.id LEFT JOIN program_enrolment penr ON penr.individual_id=ind.id LEFT JOIN program_encounter penc ON penr.id = penc.program_enrolment_id   ';
+
+select get_outer_query(searchtext)into sqlOuterQuery;
 
 select searchJSON::json->>'searchAll' into searchAll;
 
@@ -372,6 +331,13 @@ WHEN (_key ='concept') THEN
 			select substring(valueTxt , '\[(.+)\]') into valueTxt;
 			select get_observation_pattern('ind',uuidKey,valueTxt)into valueTxt;
 			whereClause:=whereClause || valueTxt;
+
+		ELSE
+			select textConceptObj::json->>'value' into valueTxt;
+			IF valueTxt IS NOT NULL AND trim(valueTxt)!='' THEN
+				select get_observation_pattern('ind',uuidKey,valueTxt)into valueTxt;
+				whereClause:=whereClause || valueTxt;
+			END IF;
 		END IF;
 -- for individual concept search end
 
@@ -380,6 +346,12 @@ WHEN (_key ='concept') THEN
 			select substring(valueTxt , '\[(.+)\]') into valueTxt;
 			select get_observation_pattern('penr',uuidKey,valueTxt)into valueTxt;
 			whereClause:=whereClause || valueTxt;
+		ELSE
+			select textConceptObj::json->>'value' into valueTxt;
+			IF valueTxt IS NOT NULL AND trim(valueTxt)!='' THEN
+				select get_observation_pattern('penr',uuidKey,valueTxt)into valueTxt;
+				whereClause:=whereClause || valueTxt;
+			END IF;
 		END IF;
 -- for program enrolment concept search  end
 
@@ -388,7 +360,12 @@ WHEN (_key ='concept') THEN
 			select substring(valueTxt , '\[(.+)\]') into valueTxt;
 			select get_observation_pattern('penc',uuidKey,valueTxt)into valueTxt;
 			whereClause:=whereClause || valueTxt;
-            fetchLatestProgramEncounter := true;
+		ELSE
+			select textConceptObj::json->>'value' into valueTxt;
+				IF valueTxt IS NOT NULL AND trim(valueTxt)!='' THEN
+					select get_observation_pattern('penc',uuidKey,valueTxt)into valueTxt;
+					whereClause:=whereClause || valueTxt;
+				END IF;
 		END IF;
 -- for program encounter concept search  end
 
@@ -397,7 +374,12 @@ WHEN (_key ='concept') THEN
 			select substring(valueTxt , '\[(.+)\]') into valueTxt;
 			select get_observation_pattern('enc',uuidKey,valueTxt)into valueTxt;
 			whereClause:=whereClause || valueTxt;
-            fetchLatestEncounter := true;
+		ELSE
+			select textConceptObj::json->>'value' into valueTxt;
+				IF valueTxt IS NOT NULL AND trim(valueTxt)!='' THEN
+					select get_observation_pattern('enc',uuidKey,valueTxt)into valueTxt;
+					whereClause:=whereClause || valueTxt;
+				END IF;
 		END IF;
 -- for program encounter concept search  end
 END IF;
@@ -423,12 +405,10 @@ END IF;
 
 		IF valueTxt IS NOT NULL AND trim(valueTxt)!=''  AND trim(searchScope)='programEncounter'  THEN
 			whereClause:=whereClause || ' and penc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ' ILIKE ' || '''' ||'%'|| trim(valueTxt) || '%'||'''' ;
-            fetchLatestProgramEncounter := true;
 		END IF;
 
 		IF valueTxt IS NOT NULL AND trim(valueTxt)!=''  AND trim(searchScope)='encounter'  THEN
 			whereClause:=whereClause || ' and enc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ' ILIKE ' || '''' ||'%'|| trim(valueTxt) || '%'||'''' ;
-            fetchLatestEncounter := true;
 		END IF;
 END IF;
 
@@ -467,11 +447,10 @@ END IF;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric >= ' || minValue||'::numeric ' ;
 			whereClause:=whereClause || ' and (enc.observations ->> ' ||''''|| trim(uuidKey) ||''''|| ' )::numeric  <=  ' || maxValue||'::numeric ' ;
-            fetchLatestEncounter := true;
 			ELSIF trim(searchScope)='encounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric = ' || minValue||'::numeric ' ;
-                fetchLatestEncounter := true;
+
 		END IF;
 
 		IF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='RANGE'  THEN
@@ -479,11 +458,10 @@ END IF;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric >= ' || minValue||'::numeric ' ;
 			whereClause:=whereClause || ' and (penc.observations ->> ' ||''''|| trim(uuidKey) ||''''|| ' )::numeric  <=  ' || maxValue||'::numeric ' ;
-            fetchLatestProgramEncounter := true;
 			ELSIF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric = ' || minValue||'::numeric ' ;
-                fetchLatestProgramEncounter := true;
+
 		END IF;
 
 searchScope:='';widgetType:='';
@@ -526,11 +504,10 @@ END IF;
 			select string_agg(quote_literal(trim(elem)), ',')from unnest(string_to_array(textArray, ',')) elem into valueTxt;
 			whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE >= ' ||''''|| minValue||''''||'::DATE ' ;
 			whereClause:=whereClause || ' and (enc.observations ->> ' ||''''|| uuidKey ||''''|| ' )::DATE  <=  ' ||''''|| maxValue||''''||'::DATE ' ;
-            fetchLatestEncounter := true;
 			ELSIF trim(searchScope)='encounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE = '||'''' || minValue||''''||'::DATE ' ;
-                fetchLatestEncounter := true;
+
 		END IF;
 
 		IF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='RANGE'  THEN
@@ -539,11 +516,10 @@ END IF;
 			select string_agg(quote_literal(trim(elem)), ',')from unnest(string_to_array(textArray, ',')) elem into valueTxt;
 			whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE >= '||'''' || minValue||''''||'::DATE ' ;
 			whereClause:=whereClause || ' and (penc.observations ->> ' ||''''|| uuidKey ||''''|| ' )::DATE  <=  '||'''' || maxValue||''''||'::DATE ' ;
-            fetchLatestProgramEncounter := true;
 			ELSIF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE = '||'''' || minValue||''''||'::DATE ' ;
-                fetchLatestProgramEncounter := true;
+
 		END IF;
 searchScope:='';widgetType:='';
 
@@ -566,17 +542,10 @@ END CASE;
 whereClause:=whereClause || ' and ind.observations::text ilike '|| '''' ||  '%' || TRIM(searchAll) || '%' || '''';
 whereClause:=whereClause || ' or penr.observations::text ilike '|| '''' || '%' || TRIM(searchAll) || '%' || '''';
     END IF;
-IF fetchLatestEncounter THEN
-latestVisitCondition = latestVisitCondition || ' AND encounter_visit_number = 1 ';
-END IF;
-IF fetchLatestProgramEncounter THEN
-    latestVisitCondition = latestVisitCondition || ' AND program_encounter_visit_number = 1 ';
-END IF;
-select get_outer_query(searchtext, latestVisitCondition)into sqlOuterQuery;
+
 sqlQuery:=sqlQueryBase || sqlQueryJoins || whereClause ;
-sqlQuery:= ' WITH ' || partitionedEncounterCTE || ',' || partitionedProgramEncounterCTE || ',' || ' cte AS ( ' ||
-           sqlQuery || ' ) ' || sqlOuterQuery;
-RAISE NOTICE '%', sqlQuery;
+sqlQuery:=' WITH cte AS ( ' || sqlQuery || ' ) ' || sqlOuterQuery;
+ --RAISE NOTICE '%', sqlQuery;
   return QUERY EXECUTE sqlQuery;
 END;
 $BODY$
