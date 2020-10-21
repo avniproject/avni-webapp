@@ -200,10 +200,9 @@ const DefaultPage = props => {
       addressLevelTypes,
       subject: { subjectType: { uuid } = null } = {}
     } = props;
-    const { addressLevels = {} } = find(
-      customRegistrationLocations,
-      ({ subjectTypeUUID }) => subjectTypeUUID === uuid
-    );
+    const { addressLevels = {} } =
+      !isEmpty(customRegistrationLocations) &&
+      find(customRegistrationLocations, ({ subjectTypeUUID }) => subjectTypeUUID === uuid);
     const addressLevelTypesToRender = isEmpty(addressLevels) ? addressLevelTypes : addressLevels;
     return (
       <>
