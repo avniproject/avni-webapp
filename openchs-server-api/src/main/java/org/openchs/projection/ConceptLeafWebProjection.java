@@ -1,5 +1,6 @@
 package org.openchs.projection;
 
+import org.openchs.application.KeyValues;
 import org.openchs.domain.Concept;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -13,4 +14,5 @@ public interface ConceptLeafWebProjection {
     Double getHighAbsolute();
     Double getLowNormal();
     Double getHighNormal();
+    KeyValues getKeyValues();
 }
