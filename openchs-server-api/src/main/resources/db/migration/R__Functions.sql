@@ -576,7 +576,7 @@ select get_outer_query(searchtext, latestVisitCondition)into sqlOuterQuery;
 sqlQuery:=sqlQueryBase || sqlQueryJoins || whereClause ;
 sqlQuery:= ' WITH ' || partitionedEncounterCTE || ',' || partitionedProgramEncounterCTE || ',' || ' cte AS ( ' ||
            sqlQuery || ' ) ' || sqlOuterQuery;
---RAISE NOTICE '%', sqlQuery;
+RAISE NOTICE '%', sqlQuery;
   return QUERY EXECUTE sqlQuery;
 END;
 $BODY$
