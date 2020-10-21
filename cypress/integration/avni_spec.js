@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
-describe("My First Test", () => {
-  it("Can create new Subject Type", () => {
+describe("Data Entry App", () => {
+  it("Can open new registration form", () => {
     cy.visit("https://staging.avniproject.org");
     cy.get("#username").type("admin@hiren2");
     cy.get("#password").type("password");
