@@ -15,7 +15,7 @@ const noOfKeysWithoutValues = file => {
 };
 
 const isInvalidFile = file => {
-  return !isEmpty(reject(file && file.json, isString));
+  return !file ? false : isEmpty(filter(file && file.json, isString));
 };
 
 export default ({ locales = [], onSuccessfulImport }) => {
