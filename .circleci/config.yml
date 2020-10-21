@@ -124,12 +124,6 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - cypress/run:
-          yarn: true
-          store_artifacts: true
-          post-steps:
-            - store_test_results:
-                path: cypress/results
       - app_test
       - app_build:
           requires:
@@ -140,6 +134,14 @@ workflows:
               only: master
           requires:
             - app_build
+      - cypress/run:
+          yarn: true
+          store_artifacts: true
+          requires:
+            - STAGING_deploy
+          post-steps:
+            - store_test_results:
+                path: cypress/results
       - UAT_approve:
           type: approval
           requires:
