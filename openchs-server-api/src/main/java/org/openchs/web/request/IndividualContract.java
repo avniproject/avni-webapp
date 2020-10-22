@@ -1,5 +1,6 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openchs.web.request.common.CommonIndividualRequest;
 
 import java.math.BigInteger;
@@ -9,6 +10,7 @@ public class IndividualContract extends CommonIndividualRequest {
 
     private List<RelationshipContract> relationships = new ArrayList<>();
 
+    @JsonInclude
     private List<ObservationContract> observations = new ArrayList<>();
 
     private List<EnrolmentContract> enrolments = new ArrayList<>();

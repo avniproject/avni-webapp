@@ -1,8 +1,10 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 import org.openchs.web.request.common.CommonAbstractEncounterRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EncounterContract extends CHSRequest {
@@ -13,8 +15,10 @@ public class EncounterContract extends CHSRequest {
     DateTime maxVisitDateTime;
     private DateTime encounterDateTime;
     String subjectUUID;
-    private List<ObservationContract> observations;
-    private List<ObservationContract> cancelObservations;
+    @JsonInclude
+    private List<ObservationContract> observations = new ArrayList<>();
+    @JsonInclude
+    private List<ObservationContract> cancelObservations = new ArrayList<>();
 
     public String getName() {
         return name;
