@@ -1,13 +1,11 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.GroupRoleRepository;
-import org.openchs.dao.GroupSubjectRepository;
-import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.*;
 import org.openchs.domain.GroupRole;
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
+import org.openchs.domain.SubjectType;
 import org.openchs.service.UserService;
 import org.openchs.web.request.GroupSubjectContract;
 import org.slf4j.Logger;
@@ -32,14 +30,16 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
     private final UserService userService;
     private final IndividualRepository individualRepository;
     private final GroupRoleRepository groupRoleRepository;
+    private final SubjectTypeRepository subjectTypeRepository;
     private final Logger logger;
 
     @Autowired
-    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository) {
+    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.userService = userService;
         this.individualRepository = individualRepository;
         this.groupRoleRepository = groupRoleRepository;
+        this.subjectTypeRepository = subjectTypeRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -50,8 +50,10 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "subjectTypeUuid", required = false) String groupSubjectTypeUuid,
             Pageable pageable) {
-        return groupSubjectTypeUuid == null || groupSubjectTypeUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
-                wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, groupSubjectTypeUuid, pageable));
+        if (groupSubjectTypeUuid == null || groupSubjectTypeUuid.isEmpty())
+            return wrap(new PageImpl<>(Collections.emptyList()));
+        SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @RequestMapping(value = "/groupSubjects", method = RequestMethod.POST)

@@ -119,8 +119,9 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (subjectTypeUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
         } else {
-            return subjectTypeUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
-                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectTypeUuid, pageable));
+            if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+            SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
         }
     }
 
