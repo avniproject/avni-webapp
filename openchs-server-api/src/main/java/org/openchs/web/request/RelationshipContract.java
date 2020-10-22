@@ -1,9 +1,11 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RelationshipContract extends ReferenceDataContract{
@@ -15,7 +17,8 @@ public class RelationshipContract extends ReferenceDataContract{
 
     private DateTime exitDateTime;
 
-    private List<ObservationContract> exitObservations;
+    @JsonInclude
+    private List<ObservationContract> exitObservations = new ArrayList<>();
 
     public DateTime getEnterDateTime() {
         return enterDateTime;

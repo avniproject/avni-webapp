@@ -1,5 +1,6 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class EnrolmentContract extends ReferenceDataContract{
     private String subjectUuid;
 
     private Set<ProgramEncountersContract> programEncounters = new HashSet<>();
-
+    @JsonInclude
     private List<ObservationContract> observations = new ArrayList<>();
     private String programColor;
 
@@ -57,7 +58,7 @@ public class EnrolmentContract extends ReferenceDataContract{
 	public void setExitObservations(List<ObservationContract> exitObservations) {
         this.exitObservations = exitObservations;
     }
-
+    @JsonInclude
     private List<ObservationContract> exitObservations = new ArrayList<>();
 
     public List<ObservationContract> getObservations() {
