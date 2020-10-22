@@ -4,13 +4,14 @@ import org.joda.time.DateTime;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.Individual;
+import org.openchs.domain.SubjectType;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.service.UserService;
-import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.IndividualRelationshipRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -19,13 +20,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,13 +32,15 @@ public class IndividualRelationshipController extends AbstractController<Individ
     private final IndividualRepository individualRepository;
     private final IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
     private final IndividualRelationshipRepository individualRelationshipRepository;
+    private final SubjectTypeRepository subjectTypeRepository;
     private final UserService userService;
 
     @Autowired
-    public IndividualRelationshipController(IndividualRelationshipRepository individualRelationshipRepository, IndividualRepository individualRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, UserService userService) {
+    public IndividualRelationshipController(IndividualRelationshipRepository individualRelationshipRepository, IndividualRepository individualRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, SubjectTypeRepository subjectTypeRepository, UserService userService) {
         this.individualRelationshipRepository = individualRelationshipRepository;
         this.individualRepository = individualRepository;
         this.individualRelationshipTypeRepository = individualRelationshipTypeRepository;
+        this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
     }
 
@@ -92,8 +93,9 @@ public class IndividualRelationshipController extends AbstractController<Individ
         if (subjectTypeUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
         } else {
-            return subjectTypeUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
-                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectTypeUuid, pageable));
+            if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+            SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
         }
     }
 

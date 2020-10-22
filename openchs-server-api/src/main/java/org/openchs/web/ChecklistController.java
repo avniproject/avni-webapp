@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.Checklist;
+import org.openchs.domain.ChecklistDetail;
 import org.openchs.service.UserService;
 import org.openchs.web.request.ChecklistRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +76,9 @@ public class ChecklistController extends AbstractController<Checklist> implement
         if (checklistDetailUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
         } else {
-            return checklistDetailUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
-                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetailUuid, pageable));
+            if (checklistDetailUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+            ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
         }
     }
 

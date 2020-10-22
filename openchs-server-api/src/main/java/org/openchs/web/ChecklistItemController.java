@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.Checklist;
+import org.openchs.domain.ChecklistDetail;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareController<ChecklistItem>, OperatingIndividualScopeAwareFilterController<ChecklistItem> {
@@ -27,14 +27,16 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
     private final ChecklistItemDetailRepository checklistItemDetailRepository;
     private final ChecklistRepository checklistRepository;
     private final ChecklistItemRepository checklistItemRepository;
+    private final ChecklistDetailRepository checklistDetailRepository;
     private final UserService userService;
 
     @Autowired
-    public ChecklistItemController(ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository, ObservationService observationService, ChecklistItemDetailRepository checklistItemDetailRepository, UserService userService) {
+    public ChecklistItemController(ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository, ObservationService observationService, ChecklistItemDetailRepository checklistItemDetailRepository, ChecklistDetailRepository checklistDetailRepository, UserService userService) {
         this.checklistRepository = checklistRepository;
         this.checklistItemRepository = checklistItemRepository;
         this.observationService = observationService;
         this.checklistItemDetailRepository = checklistItemDetailRepository;
+        this.checklistDetailRepository = checklistDetailRepository;
         this.userService = userService;
     }
 
@@ -82,8 +84,9 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
         if (checklistDetailUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
         } else {
-            return checklistDetailUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
-                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetailUuid, pageable));
+            if (checklistDetailUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+            ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
         }
     }
 

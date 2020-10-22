@@ -2,7 +2,8 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.*;
+import org.openchs.domain.Program;
+import org.openchs.domain.ProgramEnrolment;
 import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.*;
 import org.openchs.util.S;
@@ -30,36 +31,28 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
 @RestController
 public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareController<ProgramEnrolment>, OperatingIndividualScopeAwareFilterController<ProgramEnrolment> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
-    private final ProgramRepository programRepository;
-    private final IndividualRepository individualRepository;
-    private final ProgramOutcomeRepository programOutcomeRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
-    private final ObservationService observationService;
     private final UserService userService;
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
     private final ProgramEnrolmentService programEnrolmentService;
     private final ProgramEncounterService programEncounterService;
+    private final ProgramRepository programRepository;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService,ProgramEnrolmentService programEnrolmentService, ProgramEncounterService programEncounterService) {
-        this.programRepository = programRepository;
-        this.individualRepository = individualRepository;
-        this.programOutcomeRepository = programOutcomeRepository;
+    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEnrolmentService programEnrolmentService, ProgramEncounterService programEncounterService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
-        this.observationService = observationService;
         this.userService = userService;
         this.projectionFactory = projectionFactory;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.programEnrolmentService = programEnrolmentService;
         this.programEncounterService = programEncounterService;
+        this.programRepository = programRepository;
     }
 
     @RequestMapping(value = "/api/enrolments", method = RequestMethod.GET)
@@ -96,8 +89,8 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         programEnrolmentService.programEnrolmentSave(request);
-        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
-            programEncounterService.saveVisitSchedules(request.getUuid(),request.getVisitSchedules(), null);
+        if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+            programEncounterService.saveVisitSchedules(request.getUuid(), request.getVisitSchedules(), null);
         }
     }
 
@@ -111,8 +104,11 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         if (programUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
         } else {
-            return programUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
-                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, programUuid, pageable));
+            if (programUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+            else {
+                Program program = programRepository.findByUuid(programUuid);
+                return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
+            }
         }
     }
 
@@ -141,9 +137,9 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             @PathVariable String uuid,
             @RequestParam(value = "encounterDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime encounterDateTime,
             @RequestParam(value = "earliestVisitDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime earliestVisitDateTime,
-            @RequestParam(value = "encounterTypeUuids",required = false) String encounterTypeUuids,
+            @RequestParam(value = "encounterTypeUuids", required = false) String encounterTypeUuids,
             Pageable pageable) {
-        return programEnrolmentService.getAllCompletedEncounters(uuid,encounterTypeUuids,encounterDateTime,earliestVisitDateTime,pageable);
+        return programEnrolmentService.getAllCompletedEncounters(uuid, encounterTypeUuids, encounterDateTime, earliestVisitDateTime, pageable);
     }
 
     @Override
