@@ -1,15 +1,16 @@
 package org.openchs.web.request.rules.constructWrappers;
 
+import org.openchs.dao.ChecklistDetailRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.*;
+import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.openchs.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.LowestAddressLevelContract;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
-import org.openchs.web.request.rules.request.ObservationRequestEntity;
 import org.openchs.web.request.rules.request.ProgramEnrolmentRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,20 @@ public class ProgramEnrolmentConstructionService {
     private final IndividualRepository individualRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final ObservationService observationService;
+    private final ChecklistDetailRepository checklistDetailRepository;
 
     @Autowired
     public ProgramEnrolmentConstructionService(
             ObservationConstructionService observationConstructionService,
             IndividualRepository individualRepository,
             ProgramEnrolmentRepository programEnrolmentRepository,
-            ObservationService observationService) {
+            ObservationService observationService,
+            ChecklistDetailRepository checklistDetailRepository) {
         this.observationConstructionService = observationConstructionService;
         this.individualRepository = individualRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationService = observationService;
+        this.checklistDetailRepository = checklistDetailRepository;
     }
 
 
@@ -73,6 +77,13 @@ public class ProgramEnrolmentConstructionService {
             encountersContract.setVoided(encounter.isVoided());
             return encountersContract;
         }).collect(Collectors.toSet());
+    }
+
+    public List<ChecklistDetailRequest> constructChecklistDetailRequest() {
+        List<ChecklistDetail> checklistDetails = checklistDetailRepository.findAllByIsVoidedFalse();
+        return checklistDetails
+                .stream().map(ChecklistDetailRequest::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public IndividualContractWrapper getSubjectInfo(Individual individual) {

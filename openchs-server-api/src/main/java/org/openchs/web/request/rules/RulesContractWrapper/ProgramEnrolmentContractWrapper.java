@@ -5,6 +5,7 @@ import org.openchs.domain.ProgramEnrolment;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.ProgramEncountersContract;
+import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.openchs.web.request.rules.request.RuleRequestEntity;
 
 import java.util.ArrayList;
@@ -24,6 +25,15 @@ public class ProgramEnrolmentContractWrapper {
     private List<ObservationModelContract> observations = new ArrayList<>();
     private List<ObservationModelContract> exitObservations = new ArrayList<>();
     private String operationalProgramName;
+    private List<ChecklistDetailRequest> checklistDetails = new ArrayList<>();
+
+    public List<ChecklistDetailRequest> getChecklistDetails() {
+        return checklistDetails;
+    }
+
+    public void setChecklistDetails(List<ChecklistDetailRequest> checklistDetails) {
+        this.checklistDetails = checklistDetails;
+    }
 
     public String getOperationalProgramName() {
         return operationalProgramName;

@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.web.request.rules.RulesContractWrapper.ChecklistContract;
 import org.openchs.web.request.rules.RulesContractWrapper.Decision;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
@@ -13,6 +14,7 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
     private List<ObservationRequest> programExitObservations;
     private List<VisitSchedule> visitSchedules;
     private Decisions decisions;
+    private List<ChecklistContract> checklists;
 
     public List<VisitSchedule> getVisitSchedules() {
         return visitSchedules;
@@ -64,5 +66,13 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
 
     public void setDecisions(Decisions decisions) {
         this.decisions = decisions;
+    }
+
+    public List<ChecklistContract> getChecklists() {
+        return checklists;
+    }
+
+    public void setChecklists(List<ChecklistContract> checklists) {
+        this.checklists = checklists;
     }
 }

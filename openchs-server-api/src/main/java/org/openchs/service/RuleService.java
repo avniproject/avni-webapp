@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.codehaus.jettison.json.JSONException;
 import org.openchs.application.Form;
 import org.openchs.application.RuleType;
@@ -161,7 +162,9 @@ public class RuleService {
         Form form = formRepository.findByUuid(rule.getFormUuid());
         rule.setDecisionCode(form.getDecisionRule());
         rule.setVisitScheduleCode(form.getVisitScheduleRule());
-        if (StringUtils.isEmpty(rule.getDecisionCode()) && StringUtils.isEmpty(rule.getVisitScheduleCode())) {
+        rule.setChecklistCode(form.getChecklistsRule());
+        if (StringUtils.isEmpty(rule.getDecisionCode()) && StringUtils.isEmpty(rule.getVisitScheduleCode())
+                && StringUtils.isEmpty(rule.getChecklistCode())) {
             return emptySuccessEntity();
         }
 
@@ -175,6 +178,7 @@ public class RuleService {
                 ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(programEnrolmentRequestEntity);
                 programEnrolmentContractWrapper.setRule(rule);
                 programEnrolmentContractWrapper.setVisitSchedules(new ArrayList<>());
+                programEnrolmentContractWrapper.setChecklistDetails(programEnrolmentConstructionService.constructChecklistDetailRequest());
                 entity = programEnrolmentContractWrapper;
                 break;
             case PROGRAM_ENCOUNTER:
@@ -237,6 +241,7 @@ public class RuleService {
     private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog) {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JodaModule());
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             String ruleResponse = restClient.post(url, contractObject, httpHeaders);

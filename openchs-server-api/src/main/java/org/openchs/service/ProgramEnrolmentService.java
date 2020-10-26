@@ -5,11 +5,9 @@ import org.openchs.common.EntityHelper;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
-import org.openchs.web.AbstractController;
-import org.openchs.web.IndividualController;
 import org.openchs.web.request.*;
+import org.openchs.web.request.rules.RulesContractWrapper.ChecklistContract;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
-import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,8 +19,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -37,9 +33,13 @@ public class ProgramEnrolmentService {
     private ObservationService observationService;
     private IndividualRepository individualRepository;
     private ProgramOutcomeRepository programOutcomeRepository;
+    private ChecklistDetailRepository checklistDetailRepository;
+    private ChecklistItemDetailRepository checklistItemDetailRepository;
+    private ChecklistRepository checklistRepository;
+    private ChecklistItemRepository checklistItemRepository;
 
     @Autowired
-    public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository,ProgramEncounterService programEncounterService,ProgramEncounterRepository programEncounterRepository,ProgramRepository programRepository,ObservationService observationService,IndividualRepository individualRepository,ProgramOutcomeRepository programOutcomeRepository) {
+    public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository, ProgramEncounterService programEncounterService, ProgramEncounterRepository programEncounterRepository, ProgramRepository programRepository, ObservationService observationService, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ChecklistDetailRepository checklistDetailRepository, ChecklistItemDetailRepository checklistItemDetailRepository, ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.programEncounterService = programEncounterService;
         this.programEncounterRepository = programEncounterRepository;
@@ -47,6 +47,10 @@ public class ProgramEnrolmentService {
         this.observationService = observationService;
         this.individualRepository = individualRepository;
         this.programOutcomeRepository = programOutcomeRepository;
+        this.checklistDetailRepository = checklistDetailRepository;
+        this.checklistItemDetailRepository = checklistItemDetailRepository;
+        this.checklistRepository = checklistRepository;
+        this.checklistItemRepository = checklistItemRepository;
     }
 
     @Transactional
@@ -143,5 +147,32 @@ public class ProgramEnrolmentService {
             programEnrolmentRepository.save(programEnrolment);
         }
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
+    }
+
+    public Checklist saveChecklist(ChecklistContract checklistContract, String programEnrolmentUUID){
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
+        Checklist existingChecklist = checklistRepository.findByProgramEnrolmentId(programEnrolment.getId());
+        if (existingChecklist != null) {
+            existingChecklist.setBaseDate(checklistContract.getBaseDate());
+            return checklistRepository.save(existingChecklist);
+        }
+        Checklist checklist = new Checklist();
+        checklist.assignUUIDIfRequired();
+        String checklistDetailUUID = checklistContract.getDetail().getUuid();
+        ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUUID);
+        checklist.setBaseDate(checklistContract.getBaseDate());
+        checklist.setChecklistDetail(checklistDetail);
+        checklist.setProgramEnrolment(programEnrolment);
+        Checklist savedChecklist = checklistRepository.save(checklist);
+        checklistContract.getItems().forEach(item -> {
+            ChecklistItem checklistItem = new ChecklistItem();
+            checklistItem.assignUUIDIfRequired();
+            String checklistItemDetailUUID = item.getDetail().getUuid();
+            ChecklistItemDetail checklistItemDetail = checklistItemDetailRepository.findByUuid(checklistItemDetailUUID);
+            checklistItem.setChecklistItemDetail(checklistItemDetail);
+            checklistItem.setChecklist(savedChecklist);
+            checklistItemRepository.save(checklistItem);
+        });
+        return savedChecklist;
     }
 }

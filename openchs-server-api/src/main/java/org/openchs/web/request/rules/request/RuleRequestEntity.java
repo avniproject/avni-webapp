@@ -7,6 +7,15 @@ public class RuleRequestEntity {
     private String code;
     private String decisionCode;
     private String visitScheduleCode;
+    private String checklistCode;
+
+    public String getChecklistCode() {
+        return checklistCode;
+    }
+
+    public void setChecklistCode(String checklistCode) {
+        this.checklistCode = checklistCode;
+    }
 
     public String getFormUuid() {
         return formUuid;
