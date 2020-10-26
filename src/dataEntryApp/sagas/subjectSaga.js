@@ -48,7 +48,8 @@ import { setFilteredFormElements } from "../reducers/RulesReducer";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import {
   selectDecisions,
-  selectVisitSchedules
+  selectVisitSchedules,
+  selectChecklists
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
@@ -151,11 +152,13 @@ export function* saveProgramEnrolmentWorker(params) {
     const programEnrolment = yield select(selectProgramEnrolment);
     const visitSchedules = yield select(selectVisitSchedules);
     const decisions = yield select(selectDecisions);
+    const checklists = yield select(selectChecklists);
     if (decisions) decisions.exit = params.isExit;
 
     let resource = programEnrolment.toResource;
     resource.visitSchedules = visitSchedules;
     resource.decisions = decisions;
+    resource.checklists = checklists;
 
     yield call(api.saveProgram, resource);
     yield put(saveProgramComplete());
