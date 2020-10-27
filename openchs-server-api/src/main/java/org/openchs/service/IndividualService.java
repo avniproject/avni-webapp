@@ -101,6 +101,9 @@ public class IndividualService {
         subjectTypeContract.setUuid(subjectType.getUuid());
         subjectTypeContract.setName(subjectType.getName());
         subjectTypeContract.setVoided(subjectType.isVoided());
+        subjectTypeContract.setType(subjectType.getType().toString());
+        subjectTypeContract.setIsGroup(subjectType.isGroup());
+        subjectTypeContract.setHousehold(subjectType.isHousehold());
         return subjectTypeContract;
     }
 
