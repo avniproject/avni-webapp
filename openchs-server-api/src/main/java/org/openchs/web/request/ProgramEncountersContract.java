@@ -7,16 +7,15 @@ import org.openchs.web.request.common.CommonAbstractEncounterRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude
 public class ProgramEncountersContract extends CHSRequest {
-    String name;
-    DateTime cancelDateTime;
-    DateTime earliestVisitDateTime;
-    DateTime maxVisitDateTime;
-    EncounterTypeContract encounterType;
+    private String name;
+    private DateTime cancelDateTime;
+    private DateTime earliestVisitDateTime;
+    private DateTime maxVisitDateTime;
+    private EncounterTypeContract encounterType;
     private DateTime encounterDateTime;
-    @JsonInclude
     private List<ObservationContract> observations = new ArrayList<>();
-    @JsonInclude
     private List<ObservationContract> cancelObservations = new ArrayList<>();
     private String subjectUUID;
 

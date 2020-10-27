@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@JsonInclude
 public class EnrolmentContract extends ReferenceDataContract{
     private String operationalProgramName;
 
@@ -20,7 +21,7 @@ public class EnrolmentContract extends ReferenceDataContract{
     private String subjectUuid;
 
     private Set<ProgramEncountersContract> programEncounters = new HashSet<>();
-    @JsonInclude
+
     private List<ObservationContract> observations = new ArrayList<>();
     private String programColor;
 
@@ -58,7 +59,7 @@ public class EnrolmentContract extends ReferenceDataContract{
 	public void setExitObservations(List<ObservationContract> exitObservations) {
         this.exitObservations = exitObservations;
     }
-    @JsonInclude
+
     private List<ObservationContract> exitObservations = new ArrayList<>();
 
     public List<ObservationContract> getObservations() {

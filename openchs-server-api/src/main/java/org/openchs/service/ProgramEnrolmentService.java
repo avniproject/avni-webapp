@@ -19,6 +19,8 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -77,6 +79,11 @@ public class ProgramEnrolmentService {
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
         enrolmentContract.setSubjectUuid(programEnrolment.getIndividual().getUuid());
         enrolmentContract.setVoided(programEnrolment.isVoided());
+        Set<ProgramEncountersContract> programEncounters = programEnrolment.getProgramEncounters()
+                .stream()
+                .map(programEncounter -> programEncounterService.constructProgramEncounters(programEncounter))
+                .collect(Collectors.toSet());
+        enrolmentContract.setProgramEncounters(programEncounters);
         List<ObservationContract> observationContractsList = observationService.constructObservations(programEnrolment.getObservations());
         enrolmentContract.setObservations(observationContractsList);
         if (programEnrolment.getProgramExitObservations() != null) {
