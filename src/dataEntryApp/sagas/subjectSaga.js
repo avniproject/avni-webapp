@@ -73,6 +73,12 @@ function* setupNewEnrolmentWorker({
   const formMapping = yield select(
     selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
   );
+
+  yield put.resolve(setSubjectProfile());
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const subjectProfile = mapProfile(subjectProfileJson);
+  yield put.resolve(setSubjectProfile(subjectProfile));
+
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put.resolve(setEnrolForm(mapForm(enrolForm)));
   const program = yield select(selectProgram(programName));
@@ -106,11 +112,6 @@ function* setupNewEnrolmentWorker({
     _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
   }
-
-  yield put.resolve(setSubjectProfile());
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
-  const subjectProfile = mapProfile(subjectProfileJson);
-  yield put.resolve(setSubjectProfile(subjectProfile));
   yield put.resolve(setEnrolmentLoaded());
 }
 

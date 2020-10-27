@@ -16,7 +16,7 @@ import {
   SubjectType,
   ConceptAnswer
 } from "avni-models";
-import { map } from "lodash";
+import { map, isNil } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
 
 export const mapIndividual = individualDetails => {
@@ -116,6 +116,11 @@ export const mapProgramEnrolment = (json, subject) => {
   programEnrolment.program = program;
   programEnrolment.voided = false;
   if (subject) programEnrolment.individual = subject;
+  if (!isNil(json.programEncounters)) {
+    programEnrolment.encounters = map(json.programEncounters, programEncounter =>
+      mapProgramEncounter(programEncounter)
+    );
+  }
   return programEnrolment;
 };
 
