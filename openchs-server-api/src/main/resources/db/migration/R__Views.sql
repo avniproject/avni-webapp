@@ -77,6 +77,7 @@ CREATE OR REPLACE VIEW title_lineage_locations_view AS
               concat(prog.name, ':', prog.colour) AS programname
              FROM program_enrolment pe
                JOIN program prog ON prog.id = pe.program_id
+            WHERE pe.program_exit_date_time isnull
             GROUP BY pe.individual_id, prog.name, prog.colour) progralalise
     GROUP BY progralalise.individual_id;
 
