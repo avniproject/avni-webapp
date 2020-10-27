@@ -155,7 +155,9 @@ const SubjectDashboardProfileTab = ({
             {/* <Button color="primary">{t("edit")}</Button> */}
             {!enableReadOnly ? (
               <Button color="primary">
-                <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
+                <InternalLink
+                  to={`/app/editSubject?uuid=${profile.uuid}&type=${profile.subjectType.name}`}
+                >
                   {t("edit")}{" "}
                 </InternalLink>
               </Button>

@@ -138,7 +138,10 @@ const ProgramEnrol = ({
                     />
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
-              ) : enrolForm && programEnrolment && programEnrolment.programExitDateTime ? (
+              ) : enrolForm &&
+                programEnrolment &&
+                programEnrolment.programExitDateTime &&
+                formType === "ProgramExit" ? (
                 <ProgramExitEnrolmentForm
                   formType={formType}
                   fetchRulesResponse={fetchEnrolmentRulesResponse}

@@ -33,8 +33,14 @@ export const mapIndividual = individualDetails => {
 
   const subjectType = new SubjectType();
   if (individualDetails.subjectType) {
-    subjectType.uuid = individualDetails.subjectType.uuid;
-    subjectType.name = individualDetails.subjectType.name;
+    General.assignFields(individualDetails.subjectType, subjectType, [
+      "name",
+      "uuid",
+      "type",
+      "group",
+      "household",
+      "voided"
+    ]);
   }
   individual.subjectType = subjectType;
 

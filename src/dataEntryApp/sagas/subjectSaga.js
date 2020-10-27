@@ -97,10 +97,9 @@ function* setupNewEnrolmentWorker({
   } else if (formType === "ProgramExit" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment, subject);
-
+    programEnrolment.programExitDateTime = new Date();
     if (!programEnrolment.programExitObservations) {
       programEnrolment.programExitObservations = [];
-      programEnrolment.programExitDateTime = new Date();
     }
     _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));

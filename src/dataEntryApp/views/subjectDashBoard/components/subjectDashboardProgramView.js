@@ -32,6 +32,7 @@ import { types } from "../../../reducers/completedVisitsReducer";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
+import { isNil } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -152,6 +153,7 @@ const ProgramView = ({
 
   const classes = useStyles();
   const { t } = useTranslation();
+  const isNotExited = isNil(programData.programExitDateTime);
 
   const [expandedPanel, setExpanded] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -219,7 +221,7 @@ const ProgramView = ({
         </Grid>
 
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          {!enableReadOnly && !subjectVoided ? (
+          {!enableReadOnly && !subjectVoided && isNotExited ? (
             <InternalLink
               to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
               noUnderline

@@ -31,6 +31,7 @@ import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import { setFilteredFormElements } from "../../reducers/RulesReducer";
 import Stepper from "./Stepper";
 import { fetchRegistrationRulesResponse } from "dataEntryApp/reducers/registrationReducer";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -139,6 +140,7 @@ const DefaultPage = props => {
   if (!props.form) return <div />;
   const classes = useStyles();
   const { t } = useTranslation();
+  const loaded = !!props.loaded;
   const [subjectRegErrors, setSubjectRegErrors] = React.useState({
     REGISTRATION_DATE: "",
     FIRST_NAME: "",
@@ -256,7 +258,7 @@ const DefaultPage = props => {
     );
   }
 
-  return (
+  return loaded ? (
     <div>
       <Stepper subjectTypeName={props.subject.subjectType.name} />
       <LineBreak num={1} />
@@ -472,6 +474,8 @@ const DefaultPage = props => {
         )}
       </div>
     </div>
+  ) : (
+    <CustomizedBackdrop load={false} />
   );
 };
 

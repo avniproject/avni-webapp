@@ -111,7 +111,8 @@ export const fetchRegistrationRulesResponse = () => {
 const initialState = {
   saved: false,
   validationResults: [],
-  selectedAddressLevelType: { id: -1, name: "" }
+  selectedAddressLevelType: { id: -1, name: "" },
+  loaded: false
 };
 
 // reducer
