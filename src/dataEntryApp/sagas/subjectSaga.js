@@ -15,7 +15,7 @@ import {
   setValidationResults,
   types as subjectTypes
 } from "../reducers/registrationReducer";
-import SubjectService from "../services/SubjectService";
+import SubjectSearchService from "../services/SubjectSearchService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
 import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import api from "../api";
@@ -121,7 +121,7 @@ export function* dataEntrySearchWatcher() {
 function* dataEntrySearchWorker({ params }) {
   // const params = yield select(state => state.dataEntry.search.subjectSearchParams);
   yield put.resolve(setLoad(false));
-  const subjects = yield call(SubjectService.search, params);
+  const subjects = yield call(SubjectSearchService.search, params);
   yield put(setSubjects(subjects));
   yield put.resolve(setLoad(true));
 }

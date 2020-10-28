@@ -18,6 +18,8 @@ import {
 } from "avni-models";
 import { map, isNil } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
+import { subjectService } from "../dataEntryApp/services/SubjectService";
+import { addressLevelService } from "../dataEntryApp/services/AddressLevelService";
 
 export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
@@ -91,6 +93,12 @@ export const mapObservation = observationJson => {
   if (observationJson) {
     const observation = new Observation();
     const concept = mapConcept(observationJson.concept);
+
+    observationJson.subjects &&
+      observationJson.subjects.forEach(subject => {
+        subjectService.addSubject(subject);
+      });
+    observationJson.location && addressLevelService.addAddressLevel(observationJson.location);
 
     const value = concept.getValueWrapperFor(observationJson.value);
     observation.concept = concept;

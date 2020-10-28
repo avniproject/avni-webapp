@@ -6,6 +6,8 @@ import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { Observation } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
+import { addressLevelService } from "../services/AddressLevelService";
+import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
@@ -13,6 +15,8 @@ import { isEmpty, isNil } from "lodash";
 import useCommonStyles from "dataEntryApp/styles/commonStyles";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
+import { Link } from "react-router-dom";
+import { LineBreak } from "../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -37,7 +41,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return <div />;
   }
 
-  const renderValue = (value, isAbnormal) => {
+  const renderText = (value, isAbnormal) => {
     return isAbnormal ? (
       <span className={classes.abnormalColor}>
         {" "}
@@ -45,6 +49,34 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       </span>
     ) : (
       value
+    );
+  };
+
+  const renderValue = observation => {
+    const displayable = Observation.valueForDisplay({
+      observation,
+      conceptService,
+      addressLevelService,
+      subjectService,
+      i18n: i
+    });
+    if (observation.concept.datatype === "Subject") {
+      return displayable.map((subject, index) => {
+        return renderSubject(subject, index < displayable.length - 1);
+      });
+    } else {
+      return renderText(displayable.displayValue, observation.isAbnormal());
+    }
+  };
+
+  const renderSubject = (subject, addLineBreak) => {
+    return (
+      <div>
+        <Link to={`/app/subject?uuid=${subject.entityObject.uuid}`}>
+          {subject.entityObject.firstName + " " + subject.entityObject.lastName}
+        </Link>
+        {addLineBreak && <LineBreak />}
+      </div>
     );
   };
 
@@ -57,9 +89,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           {t(obs.concept["name"])}
         </TableCell>
         <TableCell align="left" width="50%">
-          <div>
-            {renderValue(t(Observation.valueAsString(obs, conceptService, i)), obs.isAbnormal())}
-          </div>
+          <div>{renderValue(obs)}</div>
         </TableCell>
       </TableRow>
     );
@@ -73,7 +103,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
             {t(row.label)}
           </TableCell>
           <TableCell align="left" width="50%">
-            <div>{renderValue(t(row.value), row.abnormal)}</div>
+            <div>{renderText(t(row.value), row.abnormal)}</div>
           </TableCell>
         </TableRow>
       );
