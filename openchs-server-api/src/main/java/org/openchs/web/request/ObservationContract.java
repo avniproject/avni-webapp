@@ -1,8 +1,12 @@
 package org.openchs.web.request;
 
+import java.util.List;
+
 public class ObservationContract extends ReferenceDataContract{
     private ConceptContract concept;
     private Object value;
+    private List<IndividualContract> subjects;
+    private AddressLevelContractWeb location;
 
     public ConceptContract getConcept() {
         return concept;
@@ -18,5 +22,21 @@ public class ObservationContract extends ReferenceDataContract{
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public List<IndividualContract> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<IndividualContract> subjects) {
+        this.subjects = subjects;
+    }
+
+    public AddressLevelContractWeb getLocation() {
+        return location;
+    }
+
+    public void setLocation(AddressLevelContractWeb location) {
+        this.location = location;
     }
 }

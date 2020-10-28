@@ -10,6 +10,7 @@ public class AddressLevelContractWeb {
     private Double level;
     private String lineage;
     private Long parentId;
+    private String uuid;
 
     public static AddressLevelContractWeb fromEntity(AddressLevel addressLevel) {
         AddressLevelContractWeb addressLevelContractWeb = new AddressLevelContractWeb();
@@ -19,6 +20,7 @@ public class AddressLevelContractWeb {
         addressLevelContractWeb.setLevel(addressLevel.getLevel());
         addressLevelContractWeb.setParentId(addressLevel.getParentId());
         addressLevelContractWeb.setLineage(addressLevel.getLineage());
+        addressLevelContractWeb.setUuid(addressLevel.getUuid());
         return addressLevelContractWeb;
     }
 
@@ -70,4 +72,11 @@ public class AddressLevelContractWeb {
         this.lineage = lineage;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

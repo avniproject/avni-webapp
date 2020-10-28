@@ -1,6 +1,8 @@
 package org.openchs.service;
 
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.domain.*;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.*;
@@ -19,10 +21,14 @@ import static java.util.Collections.singletonList;
 @Service
 public class ObservationService {
     private ConceptRepository conceptRepository;
+    private IndividualRepository individualRepository;
+    private LocationRepository locationRepository;
 
     @Autowired
-    public ObservationService(ConceptRepository conceptRepository) {
+    public ObservationService(ConceptRepository conceptRepository, IndividualRepository individualRepository, LocationRepository locationRepository) {
         this.conceptRepository = conceptRepository;
+        this.individualRepository = individualRepository;
+        this.locationRepository = locationRepository;
     }
 
     public ObservationCollection createObservations(List<ObservationRequest> observationRequests) {
@@ -221,9 +227,43 @@ public class ObservationService {
             ObservationContract observationContract = new ObservationContract();
             Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
             ConceptContract conceptContract = ConceptContract.create(questionConcept);
+            if (questionConcept.getDataType().equals(ConceptDataType.Subject.toString())) {
+                Object answerValue = entry.getValue();
+                List<Individual> subjects = null;
+                if (answerValue instanceof Collection) {
+                    subjects = ((ArrayList<String>) answerValue).stream().map((String uuid) -> individualRepository.findByUuid(uuid)).collect(Collectors.toList());
+                } else {
+                    subjects = Collections.singletonList(individualRepository.findByUuid((String) answerValue));
+                }
+                observationContract.setSubjects(subjects.stream().map(this::convertIndividualToContract).collect(Collectors.toList()));
+            }
+            if (questionConcept.getDataType().equals(ConceptDataType.Location.toString())) {
+                observationContract.setLocation(AddressLevelContractWeb.fromEntity(locationRepository.findByUuid((String) entry.getValue())));
+            }
             observationContract.setConcept(conceptContract);
             observationContract.setValue(entry.getValue());
             return observationContract;
         }).collect(Collectors.toList());
+    }
+
+    public IndividualContract convertIndividualToContract(Individual individual) {
+        IndividualContract individualContract = new IndividualContract();
+        individualContract.setId(individual.getId());
+        individualContract.setUuid(individual.getUuid());
+        individualContract.setFirstName(individual.getFirstName());
+        individualContract.setLastName(individual.getLastName());
+        if (null != individual.getDateOfBirth())
+            individualContract.setDateOfBirth(individual.getDateOfBirth());
+        if (null != individual.getGender()) {
+            individualContract.setGender(individual.getGender().getName());
+            individualContract.setGenderUUID(individual.getGender().getUuid());
+        }
+        individualContract.setAddressLevelTypeName(individual.getAddressLevel().getType().getName());
+        individualContract.setAddressLevelTypeId(individual.getAddressLevel().getType().getId());
+        individualContract.setRegistrationDate(individual.getRegistrationDate());
+        individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
+        individualContract.setAddressLevelUUID(individual.getAddressLevel().getUuid());
+        individualContract.setVoided(individual.isVoided());
+        return individualContract;
     }
 }

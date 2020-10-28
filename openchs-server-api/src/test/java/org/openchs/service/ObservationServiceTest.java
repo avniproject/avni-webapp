@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ObservationCollection;
@@ -21,6 +23,10 @@ public class ObservationServiceTest {
 
     @Mock
     private ConceptRepository conceptRepository;
+    @Mock
+    private IndividualRepository individualRepository;
+    @Mock
+    private LocationRepository locationRepository;
 
     private ObservationService observationService;
 
@@ -29,7 +35,7 @@ public class ObservationServiceTest {
     @Before
     public void setup() {
         initMocks(this);
-        observationService = new ObservationService(conceptRepository);
+        observationService = new ObservationService(conceptRepository, individualRepository, locationRepository);
     }
 
     @Test
