@@ -10809,10 +10809,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@0.2.45, openchs-models@^0.2.25:
-  version "0.2.45"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.45.tgz#b43b43d626af371a670e942a1f6fd975bbe13b22"
-  integrity sha512-i6qI4hfNSmyKHtqe9Ts3M0a9bml5SP+B1vUI+jlYckMa+N1XUOZDyFpKKIBRR+7rU+wunk8uYqM52x68RgBc7w==
+openchs-models@0.2.47:
+  version "0.2.47"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.47.tgz#98b77eec9ae9f813f77552404c89df1e95f7e436"
+  integrity sha512-GQn6JHPvv0Sp6NuN1avPRuUC8sTIAkcNLFXWcnJTc84EPlzEULJx/8GV7BMsJdXlwRSN7nOef9LC2DgWUKvXHQ==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -15559,7 +15559,7 @@ webpack@4.28.3:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^3.12.0:
+webpack@^3.5.5:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.12.0.tgz#3f9e34360370602fcf639e97939db486f4ec0d74"
   integrity sha512-Sw7MdIIOv/nkzPzee4o0EdvCuPmxT98+vVpIvwtcwcF1Q4SDSNp92vwcKc4REe7NItH9f1S4ra9FuQ7yuYZ8bQ==

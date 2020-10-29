@@ -8,6 +8,8 @@ import NumericFormElement from "./NumericFormElement";
 import { DateFormElement, DateTimeFormElement } from "./DateFormElement";
 import TimeFormElement from "./TimeFormElement";
 import DurationFormElement from "./DurationFormElement";
+import SubjectFormElement from "./SubjectFormElement";
+// import LocationFormElement from "./LocationFormElement";
 
 const div = () => <div />;
 
@@ -25,7 +27,9 @@ const elements = {
   NA: div,
   Image: div,
   Video: div,
-  Id: div
+  Id: div,
+  Subject: SubjectFormElement
+  // Location: LocationFormElement
 };
 
 export const FormElement = ({
@@ -42,7 +46,7 @@ export const FormElement = ({
   return (
     <div>
       <LineBreak num={1} />
-      {/*this check can be removed later when DEA supports all the data types (Location and Subject are not supported yet)*/}
+      {/*this check can be removed later when DEA supports all the data types (Location is not supported yet)*/}
       {Element && <Element {...props} />}
       {/* <LineBreak num={1} /> */}
     </div>

@@ -5,11 +5,16 @@ import { getFormElementsStatuses } from "./RuleEvaluationService";
 export default {
   updateObservations(observations = [], formElement, value) {
     const observationHolder = new ObservationsHolder(observations);
-    if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    if (
+      formElement.isMultiSelect() &&
+      (formElement.concept.datatype === Concept.dataType.Coded ||
+        formElement.concept.datatype === Concept.dataType.Subject)
+    ) {
       const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
     } else if (
-      formElement.concept.datatype === Concept.dataType.Coded &&
-      formElement.isSingleSelect()
+      formElement.isSingleSelect() &&
+      (formElement.concept.datatype === Concept.dataType.Coded ||
+        formElement.concept.datatype === Concept.dataType.Subject)
     ) {
       observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
     } else if (

@@ -16,7 +16,6 @@ import useCommonStyles from "dataEntryApp/styles/commonStyles";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
-import { LineBreak } from "../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -75,7 +74,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         <Link to={`/app/subject?uuid=${subject.entityObject.uuid}`}>
           {subject.entityObject.firstName + " " + subject.entityObject.lastName}
         </Link>
-        {addLineBreak && <LineBreak />}
+        {addLineBreak && <br />}
       </div>
     );
   };
