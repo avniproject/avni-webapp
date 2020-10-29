@@ -21,7 +21,12 @@ const SubjectFormElement = props => {
     if (isSearchFlow) {
       return subject.fullName + " | " + subject.addressLevel.title;
     } else {
-      return subject.firstName + " " + subject.lastName + " | " + subject.addressLevel;
+      return (
+        subject.firstName +
+        (isEmpty(subject.lastName) ? "" : " " + subject.lastName) +
+        " | " +
+        subject.addressLevel
+      );
     }
   };
 
@@ -49,10 +54,13 @@ const SubjectFormElement = props => {
     const toggledSubject = isMultiSelect
       ? first(xor(event, selectedSubjects))
       : event || selectedSubjects;
-    const changedSubjectUuid = toggledSubject.value.uuid;
-    props.update(changedSubjectUuid);
-    subjectService.addSubject(toggledSubject.value);
-    setSelectedSubjects(isEmpty(event) ? (isMultiSelect ? [] : "") : event);
+    if (!isEmpty(toggledSubject)) {
+      //handling required as backspace on empty control triggers an onChange
+      const changedSubjectUuid = toggledSubject.value.uuid;
+      props.update(changedSubjectUuid);
+      subjectService.addSubject(toggledSubject.value);
+      setSelectedSubjects(isEmpty(event) ? (isMultiSelect ? [] : "") : event);
+    }
   };
 
   const loadSubjects = async inputValue => {
@@ -94,7 +102,7 @@ const SubjectFormElement = props => {
       <Grid container spacing={2} style={{ width: "100%" }}>
         <Grid item xs={10}>
           <AsyncSelect
-            // cacheOptions
+            cacheOptions
             loadOptions={loadSubjects}
             name={fieldLabel}
             isMulti={isMultiSelect}

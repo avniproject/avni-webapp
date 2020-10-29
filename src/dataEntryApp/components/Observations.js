@@ -72,7 +72,8 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return (
       <div>
         <Link to={`/app/subject?uuid=${subject.entityObject.uuid}`}>
-          {subject.entityObject.firstName + " " + subject.entityObject.lastName}
+          {subject.entityObject.firstName +
+            (isEmpty(subject.entityObject.lastName) ? "" : " " + subject.entityObject.lastName)}
         </Link>
         {addLineBreak && <br />}
       </div>
