@@ -15,7 +15,7 @@ const SubjectFormElement = props => {
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
   const fieldLabel = props.formElement.name;
-  const [selectedSubjects, setSelectedSubjects] = React.useState(isMultiSelect ? [] : "");
+  const [selectedSubjects, setSelectedSubjects] = React.useState();
 
   const constructSubjectLabel = (subject, isSearchFlow = false) => {
     if (isSearchFlow) {
@@ -55,11 +55,11 @@ const SubjectFormElement = props => {
       ? first(xor(event, selectedSubjects))
       : event || selectedSubjects;
     if (!isEmpty(toggledSubject)) {
-      //handling required as backspace on empty control triggers an onChange
+      //empty check required as backspace on empty control triggers an onChange
       const changedSubjectUuid = toggledSubject.value.uuid;
       props.update(changedSubjectUuid);
       subjectService.addSubject(toggledSubject.value);
-      setSelectedSubjects(isEmpty(event) ? (isMultiSelect ? [] : "") : event);
+      setSelectedSubjects(event);
     }
   };
 
@@ -69,14 +69,15 @@ const SubjectFormElement = props => {
       subjectTypeUUID: subjectTypeUuid
     });
 
-    const filteredSubjects = isMultiSelect
-      ? searchResults.content.filter(
-          subject =>
-            selectedSubjects
-              .map(selectedSubject => selectedSubject.value.uuid)
-              .indexOf(subject.uuid) === -1
-        )
-      : searchResults.content;
+    const filteredSubjects =
+      isMultiSelect && selectedSubjects
+        ? searchResults.content.filter(
+            subject =>
+              selectedSubjects
+                .map(selectedSubject => selectedSubject.value.uuid)
+                .indexOf(subject.uuid) === -1
+          )
+        : searchResults.content;
 
     return filteredSubjects.map(subject => ({
       label: constructSubjectLabel(subject, true),
