@@ -53,6 +53,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         if (groupSubjectTypeUuid == null || groupSubjectTypeUuid.isEmpty())
             return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
+        if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
         return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
