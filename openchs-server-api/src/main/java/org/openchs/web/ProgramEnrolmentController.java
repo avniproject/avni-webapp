@@ -111,6 +111,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             if (programUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
             else {
                 Program program = programRepository.findByUuid(programUuid);
+                if(program == null) return wrap(new PageImpl<>(Collections.emptyList()));
                 return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
             }
         }

@@ -206,6 +206,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         } else {
             if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
             EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+            if(encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
             return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
         }
     }
