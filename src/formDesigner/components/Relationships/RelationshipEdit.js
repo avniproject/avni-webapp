@@ -30,7 +30,7 @@ function RelationshipEdit(props) {
       .get("/web/subjectType")
       .then(response => {
         response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.name.toLowerCase() === "individual") {
+          if (subjectType.type === "Person") {
             setIsIndividualSubjectTypeAvailable(true);
           }
         });
@@ -120,7 +120,7 @@ function RelationshipEdit(props) {
 
           {!isIndividualSubjectTypeAvailable && (
             <div style={{ color: "red", size: "10" }}>
-              Go to subject type and please create Individual named subject type{" "}
+              Go to subject type and please create Person subject type{" "}
             </div>
           )}
           {error === "existName" && (

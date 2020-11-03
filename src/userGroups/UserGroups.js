@@ -51,6 +51,19 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
     setOpenModal(false);
   };
 
+  const deleteGroup = id => {
+    if (window.confirm("Are you sure you want to delete this group?")) {
+      api.deleteGroup(id).then(res => {
+        const [response_data, error] = res;
+        if (error) {
+          alert(error);
+        } else {
+          getGroups();
+        }
+      });
+    }
+  };
+
   const showCumulativePrivilegesInfo = () => {
     //more than one group configured + Everyone group has all privileges on + at least one other group without all privileges.
     return (
@@ -127,6 +140,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
               groupName={group.name}
               hasAllPrivileges={group.hasAllPrivileges}
               href={`userGroupDetails/${group.id}`}
+              onDelete={() => deleteGroup(group.id)}
             />
           ))}
         </Grid>

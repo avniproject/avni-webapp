@@ -1,15 +1,21 @@
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import React from "react";
-import Card from "@material-ui/core/Card";
 import { Link } from "react-router-dom";
+import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
+import {
+  Grid,
+  CardActions,
+  Button,
+  CardContent,
+  Typography,
+  CardActionArea,
+  Card
+} from "@material-ui/core";
 
-export const GroupCard = ({ groupName, href, hasAllPrivileges }) => {
+export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
   const classes = {
     card: {
       width: 150,
-      height: 150,
+      height: 100,
       justify: "center"
     },
     cardArea: {
@@ -28,17 +34,25 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges }) => {
   };
 
   return (
-    <CardActionArea style={classes.cardArea}>
-      <Link to={toUserGroupDetails}>
-        <Card style={classes.card} raised={true}>
+    <Card style={classes.cardArea} raised={true}>
+      <CardActionArea style={classes.card}>
+        <Link to={toUserGroupDetails}>
           <CardContent>
-            <Typography align="center" color="primary" />
+            <Typography variant="h5" component="h2" align="center" color="primary">
+              {groupName}
+            </Typography>
           </CardContent>
-          <Typography variant="h5" component="h2" align="center" color="primary">
-            {groupName}
-          </Typography>
-        </Card>
-      </Link>
-    </CardActionArea>
+        </Link>
+      </CardActionArea>
+      <CardActions>
+        <Grid container justify="flex-end">
+          <Grid item>
+            <Button size="small" disabled={groupName === "Everyone"} onClick={onDelete}>
+              <DeleteOutlineOutlinedIcon />
+            </Button>
+          </Grid>
+        </Grid>
+      </CardActions>
+    </Card>
   );
 };

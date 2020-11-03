@@ -34,5 +34,10 @@ export default {
     http
       .postJson("/groupPrivilege", params)
       .then(r => [r.data, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  deleteGroup: id =>
+    http
+      .deleteEntity(`/groups/${id}`)
+      .then(r => [r.data, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`])
 };

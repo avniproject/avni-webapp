@@ -34,7 +34,7 @@ const RelationshipTypeList = ({ history }) => {
       .get("/web/subjectType")
       .then(response => {
         response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.name.toLowerCase() === "individual") {
+          if (subjectType.type === "Person") {
             flag = "true";
           }
         });
@@ -84,7 +84,7 @@ const RelationshipTypeList = ({ history }) => {
           {isIndividualSubjectTypeAvailable === "false" && (
             <div style={{ color: "red", size: "10" }}>
               Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create an
-              Individual subject type to enable this screen.
+              Person subject type to enable this screen.
             </div>
           )}
           {isIndividualSubjectTypeAvailable === "true" && (

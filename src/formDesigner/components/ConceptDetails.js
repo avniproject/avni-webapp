@@ -67,7 +67,7 @@ function ConceptDetails(props) {
       .catch(error => {
         console.log(error);
       });
-  }, []);
+  }, [props.match.params.uuid]);
 
   return (
     <>
@@ -156,7 +156,6 @@ function ConceptDetails(props) {
                             <Checkbox checked={answer.abnormal ? true : false} name="abnormal" />
                           }
                           label="abnormal"
-                          key={answer.uuid}
                           style={{ marginLeft: "5px" }}
                           disabled={true}
                         />
@@ -165,7 +164,6 @@ function ConceptDetails(props) {
                             <Checkbox checked={answer.unique ? true : false} name="unique" />
                           }
                           label="unique"
-                          key={answer.uuid}
                           disabled={true}
                         />
                       </div>

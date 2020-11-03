@@ -164,45 +164,37 @@ export class LocationForm extends React.Component {
             toolTipKey={"ADMIN_LOCATION_NAME"}
           />
         </div>
-        {edit ? (
-          <AvniTextInput label="Type" source="typeString" toolTipKey={"ADMIN_LOCATION_TYPE"} />
-        ) : (
-          <AvniFormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
-            {({ formData, dispatch, ...rest }) => (
-              <ReferenceInput
-                label="Type"
-                source="name"
-                reference="addressLevelType"
-                validate={isRequired}
-                sort={{ field: "id", order: "ASC" }}
-                onChange={() => {
-                  this.changed = true;
-                }}
-                {...rest}
-              >
-                <LocationTypeSelectInput optionText="name" resettable />
-              </ReferenceInput>
-            )}
-          </AvniFormDataConsumer>
-        )}
-        {!edit && (
-          <FormDataConsumer>
-            {({ formData, dispatch, ...rest }) => (
-              <DisabledInput
-                source="type"
-                defaultValue={getNameOfLocationType(formData.name)}
-                style={{ display: "none" }}
-                {...rest}
-              />
-            )}
-          </FormDataConsumer>
-        )}
-        {edit ? (
-          <ParentLocationReferenceField label="Part of (location)" />
-        ) : (
-          <FormDataConsumer>
-            {({ formData, dispatch, ...rest }) =>
-              !isNil(getParentIdOfLocationType(formData.name)) && (
+        <AvniFormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
+          {({ formData, dispatch, ...rest }) => (
+            <ReferenceInput
+              label="Type"
+              source="typeId"
+              reference="addressLevelType"
+              validate={isRequired}
+              onChange={() => {
+                this.changed = true;
+              }}
+              disabled={edit}
+              {...rest}
+            >
+              <LocationTypeSelectInput optionText="name" resettable />
+            </ReferenceInput>
+          )}
+        </AvniFormDataConsumer>
+        <FormDataConsumer>
+          {({ formData, dispatch, ...rest }) => (
+            <DisabledInput
+              source="type"
+              defaultValue={getNameOfLocationType(formData.typeId)}
+              style={{ display: "none" }}
+              {...rest}
+            />
+          )}
+        </FormDataConsumer>
+        <FormDataConsumer>
+          {({ formData, dispatch, ...rest }) => {
+            return (
+              !isNil(getParentIdOfLocationType(formData.typeId)) && (
                 <ReferenceInput
                   label="Part of (location)"
                   helperText="Which larger location is this location a part of?"
@@ -210,7 +202,7 @@ export class LocationForm extends React.Component {
                   reference="locations"
                   filter={{
                     searchURI: "autocompleteLocationsOfType",
-                    typeId: getParentIdOfLocationType(formData.name),
+                    typeId: getParentIdOfLocationType(formData.typeId),
                     title: ""
                   }}
                   filterToQuery={searchText => ({ title: searchText })}
@@ -222,9 +214,10 @@ export class LocationForm extends React.Component {
                   />
                 </ReferenceInput>
               )
-            }
-          </FormDataConsumer>
-        )}
+            );
+          }}
+        </FormDataConsumer>
+
         <DisabledInput source="level" defaultValue={1} style={{ display: "none" }} />
       </SimpleForm>
     );

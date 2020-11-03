@@ -24,7 +24,7 @@ function RelationshipCreate() {
       .get("/web/subjectType")
       .then(response => {
         response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.name.toLowerCase() === "individual") {
+          if (subjectType.type === "Person") {
             flag = true;
           }
         });
@@ -85,7 +85,7 @@ function RelationshipCreate() {
         <DocumentationContainer filename={"Relationship.md"}>
           {!isIndividualSubjectTypeAvailable && (
             <div style={{ color: "red", size: "10" }}>
-              Please create an Individual subject type to enable this screen{" "}
+              Please create an Person subject type to enable this screen{" "}
             </div>
           )}
           {error === "existName" && (
