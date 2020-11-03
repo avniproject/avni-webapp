@@ -3,11 +3,13 @@ package org.openchs.service;
 import org.openchs.builder.BuilderException;
 import org.openchs.builder.LocationBuilder;
 import org.openchs.dao.AddressLevelTypeRepository;
+import org.openchs.dao.LocationMappingRepository;
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Organisation;
+import org.openchs.domain.ParentLocationMapping;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.AddressLevelTypeContract;
 import org.openchs.web.request.LocationContract;
@@ -22,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
@@ -29,13 +32,15 @@ public class LocationService {
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final OrganisationRepository organisationRepository;
     private final LocationRepository locationRepository;
+    private final LocationMappingRepository locationMappingRepository;
     private final Logger logger;
 
     @Autowired
-    public LocationService(LocationRepository locationRepository, AddressLevelTypeRepository addressLevelTypeRepository, OrganisationRepository organisationRepository) {
+    public LocationService(LocationRepository locationRepository, AddressLevelTypeRepository addressLevelTypeRepository, OrganisationRepository organisationRepository, LocationMappingRepository locationMappingRepository) {
         this.locationRepository = locationRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.organisationRepository = organisationRepository;
+        this.locationMappingRepository = locationMappingRepository;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -145,6 +150,16 @@ public class LocationService {
         if (locationEditContract.getTitle().trim().equals("")) {
             throw new RuntimeException("Empty 'title' received");
         }
+
+        if (location.getParentId() != null && !location.getParentId().equals(locationEditContract.getParentId())) {
+            Long oldParentId = location.getParentId();
+            Long newParentId = locationEditContract.getParentId();
+            String lineage = location.getLineage();
+            updateDescendantLocationLineage(locationRepository.findAllByParent(location), oldParentId, newParentId);
+            updateLocationMapping(location, locationEditContract);
+            location.setLineage(updateLineage(lineage, oldParentId, newParentId));
+            location.setParent(locationRepository.findOne(newParentId));
+        }
         if (!titleIsValid(location, locationEditContract.getTitle().trim(), location.getType())) {
             String message = String.format("Location with same name '%s' and type '%s' exists at this level",
                     locationEditContract.getTitle(),
@@ -154,6 +169,32 @@ public class LocationService {
         location.setTitle(locationEditContract.getTitle());
         locationRepository.save(location);
         return location;
+    }
+
+    private void updateLocationMapping(AddressLevel location, LocationEditContract locationEditContract) {
+        List<ParentLocationMapping> locationMappings = locationMappingRepository.findAllByLocation(location);
+        AddressLevel newParent = locationRepository.findOne(locationEditContract.getParentId());
+        List<ParentLocationMapping> updatedLocationMappings = locationMappings.stream()
+                .peek(locationMapping -> locationMapping.setParentLocation(newParent))
+                .collect(Collectors.toList());
+        locationMappingRepository.saveAll(updatedLocationMappings);
+    }
+
+    private String updateLineage(String lineage, Long oldId, Long newId) {
+        return lineage.replaceAll(oldId.toString(), newId.toString());
+    }
+
+    private void updateDescendantLocationLineage(List<AddressLevel> children, Long oldId, Long newId) {
+        if (children.isEmpty()) {
+            return;
+        } else {
+            children.forEach(child -> {
+                String lineage = child.getLineage();
+                child.setLineage(updateLineage(lineage, oldId, newId));
+                locationRepository.save(child);
+                updateDescendantLocationLineage(locationRepository.findAllByParent(child), oldId, newId);
+            });
+        }
     }
 
     private boolean titleIsValid(AddressLevel location, String title, AddressLevelType type) {

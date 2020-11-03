@@ -208,6 +208,14 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.titleLineage = titleLineage;
     }
 
+    public Long getParentTypeId() {
+        return this.parent != null ? this.parent.getType().getId() : null;
+    }
+
+    public Long getTypeId() {
+        return this.type != null ? this.type.getId() : null;
+    }
+
     @Projection(name = "AddressLevelProjection", types = {AddressLevel.class})
     public interface AddressLevelProjection extends BaseProjection {
         String getTitle();

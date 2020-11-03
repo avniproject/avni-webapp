@@ -34,6 +34,9 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
+    @Query(value = "SELECT a FROM AddressLevel a " +
+            "where (:title is null or lower(a.title) like lower(concat('%', :title,'%'))) " +
+            "and a.isVoided = false order by a.title ")
     Page<AddressLevel> findByIsVoidedFalseAndTitleIgnoreCaseStartingWithOrderByTitleAsc(String title, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
@@ -75,11 +78,13 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     Page<AddressLevel> findByIsVoidedFalseAndParent_Id(@Param("parentId") Long parentId, Pageable pageable);
 
     @RestResource(path = "autocompleteLocationsOfType", rel = "autocompleteLocationsOfType")
-    List<AddressLevel> findByTypeIdAndTitleIgnoreCaseStartingWithAndIsVoidedFalse(@Param("typeId") Long typeId,
+    List<AddressLevel> findByType_IdAndTitleIgnoreCaseStartingWithAndIsVoidedFalseOrderByTitleAsc(@Param("typeId") Long typeId,
                                                                                   @Param("title") String title);
     @Query("select a.title from AddressLevel a where a.isVoided = false")
     List<String> getAllNames();
 
     Optional<AddressLevel> findByTitleLineageIgnoreCase(String locationTitleLineage);
     List<AddressLevel> getAllByIsVoidedFalse();
+
+    List<AddressLevel> findAllByParent(AddressLevel parent);
 }

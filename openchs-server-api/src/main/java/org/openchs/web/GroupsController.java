@@ -29,7 +29,7 @@ public class GroupsController implements RestControllerResourceProcessor<Program
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public List<Group> getAll() {
-        return groupRepository.findAll();
+        return groupRepository.findAllByIsVoidedFalse();
     }
 
     @PostMapping(value = "web/groups")
@@ -66,5 +66,18 @@ public class GroupsController implements RestControllerResourceProcessor<Program
         }
 
         return ResponseEntity.ok(groupRepository.save(group));
+    }
+
+    @DeleteMapping(value = "/groups/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity voidGroup(@PathVariable("id") Long id) {
+        Group group = groupRepository.findOne(id);
+        if (group == null)
+            return ResponseEntity.badRequest().body(String.format("Group with id '%d' not found", id));
+        group.setVoided(true);
+        group.updateAudit();
+        groupRepository.save(group);
+        return ResponseEntity.ok(null);
     }
 }

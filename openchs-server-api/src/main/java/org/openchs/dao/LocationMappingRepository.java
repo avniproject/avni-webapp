@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.AddressLevel;
 import org.openchs.domain.ParentLocationMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
+
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locationMapping", path = "locationMapping", exported = false)
@@ -37,4 +41,6 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
     default ParentLocationMapping findByNameIgnoreCase(String name) {
         throw new UnsupportedOperationException("No field 'name' in ParentLocationMapping");
     }
+
+    List<ParentLocationMapping> findAllByLocation(AddressLevel location);
 }
