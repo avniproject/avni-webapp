@@ -10,7 +10,7 @@
     "@material-ui/pickers": "^3.2.10",
     "@nivo/bar": "^0.62.0",
     "@nivo/pie": "^0.62.0",
-    "avni-health-modules": "0.0.5",
+    "avni-health-modules": "0.0.7",
     "aws-amplify": "^1.1.19",
     "aws-amplify-react": "^2.3.0",
     "axios": "^0.18.0",

@@ -2715,13 +2715,14 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.5.tgz#870b6700aa93f43989c37754c384235a23b82381"
-  integrity sha512-WHqdEQEny28BzWALZno2j4LnedEtIJGxajirysBZcrYLogKWRCyyahMU/8TKZU0jl8e3tcvLmyclEy0kHfmLDg==
+avni-health-modules@0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.7.tgz#59c3fe903d88e12f08ce3acafaad4017b1662f1d"
+  integrity sha512-claQ2Ds8IqkwT/eBDH7U1yC+H0WQjtVF+L9DiZEZeFYhwbP5KAI3/9NM5pNIjSwTZSmhD3iZj0swI8j0dqNF4A==
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
+    rules-config "github:openchs/rules-config#08202533ec3f3a55977946c69d204f3df8080e61"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -13588,6 +13589,29 @@ rsvp@^3.3.3:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.6.2.tgz#2e96491599a96cde1b515d5674a8f7a91452926a"
   integrity sha512-OfWGQTb9vnwRjwtA2QwpG2ICclHC3pgXZO5xt8H2EfgDquO0qVdSb5T88L4qJVAEugbS56pAuV4XZM58UX8ulw==
+
+"rules-config@github:openchs/rules-config#08202533ec3f3a55977946c69d204f3df8080e61":
+  version "0.0.1"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/08202533ec3f3a55977946c69d204f3df8080e61"
+  dependencies:
+    babel-cli "^6.26.0"
+    babel-loader "^7.1.4"
+    babel-plugin-transform-class-properties "^6.24.1"
+    babel-plugin-transform-decorators-legacy "^1.3.5"
+    babel-plugin-transform-es2015-destructuring "^6.23.0"
+    babel-plugin-transform-export-extensions "^6.22.0"
+    babel-preset-env "^1.7.0"
+    babel-register "^6.26.0"
+    chai "^4.1.2"
+    lodash "^4.17.11"
+    mocha "^5.2.0"
+    moment "^2.22.2"
+    superagent "^3.8.3"
+    test "^0.6.0"
+    uglifyjs-webpack-plugin "^1.2.5"
+    webpack "^3.5.5"
+    webpack-cli "^3.0.3"
+    webpack-node-externals "1.6.0"
 
 "rules-config@github:openchs/rules-config#2c40bb37641694070de1566f96b9bd6a2c27007b":
   version "0.0.1"
