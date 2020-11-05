@@ -20,6 +20,8 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
     },
     cardArea: {
       width: 150,
+      whiteSpace: "pre-wrap",
+      overflowWrap: "break-word",
       height: 150,
       justify: "center",
       margin: 20,
