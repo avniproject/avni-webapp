@@ -2715,14 +2715,14 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.7.tgz#59c3fe903d88e12f08ce3acafaad4017b1662f1d"
-  integrity sha512-claQ2Ds8IqkwT/eBDH7U1yC+H0WQjtVF+L9DiZEZeFYhwbP5KAI3/9NM5pNIjSwTZSmhD3iZj0swI8j0dqNF4A==
+avni-health-modules@0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.9.tgz#21b600302b535ca60b0542cce5a380200cd55108"
+  integrity sha512-2HVstgEN/Bpw8Q5YcxzNZVtXGLpsTiZzEvmVel/Xu/WvcjhrGsRyrtbSwsVlNA61paCrwnR1XAL4b6690r24AQ==
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
-    rules-config "github:openchs/rules-config#08202533ec3f3a55977946c69d204f3df8080e61"
+    rules-config "github:openchs/rules-config#3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -10810,10 +10810,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@0.2.47:
-  version "0.2.47"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.47.tgz#98b77eec9ae9f813f77552404c89df1e95f7e436"
-  integrity sha512-GQn6JHPvv0Sp6NuN1avPRuUC8sTIAkcNLFXWcnJTc84EPlzEULJx/8GV7BMsJdXlwRSN7nOef9LC2DgWUKvXHQ==
+openchs-models@0.2.51, openchs-models@^0.2.25:
+  version "0.2.51"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.51.tgz#009449a03e9f75aa738f8aa17ea53b27990ea766"
+  integrity sha512-OsmIi07OkmIFMMDjfppctimZHZsHj6jzU2+tVmJbkuTKWv6W+SvZWwdR1vfoE7sUtwGYhW0Dr31vxSURGSIopQ==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -13590,32 +13590,9 @@ rsvp@^3.3.3:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.6.2.tgz#2e96491599a96cde1b515d5674a8f7a91452926a"
   integrity sha512-OfWGQTb9vnwRjwtA2QwpG2ICclHC3pgXZO5xt8H2EfgDquO0qVdSb5T88L4qJVAEugbS56pAuV4XZM58UX8ulw==
 
-"rules-config@github:openchs/rules-config#08202533ec3f3a55977946c69d204f3df8080e61":
+"rules-config@github:openchs/rules-config#3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3":
   version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/08202533ec3f3a55977946c69d204f3df8080e61"
-  dependencies:
-    babel-cli "^6.26.0"
-    babel-loader "^7.1.4"
-    babel-plugin-transform-class-properties "^6.24.1"
-    babel-plugin-transform-decorators-legacy "^1.3.5"
-    babel-plugin-transform-es2015-destructuring "^6.23.0"
-    babel-plugin-transform-export-extensions "^6.22.0"
-    babel-preset-env "^1.7.0"
-    babel-register "^6.26.0"
-    chai "^4.1.2"
-    lodash "^4.17.11"
-    mocha "^5.2.0"
-    moment "^2.22.2"
-    superagent "^3.8.3"
-    test "^0.6.0"
-    uglifyjs-webpack-plugin "^1.2.5"
-    webpack "^3.5.5"
-    webpack-cli "^3.0.3"
-    webpack-node-externals "1.6.0"
-
-"rules-config@github:openchs/rules-config#2c40bb37641694070de1566f96b9bd6a2c27007b":
-  version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/2c40bb37641694070de1566f96b9bd6a2c27007b"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3"
   dependencies:
     babel-cli "^6.26.0"
     babel-loader "^7.1.4"
@@ -15583,7 +15560,7 @@ webpack@4.28.3:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^3.5.5:
+webpack@^3.12.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.12.0.tgz#3f9e34360370602fcf639e97939db486f4ec0d74"
   integrity sha512-Sw7MdIIOv/nkzPzee4o0EdvCuPmxT98+vVpIvwtcwcF1Q4SDSNp92vwcKc4REe7NItH9f1S4ra9FuQ7yuYZ8bQ==

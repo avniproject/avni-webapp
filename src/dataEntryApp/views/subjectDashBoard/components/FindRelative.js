@@ -1,19 +1,15 @@
 import React from "react";
-import { store } from "../../../../../src/common/store/createStore";
 import { makeStyles } from "@material-ui/core/styles";
 import { LineBreak } from "common/components/utils";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
-import { first } from "lodash";
 import { withRouter, useHistory } from "react-router-dom";
 import Modal from "./CommonModal";
 import DialogContent from "@material-ui/core/DialogContent";
 import { FormControl, FormGroup, TextField, Typography } from "@material-ui/core";
-import moment from "moment/moment";
-import { noop, isNil, isEmpty } from "lodash";
+import { noop } from "lodash";
 import { searchSubjects, setSubjects } from "../../../reducers/searchReducer";
-import { types } from "../../../reducers/relationshipReducer";
 import FindRelativeTable from "./FindRelativeTable";
 
 const useStyles = makeStyles(theme => ({

@@ -3,8 +3,10 @@ import {
   setOperationalModules,
   setAllLocations,
   setOrganisationConfig,
+  setLegacyRulesBundle,
+  setLegacyRules,
   types
-} from "../reducers/metadataReducer";
+} from "dataEntryApp/reducers/metadataReducer";
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { isEmpty } from "lodash/core";
@@ -30,6 +32,24 @@ export function* dataEntryLoadOperationalModulesWorker() {
   const operationalModules = yield call(api.fetchOperationalModules);
 
   yield put(setOperationalModules(yield call(mapOperationalModules, operationalModules)));
+}
+
+export function* legacyRulesBundleWatcher() {
+  yield takeLatest(types.GET_LEGACY_RULES_BUNDLE, legacyRulesBundleWorker);
+}
+
+export function* legacyRulesBundleWorker() {
+  const legacyRulesBundle = yield call(api.getLegacyRulesBundle);
+  yield put(setLegacyRulesBundle(legacyRulesBundle));
+}
+
+export function* legacyRulesWatcher() {
+  yield takeLatest(types.GET_LEGACY_RULES, legacyRulesWorker);
+}
+
+export function* legacyRulesWorker() {
+  const legacyRules = yield call(api.getLegacyRules);
+  yield put(setLegacyRules(legacyRules));
 }
 
 export function* getGendersWatcher() {
@@ -66,7 +86,9 @@ export default function* referenceDataSaga() {
       dataEntryLoadOperationalModulesWatcher,
       getGendersWatcher,
       getAllLocationWatcher,
-      getOrganisationConfigWatcher
+      getOrganisationConfigWatcher,
+      legacyRulesBundleWatcher,
+      legacyRulesWatcher
     ].map(fork)
   );
 }

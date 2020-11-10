@@ -1,4 +1,5 @@
 import httpClient from "common/utils/httpClient";
+import { get } from "lodash";
 
 export default {
   fetchOperationalModules: () =>
@@ -101,5 +102,15 @@ export default {
       return response.json;
     }),
   getRulesResponse: requestBody =>
-    httpClient.post("/web/rules", requestBody).then(response => response.data)
+    httpClient.post("/web/rules", requestBody).then(response => response.data),
+  getLegacyRulesBundle: () =>
+    httpClient
+      .get(
+        "/ruleDependency/search/lastModified?lastModifiedDateTime=1900-01-01T00:00:00.000Z&size=1000"
+      )
+      .then(response => get(response, "data._embedded.ruleDependency[0].code")),
+  getLegacyRules: () =>
+    httpClient
+      .get("/rule/search/lastModified?lastModifiedDateTime=1900-01-01T00:00:00.000Z&size=1000")
+      .then(response => get(response, "data._embedded.rule"))
 };

@@ -4,10 +4,28 @@ import moment from "moment";
 import * as models from "avni-models";
 import { FormElementStatus } from "avni-models";
 import * as rulesConfig from "rules-config";
-import { common, motherCalculations } from "avni-health-modules";
+import {
+  common,
+  encounterDecision,
+  familyRegistrationDecision,
+  individualRegistrationDecision,
+  motherCalculations,
+  programEncounterDecision,
+  programEnrolmentDecision,
+  RuleRegistry
+} from "avni-health-modules";
+import { store } from "common/store/createStore";
+import {
+  selectLegacyRules,
+  selectLegacyRulesBundle,
+  selectLegacyRulesAllRules
+} from "dataEntryApp/reducers/metadataReducer";
 
 export const getFormElementsStatuses = (entity, formElementGroup) => {
   if ([entity, formElementGroup, formElementGroup.form].some(_.isEmpty)) return [];
+  const entityName = _.get(entity, "constructor.schema.name");
+
+  const rulesFromTheBundle = getAllRuleItemsFor(formElementGroup.form, "ViewFilter", "Form");
   const formElementsWithRules = formElementGroup
     .getFormElements()
     .filter(formElement => !_.isNil(formElement.rule) && !_.isEmpty(_.trim(formElement.rule)));
@@ -41,7 +59,14 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
       .values();
     return [...formElementStatuses];
   }
-  return formElementStatusAfterGroupRule;
+  if (_.isEmpty(rulesFromTheBundle)) return formElementStatusAfterGroupRule;
+  return [
+    ...rulesFromTheBundle
+      .map(r => runRuleAndSaveFailure(r, entityName, entity, formElementGroup, new Date()))
+      .reduce((all, curr) => all.concat(curr), formElementStatusAfterGroupRule)
+      .reduce((acc, fs) => acc.set(fs.uuid, fs), new Map())
+      .values()
+  ];
 };
 
 const runFormElementGroupRule = (formElementGroup, entity) => {
@@ -71,4 +96,52 @@ const getRuleServiceLibraryInterfaceForSharingModules = () => {
     motherCalculations: motherCalculations,
     models: models
   };
+};
+
+const getAllRuleItemsFor = (entity, type, entityTypeHardCoded) => {
+  const entityType = _.get(entity, "constructor.schema.name", entityTypeHardCoded);
+  const applicableRules = RuleRegistry.getRulesFor(entity.uuid, type, entityType); //Core module rules
+  const additionalRules = getApplicableRules(entity, type, entityType);
+  const ruleItems = _.sortBy(applicableRules.concat(additionalRules), r => r.executionOrder);
+  return ruleItems;
+};
+
+const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
+  const state = store.getState();
+  const legacyRules = selectLegacyRules(state);
+  const rules = legacyRules
+    .map(_.identity)
+    .filter(
+      rule =>
+        rule.voided === false &&
+        rule.type === ruleType &&
+        rule.entity.uuid === ruledEntity.uuid &&
+        rule.entity.type === ruledEntityType
+    );
+  return getRuleFunctions(rules);
+};
+
+const getRuleFunctions = (rules = []) => {
+  const allRules = selectLegacyRulesAllRules(store.getState());
+  return _.defaults(rules, [])
+    .filter(ar => _.isFunction(allRules[ar.fnName]) && _.isFunction(allRules[ar.fnName].exec))
+    .map(ar => ({ ...ar, fn: allRules[ar.fnName] }));
+};
+
+const runRuleAndSaveFailure = (rule, entityName, entity, ruleTypeValue, config, context) => {
+  try {
+    if (entityName === "WorkList") {
+      ruleTypeValue = entity;
+      return rule.fn.exec(entity, context);
+    } else {
+      return _.isNil(context)
+        ? rule.fn.exec(entity, ruleTypeValue, config)
+        : rule.fn.exec(entity, ruleTypeValue, context, config);
+    }
+  } catch (error) {
+    console.log("Rule-Failure", `Rule failed: ${rule.name}, uuid: ${rule.uuid}`);
+    //TODO: Implement saving rule failures by calling API
+    // this.saveFailedRules(error, rule.uuid, this.getIndividualUUID(entity, entityName));
+    return ruleTypeValue;
+  }
 };

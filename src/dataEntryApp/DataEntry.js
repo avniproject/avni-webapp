@@ -1,9 +1,15 @@
 import React, { useEffect } from "react";
 import { Route, withRouter, useLocation } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
-import { getOperationalModules } from "./reducers/metadataReducer";
+import {
+  getOperationalModules,
+  getLegacyRulesBundle,
+  selectLegacyRulesBundleLoaded,
+  selectLegacyRulesLoaded,
+  getLegacyRules
+} from "dataEntryApp/reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import Loading from "./components/Loading";
 import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
@@ -32,22 +38,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DataEntry = ({
-  match: { path },
-  getOperationalModules,
-  operationalModules,
-  getOrgConfigInfo,
-  orgConfig
-}) => {
+const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
   const classes = useStyles();
-  let location = useLocation();
+  const dispatch = useDispatch();
+  const legacyRulesBundleLoaded = useSelector(selectLegacyRulesBundleLoaded);
+  const legacyRulesLoaded = useSelector(selectLegacyRulesLoaded);
 
   useEffect(() => {
-    getOperationalModules();
-    getOrgConfigInfo();
+    dispatch(getOperationalModules());
+    dispatch(getOrgConfigInfo());
+    dispatch(getLegacyRulesBundle());
+    dispatch(getLegacyRules());
   }, []);
 
-  return operationalModules && orgConfig ? (
+  return operationalModules && orgConfig && legacyRulesBundleLoaded && legacyRulesLoaded ? (
     <I18nextProvider i18n={i18n}>
       <div className={classes.root}>
         {/* <Grid container spacing={2} justify="center"> */}
@@ -117,6 +121,6 @@ const mapStateToProps = state => ({
 export default withRouter(
   connect(
     mapStateToProps,
-    { getOperationalModules, getOrgConfigInfo }
+    null
   )(DataEntry)
 );

@@ -23,7 +23,10 @@ export const selectEnrolmentFormMapping = (subjectType, programUuid, formType) =
   );
 
 export const selectProgramUUID = programName => state =>
-  find(get(state, "dataEntry.metadata.operationalModules.programs"), fm => fm.name === programName);
+  find(
+    get(state, "dataEntry.metadata.operationalModules.programs"),
+    program => program.operationalProgramName === programName
+  );
 
 export const selectEnrolmentFormMappingForSubjectType = (
   subjectTypeName,

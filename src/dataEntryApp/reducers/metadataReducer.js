@@ -1,3 +1,7 @@
+import { common, motherCalculations } from "avni-health-modules";
+import * as models from "avni-models";
+import { isEmpty } from "lodash";
+
 const prefix = "app/dataEntry/reducer/metadata/";
 
 export const types = {
@@ -8,7 +12,11 @@ export const types = {
   GET_ALL_LOCATION: `${prefix}GET_ALL_LOCATION`,
   SET_ALL_LOCATION: `${prefix}SET_ALL_LOCATION`,
   GET_ORGANISATION_CONFIG: `${prefix}GET_ORGANISATION_CONFIG`,
-  SET_ORGANISATION_CONFIG: `${prefix}SET_ORGANISATION_CONFIG`
+  SET_ORGANISATION_CONFIG: `${prefix}SET_ORGANISATION_CONFIG`,
+  GET_LEGACY_RULES_BUNDLE: `${prefix}GET_LEGACY_RULES_BUNDLE`,
+  SET_LEGACY_RULES_BUNDLE: `${prefix}SET_LEGACY_RULES_BUNDLE`,
+  GET_LEGACY_RULES: `${prefix}GET_LEGACY_RULES`,
+  SET_LEGACY_RULES: `${prefix}SET_LEGACY_RULES`
 };
 
 export const getOperationalModules = () => ({
@@ -45,6 +53,31 @@ export const setOrganisationConfig = organisationConfigs => ({
   organisationConfigs
 });
 
+export const getLegacyRulesBundle = () => ({
+  type: types.GET_LEGACY_RULES_BUNDLE
+});
+
+export const setLegacyRulesBundle = rulesBundle => ({
+  type: types.SET_LEGACY_RULES_BUNDLE,
+  rulesBundle
+});
+
+export const getLegacyRules = () => ({
+  type: types.GET_LEGACY_RULES
+});
+
+export const setLegacyRules = rules => ({
+  type: types.SET_LEGACY_RULES,
+  rules
+});
+
+export const selectLegacyRulesBundle = state => state.dataEntry.metadata.rulesBundle;
+export const selectLegacyRulesAllRules = state => state.dataEntry.metadata.allRules;
+export const selectLegacyRulesBundleLoaded = state => state.dataEntry.metadata.rulesBundleLoaded;
+
+export const selectLegacyRules = state => state.dataEntry.metadata.rules;
+export const selectLegacyRulesLoaded = state => state.dataEntry.metadata.rulesLoaded;
+
 // const initialState = {};
 
 // reducer
@@ -72,6 +105,35 @@ export default function(state = {}, action) {
       return {
         ...state,
         organisationConfigs: action.organisationConfigs
+      };
+    }
+    case types.SET_LEGACY_RULES_BUNDLE: {
+      /**********/
+      /*variables used inside the eval*/
+      /*keeping it long to avoid name conflicts*/
+      let ruleServiceLibraryInterfaceForSharingModules = {
+        log: console.log,
+        common: common,
+        motherCalculations: motherCalculations,
+        models: models
+      };
+      let rulesConfig = isEmpty(action.rulesBundle)
+        ? {}
+        : eval(action.rulesBundle.concat("rulesConfig;"));
+      /**********/
+      const allRules = { ...rulesConfig };
+
+      return {
+        ...state,
+        allRules,
+        rulesBundleLoaded: true
+      };
+    }
+    case types.SET_LEGACY_RULES: {
+      return {
+        ...state,
+        rules: action.rules,
+        rulesLoaded: true
       };
     }
     default:
