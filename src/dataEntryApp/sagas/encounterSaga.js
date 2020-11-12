@@ -55,6 +55,7 @@ export function* encouterOnLoadWatcher() {
 }
 export function* encouterOnLoadWorker({ subjectUuid }) {
   yield put.resolve(setLoad(false));
+  yield put.resolve(setFilteredFormElements());
   yield put.resolve(getSubjectGeneral(subjectUuid));
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const encounterFormMappings = yield select(

@@ -55,6 +55,7 @@ export function* programEncouterOnLoadWatcher() {
 
 export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
   yield put.resolve(setLoad(false));
+  yield put.resolve(setFilteredFormElements());
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   yield put(setProgramEnrolment(programEnrolment));
 

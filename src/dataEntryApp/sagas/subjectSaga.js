@@ -70,6 +70,7 @@ function* setupNewEnrolmentWorker({
   subjectUuid
 }) {
   yield put.resolve(setInitialState());
+  yield put.resolve(setFilteredFormElements());
   const formMapping = yield select(
     selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
   );
@@ -193,6 +194,7 @@ function* loadRegistrationPageWatcher() {
 }
 
 export function* loadRegistrationPageWorker({ subjectTypeName }) {
+  yield put.resolve(setFilteredFormElements());
   yield put.resolve(getOperationalModules());
   yield put.resolve(getRegistrationForm(subjectTypeName));
   yield put.resolve(getGenders());
@@ -212,6 +214,7 @@ function* loadEditRegistrationPageWatcher() {
 export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const subject = mapProfile(subjectProfileJson);
+  yield put.resolve(setFilteredFormElements());
   const selectedAddressLevelType = {
     name: subjectProfileJson.addressLevelTypeName,
     id: subjectProfileJson.addressLevelTypeId
