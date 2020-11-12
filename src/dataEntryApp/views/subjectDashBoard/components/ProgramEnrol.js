@@ -72,9 +72,10 @@ const ProgramEnrol = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const formType = match.queryParams.formType;
+  const subjectTypeName = match.queryParams.subjectTypeName;
   useEffect(() => {
     onLoad(
-      "Individual",
+      subjectTypeName,
       match.queryParams.programName,
       formType,
       match.queryParams.programEnrolmentUuid,

@@ -9,9 +9,6 @@ import { withRouter } from "react-router-dom";
 import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";
 import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
-let subject = Individual.createEmptyInstance();
-subject.subjectType = SubjectType.create("Individual");
-
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,

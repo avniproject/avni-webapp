@@ -522,10 +522,9 @@ const mapFormStateToProps = state => ({
     new ObservationsHolder(state.dataEntry.registration.subject.observations),
   observations:
     state.dataEntry.registration.subject && state.dataEntry.registration.subject.observations,
-  //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
-  onSaveGoto: "/app/search",
+  onSaveGoto: `/app/subject?uuid=${state.dataEntry.registration.subject.uuid}`,
   validationResults: state.dataEntry.registration.validationResults,
   registrationFlow: true,
   filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,

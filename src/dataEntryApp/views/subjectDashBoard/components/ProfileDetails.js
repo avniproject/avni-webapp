@@ -218,10 +218,10 @@ const ProfileDetails = ({
           <Table aria-label="caption table" className={classes.tableContainer}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                {profileDetails.subjectType.isPerson() && (
                   <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
                 )}
-                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                {profileDetails.subjectType.isPerson() && (
                   <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
                 )}
                 <TableCell className={classes.tableCell}>
@@ -231,12 +231,12 @@ const ProfileDetails = ({
             </TableHead>
             <TableBody>
               <TableRow>
-                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                {profileDetails.subjectType.isPerson() && (
                   <TableCell className={classes.tableCellDetails}>
                     {t(profileDetails.gender.name)}
                   </TableCell>
                 )}
-                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                {profileDetails.subjectType.isPerson() && (
                   <TableCell className={classes.tableCellDetails}>
                     {profileDetails.dateOfBirth
                       ? new Date().getFullYear() -
@@ -269,7 +269,9 @@ const ProfileDetails = ({
                     buttonType: "saveButton",
                     label: t("Enrol"),
                     classes: classes.btnCustom,
-                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment`,
+                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
+                      profileDetails.subjectType.name
+                    }`,
                     requiredField: selectedProgram,
                     handleError: handleError
                   },

@@ -10810,7 +10810,7 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@0.2.51, openchs-models@^0.2.25:
+openchs-models@0.2.51:
   version "0.2.51"
   resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.51.tgz#009449a03e9f75aa738f8aa17ea53b27990ea766"
   integrity sha512-OsmIi07OkmIFMMDjfppctimZHZsHj6jzU2+tVmJbkuTKWv6W+SvZWwdR1vfoE7sUtwGYhW0Dr31vxSURGSIopQ==
@@ -15560,7 +15560,7 @@ webpack@4.28.3:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^3.12.0:
+webpack@^3.5.5:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.12.0.tgz#3f9e34360370602fcf639e97939db486f4ec0d74"
   integrity sha512-Sw7MdIIOv/nkzPzee4o0EdvCuPmxT98+vVpIvwtcwcF1Q4SDSNp92vwcKc4REe7NItH9f1S4ra9FuQ7yuYZ8bQ==

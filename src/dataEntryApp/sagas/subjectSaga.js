@@ -84,7 +84,6 @@ function* setupNewEnrolmentWorker({
   const program = yield select(selectProgram(programName));
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
-  //subject.subjectType = SubjectType.create("Individual");
   if (formType === "ProgramEnrolment" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment, subject);
@@ -174,7 +173,6 @@ export function* saveProgramEnrolmentWatcher() {
 export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
-  subject.subjectType = SubjectType.create("Individual");
 
   let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
   programEnrolment = mapProgramEnrolment(programEnrolment, subject);

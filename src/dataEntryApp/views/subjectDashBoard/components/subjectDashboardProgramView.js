@@ -277,14 +277,18 @@ const ProgramView = ({
                     <Link
                       to={`/app/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName
-                      }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                      }&formType=ProgramExit&programEnrolmentUuid=${
+                        programData.uuid
+                      }&subjectTypeName=${subjectProfile.subjectType.name}`}
                     >
                       <Button color="primary">{t("Exit")}</Button>
                     </Link>
                     <Link
                       to={`/app/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName
-                      }&formType=ProgramEnrolment&programEnrolmentUuid=${programData.uuid}`}
+                      }&formType=ProgramEnrolment&programEnrolmentUuid=${
+                        programData.uuid
+                      }&subjectTypeName=${subjectProfile.subjectType.name}`}
                     >
                       <Button color="primary">{t("Edit")}</Button>
                     </Link>
@@ -294,7 +298,9 @@ const ProgramView = ({
                     <Link
                       to={`/app/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName
-                      }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                      }&formType=ProgramExit&programEnrolmentUuid=${
+                        programData.uuid
+                      }&subjectTypeName=${subjectProfile.subjectType.name}`}
                     >
                       <Button color="primary">{t("Edit Exit")}</Button>
                     </Link>
