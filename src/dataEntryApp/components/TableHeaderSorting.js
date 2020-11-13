@@ -31,16 +31,7 @@ export const stableSort = (array, comparator) => {
 
 export const EnhancedTableHead = props => {
   const { t } = useTranslation();
-  const {
-    headername,
-    classes,
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort
-  } = props;
+  const { headername, classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = property => event => {
     onRequestSort(event, property);
   };

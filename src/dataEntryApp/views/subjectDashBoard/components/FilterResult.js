@@ -74,7 +74,6 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
     SCHEDULED_DATE: "",
     COMPLETED_DATE: ""
   });
-  const [msg, setMsg] = React.useState("");
 
   const [selectedVisitTypes, setVisitTypes] = React.useState(null);
 

@@ -7,16 +7,6 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import http from "../../common/utils/httpClient";
 
 export const SubjectConcept = props => {
-  const useStyles = makeStyles(theme => ({
-    width: 195,
-    marginRight: 10,
-    select: {
-      width: "200px",
-      height: 40,
-      marginTop: 24
-    }
-  }));
-
   const [subjectType, setSubjectType] = React.useState("");
   const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
 

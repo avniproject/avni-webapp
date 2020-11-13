@@ -2,7 +2,6 @@ import React from "react";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import Select from "react-select";
-import { Grid } from "@material-ui/core";
 import { filter, includes, map } from "lodash";
 
 export const AddressLevelSetting = ({ levelUUIDs, setLevelUUIDs, locationTypes }) => {

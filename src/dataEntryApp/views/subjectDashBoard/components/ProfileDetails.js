@@ -18,7 +18,6 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { isEqual } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
@@ -112,22 +111,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: "10px"
   }
 }));
-
-const styles = theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-    backgroundColor: "black",
-    padding: "6px 16px",
-    color: "white"
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: "0px",
-    color: "white"
-  }
-});
 
 const ProfileDetails = ({
   profileDetails,

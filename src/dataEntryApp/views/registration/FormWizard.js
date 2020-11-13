@@ -9,7 +9,7 @@ import Summary from "./Summary";
 import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { FormElementGroup, StaticFormElementGroup, ValidationResults } from "avni-models";
-import { InternalLink, RelativeLink } from "common/components/utils";
+import { InternalLink } from "common/components/utils";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import { filterFormElements } from "../../services/FormElementService";
 import { getFormElementsStatuses } from "../../services/RuleEvaluationService";
@@ -222,7 +222,7 @@ const FormWizard = ({
   };
 
   const getPageNumber = index => (index === -1 ? 1 : index + 1);
-  const { from, type } = match.queryParams;
+  const { from } = match.queryParams;
 
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),

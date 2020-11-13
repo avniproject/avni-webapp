@@ -22,12 +22,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
 
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { InternalLink } from "../../../../common/components/utils";
-import { enableReadOnly } from "common/constants";
-import { withParams } from "../../../../common/components/utils";
-import { Link } from "react-router-dom";
+import { InternalLink, withParams } from "../../../../common/components/utils";
 import moment from "moment";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
 import { isNil } from "lodash";

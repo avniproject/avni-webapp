@@ -1,7 +1,6 @@
 import { filter, isEmpty, isFinite, isNil } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";
 import {
-  BooleanInput,
   Create,
   Datagrid,
   DisabledInput,
@@ -10,7 +9,6 @@ import {
   FormDataConsumer,
   FunctionField,
   List,
-  RadioButtonGroupInput,
   REDUX_FORM_NAME,
   ReferenceField,
   ReferenceInput,
@@ -19,8 +17,7 @@ import {
   Show,
   SimpleForm,
   SimpleShowLayout,
-  TextField,
-  TextInput
+  TextField
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";

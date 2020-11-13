@@ -3,17 +3,16 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import Observations from "dataEntryApp/components/Observations";
 import { useTranslation } from "react-i18next";
-import { flatten, isEmpty, join } from "lodash";
+import { isEmpty } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
 import Box from "@material-ui/core/Box";
 import {
+  selectError,
   selectFetchingRulesResponse,
-  selectRulesResponse,
-  selectError
+  selectRulesResponse
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import CustomizedBackdrop from "dataEntryApp/components/CustomizedBackdrop";
-import { mapObservations } from "common/subjectModelMapper";
 
 const useStyle = makeStyles(theme => ({
   form: {

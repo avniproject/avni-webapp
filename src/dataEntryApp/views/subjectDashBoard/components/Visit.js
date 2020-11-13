@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
-import { find, isEmpty, isNil } from "lodash";
+import { isEmpty } from "lodash";
 import {
   selectFormMappingForCancelProgramEncounter,
   selectFormMappingForProgramEncounter

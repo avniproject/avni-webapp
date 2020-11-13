@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import _, { map, includes, filter } from "lodash";
+import { map, includes, filter } from "lodash";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -12,8 +12,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import httpClient from "../../common/utils/httpClient";
 import { default as UUID } from "uuid";
 import Types from "./Types";
-import { findRegistrationForms } from "../domain/formMapping";
-import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniSelect } from "../../common/components/AvniSelect";
 
 const useStyles = makeStyles(theme => ({

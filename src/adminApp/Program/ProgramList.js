@@ -1,26 +1,17 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _, { get, isEqual } from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
-import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
-import {
-  findProgramEncounterForm,
-  findProgramEnrolmentForm,
-  findProgramExitForm
-} from "../domain/formMapping";
+import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
 
 const ProgramList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
-  const [notificationAlert, setNotificationAlert] = useState(false);
-  const [message, setMessage] = useState("");
-  const [formList, setFormList] = useState([]);
 
   useEffect(() => {
     http
@@ -30,7 +21,6 @@ const ProgramList = ({ history }) => {
         formMap.map(l => (l["isVoided"] = false));
         setFormMappings(formMap);
         setSubjectType(response.data.subjectTypes);
-        setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);
@@ -190,6 +180,7 @@ const ProgramList = ({ history }) => {
     </>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }

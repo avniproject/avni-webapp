@@ -6,18 +6,16 @@ import {
   Edit,
   FunctionField,
   List,
+  number,
   ReferenceField,
-  ReferenceInput,
+  required,
   SaveButton,
   SelectInput,
   Show,
   SimpleForm,
   SimpleShowLayout,
   TextField,
-  TextInput,
-  Toolbar,
-  required,
-  number
+  Toolbar
 } from "react-admin";
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
@@ -26,8 +24,6 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@material-ui/core";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
-import { formatRoles } from "./UserHelper";
-import moment from "moment";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 export const LocationTypeList = props => (

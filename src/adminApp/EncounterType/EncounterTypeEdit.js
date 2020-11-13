@@ -1,4 +1,3 @@
-import TextField from "@material-ui/core/TextField";
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -13,12 +12,8 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
-import SelectForm from "../SubjectType/SelectForm";
 import {
   findEncounterCancellationForms,
   findEncounterForms,
@@ -44,13 +39,10 @@ const EncounterTypeEdit = props => {
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [subjectT, setSubjectT] = useState({});
   const [subjectType, setSubjectType] = useState([]);
-  const [existMapping, setExistMapping] = useState([]);
   const [programT, setProgramT] = useState({});
   const [program, setProgram] = useState([]);
-  const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
   const [subjectValidation, setSubjectValidation] = useState(false);
-  const [encounterFormsInitialized, setEncounterFormsInitialized] = useState(false);
 
   useEffect(() => {
     http
@@ -64,7 +56,6 @@ const EncounterTypeEdit = props => {
           .then(response => {
             const formMap = response.data.formMappings;
             formMap.map(l => (l["isVoided"] = false));
-            setFormMappings(formMap);
             setFormList(response.data.forms);
             setSubjectType(response.data.subjectTypes);
             setProgram(response.data.programs);
@@ -77,7 +68,6 @@ const EncounterTypeEdit = props => {
             );
             setProgramT(response.data.programs.filter(l => l.uuid === temp[0].programUUID)[0]);
 
-            setExistMapping(temp);
             setSubjectT(
               response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
             );

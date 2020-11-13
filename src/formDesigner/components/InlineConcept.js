@@ -1,15 +1,13 @@
 import React from "react";
-import PropTypes from "prop-types";
 import NumericConcept from "./NumericConcept";
-import { Input, InputLabel, Select, Button, FormControl } from "@material-ui/core";
+import { Button, FormControl, Input } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { CodedConceptUI } from "./CodedConcept";
 import MenuItem from "@material-ui/core/MenuItem";
 import { inlineConceptDataType } from "../common/constants";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { BackButton } from "./FormElementDetails";
 import { AvniSelect } from "../../common/components/AvniSelect";
-import _ from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";

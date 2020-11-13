@@ -1,11 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { withParams, LineBreak } from "../../../common/components/utils";
+import { LineBreak, withParams } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { Typography, Paper } from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useTranslation } from "react-i18next";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -13,7 +12,6 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { getAllLocations, getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import Button from "@material-ui/core/Button";
-import { Link } from "react-router-dom";
 import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
 import NonConceptForm from "../GlobalSearch/NonConceptForm";
@@ -113,7 +111,6 @@ function SearchFilterForm({
   organisationConfigs,
   searchRequest
 }) {
-  const { t } = useTranslation();
   const classes = useStyles();
   const {
     subjectType,
@@ -226,34 +223,19 @@ function SearchFilterForm({
     searchElement => searchElement.type === "Concept"
   );
 
-  const initialConceptList = conceptList.map(concept => {
-    if (concept.conceptDataType === null) {
-    } else {
-      if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
-        return {
-          ...concept,
-          minValue: null,
-          maxValue: null
-        };
-      } else if (concept.conceptDataType === "Coded") {
-        return {
-          ...concept,
-          values: []
-        };
-      } else if (concept.conceptDataType === "Text") {
-        return {
-          ...concept,
-          value: ""
-        };
-      } else if (concept.conceptDataType === "Numeric") {
-        return {
-          ...concept,
-          minValue: null,
-          maxValue: null
-        };
-      }
-    }
-  });
+  const initialConceptList = conceptList
+    .filter(concept => concept.conceptDataType !== null)
+    .map(concept => {
+      const defaultState = {
+        Date: { ...concept, minValue: null, maxValue: null },
+        DateTime: { ...concept, minValue: null, maxValue: null },
+        Time: { ...concept, minValue: null, maxValue: null },
+        Numeric: { ...concept, minValue: null, maxValue: null },
+        Coded: { ...concept, values: [] },
+        Text: { ...concept, value: "" }
+      };
+      return defaultState[concept.conceptDataType];
+    });
 
   const allConceptRelatedFilters = _.map(initialConceptList, item =>
     _.merge(item, _.find(concept, { uuid: item.conceptUUID }))

@@ -1,8 +1,6 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { useTranslation } from "react-i18next";
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogActions from "@material-ui/core/DialogActions";
@@ -10,7 +8,6 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import SubjectButton from "./Button";
 import Fab from "@material-ui/core/Fab";
-//import Link from "@material-ui/core/Link";
 import { Link } from "react-router-dom";
 import CustomizedDialog from "../../../components/Dialog";
 

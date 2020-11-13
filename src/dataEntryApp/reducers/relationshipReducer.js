@@ -8,8 +8,6 @@ export const types = {
   SET_LISTOFRELATIVES: `${prefix}SET_LISTOFRELATIVES`
 };
 
-const listOfRelations = {};
-
 export const getRelations = () => ({
   type: types.GET_RELATION
 });

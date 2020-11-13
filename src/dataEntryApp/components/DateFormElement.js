@@ -1,24 +1,23 @@
-import React, { Fragment, useState } from "react";
+import React from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import {
-  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
   KeyboardDateTimePicker,
-  KeyboardDatePicker
+  MuiPickersUtilsProvider
 } from "@material-ui/pickers";
 
 import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Radio,
   RadioGroup,
-  FormControlLabel,
-  FormControl,
   TextField,
-  FormLabel,
   Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
-import { Duration } from "avni-models";
-import _, { isNil, get, find } from "lodash";
+import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({

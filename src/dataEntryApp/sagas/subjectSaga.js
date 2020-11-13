@@ -1,10 +1,4 @@
-import {
-  FormElementGroup,
-  Individual,
-  ObservationsHolder,
-  ProgramEnrolment,
-  SubjectType
-} from "avni-models";
+import { FormElementGroup, Individual, ObservationsHolder, ProgramEnrolment } from "avni-models";
 import {
   getRegistrationForm,
   saveComplete,

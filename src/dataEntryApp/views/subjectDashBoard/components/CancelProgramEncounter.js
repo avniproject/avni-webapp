@@ -9,8 +9,6 @@ import { withParams } from "common/components/utils";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { ModelGeneral as General, ValidationResult } from "avni-models";
-import moment from "moment";
 import {
   updateProgramEncounter,
   setEncounterDateValidation,
@@ -34,7 +32,6 @@ const useStyles = makeStyles(theme => ({
 const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const CANCEL_DATE_TIME = "CANCEL_DATE_TIME";
   const editCancelProgramEncounter = isEqual(match.path, "/app/subject/editCancelProgramEncounter");
   const encounterUuid = match.queryParams.uuid;
 

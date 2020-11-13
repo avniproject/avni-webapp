@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { TextField, FormLabel, FormControl } from "@material-ui/core";
-import _, { isEmpty, find } from "lodash";
+import { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";

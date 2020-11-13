@@ -1,17 +1,16 @@
 import React from "react";
-import { lighten, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import { noop, isNil, isEmpty, first } from "lodash";
+import { first } from "lodash";
 import { connect } from "react-redux";
-import { withRouter, useHistory } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import TableHead from "@material-ui/core/TableHead";
 import Radio from "@material-ui/core/Radio";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
-import { Row } from "reactstrap";
 
 const useStyles = makeStyles(theme => ({
   root: {

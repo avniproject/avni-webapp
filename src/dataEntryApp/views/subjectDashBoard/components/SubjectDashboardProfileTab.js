@@ -15,7 +15,7 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
-import { getSubjectProfile, unVoidSubject } from "../../../reducers/subjectDashboardReducer";
+import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import SubjectVoided from "../../../components/SubjectVoided";
 
@@ -183,7 +183,7 @@ const SubjectDashboardProfileTab = ({
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-          {profile.relationships != undefined && relativeList.length !== 0 ? (
+          {profile.relationships !== undefined && relativeList.length !== 0 ? (
             <GridCommonList
               profileUUID={profile.uuid}
               profileName={profile.firstName + " " + profile.lastName}

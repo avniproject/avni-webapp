@@ -1,6 +1,4 @@
-import TextField from "@material-ui/core/TextField";
-
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -12,26 +10,18 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import { programInitialState, colorPickerCSS } from "../Constant";
+import { colorPickerCSS, programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
 import ColorPicker from "material-ui-rc-color-picker";
 import "material-ui-rc-color-picker/assets/index.css";
-import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
-import { default as UUID } from "uuid";
 import {
-  findProgramEncounterCancellationForm,
-  findProgramEncounterForm,
-  findProgramEncounterForms,
   findProgramEnrolmentForm,
   findProgramEnrolmentForms,
   findProgramExitForm,
   findProgramExitForms
 } from "../domain/formMapping";
-import SelectForm from "../SubjectType/SelectForm";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";

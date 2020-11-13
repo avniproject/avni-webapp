@@ -4,31 +4,27 @@ import NativeSelect from "@material-ui/core/NativeSelect";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getRelations, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
-import { withRouter, useHistory } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import { ModelGeneral as General, EncounterType } from "avni-models";
+import { ModelGeneral as General } from "avni-models";
 import {
-  Grid,
   Box,
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  Paper,
   Table,
-  TableHead,
-  TableRow,
   TableBody,
   TableCell,
-  Typography,
-  Paper,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  FormHelperText,
-  Select,
-  Button
+  TableHead,
+  TableRow,
+  Typography
 } from "@material-ui/core";
 import FindRelative from "../components/FindRelative";
-import { InternalLink, LineBreak, RelativeLink } from "../../../../common/components/utils";
+import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
-import { Cancel } from "@material-ui/icons";
 import { isEmpty } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 

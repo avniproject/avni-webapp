@@ -6,7 +6,6 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
-import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
