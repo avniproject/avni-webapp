@@ -85,6 +85,8 @@ const decisionType = entityName => {
     case "programEncounter":
     case "encounter":
       return "encounterDecisions";
+    default:
+      return "";
   }
 };
 export const sampleDecisionRule = entityName => {

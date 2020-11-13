@@ -1,4 +1,4 @@
-import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import { types, setRelations } from "../reducers/relationshipReducer";
 import api from "../api";
 import { setLoad } from "../reducers/loadReducer";

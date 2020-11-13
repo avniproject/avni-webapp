@@ -27,8 +27,6 @@ const useStyles = makeStyles(theme => ({
 const NewProgramVisit = ({ match, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const planEncounterList = [];
-  const unplanEncounterList = [];
   const enrolmentUuid = match.queryParams.enrolUuid;
 
   useEffect(() => {
@@ -38,7 +36,7 @@ const NewProgramVisit = ({ match, ...props }) => {
   }, []);
 
   //Creating New programEncounter Object for Plan Encounter
-  props.planEncounters
+  const planEncounterList = props.planEncounters
     .filter(pe => isNil(pe.encounterDateTime) && isNil(pe.cancelDateTime))
     .map(planEncounter => {
       const planVisit = new ProgramEncounter();
@@ -48,18 +46,18 @@ const NewProgramVisit = ({ match, ...props }) => {
       planVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
       planVisit.name = planEncounter.name;
       planVisit.uuid = planEncounter.uuid;
-      planEncounterList.push(planVisit);
+      return planVisit;
     });
 
   //Creating New programEncounter Object for Unplan Encounter
-  props.unplanEncounters.map(unplanEncounter => {
+  const unplanEncounterList = props.unplanEncounters.map(unplanEncounter => {
     const unplanVisit = new ProgramEncounter();
     unplanVisit.encounterType = props.operationalModules.encounterTypes.find(
       eT => eT.uuid === unplanEncounter.encounterTypeUUID
     );
     unplanVisit.name =
       unplanVisit.encounterType && unplanVisit.encounterType.operationalEncounterTypeName;
-    unplanEncounterList.push(unplanVisit);
+    return unplanVisit;
   });
 
   const sections = [];

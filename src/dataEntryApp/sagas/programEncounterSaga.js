@@ -18,7 +18,6 @@ import {
 import { mapForm } from "../../common/adapters";
 import {
   ProgramEncounter,
-  ProgramEnrolment,
   ModelGeneral as General,
   ObservationsHolder,
   FormElementGroup

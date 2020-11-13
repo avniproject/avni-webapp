@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import ScheduledVisitsTable from "dataEntryApp/components/ScheduledVisitsTable";
 import Box from "@material-ui/core/Box";
 import {
-  selectError,
   selectFetchingRulesResponse,
   selectRulesResponse
 } from "dataEntryApp/reducers/serverSideRulesReducer";
@@ -27,10 +26,8 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
   const classes = useStyle();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
   const rulesResponse = useSelector(selectRulesResponse);
   const fetchingRulesResponse = useSelector(selectFetchingRulesResponse);
-  const rulesError = useSelector(selectError);
 
   useEffect(() => {
     dispatch(fetchRulesResponse());

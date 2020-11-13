@@ -4,7 +4,7 @@ import { LineBreak } from "common/components/utils";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
-import { withRouter, useHistory } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import Modal from "./CommonModal";
 import DialogContent from "@material-ui/core/DialogContent";
 import { FormControl, FormGroup, TextField, Typography } from "@material-ui/core";
@@ -84,7 +84,6 @@ const useStyles = makeStyles(theme => ({
 const FindRelative = ({ subjectType, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const history = useHistory();
   const [value, setValue] = React.useState("");
 
   const handleChange = event => {
@@ -140,10 +139,7 @@ const FindRelative = ({ subjectType, ...props }) => {
           </Grid>
         )}
         <LineBreak num={1} />
-        {/* <FormLabel component="legend">{t("visitType")}</FormLabel> */}
         <FormGroup row>
-          {/* <FindRelativeTable/> */}
-          {/* <Button onClick={() => valueSubmit()}>Find</Button> */}
           {props.subjects && props.subjects.content ? (
             <FindRelativeTable subjectData={props.subjects} />
           ) : (

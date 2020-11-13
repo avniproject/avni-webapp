@@ -64,10 +64,6 @@ class OrgManager extends Component {
     store: PropTypes.object
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   getChildContext() {
     return { store };
   }

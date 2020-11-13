@@ -23,10 +23,6 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
     }
   }, [dateOfBirth]);
 
-  const _onChange = date => {
-    onChange(date);
-  };
-
   const _onYearsChange = value => {
     setYears(value);
     onChange(

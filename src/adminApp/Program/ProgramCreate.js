@@ -33,16 +33,12 @@ const ProgramCreate = props => {
   const [id, setId] = useState();
   const [subjectT, setSubjectT] = useState({});
   const [subjectType, setSubjectType] = useState([]);
-  const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
 
   useEffect(() => {
     http
       .get("/web/operationalModules")
       .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setFormMappings(formMap);
         setFormList(response.data.forms);
         setSubjectType(response.data.subjectTypes);
       })

@@ -1,5 +1,4 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelect } from "../../common/components/AvniSelect";
@@ -8,19 +7,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import _ from "lodash";
 import http from "../../common/utils/httpClient";
 
-const useStyles = makeStyles(theme => ({
-  width: 195,
-  marginRight: 10,
-  select: {
-    width: "200px",
-    height: 40,
-    marginTop: 24
-  }
-}));
-
 export const LocationConcept = props => {
-  const classes = useStyles();
-
   const [addressLevelTypes, setAddressLevelTypes] = React.useState([]);
   const [addressLevelTypeHierarchy, setAddressLevelTypeHierarchy] = React.useState(new Map());
   const [isWithinCatchment, setWithinCatchment] = React.useState(true);

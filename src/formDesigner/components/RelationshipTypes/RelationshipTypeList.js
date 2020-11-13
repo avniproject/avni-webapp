@@ -26,7 +26,6 @@ const RelationshipTypeList = ({ history }) => {
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState("");
 
   const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   useEffect(() => {
     let flag = "false";

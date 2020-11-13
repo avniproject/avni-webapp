@@ -5,7 +5,7 @@ import { getUserInfo } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
 
 class App extends Component {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.getUserInfo();
   }
 

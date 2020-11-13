@@ -17,7 +17,6 @@ import {
 import { mapForm } from "../../common/adapters";
 import {
   Encounter,
-  Individual,
   ModelGeneral as General,
   ObservationsHolder,
   FormElementGroup
@@ -30,7 +29,6 @@ import { setLoad } from "../reducers/loadReducer";
 import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
   selectDecisions,
-  selectRulesResponse,
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 

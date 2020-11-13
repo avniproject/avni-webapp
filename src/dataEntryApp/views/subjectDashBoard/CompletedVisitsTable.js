@@ -118,7 +118,7 @@ const EncounterObservations = connect(
   mapDispatchToProps
 )(EncounterObs);
 
-const NewCompletedVisitsTable = ({
+const CompletedVisitsTable = ({
   apiUrl,
   viewEncounterUrl,
   filterParams,
@@ -128,7 +128,7 @@ const NewCompletedVisitsTable = ({
   enableReadOnly
 }) => {
   const { t } = useTranslation();
-  const prev = usePrevious(filterParams);
+  usePrevious(filterParams);
   const columns = [
     {
       title: t("visitName"),
@@ -246,4 +246,4 @@ const NewCompletedVisitsTable = ({
   );
 };
 
-export default NewCompletedVisitsTable;
+export default CompletedVisitsTable;

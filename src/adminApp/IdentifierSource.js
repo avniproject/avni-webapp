@@ -16,7 +16,6 @@ import Chip from "@material-ui/core/Chip";
 import { FormLabel, Paper } from "@material-ui/core";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
-import Typography from "@material-ui/core/Typography";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniSelectInput } from "./components/AvniSelectInput";

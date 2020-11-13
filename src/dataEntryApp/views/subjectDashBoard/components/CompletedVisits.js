@@ -10,10 +10,9 @@ import { loadEncounters, loadProgramEncounters } from "../../../reducers/complet
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
-import CompletedVisitsTable from "./CompletedVisitsTable";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
-import NewCompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/NewCompletedVisitsTable";
+import CompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/CompletedVisitsTable";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -86,12 +85,6 @@ const CompleteVisit = ({
   const { t } = useTranslation();
   const [filterParams, setFilterParams] = React.useState({});
 
-  // const [rowsPerPage] = React.useState(5);
-  let totalVisits = 0; //completedVisits ? completedVisits.totalElements : "";
-  // let filterParams = {};
-  // filterParams.page = 0;
-  // filterParams.size = rowsPerPage;
-  // const SearchParamsFilter = new URLSearchParams(filterParams);
   const filterQueryString = new URLSearchParams(filterParams).toString();
   const isForProgramEncounters = match.path === "/app/subject/completedProgramEncounters";
   const entityUuid = match.queryParams.uuid;
@@ -129,7 +122,7 @@ const CompleteVisit = ({
             </Grid>
           </Grid>
           <Paper className={classes.tableBox}>
-            <NewCompletedVisitsTable
+            <CompletedVisitsTable
               apiUrl={apiUrl}
               viewEncounterUrl={viewEncounterUrl}
               filterParams={filterParams}
@@ -149,7 +142,6 @@ const CompleteVisit = ({
 
 const mapStateToProps = state => {
   return {
-    // completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
     enableReadOnly: selectEnableReadonly(state),
     load: state.dataEntry.loadReducer.load

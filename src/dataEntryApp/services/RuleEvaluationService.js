@@ -29,7 +29,9 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
       .filter(({ uuid }) => _.includes(visibleFormElementsUUIDs, uuid))
       .map(formElement => {
         try {
+          /* eslint-disable-next-line no-unused-vars */
           const ruleServiceLibraryInterfaceForSharingModules = getRuleServiceLibraryInterfaceForSharingModules();
+          /* eslint-disable-next-line no-eval */
           const ruleFunc = eval(formElement.rule);
           return ruleFunc({
             params: { formElement, entity },
@@ -41,6 +43,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
               e.message
             } stack: ${e.stack}`
           );
+          return null;
         }
       })
       .filter(fs => !_.isNil(fs))
@@ -66,7 +69,9 @@ const runFormElementGroupRule = (formElementGroup, entity) => {
       .map(formElement => new FormElementStatus(formElement.uuid, true, undefined));
   }
   try {
+    /* eslint-disable-next-line no-unused-vars */
     const ruleServiceLibraryInterfaceForSharingModules = getRuleServiceLibraryInterfaceForSharingModules();
+    /* eslint-disable-next-line no-eval */
     const ruleFunc = eval(formElementGroup.rule);
     return ruleFunc({
       params: { formElementGroup, entity },

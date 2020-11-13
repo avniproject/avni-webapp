@@ -15,8 +15,6 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -121,15 +119,6 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
   };
-
-  const handleClose = event => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
-  };
-
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
   useEffect(() => {

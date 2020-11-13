@@ -18,7 +18,6 @@ const useStyle = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     padding: "20px",
-    // backgroundColor: "#36349e",
     color: "blue",
     borderRadius: "3px"
   },
@@ -41,24 +40,6 @@ function NewMenu({ operationalModules }) {
   const classes = useStyle();
   const { t } = useTranslation();
 
-  const [value, setValue] = React.useState("female");
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClose = () => setAnchorEl(null);
-
-  const handleChange = event => {
-    setValue(event.target.value);
-    handleClose();
-  };
-
-  // const setAnchorEl = React.useState(null);
-
-  const handleClickRoute = () => event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  // const handleCloseRoute = () => setAnchorEl(null);
-
   return (
     <div className={classes.container}>
       <List component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
@@ -69,7 +50,6 @@ function NewMenu({ operationalModules }) {
               <InternalLink
                 key={index}
                 to={`/app/register?type=${element.name}`}
-                onClick={handleClickRoute(element)}
                 style={{ color: "blue" }}
               >
                 <ListItem button>

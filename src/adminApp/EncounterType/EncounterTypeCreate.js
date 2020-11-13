@@ -35,7 +35,6 @@ const EncounterTypeCreate = props => {
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
-  const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
 
   useEffect(() => {
@@ -44,7 +43,6 @@ const EncounterTypeCreate = props => {
       .then(response => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
-        setFormMappings(formMap);
         setFormList(response.data.forms);
         setSubjectType(response.data.subjectTypes);
         setProgram(response.data.programs);

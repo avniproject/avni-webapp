@@ -10,7 +10,7 @@ export default {
       (formElement.concept.datatype === Concept.dataType.Coded ||
         formElement.concept.datatype === Concept.dataType.Subject)
     ) {
-      const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
+      observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
     } else if (
       formElement.isSingleSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||

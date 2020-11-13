@@ -20,26 +20,21 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Types from "./Types";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import Editor from "react-simple-code-editor";
-import {
-  sampleEnrolmentSummaryRule,
-  sampleSubjectSummaryRule
-} from "../../formDesigner/common/SampleRule";
+import { sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { AdvancedSettings } from "./AdvancedSettings";
 
-const SubjectTypeCreate = props => {
+const SubjectTypeCreate = () => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
-  const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
 
   const consumeFormMappingResult = (formMap, forms) => {
-    setFormMappings(formMap);
     setFormList(forms);
   };
 
@@ -58,7 +53,6 @@ const SubjectTypeCreate = props => {
     }
 
     setNameValidation(false);
-    let subjectTypeUuid;
 
     if (!groupValidationError) {
       let subjectTypeSavePromise = () =>
@@ -69,7 +63,6 @@ const SubjectTypeCreate = props => {
           })
           .then(response => {
             if (response.status === 200) {
-              subjectTypeUuid = response.data.uuid;
               setError("");
               setAlert(true);
               setId(response.data.id);

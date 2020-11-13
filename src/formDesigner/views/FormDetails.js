@@ -627,16 +627,6 @@ class FormDetails extends Component {
     });
   };
 
-  updateConceptElementData(index, propertyName, value, elementIndex = -1) {
-    this.setState(
-      produce(draft => {
-        draft.form.formElementGroups[index].formElements[elementIndex]["concept"][
-          propertyName
-        ] = value;
-      })
-    );
-  }
-
   handleInlineLocationAttributes(index, propertyName, value, elementIndex) {
     this.setState(
       produce(draft => {
@@ -1210,13 +1200,6 @@ class FormDetails extends Component {
   };
 
   render() {
-    const classes = {
-      inputLabel: {
-        marginTop: 15,
-        fontSize: 12
-      }
-    };
-
     const personStaticFormElements = [
       { name: "First name", dataType: "Text" },
       { name: "Last name", dataType: "Text" },

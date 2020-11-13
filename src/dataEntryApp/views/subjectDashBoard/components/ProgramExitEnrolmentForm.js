@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
-import { ObservationsHolder, Individual, SubjectType } from "avni-models";
+import { ObservationsHolder } from "avni-models";
 import {
   updateExitObs as updateObs,
   saveProgramEnrolment
@@ -12,8 +12,6 @@ import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
-  //observations: state.dataEntry.enrolmentReducer.programEnrolment.observations,
-  //obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
   observations: state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations,
   obsHolder: new ObservationsHolder(
     state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations

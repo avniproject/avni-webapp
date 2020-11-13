@@ -1,6 +1,6 @@
 import Types from "./SubjectType/Types";
 import { default as UUID } from "uuid";
-import _, { map, isEmpty } from "lodash";
+import _, { map } from "lodash";
 
 export function programReducer(program, action) {
   switch (action.type) {

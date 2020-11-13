@@ -17,7 +17,6 @@ const EncounterTypeList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [program, setProgram] = useState([]);
-  const [formList, setFormList] = useState([]);
 
   const tableRef = React.createRef();
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -31,7 +30,6 @@ const EncounterTypeList = ({ history }) => {
         setFormMappings(formMap);
         setSubjectTypes(response.data.subjectTypes);
         setProgram(response.data.programs);
-        setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);

@@ -25,7 +25,6 @@ import Button from "@material-ui/core/Button";
 import { Redirect } from "react-router-dom";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
 

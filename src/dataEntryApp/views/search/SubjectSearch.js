@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
-import NewSubjectSearchTable from "dataEntryApp/views/search/NewSubjectSearchTable";
+import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
@@ -86,7 +86,7 @@ const SubjectSearch = ({ searchRequest }) => {
         </Link>
       </Grid>
 
-      <NewSubjectSearchTable searchRequest={searchRequest} />
+      <SubjectSearchTable searchRequest={searchRequest} />
     </Paper>
   );
 };

@@ -46,6 +46,8 @@ import {
   selectChecklists
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 
+//TODO: Lots of updateObs functions looks the same. See if it's possible to remove duplication.
+
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
   const registrationForm = yield call(api.fetchForm, formMapping.formUUID);

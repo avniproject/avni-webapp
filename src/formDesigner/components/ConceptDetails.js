@@ -9,19 +9,12 @@ import TextField from "@material-ui/core/TextField";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
 import RemoveIcon from "@material-ui/icons/Remove";
-import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
 import { isEmpty, orderBy } from "lodash";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 import { Audit } from "./Audit";
-
-const useStyles = makeStyles({
-  tableContainer: {
-    minWidth: 650
-  }
-});
 
 function ConceptDetails(props) {
   const [editAlert, setEditAlert] = useState(false);

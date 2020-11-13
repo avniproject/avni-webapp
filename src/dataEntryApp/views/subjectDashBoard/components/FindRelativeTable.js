@@ -39,8 +39,6 @@ const useStyles = makeStyles(theme => ({
 const FindRelativeTable = ({ subjectData, errormsg }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [selected, setSelected] = React.useState([]);
-  const [errorvalue, setErrorValue] = React.useState(errormsg);
   const [selectedValue, setSelectedValue] = React.useState("1");
 
   const handleChange = (event, uuid, row) => {
@@ -62,7 +60,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
         Results found
       </Typography>
       <Typography variant="subtitle2" gutterBottom>
-        {errorvalue}
+        {errormsg}
       </Typography>
 
       {subjectData && subjectData.content && subjectData.content.length !== 0 ? (
@@ -84,7 +82,6 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
           <TableBody>
             {subjectData &&
               subjectData.content.map((row, index) => {
-                // const isItemSelected = isSelected(row.uuid);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
@@ -123,13 +120,9 @@ const mapStateToProps = state => ({
   subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes)
 });
 
-const mapDispatchToProps = {
-  // search: searchSubjects
-};
-
 export default withRouter(
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    null
   )(FindRelativeTable)
 );

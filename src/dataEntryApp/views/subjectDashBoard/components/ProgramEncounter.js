@@ -34,7 +34,6 @@ const useStyles = makeStyles(theme => ({
 const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
   const enrolUuid = match.queryParams.enrolUuid;

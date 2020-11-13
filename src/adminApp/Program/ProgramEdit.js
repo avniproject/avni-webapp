@@ -42,10 +42,8 @@ const ProgramEdit = props => {
   const [programData, setProgramData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [subjectT, setSubjectT] = useState({});
-  const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
-  const [existMapping, setExistMapping] = useState([]);
 
   useEffect(() => {
     http
@@ -59,11 +57,9 @@ const ProgramEdit = props => {
           .then(response => {
             const formMap = response.data.formMappings;
             formMap.map(l => (l["isVoided"] = false));
-            setFormMappings(formMap);
             setFormList(response.data.forms);
             setSubjectType(response.data.subjectTypes);
             const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
-            setExistMapping(temp);
             setSubjectT(
               response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
             );

@@ -54,7 +54,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
   const deleteGroup = id => {
     if (window.confirm("Are you sure you want to delete this group?")) {
       api.deleteGroup(id).then(res => {
-        const [response_data, error] = res;
+        const [error] = res;
         if (error) {
           alert(error);
         } else {

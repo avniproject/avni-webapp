@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
-import { ObservationsHolder, Individual, SubjectType } from "avni-models";
+import { ObservationsHolder } from "avni-models";
 import { updateObs, saveProgramEnrolment } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";

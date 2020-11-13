@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import { Typography } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/pickers";

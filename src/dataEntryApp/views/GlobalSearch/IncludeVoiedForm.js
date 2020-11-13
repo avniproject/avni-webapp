@@ -3,7 +3,6 @@ import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
-import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(theme => ({
   componentSpacing: {
@@ -13,7 +12,6 @@ const useStyles = makeStyles(theme => ({
 }));
 function IncludeVoiedForm({ includeVoied, includeVoiedChange }) {
   const classes = useStyles();
-  const { t } = useTranslation();
   return (
     <Fragment>
       <Grid container spacing={3} className={classes.componentSpacing}>

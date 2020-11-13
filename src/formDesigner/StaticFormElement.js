@@ -58,7 +58,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
             )}
             {dataType === "Coded" && (
               <div className={classes.iconDataType}>
-                <Tooltip title={dataType + " : " + "SingleSelect"}>
+                <Tooltip title={dataType + " : SingleSelect"}>
                   {dataTypeIcons["concept"]["SingleSelect"]}
                 </Tooltip>
               </div>

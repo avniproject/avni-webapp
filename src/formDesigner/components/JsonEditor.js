@@ -1,7 +1,6 @@
 import { highlight, languages } from "prismjs/components/prism-core";
 import React from "react";
 import Editor from "react-simple-code-editor";
-import FormLabel from "@material-ui/core/FormLabel";
 import { ValidationError } from "./ValidationError";
 
 export const JsonEditor = ({ value, onChange, validationError }) => {

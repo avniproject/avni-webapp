@@ -1,227 +1,113 @@
-import React from "react";
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TablePagination,
-  TableRow
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import { EnhancedTableHead } from "../../components/TableHeaderSorting";
-import { TablePaginationActions } from "../../components/TablePagination";
+import React, { Fragment, useEffect } from "react";
+import MaterialTable from "material-table";
+import http from "common/utils/httpClient";
+import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
 
-const useStyle = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    marginTop: theme.spacing(3),
-    overflowX: "auto",
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5)
-  },
-  tableContainer: {
-    minWidth: 1000
-  },
-  searchCreateToolbar: {
-    display: "flex"
-  },
-  searchForm: {
-    marginLeft: theme.spacing(3),
-    marginBottom: theme.spacing(8),
-    display: "flex",
-    alignItems: "flex-end",
-    flex: 8
-  },
-  searchFormItem: {
-    margin: theme.spacing(1)
-  },
-  searchBtnShadow: {
-    boxShadow: "none",
-    backgroundColor: "#0e6eff",
-    marginRight: 10
-  },
-  createButtonHolder: {
-    flex: 1
-  },
-  searchBox: {
-    padding: "1.5rem",
-    margin: "2rem 1rem"
-  },
-  cellpadding: {
-    padding: "14px 40px 14px 0px"
-  }
-}));
-
-export const SubjectsTable = ({
-  type,
-  subjects,
-  pageDetails,
-  searchparam,
-  rowsPerPage,
-  setRowsPerPage,
-  page,
-  setPage
-}) => {
-  const classes = useStyle();
+const SubjectSearchTable = ({ searchRequest }) => {
   const { t } = useTranslation();
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("firstName");
-  const [selected] = React.useState([]);
-  let pageinfo = pageDetails.subjects;
-  let searchText = searchparam;
-  const camelize = str => {
-    return (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr) {
-      return chr.toUpperCase();
-    });
-  };
-  let subjectsListObj = [];
-  // let sortfields = orderBy + "," + order;
-  let sortfields;
 
-  if (subjects) {
-    subjectsListObj = subjects.map(a => {
-      let firstName = a.firstName ? camelize(a.firstName) : "";
-      let lastName = a.lastName ? camelize(a.lastName) : "";
-      let sub = {
-        uuid: a.uuid,
-        fullName: firstName + " " + lastName,
-        subjectType: a.subjectType.name,
-        gender: a.gender ? t(a.gender.name) : "",
-        dateOfBirth: a.dateOfBirth
-          ? new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`
-          : "",
-        addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
-        activePrograms: a.activePrograms ? a.activePrograms : []
-      };
-      return sub;
-    });
-  }
-  const tableHeaderNames = [
-    { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+  const columns = [
     {
-      id: "subjectType",
-      numeric: false,
-      disablePadding: true,
-      label: "subjectType",
-      align: "left"
-    },
-    { id: "gender", numeric: false, disablePadding: true, label: "gender", align: "left" },
-    {
-      id: "dateOfBirth",
-      numeric: true,
-      disablePadding: false,
-      label: "age",
-      align: "left"
+      title: t("name"),
+      field: "fullName",
+      defaultSort: "asc",
+      render: rowData => <a href={`/#/app/subject?uuid=${rowData.uuid}`}>{rowData.fullName}</a>
     },
     {
-      id: "addressLevel",
-      numeric: false,
-      disablePadding: true,
-      label: "addressVillage",
-      align: "left"
+      title: t("subjectType"),
+      field: "subjectType",
+      render: row => row.subjectTypeName && t(row.subjectTypeName)
+    },
+    { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) },
+    {
+      title: t("age"),
+      field: "dateOfBirth",
+      render: row =>
+        row.dateOfBirth
+          ? `${new Date().getFullYear() - new Date(row.dateOfBirth).getFullYear()} ${t("years")}`
+          : ""
     },
     {
-      id: "activePrograms",
-      numeric: false,
-      disablePadding: true,
-      label: "enrolments",
-      align: "left"
+      title: t("Address"),
+      field: "addressLevel",
+      render: row => row.addressLevel
+    },
+    {
+      title: t("enrolments"),
+      field: "activePrograms",
+      sorting: false,
+      render: row => {
+        return row.enrolments
+          ? row.enrolments.map((p, key) => (
+              <Chip
+                key={key}
+                size="small"
+                label={t(p.operationalProgramName)}
+                style={{
+                  margin: 2,
+                  backgroundColor: p.programColor,
+                  color: "white"
+                }}
+              />
+            ))
+          : "";
+      }
     }
   ];
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-    setPage(0);
-    sortfields = property + "," + order;
-    pageDetails.search({ page: 0, query: searchText, size: rowsPerPage, sort: sortfields });
-  };
+  const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-    pageDetails.search({ page: newPage, query: searchText, size: rowsPerPage, sort: sortfields });
-  };
+  useEffect(() => {
+    refreshTable(tableRef);
+  });
 
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-    pageDetails.search({ page: 0, query: searchText, size: event.target.value, sort: sortfields });
-  };
+  const fetchData = query =>
+    new Promise(resolve => {
+      let apiUrl = "/web/searchAPI/v2";
+      const pageElement = {};
+      pageElement.pageNumber = query.page;
+      pageElement.numberOfRecordPerPage = query.pageSize;
+      pageElement.sortColumn = query.orderBy.field;
+      pageElement.sortOrder = query.orderDirection;
+      searchRequest.pageElement = pageElement;
+      http
+        .post(apiUrl, searchRequest)
+        .then(response => response.data)
+        .then(result => {
+          resolve({
+            data: result.listOfRecords,
+            page: query.page,
+            totalCount: result.totalElements
+          });
+        })
+        .catch(err => console.log(err));
+    });
 
-  return subjectsListObj ? (
-    <div>
-      <Table className={classes.tableContainer} aria-label="custom pagination table">
-        <EnhancedTableHead
-          headername={tableHeaderNames}
-          classes={classes}
-          numSelected={selected.length}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={handleRequestSort}
-          rowCount={subjectsListObj.length}
+  return (
+    <>
+      <div>
+        <MaterialTable
+          title=""
+          components={{
+            Toolbar: props => <Fragment>{props.children}</Fragment>
+          }}
+          tableRef={tableRef}
+          columns={columns}
+          data={fetchData}
+          options={{
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
+            addRowPosition: "first",
+            sorting: true,
+            debounceInterval: 500,
+            search: false
+          }}
         />
-        <TableBody>
-          {subjectsListObj.map(row => (
-            <TableRow key={row.fullName}>
-              <TableCell component="th" scope="row" padding="none" width="20%">
-                <Link to={`/app/subject?uuid=${row.uuid}`}>{t(row.fullName)}</Link>
-              </TableCell>
-              <TableCell padding="none" width="12%">
-                {row.subjectType}
-              </TableCell>
-              <TableCell align="left" className={classes.cellpadding}>
-                {row.gender}
-              </TableCell>
-              <TableCell align="left" className={classes.cellpadding}>
-                {row.dateOfBirth}
-              </TableCell>
-              <TableCell align="left" className={classes.cellpadding}>
-                {row.addressLevel}
-              </TableCell>
-              <TableCell align="left" width="25%" className={classes.cellpadding}>
-                {" "}
-                {row.activePrograms.map((p, key) => (
-                  <Button
-                    key={key}
-                    size="small"
-                    style={{
-                      height: 20,
-                      padding: 2,
-                      margin: 2,
-                      backgroundColor: p.colour,
-                      color: "white",
-                      fontSize: 11
-                    }}
-                    disabled
-                  >
-                    {t(p.operationalProgramName)}
-                  </Button>
-                ))}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              search={searchText}
-              count={pageinfo.totalElements}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </div>
-  ) : (
-    ""
+      </div>
+    </>
   );
 };
+
+export default SubjectSearchTable;

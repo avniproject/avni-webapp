@@ -150,7 +150,6 @@ const ProgramView = ({
   const { t } = useTranslation();
   const isNotExited = isNil(programData.programExitDateTime);
 
-  const [expandedPanel, setExpanded] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -159,14 +158,6 @@ const ProgramView = ({
 
   const handleClose = () => {
     setOpen(false);
-  };
-  const enrolldata = {
-    enrollmentId: programData.id,
-    enrollmentUuid: programData.uuid
-  };
-
-  const handleChange = panel => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
   };
 
   const handleUndoExit = (programEnrolmentUuid, Link) => {

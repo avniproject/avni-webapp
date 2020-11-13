@@ -126,11 +126,13 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
 Observations.propTypes = {
   observations: PropTypes.arrayOf(Observation).isRequired,
-  additionalRows: PropTypes.arrayOf({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
-    abnormal: PropTypes.bool
-  }),
+  additionalRows: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+      abnormal: PropTypes.bool
+    })
+  ),
   highlight: PropTypes.bool
 };
 

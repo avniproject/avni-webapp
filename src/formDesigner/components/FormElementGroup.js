@@ -78,15 +78,6 @@ export const ExpansionPanel = withStyles({
   },
   expanded: {}
 })(MuiExpansionPanel);
-
-const ExpansionPanelDetails = withStyles({
-  root: {
-    width: "100%",
-    border: "1px solid #2196F3",
-    paddingHorizontal: 0
-  }
-})(MuiExpansionPanelDetails);
-
 export const ExpansionPanelSummary = withStyles({
   root: {
     paddingRight: 0,

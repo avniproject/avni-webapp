@@ -5,7 +5,6 @@ import { withRouter } from "react-router-dom";
 
 import "./SecureApp.css";
 import App from "./App";
-import logo from "../logo.png";
 import { initCognito, setCognitoUser } from "./ducks";
 import { customAmplifyErrorMsgs } from "./utils";
 
@@ -35,13 +34,11 @@ class SecureApp extends Component {
       <App />
     ) : (
       <div className="centerContainer">
-        {/* <img src={logo} alt="Avni" /> */}
         {this.props.authConfigured && (
           <Authenticator
             hide={[Greetings, SignUp, SignIn]}
             onStateChange={this.setAuthState}
             errorMessage={customAmplifyErrorMsgs}
-            // amplifyConfig={config}
           >
             <CustomSignIn />
           </Authenticator>

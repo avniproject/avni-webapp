@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import http from "common/utils/httpClient";
 import Link from "@material-ui/core/Link";
 import { getUserInfo } from "../../rootApp/ducks";
 

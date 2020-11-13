@@ -11,7 +11,7 @@ const useStyle = makeStyles(theme => ({
 //Custom link renderer to open relative URLs in same tab and absolute URLs in new tab
 export const LinkRenderer = props => {
   return props.href.startsWith("http") ? (
-    <a href={props.href} target="_blank">
+    <a href={props.href} target="_blank" rel="noopener noreferrer">
       {props.children}
     </a>
   ) : (

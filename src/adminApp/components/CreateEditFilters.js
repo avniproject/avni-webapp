@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl, Input, InputLabel } from "@material-ui/core";
+import { FormControl } from "@material-ui/core";
 import Select from "react-select";
 import _, { deburr } from "lodash";
 import Box from "@material-ui/core/Box";

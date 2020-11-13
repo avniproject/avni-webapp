@@ -71,7 +71,6 @@ const SubjectTypeEdit = props => {
     }
 
     setNameValidation(false);
-    let subjectTypeUuid;
     if (!groupValidationError) {
       let subjectTypeSavePromise = () =>
         http
@@ -92,7 +91,6 @@ const SubjectTypeEdit = props => {
           })
           .then(response => {
             if (response.status === 200) {
-              subjectTypeUuid = response.data.uuid;
               setError("");
               setRedirectShow(true);
             }

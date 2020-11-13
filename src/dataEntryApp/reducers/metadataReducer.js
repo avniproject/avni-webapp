@@ -111,6 +111,7 @@ export default function(state = {}, action) {
       /**********/
       /*variables used inside the eval*/
       /*keeping it long to avoid name conflicts*/
+      /* eslint-disable-next-line no-unused-vars */
       let ruleServiceLibraryInterfaceForSharingModules = {
         log: console.log,
         common: common,
@@ -119,7 +120,7 @@ export default function(state = {}, action) {
       };
       let rulesConfig = isEmpty(action.rulesBundle)
         ? {}
-        : eval(action.rulesBundle.concat("rulesConfig;"));
+        : eval(action.rulesBundle.concat("rulesConfig;")); // eslint-disable-line no-eval
       /**********/
       const allRules = { ...rulesConfig };
 

@@ -27,8 +27,6 @@ const useStyles = makeStyles(theme => ({
 const NewGeneralVisit = ({ match, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const scheduledEncounters = [];
-  const actualEncounters = [];
   const subjectUuid = match.queryParams.subjectUuid;
 
   useEffect(() => {
@@ -38,7 +36,8 @@ const NewGeneralVisit = ({ match, ...props }) => {
   }, []);
 
   // Creating New Encounter Object for Plan Encounter
-  props.subjectGeneral &&
+  const scheduledEncounters =
+    props.subjectGeneral &&
     props.subjectGeneral
       .filter(e => isNil(e.encounterDateTime) && isNil(e.cancelDateTime))
       .map(pe => {
@@ -49,11 +48,12 @@ const NewGeneralVisit = ({ match, ...props }) => {
         encounter.maxVisitDateTime = pe.maxVisitDateTime;
         encounter.name = pe.name;
         encounter.uuid = pe.uuid;
-        scheduledEncounters.push(encounter);
+        return encounter;
       });
 
   //Creating New Encounter Object for Unplan Encounter
-  props.encounterFormMappings &&
+  const actualEncounters =
+    props.encounterFormMappings &&
     props.encounterFormMappings.map(fm => {
       const encounter = new Encounter();
       encounter.encounterType = props.operationalModules.encounterTypes.find(
@@ -61,7 +61,7 @@ const NewGeneralVisit = ({ match, ...props }) => {
       );
       encounter.name =
         encounter.encounterType && encounter.encounterType.operationalEncounterTypeName;
-      actualEncounters.push(encounter);
+      return encounter;
     });
 
   const sections = [];

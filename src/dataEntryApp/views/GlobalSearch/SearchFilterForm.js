@@ -302,6 +302,7 @@ function SearchFilterForm({
             }
           }
         }
+        return null;
       })
     );
   };
@@ -333,6 +334,7 @@ function SearchFilterForm({
         }
       }
     }
+    return null;
   });
 
   const conceptRequests = selectedConceptApi.map(conceptRequest => {
@@ -376,6 +378,8 @@ function SearchFilterForm({
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget
       };
+    } else {
+      return null;
     }
   });
 

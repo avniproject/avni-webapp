@@ -10,7 +10,6 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import Grid from "@material-ui/core/Grid";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
