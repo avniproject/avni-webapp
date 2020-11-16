@@ -163,10 +163,6 @@ public class RuleService {
         rule.setDecisionCode(form.getDecisionRule());
         rule.setVisitScheduleCode(form.getVisitScheduleRule());
         rule.setChecklistCode(form.getChecklistsRule());
-        if (StringUtils.isEmpty(rule.getDecisionCode()) && StringUtils.isEmpty(rule.getVisitScheduleCode())
-                && StringUtils.isEmpty(rule.getChecklistCode())) {
-            return emptySuccessEntity();
-        }
 
         Object entity = null;
         String entityUuid = null;
@@ -209,6 +205,11 @@ public class RuleService {
 
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper, "Web", "Rules : " + workFlowType, entityUuid);
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/rules", entity, ruleFailureLog);
+        setObservationsOnResponse(workFlowType, ruleResponseEntity);
+        return ruleResponseEntity;
+    }
+
+    private void setObservationsOnResponse(String workFlowType, RuleResponseEntity ruleResponseEntity) {
         DecisionResponseEntity decisions = ruleResponseEntity.getDecisions();
 
         switch (WorkFlowTypeEnum.findByValue(workFlowType.toLowerCase())) {
@@ -229,7 +230,6 @@ public class RuleService {
                 decisions.setRegistrationObservations(observationService.createObservationContractsFromDecisions(decisions.getRegistrationDecisions()));
                 break;
         }
-        return ruleResponseEntity;
     }
 
     private RuleResponseEntity emptySuccessEntity() {
