@@ -47,7 +47,9 @@ public class AuthService {
 
     public UserContext authenticateByToken(String authToken, String organisationUUID) {
         becomeSuperUser();
-        return changeUser(cognitoAuthService.getUserFromToken(authToken), organisationUUID);
+        UserContext userContext = changeUser(cognitoAuthService.getUserFromToken(authToken), organisationUUID);
+        userContext.setAuthToken(authToken);
+        return userContext;
     }
 
     public UserContext authenticateByUserId(Long userId, String organisationUUID) {

@@ -9,6 +9,7 @@ public class UserContext {
     private Organisation organisation;
     private User user;
     private String organisationUUID;
+    private String authToken;
 
     public String getOrganisationUUID() {
         return organisationUUID;
@@ -80,5 +81,13 @@ public class UserContext {
 
     public String getMediaDirectory() {
         return nullSafeGetOrganisation().getMediaDirectory();
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

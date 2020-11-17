@@ -9,7 +9,9 @@ import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.*;
+import org.openchs.framework.security.AuthenticationFilter;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.RestClient;
 import org.openchs.web.request.RuleRequest;
 import org.openchs.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
@@ -240,10 +242,9 @@ public class RuleService {
 
     private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            HttpHeaders httpHeaders = constructHeaders();
+            ObjectMapper mapper = ObjectMapperSingleton.getObjectMapper();
             mapper.registerModule(new JodaModule());
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             String ruleResponse = restClient.post(url, contractObject, httpHeaders);
             RuleResponseEntity ruleResponseEntity = mapper.readValue(ruleResponse, RuleResponseEntity.class);
             if (ruleResponseEntity.getStatus().equals("failure")) {
@@ -255,6 +256,23 @@ public class RuleService {
             saveRuleError(ruleFailureLog, e.getMessage(), getStackTrace(e));
             return getFailureRuleResponseEntity(e);
         }
+    }
+
+    private HttpHeaders constructHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        UserContext userContext = UserContextHolder.getUserContext();
+        String userName = userContext.getUserName();
+        String organisationUUID = userContext.getOrganisationUUID();
+        String authToken = userContext.getAuthToken();
+
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        if(userName != null)
+            httpHeaders.add(AuthenticationFilter.USER_NAME_HEADER, userName);
+        if(organisationUUID != null)
+            httpHeaders.add(AuthenticationFilter.ORGANISATION_UUID, organisationUUID);
+        if(authToken != null)
+            httpHeaders.add(AuthenticationFilter.AUTH_TOKEN_HEADER, authToken);
+        return httpHeaders;
     }
 
     private RuleResponseEntity getFailureRuleResponseEntity(Exception e) {
