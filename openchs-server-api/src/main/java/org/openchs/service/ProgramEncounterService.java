@@ -96,7 +96,15 @@ public class ProgramEncounterService {
         if (allScheduleEncountersByType.isEmpty() || "createNew".equals(visitSchedule.getVisitCreationStrategy())) {
             OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findByName(visitSchedule.getEncounterType());
             if (operationalEncounterType == null) {
-                throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getEncounterType());
+                EncounterType encounterType = encounterTypeRepository.findByName(visitSchedule.getEncounterType());
+                if (encounterType == null) {
+                    throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getEncounterType());
+                } else {
+                    operationalEncounterType = encounterType.getOperationalEncounterTypes().stream().findFirst().orElse(null);
+                    if (operationalEncounterType == null) {
+                        throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getEncounterType());
+                    }
+                }
             }
             ProgramEncounter programEncounter = createEmptyProgramEncounter(programEnrolment, operationalEncounterType);
             allScheduleEncountersByType = Arrays.asList(programEncounter);
