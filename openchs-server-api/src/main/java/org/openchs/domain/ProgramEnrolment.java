@@ -106,7 +106,7 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
 
     @JsonIgnore
     public Stream<ProgramEncounter> scheduledEncountersOfType(String encounterTypeName) {
-        return this.scheduledEncounters().filter(scheduledEncounter -> scheduledEncounter.getEncounterType().getName().equals(encounterTypeName));
+        return this.scheduledEncounters().filter(scheduledEncounter -> scheduledEncounter.getEncounterType().getOperationalEncounterTypeName().equals(encounterTypeName));
     }
 
     public void setProgramEncounters(Set<ProgramEncounter> programEncounters) {

@@ -3,6 +3,7 @@ package org.openchs.service;
 import com.bugsnag.Bugsnag;
 import org.openchs.common.EntityHelper;
 import org.openchs.dao.EncounterTypeRepository;
+import org.openchs.dao.OperationalEncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
@@ -33,14 +34,16 @@ public class ProgramEncounterService {
     Bugsnag bugsnag;
     private ProgramEncounterRepository programEncounterRepository;
     private EncounterTypeRepository encounterTypeRepository;
+    private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private ObservationService observationService;
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private RuleFailureLogRepository ruleFailureLogRepository;
 
     @Autowired
-    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository, RuleFailureLogRepository ruleFailureLogRepository) {
+    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository, RuleFailureLogRepository ruleFailureLogRepository) {
         this.programEncounterRepository = programEncounterRepository;
         this.encounterTypeRepository = encounterTypeRepository;
+        this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.observationService = observationService;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.ruleFailureLogRepository = ruleFailureLogRepository;
@@ -91,11 +94,11 @@ public class ProgramEncounterService {
     public void saveVisitSchedule(ProgramEnrolment programEnrolment, VisitSchedule visitSchedule, String currentProgramEncounterUuid) {
         List<ProgramEncounter> allScheduleEncountersByType = scheduledEncountersByType(programEnrolment, visitSchedule.getEncounterType(), currentProgramEncounterUuid);
         if (allScheduleEncountersByType.isEmpty() || "createNew".equals(visitSchedule.getVisitCreationStrategy())) {
-            EncounterType encounterType = encounterTypeRepository.findByName(visitSchedule.getEncounterType());
-            if (encounterType == null) {
-                throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getName());
+            OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findByName(visitSchedule.getEncounterType());
+            if (operationalEncounterType == null) {
+                throw new BadRequestError("Next scheduled visit is for encounter type=%s that doesn't exist", visitSchedule.getEncounterType());
             }
-            ProgramEncounter programEncounter = createEmptyProgramEncounter(programEnrolment, encounterType);
+            ProgramEncounter programEncounter = createEmptyProgramEncounter(programEnrolment, operationalEncounterType);
             allScheduleEncountersByType = Arrays.asList(programEncounter);
         }
         allScheduleEncountersByType.stream().forEach(programEncounter -> {
@@ -110,9 +113,9 @@ public class ProgramEncounterService {
         programEncounter.setName(visitSchedule.getName());
     }
 
-    public ProgramEncounter createEmptyProgramEncounter(ProgramEnrolment programEnrolment, EncounterType encounterType) {
+    public ProgramEncounter createEmptyProgramEncounter(ProgramEnrolment programEnrolment, OperationalEncounterType operationalEncounterType) {
         ProgramEncounter programEncounter = new ProgramEncounter();
-        programEncounter.setEncounterType(encounterType);
+        programEncounter.setEncounterType(operationalEncounterType.getEncounterType());
         programEncounter.setProgramEnrolment(programEnrolment);
         programEncounter.setEncounterDateTime(null);
         programEncounter.setUuid(UUID.randomUUID().toString());

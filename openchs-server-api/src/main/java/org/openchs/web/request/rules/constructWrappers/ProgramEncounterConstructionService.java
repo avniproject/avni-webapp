@@ -82,9 +82,10 @@ public class ProgramEncounterConstructionService {
         return programEncounterContractWrapper;
     }
 
-    public List<VisitSchedule> constructProgramEnrolmentVisitScheduleContract(String uuid) {
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
-        return programEnrolment == null ? new ArrayList<>() : programEnrolment.getProgramEncounters().stream().map(programEncounter -> {
+    public List<VisitSchedule> constructProgramEnrolmentVisitScheduleContract(ProgramEncounterRequestEntity requestEntity) {
+        String currentProgramEncounterUuid = requestEntity.getUuid();
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(requestEntity.getProgramEnrolmentUUID());
+        return programEnrolment == null ? new ArrayList<>() : programEnrolment.scheduledEncounters().filter(enc -> !enc.getUuid().equals(currentProgramEncounterUuid)).map(programEncounter -> {
             VisitSchedule visitSchedule = new VisitSchedule();
             visitSchedule.setEarliestDate(programEncounter.getEarliestVisitDateTime());
             visitSchedule.setMaxDate(programEncounter.getMaxVisitDateTime());
@@ -95,9 +96,10 @@ public class ProgramEncounterConstructionService {
         }).collect(Collectors.toList());
     }
 
-    public List<VisitSchedule> constructIndividualVisitScheduleContract(String uuid) {
-        Individual individual = individualRepository.findByUuid(uuid);
-        return individual == null ? new ArrayList<>() : individual.getEncounters().stream().map(encounter -> {
+    public List<VisitSchedule> constructIndividualVisitScheduleContract(EncounterRequestEntity requestEntity) {
+        String currentEncounterUuid = requestEntity.getUuid();
+        Individual individual = individualRepository.findByUuid(requestEntity.getIndividualUUID());
+        return individual == null ? new ArrayList<>() : individual.scheduledEncounters().filter(enc -> !enc.getUuid().equals(currentEncounterUuid)).map(encounter -> {
             VisitSchedule visitSchedule = new VisitSchedule();
             visitSchedule.setEarliestDate(encounter.getEarliestVisitDateTime());
             visitSchedule.setMaxDate(encounter.getMaxVisitDateTime());

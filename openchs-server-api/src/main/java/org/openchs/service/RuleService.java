@@ -184,7 +184,7 @@ public class RuleService {
                 entityUuid = programEncounterRequestEntity.getUuid();
                 ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(programEncounterRequestEntity);
                 programEncounterContractWrapper.setRule(rule);
-                programEncounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(programEncounterRequestEntity.getProgramEnrolmentUUID()));
+                programEncounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(programEncounterRequestEntity));
                 entity = programEncounterContractWrapper;
                 break;
             case ENCOUNTER:
@@ -192,7 +192,7 @@ public class RuleService {
                 entityUuid = encounterRequestEntity.getUuid();
                 EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(encounterRequestEntity);
                 encounterContractWrapper.setRule(rule);
-                encounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructIndividualVisitScheduleContract(encounterRequestEntity.getIndividualUUID()));
+                encounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructIndividualVisitScheduleContract(encounterRequestEntity));
                 entity = encounterContractWrapper;
                 break;
             case INDIVIDUAL:
