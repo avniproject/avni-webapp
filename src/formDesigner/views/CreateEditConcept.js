@@ -15,7 +15,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, trim, includes } from "lodash";
+import { filter, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
