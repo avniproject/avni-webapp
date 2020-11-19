@@ -71,7 +71,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         return renderSubject(subject, index < displayable.length - 1);
       });
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
-      return renderMedia(displayable.displayValue.trim());
+      return renderMedia(displayable.displayValue);
     } else {
       return renderText(displayable.displayValue, observation.isAbnormal());
     }
@@ -90,7 +90,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   };
 
   const openMediaInNewTab = mediaUrl => {
-    window.open(mediaSignedUrls.find(media => media.unsignedUrl === mediaUrl).url);
+    window.open(mediaSignedUrls.find(media => media.url.startsWith(mediaUrl)).url);
   };
 
   const renderMedia = mediaUrl => {
@@ -111,7 +111,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
             openMediaInNewTab(mediaUrl);
           }}
         >
-          {t("Open in new Tab")}
+          {t("Open in New Tab")}
         </Link>
       </div>
     );
@@ -127,7 +127,6 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         mediaObservations.map(async obs => {
           const signedUrl = await getSignedUrl(obs.valueJSON.answer);
           return {
-            unsignedUrl: obs.valueJSON.answer,
             url: signedUrl.data,
             type: obs.concept.datatype === "Image" ? "photo" : "video",
             altTag: obs.concept.name
