@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +33,7 @@ public class MediaController {
             logger.info("getting media upload url");
             URL url = s3Service.generateMediaUploadUrl(fileName);
             logger.debug(format("Generating pre-signed url: %s", url.toString()));
-            return ResponseEntity.ok(url.toString());
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(url.toString());
         } catch (AccessDeniedException e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
@@ -46,7 +47,7 @@ public class MediaController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateDownloadUrl(@RequestParam String url) {
         try {
-            return ResponseEntity.ok(s3Service.generateMediaDownloadUrl(url).toString());
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3Service.generateMediaDownloadUrl(url).toString());
         } catch (AccessDeniedException e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
