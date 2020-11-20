@@ -355,7 +355,7 @@
     "create": "Create",
     "visit": "Visit",
     "resultfound": "Result Found",
-    "visitscheduledate": "Visit Schedule Date",
+    "visitscheduledate": "Visit Scheduled Date",
     "visitcompleteddate": "Visit Completed Date",
     "visitType": "Visit Type",
     "filterResult": "Filter Result",
@@ -392,6 +392,7 @@
     "filterResults": "Filter results",
     "filterRelative": "Filter Relative",
     "invalidDateFormat": "Is not a valid date",
-    "resetFilter": "Reset Filter"
+    "resetFilter": "Reset Filter",
+    "visitCanceldate": "Visit Cancel Date"
   }
 }

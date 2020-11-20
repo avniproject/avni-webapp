@@ -280,15 +280,15 @@
     "details": "વિગતો",
     "Basic": "પાયાની",
     "Date of registration": "નોંધણી તારીખ",
-    "SYSTEM RECOMMENDATIONS": "पસિસ્ટમ ભલામણ",
+    "SYSTEM RECOMMENDATIONS": "સિસ્ટમ દ્વારા આપવા માં આવતી ભલામણો",
     "OBSERVATIONS": "અવલોકન",
     "create": "બનાવો",
     "visit": "મુલાકાત",
     "resultfound": "પરિણામ",
-    "visitscheduledate": "મુલાકાતીઓ",
-    "visitcompleteddate": "મુલાકાત પૂર્ણ તારીખ",
+    "visitscheduledate": "મુલાકાત ની નિર્ધારીત તારીખ",
+    "visitcompleteddate": "મુલાકાત પૂર્ણ કર્યા ની તારીખ",
     "visitType": "મુલાકાત પ્રકાર",
-    "filterResult": "ફિલ્ટર રેઝલ્ટ",
+    "filterResult": "પરિણામો ને ફિલ્ટર કરો",
     "apply": "લાગુ કરો",
     "Date": "તારીખ",
     "Age": "ઉંમર",
@@ -331,6 +331,7 @@
     "registrationDetails": "નોંધણી વિગતો",
     "filterResults": "ફિલ્ટર પરિણામો",
     "invalidDateFormat": "માન્ય તારીખ નથી",
-    "resetFilter": "ફિલ્ટર ફરીથી સેટ કરો"
+    "resetFilter": "ફિલ્ટર ફરીથી સેટ કરો",
+    "visitCanceldate": "મુલાકાત રદ કર્યા ની તારીખ"
   }
 }

@@ -297,8 +297,8 @@
     "create": "सृजन करना",
     "visit": "यात्रा",
     "resultfound": "परिणाम मिला",
-    "visitscheduledate": "यात्रा की तिथि निर्धारित करें",
-    "visitcompleteddate": "यात्रा की पूर्ण तिथि",
+    "visitscheduledate": "विजिट की निर्धारित तारीख",
+    "visitcompleteddate": "विजिट की तारीख",
     "visitType": "यात्रा प्रकार",
     "filterResult": "फ़िल्टर का परिणाम",
     "apply": "अर्ज लागू",
@@ -343,6 +343,7 @@
     "registrationDetails": "पंजीकरण विवरण",
     "filterResults": "फिल्टर परिणाम",
     "invalidDateFormat": "वैध तिथि नहीं है",
-    "resetFilter": "फ़िल्टर रीसेट करें"
+    "resetFilter": "फ़िल्टर रीसेट करें",
+    "visitCanceldate": "विजिट रद्द करने की तारीख"
   }
 }
