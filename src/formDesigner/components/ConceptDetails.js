@@ -172,7 +172,7 @@ function ConceptDetails(props) {
                 <br />
                 <span style={{ fontSize: "15px" }}>
                   {data.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value ===
-                  "true"
+                  true
                     ? "Yes"
                     : "No"}
                 </span>
