@@ -266,7 +266,7 @@ const FormWizard = ({
       ? currentFormElementGroup.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
       : isFirstGroup;
 
-  const handleNext = (event, feg, page) => {
+  const handleNext = (event, feg, page, skippedGroupCount = 0) => {
     const filteredFormElement = filterFormElements(feg, entity);
     const formElementGroup = new FormElementGroup();
     const formElementGroupValidations = formElementGroup.validate(obsHolder, filteredFormElement);
@@ -300,18 +300,18 @@ const FormWizard = ({
     if (!isEmpty(nextGroup) && isEmpty(filteredFormElements)) {
       obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), filteredFormElements);
       obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-      handleNext(event, nextGroup, nextPage);
+      handleNext(event, nextGroup, nextPage, skippedGroupCount + 1);
     } else {
       setFilteredFormElements(filteredFormElements);
       let currentUrlParams = new URLSearchParams(history.location.search);
-      currentUrlParams.set("page", nextPage);
+      currentUrlParams.set("page", (nextPage - skippedGroupCount).toString());
       history.push(history.location.pathname + "?" + currentUrlParams.toString());
     }
   };
 
   const getPreviousGroup = feg => (feg && feg.previous()) || [];
 
-  const handlePrevious = (event, feg, currentPage) => {
+  const handlePrevious = (event, feg, currentPage, skippedGroupCount = 0) => {
     const previousGroup =
       currentPage > formElementGroupsLength
         ? form.getLastFormElementElementGroup()
@@ -329,12 +329,12 @@ const FormWizard = ({
         obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), filteredFormElements);
         obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
       }
-      handlePrevious(event, previousGroup, previousPage);
+      handlePrevious(event, previousGroup, previousPage, skippedGroupCount + 1);
     } else {
       setFilteredFormElements(filteredFormElements);
       let currentUrlParams = new URLSearchParams(history.location.search);
-      if (previousPage !== 0) {
-        currentUrlParams.set("page", previousPage);
+      if (previousPage + skippedGroupCount !== 0) {
+        currentUrlParams.set("page", (previousPage + skippedGroupCount).toString());
         history.push(history.location.pathname + "?" + currentUrlParams.toString());
       } else {
         const pathName = registrationFlow ? "/app/register" : history.location.pathname;
