@@ -9,8 +9,8 @@ import { useTranslation } from "react-i18next";
 
 export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
-  const [years, setYears] = React.useState("");
-  const [months, setMonths] = React.useState("");
+  const [years, setYears] = React.useState(0);
+  const [months, setMonths] = React.useState(0);
   const dob = (dateOfBirth && moment(dateOfBirth).isValid() && new Date(dateOfBirth)) || null;
 
   React.useEffect(() => {
@@ -18,8 +18,8 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
       setYears(moment().diff(dateOfBirth, "years"));
       setMonths(moment().diff(dateOfBirth, "months") % 12);
     } else {
-      setYears("");
-      setMonths("");
+      setYears(0);
+      setMonths(0);
     }
   }, [dateOfBirth]);
 
