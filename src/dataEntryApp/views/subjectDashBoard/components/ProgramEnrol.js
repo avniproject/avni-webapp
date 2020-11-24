@@ -24,6 +24,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import programEnrolmentService from "../../../services/ProgramEnrolmentService";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -114,8 +115,8 @@ const ProgramEnrol = ({
                       margin="none"
                       size="small"
                       id="date-picker-dialog"
-                      format="MM/dd/yyyy"
-                      placeholder="mm/dd/yyyy"
+                      format={dateFormat}
+                      placeholder={dateFormat}
                       name="enrolmentDateTime"
                       value={new Date(programEnrolment.enrolmentDateTime)}
                       autoComplete="off"
@@ -160,7 +161,7 @@ const ProgramEnrol = ({
                       margin="none"
                       size="small"
                       id="date-picker-dialog"
-                      format="MM/dd/yyyy"
+                      format={dateFormat}
                       name="programExitDateTime"
                       value={new Date(programEnrolment.programExitDateTime)}
                       error={!isEmpty(exitDateValidation) && !first(exitDateValidation).success}

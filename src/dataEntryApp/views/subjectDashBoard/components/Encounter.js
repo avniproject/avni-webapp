@@ -21,6 +21,7 @@ import {
 import encounterService from "../../../services/EncounterService";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -71,8 +72,8 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
                     margin="none"
                     size="small"
                     id="date-picker-dialog"
-                    format="MM/dd/yyyy"
-                    placeholder="mm/dd/yyyy"
+                    format={dateFormat}
+                    placeholder={dateFormat}
                     name="visitDateTime"
                     autoComplete="off"
                     required

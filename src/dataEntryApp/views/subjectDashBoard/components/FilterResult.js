@@ -15,6 +15,7 @@ import moment from "moment/moment";
 import { noop, isNil, isEmpty } from "lodash";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -172,7 +173,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   margin="normal"
                   id="date-picker-dialog"
                   label={t("visitscheduledate")}
-                  format="dd/MM/yyyy"
+                  format={dateFormat}
                   autoComplete="off"
                   value={selectedScheduleDate}
                   onChange={scheduleDateChange}
@@ -193,7 +194,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   margin="normal"
                   id="date-picker-dialog"
                   label={t("visitcompleteddate")}
-                  format="dd/MM/yyyy"
+                  format={dateFormat}
                   autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}

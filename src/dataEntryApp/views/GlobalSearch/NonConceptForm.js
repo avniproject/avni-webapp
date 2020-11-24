@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,7 +41,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                 </Typography>
                 <KeyboardDatePicker
                   id="date-picker-dialog"
-                  format="dd/MM/yyyy"
+                  format={dateFormat}
                   value={selectedDate[`${searchFilterForm.type}`].minValue}
                   onChange={minDate => onDateChange(minDate, null, searchFilterForm.type)}
                   style={{ width: "30%" }}
@@ -63,7 +64,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                 </Typography>
                 <KeyboardDatePicker
                   id="date-picker-dialog"
-                  format="dd/MM/yyyy"
+                  format={dateFormat}
                   placeholder="Form"
                   value={selectedDate[`${searchFilterForm.type}`].minValue}
                   onChange={minDate =>
@@ -83,7 +84,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                 />
                 <KeyboardDatePicker
                   id="date-picker-dialog"
-                  format="dd/MM/yyyy"
+                  format={dateFormat}
                   placeholder="To"
                   value={selectedDate[`${searchFilterForm.type}`].maxValue}
                   onChange={maxDate =>

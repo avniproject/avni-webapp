@@ -6,6 +6,7 @@ import { LineBreak } from "../../../src/common/components/utils";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
+import { dateFormat } from "dataEntryApp/constants";
 
 export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
@@ -52,8 +53,8 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             margin="normal"
             id="date-picker-dialog"
             autoComplete="off"
-            placeholder="mm/dd/yyyy"
-            format="MM/dd/yyyy"
+            placeholder={dateFormat}
+            format={dateFormat}
             style={{ width: "30%" }}
             name="dateOfBirth"
             // label={t("date of birth")}

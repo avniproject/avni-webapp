@@ -22,6 +22,7 @@ import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import programEncounterService from "../../../services/ProgramEncounterService";
 import { fetchProgramEncounterRulesResponse } from "dataEntryApp/reducers/programEncounterReducer";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,8 +74,8 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                     margin="none"
                     size="small"
                     id="date-picker-dialog"
-                    format="MM/dd/yyyy"
-                    placeholder="mm/dd/yyyy"
+                    format={dateFormat}
+                    placeholder={dateFormat}
                     name="visitDateTime"
                     autoComplete="off"
                     required

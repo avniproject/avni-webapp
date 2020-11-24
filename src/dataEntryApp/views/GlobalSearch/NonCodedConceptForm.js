@@ -11,6 +11,7 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 import _ from "lodash";
+import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -69,7 +70,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardDatePicker
                       id="date-picker-dialog"
                       placeholder="Form"
-                      format="dd/MM/yyyy"
+                      format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
@@ -81,7 +82,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardDatePicker
                       id="date-picker-dialog"
                       placeholder="To"
-                      format="dd/MM/yyyy"
+                      format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
@@ -101,7 +102,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardDateTimePicker
                       id="date-picker-dialog"
                       placeholder="Form"
-                      format="dd/MM/yyyy HH:mm"
+                      format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
@@ -113,7 +114,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardDateTimePicker
                       id="date-picker-dialog"
                       placeholder="To"
-                      format="dd/MM/yyyy HH:mm"
+                      format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
@@ -216,7 +217,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </Typography>
                     <KeyboardDatePicker
                       id="date-picker-dialog"
-                      format="dd/MM/yyyy"
+                      format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
@@ -235,7 +236,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </Typography>
                     <KeyboardDateTimePicker
                       id="date-picker-dialog"
-                      format="dd/MM/yyyy HH:mm"
+                      format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}

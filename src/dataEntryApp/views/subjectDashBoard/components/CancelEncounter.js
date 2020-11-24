@@ -20,6 +20,7 @@ import {
 import encounterService from "../../../services/EncounterService";
 import CancelEncounterForm from "./CancelEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,8 +66,8 @@ const CancelEncounter = ({ match, encounter, enconterDateValidation, ...props })
                     margin="none"
                     size="small"
                     id="date-picker-dialog"
-                    format="MM/dd/yyyy"
-                    placeholder="mm/dd/yyyy"
+                    format={dateFormat}
+                    placeholder={dateFormat}
                     name="cancelDateTime"
                     autoComplete="off"
                     required

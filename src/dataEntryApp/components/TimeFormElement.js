@@ -34,7 +34,6 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
         onChange={value => {
           update(value);
         }}
-        onError={console.log}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         placeholder="hh:mm"

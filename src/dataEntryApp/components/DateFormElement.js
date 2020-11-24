@@ -19,6 +19,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
 import { find, get, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
+import { dateFormat, dateTimeFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,9 +64,8 @@ export const DateTimeFormElement = ({
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         onChange={update}
-        onError={console.log}
         // disablePast
-        format="dd/MM/yyyy HH:mm"
+        format={dateTimeFormat}
         style={{ width: "30%" }}
         KeyboardButtonProps={{
           "aria-label": "change date",
@@ -111,8 +111,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
         onChange={update}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
-        onError={console.log}
-        format="dd/MM/yyyy"
+        format={dateFormat}
         style={{ width: "30%" }}
         KeyboardButtonProps={{
           "aria-label": "change date",
@@ -170,18 +169,16 @@ export const DateAndDurationFormElement = ({
       <FormLabel>{fe.display || fe.name}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-          Select Date*
+          {`${t("Select Date")}${fe.mandatory ? "*" : ""}`}
         </Typography>
         <KeyboardDatePicker
           autoOk
-          // label="Select Date"
           required={fe.mandatory}
           value={date}
           onChange={dateValue => onDateChange(dateValue)}
           helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
           error={validationResult && !validationResult.success}
-          onError={console.log}
-          format="dd/MM/yyyy"
+          format={dateFormat}
           style={{ width: "30%" }}
           KeyboardButtonProps={{
             "aria-label": "change date",
@@ -195,12 +192,11 @@ export const DateAndDurationFormElement = ({
       </div>
       <form>
         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-          Enter Duration*
+          {`${t("Enter Duration")}${fe.mandatory ? "*" : ""}`}
         </Typography>
         <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>
           <TextField
             id="standard-number"
-            // label="Enter Duration"
             type="number"
             InputLabelProps={{
               shrink: true

@@ -32,6 +32,7 @@ import { setFilteredFormElements } from "../../reducers/RulesReducer";
 import Stepper from "./Stepper";
 import { fetchRegistrationRulesResponse } from "dataEntryApp/reducers/registrationReducer";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import { dateFormat } from "dataEntryApp/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -319,8 +320,8 @@ const DefaultPage = props => {
                     style={{ width: "30%" }}
                     margin="normal"
                     id="date-picker-dialog"
-                    format="MM/dd/yyyy"
-                    placeholder="mm/dd/yyyy"
+                    format={dateFormat}
+                    placeholder={dateFormat}
                     onChange={date => {
                       const dateOfReg = _.isNil(date) ? undefined : new Date(date);
                       props.updateSubject("registrationDate", dateOfReg);
