@@ -383,7 +383,7 @@ const DefaultPage = props => {
                     />
                     <LineBreak num={1} />
                     <DateOfBirth
-                      dateOfBirth={props.subject.dateOfBirth || ""}
+                      dateOfBirth={props.subject.dateOfBirth || null}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
                       dobErrorMsg={subjectRegErrors.DOB}
                       onChange={date => {
