@@ -10,4 +10,5 @@ public interface ConceptAnswerWebProjection extends BaseProjection {
     double getOrder();
     boolean isAbnormal();
     boolean isUnique();
+    Boolean getVoided();
 }
