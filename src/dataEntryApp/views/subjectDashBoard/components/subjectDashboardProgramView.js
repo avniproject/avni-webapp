@@ -143,7 +143,11 @@ const ProgramView = ({
 }) => {
   React.useEffect(() => {
     const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
-    getProgramEnrolmentForm(subjectProfile.subjectType.name, programData.program.name, formType);
+    getProgramEnrolmentForm(
+      subjectProfile.subjectType.name,
+      programData.program.operationalProgramName,
+      formType
+    );
   }, [programData]);
 
   const classes = useStyles();
