@@ -15,6 +15,8 @@ import org.openchs.projection.ConceptProjection;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.OrganisationConfigRequest;
 import org.openchs.web.request.webapp.SubjectTypeSetting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.projection.ProjectionFactory;
@@ -33,6 +35,8 @@ public class OrganisationConfigService {
     private final ConceptRepository conceptRepository;
     private final LocationHierarchyService locationHierarchyService;
     private ObjectMapper objectMapper;
+    private final Logger logger;
+
 
     @Autowired
     public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository,
@@ -44,6 +48,7 @@ public class OrganisationConfigService {
         this.conceptRepository = conceptRepository;
         this.locationHierarchyService = locationHierarchyService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Transactional
@@ -65,19 +70,23 @@ public class OrganisationConfigService {
         return organisationConfigRepository.findByOrganisationId(organisation.getId());
     }
 
-    public LinkedHashMap<String, Object> getOrganisationSettings(Long organisationId) throws JSONException {
+    public LinkedHashMap<String, Object> getOrganisationSettings(Long organisationId) {
         JsonObject jsonObject = organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
         LinkedHashMap<String, Object> organisationSettingsConceptListMap = new LinkedHashMap<>();
         List<String> conceptUuidList = new ArrayList<>();
-        JSONObject jsonObj = new JSONObject(jsonObject.toString());
-        JSONArray jsonArray = jsonObj.getJSONArray("searchFilters");
-        String uuid = null;
-        for (int i = 0; i < jsonArray.length(); i++) {
-            if (jsonArray.getJSONObject(i).has("conceptUUID")) {
-                uuid = jsonArray.getJSONObject(i).getString("conceptUUID");
-                if (null != uuid && !"".equals(uuid.trim()))
-                    conceptUuidList.add(uuid.trim());
+        try {
+            JSONObject jsonObj = new JSONObject(jsonObject.toString());
+            JSONArray jsonArray = jsonObj.getJSONArray("searchFilters");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                if (jsonArray.getJSONObject(i).has("conceptUUID")) {
+                    String uuid = jsonArray.getJSONObject(i).getString("conceptUUID");
+                    if (null != uuid && !"".equals(uuid.trim()))
+                        conceptUuidList.add(uuid.trim());
+                }
             }
+        } catch (JSONException e) {
+            logger.error("Ignoring JSONException " + e.getMessage() + " and setting empty searchFilters array in response.");
+            jsonObject.put("searchFilters", Collections.emptyList());
         }
         List<ConceptProjection> conceptList = conceptRepository.getAllConceptByUuidIn(conceptUuidList).stream()
                 .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
