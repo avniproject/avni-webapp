@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Box, TextField, Typography } from "@material-ui/core";
 import moment from "moment/moment";
 import _ from "lodash";
-import { LineBreak } from "../../../src/common/components/utils";
+import { LineBreak } from "../../common/components/utils";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
@@ -19,8 +19,8 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
       setYears(moment().diff(dateOfBirth, "years"));
       setMonths(moment().diff(dateOfBirth, "months") % 12);
     } else {
-      setYears(0);
-      setMonths(0);
+      setYears("");
+      setMonths("");
     }
   }, [dateOfBirth]);
 
@@ -58,7 +58,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             style={{ width: "30%" }}
             name="dateOfBirth"
             // label={t("date of birth")}
-            value={_.isNil(dateOfBirth) ? new Date() : dateOfBirth}
+            value={_.isNil(dateOfBirth) ? null : dateOfBirth}
             onChange={date => onChange(date)}
             InputLabelProps={{
               shrink: true
