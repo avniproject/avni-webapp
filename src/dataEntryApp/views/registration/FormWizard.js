@@ -1,18 +1,18 @@
 import React, { Fragment } from "react";
 import { filter, find, findIndex, isEmpty, isNil, sortBy, unionBy } from "lodash";
-import { LineBreak, withParams } from "../../../common/components/utils";
+import { withParams } from "../../../common/components/utils";
 import { Redirect, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
-import moment from "moment/moment";
-import Form from "../../components/Form";
 import Summary from "./Summary";
 import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { FormElementGroup, StaticFormElementGroup, ValidationResults } from "avni-models";
-import { InternalLink } from "common/components/utils";
+import { StaticFormElementGroup, ValidationResults, FormElementGroup } from "avni-models";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import { filterFormElements } from "../../services/FormElementService";
 import { getFormElementsStatuses } from "../../services/RuleEvaluationService";
+import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
+import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
+import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -21,18 +21,6 @@ const useStyle = makeStyles(theme => ({
     border: "1px solid #f1ebeb",
     position: "relative",
     minHeight: "600px"
-  },
-  detailsstyle: {
-    color: "#000",
-    fontSize: "bold"
-  },
-  details: {
-    color: "rgba(0, 0, 0, 0.54)",
-    backgroundColor: "#F8F9F9",
-    height: 40,
-    width: "100%",
-    padding: 8,
-    marginBottom: 10
   },
   buttomstyle: {
     position: "absolute",
@@ -121,66 +109,15 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ subject }) => {
-  const classes = useStyle();
-  const { t } = useTranslation();
-  const fullName = subject.firstName + " " + subject.lastName || "-";
-  const gender = subject.gender ? subject.gender.name || "-" : "";
-  const lowestAddressLevel = subject.lowestAddressLevel
-    ? subject.lowestAddressLevel.name || "-"
-    : "";
-  const lowestAddressLevelType = subject.lowestAddressLevel
-    ? subject.lowestAddressLevel.type || "-"
-    : "";
-  const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
-  return (
-    <div className={classes.details}>
-      <Typography variant="caption" gutterBottom>
-        {t("name")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {fullName}
-        </Typography>{" "}
-        | {t("age")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {dateOfBirth}
-        </Typography>{" "}
-        | {t("gender")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {gender}
-        </Typography>{" "}
-        | {t(lowestAddressLevelType)}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {lowestAddressLevel}
-        </Typography>
-      </Typography>
-      <LineBreak num={2} />
-    </div>
-  );
+const filterFormElementsWithStatus = (formElementGroup, entity) => {
+  let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
+  return {
+    filteredFormElements: formElementGroup.filterElements(formElementStatuses),
+    formElementStatuses
+  };
 };
 
-const WizardButton = ({ text, className, to, params, onClick, disabled }) => {
-  if (disabled) {
-    return (
-      <Button disabled={disabled} className={className} onClick={onClick} type="button">
-        {text}
-      </Button>
-    );
-  }
-  if (to) {
-    return (
-      <InternalLink noUnderline to={to} params={{ page: "" }}>
-        <Button className={className} onClick={onClick} type="button">
-          {text}
-        </Button>
-      </InternalLink>
-    );
-  }
-  return (
-    <Button className={className} onClick={onClick} type="button">
-      {text}
-    </Button>
-  );
-};
+const getPageNumber = index => (index === -1 ? 1 : index + 1);
 
 const FormWizard = ({
   form,
@@ -213,21 +150,13 @@ const FormWizard = ({
     }, 2500);
   }
 
-  const filterFormElementsWithStatus = (formElementGroup, entity) => {
-    let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
-    return {
-      filteredFormElements: formElementGroup.filterElements(formElementStatuses),
-      formElementStatuses
-    };
-  };
-
-  const getPageNumber = index => (index === -1 ? 1 : index + 1);
   const { from } = match.queryParams;
 
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
+
   const indexOfGroup = firstGroupWithAtLeastOneVisibleElement
     ? findIndex(
         form.getFormElementGroups(),
@@ -236,6 +165,7 @@ const FormWizard = ({
     : registrationFlow
     ? 1
     : -1;
+
   const currentPageNumber = match.queryParams.page
     ? parseInt(match.queryParams.page)
     : getPageNumber(indexOfGroup);
@@ -358,14 +288,14 @@ const FormWizard = ({
     <Fragment>
       {form && (
         <div>
-          {subject ? <Header subject={subject} /> : ""}
+          {subject ? <FormWizardHeader subject={subject} /> : ""}
           <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
               {pageTitle}
             </Typography>
             <Box flexDirection={"row"} display={"flex"}>
-              <WizardButton
+              <FormWizardButton
                 className={classes.topnav}
                 to={goBackToRegistrationDefaultPage ? from : null}
                 params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
@@ -375,7 +305,7 @@ const FormWizard = ({
               />
               <label className={classes.toppagenum}>{pageCounter}</label>
               {!isOnSummaryPage ? (
-                <WizardButton
+                <FormWizardButton
                   className={classes.topnav}
                   onClick={e => handleNext(e, currentFormElementGroup, currentPageNumber)}
                   params={{ page: currentPageNumber + 1 }}
@@ -397,21 +327,23 @@ const FormWizard = ({
                 fetchRulesResponse={fetchRulesResponse}
               />
             ) : (
-              <Form
-                current={currentFormElementGroup}
+              <FormElementGroupComponent
+                parentChildren={children}
+                key={currentFormElementGroup.uuid}
                 obsHolder={obsHolder}
                 updateObs={updateObs}
                 validationResults={validationResults}
-                children={children}
                 filteredFormElements={filteredFormElements}
                 entity={entity}
                 renderParent={isFirstPage}
-              />
+              >
+                {currentFormElementGroup}
+              </FormElementGroupComponent>
             )}
 
             <Box className={classes.buttomstyle} display="flex">
               <Box style={{ marginRight: 20 }}>
-                <WizardButton
+                <FormWizardButton
                   className={classes.privbuttonStyle}
                   to={goBackToRegistrationDefaultPage ? from : null}
                   params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
@@ -422,7 +354,7 @@ const FormWizard = ({
               </Box>
               <Box>
                 {!isOnSummaryPage ? (
-                  <WizardButton
+                  <FormWizardButton
                     className={classes.nextbuttonStyle}
                     onClick={e => handleNext(e, currentFormElementGroup, currentPageNumber)}
                     params={{ page: currentPageNumber + 1 }}
