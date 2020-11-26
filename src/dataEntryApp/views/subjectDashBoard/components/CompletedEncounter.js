@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
-import { isEmpty } from "lodash";
+import { defaultTo, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -83,8 +83,8 @@ const CompletedEncounter = ({
             <Link to={visitUrl}>
               <ListItemText
                 className={classes.ListItemText}
-                title={t(encounter.encounterType.name)}
-                primary={truncate(t(encounter.encounterType.name))}
+                title={t(defaultTo(encounter.name, encounter.encounterType.name))}
+                primary={truncate(t(defaultTo(encounter.name, encounter.encounterType.name)))}
               />
             </Link>
           </ListItem>

@@ -7,6 +7,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
+import { defaultTo } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,9 +40,10 @@ const Breadcrumbs = ({
   const currentpage = parts[parts.length - 1];
   const subjectName = subjectProfile && subjectProfile.nameString;
   const subjectUuid = subjectProfile && subjectProfile.uuid;
-  const viewVisitName = viewVisit && viewVisit.encounterType.name;
-  const programEncounterName = programEncounter && programEncounter.encounterType.name;
-  const encounterName = encounter && encounter.encounterType.name;
+  const viewVisitName = viewVisit && defaultTo(viewVisit.name, viewVisit.encounterType.name);
+  const programEncounterName =
+    programEncounter && defaultTo(programEncounter.name, programEncounter.encounterType.name);
+  const encounterName = encounter && defaultTo(encounter.name, encounter.encounterType.name);
   const urlPartLabels = {
     APP: "app",
     SUBJECT: "subject",

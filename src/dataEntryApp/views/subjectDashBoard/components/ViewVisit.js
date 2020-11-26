@@ -14,6 +14,7 @@ import { InternalLink, LineBreak } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { defaultTo } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -89,7 +90,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
       <Paper className={classes.root}>
         <Grid container direction="row" justify="space-between" alignItems="baseline">
           <Typography component={"span"} className={classes.mainHeading}>
-            {t("ViewVisit")}: {t(encounter.encounterType.name)}
+            {t("ViewVisit")}: {t(defaultTo(encounter.name, encounter.encounterType.name))}
           </Typography>
           {encounter.earliestVisitDateTime ? (
             <Typography component={"span"} className={classes.scheduledHeading}>

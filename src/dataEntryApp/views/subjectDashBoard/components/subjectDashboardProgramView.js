@@ -27,7 +27,7 @@ import { connect } from "react-redux";
 import { InternalLink, withParams } from "../../../../common/components/utils";
 import moment from "moment";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
-import { isNil } from "lodash";
+import { defaultTo, isNil } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -366,7 +366,7 @@ const ProgramView = ({
                     <Visit
                       type={"programEncounter"}
                       uuid={row.uuid}
-                      name={row.name}
+                      name={defaultTo(row.name, row.encounterType.name)}
                       index={index}
                       visitDate={row.encounterDateTime}
                       earliestVisitDate={row.earliestVisitDateTime}
@@ -422,7 +422,7 @@ const ProgramView = ({
                     <Visit
                       uuid={row.uuid}
                       type={"programEncounter"}
-                      name={row.encounterType.name}
+                      name={defaultTo(row.name, row.encounterType.name)}
                       key={index}
                       index={index}
                       visitDate={row.encounterDateTime}
