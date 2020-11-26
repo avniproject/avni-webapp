@@ -70,14 +70,15 @@ CREATE OR REPLACE VIEW title_lineage_locations_view AS
          join address_level alevel_in_lineage on alevel_in_lineage.id = lineage.point_id :: int
   group by al.id;
 
-  CREATE OR REPLACE VIEW individual_program_enrolment_search_view AS
-   SELECT progralalise.individual_id,
-      string_agg(progralalise.programname, ','::text) AS program_name
-     FROM ( SELECT pe.individual_id,
-              concat(prog.name, ':', prog.colour) AS programname
-             FROM program_enrolment pe
+CREATE OR REPLACE VIEW individual_program_enrolment_search_view AS
+SELECT progralalise.individual_id,
+       string_agg(progralalise.programname, ','::text) AS program_name
+FROM (SELECT pe.individual_id,
+             concat(op.name, ':', prog.colour) AS programname
+      FROM program_enrolment pe
                JOIN program prog ON prog.id = pe.program_id
-            WHERE pe.program_exit_date_time isnull
-            GROUP BY pe.individual_id, prog.name, prog.colour) progralalise
-    GROUP BY progralalise.individual_id;
+               JOIN operational_program op on prog.id = op.program_id
+      WHERE pe.program_exit_date_time isnull
+      GROUP BY pe.individual_id, op.name, prog.colour) progralalise
+GROUP BY progralalise.individual_id;
 
