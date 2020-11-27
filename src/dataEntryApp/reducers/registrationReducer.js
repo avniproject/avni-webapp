@@ -100,7 +100,6 @@ export const fetchRegistrationRulesResponse = () => {
         individualRequestEntity,
         rule: {
           formUuid: state.dataEntry.registration.registrationForm.uuid,
-          ruleType: "VisitSchedule",
           workFlowType: "Individual"
         }
       })

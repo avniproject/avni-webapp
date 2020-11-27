@@ -156,7 +156,7 @@ export function* saveProgramEnrolmentWorker(params) {
     resource.decisions = decisions;
     resource.checklists = checklists;
 
-    yield call(api.saveProgram, resource);
+    yield call(api.saveProgramEnrolment, resource);
     yield put(saveProgramComplete());
   } catch (e) {
     console.log(e);
@@ -177,7 +177,7 @@ export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
   programEnrolment.programExitObservations = [];
 
   let resource = programEnrolment.toResource;
-  yield call(api.saveProgram, resource);
+  yield call(api.saveProgramEnrolment, resource);
   yield put(saveProgramComplete());
 }
 

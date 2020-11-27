@@ -118,7 +118,6 @@ export const fetchEncounterRulesResponse = () => {
         encounterRequestEntity: requestEntity,
         rule: {
           formUuid: state.dataEntry.encounterReducer.encounterForm.uuid,
-          ruleType: "VisitSchedule",
           workFlowType: "Encounter"
         }
       })

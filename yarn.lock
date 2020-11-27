@@ -10877,7 +10877,15 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@0.2.54, openchs-models@^0.2.25:
+openchs-models@0.2.55:
+  version "0.2.55"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.55.tgz#e2d49825089a068b3c57067564d3a88513e3a7d2"
+  integrity sha512-8RnpryF06l+8APB7TwkNXYFHFT4YmlyMpVvfZRy/qyP+C8tkkpGTrqwTVlhheph2ZnplQdmC5DW2lTtuut5c1A==
+  dependencies:
+    lodash "^4.17.11"
+    moment "^2.22.2"
+
+openchs-models@^0.2.25:
   version "0.2.54"
   resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.54.tgz#6bbdfde9110ae1d15e7cd698d16710891d791132"
   integrity sha512-5bXmRgBkrUAWCcPWSwnJ1bgwf03zEDj7f81S9v2brXK17415kFt7+zaWvQaZOdXqQ4soWkVcdGbCs3Y1gUhK+Q==

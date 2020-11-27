@@ -1,4 +1,6 @@
 import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import { ValidationResult } from "avni-models";
+import validationService from "dataEntryApp/services/ValidationService";
 
 const prefix = "app/dataEntry/reducer/enrol/";
 
@@ -6,32 +8,21 @@ export const types = {
   SET_ENROL_FORM: `${prefix}SET_ENROL_FORM`,
   ON_LOAD: `${prefix}ON_LOAD`,
   UNDO_EXIT_ENROLMENT: `${prefix}UNDO_EXIT_ENROLMENT`,
-  UPDATE_SUBJECT: `${prefix}UPDATE_NEW_SUBJECT`,
-  SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   SAVE_PROGRAM_ENROLMENT: `${prefix}SAVE_PROGRAM_ENROLMENT`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   UPDATE_EXIT_OBS: `${prefix}UPDATE_EXIT_OBS`,
   SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
-  GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
-  UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`,
+  UPDATE_PROGRAM_ENROL_DATE: `${prefix}UPDATE_PROGRAM_ENROL_DATE`,
+  UPDATE_PROGRAM_EXIT_DATE: `${prefix}UPDATE_PROGRAM_EXIT_DATE`,
   SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`,
   SET_ENROL_DATE_VALIDATION: `${prefix}SET_ENROL_DATE_VALIDATION`,
   SET_LOADED: `${prefix}SET_LOADED`
 };
 
-export const getProgramEnrolment = programEnrolmentUuid => ({
-  type: types.GET_PROGRAM_ENROLMENT,
-  programEnrolmentUuid
-});
-
 export const setProgramEnrolment = programEnrolment => ({
   type: types.SET_PROGRAM_ENROLMENT,
   programEnrolment
-});
-
-export const saveSubject = () => ({
-  type: types.SAVE_SUBJECT
 });
 
 export const saveProgramEnrolment = isExit => ({
@@ -80,9 +71,13 @@ export const saveProgramComplete = () => ({
   type: types.SAVE_PROGRAM_COMPLETE
 });
 
-export const updateProgramEnrolment = (field, value) => ({
-  type: types.UPDATE_PROGRAM_ENROLMENT,
-  field,
+export const updateProgramEnrolDate = value => ({
+  type: types.UPDATE_PROGRAM_ENROL_DATE,
+  value
+});
+
+export const updateProgramExitDate = value => ({
+  type: types.UPDATE_PROGRAM_EXIT_DATE,
   value
 });
 
@@ -108,7 +103,6 @@ export const fetchEnrolmentRulesResponse = () => {
         programEnrolmentRequestEntity: requestEntity,
         rule: {
           formUuid: state.dataEntry.enrolmentReducer.enrolForm.uuid,
-          ruleType: "VisitSchedule",
           workFlowType: "ProgramEnrolment"
         }
       })
@@ -118,7 +112,8 @@ export const fetchEnrolmentRulesResponse = () => {
 
 const initialState = {
   saved: false,
-  enrolDateValidation: []
+  enrolDateValidation: ValidationResult.successful(),
+  load: false
 };
 
 // reducer
@@ -132,11 +127,7 @@ export default function(state = initialState, action) {
     }
 
     case types.SET_INITIAL_STATE: {
-      return {
-        ...state,
-        saved: false,
-        load: false
-      };
+      return initialState;
     }
 
     case types.SAVE_PROGRAM_COMPLETE: {
@@ -151,19 +142,26 @@ export default function(state = initialState, action) {
         programEnrolment: action.programEnrolment
       };
     }
-    case types.UPDATE_PROGRAM_ENROLMENT: {
-      const newState = {};
+    case types.UPDATE_PROGRAM_ENROL_DATE: {
       const programEnrolment = state.programEnrolment.cloneForEdit();
-      programEnrolment[action.field] = action.value;
-      if (action.field === "programExitDateTime") {
-        newState.exitDateValidation = programEnrolment
-          .validateExit()
-          .filter(({ success }) => !success);
-      }
-      newState.programEnrolment = programEnrolment;
+      programEnrolment.enrolmentDateTime = action.value;
+      const enrolDateValidation = validationService.getFirstError(
+        programEnrolment.validateEnrolment()
+      );
       return {
         ...state,
-        ...newState
+        programEnrolment,
+        enrolDateValidation
+      };
+    }
+    case types.UPDATE_PROGRAM_EXIT_DATE: {
+      const programEnrolment = state.programEnrolment.cloneForEdit();
+      programEnrolment.programExitDateTime = action.value;
+      const enrolDateValidation = validationService.getFirstError(programEnrolment.validateExit());
+      return {
+        ...state,
+        programEnrolment,
+        enrolDateValidation
       };
     }
     case types.SET_ENROL_DATE_VALIDATION: {

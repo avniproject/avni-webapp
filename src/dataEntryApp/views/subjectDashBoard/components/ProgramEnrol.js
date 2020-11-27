@@ -6,13 +6,13 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import {
   onLoad,
-  updateProgramEnrolment,
+  updateProgramEnrolDate,
+  updateProgramExitDate,
   setProgramEnrolment,
   setInitialState,
   setEnrolDateValidation,
   fetchEnrolmentRulesResponse
 } from "dataEntryApp/reducers/programEnrolReducer";
-import { isNil, isEmpty, first } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -22,7 +22,6 @@ import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
-import programEnrolmentService from "../../../services/ProgramEnrolmentService";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { dateFormat } from "dataEntryApp/constants";
 
@@ -63,11 +62,11 @@ const ProgramEnrol = ({
   enrolForm,
   getSubjectProfile,
   programEnrolment,
-  updateProgramEnrolment,
+  updateProgramEnrolDate,
+  updateProgramExitDate,
   setInitialState,
   setEnrolDateValidation,
   enrolDateValidation,
-  exitDateValidation,
   load
 }) => {
   const { t } = useTranslation();
@@ -94,10 +93,7 @@ const ProgramEnrol = ({
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {enrolForm &&
-              programEnrolment &&
-              programEnrolment.enrolmentDateTime &&
-              formType === "ProgramEnrolment" ? (
+              {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm
                   formType={formType}
                   fetchRulesResponse={fetchEnrolmentRulesResponse}
@@ -118,21 +114,16 @@ const ProgramEnrol = ({
                       format={dateFormat}
                       placeholder={dateFormat}
                       name="enrolmentDateTime"
-                      value={new Date(programEnrolment.enrolmentDateTime)}
+                      value={programEnrolment.enrolmentDateTime}
                       autoComplete="off"
                       required
-                      error={!isEmpty(enrolDateValidation) && !first(enrolDateValidation).success}
+                      error={enrolDateValidation && !enrolDateValidation.success}
                       helperText={
-                        !isEmpty(enrolDateValidation) && t(first(enrolDateValidation).messageKey)
+                        enrolDateValidation &&
+                        !enrolDateValidation.success &&
+                        t(enrolDateValidation.messageKey)
                       }
-                      onChange={date => {
-                        const enrolDate = isNil(date) ? undefined : new Date(date);
-                        programEnrolment.enrolmentDateTime = enrolDate;
-                        updateProgramEnrolment("enrolmentDateTime", enrolDate);
-                        setEnrolDateValidation([
-                          programEnrolmentService.validateEnrolmentDate(programEnrolment)
-                        ]);
-                      }}
+                      onChange={updateProgramEnrolDate}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
                         color: "primary"
@@ -140,10 +131,7 @@ const ProgramEnrol = ({
                     />
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
-              ) : enrolForm &&
-                programEnrolment &&
-                programEnrolment.programExitDateTime &&
-                formType === "ProgramExit" ? (
+              ) : enrolForm && programEnrolment && formType === "ProgramExit" ? (
                 <ProgramExitEnrolmentForm
                   formType={formType}
                   fetchRulesResponse={fetchEnrolmentRulesResponse}
@@ -162,15 +150,18 @@ const ProgramEnrol = ({
                       size="small"
                       id="date-picker-dialog"
                       format={dateFormat}
+                      placeholder={dateFormat}
                       name="programExitDateTime"
-                      value={new Date(programEnrolment.programExitDateTime)}
-                      error={!isEmpty(exitDateValidation) && !first(exitDateValidation).success}
+                      value={programEnrolment.programExitDateTime}
+                      autoComplete="off"
+                      required
+                      error={enrolDateValidation && !enrolDateValidation.success}
                       helperText={
-                        !isEmpty(exitDateValidation) && t(first(exitDateValidation).messageKey)
+                        enrolDateValidation &&
+                        !enrolDateValidation.success &&
+                        t(enrolDateValidation.messageKey)
                       }
-                      onChange={date => {
-                        updateProgramEnrolment("programExitDateTime", new Date(date));
-                      }}
+                      onChange={updateProgramExitDate}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
                         color: "primary"
@@ -196,14 +187,14 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment,
   enrolDateValidation: state.dataEntry.enrolmentReducer.enrolDateValidation,
-  exitDateValidation: state.dataEntry.enrolmentReducer.exitDateValidation,
   load: state.dataEntry.enrolmentReducer.load
 });
 
 const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
-  updateProgramEnrolment,
+  updateProgramEnrolDate,
+  updateProgramExitDate,
   setProgramEnrolment,
   setInitialState,
   setEnrolDateValidation

@@ -21,7 +21,10 @@ const mapFormStateToProps = state => ({
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   validationResults: state.dataEntry.registration.validationResults,
   filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
-  entity: state.dataEntry.enrolmentReducer.programEnrolment
+  entity: state.dataEntry.enrolmentReducer.programEnrolment,
+  staticValidationResults: state.dataEntry.enrolmentReducer.enrolDateValidation && [
+    state.dataEntry.enrolmentReducer.enrolDateValidation
+  ]
 });
 
 const mapFormDispatchToProps = dispatch => {

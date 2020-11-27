@@ -124,7 +124,6 @@ export const fetchProgramEncounterRulesResponse = () => {
         programEncounterRequestEntity: requestEntity,
         rule: {
           formUuid: state.dataEntry.programEncounterReducer.programEncounterForm.uuid,
-          ruleType: "VisitSchedule",
           workFlowType: "ProgramEncounter"
         }
       })

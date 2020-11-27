@@ -213,14 +213,12 @@ const FormWizard = ({
       staticValidationResults &&
       new ValidationResults(staticValidationResults).hasValidationError();
     setValidationResults(allRuleValidationResults);
-    if (!isEmpty(allRuleValidationResults)) {
-      if (
-        new ValidationResults(allRuleValidationResults).hasValidationError() ||
-        staticValidationResultsError
-      ) {
-        event.preventDefault();
-        return;
-      }
+    if (
+      new ValidationResults(allRuleValidationResults).hasValidationError() ||
+      staticValidationResultsError
+    ) {
+      event.preventDefault();
+      return;
     }
     const nextGroup = feg.next();
     const { filteredFormElements, formElementStatuses } = !isEmpty(nextGroup)

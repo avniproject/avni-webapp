@@ -18,7 +18,7 @@ export default {
       body: JSON.stringify(subject)
     }),
 
-  saveProgram: programEnrolment =>
+  saveProgramEnrolment: programEnrolment =>
     httpClient.fetchJson("/programEnrolments", {
       method: "POST",
       body: JSON.stringify(programEnrolment)
