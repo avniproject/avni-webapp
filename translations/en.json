@@ -393,7 +393,6 @@
     "filterRelative": "Filter Relative",
     "invalidDateFormat": "Is not a valid date",
     "resetFilter": "Reset Filter",
-    "visitCanceldate": "Visit Cancel Date",
-    "noElements": "No questions on this page"
+    "visitCanceldate": "Visit Cancel Date"
   }
 }
