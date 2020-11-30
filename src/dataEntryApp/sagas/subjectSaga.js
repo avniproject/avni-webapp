@@ -7,6 +7,7 @@ import {
   setRegistrationForm,
   setSubject,
   setValidationResults,
+  setInitialSubjectState,
   types as subjectTypes
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
@@ -190,14 +191,15 @@ function* loadRegistrationPageWatcher() {
 }
 
 export function* loadRegistrationPageWorker({ subjectTypeName }) {
+  yield put.resolve(setInitialSubjectState());
   yield put.resolve(setFilteredFormElements());
   yield put.resolve(getOperationalModules());
   yield put.resolve(getRegistrationForm(subjectTypeName));
-  yield put.resolve(getGenders());
-
   const subjectType = yield select(selectSubjectTypeFromName(subjectTypeName));
-
-  let subject = Individual.createEmptyInstance();
+  if (subjectType.isPerson()) {
+    yield put.resolve(getGenders());
+  }
+  let subject = Individual.createEmptySubjectInstance();
   subject.subjectType = subjectType;
   yield put.resolve(setSubject(subject));
   yield put.resolve(setLoaded());

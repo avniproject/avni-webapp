@@ -17,7 +17,8 @@ export const types = {
   SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
   GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
-  SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`
+  SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`,
+  SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -89,6 +90,10 @@ export const setValidationResults = validationResults => ({
 
 export const getValidationResults = () => ({
   type: types.GET_VALIDATION_RESULTS
+});
+
+export const setInitialSubjectState = () => ({
+  type: types.SET_INITIAL_SUBJECT_STATE
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -166,6 +171,9 @@ export default function(state = initialState, action) {
         ...state,
         validationResults: action.validationResults
       };
+    }
+    case types.SET_INITIAL_SUBJECT_STATE: {
+      return initialState;
     }
     default:
       return state;
