@@ -1,5 +1,6 @@
 package org.openchs.web.request.rules.constructWrappers;
 
+import org.openchs.application.Subject;
 import org.openchs.dao.ChecklistDetailRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
@@ -98,7 +99,9 @@ public class ProgramEnrolmentConstructionService {
         individualContractWrapper.setFirstName(individual.getFirstName());
         individualContractWrapper.setLastName(individual.getLastName());
         individualContractWrapper.setDateOfBirth(individual.getDateOfBirth());
-        individualContractWrapper.setGender(constructGenderContract(individual.getGender()));
+        if (individual.getSubjectType().getType().equals(Subject.Person)) {
+            individualContractWrapper.setGender(constructGenderContract(individual.getGender()));
+        }
         individualContractWrapper.setLowestAddressLevel(constructAddressLevel(individual.getAddressLevel()));
         individualContractWrapper.setRegistrationDate(individual.getRegistrationDate());
         individualContractWrapper.setVoided(individual.isVoided());
