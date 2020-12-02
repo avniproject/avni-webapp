@@ -7,6 +7,7 @@ public class AddressLevelContractWeb {
     private Long id;
     private String name;
     private String type;
+    private Long typeId;
     private Double level;
     private String lineage;
     private Long parentId;
@@ -17,6 +18,7 @@ public class AddressLevelContractWeb {
         addressLevelContractWeb.setId(addressLevel.getId());
         addressLevelContractWeb.setName(addressLevel.getTitle());
         addressLevelContractWeb.setType(addressLevel.getType().getName());
+        addressLevelContractWeb.setTypeId(addressLevel.getType().getId());
         addressLevelContractWeb.setLevel(addressLevel.getLevel());
         addressLevelContractWeb.setParentId(addressLevel.getParentId());
         addressLevelContractWeb.setLineage(addressLevel.getLineage());
@@ -78,5 +80,13 @@ public class AddressLevelContractWeb {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
     }
 }

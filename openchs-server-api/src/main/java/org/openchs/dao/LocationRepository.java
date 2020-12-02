@@ -80,6 +80,9 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @RestResource(path = "autocompleteLocationsOfType", rel = "autocompleteLocationsOfType")
     List<AddressLevel> findByType_IdAndTitleIgnoreCaseStartingWithAndIsVoidedFalseOrderByTitleAsc(@Param("typeId") Long typeId,
                                                                                   @Param("title") String title);
+
+    List<AddressLevel> findByType_IdAndIsVoidedFalseOrderByTitleAsc(Long typeId);
+
     @Query("select a.title from AddressLevel a where a.isVoided = false")
     List<String> getAllNames();
 

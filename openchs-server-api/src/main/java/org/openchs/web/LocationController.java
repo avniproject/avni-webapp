@@ -134,6 +134,15 @@ public class LocationController implements OperatingIndividualScopeAwareControll
                 .collect(Collectors.toList());
     }
 
+    @GetMapping(value = "/locations/search/typeId/{typeId}")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin','organisation_admin')")
+    @ResponseBody
+    public List<AddressLevelContractWeb> getLocationsByTypeId(@PathVariable("typeId") Long typeId) {
+        return locationRepository.findByType_IdAndIsVoidedFalseOrderByTitleAsc(typeId).stream()
+                .map(AddressLevelContractWeb::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public OperatingIndividualScopeAwareRepository<AddressLevel> resourceRepository() {
         return locationRepository;
