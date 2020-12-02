@@ -22,7 +22,7 @@ import _, { get, sortBy, isEmpty, find } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
+import LocationSelect from "dataEntryApp/components/LocationSelect";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
@@ -221,7 +221,7 @@ const DefaultPage = props => {
         <div>
           {props.selectedAddressLevelType.id === -1 ? null : (
             <div>
-              <LocationAutosuggest
+              <LocationSelect
                 selectedLocation={props.subject.lowestAddressLevel.name || ""}
                 errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
                 onSelect={location => {
@@ -229,16 +229,16 @@ const DefaultPage = props => {
                     "lowestAddressLevel",
                     AddressLevel.create({
                       uuid: location.uuid,
-                      title: location.title,
+                      title: location.name,
                       level: location.level,
-                      typeString: location.typeString
+                      typeString: location.type
                     })
                   );
                   props.subject.lowestAddressLevel = AddressLevel.create({
                     uuid: location.uuid,
-                    title: location.title,
+                    title: location.name,
                     level: location.level,
-                    typeString: location.typeString
+                    typeString: location.type
                   });
                   setValidationResultToError(props.subject.validateAddress());
                 }}

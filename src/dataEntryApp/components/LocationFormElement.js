@@ -1,6 +1,7 @@
+/* eslint-disable */ //TODO remove when this form element type is supported
 import React from "react";
 import { useTranslation } from "react-i18next";
-import LocationAutosuggest from "./LocationAutosuggest";
+import LocationSelect from "./LocationSelect";
 import RadioButtonsGroup from "./RadioButtonsGroup";
 
 const LocationFormElement = props => {
@@ -22,7 +23,7 @@ const LocationFormElement = props => {
       {/*  items={addressLevelTypesToRender.map(a => ({id: a.id, name: a.name}))}*/}
       {/*  value={props.selectedAddressLevelType.id}*/}
       {/*  onChange={item => props.selectAddressLevelType(item)}*/}
-      {/*/>*/}){/*<LocationAutosuggest*/}
+      {/*/>*/}){/*<LocationSelect*/}
       {/*  selectedLocation={}*/}
       {/*  subjectProps={}*/}
       {/*  onSelect={}*/}
