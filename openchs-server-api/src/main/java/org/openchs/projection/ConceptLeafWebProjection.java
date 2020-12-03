@@ -15,4 +15,5 @@ public interface ConceptLeafWebProjection {
     Double getLowNormal();
     Double getHighNormal();
     KeyValues getKeyValues();
+    String getUnit();
 }
