@@ -4,6 +4,7 @@ import { isNaN, isEmpty, find, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
+
 const useStyles = makeStyles(theme => ({
   lableStyle: {
     width: "50%",
@@ -28,11 +29,27 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
 
   const textColor = error() ? Colors.ValidationError : Colors.DefaultPrimary;
 
+  const rangeText = (lowNormal, hiNormal) => {
+    let rangeText = null;
+    if (!isNil(lowNormal)) {
+      if (!isNil(hiNormal)) {
+        rangeText = `${lowNormal} - ${hiNormal}`;
+      } else {
+        rangeText = `>=${lowNormal}`;
+      }
+    } else if (!isNil(hiNormal)) {
+      rangeText = `<=${hiNormal}`;
+    }
+    return isNil(rangeText) ? "" : ` (${rangeText})`;
+  };
+
   return (
     <Fragment>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
         {fe.mandatory ? "*" : ""}
+        {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}
+        {rangeText(fe.concept.lowNormal, fe.concept.hiNormal)}
       </Typography>
       <TextField
         // label={t(fe.display || fe.name)}
