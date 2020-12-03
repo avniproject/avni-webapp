@@ -17,12 +17,20 @@ export const types = {
   UPDATE_PROGRAM_EXIT_DATE: `${prefix}UPDATE_PROGRAM_EXIT_DATE`,
   SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`,
   SET_ENROL_DATE_VALIDATION: `${prefix}SET_ENROL_DATE_VALIDATION`,
-  SET_LOADED: `${prefix}SET_LOADED`
+  SET_LOADED: `${prefix}SET_LOADED`,
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
   type: types.SET_PROGRAM_ENROLMENT,
   programEnrolment
+});
+
+export const onLoadSuccess = (programEnrolment, enrolForm, formElementGroup) => ({
+  type: types.ON_LOAD_SUCCESS,
+  programEnrolment,
+  enrolForm,
+  formElementGroup
 });
 
 export const saveProgramEnrolment = isExit => ({
@@ -173,6 +181,15 @@ export default function(state = initialState, action) {
     case types.SET_LOADED: {
       return {
         ...state,
+        load: true
+      };
+    }
+    case types.ON_LOAD_SUCCESS: {
+      return {
+        ...state,
+        programEnrolment: action.programEnrolment,
+        enrolForm: action.enrolForm,
+        formElementGroup: action.formElementGroup,
         load: true
       };
     }

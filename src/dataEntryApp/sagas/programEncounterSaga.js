@@ -7,7 +7,8 @@ import {
   setProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
-  setValidationResults
+  setValidationResults,
+  onLoadSuccess
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import {
@@ -31,6 +32,7 @@ import {
   selectDecisions,
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 export default function*() {
   yield all(
@@ -188,12 +190,14 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
       subjectProfileJson.subjectType.uuid
     )
   );
-  const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const programEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const programEncounterForm = mapForm(programEncounterFormJson);
   const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
-  yield put.resolve(setProgramEncounter(programEncounter));
-  yield put.resolve(setProgramEncounterForm(mapForm(programEncounterForm)));
+  const formElementGroup = commonFormUtil.onLoad(programEncounterForm, programEncounter);
+
+  yield put.resolve(onLoadSuccess(programEncounter, programEncounterForm, formElementGroup));
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -269,6 +273,9 @@ export function* editCancelProgramEncounterWorker({ programEncounterUuid }) {
 export function* setCancelProgramEncounterDetails(programEncounter, programEnrolmentJson) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolmentJson.subjectUuid);
   const subject = mapProfile(subjectProfileJson);
+  const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
+  programEncounter.programEnrolment = programEnrolment;
+
   const formMapping = yield select(
     selectFormMappingForCancelProgramEncounter(
       programEncounter.encounterType.uuid,
@@ -276,11 +283,11 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
       subjectProfileJson.subjectType.uuid
     )
   );
-  const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
-  programEncounter.programEnrolment = programEnrolment;
+  const cancelProgramEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const cancelProgramEncounterForm = mapForm(cancelProgramEncounterFormJson);
 
-  yield put.resolve(setProgramEncounter(programEncounter));
-  yield put.resolve(setProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
+  const formElementGroup = commonFormUtil.onLoad(cancelProgramEncounterForm, programEncounter);
+
+  yield put.resolve(onLoadSuccess(programEncounter, cancelProgramEncounterForm, formElementGroup));
   yield put.resolve(setSubjectProfile(subject));
 }

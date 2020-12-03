@@ -11,6 +11,7 @@ export const types = {
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   ON_LOAD: `${prefix}ON_LOAD`,
   ON_LOAD_EDIT: `${prefix}ON_LOAD_EDIT`,
+  ON_LOAD_EDIT_SUCCESS: `${prefix}ON_LOAD_EDIT_SUCCESS`,
   SET_LOADED: `${prefix}SET_LOADED`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
@@ -63,6 +64,13 @@ export const onLoad = subjectTypeName => ({
 export const onLoadEdit = subjectUuid => ({
   type: types.ON_LOAD_EDIT,
   subjectUuid
+});
+
+export const onLoadEditSuccess = (subject, registrationForm, formElementGroup) => ({
+  type: types.ON_LOAD_EDIT_SUCCESS,
+  subject,
+  registrationForm,
+  formElementGroup
 });
 
 export const setLoaded = () => ({
@@ -174,6 +182,15 @@ export default function(state = initialState, action) {
     }
     case types.SET_INITIAL_SUBJECT_STATE: {
       return initialState;
+    }
+    case types.ON_LOAD_EDIT_SUCCESS: {
+      return {
+        ...state,
+        subject: action.subject,
+        formElementGroup: action.formElementGroup,
+        registrationForm: action.registrationForm,
+        loaded: true
+      };
     }
     default:
       return state;

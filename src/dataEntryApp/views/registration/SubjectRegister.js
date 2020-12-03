@@ -528,7 +528,8 @@ const mapFormStateToProps = state => ({
   validationResults: state.dataEntry.registration.validationResults,
   registrationFlow: true,
   filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
-  entity: state.dataEntry.registration.subject
+  entity: state.dataEntry.registration.subject,
+  formElementGroup: state.dataEntry.registration.formElementGroup
 });
 
 const mapFormDispatchToProps = {

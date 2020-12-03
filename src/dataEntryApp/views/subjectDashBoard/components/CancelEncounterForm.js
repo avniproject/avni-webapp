@@ -33,7 +33,8 @@ const mapFormStateToProps = state => {
       }
     ],
     filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
-    entity: encounter
+    entity: encounter,
+    formElementGroup: state.dataEntry.encounterReducer.formElementGroup
   };
 };
 

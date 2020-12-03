@@ -19,7 +19,8 @@ export const types = {
   EDIT_ENCOUNTER: `${prefix}EDIT_ENCOUNTER`,
   UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   CREATE_CANCEL_ENCOUNTER: `${prefix}CREATE_CANCEL_ENCOUNTER`,
-  EDIT_CANCEL_ENCOUNTER: `${prefix}EDIT_CANCEL_ENCOUNTER`
+  EDIT_CANCEL_ENCOUNTER: `${prefix}EDIT_CANCEL_ENCOUNTER`,
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -30,6 +31,13 @@ export const setEncounterFormMappings = encounterFormMappings => ({
 export const onLoad = subjectUuid => ({
   type: types.ON_LOAD,
   subjectUuid
+});
+
+export const onLoadSuccess = (encounter, encounterForm, formElementGroup) => ({
+  type: types.ON_LOAD_SUCCESS,
+  encounter,
+  encounterForm,
+  formElementGroup
 });
 
 export const setEncounterForm = encounterForm => ({
@@ -149,6 +157,14 @@ export default function(state = initialState, action) {
       return {
         ...state,
         encounter: action.encounter
+      };
+    }
+    case types.ON_LOAD_SUCCESS: {
+      return {
+        ...state,
+        encounter: action.encounter,
+        encounterForm: action.encounterForm,
+        formElementGroup: action.formElementGroup
       };
     }
     case types.SAVE_ENCOUNTER_COMPLETE: {

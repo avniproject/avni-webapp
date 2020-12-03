@@ -20,7 +20,8 @@ export const types = {
   EDIT_PROGRAM_ENCOUNTER: `${prefix}EDIT_PROGRAM_ENCOUNTER`,
   UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   CREATE_CANCEL_PROGRAM_ENCOUNTER: `${prefix}CREATE_CANCEL_PROGRAM_ENCOUNTER`,
-  EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}EDIT_CANCEL_PROGRAM_ENCOUNTER`
+  EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}EDIT_CANCEL_PROGRAM_ENCOUNTER`,
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -46,6 +47,13 @@ export const setProgramEncounterForm = programEncounterForm => ({
 export const setProgramEncounter = programEncounter => ({
   type: types.SET_PROGRAM_ENCOUNTER,
   programEncounter
+});
+
+export const onLoadSuccess = (programEncounter, programEncounterForm, formElementGroup) => ({
+  type: types.ON_LOAD_SUCCESS,
+  programEncounter,
+  programEncounterForm,
+  formElementGroup
 });
 
 export const updateObs = (formElement, value) => ({
@@ -161,6 +169,14 @@ export default function(state = initialState, action) {
       return {
         ...state,
         programEncounter: action.programEncounter
+      };
+    }
+    case types.ON_LOAD_SUCCESS: {
+      return {
+        ...state,
+        programEncounter: action.programEncounter,
+        programEncounterForm: action.programEncounterForm,
+        formElementGroup: action.formElementGroup
       };
     }
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {

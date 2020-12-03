@@ -24,7 +24,8 @@ const mapFormStateToProps = state => ({
   entity: state.dataEntry.enrolmentReducer.programEnrolment,
   staticValidationResults: state.dataEntry.enrolmentReducer.enrolDateValidation && [
     state.dataEntry.enrolmentReducer.enrolDateValidation
-  ]
+  ],
+  formElementGroup: state.dataEntry.enrolmentReducer.formElementGroup
 });
 
 const mapFormDispatchToProps = dispatch => {

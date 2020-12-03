@@ -3,10 +3,10 @@ import { find } from "lodash";
 import {
   types,
   setEncounterFormMappings,
-  setEncounterForm,
   setEncounter,
   saveEncounterComplete,
-  setValidationResults
+  setValidationResults,
+  onLoadSuccess
 } from "../reducers/encounterReducer";
 import api from "../api";
 import {
@@ -31,6 +31,7 @@ import {
   selectDecisions,
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 export default function*() {
   yield all(
@@ -169,11 +170,16 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   const formMapping = yield select(
     selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
   );
-  const encounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const encounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const encounterForm = mapForm(encounterFormJson);
   encounter.individual = subject;
 
-  yield put.resolve(setEncounter(encounter));
-  yield put.resolve(setEncounterForm(mapForm(encounterForm)));
+  // const state = yield select();
+  // const legacyRules = selectLegacyRules(state);
+  // const legacyRulesMap = selectLegacyRulesAllRules(store.getState());
+  const formElementGroup = commonFormUtil.onLoad(encounterForm, encounter);
+
+  yield put.resolve(onLoadSuccess(encounter, encounterForm, formElementGroup));
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -240,16 +246,21 @@ export function* editCancelEncounterWorker({ encounterUuid }) {
 
 export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   const subject = mapProfile(subjectProfileJson);
+  encounter.individual = subject;
+
   const cancelFormMapping = yield select(
     selectFormMappingForCancelEncounter(
       encounter.encounterType.uuid,
       subjectProfileJson.subjectType.uuid
     )
   );
-  const cancelEncounterForm = yield call(api.fetchForm, cancelFormMapping.formUUID);
-  encounter.individual = subject;
+  const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
+  const encounterCancellationForm = mapForm(cancelEncounterFormJson);
+  const formElementGroup = commonFormUtil.onLoad(
+    encounterCancellationForm,
+    cancelEncounterFormJson
+  );
 
-  yield put.resolve(setEncounter(encounter));
-  yield put.resolve(setEncounterForm(mapForm(cancelEncounterForm)));
+  yield put.resolve(onLoadSuccess(encounter, encounterCancellationForm, formElementGroup));
   yield put.resolve(setSubjectProfile(subject));
 }

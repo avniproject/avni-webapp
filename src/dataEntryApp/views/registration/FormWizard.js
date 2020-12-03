@@ -140,7 +140,8 @@ const FormWizard = ({
   entity,
   setFilteredFormElements,
   history,
-  fetchRulesResponse
+  fetchRulesResponse,
+  formElementGroup
 }) => {
   if (!form) return <div />;
 
@@ -327,7 +328,7 @@ const FormWizard = ({
             ) : (
               <FormElementGroupComponent
                 parentChildren={children}
-                key={currentFormElementGroup.uuid}
+                key={formElementGroup.uuid}
                 obsHolder={obsHolder}
                 updateObs={updateObs}
                 validationResults={validationResults}
@@ -335,7 +336,7 @@ const FormWizard = ({
                 entity={entity}
                 renderParent={isFirstPage}
               >
-                {currentFormElementGroup}
+                {formElementGroup}
               </FormElementGroupComponent>
             )}
 

@@ -8,6 +8,7 @@ import {
   setSubject,
   setValidationResults,
   setInitialSubjectState,
+  onLoadEditSuccess,
   types as subjectTypes
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
@@ -30,8 +31,8 @@ import {
   saveProgramComplete,
   setEnrolForm,
   setInitialState,
-  setLoaded as setEnrolmentLoaded,
   setProgramEnrolment,
+  onLoadSuccess as enrolmentOnLoadSuccess,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
@@ -46,6 +47,7 @@ import {
   selectVisitSchedules,
   selectChecklists
 } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 //TODO: Lots of updateObs functions looks the same. See if it's possible to remove duplication.
 
@@ -68,47 +70,49 @@ function* setupNewEnrolmentWorker({
 }) {
   yield put.resolve(setInitialState());
   yield put.resolve(setFilteredFormElements());
-  const formMapping = yield select(
-    selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
-  );
 
   yield put.resolve(setSubjectProfile());
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const subjectProfile = mapProfile(subjectProfileJson);
   yield put.resolve(setSubjectProfile(subjectProfile));
 
-  const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
-  yield put.resolve(setEnrolForm(mapForm(enrolForm)));
   const program = yield select(selectProgram(programName));
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
+
+  let programEnrolment;
+
   if (formType === "ProgramEnrolment" && programEnrolmentUuid) {
-    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment, subject);
     programEnrolment.programExitObservations = [];
     _.assign(programEnrolment, { program });
-    yield put.resolve(setProgramEnrolment(programEnrolment));
   } else if (formType === "ProgramEnrolment") {
-    let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
-    yield put.resolve(setProgramEnrolment(programEnrolment));
+    programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
   } else if (formType === "ProgramExit" && programEnrolmentUuid) {
-    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment, subject);
     programEnrolment.programExitDateTime = new Date();
     if (!programEnrolment.programExitObservations) {
       programEnrolment.programExitObservations = [];
     }
     _.assign(programEnrolment, { program });
-    yield put.resolve(setProgramEnrolment(programEnrolment));
   } else {
-    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment, subject);
     programEnrolment.programExitObservations = [];
     programEnrolment.programExitDateTime = new Date();
     _.assign(programEnrolment, { program });
-    yield put.resolve(setProgramEnrolment(programEnrolment));
   }
-  yield put.resolve(setEnrolmentLoaded());
+
+  const formMapping = yield select(
+    selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
+  );
+  const enrolFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const enrolForm = mapForm(enrolFormJson);
+
+  const formElementGroup = commonFormUtil.onLoad(enrolForm, programEnrolment);
+  yield put.resolve(enrolmentOnLoadSuccess(programEnrolment, enrolForm, formElementGroup));
 }
 
 export function* dataEntrySearchWatcher() {
@@ -219,12 +223,17 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   };
   yield put(selectAddressLevelType(selectedAddressLevelType));
 
-  yield put.resolve(getOperationalModules());
-  yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  const formMapping = yield select(
+    selectRegistrationFormMappingForSubjectType(subject.subjectType.name)
+  );
+  const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const registrationForm = mapForm(registrationFormJson);
+
+  const formElementGroup = commonFormUtil.onLoad(registrationForm, subject);
+
   yield put.resolve(getGenders());
 
-  yield put.resolve(setSubject(subject));
-  yield put.resolve(setLoaded());
+  yield put.resolve(onLoadEditSuccess(subject, registrationForm, formElementGroup));
 }
 
 function* updateObsWatcher() {
