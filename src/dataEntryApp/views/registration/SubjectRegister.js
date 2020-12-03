@@ -240,7 +240,6 @@ const DefaultPage = props => {
                     level: location.level,
                     typeString: location.type
                   });
-                  setValidationResultToError(props.subject.validateAddress());
                 }}
                 //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
                 //   setValidationResultToError(props.subject.validateAddress());
