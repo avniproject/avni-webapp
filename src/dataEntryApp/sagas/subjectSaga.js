@@ -1,14 +1,12 @@
 import { FormElementGroup, Individual, ObservationsHolder, ProgramEnrolment } from "avni-models";
 import {
-  getRegistrationForm,
   saveComplete,
   selectAddressLevelType,
-  setLoaded,
   setRegistrationForm,
   setSubject,
   setValidationResults,
   setInitialSubjectState,
-  onLoadEditSuccess,
+  onLoadSuccess,
   types as subjectTypes
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
@@ -29,7 +27,6 @@ import {
 import { mapForm } from "../../common/adapters";
 import {
   saveProgramComplete,
-  setEnrolForm,
   setInitialState,
   setProgramEnrolment,
   onLoadSuccess as enrolmentOnLoadSuccess,
@@ -198,15 +195,22 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setInitialSubjectState());
   yield put.resolve(setFilteredFormElements());
   yield put.resolve(getOperationalModules());
-  yield put.resolve(getRegistrationForm(subjectTypeName));
+
   const subjectType = yield select(selectSubjectTypeFromName(subjectTypeName));
   if (subjectType.isPerson()) {
     yield put.resolve(getGenders());
   }
   let subject = Individual.createEmptySubjectInstance();
   subject.subjectType = subjectType;
-  yield put.resolve(setSubject(subject));
-  yield put.resolve(setLoaded());
+
+  const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
+  const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const registrationForm = mapForm(registrationFormJson);
+  yield put(setRegistrationForm(registrationForm));
+
+  const formElementGroup = commonFormUtil.onLoad(registrationForm, subject);
+
+  yield put.resolve(onLoadSuccess(subject, registrationForm, formElementGroup));
 }
 
 function* loadEditRegistrationPageWatcher() {
@@ -231,9 +235,12 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
 
   const formElementGroup = commonFormUtil.onLoad(registrationForm, subject);
 
-  yield put.resolve(getGenders());
+  const subjectType = yield select(selectSubjectTypeFromName(subject.subjectType.name));
+  if (subjectType.isPerson()) {
+    yield put.resolve(getGenders());
+  }
 
-  yield put.resolve(onLoadEditSuccess(subject, registrationForm, formElementGroup));
+  yield put.resolve(onLoadSuccess(subject, registrationForm, formElementGroup));
 }
 
 function* updateObsWatcher() {

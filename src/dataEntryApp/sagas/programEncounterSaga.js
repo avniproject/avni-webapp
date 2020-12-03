@@ -4,7 +4,6 @@ import {
   types,
   setProgramEnrolment,
   setUnplanProgramEncounters,
-  setProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
   setValidationResults,

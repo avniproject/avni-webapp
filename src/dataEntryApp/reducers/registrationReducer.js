@@ -1,4 +1,6 @@
 import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import { ObservationsHolder } from "openchs-models";
 
 const prefix = "app/dataEntry/reducer/registration/";
 
@@ -11,7 +13,7 @@ export const types = {
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   ON_LOAD: `${prefix}ON_LOAD`,
   ON_LOAD_EDIT: `${prefix}ON_LOAD_EDIT`,
-  ON_LOAD_EDIT_SUCCESS: `${prefix}ON_LOAD_EDIT_SUCCESS`,
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
   SET_LOADED: `${prefix}SET_LOADED`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
@@ -19,7 +21,8 @@ export const types = {
   GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`,
-  SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`
+  SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`,
+  ON_NEXT: `${prefix}ON_NEXT`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -66,8 +69,8 @@ export const onLoadEdit = subjectUuid => ({
   subjectUuid
 });
 
-export const onLoadEditSuccess = (subject, registrationForm, formElementGroup) => ({
-  type: types.ON_LOAD_EDIT_SUCCESS,
+export const onLoadSuccess = (subject, registrationForm, formElementGroup) => ({
+  type: types.ON_LOAD_SUCCESS,
   subject,
   registrationForm,
   formElementGroup
@@ -102,6 +105,10 @@ export const getValidationResults = () => ({
 
 export const setInitialSubjectState = () => ({
   type: types.SET_INITIAL_SUBJECT_STATE
+});
+
+export const onNext = () => ({
+  type: types.ON_NEXT
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -183,7 +190,7 @@ export default function(state = initialState, action) {
     case types.SET_INITIAL_SUBJECT_STATE: {
       return initialState;
     }
-    case types.ON_LOAD_EDIT_SUCCESS: {
+    case types.ON_LOAD_SUCCESS: {
       return {
         ...state,
         subject: action.subject,
@@ -191,6 +198,9 @@ export default function(state = initialState, action) {
         registrationForm: action.registrationForm,
         loaded: true
       };
+    }
+    case types.ON_NEXT: {
+      return commonFormUtil.onNext(state, new ObservationsHolder(state.subject.observations));
     }
     default:
       return state;
