@@ -37,6 +37,24 @@ export const datePickerModes = [
   { id: "calendar", name: "Calendar" },
   { id: "spinner", name: "Spinner" }
 ];
+export const timePickerModes = [{ id: "clock", name: "Clock" }, { id: "spinner", name: "Spinner" }];
+
+export const pickers = [
+  {
+    type: "date",
+    key: "datePickerMode",
+    modes: datePickerModes,
+    label: "Date Picker Mode",
+    toolTipKey: "APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE"
+  },
+  {
+    type: "time",
+    key: "timePickerMode",
+    modes: timePickerModes,
+    label: "Time Picker Mode",
+    toolTipKey: "APP_DESIGNER_FORM_ELEMENT_TIME_PICKER_MODE"
+  }
+];
 
 export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
 
