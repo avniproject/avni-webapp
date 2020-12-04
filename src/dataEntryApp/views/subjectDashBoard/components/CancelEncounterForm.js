@@ -32,7 +32,7 @@ const mapFormStateToProps = state => {
         value: moment(encounter.cancelDateTime).format("DD-MMM-YYYY")
       }
     ],
-    filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+    filteredFormElements: state.dataEntry.encounterReducer.filteredFormElements,
     entity: encounter,
     formElementGroup: state.dataEntry.encounterReducer.formElementGroup
   };

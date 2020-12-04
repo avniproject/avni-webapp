@@ -20,7 +20,7 @@ const mapFormStateToProps = state => ({
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   validationResults: state.dataEntry.registration.validationResults,
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  filteredFormElements: state.dataEntry.enrolmentReducer.filteredFormElements,
   entity: state.dataEntry.enrolmentReducer.programEnrolment,
   staticValidationResults: state.dataEntry.enrolmentReducer.enrolDateValidation && [
     state.dataEntry.enrolmentReducer.enrolDateValidation

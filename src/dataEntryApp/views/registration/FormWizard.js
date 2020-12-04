@@ -141,7 +141,8 @@ const FormWizard = ({
   setFilteredFormElements,
   history,
   fetchRulesResponse,
-  formElementGroup
+  formElementGroup,
+  onNext
 }) => {
   if (!form) return <div />;
 
@@ -183,12 +184,9 @@ const FormWizard = ({
       ? new Array(new StaticFormElementGroup(form))
       : form.getFormElementGroups().filter(feg => !isEmpty(feg.nonVoidedFormElements()));
   const formElementGroupsLength = formElementGroups.length;
-  const isOnSummaryPage = currentPageNumber > formElementGroupsLength;
+  const isOnSummaryPage = isNil(formElementGroup);
 
-  let currentFormElementGroup;
-  if (!isOnSummaryPage) {
-    currentFormElementGroup = formElementGroups[currentPageNumber - 1];
-  }
+  let currentFormElementGroup = formElementGroup;
 
   const isFirstGroup = currentFormElementGroup && currentFormElementGroup.isFirst;
 
@@ -196,47 +194,6 @@ const FormWizard = ({
     firstGroupWithAtLeastOneVisibleElement && currentFormElementGroup
       ? currentFormElementGroup.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
       : isFirstGroup;
-
-  const handleNext = (event, feg, page, skippedGroupCount = 0) => {
-    const filteredFormElement = filterFormElements(feg, entity);
-    const formElementGroup = new FormElementGroup();
-    const formElementGroupValidations = formElementGroup.validate(obsHolder, filteredFormElement);
-    const elementsWithValidationError = filter(
-      formElementGroupValidations,
-      ({ success }) => !success
-    );
-    const allRuleValidationResults = unionBy(
-      elementsWithValidationError,
-      validationResults,
-      "formIdentifier"
-    );
-    const staticValidationResultsError =
-      staticValidationResults &&
-      new ValidationResults(staticValidationResults).hasValidationError();
-    setValidationResults(allRuleValidationResults);
-    if (
-      new ValidationResults(allRuleValidationResults).hasValidationError() ||
-      staticValidationResultsError
-    ) {
-      event.preventDefault();
-      return;
-    }
-    const nextGroup = feg.next();
-    const { filteredFormElements, formElementStatuses } = !isEmpty(nextGroup)
-      ? filterFormElementsWithStatus(nextGroup, entity)
-      : { filteredFormElements: null };
-    const nextPage = page + 1;
-    if (!isEmpty(nextGroup) && isEmpty(filteredFormElements)) {
-      obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), filteredFormElements);
-      obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-      handleNext(event, nextGroup, nextPage, skippedGroupCount + 1);
-    } else {
-      setFilteredFormElements(filteredFormElements);
-      let currentUrlParams = new URLSearchParams(history.location.search);
-      currentUrlParams.set("page", (nextPage - skippedGroupCount).toString());
-      history.push(history.location.pathname + "?" + currentUrlParams.toString());
-    }
-  };
 
   const getPreviousGroup = feg => (feg && feg.previous()) || [];
 
@@ -272,14 +229,9 @@ const FormWizard = ({
       }
     }
   };
-
-  const pageTitleNumber = registrationFlow ? currentPageNumber + 1 : currentPageNumber;
-  const pageTitleText = isOnSummaryPage
-    ? t("summaryAndRecommendations")
-    : t(currentFormElementGroup.name);
-  const pageTitle = `${pageTitleNumber}. ${pageTitleText}`;
-  const totalNumberOfPages = formElementGroupsLength + (registrationFlow ? 2 : 1);
-  const pageCounter = `${pageTitleNumber} / ${totalNumberOfPages}`;
+  const pageTitleText = isOnSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
+  const pageTitle = `${pageTitleText}`;
+  const pageCounter = `X / X`;
 
   const goBackToRegistrationDefaultPage = registrationFlow && currentPageNumber === 1;
 
@@ -306,7 +258,7 @@ const FormWizard = ({
               {!isOnSummaryPage ? (
                 <FormWizardButton
                   className={classes.topnav}
-                  onClick={e => handleNext(e, currentFormElementGroup, currentPageNumber)}
+                  onClick={onNext}
                   params={{ page: currentPageNumber + 1 }}
                   text={t("next")}
                 />
@@ -355,7 +307,7 @@ const FormWizard = ({
                 {!isOnSummaryPage ? (
                   <FormWizardButton
                     className={classes.nextbuttonStyle}
-                    onClick={e => handleNext(e, currentFormElementGroup, currentPageNumber)}
+                    onClick={onNext}
                     params={{ page: currentPageNumber + 1 }}
                     text={t("next")}
                   />

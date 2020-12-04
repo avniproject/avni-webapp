@@ -6,7 +6,8 @@ import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
   updateObs,
   saveEncounter,
-  setValidationResults
+  setValidationResults,
+  onNext
 } from "dataEntryApp/reducers/encounterReducer";
 import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
@@ -32,7 +33,7 @@ const mapFormStateToProps = state => ({
       )
     }
   ],
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  filteredFormElements: state.dataEntry.encounterReducer.filteredFormElements,
   entity: state.dataEntry.encounterReducer.encounter,
   formElementGroup: state.dataEntry.encounterReducer.formElementGroup
 });
@@ -41,7 +42,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveEncounter(false),
   setValidationResults,
-  setFilteredFormElements
+  setFilteredFormElements,
+  onNext
 };
 
 const EncounterForm = withRouter(

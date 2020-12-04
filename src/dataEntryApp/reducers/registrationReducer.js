@@ -1,6 +1,4 @@
 import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
-import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
-import { ObservationsHolder } from "openchs-models";
 
 const prefix = "app/dataEntry/reducer/registration/";
 
@@ -22,7 +20,8 @@ export const types = {
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`,
   SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`,
-  ON_NEXT: `${prefix}ON_NEXT`
+  ON_NEXT: `${prefix}ON_NEXT`,
+  SET_STATE: `${prefix}SET_STATE`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -69,11 +68,17 @@ export const onLoadEdit = subjectUuid => ({
   subjectUuid
 });
 
-export const onLoadSuccess = (subject, registrationForm, formElementGroup) => ({
+export const onLoadSuccess = (
+  subject,
+  registrationForm,
+  formElementGroup,
+  filteredFormElements
+) => ({
   type: types.ON_LOAD_SUCCESS,
   subject,
   registrationForm,
-  formElementGroup
+  formElementGroup,
+  filteredFormElements
 });
 
 export const setLoaded = () => ({
@@ -111,6 +116,11 @@ export const onNext = () => ({
   type: types.ON_NEXT
 });
 
+export const setState = state => ({
+  type: types.SET_STATE,
+  state
+});
+
 export const fetchRegistrationRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
@@ -126,6 +136,8 @@ export const fetchRegistrationRulesResponse = () => {
     );
   };
 };
+
+export const selectRegistrationState = state => state.dataEntry.registration;
 
 const initialState = {
   saved: false,
@@ -196,11 +208,12 @@ export default function(state = initialState, action) {
         subject: action.subject,
         formElementGroup: action.formElementGroup,
         registrationForm: action.registrationForm,
+        filteredFormElements: action.filteredFormElements,
         loaded: true
       };
     }
-    case types.ON_NEXT: {
-      return commonFormUtil.onNext(state, new ObservationsHolder(state.subject.observations));
+    case types.SET_STATE: {
+      return action.state;
     }
     default:
       return state;

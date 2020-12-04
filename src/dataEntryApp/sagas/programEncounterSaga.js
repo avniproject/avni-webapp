@@ -194,9 +194,14 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
   const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
-  const formElementGroup = commonFormUtil.onLoad(programEncounterForm, programEncounter);
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+    programEncounterForm,
+    programEncounter
+  );
 
-  yield put.resolve(onLoadSuccess(programEncounter, programEncounterForm, formElementGroup));
+  yield put.resolve(
+    onLoadSuccess(programEncounter, programEncounterForm, formElementGroup, filteredFormElements)
+  );
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -285,8 +290,18 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
   const cancelProgramEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const cancelProgramEncounterForm = mapForm(cancelProgramEncounterFormJson);
 
-  const formElementGroup = commonFormUtil.onLoad(cancelProgramEncounterForm, programEncounter);
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+    cancelProgramEncounterForm,
+    programEncounter
+  );
 
-  yield put.resolve(onLoadSuccess(programEncounter, cancelProgramEncounterForm, formElementGroup));
+  yield put.resolve(
+    onLoadSuccess(
+      programEncounter,
+      cancelProgramEncounterForm,
+      formElementGroup,
+      filteredFormElements
+    )
+  );
   yield put.resolve(setSubjectProfile(subject));
 }

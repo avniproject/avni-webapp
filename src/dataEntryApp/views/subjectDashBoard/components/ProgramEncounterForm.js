@@ -32,7 +32,7 @@ const mapFormStateToProps = state => ({
       ).format("DD-MMM-YYYY")
     }
   ],
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  filteredFormElements: state.dataEntry.programEncounterReducer.filteredFormElements,
   entity: state.dataEntry.programEncounterReducer.programEncounter,
   formElementGroup: state.dataEntry.programEncounterReducer.formElementGroup
 });

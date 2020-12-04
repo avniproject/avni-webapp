@@ -32,6 +32,9 @@ import {
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
+
+//TODO: Move all cancel related functionality to a separate saga
 
 export default function*() {
   yield all(
@@ -44,7 +47,8 @@ export default function*() {
       editEncounterWatcher,
       updateCancelEncounterObsWatcher,
       createCancelEncounterWatcher,
-      editCancelEncounterWatcher
+      editCancelEncounterWatcher,
+      nextWatcher
     ].map(fork)
   );
 }
@@ -177,9 +181,14 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   // const state = yield select();
   // const legacyRules = selectLegacyRules(state);
   // const legacyRulesMap = selectLegacyRulesAllRules(store.getState());
-  const formElementGroup = commonFormUtil.onLoad(encounterForm, encounter);
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+    encounterForm,
+    encounter
+  );
 
-  yield put.resolve(onLoadSuccess(encounter, encounterForm, formElementGroup));
+  yield put.resolve(
+    onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements)
+  );
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -256,11 +265,43 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   );
   const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
   const encounterCancellationForm = mapForm(cancelEncounterFormJson);
-  const formElementGroup = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
     encounterCancellationForm,
     cancelEncounterFormJson
   );
 
-  yield put.resolve(onLoadSuccess(encounter, encounterCancellationForm, formElementGroup));
+  yield put.resolve(
+    onLoadSuccess(encounter, encounterCancellationForm, formElementGroup, filteredFormElements)
+  );
   yield put.resolve(setSubjectProfile(subject));
+}
+
+export function* nextWatcher() {
+  yield takeLatest(types.ON_NEXT, nextWorker);
+}
+
+export function* nextWorker() {
+  const state = yield select(selectEncounterState);
+
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations
+  } = commonFormUtil.onNext({
+    ...state,
+    observations: state.encounter.observations,
+    entity: state.encounter
+  });
+
+  const encounter = state.encounter.cloneForEdit();
+  encounter.observations = observations;
+  const nextState = {
+    ...state,
+    encounter,
+    formElementGroup,
+    filteredFormElements,
+    validationResults
+  };
+  yield put(setState(nextState));
 }

@@ -20,7 +20,9 @@ export const types = {
   UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   CREATE_CANCEL_ENCOUNTER: `${prefix}CREATE_CANCEL_ENCOUNTER`,
   EDIT_CANCEL_ENCOUNTER: `${prefix}EDIT_CANCEL_ENCOUNTER`,
-  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
+  ON_NEXT: `${prefix}ON_NEXT`,
+  SET_STATE: `${prefix}SET_STATE`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -33,11 +35,17 @@ export const onLoad = subjectUuid => ({
   subjectUuid
 });
 
-export const onLoadSuccess = (encounter, encounterForm, formElementGroup) => ({
+export const onLoadSuccess = (
+  encounter,
+  encounterForm,
+  formElementGroup,
+  filteredFormElements
+) => ({
   type: types.ON_LOAD_SUCCESS,
   encounter,
   encounterForm,
-  formElementGroup
+  formElementGroup,
+  filteredFormElements
 });
 
 export const setEncounterForm = encounterForm => ({
@@ -117,6 +125,15 @@ export const editCancelEncounter = encounterUuid => ({
   encounterUuid
 });
 
+export const onNext = () => ({
+  type: types.ON_NEXT
+});
+
+export const setState = state => ({
+  type: types.SET_STATE,
+  state
+});
+
 export const fetchEncounterRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
@@ -132,6 +149,8 @@ export const fetchEncounterRulesResponse = () => {
     );
   };
 };
+
+export const selectEncounterState = state => state.dataEntry.encounterReducer;
 
 const initialState = {
   saved: false,
@@ -164,7 +183,8 @@ export default function(state = initialState, action) {
         ...state,
         encounter: action.encounter,
         encounterForm: action.encounterForm,
-        formElementGroup: action.formElementGroup
+        formElementGroup: action.formElementGroup,
+        filteredFormElements: action.filteredFormElements
       };
     }
     case types.SAVE_ENCOUNTER_COMPLETE: {
@@ -203,6 +223,9 @@ export default function(state = initialState, action) {
         encounterForm: null,
         encounterFormMappings: null
       };
+    }
+    case types.SET_STATE: {
+      return action.state;
     }
     default:
       return state;

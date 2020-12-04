@@ -7,7 +7,9 @@ import {
   setValidationResults,
   setInitialSubjectState,
   onLoadSuccess,
-  types as subjectTypes
+  types as subjectTypes,
+  selectRegistrationState,
+  setState as setRegistrationState
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
@@ -108,8 +110,13 @@ function* setupNewEnrolmentWorker({
   const enrolFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const enrolForm = mapForm(enrolFormJson);
 
-  const formElementGroup = commonFormUtil.onLoad(enrolForm, programEnrolment);
-  yield put.resolve(enrolmentOnLoadSuccess(programEnrolment, enrolForm, formElementGroup));
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+    enrolForm,
+    programEnrolment
+  );
+  yield put.resolve(
+    enrolmentOnLoadSuccess(programEnrolment, enrolForm, formElementGroup, filteredFormElements)
+  );
 }
 
 export function* dataEntrySearchWatcher() {
@@ -208,9 +215,14 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationForm = mapForm(registrationFormJson);
   yield put(setRegistrationForm(registrationForm));
 
-  const formElementGroup = commonFormUtil.onLoad(registrationForm, subject);
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+    registrationForm,
+    subject
+  );
 
-  yield put.resolve(onLoadSuccess(subject, registrationForm, formElementGroup));
+  yield put.resolve(
+    onLoadSuccess(subject, registrationForm, formElementGroup, filteredFormElements)
+  );
 }
 
 function* loadEditRegistrationPageWatcher() {
@@ -233,14 +245,19 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const registrationForm = mapForm(registrationFormJson);
 
-  const formElementGroup = commonFormUtil.onLoad(registrationForm, subject);
+  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+    registrationForm,
+    subject
+  );
 
   const subjectType = yield select(selectSubjectTypeFromName(subject.subjectType.name));
   if (subjectType.isPerson()) {
     yield put.resolve(getGenders());
   }
 
-  yield put.resolve(onLoadSuccess(subject, registrationForm, formElementGroup));
+  yield put.resolve(
+    onLoadSuccess(subject, registrationForm, formElementGroup, filteredFormElements)
+  );
 }
 
 function* updateObsWatcher() {
@@ -365,6 +382,36 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   );
 }
 
+export function* registrationNextWatcher() {
+  yield takeLatest(subjectTypes.ON_NEXT, registrationNextWorker);
+}
+
+export function* registrationNextWorker() {
+  const state = yield select(selectRegistrationState);
+
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations
+  } = commonFormUtil.onNext({
+    ...state,
+    observations: state.subject.observations,
+    entity: state.subject
+  });
+
+  const subject = state.subject.cloneForEdit();
+  subject.observations = observations;
+  const nextState = {
+    ...state,
+    subject,
+    formElementGroup,
+    filteredFormElements,
+    validationResults
+  };
+  yield put(setRegistrationState(nextState));
+}
+
 export default function* subjectSaga() {
   yield all(
     [
@@ -378,7 +425,8 @@ export default function* subjectSaga() {
       updateEnrolmentObsWatcher,
       loadEditRegistrationPageWatcher,
       updateExitEnrolmentObsWatcher,
-      undoExitProgramEnrolmentWatcher
+      undoExitProgramEnrolmentWatcher,
+      registrationNextWatcher
     ].map(fork)
   );
 }

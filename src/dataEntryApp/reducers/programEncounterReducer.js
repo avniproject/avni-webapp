@@ -49,11 +49,17 @@ export const setProgramEncounter = programEncounter => ({
   programEncounter
 });
 
-export const onLoadSuccess = (programEncounter, programEncounterForm, formElementGroup) => ({
+export const onLoadSuccess = (
+  programEncounter,
+  programEncounterForm,
+  formElementGroup,
+  filteredFormElements
+) => ({
   type: types.ON_LOAD_SUCCESS,
   programEncounter,
   programEncounterForm,
-  formElementGroup
+  formElementGroup,
+  filteredFormElements
 });
 
 export const updateObs = (formElement, value) => ({
@@ -176,7 +182,8 @@ export default function(state = initialState, action) {
         ...state,
         programEncounter: action.programEncounter,
         programEncounterForm: action.programEncounterForm,
-        formElementGroup: action.formElementGroup
+        formElementGroup: action.formElementGroup,
+        filteredFormElements: action.filteredFormElements
       };
     }
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {

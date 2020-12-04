@@ -13,7 +13,8 @@ import {
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  onLoadEdit
+  onLoadEdit,
+  onNext
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -527,7 +528,7 @@ const mapFormStateToProps = state => ({
   onSaveGoto: `/app/subject?uuid=${state.dataEntry.registration.subject.uuid}`,
   validationResults: state.dataEntry.registration.validationResults,
   registrationFlow: true,
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  filteredFormElements: state.dataEntry.registration.filteredFormElements,
   entity: state.dataEntry.registration.subject,
   formElementGroup: state.dataEntry.registration.formElementGroup
 });
@@ -536,7 +537,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: saveSubject,
   setValidationResults,
-  setFilteredFormElements
+  setFilteredFormElements,
+  onNext
 };
 
 const RegistrationForm = withRouter(

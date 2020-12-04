@@ -19,7 +19,7 @@ const mapFormStateToProps = state => ({
   ],
   validationResults: state.dataEntry.registration.validationResults,
   message: `${state.dataEntry.enrolmentReducer.programEnrolment.program.name} Enrolment Saved`,
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
+  filteredFormElements: state.dataEntry.enrolmentReducer.filteredFormElements,
   entity: state.dataEntry.enrolmentReducer.programEnrolment,
   formElementGroup: state.dataEntry.enrolmentReducer.formElementGroup
 });
