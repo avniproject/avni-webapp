@@ -6,7 +6,8 @@ import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
   updateCancelObs,
   saveEncounter,
-  setValidationResults
+  setValidationResults,
+  onNext
 } from "dataEntryApp/reducers/encounterReducer";
 import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
@@ -42,7 +43,8 @@ const mapFormDispatchToProps = {
   updateObs: updateCancelObs,
   onSave: () => saveEncounter(true),
   setValidationResults,
-  setFilteredFormElements
+  setFilteredFormElements,
+  onNext
 };
 
 const CancelEncounterForm = withRouter(

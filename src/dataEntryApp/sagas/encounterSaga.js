@@ -34,8 +34,6 @@ import {
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
 
-//TODO: Move all cancel related functionality to a separate saga
-
 export default function*() {
   yield all(
     [
@@ -178,9 +176,6 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   const encounterForm = mapForm(encounterFormJson);
   encounter.individual = subject;
 
-  // const state = yield select();
-  // const legacyRules = selectLegacyRules(state);
-  // const legacyRulesMap = selectLegacyRulesAllRules(store.getState());
   const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
     encounterForm,
     encounter
@@ -289,7 +284,8 @@ export function* nextWorker() {
     validationResults,
     observations
   } = commonFormUtil.onNext({
-    ...state,
+    formElementGroup: state.formElementGroup,
+    validationResults: state.validationResults,
     observations: state.encounter.observations,
     entity: state.encounter
   });

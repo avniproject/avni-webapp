@@ -32,7 +32,9 @@ import {
   setInitialState,
   setProgramEnrolment,
   onLoadSuccess as enrolmentOnLoadSuccess,
-  types as enrolmentTypes
+  types as enrolmentTypes,
+  selectProgramEnrolmentState,
+  setState as setProgramEnrolmentState
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
 import _ from "lodash";
@@ -395,7 +397,8 @@ export function* registrationNextWorker() {
     validationResults,
     observations
   } = commonFormUtil.onNext({
-    ...state,
+    formElementGroup: state.formElementGroup,
+    validationResults: state.validationResults,
     observations: state.subject.observations,
     entity: state.subject
   });
@@ -412,6 +415,37 @@ export function* registrationNextWorker() {
   yield put(setRegistrationState(nextState));
 }
 
+export function* enrolmentNextWatcher() {
+  yield takeLatest(enrolmentTypes.ON_NEXT, enrolmentNextWorker);
+}
+
+export function* enrolmentNextWorker() {
+  const state = yield select(selectProgramEnrolmentState);
+
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations
+  } = commonFormUtil.onNext({
+    formElementGroup: state.formElementGroup,
+    validationResults: state.validationResults,
+    observations: state.programEnrolment.observations,
+    entity: state.programEnrolment
+  });
+
+  const programEnrolment = state.programEnrolment.cloneForEdit();
+  programEnrolment.observations = observations;
+  const nextState = {
+    ...state,
+    programEnrolment,
+    formElementGroup,
+    filteredFormElements,
+    validationResults
+  };
+  yield put(setProgramEnrolmentState(nextState));
+}
+
 export default function* subjectSaga() {
   yield all(
     [
@@ -426,7 +460,8 @@ export default function* subjectSaga() {
       loadEditRegistrationPageWatcher,
       updateExitEnrolmentObsWatcher,
       undoExitProgramEnrolmentWatcher,
-      registrationNextWatcher
+      registrationNextWatcher,
+      enrolmentNextWatcher
     ].map(fork)
   );
 }

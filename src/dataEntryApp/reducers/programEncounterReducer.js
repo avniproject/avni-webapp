@@ -21,7 +21,9 @@ export const types = {
   UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   CREATE_CANCEL_PROGRAM_ENCOUNTER: `${prefix}CREATE_CANCEL_PROGRAM_ENCOUNTER`,
   EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}EDIT_CANCEL_PROGRAM_ENCOUNTER`,
-  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
+  ON_NEXT: `${prefix}ON_NEXT`,
+  SET_STATE: `${prefix}SET_STATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -129,6 +131,15 @@ export const editCancelProgramEncounter = programEncounterUuid => ({
   programEncounterUuid
 });
 
+export const onNext = () => ({
+  type: types.ON_NEXT
+});
+
+export const setState = state => ({
+  type: types.SET_STATE,
+  state
+});
+
 export const fetchProgramEncounterRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
@@ -144,6 +155,8 @@ export const fetchProgramEncounterRulesResponse = () => {
     );
   };
 };
+
+export const selectProgramEncounterState = state => state.dataEntry.programEncounterReducer;
 
 const initialState = {
   saved: false,
@@ -223,6 +236,9 @@ export default function(state = initialState, action) {
         programEnrolment: null,
         unplanProgramEncounters: null
       };
+    }
+    case types.SET_STATE: {
+      return action.state;
     }
     default:
       return state;

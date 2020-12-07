@@ -18,7 +18,10 @@ export const types = {
   SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`,
   SET_ENROL_DATE_VALIDATION: `${prefix}SET_ENROL_DATE_VALIDATION`,
   SET_LOADED: `${prefix}SET_LOADED`,
-  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
+  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
+  ON_NEXT: `${prefix}ON_NEXT`,
+  SET_STATE: `${prefix}SET_STATE`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -108,6 +111,20 @@ export const setLoaded = () => ({
   type: types.SET_LOADED
 });
 
+export const setValidationResults = validationResults => ({
+  type: types.SET_VALIDATION_RESULTS,
+  validationResults
+});
+
+export const onNext = () => ({
+  type: types.ON_NEXT
+});
+
+export const setState = state => ({
+  type: types.SET_STATE,
+  state
+});
+
 export const fetchEnrolmentRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
@@ -123,6 +140,8 @@ export const fetchEnrolmentRulesResponse = () => {
     );
   };
 };
+
+export const selectProgramEnrolmentState = state => state.dataEntry.enrolmentReducer;
 
 const initialState = {
   saved: false,
@@ -199,6 +218,15 @@ export default function(state = initialState, action) {
         filteredFormElements: action.filteredFormElements,
         load: true
       };
+    }
+    case types.SET_VALIDATION_RESULTS: {
+      return {
+        ...state,
+        validationResults: action.validationResults
+      };
+    }
+    case types.SET_STATE: {
+      return action.state;
     }
     default:
       return state;

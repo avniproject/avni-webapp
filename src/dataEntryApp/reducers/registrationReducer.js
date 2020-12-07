@@ -16,7 +16,6 @@ export const types = {
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
   SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
-  GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`,
   SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`,
@@ -102,10 +101,6 @@ export const saveCompleteFalse = () => ({
 export const setValidationResults = validationResults => ({
   type: types.SET_VALIDATION_RESULTS,
   validationResults
-});
-
-export const getValidationResults = () => ({
-  type: types.GET_VALIDATION_RESULTS
 });
 
 export const setInitialSubjectState = () => ({

@@ -6,7 +6,8 @@ import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
   updateObs,
   saveProgramEncounter,
-  setValidationResults
+  setValidationResults,
+  onNext
 } from "dataEntryApp/reducers/programEncounterReducer";
 import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
@@ -41,7 +42,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveProgramEncounter(false),
   setValidationResults,
-  setFilteredFormElements
+  setFilteredFormElements,
+  onNext
 };
 
 const ProgramEncounterForm = withRouter(

@@ -7,8 +7,10 @@ import {
   setProgramEncounter,
   saveProgramEncounterComplete,
   setValidationResults,
-  onLoadSuccess
-} from "../reducers/programEncounterReducer";
+  onLoadSuccess,
+  selectProgramEncounterState,
+  setState
+} from "dataEntryApp/reducers/programEncounterReducer";
 import api from "../api";
 import {
   selectFormMappingForSubjectType,
@@ -44,7 +46,8 @@ export default function*() {
       createProgramEncounterWatcher,
       createProgramEncounterForScheduledWatcher,
       createCancelProgramEncounterWatcher,
-      editCancelProgramEncounterWatcher
+      editCancelProgramEncounterWatcher,
+      nextWatcher
     ].map(fork)
   );
 }
@@ -304,4 +307,35 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
     )
   );
   yield put.resolve(setSubjectProfile(subject));
+}
+
+export function* nextWatcher() {
+  yield takeLatest(types.ON_NEXT, nextWorker);
+}
+
+export function* nextWorker() {
+  const state = yield select(selectProgramEncounterState);
+
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations
+  } = commonFormUtil.onNext({
+    formElementGroup: state.formElementGroup,
+    validationResults: state.validationResults,
+    observations: state.programEncounter.observations,
+    entity: state.programEncounter
+  });
+
+  const programEncounter = state.programEncounter.cloneForEdit();
+  programEncounter.observations = observations;
+  const nextState = {
+    ...state,
+    programEncounter,
+    formElementGroup,
+    filteredFormElements,
+    validationResults
+  };
+  yield put(setState(nextState));
 }
