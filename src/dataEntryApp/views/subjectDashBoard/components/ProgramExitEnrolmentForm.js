@@ -24,9 +24,6 @@ const mapFormStateToProps = state => {
     validationResults: enrolmentState.validationResults,
     filteredFormElements: enrolmentState.filteredFormElements,
     entity: enrolmentState.programEnrolment,
-    staticValidationResults: enrolmentState.enrolDateValidation && [
-      enrolmentState.enrolDateValidation
-    ],
     formElementGroup: enrolmentState.formElementGroup
   };
 };

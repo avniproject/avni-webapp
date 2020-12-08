@@ -315,7 +315,7 @@ export function* nextWatcher() {
 }
 
 export function* previousWatcher() {
-  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onPrevious);
+  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious);
 }
 
 export function* wizardWorker(getNextState) {

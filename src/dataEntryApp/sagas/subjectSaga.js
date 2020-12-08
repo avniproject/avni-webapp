@@ -315,7 +315,9 @@ function* updateExitEnrolmentObsWatcher() {
 export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
-  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+  const validationResults = yield select(
+    state => state.dataEntry.enrolmentReducer.validationResults
+  );
 
   const programExitObservations = formElementService.updateObservations(
     programEnrolment.programExitObservations,
@@ -352,7 +354,9 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
 export function* updateEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
-  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+  const validationResults = yield select(
+    state => state.dataEntry.enrolmentReducer.validationResults
+  );
 
   const observations = formElementService.updateObservations(
     programEnrolment.observations,

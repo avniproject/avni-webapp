@@ -6,12 +6,10 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import {
   onLoad,
-  updateProgramEnrolDate,
-  updateProgramExitDate,
   setProgramEnrolment,
-  setInitialState,
-  setEnrolDateValidation,
-  fetchEnrolmentRulesResponse
+  fetchEnrolmentRulesResponse,
+  setEnrolmentDate,
+  setExitDate
 } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -19,11 +17,10 @@ import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
 import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import { dateFormat } from "dataEntryApp/constants";
+import { DateFormElement } from "dataEntryApp/components/DateFormElement";
+import { ProgramEnrolment } from "openchs-models";
+import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,14 +59,11 @@ const ProgramEnrol = ({
   enrolForm,
   getSubjectProfile,
   programEnrolment,
-  updateProgramEnrolDate,
-  updateProgramExitDate,
-  setInitialState,
-  setEnrolDateValidation,
-  enrolDateValidation,
-  load
+  load,
+  validationResults,
+  setEnrolmentDate,
+  setExitDate
 }) => {
-  const { t } = useTranslation();
   const classes = useStyles();
   const formType = match.queryParams.formType;
   const subjectTypeName = match.queryParams.subjectTypeName;
@@ -98,76 +92,26 @@ const ProgramEnrol = ({
                   formType={formType}
                   fetchRulesResponse={fetchEnrolmentRulesResponse}
                 >
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Typography
-                      variant="body1"
-                      gutterBottom
-                      style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-                    >
-                      Enrolment Date*
-                    </Typography>
-                    <KeyboardDatePicker
-                      style={{ width: "30%" }}
-                      margin="none"
-                      size="small"
-                      id="date-picker-dialog"
-                      format={dateFormat}
-                      placeholder={dateFormat}
-                      name="enrolmentDateTime"
-                      value={programEnrolment.enrolmentDateTime}
-                      autoComplete="off"
-                      required
-                      error={enrolDateValidation && !enrolDateValidation.success}
-                      helperText={
-                        enrolDateValidation &&
-                        !enrolDateValidation.success &&
-                        t(enrolDateValidation.messageKey)
-                      }
-                      onChange={updateProgramEnrolDate}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
-                      }}
-                    />
-                  </MuiPickersUtilsProvider>
+                  <DateFormElement
+                    uuid={ProgramEnrolment.validationKeys.ENROLMENT_DATE}
+                    formElement={new StaticFormElement("Enrolment Date", true, true)}
+                    value={programEnrolment.enrolmentDateTime}
+                    validationResults={validationResults}
+                    update={setEnrolmentDate}
+                  />
                 </ProgramEnrolmentForm>
               ) : enrolForm && programEnrolment && formType === "ProgramExit" ? (
                 <ProgramExitEnrolmentForm
                   formType={formType}
                   fetchRulesResponse={fetchEnrolmentRulesResponse}
                 >
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Typography
-                      variant="body1"
-                      gutterBottom
-                      style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-                    >
-                      Exit Enrolment Date*
-                    </Typography>
-                    <KeyboardDatePicker
-                      style={{ width: "30%" }}
-                      margin="none"
-                      size="small"
-                      id="date-picker-dialog"
-                      format={dateFormat}
-                      placeholder={dateFormat}
-                      name="programExitDateTime"
-                      value={programEnrolment.programExitDateTime}
-                      autoComplete="off"
-                      required
-                      error={enrolDateValidation && !enrolDateValidation.success}
-                      helperText={
-                        enrolDateValidation &&
-                        !enrolDateValidation.success &&
-                        t(enrolDateValidation.messageKey)
-                      }
-                      onChange={updateProgramExitDate}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
-                      }}
-                    />
-                  </MuiPickersUtilsProvider>
+                  <DateFormElement
+                    uuid={ProgramEnrolment.validationKeys.EXIT_DATE}
+                    formElement={new StaticFormElement("Exit Enrolment Date", true, true)}
+                    value={programEnrolment.programExitDateTime}
+                    validationResults={validationResults}
+                    update={setExitDate}
+                  />
                 </ProgramExitEnrolmentForm>
               ) : (
                 <div>Loading</div>
@@ -186,18 +130,16 @@ const mapStateToProps = state => ({
   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment,
-  enrolDateValidation: state.dataEntry.enrolmentReducer.enrolDateValidation,
-  load: state.dataEntry.enrolmentReducer.load
+  load: state.dataEntry.enrolmentReducer.load,
+  validationResults: state.dataEntry.enrolmentReducer.validationResults
 });
 
 const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
-  updateProgramEnrolDate,
-  updateProgramExitDate,
   setProgramEnrolment,
-  setInitialState,
-  setEnrolDateValidation
+  setEnrolmentDate,
+  setExitDate
 };
 
 export default withRouter(

@@ -7,7 +7,8 @@ import {
   updateCancelObs,
   saveEncounter,
   setValidationResults,
-  onNext
+  onNext,
+  onPrevious
 } from "dataEntryApp/reducers/encounterReducer";
 
 const mapFormStateToProps = state => {
@@ -19,7 +20,6 @@ const mapFormStateToProps = state => {
     obsHolder: new ObservationsHolder(encounter.cancelObservations),
     saved: state.dataEntry.encounterReducer.saved,
     onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-    staticValidationResults: state.dataEntry.encounterReducer.encounterDateValidation,
     validationResults: state.dataEntry.encounterReducer.validationResults,
     message: encounter.name
       ? `${encounter.name} Encounter Canceled`
@@ -42,7 +42,8 @@ const mapFormDispatchToProps = {
   updateObs: updateCancelObs,
   onSave: () => saveEncounter(true),
   setValidationResults,
-  onNext
+  onNext,
+  onPrevious
 };
 
 const CancelEncounterForm = withRouter(

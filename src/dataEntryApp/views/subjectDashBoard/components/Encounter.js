@@ -8,7 +8,6 @@ import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   updateEncounter,
-  setEncounterDateValidation,
   resetState,
   createEncounter,
   createEncounterForScheduled,
@@ -84,7 +83,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   updateEncounter,
-  setEncounterDateValidation,
   resetState,
   createEncounter,
   createEncounterForScheduled,

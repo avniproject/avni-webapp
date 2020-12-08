@@ -10,7 +10,6 @@ import {
   createCancelEncounter,
   editCancelEncounter,
   updateEncounter,
-  setEncounterDateValidation,
   resetState,
   fetchEncounterRulesResponse
 } from "../../../reducers/encounterReducer";
@@ -28,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CancelEncounter = ({ match, encounter, encounterDateValidation, ...props }) => {
+const CancelEncounter = ({ match, encounter, ...props }) => {
   const classes = useStyles();
   const editCancelEncounter = isEqual(match.path, "/app/subject/editCancelEncounter");
   const encounterUuid = match.queryParams.uuid;
@@ -52,7 +51,7 @@ const CancelEncounter = ({ match, encounter, encounterDateValidation, ...props }
               <CancelEncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
                 <DateFormElement
                   uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
-                  formElement={new StaticFormElement("Visit Date", true, false)}
+                  formElement={new StaticFormElement("Cancel Date", true, false)}
                   value={encounter.cancelDateTime}
                 />
               </CancelEncounterForm>
@@ -69,15 +68,13 @@ const CancelEncounter = ({ match, encounter, encounterDateValidation, ...props }
 const mapStateToProps = state => ({
   cancelEncounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  encounter: state.dataEntry.encounterReducer.encounter,
-  encounterDateValidation: state.dataEntry.encounterReducer.encounterDateValidation
+  encounter: state.dataEntry.encounterReducer.encounter
 });
 
 const mapDispatchToProps = {
   createCancelEncounter,
   editCancelEncounter,
   updateEncounter,
-  setEncounterDateValidation,
   resetState
 };
 

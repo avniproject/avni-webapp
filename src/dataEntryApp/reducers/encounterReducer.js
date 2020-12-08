@@ -13,7 +13,6 @@ export const types = {
   SAVE_ENCOUNTER_COMPLETE: `${prefix}SAVE_ENCOUNTER_COMPLETE`,
   UPDATE_ENCOUNTER: `${prefix}UPDATE_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
-  SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
   RESET_STATE: `${prefix}RESET_STATE`,
   CREATE_ENCOUNTER: `${prefix}CREATE_ENCOUNTER`,
   CREATE_ENCOUNTER_FOR_SCHEDULED: `${prefix}CREATE_ENCOUNTER_FOR_SCHEDULED`,
@@ -86,11 +85,6 @@ export const updateEncounter = (field, value) => ({
 export const setValidationResults = validationResults => ({
   type: types.SET_VALIDATION_RESULTS,
   validationResults
-});
-
-export const setEncounterDateValidation = encounterDateValidation => ({
-  type: types.SET_ENCOUNTER_DATE_VALIDATION,
-  encounterDateValidation
 });
 
 export const resetState = () => ({
@@ -172,8 +166,7 @@ export const selectEncounterState = state => state.dataEntry.encounterReducer;
 
 const initialState = {
   saved: false,
-  validationResults: [],
-  encounterDateValidation: []
+  validationResults: []
 };
 
 export default function(state = initialState, action) {
@@ -225,12 +218,6 @@ export default function(state = initialState, action) {
         validationResults: action.validationResults
       };
     }
-    case types.SET_ENCOUNTER_DATE_VALIDATION: {
-      return {
-        ...state,
-        encounterDateValidation: action.encounterDateValidation
-      };
-    }
     case types.SET_ENCOUNTER_DATE: {
       const encounter = state.encounter.cloneForEdit();
       encounter.encounterDateTime = action.encounterDate;
@@ -250,7 +237,6 @@ export default function(state = initialState, action) {
         ...state,
         saved: false,
         validationResults: [],
-        encounterDateValidation: [],
         encounter: null,
         encounterForm: null,
         encounterFormMappings: null

@@ -1,17 +1,13 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper, Typography } from "@material-ui/core";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { isNil, isEqual, isEmpty, first } from "lodash";
+import { Grid, Paper } from "@material-ui/core";
+import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   updateProgramEncounter,
-  setEncounterDateValidation,
   resetState,
   createCancelProgramEncounter,
   editCancelProgramEncounter,
@@ -19,8 +15,9 @@ import {
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import programEncounterService from "../../../services/ProgramEncounterService";
-import { dateFormat } from "dataEntryApp/constants";
+import { AbstractEncounter } from "openchs-models";
+import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
+import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,8 +27,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CancelProgramEncounter = ({ match, programEncounter, encounterDateValidation, ...props }) => {
-  const { t } = useTranslation();
+const CancelProgramEncounter = ({ match, programEncounter, ...props }) => {
   const classes = useStyles();
   const editCancelProgramEncounter = isEqual(match.path, "/app/subject/editCancelProgramEncounter");
   const encounterUuid = match.queryParams.uuid;
@@ -53,46 +49,11 @@ const CancelProgramEncounter = ({ match, programEncounter, encounterDateValidati
           <Grid item xs={12}>
             {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? (
               <CancelProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-                  >
-                    Cancel Date
-                  </Typography>
-                  <KeyboardDatePicker
-                    style={{ width: "30%" }}
-                    margin="none"
-                    size="small"
-                    id="date-picker-dialog"
-                    format={dateFormat}
-                    placeholder={dateFormat}
-                    name="cancelDateTime"
-                    autoComplete="off"
-                    required
-                    value={new Date(programEncounter.cancelDateTime)}
-                    error={
-                      !isEmpty(encounterDateValidation) && !first(encounterDateValidation).success
-                    }
-                    helperText={
-                      !isEmpty(encounterDateValidation) &&
-                      t(first(encounterDateValidation).messageKey)
-                    }
-                    onChange={date => {
-                      const cancelDate = isNil(date) ? undefined : new Date(date);
-                      programEncounter.cancelDateTime = cancelDate;
-                      props.updateProgramEncounter("cancelDateTime", cancelDate);
-                      props.setEncounterDateValidation([
-                        programEncounterService.validateCancelDate(programEncounter)
-                      ]);
-                    }}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                      color: "primary"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <DateFormElement
+                  uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
+                  formElement={new StaticFormElement("Cancel Date", true, false)}
+                  value={programEncounter.cancelDateTime}
+                />
               </CancelProgramEncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />
@@ -107,13 +68,11 @@ const CancelProgramEncounter = ({ match, programEncounter, encounterDateValidati
 const mapStateToProps = state => ({
   cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  encounterDateValidation: state.dataEntry.programEncounterReducer.encounterDateValidation
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter
 });
 
 const mapDispatchToProps = {
   updateProgramEncounter,
-  setEncounterDateValidation,
   createCancelProgramEncounter,
   editCancelProgramEncounter,
   resetState

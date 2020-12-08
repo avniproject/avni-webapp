@@ -1,4 +1,5 @@
 import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 const prefix = "app/dataEntry/reducer/programEncounter/";
 
@@ -13,7 +14,6 @@ export const types = {
   SAVE_PROGRAM_ENCOUNTER_COMPLETE: `${prefix}SAVE_PROGRAM_ENCOUNTER_COMPLETE`,
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
-  SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
   RESET_STATE: `${prefix}RESET_STATE`,
   CREATE_PROGRAM_ENCOUNTER: `${prefix}CREATE_PROGRAM_ENCOUNTER`,
   CREATE_PROGRAM_ENCOUNTER_FOR_SCHEDULED: `${prefix}CREATE_PROGRAM_ENCOUNTER_FOR_SCHEDULED`,
@@ -25,7 +25,8 @@ export const types = {
   ON_NEXT: `${prefix}ON_NEXT`,
   ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
   SET_STATE: `${prefix}SET_STATE`,
-  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
+  SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -98,11 +99,6 @@ export const setValidationResults = validationResults => ({
   validationResults
 });
 
-export const setEncounterDateValidation = encounterDateValidation => ({
-  type: types.SET_ENCOUNTER_DATE_VALIDATION,
-  encounterDateValidation
-});
-
 export const editProgramEncounter = programEncounterUuid => ({
   type: types.EDIT_PROGRAM_ENCOUNTER,
   programEncounterUuid
@@ -151,6 +147,11 @@ export const setFilteredFormElements = filteredFormElements => ({
   filteredFormElements
 });
 
+export const setEncounterDate = encounterDate => ({
+  type: types.SET_ENCOUNTER_DATE,
+  encounterDate
+});
+
 export const fetchProgramEncounterRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
@@ -171,8 +172,7 @@ export const selectProgramEncounterState = state => state.dataEntry.programEncou
 
 const initialState = {
   saved: false,
-  validationResults: [],
-  encounterDateValidation: []
+  validationResults: []
 };
 
 export default function(state = initialState, action) {
@@ -230,10 +230,18 @@ export default function(state = initialState, action) {
         validationResults: action.validationResults
       };
     }
-    case types.SET_ENCOUNTER_DATE_VALIDATION: {
+    case types.SET_ENCOUNTER_DATE: {
+      const programEncounter = state.programEncounter.cloneForEdit();
+      programEncounter.encounterDateTime = action.encounterDate;
+      const validationResults = commonFormUtil.handleValidationResult(
+        programEncounter.validate(),
+        state.validationResults
+      );
+
       return {
         ...state,
-        encounterDateValidation: action.encounterDateValidation
+        programEncounter,
+        validationResults
       };
     }
     case types.RESET_STATE: {
@@ -241,7 +249,6 @@ export default function(state = initialState, action) {
         ...state,
         saved: false,
         validationResults: [],
-        encounterDateValidation: [],
         programEncounter: null,
         programEncounterForm: null,
         programEnrolment: null,

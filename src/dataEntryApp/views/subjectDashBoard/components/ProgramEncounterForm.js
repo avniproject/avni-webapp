@@ -7,7 +7,8 @@ import {
   updateObs,
   saveProgramEncounter,
   setValidationResults,
-  onNext
+  onNext,
+  onPrevious
 } from "dataEntryApp/reducers/programEncounterReducer";
 
 const mapFormStateToProps = state => ({
@@ -19,7 +20,6 @@ const mapFormStateToProps = state => ({
   ),
   saved: state.dataEntry.programEncounterReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  staticValidationResults: state.dataEntry.programEncounterReducer.encounterDateValidation,
   validationResults: state.dataEntry.programEncounterReducer.validationResults,
   message: state.dataEntry.programEncounterReducer.programEncounter.name
     ? `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Saved`
@@ -41,7 +41,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveProgramEncounter(false),
   setValidationResults,
-  onNext
+  onNext,
+  onPrevious
 };
 
 const ProgramEncounterForm = withRouter(

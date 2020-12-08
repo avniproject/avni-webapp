@@ -18,7 +18,6 @@ const mapFormStateToProps = state => ({
   obsHolder: new ObservationsHolder(state.dataEntry.encounterReducer.encounter.observations),
   saved: state.dataEntry.encounterReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  staticValidationResults: state.dataEntry.encounterReducer.encounterDateValidation,
   validationResults: state.dataEntry.encounterReducer.validationResults,
   message: state.dataEntry.encounterReducer.encounter.name
     ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Saved`
