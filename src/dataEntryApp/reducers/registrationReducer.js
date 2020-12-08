@@ -20,7 +20,9 @@ export const types = {
   SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`,
   SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`,
   ON_NEXT: `${prefix}ON_NEXT`,
-  SET_STATE: `${prefix}SET_STATE`
+  ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
+  SET_STATE: `${prefix}SET_STATE`,
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -111,9 +113,18 @@ export const onNext = () => ({
   type: types.ON_NEXT
 });
 
+export const onPrevious = () => ({
+  type: types.ON_PREVIOUS
+});
+
 export const setState = state => ({
   type: types.SET_STATE,
   state
+});
+
+export const setFilteredFormElements = filteredFormElements => ({
+  type: types.SET_FILTERED_FORM_ELEMENTS,
+  filteredFormElements
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -209,6 +220,12 @@ export default function(state = initialState, action) {
     }
     case types.SET_STATE: {
       return action.state;
+    }
+    case types.SET_FILTERED_FORM_ELEMENTS: {
+      return {
+        ...state,
+        filteredFormElements: action.filteredFormElements
+      };
     }
     default:
       return state;

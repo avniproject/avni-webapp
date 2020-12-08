@@ -64,7 +64,7 @@ export const DateTimeFormElement = ({
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         onChange={update}
-        // disablePast
+        placeholder={dateTimeFormat}
         format={dateTimeFormat}
         style={{ width: "30%" }}
         KeyboardButtonProps={{
@@ -104,13 +104,13 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
         {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardDatePicker
-        autoOk
         // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         onChange={update}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
+        placeholder={dateFormat}
         format={dateFormat}
         style={{ width: "30%" }}
         KeyboardButtonProps={{
@@ -178,6 +178,7 @@ export const DateAndDurationFormElement = ({
           onChange={dateValue => onDateChange(dateValue)}
           helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
           error={validationResult && !validationResult.success}
+          placeholder={dateFormat}
           format={dateFormat}
           style={{ width: "30%" }}
           KeyboardButtonProps={{

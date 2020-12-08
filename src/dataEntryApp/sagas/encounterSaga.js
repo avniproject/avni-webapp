@@ -6,7 +6,8 @@ import {
   setEncounter,
   saveEncounterComplete,
   setValidationResults,
-  onLoadSuccess
+  onLoadSuccess,
+  setFilteredFormElements
 } from "../reducers/encounterReducer";
 import api from "../api";
 import {
@@ -26,7 +27,6 @@ import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
-import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
   selectDecisions,
   selectVisitSchedules
@@ -46,7 +46,8 @@ export default function*() {
       updateCancelEncounterObsWatcher,
       createCancelEncounterWatcher,
       editCancelEncounterWatcher,
-      nextWatcher
+      nextWatcher,
+      previousWatcher
     ].map(fork)
   );
 }
@@ -272,22 +273,22 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
 }
 
 export function* nextWatcher() {
-  yield takeLatest(types.ON_NEXT, nextWorker);
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext);
 }
 
-export function* nextWorker() {
+export function* previousWatcher() {
+  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious);
+}
+
+export function* wizardWorker(getNextState) {
   const state = yield select(selectEncounterState);
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    observations
-  } = commonFormUtil.onNext({
+  const { formElementGroup, filteredFormElements, validationResults, observations } = getNextState({
     formElementGroup: state.formElementGroup,
-    validationResults: state.validationResults,
+    filteredFormElements: state.filteredFormElements,
     observations: state.encounter.observations,
-    entity: state.encounter
+    entity: state.encounter,
+    validationResults: state.validationResults
   });
 
   const encounter = state.encounter.cloneForEdit();

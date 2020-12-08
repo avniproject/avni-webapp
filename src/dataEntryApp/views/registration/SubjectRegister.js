@@ -29,7 +29,6 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
-import { setFilteredFormElements } from "../../reducers/RulesReducer";
 import Stepper from "./Stepper";
 import { fetchRegistrationRulesResponse } from "dataEntryApp/reducers/registrationReducer";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
@@ -537,7 +536,6 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: saveSubject,
   setValidationResults,
-  setFilteredFormElements,
   onNext
 };
 

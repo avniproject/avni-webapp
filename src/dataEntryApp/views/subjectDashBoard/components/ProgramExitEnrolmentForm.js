@@ -6,10 +6,10 @@ import {
   saveProgramEnrolment,
   setValidationResults,
   selectProgramEnrolmentState,
-  onNext
+  onNext,
+  onPrevious
 } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
-import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 const mapFormStateToProps = state => {
   const enrolmentState = selectProgramEnrolmentState(state);
@@ -35,8 +35,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveProgramEnrolment(true),
   setValidationResults,
-  setFilteredFormElements,
-  onNext
+  onNext,
+  onPrevious
 };
 
 const ProgramExitEnrolmentForm = withRouter(

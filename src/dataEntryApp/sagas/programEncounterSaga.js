@@ -9,7 +9,8 @@ import {
   setValidationResults,
   onLoadSuccess,
   selectProgramEncounterState,
-  setState
+  setState,
+  setFilteredFormElements
 } from "dataEntryApp/reducers/programEncounterReducer";
 import api from "../api";
 import {
@@ -28,7 +29,6 @@ import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProgramEncounter, mapProgramEnrolment, mapProfile } from "common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
-import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
   selectDecisions,
   selectVisitSchedules
@@ -47,7 +47,8 @@ export default function*() {
       createProgramEncounterForScheduledWatcher,
       createCancelProgramEncounterWatcher,
       editCancelProgramEncounterWatcher,
-      nextWatcher
+      nextWatcher,
+      previousWatcher
     ].map(fork)
   );
 }
@@ -310,22 +311,22 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
 }
 
 export function* nextWatcher() {
-  yield takeLatest(types.ON_NEXT, nextWorker);
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext);
 }
 
-export function* nextWorker() {
+export function* previousWatcher() {
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onPrevious);
+}
+
+export function* wizardWorker(getNextState) {
   const state = yield select(selectProgramEncounterState);
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    observations
-  } = commonFormUtil.onNext({
+  const { formElementGroup, filteredFormElements, validationResults, observations } = getNextState({
     formElementGroup: state.formElementGroup,
-    validationResults: state.validationResults,
+    filteredFormElements: state.filteredFormElements,
     observations: state.programEncounter.observations,
-    entity: state.programEncounter
+    entity: state.programEncounter,
+    validationResults: state.validationResults
   });
 
   const programEncounter = state.programEncounter.cloneForEdit();

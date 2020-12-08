@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
+const ProgramEncounter = ({ match, programEncounter, encounterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
@@ -81,11 +81,11 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                     required
                     value={new Date(programEncounter.encounterDateTime)}
                     error={
-                      !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
+                      !isEmpty(encounterDateValidation) && !first(encounterDateValidation).success
                     }
                     helperText={
-                      !isEmpty(enconterDateValidation) &&
-                      t(first(enconterDateValidation).messageKey)
+                      !isEmpty(encounterDateValidation) &&
+                      t(first(encounterDateValidation).messageKey)
                     }
                     onChange={date => {
                       const visitDate = isNil(date) ? undefined : new Date(date);
@@ -116,7 +116,7 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
+  encounterDateValidation: state.dataEntry.programEncounterReducer.encounterDateValidation
 });
 
 const mapDispatchToProps = {

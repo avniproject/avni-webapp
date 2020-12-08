@@ -23,7 +23,9 @@ export const types = {
   EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}EDIT_CANCEL_PROGRAM_ENCOUNTER`,
   ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
   ON_NEXT: `${prefix}ON_NEXT`,
-  SET_STATE: `${prefix}SET_STATE`
+  ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
+  SET_STATE: `${prefix}SET_STATE`,
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -96,9 +98,9 @@ export const setValidationResults = validationResults => ({
   validationResults
 });
 
-export const setEncounterDateValidation = enconterDateValidation => ({
+export const setEncounterDateValidation = encounterDateValidation => ({
   type: types.SET_ENCOUNTER_DATE_VALIDATION,
-  enconterDateValidation
+  encounterDateValidation
 });
 
 export const editProgramEncounter = programEncounterUuid => ({
@@ -135,9 +137,18 @@ export const onNext = () => ({
   type: types.ON_NEXT
 });
 
+export const onPrevious = () => ({
+  type: types.ON_PREVIOUS
+});
+
 export const setState = state => ({
   type: types.SET_STATE,
   state
+});
+
+export const setFilteredFormElements = filteredFormElements => ({
+  type: types.SET_FILTERED_FORM_ELEMENTS,
+  filteredFormElements
 });
 
 export const fetchProgramEncounterRulesResponse = () => {
@@ -161,7 +172,7 @@ export const selectProgramEncounterState = state => state.dataEntry.programEncou
 const initialState = {
   saved: false,
   validationResults: [],
-  enconterDateValidation: []
+  encounterDateValidation: []
 };
 
 export default function(state = initialState, action) {
@@ -222,7 +233,7 @@ export default function(state = initialState, action) {
     case types.SET_ENCOUNTER_DATE_VALIDATION: {
       return {
         ...state,
-        enconterDateValidation: action.enconterDateValidation
+        encounterDateValidation: action.encounterDateValidation
       };
     }
     case types.RESET_STATE: {
@@ -230,7 +241,7 @@ export default function(state = initialState, action) {
         ...state,
         saved: false,
         validationResults: [],
-        enconterDateValidation: [],
+        encounterDateValidation: [],
         programEncounter: null,
         programEncounterForm: null,
         programEnrolment: null,
@@ -239,6 +250,12 @@ export default function(state = initialState, action) {
     }
     case types.SET_STATE: {
       return action.state;
+    }
+    case types.SET_FILTERED_FORM_ELEMENTS: {
+      return {
+        ...state,
+        filteredFormElements: action.filteredFormElements
+      };
     }
     default:
       return state;

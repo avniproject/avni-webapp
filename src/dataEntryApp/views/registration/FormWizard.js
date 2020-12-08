@@ -1,15 +1,13 @@
 import React, { Fragment } from "react";
-import { filter, find, findIndex, isEmpty, isNil, sortBy, unionBy } from "lodash";
+import { find, findIndex, isNil, sortBy } from "lodash";
 import { withParams } from "../../../common/components/utils";
 import { Redirect, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import Summary from "./Summary";
 import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { StaticFormElementGroup, ValidationResults, FormElementGroup } from "avni-models";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import { filterFormElements } from "../../services/FormElementService";
-import { getFormElementsStatuses } from "../../services/RuleEvaluationService";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
@@ -108,15 +106,6 @@ const useStyle = makeStyles(theme => ({
     }
   }
 }));
-
-const filterFormElementsWithStatus = (formElementGroup, entity) => {
-  let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
-  return {
-    filteredFormElements: formElementGroup.filterElements(formElementStatuses),
-    formElementStatuses
-  };
-};
-
 const getPageNumber = index => (index === -1 ? 1 : index + 1);
 
 const FormWizard = ({
@@ -131,18 +120,16 @@ const FormWizard = ({
   message,
   subject,
   validationResults,
-  staticValidationResults,
-  setValidationResults,
   additionalRows,
   registrationFlow,
   children,
   filteredFormElements,
   entity,
-  setFilteredFormElements,
   history,
   fetchRulesResponse,
   formElementGroup,
-  onNext
+  onNext,
+  onPrevious
 }) => {
   if (!form) return <div />;
 
@@ -176,14 +163,6 @@ const FormWizard = ({
   const classes = useStyle();
   const { t } = useTranslation();
 
-  const formElementGroups =
-    (isNil(form) ||
-      isNil(form.firstFormElementGroup) ||
-      isNil(firstGroupWithAtLeastOneVisibleElement)) &&
-    !registrationFlow
-      ? new Array(new StaticFormElementGroup(form))
-      : form.getFormElementGroups().filter(feg => !isEmpty(feg.nonVoidedFormElements()));
-  const formElementGroupsLength = formElementGroups.length;
   const isOnSummaryPage = isNil(formElementGroup);
 
   let currentFormElementGroup = formElementGroup;
@@ -195,40 +174,6 @@ const FormWizard = ({
       ? currentFormElementGroup.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
       : isFirstGroup;
 
-  const getPreviousGroup = feg => (feg && feg.previous()) || [];
-
-  const handlePrevious = (event, feg, currentPage, skippedGroupCount = 0) => {
-    const previousGroup =
-      currentPage > formElementGroupsLength
-        ? form.getLastFormElementElementGroup()
-        : getPreviousGroup(feg);
-    const { filteredFormElements, formElementStatuses } = !isEmpty(previousGroup)
-      ? filterFormElementsWithStatus(previousGroup, entity)
-      : { filteredFormElements: null };
-    const previousPage = currentPage - 1;
-    if (
-      (!isEmpty(previousGroup) || registrationFlow) &&
-      isEmpty(filteredFormElements) &&
-      previousPage > 0
-    ) {
-      if (!isEmpty(previousGroup)) {
-        obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), filteredFormElements);
-        obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-      }
-      handlePrevious(event, previousGroup, previousPage, skippedGroupCount + 1);
-    } else {
-      setFilteredFormElements(filteredFormElements);
-      let currentUrlParams = new URLSearchParams(history.location.search);
-      if (previousPage + skippedGroupCount !== 0) {
-        currentUrlParams.set("page", (previousPage + skippedGroupCount).toString());
-        history.push(history.location.pathname + "?" + currentUrlParams.toString());
-      } else {
-        const pathName = registrationFlow ? "/app/register" : history.location.pathname;
-        currentUrlParams.delete("page");
-        history.push(pathName + "?" + currentUrlParams.toString());
-      }
-    }
-  };
   const pageTitleText = isOnSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
   const pageCounter = `X / X`;
@@ -252,7 +197,7 @@ const FormWizard = ({
                 params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                 text={t("previous")}
                 disabled={!registrationFlow && isFirstPage}
-                onClick={e => handlePrevious(e, currentFormElementGroup, currentPageNumber)}
+                onClick={onPrevious}
               />
               <label className={classes.toppagenum}>{pageCounter}</label>
               {!isOnSummaryPage ? (
@@ -300,7 +245,7 @@ const FormWizard = ({
                   params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                   text={t("previous")}
                   disabled={!registrationFlow && isFirstPage}
-                  onClick={e => handlePrevious(e, currentFormElementGroup, currentPageNumber)}
+                  onClick={onPrevious}
                 />
               </Box>
               <Box>

@@ -9,7 +9,6 @@ import {
   setValidationResults,
   onNext
 } from "dataEntryApp/reducers/encounterReducer";
-import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 const mapFormStateToProps = state => {
   const encounter = state.dataEntry.encounterReducer.encounter;
@@ -20,7 +19,7 @@ const mapFormStateToProps = state => {
     obsHolder: new ObservationsHolder(encounter.cancelObservations),
     saved: state.dataEntry.encounterReducer.saved,
     onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-    staticValidationResults: state.dataEntry.encounterReducer.enconterDateValidation,
+    staticValidationResults: state.dataEntry.encounterReducer.encounterDateValidation,
     validationResults: state.dataEntry.encounterReducer.validationResults,
     message: encounter.name
       ? `${encounter.name} Encounter Canceled`
@@ -43,7 +42,6 @@ const mapFormDispatchToProps = {
   updateObs: updateCancelObs,
   onSave: () => saveEncounter(true),
   setValidationResults,
-  setFilteredFormElements,
   onNext
 };
 

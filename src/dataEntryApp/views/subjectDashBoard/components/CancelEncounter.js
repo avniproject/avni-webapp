@@ -1,13 +1,10 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper, Typography } from "@material-ui/core";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { isNil, isEmpty, first, isEqual } from "lodash";
+import { Grid, Paper } from "@material-ui/core";
+import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   createCancelEncounter,
@@ -17,10 +14,11 @@ import {
   resetState,
   fetchEncounterRulesResponse
 } from "../../../reducers/encounterReducer";
-import encounterService from "../../../services/EncounterService";
 import CancelEncounterForm from "./CancelEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import { dateFormat } from "dataEntryApp/constants";
+import { AbstractEncounter } from "openchs-models";
+import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
+import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,8 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CancelEncounter = ({ match, encounter, enconterDateValidation, ...props }) => {
-  const { t } = useTranslation();
+const CancelEncounter = ({ match, encounter, encounterDateValidation, ...props }) => {
   const classes = useStyles();
   const editCancelEncounter = isEqual(match.path, "/app/subject/editCancelEncounter");
   const encounterUuid = match.queryParams.uuid;
@@ -53,46 +50,11 @@ const CancelEncounter = ({ match, encounter, enconterDateValidation, ...props })
           <Grid item xs={12}>
             {props.cancelEncounterForm && encounter && props.subjectProfile ? (
               <CancelEncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-                  >
-                    Cancel Date
-                  </Typography>
-                  <KeyboardDatePicker
-                    style={{ width: "30%" }}
-                    margin="none"
-                    size="small"
-                    id="date-picker-dialog"
-                    format={dateFormat}
-                    placeholder={dateFormat}
-                    name="cancelDateTime"
-                    autoComplete="off"
-                    required
-                    value={new Date(encounter.cancelDateTime)}
-                    error={
-                      !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
-                    }
-                    helperText={
-                      !isEmpty(enconterDateValidation) &&
-                      t(first(enconterDateValidation).messageKey)
-                    }
-                    onChange={date => {
-                      const cancelDate = isNil(date) ? undefined : new Date(date);
-                      encounter.cancelDateTime = cancelDate;
-                      props.updateEncounter("cancelDateTime", cancelDate);
-                      props.setEncounterDateValidation([
-                        encounterService.validateCancelDate(encounter)
-                      ]);
-                    }}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                      color: "primary"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <DateFormElement
+                  uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
+                  formElement={new StaticFormElement("Visit Date", true, false)}
+                  value={encounter.cancelDateTime}
+                />
               </CancelEncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />
@@ -108,7 +70,7 @@ const mapStateToProps = state => ({
   cancelEncounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter,
-  enconterDateValidation: state.dataEntry.encounterReducer.enconterDateValidation
+  encounterDateValidation: state.dataEntry.encounterReducer.encounterDateValidation
 });
 
 const mapDispatchToProps = {

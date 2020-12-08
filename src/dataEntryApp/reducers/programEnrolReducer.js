@@ -21,7 +21,9 @@ export const types = {
   ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   ON_NEXT: `${prefix}ON_NEXT`,
-  SET_STATE: `${prefix}SET_STATE`
+  ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
+  SET_STATE: `${prefix}SET_STATE`,
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -120,9 +122,18 @@ export const onNext = () => ({
   type: types.ON_NEXT
 });
 
+export const onPrevious = () => ({
+  type: types.ON_PREVIOUS
+});
+
 export const setState = state => ({
   type: types.SET_STATE,
   state
+});
+
+export const setFilteredFormElements = filteredFormElements => ({
+  type: types.SET_FILTERED_FORM_ELEMENTS,
+  filteredFormElements
 });
 
 export const fetchEnrolmentRulesResponse = () => {
@@ -227,6 +238,12 @@ export default function(state = initialState, action) {
     }
     case types.SET_STATE: {
       return action.state;
+    }
+    case types.SET_FILTERED_FORM_ELEMENTS: {
+      return {
+        ...state,
+        filteredFormElements: action.filteredFormElements
+      };
     }
     default:
       return state;

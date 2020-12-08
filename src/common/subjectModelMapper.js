@@ -214,14 +214,14 @@ export const mapEnrolments = enrolmentList => {
 export const mapProgramEncounters = programEncountersList => {
   if (programEncountersList)
     return programEncountersList.map(programEncounters => {
-      const programEnconter = General.assignFields(
+      const programEncounter = General.assignFields(
         programEncounters,
         new ProgramEncounter(),
         ["uuid", "name"],
         ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
       );
-      programEnconter.encounterType = mapEncounterType(programEncounters["encounterType"]);
-      return programEnconter;
+      programEncounter.encounterType = mapEncounterType(programEncounters["encounterType"]);
+      return programEncounter;
     });
 };
 
