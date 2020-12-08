@@ -164,8 +164,7 @@ const DefaultPage = props => {
     setValidationResultToError(props.subject.validateGender());
     setValidationResultToError(props.subject.validateAddress());
 
-    //needs to used when village location is set
-    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+    let shouldPreventDefault = false;
     if (props.subject.subjectType.isPerson()) {
       if (
         !(
@@ -178,6 +177,7 @@ const DefaultPage = props => {
         )
       ) {
         event.preventDefault();
+        shouldPreventDefault = true;
       }
     } else {
       if (
@@ -188,7 +188,12 @@ const DefaultPage = props => {
         )
       ) {
         event.preventDefault();
+        shouldPreventDefault = true;
       }
+    }
+
+    if (!shouldPreventDefault) {
+      props.onNext();
     }
   };
 
@@ -504,7 +509,8 @@ const mapDispatchToProps = {
   setSubject,
   saveCompleteFalse,
   setValidationResults,
-  selectAddressLevelType
+  selectAddressLevelType,
+  onNext
 };
 
 const ConnectedDefaultPage = withRouter(
