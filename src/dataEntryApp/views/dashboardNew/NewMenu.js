@@ -36,7 +36,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-function NewMenu({ operationalModules }) {
+function NewMenu({ operationalModules, handleClose }) {
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -52,7 +52,7 @@ function NewMenu({ operationalModules }) {
                 to={`/app/register?type=${element.name}`}
                 style={{ color: "blue" }}
               >
-                <ListItem button>
+                <ListItem button onClick={handleClose}>
                   <ListItemIcon>
                     <PersonAddIcon style={{ color: "blue" }} />
                   </ListItemIcon>

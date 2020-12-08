@@ -222,7 +222,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
                       }}
                     >
                       <Paper>
-                        <NewMenu />
+                        <NewMenu handleClose={newHandleclose} />
                       </Paper>
                     </Grow>
                   )}

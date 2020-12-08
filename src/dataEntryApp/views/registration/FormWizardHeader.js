@@ -4,6 +4,7 @@ import { Typography } from "@material-ui/core";
 import { LineBreak } from "common/components/utils";
 import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { isNil, isDate } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   detailsstyle: {
@@ -23,35 +24,43 @@ const useStyle = makeStyles(theme => ({
 const FormWizardHeader = ({ subject }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const fullName = subject.firstName + " " + subject.lastName || "-";
-  const gender = subject.gender ? subject.gender.name || "-" : "";
+  let headerElements = [];
+
+  const addElement = (label, value, headerElements) => {
+    const insertSeparator = headerElements.length !== 0;
+    headerElements.push(
+      <Typography variant="caption" gutterBottom>
+        {(insertSeparator ? " | " : "") + label + ": "}
+      </Typography>
+    );
+    headerElements.push(
+      <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+        {value}
+      </Typography>
+    );
+    return headerElements;
+  };
+  const fullName = subject.nameString || "-";
+  headerElements = addElement(t("name"), fullName, headerElements);
+
+  if (subject.isPerson()) {
+    const dateOfBirth = isDate(subject.dateOfBirth)
+      ? moment().diff(subject.dateOfBirth, "years") + " years"
+      : null;
+    headerElements = dateOfBirth && addElement(t("age"), dateOfBirth, headerElements);
+    const gender = subject.gender && !isNil(subject.gender.name) ? subject.gender.name : "-";
+    headerElements = addElement(t("gender"), gender, headerElements);
+  }
   const lowestAddressLevel = subject.lowestAddressLevel
     ? subject.lowestAddressLevel.name || "-"
     : "";
   const lowestAddressLevelType = subject.lowestAddressLevel
     ? subject.lowestAddressLevel.type || "-"
     : "";
-  const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
+  headerElements = addElement(lowestAddressLevelType, lowestAddressLevel, headerElements);
   return (
     <div className={classes.details}>
-      <Typography variant="caption" gutterBottom>
-        {t("name")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {fullName}
-        </Typography>{" "}
-        | {t("age")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {dateOfBirth}
-        </Typography>{" "}
-        | {t("gender")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {gender}
-        </Typography>{" "}
-        | {t(lowestAddressLevelType)}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {lowestAddressLevel}
-        </Typography>
-      </Typography>
+      {headerElements}
       <LineBreak num={2} />
     </div>
   );
