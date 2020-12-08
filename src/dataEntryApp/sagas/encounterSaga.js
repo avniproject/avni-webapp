@@ -263,7 +263,7 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   const encounterCancellationForm = mapForm(cancelEncounterFormJson);
   const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
     encounterCancellationForm,
-    cancelEncounterFormJson
+    encounter
   );
 
   yield put.resolve(
