@@ -75,7 +75,7 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
               component={(...props) => <SubjectDashboard tab={1} {...props} />}
             />
             {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
-            <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
+            <Route exact path={`${path}/subject/enrol`} component={ProgramEnrol} />
             <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
             <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
             <Route exact path={`${path}/subject/addRelative`} component={AddRelative} />

@@ -267,7 +267,7 @@ const ProgramView = ({
                 !programData.programExitDateTime ? (
                   <>
                     <Link
-                      to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName
                       }&formType=ProgramExit&programEnrolmentUuid=${
                         programData.uuid
@@ -276,7 +276,7 @@ const ProgramView = ({
                       <Button color="primary">{t("Exit")}</Button>
                     </Link>
                     <Link
-                      to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName
                       }&formType=ProgramEnrolment&programEnrolmentUuid=${
                         programData.uuid
@@ -288,7 +288,7 @@ const ProgramView = ({
                 ) : (
                   <>
                     <Link
-                      to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName
                       }&formType=ProgramExit&programEnrolmentUuid=${
                         programData.uuid

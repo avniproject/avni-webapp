@@ -6,9 +6,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
 
 const useStyles = makeStyles(theme => ({
-  lableStyle: {
+  labelStyle: {
     width: "50%",
-    marginBottom: 10
+    marginBottom: 10,
+    color: "rgba(0, 0, 0, 0.54)"
   }
 }));
 
@@ -45,7 +46,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
 
   return (
     <Fragment>
-      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+      <Typography variant="body1" gutterBottom className={classes.labelStyle}>
         {t(fe.display || fe.name)}
         {fe.mandatory ? "*" : ""}
         {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}
