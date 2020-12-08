@@ -25,6 +25,7 @@ import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { pickers } from "../../common/constants";
 
 export const FormControl = withStyles({
   root: {
@@ -38,42 +39,39 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const showDatePicker = (cssClasses, props, disableFormElement) => {
+const showPicker = (pickerType, cssClasses, props, disableFormElement) => {
+  const picker = pickers.find(picker => picker.type === pickerType);
+  const pickerModes = [];
+  _.forEach(picker.modes, mode => {
+    pickerModes.push(
+      <FormControlLabel
+        value={mode.id}
+        control={<Radio />}
+        label={mode.name}
+        disabled={disableFormElement}
+      />
+    );
+  });
+
   return (
     <Grid container item sm={12}>
-      <AvniFormLabel
-        style={cssClasses.label}
-        label={"Date Picker Mode"}
-        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE"}
-      />
+      <AvniFormLabel style={cssClasses.label} label={picker.label} toolTipKey={picker.toolTipKey} />
 
       <RadioGroup
-        aria-label="Date Picker Mode"
-        name="datePickerMode"
-        value={props.formElementData.keyValues.datePickerMode}
+        aria-label={picker.label}
+        name={picker.key}
+        value={props.formElementData.keyValues[picker.key]}
         onChange={event =>
           props.handleGroupElementKeyValueChange(
             props.groupIndex,
-            "datePickerMode",
+            picker.key,
             event.target.value,
             props.index
           )
         }
         row
       >
-        <FormControlLabel
-          value="Calendar"
-          control={<Radio />}
-          label="Calendar"
-          disabled={disableFormElement}
-        />
-
-        <FormControlLabel
-          value="Spinner"
-          control={<Radio />}
-          label="Spinner"
-          disabled={disableFormElement}
-        />
+        {pickerModes}
       </RadioGroup>
     </Grid>
   );
@@ -598,7 +596,7 @@ function FormElementDetails(props) {
       )}
 
       {props.formElementData.concept.dataType === "Date" &&
-        showDatePicker(cssClasses, props, disableFormElement)}
+        showPicker("date", cssClasses, props, disableFormElement)}
 
       {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
         <Grid container item sm={12}>
@@ -722,7 +720,10 @@ function FormElementDetails(props) {
       )}
 
       {props.formElementData.concept.dataType === "DateTime" &&
-        showDatePicker(cssClasses, props, disableFormElement)}
+        showPicker("date", cssClasses, props, disableFormElement)}
+
+      {props.formElementData.concept.dataType === "Time" &&
+        showPicker("time", cssClasses, props, disableFormElement)}
 
       {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
         <Grid item sm={12}>
@@ -797,7 +798,7 @@ function FormElementDetails(props) {
           </AvniFormControl>
         </Grid>
         <Grid item sm={6}>
-          {["Numeric", "Text", "Date", "DateTime"].includes(
+          {["Numeric", "Text", "Date", "DateTime", "Time"].includes(
             props.formElementData.concept.dataType
           ) && (
             <AvniFormControl

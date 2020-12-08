@@ -506,7 +506,7 @@ class FormDetails extends Component {
           value === "undefined"
             ? (formElement.keyValues[propertyName] = false)
             : delete formElement.keyValues[propertyName];
-        } else if (propertyName === "datePickerMode") {
+        } else if (["datePickerMode", "timePickerMode"].includes(propertyName)) {
           formElement.keyValues[propertyName] = value;
         } else if (
           propertyName === "maxHeight" ||

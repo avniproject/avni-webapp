@@ -78,6 +78,7 @@
   "ADMIN_CATCHMENT_LOCATIONS": "Locations inside this catchment",
   "APP_DESIGNER_FORM_ELEMENT_GROUP_NAME": "This name will appear at the top of each page of this form.",
   "APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE": "Date picker mode",
+  "APP_DESIGNER_FORM_ELEMENT_TIME_PICKER_MODE": "Time picker mode",
   "APP_DESIGNER_FORM_ELEMENT_NAME": "Form element name",
   "APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE": "Values lower than this won't be allowed",
   "APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE": "Values higher than this won't be allowed",
@@ -103,5 +104,6 @@
   "ADMIN_USER_SETTINGS_REGISTER_ENROL": "Adds extra quick menu items on the Register tab to register and enrol to programs in a single flow",
   "ADMIN_USER_SETTINGS_DATA_ENTRY_APP_ENABLE_WRITES": "Enable write functionality for web based data entry app. Write functionality is in beta so may have issues.",
   "ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX": "Identifier prefix for ids generated for this user. See [documentation](https://avni.readme.io/docs/creating-identifiers) for more information",
-  "ADMIN_USER_SETTINGS_DATE_PICKER_MODE": "Set default date picker for the Field App"
+  "ADMIN_USER_SETTINGS_DATE_PICKER_MODE": "Set default date picker for the Field App",
+  "ADMIN_USER_SETTINGS_TIME_PICKER_MODE": "Set default time picker for the Field App"
 }

@@ -24,7 +24,7 @@ import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
-import { datePickerModes, localeChoices } from "../common/constants";
+import { datePickerModes, timePickerModes, localeChoices } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
 import http from "common/utils/httpClient";
 import {
@@ -158,6 +158,10 @@ export const UserDetail = ({ user, ...props }) => (
       <FunctionField
         label="Date Picker Mode"
         render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")}
+      />
+      <FunctionField
+        label="Time Picker Mode"
+        render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")}
       />
       <FunctionField
         label="Track Location"
@@ -371,6 +375,13 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           label="Date picker mode"
           choices={datePickerModes}
           toolTipKey={"ADMIN_USER_SETTINGS_DATE_PICKER_MODE"}
+        />
+        <br />
+        <AvniRadioButtonGroupInput
+          source="settings.timePickerMode"
+          label="Time picker mode"
+          choices={timePickerModes}
+          toolTipKey={"ADMIN_USER_SETTINGS_TIME_PICKER_MODE"}
         />
       </Fragment>
     </SimpleForm>
