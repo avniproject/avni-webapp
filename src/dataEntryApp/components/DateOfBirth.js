@@ -2,7 +2,6 @@ import React, { Fragment } from "react";
 import { Box, TextField, Typography } from "@material-ui/core";
 import moment from "moment/moment";
 import _ from "lodash";
-import { LineBreak } from "../../common/components/utils";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
@@ -69,7 +68,6 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             }}
           />
         </MuiPickersUtilsProvider>
-        <LineBreak num={1} />
         <Typography
           variant="body1"
           gutterBottom
