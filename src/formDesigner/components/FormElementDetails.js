@@ -17,7 +17,7 @@ import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { isEqual, get } from "lodash";
+import _, { isEqual, get, capitalize } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -130,6 +130,36 @@ function FormElementDetails(props) {
     });
     return identifierSourceArr;
   }
+
+  const renderDurationOptions = () => {
+    const durations = ["years", "months", "weeks", "days", "hours", "minutes"];
+
+    return durations.map(duration => {
+      return (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={
+                props.formElementData.keyValues.durationOptions
+                  ? props.formElementData.keyValues.durationOptions.includes(duration)
+                  : false
+              }
+              value={duration}
+              onChange={event =>
+                props.handleGroupElementKeyValueChange(
+                  props.groupIndex,
+                  `${duration}`,
+                  event.target.value,
+                  props.index
+                )
+              }
+            />
+          }
+          label={capitalize(duration)}
+        />
+      );
+    });
+  };
 
   return (
     <Grid container sm={12}>
@@ -607,114 +637,7 @@ function FormElementDetails(props) {
           />
 
           <FormControl component="fieldset" disabled={disableFormElement}>
-            <FormGroup row>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={
-                      props.formElementData.keyValues.durationOptions
-                        ? props.formElementData.keyValues.durationOptions.includes("years")
-                        : false
-                    }
-                    value="years"
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        "years",
-                        event.target.value,
-                        props.index
-                      )
-                    }
-                  />
-                }
-                label="Years"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={
-                      props.formElementData.keyValues.durationOptions
-                        ? props.formElementData.keyValues.durationOptions.includes("months")
-                        : false
-                    }
-                    value="months"
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        "months",
-                        event.target.value,
-                        props.index
-                      )
-                    }
-                  />
-                }
-                label="Months"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={
-                      props.formElementData.keyValues.durationOptions
-                        ? props.formElementData.keyValues.durationOptions.includes("weeks")
-                        : false
-                    }
-                    value="weeks"
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        "weeks",
-                        event.target.value,
-                        props.index
-                      )
-                    }
-                  />
-                }
-                label="Weeks"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={
-                      props.formElementData.keyValues.durationOptions
-                        ? props.formElementData.keyValues.durationOptions.includes("days")
-                        : false
-                    }
-                    value="days"
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        "days",
-                        event.target.value,
-                        props.index
-                      )
-                    }
-                  />
-                }
-                label="Days"
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={
-                      props.formElementData.keyValues.durationOptions
-                        ? props.formElementData.keyValues.durationOptions.includes("hours")
-                        : false
-                    }
-                    value="hours"
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        "hours",
-                        event.target.value,
-                        props.index
-                      )
-                    }
-                  />
-                }
-                label="Hours"
-              />
-            </FormGroup>
+            <FormGroup row>{renderDurationOptions()}</FormGroup>
           </FormControl>
         </Grid>
       )}
