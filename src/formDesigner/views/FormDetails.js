@@ -521,7 +521,8 @@ class FormDetails extends Component {
           propertyName === "months" ||
           propertyName === "days" ||
           propertyName === "weeks" ||
-          propertyName === "hours"
+          propertyName === "hours" ||
+          propertyName === "minutes"
         ) {
           if (!Object.keys(formElement.keyValues).includes("durationOptions")) {
             formElement.keyValues["durationOptions"] = [];
