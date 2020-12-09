@@ -237,7 +237,7 @@ const SubjectDashboardProfileTab = ({
       ) : (
         <Paper className={classes.root}>
           {renderSubjectProfile()}
-          {renderRelatives()}
+          {profile.isPerson() && renderRelatives()}
           {renderDialog(
             "Void the subject",
             voidConfirmation,
