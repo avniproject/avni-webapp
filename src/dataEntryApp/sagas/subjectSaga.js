@@ -51,6 +51,7 @@ import {
   selectChecklists
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import { StaticFormElementGroup } from "openchs-models";
 
 //TODO: Lots of updateObs functions looks the same. See if it's possible to remove duplication.
 
@@ -219,13 +220,8 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationForm = mapForm(registrationFormJson);
   yield put(setRegistrationForm(registrationForm));
 
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
-    registrationForm,
-    subject
-  );
-
   yield put.resolve(
-    onLoadSuccess(subject, registrationForm, formElementGroup, filteredFormElements)
+    onLoadSuccess(subject, registrationForm, new StaticFormElementGroup(registrationForm), [])
   );
 }
 
@@ -249,18 +245,13 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const registrationForm = mapForm(registrationFormJson);
 
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
-    registrationForm,
-    subject
-  );
-
   const subjectType = yield select(selectSubjectTypeFromName(subject.subjectType.name));
   if (subjectType.isPerson()) {
     yield put.resolve(getGenders());
   }
 
   yield put.resolve(
-    onLoadSuccess(subject, registrationForm, formElementGroup, filteredFormElements)
+    onLoadSuccess(subject, registrationForm, new StaticFormElementGroup(registrationForm), [])
   );
 }
 
