@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FindRelative = ({ subjectType, ...props }) => {
+const FindRelative = ({ subjectType, subjectProfile, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [value, setValue] = React.useState("");
@@ -141,7 +141,11 @@ const FindRelative = ({ subjectType, ...props }) => {
         <LineBreak num={1} />
         <FormGroup row>
           {props.subjects && props.subjects.content ? (
-            <FindRelativeTable subjectData={props.subjects} />
+            <FindRelativeTable
+              subjectData={props.subjects.content.filter(
+                subject => subjectProfile.uuid !== subject.uuid
+              )}
+            />
           ) : (
             ""
           )}

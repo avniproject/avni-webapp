@@ -285,13 +285,13 @@ const AddRelative = ({
                                       Select relation
                                     </option>
                                     {Relations.relationships
-                                      ? Relations.relationships.map((row1, index) =>
-                                          (row.gender.name ===
-                                            row1.individualAIsToBRelation.gender) &
-                                          (row.gender.name ===
-                                            row1.individualBIsToARelation.gender) ? (
-                                            <option key={index} value={row1.uuid}>
-                                              {t(row1.individualBIsToARelation.name)}
+                                      ? Relations.relationships.map((relationship, index) =>
+                                          subjectProfile.gender.name ===
+                                            relationship.individualAIsToBRelation.gender &&
+                                          row.gender.name ===
+                                            relationship.individualBIsToARelation.gender ? (
+                                            <option key={index} value={relationship.uuid}>
+                                              {t(relationship.individualBIsToARelation.name)}
                                             </option>
                                           ) : (
                                             ""
@@ -324,7 +324,7 @@ const AddRelative = ({
                 {/* <Button variant="contained" className={classes.findButton} color="primary">
               Find Relative
             </Button> */}
-                <FindRelative />
+                <FindRelative subjectProfile={subjectProfile} />
                 {/* {subjects.content ? (
                 <FindRelative subjectTypes={subjectTypes} />
               ) : ( */}
