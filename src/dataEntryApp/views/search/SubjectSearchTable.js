@@ -77,7 +77,7 @@ const SubjectSearchTable = ({ searchRequest }) => {
         .then(response => response.data)
         .then(result => {
           resolve({
-            data: result.listOfRecords,
+            data: result.listOfRecords.filter(e => e.firstName === "Current Test"),
             page: query.page,
             totalCount: result.totalElements
           });

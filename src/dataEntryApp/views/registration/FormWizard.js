@@ -1,13 +1,11 @@
 import React, { Fragment } from "react";
-import { find, findIndex, isNil, sortBy } from "lodash";
 import { withParams } from "../../../common/components/utils";
 import { Redirect, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import Summary from "./Summary";
-import { Box, Button, Paper, Typography } from "@material-ui/core";
+import { Box, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
-import { filterFormElements } from "../../services/FormElementService";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
@@ -106,7 +104,6 @@ const useStyle = makeStyles(theme => ({
     }
   }
 }));
-const getPageNumber = index => (index === -1 ? 1 : index + 1);
 
 const FormWizard = ({
   form,
@@ -129,7 +126,11 @@ const FormWizard = ({
   fetchRulesResponse,
   formElementGroup,
   onNext,
-  onPrevious
+  onPrevious,
+  onSummaryPage,
+  renderStaticPage,
+  onReset,
+  staticPageUrl
 }) => {
   if (!form) return <div />;
 
@@ -139,46 +140,19 @@ const FormWizard = ({
     }, 2500);
   }
 
-  const { from } = match.queryParams;
-
-  const firstGroupWithAtLeastOneVisibleElement = find(
-    sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
-    formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
-  );
-
-  const indexOfGroup = firstGroupWithAtLeastOneVisibleElement
-    ? findIndex(
-        form.getFormElementGroups(),
-        feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
-      )
-    : registrationFlow
-    ? 1
-    : -1;
-
-  const currentPageNumber = match.queryParams.page
-    ? parseInt(match.queryParams.page)
-    : getPageNumber(indexOfGroup);
-
+  const isFirstPage = false;
   const [redirect, setRedirect] = React.useState(false);
   const classes = useStyle();
   const { t } = useTranslation();
 
-  const isOnSummaryPage = isNil(formElementGroup);
+  if (renderStaticPage) {
+    onReset();
+    return <Redirect to={staticPageUrl} />;
+  }
 
-  let currentFormElementGroup = formElementGroup;
-
-  const isFirstGroup = currentFormElementGroup && currentFormElementGroup.isFirst;
-
-  const isFirstPage =
-    firstGroupWithAtLeastOneVisibleElement && currentFormElementGroup
-      ? currentFormElementGroup.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
-      : isFirstGroup;
-
-  const pageTitleText = isOnSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
+  const pageTitleText = onSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
   const pageCounter = `X / X`;
-
-  const goBackToRegistrationDefaultPage = registrationFlow && currentPageNumber === 1;
 
   return (
     <Fragment>
@@ -193,29 +167,20 @@ const FormWizard = ({
             <Box flexDirection={"row"} display={"flex"}>
               <FormWizardButton
                 className={classes.topnav}
-                to={goBackToRegistrationDefaultPage ? from : null}
-                params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                 text={t("previous")}
-                disabled={!registrationFlow && isFirstPage}
+                disabled={false}
                 onClick={onPrevious}
               />
               <label className={classes.toppagenum}>{pageCounter}</label>
-              {!isOnSummaryPage ? (
-                <FormWizardButton
-                  className={classes.topnav}
-                  onClick={onNext}
-                  params={{ page: currentPageNumber + 1 }}
-                  text={t("next")}
-                />
-              ) : (
-                <Button className={classes.topnav} onClick={onSave} type="button">
-                  {t("save")}
-                </Button>
-              )}
+              <FormWizardButton
+                className={classes.topnav}
+                onClick={onSummaryPage ? onSave : onNext}
+                text={onSummaryPage ? t("save") : t("next")}
+              />
             </Box>
           </Box>
           <Paper className={classes.form}>
-            {isOnSummaryPage ? (
+            {onSummaryPage ? (
               <Summary
                 observations={observations}
                 additionalRows={additionalRows}
@@ -241,26 +206,17 @@ const FormWizard = ({
               <Box style={{ marginRight: 20 }}>
                 <FormWizardButton
                   className={classes.privbuttonStyle}
-                  to={goBackToRegistrationDefaultPage ? from : null}
-                  params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                   text={t("previous")}
-                  disabled={!registrationFlow && isFirstPage}
+                  disabled={false}
                   onClick={onPrevious}
                 />
               </Box>
               <Box>
-                {!isOnSummaryPage ? (
-                  <FormWizardButton
-                    className={classes.nextbuttonStyle}
-                    onClick={onNext}
-                    params={{ page: currentPageNumber + 1 }}
-                    text={t("next")}
-                  />
-                ) : (
-                  <Button className={classes.nextbuttonStyle} onClick={onSave} type="button">
-                    {t("save")}
-                  </Button>
-                )}
+                <FormWizardButton
+                  className={classes.nextbuttonStyle}
+                  onClick={onSummaryPage ? onSave : onNext}
+                  text={onSummaryPage ? t("save") : t("next")}
+                />
               </Box>
             </Box>
             {redirect && <Redirect to={onSaveGoto} />}

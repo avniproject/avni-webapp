@@ -32,13 +32,15 @@ export const onLoadSuccess = (
   programEnrolment,
   enrolForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   programEnrolment,
   enrolForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 });
 
 export const saveProgramEnrolment = isExit => ({
@@ -178,6 +180,7 @@ export default function(state = initialState, action) {
         enrolForm: action.enrolForm,
         formElementGroup: action.formElementGroup,
         filteredFormElements: action.filteredFormElements,
+        onSummaryPage: action.onSummaryPage,
         load: true
       };
     }

@@ -42,13 +42,15 @@ export const onLoadSuccess = (
   encounter,
   encounterForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   encounter,
   encounterForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 });
 
 export const setEncounterForm = encounterForm => ({
@@ -195,7 +197,8 @@ export default function(state = initialState, action) {
         encounter: action.encounter,
         encounterForm: action.encounterForm,
         formElementGroup: action.formElementGroup,
-        filteredFormElements: action.filteredFormElements
+        filteredFormElements: action.filteredFormElements,
+        onSummaryPage: action.onSummaryPage
       };
     }
     case types.SAVE_ENCOUNTER_COMPLETE: {

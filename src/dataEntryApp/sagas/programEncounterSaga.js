@@ -198,13 +198,19 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
   const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
     programEncounterForm,
     programEncounter
   );
 
   yield put.resolve(
-    onLoadSuccess(programEncounter, programEncounterForm, formElementGroup, filteredFormElements)
+    onLoadSuccess(
+      programEncounter,
+      programEncounterForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage
+    )
   );
   yield put.resolve(setSubjectProfile(subject));
 }
@@ -294,7 +300,7 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
   const cancelProgramEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const cancelProgramEncounterForm = mapForm(cancelProgramEncounterFormJson);
 
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
     cancelProgramEncounterForm,
     programEncounter
   );
@@ -304,7 +310,8 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
       programEncounter,
       cancelProgramEncounterForm,
       formElementGroup,
-      filteredFormElements
+      filteredFormElements,
+      onSummaryPage
     )
   );
   yield put.resolve(setSubjectProfile(subject));
@@ -321,12 +328,19 @@ export function* previousWatcher() {
 export function* wizardWorker(getNextState) {
   const state = yield select(selectProgramEncounterState);
 
-  const { formElementGroup, filteredFormElements, validationResults, observations } = getNextState({
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations,
+    onSummaryPage
+  } = getNextState({
     formElementGroup: state.formElementGroup,
     filteredFormElements: state.filteredFormElements,
     observations: state.programEncounter.observations,
     entity: state.programEncounter,
-    validationResults: state.validationResults
+    validationResults: state.validationResults,
+    onSummaryPage: state.onSummaryPage
   });
 
   const programEncounter = state.programEncounter.cloneForEdit();
@@ -336,7 +350,8 @@ export function* wizardWorker(getNextState) {
     programEncounter,
     formElementGroup,
     filteredFormElements,
-    validationResults
+    validationResults,
+    onSummaryPage
   };
   yield put(setState(nextState));
 }

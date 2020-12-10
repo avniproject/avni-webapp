@@ -22,7 +22,7 @@ const onLoad = (form, entity) => {
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
-    return { formElementGroup: new StaticFormElementGroup(form), filteredFormElements: [] };
+    return { formElementGroup: null, filteredFormElements: [], onSummaryPage: true };
   }
   const filteredFormElements = filterFormElements(firstGroupWithAtLeastOneVisibleElement, entity);
   return {
@@ -36,14 +36,18 @@ function nextState(
   filteredFormElements,
   validationResults,
   observations,
-  entity
+  entity,
+  onSummaryPage = false,
+  renderStaticPage = false
 ) {
   return {
     formElementGroup,
     filteredFormElements,
     validationResults,
     observations,
-    entity
+    entity,
+    onSummaryPage,
+    renderStaticPage
   };
 }
 
@@ -67,8 +71,9 @@ const onNext = ({
     errors(validationResults),
     "formIdentifier"
   );
+  const thereAreValidationErrors = !isEmpty(allRuleValidationResults);
 
-  if (!isEmpty(allRuleValidationResults))
+  if (thereAreValidationErrors)
     return nextState(
       formElementGroup,
       filteredFormElements,
@@ -78,11 +83,23 @@ const onNext = ({
     );
 
   const nextGroup = formElementGroup.next();
+
+  if (isEmpty(nextGroup)) {
+    const onSummaryPage = true;
+    return nextState(
+      formElementGroup,
+      filteredFormElements,
+      [],
+      observations,
+      entity,
+      onSummaryPage
+    );
+  }
   const { filteredFormElements: nextFilteredFormElements } = !isEmpty(nextGroup)
     ? filterFormElementsWithStatus(nextGroup, entity)
     : { filteredFormElements: null };
 
-  if (!isEmpty(nextGroup) && isEmpty(nextFilteredFormElements)) {
+  if (isEmpty(nextFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), []);
     return onNext(nextState(nextGroup, [], [], obsHolder.observations, entity));
   } else {
@@ -90,20 +107,43 @@ const onNext = ({
   }
 };
 
-const onPrevious = ({ formElementGroup, validationResults, observations, entity }) => {
-  const obsHolder = new ObservationsHolder(observations);
-  const previousGroup = formElementGroup.previous();
-  const { filteredFormElements, formElementStatuses } = !isEmpty(previousGroup)
+const onPrevious = ({
+  formElementGroup,
+  observations,
+  entity,
+  filteredFormElements,
+  validationResults,
+  onSummaryPage
+}) => {
+  const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
+
+  if (isEmpty(previousGroup)) {
+    const renderStaticPage = true;
+    return nextState(
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      entity,
+      false,
+      renderStaticPage
+    );
+  }
+
+  const { filteredFormElements: previousFilteredFormElements, formElementStatuses } = !isEmpty(
+    previousGroup
+  )
     ? filterFormElementsWithStatus(previousGroup, entity)
     : { filteredFormElements: null };
 
-  if (!isEmpty(previousGroup) && isEmpty(filteredFormElements)) {
-    obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), filteredFormElements);
-    obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  const obsHolder = new ObservationsHolder(observations);
+  if (isEmpty(previousFilteredFormElements)) {
+    obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
+    obsHolder.updatePrimitiveObs(previousFilteredFormElements, formElementStatuses);
     return onPrevious(
       nextState(
         previousGroup,
-        filteredFormElements,
+        previousFilteredFormElements,
         validationResults,
         obsHolder.observations,
         entity
@@ -112,9 +152,9 @@ const onPrevious = ({ formElementGroup, validationResults, observations, entity 
   } else {
     return nextState(
       previousGroup,
-      filteredFormElements,
+      previousFilteredFormElements,
       validationResults,
-      obsHolder.observations,
+      observations,
       entity
     );
   }

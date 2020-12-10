@@ -51,7 +51,6 @@ import {
   selectChecklists
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
-import { StaticFormElementGroup } from "openchs-models";
 
 //TODO: Lots of updateObs functions looks the same. See if it's possible to remove duplication.
 
@@ -115,12 +114,18 @@ function* setupNewEnrolmentWorker({
   const enrolFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const enrolForm = mapForm(enrolFormJson);
 
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
     enrolForm,
     programEnrolment
   );
   yield put.resolve(
-    enrolmentOnLoadSuccess(programEnrolment, enrolForm, formElementGroup, filteredFormElements)
+    enrolmentOnLoadSuccess(
+      programEnrolment,
+      enrolForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage
+    )
   );
 }
 
@@ -220,8 +225,13 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationForm = mapForm(registrationFormJson);
   yield put(setRegistrationForm(registrationForm));
 
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
+    registrationForm,
+    subject
+  );
+
   yield put.resolve(
-    onLoadSuccess(subject, registrationForm, new StaticFormElementGroup(registrationForm), [])
+    onLoadSuccess(subject, registrationForm, formElementGroup, filteredFormElements, onSummaryPage)
   );
 }
 
@@ -250,8 +260,13 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
     yield put.resolve(getGenders());
   }
 
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
+    registrationForm,
+    subject
+  );
+
   yield put.resolve(
-    onLoadSuccess(subject, registrationForm, new StaticFormElementGroup(registrationForm), [])
+    onLoadSuccess(subject, registrationForm, formElementGroup, filteredFormElements, onSummaryPage)
   );
 }
 
@@ -391,25 +406,58 @@ export function* registrationPreviousWatcher() {
 
 export function* registrationWizardWorker(getNextState) {
   const state = yield select(selectRegistrationState);
+  const subject = state.subject.cloneForEdit();
 
-  const { formElementGroup, filteredFormElements, validationResults, observations } = getNextState({
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations,
+    onSummaryPage,
+    renderStaticPage
+  } = getNextState({
     formElementGroup: state.formElementGroup,
     filteredFormElements: state.filteredFormElements,
-    observations: state.subject.observations,
-    entity: state.subject,
-    validationResults: state.validationResults
+    observations: subject.observations,
+    entity: subject,
+    validationResults: state.validationResults,
+    onSummaryPage: state.onSummaryPage
   });
 
-  const subject = state.subject.cloneForEdit();
   subject.observations = observations;
   const nextState = {
     ...state,
     subject,
     formElementGroup,
     filteredFormElements,
-    validationResults
+    validationResults,
+    onSummaryPage,
+    renderStaticPage
   };
   yield put(setRegistrationState(nextState));
+}
+
+export function* resetStateWorker() {
+  yield takeLatest(subjectTypes.ON_RESET, resetStateWatcher);
+}
+
+export function* resetStateWatcher() {
+  const registrationState = yield select(selectRegistrationState);
+
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
+    registrationState.registrationForm,
+    registrationState.subject
+  );
+
+  yield put.resolve(
+    onLoadSuccess(
+      registrationState.subject,
+      registrationState.registrationForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage
+    )
+  );
 }
 
 export function* enrolmentNextWatcher() {
@@ -428,7 +476,8 @@ export function* enrolmentWizardWorker(getNextState) {
     filteredFormElements: state.filteredFormElements,
     observations: state.programEnrolment.observations,
     entity: state.programEnrolment,
-    validationResults: state.validationResults
+    validationResults: state.validationResults,
+    onSummaryPage: state.onSummaryPage
   });
 
   const programEnrolment = state.programEnrolment.cloneForEdit();
@@ -438,7 +487,8 @@ export function* enrolmentWizardWorker(getNextState) {
     programEnrolment,
     formElementGroup,
     filteredFormElements,
-    validationResults
+    validationResults,
+    onSummaryPage
   };
   yield put(setProgramEnrolmentState(nextState));
 }
@@ -460,7 +510,8 @@ export default function* subjectSaga() {
       registrationNextWatcher,
       enrolmentNextWatcher,
       registrationPreviousWatcher,
-      enrolmentPreviousWatcher
+      enrolmentPreviousWatcher,
+      resetStateWorker
     ].map(fork)
   );
 }

@@ -58,13 +58,15 @@ export const onLoadSuccess = (
   programEncounter,
   programEncounterForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   programEncounter,
   programEncounterForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 });
 
 export const updateObs = (formElement, value) => ({
@@ -207,7 +209,8 @@ export default function(state = initialState, action) {
         programEncounter: action.programEncounter,
         programEncounterForm: action.programEncounterForm,
         formElementGroup: action.formElementGroup,
-        filteredFormElements: action.filteredFormElements
+        filteredFormElements: action.filteredFormElements,
+        onSummaryPage: action.onSummaryPage
       };
     }
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {

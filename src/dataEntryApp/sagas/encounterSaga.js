@@ -177,13 +177,13 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   const encounterForm = mapForm(encounterFormJson);
   encounter.individual = subject;
 
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
     encounterForm,
     encounter
   );
 
   yield put.resolve(
-    onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements)
+    onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements, onSummaryPage)
   );
   yield put.resolve(setSubjectProfile(subject));
 }
@@ -261,13 +261,19 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   );
   const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
   const encounterCancellationForm = mapForm(cancelEncounterFormJson);
-  const { formElementGroup, filteredFormElements } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
     encounterCancellationForm,
     encounter
   );
 
   yield put.resolve(
-    onLoadSuccess(encounter, encounterCancellationForm, formElementGroup, filteredFormElements)
+    onLoadSuccess(
+      encounter,
+      encounterCancellationForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage
+    )
   );
   yield put.resolve(setSubjectProfile(subject));
 }
@@ -283,12 +289,19 @@ export function* previousWatcher() {
 export function* wizardWorker(getNextState) {
   const state = yield select(selectEncounterState);
 
-  const { formElementGroup, filteredFormElements, validationResults, observations } = getNextState({
+  const {
+    formElementGroup,
+    filteredFormElements,
+    validationResults,
+    observations,
+    onSummaryPage
+  } = getNextState({
     formElementGroup: state.formElementGroup,
     filteredFormElements: state.filteredFormElements,
     observations: state.encounter.observations,
     entity: state.encounter,
-    validationResults: state.validationResults
+    validationResults: state.validationResults,
+    onSummaryPage: state.onSummaryPage
   });
 
   const encounter = state.encounter.cloneForEdit();
@@ -298,7 +311,8 @@ export function* wizardWorker(getNextState) {
     encounter,
     formElementGroup,
     filteredFormElements,
-    validationResults
+    validationResults,
+    onSummaryPage
   };
   yield put(setState(nextState));
 }

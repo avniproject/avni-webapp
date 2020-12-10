@@ -14,7 +14,8 @@ import {
   setValidationResults,
   selectAddressLevelType,
   onLoadEdit,
-  onNext
+  onNext,
+  onReset
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -30,7 +31,12 @@ import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import Stepper from "./Stepper";
-import { fetchRegistrationRulesResponse } from "dataEntryApp/reducers/registrationReducer";
+import {
+  fetchRegistrationRulesResponse,
+  onPrevious,
+  selectRegistrationState,
+  staticPageOnNext
+} from "dataEntryApp/reducers/registrationReducer";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { dateFormat } from "dataEntryApp/constants";
 
@@ -193,14 +199,9 @@ const DefaultPage = props => {
     }
 
     if (!shouldPreventDefault) {
-      props.onNext();
+      props.staticPageOnNext();
     }
   };
-
-  const formElementGroups = props.form
-    .getFormElementGroups()
-    .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
-  const totalNumberOfPages = formElementGroups.length + 2;
 
   function renderAddress() {
     const {
@@ -287,14 +288,11 @@ const DefaultPage = props => {
                 <Button className={classes.topprevnav} type="button" disabled>
                   {t("previous")}
                 </Button>
-                {props.form && (
-                  <label className={classes.toppagenum}> 1 / {totalNumberOfPages}</label>
-                )}
+                {props.form && <label className={classes.toppagenum}> X / X</label>}
                 <RelativeLink
                   to="form"
                   params={{
-                    type: props.subject.subjectType.name,
-                    from: props.location.pathname + props.location.search
+                    type: props.subject.subjectType.name
                   }}
                   noUnderline
                 >
@@ -464,8 +462,7 @@ const DefaultPage = props => {
                   <RelativeLink
                     to="form"
                     params={{
-                      type: props.subject.subjectType.name,
-                      from: props.location.pathname + props.location.search
+                      type: props.subject.subjectType.name
                     }}
                     noUnderline
                   >
@@ -487,18 +484,21 @@ const DefaultPage = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  user: state.app.user,
-  genders: state.dataEntry.metadata.genders,
-  addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
-  customRegistrationLocations:
-    state.dataEntry.metadata.operationalModules.customRegistrationLocations,
-  form: state.dataEntry.registration.registrationForm,
-  subject: state.dataEntry.registration.subject,
-  loaded: state.dataEntry.registration.loaded,
-  saved: state.dataEntry.registration.saved,
-  selectedAddressLevelType: state.dataEntry.registration.selectedAddressLevelType
-});
+const mapStateToProps = state => {
+  const registrationState = selectRegistrationState(state);
+  return {
+    user: state.app.user,
+    genders: state.dataEntry.metadata.genders,
+    addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
+    customRegistrationLocations:
+      state.dataEntry.metadata.operationalModules.customRegistrationLocations,
+    form: registrationState.registrationForm,
+    subject: registrationState.subject,
+    loaded: registrationState.loaded,
+    saved: registrationState.saved,
+    selectedAddressLevelType: registrationState.selectedAddressLevelType
+  };
+};
 
 const mapDispatchToProps = {
   getRegistrationForm,
@@ -510,7 +510,7 @@ const mapDispatchToProps = {
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  onNext
+  staticPageOnNext
 };
 
 const ConnectedDefaultPage = withRouter(
@@ -522,28 +522,34 @@ const ConnectedDefaultPage = withRouter(
   )
 );
 
-const mapFormStateToProps = state => ({
-  form: state.dataEntry.registration.registrationForm,
-  obsHolder:
-    state.dataEntry.registration.subject &&
-    new ObservationsHolder(state.dataEntry.registration.subject.observations),
-  observations:
-    state.dataEntry.registration.subject && state.dataEntry.registration.subject.observations,
-  saved: state.dataEntry.registration.saved,
-  subject: state.dataEntry.registration.subject,
-  onSaveGoto: `/app/subject?uuid=${state.dataEntry.registration.subject.uuid}`,
-  validationResults: state.dataEntry.registration.validationResults,
-  registrationFlow: true,
-  filteredFormElements: state.dataEntry.registration.filteredFormElements,
-  entity: state.dataEntry.registration.subject,
-  formElementGroup: state.dataEntry.registration.formElementGroup
-});
+const mapFormStateToProps = state => {
+  const registrationState = selectRegistrationState(state);
+  return {
+    form: registrationState.registrationForm,
+    obsHolder:
+      registrationState.subject && new ObservationsHolder(registrationState.subject.observations),
+    observations: registrationState.subject && registrationState.subject.observations,
+    saved: registrationState.saved,
+    subject: registrationState.subject,
+    onSaveGoto: `/app/subject?uuid=${registrationState.subject.uuid}`,
+    validationResults: registrationState.validationResults,
+    registrationFlow: true,
+    filteredFormElements: registrationState.filteredFormElements,
+    entity: registrationState.subject,
+    formElementGroup: registrationState.formElementGroup,
+    onSummaryPage: registrationState.onSummaryPage,
+    renderStaticPage: registrationState.renderStaticPage,
+    staticPageUrl: `/app/register?type=${registrationState.subject.subjectType.name}`
+  };
+};
 
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveSubject,
   setValidationResults,
-  onNext
+  onNext,
+  onPrevious,
+  onReset
 };
 
 const RegistrationForm = withRouter(

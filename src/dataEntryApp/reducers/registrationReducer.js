@@ -22,7 +22,9 @@ export const types = {
   ON_NEXT: `${prefix}ON_NEXT`,
   ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
   SET_STATE: `${prefix}SET_STATE`,
-  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
+  STATIC_PAGE_ON_NEXT: `${prefix}STATIC_PAGE_ON_NEXT`,
+  ON_RESET: `${prefix}ON_RESET`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -73,13 +75,15 @@ export const onLoadSuccess = (
   subject,
   registrationForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   subject,
   registrationForm,
   formElementGroup,
-  filteredFormElements
+  filteredFormElements,
+  onSummaryPage
 });
 
 export const setLoaded = () => ({
@@ -125,6 +129,14 @@ export const setState = state => ({
 export const setFilteredFormElements = filteredFormElements => ({
   type: types.SET_FILTERED_FORM_ELEMENTS,
   filteredFormElements
+});
+
+export const staticPageOnNext = () => ({
+  type: types.STATIC_PAGE_ON_NEXT
+});
+
+export const onReset = () => ({
+  type: types.ON_RESET
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -215,7 +227,8 @@ export default function(state = initialState, action) {
         formElementGroup: action.formElementGroup,
         registrationForm: action.registrationForm,
         filteredFormElements: action.filteredFormElements,
-        loaded: true
+        loaded: true,
+        onSummaryPage: action.onSummaryPage
       };
     }
     case types.SET_STATE: {
@@ -225,6 +238,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         filteredFormElements: action.filteredFormElements
+      };
+    }
+    case types.STATIC_PAGE_ON_NEXT: {
+      return {
+        ...state,
+        renderStaticPage: false
       };
     }
     default:
