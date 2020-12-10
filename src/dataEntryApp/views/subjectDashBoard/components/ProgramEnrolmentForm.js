@@ -25,7 +25,8 @@ const mapFormStateToProps = state => {
     message: `${enrolmentState.programEnrolment.program.name} Enrolment Saved`,
     filteredFormElements: enrolmentState.filteredFormElements,
     entity: enrolmentState.programEnrolment,
-    formElementGroup: enrolmentState.formElementGroup
+    formElementGroup: enrolmentState.formElementGroup,
+    onSummaryPage: enrolmentState.onSummaryPage
   };
 };
 

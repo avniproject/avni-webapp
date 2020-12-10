@@ -24,7 +24,8 @@ const mapFormStateToProps = state => {
     validationResults: enrolmentState.validationResults,
     filteredFormElements: enrolmentState.filteredFormElements,
     entity: enrolmentState.programEnrolment,
-    formElementGroup: enrolmentState.formElementGroup
+    formElementGroup: enrolmentState.formElementGroup,
+    onSummaryPage: enrolmentState.onSummaryPage
   };
 };
 
