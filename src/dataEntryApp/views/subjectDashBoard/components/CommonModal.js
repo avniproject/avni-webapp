@@ -190,6 +190,15 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
         </DialogTitle>
         {content}
         <DialogActions className={classes.borderBottom}>
+          {cancelButton ? (
+            <SubjectButton
+              btnLabel={cancelButton.label}
+              btnClass={cancelButton.classes}
+              btnClick={handleClose}
+            />
+          ) : (
+            ""
+          )}
           {saveButton && saveButton.requiredField ? (
             <Link to={saveButton.redirectTo}>
               <SubjectButton
@@ -242,15 +251,6 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 // handleClose();
               }}
               btnDisabled={modifysearch.disabled}
-            />
-          ) : (
-            ""
-          )}
-          {cancelButton ? (
-            <SubjectButton
-              btnLabel={cancelButton.label}
-              btnClass={cancelButton.classes}
-              btnClick={handleClose}
             />
           ) : (
             ""

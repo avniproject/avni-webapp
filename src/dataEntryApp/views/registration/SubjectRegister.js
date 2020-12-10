@@ -413,6 +413,7 @@ const DefaultPage = props => {
                         setValidationResultToError(props.subject.validateGender());
                       }}
                     />
+                    <LineBreak num={1} />
                     {renderAddress()}
                   </React.Fragment>
                 )}

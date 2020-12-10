@@ -79,11 +79,11 @@ const SubjectDashboardGeneralTab = ({
   let completedVisits = [];
 
   if (general) {
-    general.forEach(function(row, index) {
-      if (!row.encounterDateTime) {
-        plannedVisits.push(row);
-      } else if (row.encounterDateTime) {
+    general.forEach(function(row) {
+      if (row.encounterDateTime || row.cancelDateTime) {
         completedVisits.push(row);
+      } else {
+        plannedVisits.push(row);
       }
     });
   }

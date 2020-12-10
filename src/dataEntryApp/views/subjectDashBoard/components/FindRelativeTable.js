@@ -52,18 +52,13 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
   return (
     <div className={classes.root}>
       <Typography variant="subtitle2" gutterBottom>
-        {subjectData && subjectData.content
-          ? subjectData.content.length === 0
-            ? "No"
-            : subjectData.content.length
-          : ""}{" "}
-        Results found
+        {subjectData ? (subjectData.length === 0 ? "No" : subjectData.length) : ""} Results found
       </Typography>
       <Typography variant="subtitle2" gutterBottom>
         {errormsg}
       </Typography>
 
-      {subjectData && subjectData.content && subjectData.content.length !== 0 ? (
+      {subjectData && subjectData.length !== 0 ? (
         <Table
           className={classes.tableContainer}
           aria-labelledby="tableTitle"
@@ -81,7 +76,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
           </TableHead>
           <TableBody>
             {subjectData &&
-              subjectData.content.map((row, index) => {
+              subjectData.map((row, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (

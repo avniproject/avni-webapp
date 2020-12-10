@@ -138,7 +138,7 @@ const FormWizard = ({
   if (saved) {
     setTimeout(() => {
       setRedirect(true);
-    }, 2500);
+    }, 1000);
   }
 
   const [redirect, setRedirect] = React.useState(false);
