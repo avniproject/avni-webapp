@@ -130,7 +130,8 @@ const FormWizard = ({
   onSummaryPage,
   renderStaticPage,
   onReset,
-  staticPageUrl
+  staticPageUrl,
+  wizard
 }) => {
   if (!form) return <div />;
 
@@ -140,7 +141,6 @@ const FormWizard = ({
     }, 2500);
   }
 
-  const isFirstPage = false;
   const [redirect, setRedirect] = React.useState(false);
   const classes = useStyle();
   const { t } = useTranslation();
@@ -150,6 +150,7 @@ const FormWizard = ({
     return <Redirect to={staticPageUrl} />;
   }
 
+  const isFirstPage = registrationFlow ? false : wizard.isFirstFormPage();
   const pageTitleText = onSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
   const pageCounter = `X / X`;
@@ -168,7 +169,7 @@ const FormWizard = ({
               <FormWizardButton
                 className={classes.topnav}
                 text={t("previous")}
-                disabled={false}
+                disabled={isFirstPage}
                 onClick={onPrevious}
               />
               <label className={classes.toppagenum}>{pageCounter}</label>
@@ -207,7 +208,7 @@ const FormWizard = ({
                 <FormWizardButton
                   className={classes.privbuttonStyle}
                   text={t("previous")}
-                  disabled={false}
+                  disabled={isFirstPage}
                   onClick={onPrevious}
                 />
               </Box>

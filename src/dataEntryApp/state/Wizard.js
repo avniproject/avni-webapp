@@ -15,6 +15,7 @@ class Wizard {
       throw Error("Already on the last page");
     }
     this.currentPage = this.currentPage + 1;
+    console.log(`Wizard: moveNext called. currentPage ${this.currentPage}`);
   }
 
   movePrevious() {
@@ -22,6 +23,7 @@ class Wizard {
       throw Error("Already on the first page");
     }
     this.currentPage = this.currentPage - 1;
+    console.log(`Wizard: movePrevious called. currentPage ${this.currentPage}`);
   }
 
   isFirstFormPage() {

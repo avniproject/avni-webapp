@@ -539,7 +539,8 @@ const mapFormStateToProps = state => {
     formElementGroup: registrationState.formElementGroup,
     onSummaryPage: registrationState.onSummaryPage,
     renderStaticPage: registrationState.renderStaticPage,
-    staticPageUrl: `/app/register?type=${registrationState.subject.subjectType.name}`
+    staticPageUrl: `/app/register?type=${registrationState.subject.subjectType.name}`,
+    wizard: registrationState.wizard
   };
 };
 

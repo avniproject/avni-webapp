@@ -76,14 +76,16 @@ export const onLoadSuccess = (
   registrationForm,
   formElementGroup,
   filteredFormElements,
-  onSummaryPage
+  onSummaryPage,
+  wizard
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   subject,
   registrationForm,
   formElementGroup,
   filteredFormElements,
-  onSummaryPage
+  onSummaryPage,
+  wizard
 });
 
 export const setLoaded = () => ({
@@ -228,7 +230,8 @@ export default function(state = initialState, action) {
         registrationForm: action.registrationForm,
         filteredFormElements: action.filteredFormElements,
         loaded: true,
-        onSummaryPage: action.onSummaryPage
+        onSummaryPage: action.onSummaryPage,
+        wizard: action.wizard
       };
     }
     case types.SET_STATE: {

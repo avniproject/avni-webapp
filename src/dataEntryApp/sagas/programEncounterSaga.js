@@ -198,7 +198,7 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
   const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
-  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
     programEncounterForm,
     programEncounter
   );
@@ -209,7 +209,8 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
       programEncounterForm,
       formElementGroup,
       filteredFormElements,
-      onSummaryPage
+      onSummaryPage,
+      wizard
     )
   );
   yield put.resolve(setSubjectProfile(subject));
@@ -300,7 +301,7 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
   const cancelProgramEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const cancelProgramEncounterForm = mapForm(cancelProgramEncounterFormJson);
 
-  const { formElementGroup, filteredFormElements, onSummaryPage } = commonFormUtil.onLoad(
+  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
     cancelProgramEncounterForm,
     programEncounter
   );
@@ -311,7 +312,8 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
       cancelProgramEncounterForm,
       formElementGroup,
       filteredFormElements,
-      onSummaryPage
+      onSummaryPage,
+      wizard
     )
   );
   yield put.resolve(setSubjectProfile(subject));
@@ -333,14 +335,16 @@ export function* wizardWorker(getNextState) {
     filteredFormElements,
     validationResults,
     observations,
-    onSummaryPage
+    onSummaryPage,
+    wizard
   } = getNextState({
     formElementGroup: state.formElementGroup,
     filteredFormElements: state.filteredFormElements,
     observations: state.programEncounter.observations,
     entity: state.programEncounter,
     validationResults: state.validationResults,
-    onSummaryPage: state.onSummaryPage
+    onSummaryPage: state.onSummaryPage,
+    wizard: state.wizard.clone()
   });
 
   const programEncounter = state.programEncounter.cloneForEdit();
@@ -351,7 +355,8 @@ export function* wizardWorker(getNextState) {
     formElementGroup,
     filteredFormElements,
     validationResults,
-    onSummaryPage
+    onSummaryPage,
+    wizard
   };
   yield put(setState(nextState));
 }

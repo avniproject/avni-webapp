@@ -1,4 +1,4 @@
-import { filter, find, isEmpty, isNil, sortBy, unionBy, remove } from "lodash";
+import { filter, find, isEmpty, isNil, sortBy, unionBy, remove, findIndex } from "lodash";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
 import {
   FormElementGroup,
@@ -7,6 +7,7 @@ import {
   ValidationResult
 } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
+import Wizard from "dataEntryApp/state/Wizard";
 
 const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
@@ -16,18 +17,30 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   };
 };
 
-const onLoad = (form, entity) => {
+const onLoad = (form, entity, defaultWizard = null) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
-    return { formElementGroup: null, filteredFormElements: [], onSummaryPage: true };
+    return {
+      formElementGroup: null,
+      filteredFormElements: [],
+      onSummaryPage: true,
+      wizard: new Wizard(1)
+    };
   }
   const filteredFormElements = filterFormElements(firstGroupWithAtLeastOneVisibleElement, entity);
+  const indexOfGroup =
+    findIndex(
+      form.getFormElementGroups(),
+      feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
+    ) + 1;
   return {
     filteredFormElements,
-    formElementGroup: firstGroupWithAtLeastOneVisibleElement
+    formElementGroup: firstGroupWithAtLeastOneVisibleElement,
+    // wizard: defaultWizard ? defaultWizard : new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup),
+    wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup)
   };
 };
 
@@ -37,8 +50,9 @@ function nextState(
   validationResults,
   observations,
   entity,
-  onSummaryPage = false,
-  renderStaticPage = false
+  onSummaryPage,
+  renderStaticPage,
+  wizard
 ) {
   return {
     formElementGroup,
@@ -47,7 +61,8 @@ function nextState(
     observations,
     entity,
     onSummaryPage,
-    renderStaticPage
+    renderStaticPage,
+    wizard
   };
 }
 
@@ -58,7 +73,8 @@ const onNext = ({
   observations,
   entity,
   filteredFormElements,
-  validationResults
+  validationResults,
+  wizard
 }) => {
   const obsHolder = new ObservationsHolder(observations);
   const formElementGroupValidations = new FormElementGroup().validate(
@@ -79,7 +95,10 @@ const onNext = ({
       filteredFormElements,
       allRuleValidationResults,
       observations,
-      entity
+      entity,
+      false,
+      false,
+      wizard
     );
 
   const nextGroup = formElementGroup.next();
@@ -92,18 +111,32 @@ const onNext = ({
       [],
       observations,
       entity,
-      onSummaryPage
+      onSummaryPage,
+      false,
+      wizard
     );
   }
   const { filteredFormElements: nextFilteredFormElements } = !isEmpty(nextGroup)
     ? filterFormElementsWithStatus(nextGroup, entity)
     : { filteredFormElements: null };
 
+  wizard.moveNext();
   if (isEmpty(nextFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), []);
-    return onNext(nextState(nextGroup, [], [], obsHolder.observations, entity));
+    return onNext(
+      nextState(nextGroup, [], [], obsHolder.observations, entity, false, false, wizard)
+    );
   } else {
-    return nextState(nextGroup, nextFilteredFormElements, [], obsHolder.observations, entity);
+    return nextState(
+      nextGroup,
+      nextFilteredFormElements,
+      [],
+      obsHolder.observations,
+      entity,
+      false,
+      false,
+      wizard
+    );
   }
 };
 
@@ -113,7 +146,8 @@ const onPrevious = ({
   entity,
   filteredFormElements,
   validationResults,
-  onSummaryPage
+  onSummaryPage,
+  wizard
 }) => {
   const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
 
@@ -126,7 +160,8 @@ const onPrevious = ({
       observations,
       entity,
       false,
-      renderStaticPage
+      renderStaticPage,
+      wizard
     );
   }
 
@@ -136,6 +171,7 @@ const onPrevious = ({
     ? filterFormElementsWithStatus(previousGroup, entity)
     : { filteredFormElements: null };
 
+  if (!onSummaryPage) wizard.movePrevious();
   const obsHolder = new ObservationsHolder(observations);
   if (isEmpty(previousFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
@@ -146,7 +182,10 @@ const onPrevious = ({
         previousFilteredFormElements,
         validationResults,
         obsHolder.observations,
-        entity
+        entity,
+        false,
+        false,
+        wizard
       )
     );
   } else {
@@ -155,7 +194,10 @@ const onPrevious = ({
       previousFilteredFormElements,
       validationResults,
       observations,
-      entity
+      entity,
+      false,
+      false,
+      wizard
     );
   }
 };
