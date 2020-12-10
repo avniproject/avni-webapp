@@ -199,6 +199,32 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
           ) : (
             ""
           )}
+          {findButton ? (
+            <SubjectButton
+              btnLabel={findButton.label}
+              btnClass={findButton.classes}
+              btnClick={() => {
+                findButton.click();
+                // handleClose();
+              }}
+              btnDisabled={findButton.disabled}
+            />
+          ) : (
+            ""
+          )}
+          {modifysearch ? (
+            <SubjectButton
+              btnLabel={modifysearch.label}
+              btnClass={modifysearch.classes}
+              btnClick={() => {
+                modifysearch.click();
+                // handleClose();
+              }}
+              btnDisabled={modifysearch.disabled}
+            />
+          ) : (
+            ""
+          )}
           {saveButton && saveButton.requiredField ? (
             <Link to={saveButton.redirectTo}>
               <SubjectButton
@@ -225,32 +251,6 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 handleClose();
               }}
               btnDisabled={applyButton.disabled}
-            />
-          ) : (
-            ""
-          )}
-          {findButton ? (
-            <SubjectButton
-              btnLabel={findButton.label}
-              btnClass={findButton.classes}
-              btnClick={() => {
-                findButton.click();
-                // handleClose();
-              }}
-              btnDisabled={findButton.disabled}
-            />
-          ) : (
-            ""
-          )}
-          {modifysearch ? (
-            <SubjectButton
-              btnLabel={modifysearch.label}
-              btnClass={modifysearch.classes}
-              btnClick={() => {
-                modifysearch.click();
-                // handleClose();
-              }}
-              btnDisabled={modifysearch.disabled}
             />
           ) : (
             ""
