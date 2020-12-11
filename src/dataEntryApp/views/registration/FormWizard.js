@@ -198,9 +198,7 @@ const FormWizard = ({
                 filteredFormElements={filteredFormElements}
                 entity={entity}
                 renderParent={isFirstPage}
-              >
-                {formElementGroup}
-              </FormElementGroupComponent>
+              />
             )}
 
             <Box className={classes.buttomstyle} display="flex">

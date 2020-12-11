@@ -4,7 +4,6 @@ import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 
 export const FormElementGroup = ({
-  children: feg,
   obsHolder,
   updateObs,
   parentChildren,
