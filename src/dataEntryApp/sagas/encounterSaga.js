@@ -33,6 +33,7 @@ import {
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
+import Wizard from "dataEntryApp/state/Wizard";
 
 export default function*() {
   yield all(
@@ -177,10 +178,13 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   const encounterForm = mapForm(encounterFormJson);
   encounter.individual = subject;
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    encounterForm,
-    encounter
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(encounterForm, encounter);
 
   yield put.resolve(
     onLoadSuccess(
@@ -189,7 +193,8 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
   yield put.resolve(setSubjectProfile(subject));
@@ -287,43 +292,53 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
 }
 
 export function* nextWatcher() {
-  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext);
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext, true);
 }
 
 export function* previousWatcher() {
-  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious);
+  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious, false);
 }
 
-export function* wizardWorker(getNextState) {
+export function* wizardWorker(getNextState, isNext) {
   const state = yield select(selectEncounterState);
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    observations,
-    onSummaryPage,
-    wizard
-  } = getNextState({
-    formElementGroup: state.formElementGroup,
-    filteredFormElements: state.filteredFormElements,
-    observations: state.encounter.observations,
-    entity: state.encounter,
-    validationResults: state.validationResults,
-    onSummaryPage: state.onSummaryPage,
-    wizard: state.wizard.clone()
-  });
+  if (state.isFormEmpty) {
+    yield put(
+      setState({
+        ...state,
+        onSummaryPage: isNext,
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
+      })
+    );
+  } else {
+    const {
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      onSummaryPage,
+      wizard
+    } = getNextState({
+      formElementGroup: state.formElementGroup,
+      filteredFormElements: state.filteredFormElements,
+      observations: state.encounter.observations,
+      entity: state.encounter,
+      validationResults: state.validationResults,
+      onSummaryPage: state.onSummaryPage,
+      wizard: state.wizard.clone()
+    });
 
-  const encounter = state.encounter.cloneForEdit();
-  encounter.observations = observations;
-  const nextState = {
-    ...state,
-    encounter,
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    onSummaryPage,
-    wizard
-  };
-  yield put(setState(nextState));
+    const encounter = state.encounter.cloneForEdit();
+    encounter.observations = observations;
+    const nextState = {
+      ...state,
+      encounter,
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      onSummaryPage,
+      wizard
+    };
+    yield put(setState(nextState));
+  }
 }

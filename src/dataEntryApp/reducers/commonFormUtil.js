@@ -24,10 +24,11 @@ const onLoad = (form, entity, defaultWizard = null) => {
   );
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
     return {
-      formElementGroup: null,
+      formElementGroup: new StaticFormElementGroup(form),
       filteredFormElements: [],
-      onSummaryPage: true,
-      wizard: new Wizard(1)
+      onSummaryPage: false,
+      wizard: new Wizard(1),
+      isFormEmpty: true
     };
   }
   const filteredFormElements = filterFormElements(firstGroupWithAtLeastOneVisibleElement, entity);

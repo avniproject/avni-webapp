@@ -77,7 +77,8 @@ export const onLoadSuccess = (
   formElementGroup,
   filteredFormElements,
   onSummaryPage,
-  wizard
+  wizard,
+  isFormEmpty
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   subject,
@@ -85,7 +86,8 @@ export const onLoadSuccess = (
   formElementGroup,
   filteredFormElements,
   onSummaryPage,
-  wizard
+  wizard,
+  isFormEmpty
 });
 
 export const setLoaded = () => ({
@@ -231,7 +233,8 @@ export default function(state = initialState, action) {
         filteredFormElements: action.filteredFormElements,
         loaded: true,
         onSummaryPage: action.onSummaryPage,
-        wizard: action.wizard
+        wizard: action.wizard,
+        isFormEmpty: action.isFormEmpty
       };
     }
     case types.SET_STATE: {
@@ -241,12 +244,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         filteredFormElements: action.filteredFormElements
-      };
-    }
-    case types.STATIC_PAGE_ON_NEXT: {
-      return {
-        ...state,
-        renderStaticPage: false
       };
     }
     default:

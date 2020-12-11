@@ -227,10 +227,13 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationForm = mapForm(registrationFormJson);
   yield put(setRegistrationForm(registrationForm));
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    registrationForm,
-    subject
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(registrationForm, subject);
 
   yield put.resolve(
     onLoadSuccess(
@@ -239,7 +242,8 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
 }
@@ -269,10 +273,13 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
     yield put.resolve(getGenders());
   }
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    registrationForm,
-    subject
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(registrationForm, subject);
 
   yield put.resolve(
     onLoadSuccess(
@@ -281,7 +288,8 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
 }
@@ -412,6 +420,26 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   );
 }
 
+export function* registrationStaticPageNextWatcher() {
+  yield takeLatest(subjectTypes.STATIC_PAGE_ON_NEXT, registrationStaticPageNextWorker);
+}
+
+export function* registrationStaticPageNextWorker() {
+  const state = yield select(selectRegistrationState);
+  if (state.isFormEmpty) {
+    yield put(
+      setRegistrationState({
+        ...state,
+        renderStaticPage: false,
+        onSummaryPage: true,
+        wizard: new Wizard(1, 1, 2)
+      })
+    );
+  } else {
+    yield put(setRegistrationState({ ...state, renderStaticPage: false }));
+  }
+}
+
 export function* registrationNextWatcher() {
   yield takeLatest(subjectTypes.ON_NEXT, registrationWizardWorker, commonFormUtil.onNext);
 }
@@ -463,10 +491,13 @@ export function* resetStateWorker() {
 export function* resetStateWatcher() {
   const registrationState = yield select(selectRegistrationState);
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    registrationState.registrationForm,
-    registrationState.subject
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(registrationState.registrationForm, registrationState.subject);
 
   yield put.resolve(
     onLoadSuccess(
@@ -475,7 +506,8 @@ export function* resetStateWatcher() {
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
 }
@@ -540,7 +572,8 @@ export default function* subjectSaga() {
       enrolmentNextWatcher,
       registrationPreviousWatcher,
       enrolmentPreviousWatcher,
-      resetStateWorker
+      resetStateWorker,
+      registrationStaticPageNextWatcher
     ].map(fork)
   );
 }
