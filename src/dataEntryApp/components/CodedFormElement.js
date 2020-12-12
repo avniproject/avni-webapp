@@ -41,6 +41,17 @@ export const CodedFormElement = ({
   const color = item =>
     isChecked(item) && item.abnormal ? Colors.ValidationError : Colors.DefaultPrimary;
 
+  const renderError = () => {
+    return validationResult || errorMsg ? (
+      <FormHelperText style={{ marginTop: "-10px", marginBottom: "20px" }}>
+        {(validationResult && t(validationResult.messageKey, validationResult.extra)) ||
+          t(errorMsg)}
+      </FormHelperText>
+    ) : (
+      ""
+    );
+  };
+
   return (
     <FormControl
       component="fieldset"
@@ -78,10 +89,7 @@ export const CodedFormElement = ({
           ))}
         </Box>
       </FormGroup>
-      <FormHelperText>
-        {(validationResult && t(validationResult.messageKey, validationResult.extra)) ||
-          t(errorMsg)}
-      </FormHelperText>
+      {renderError()}
     </FormControl>
   );
 };

@@ -76,7 +76,7 @@ const useStyles = makeStyles(theme => ({
     padding: "4px 25px",
     fontSize: 12,
     borderRadius: 50,
-    marginRight: 20
+    marginLeft: 20
   },
   buttomboxstyle: {
     backgroundColor: "#f8f4f4",
@@ -344,6 +344,9 @@ const AddRelative = ({
           justifyContent="flex-start"
         >
           <Box>
+            <Button variant="outlined" className={classes.cancelBtn} onClick={cancelRelation}>
+              CANCEL
+            </Button>
             <Button
               variant="contained"
               className={classes.addBtn}
@@ -352,9 +355,6 @@ const AddRelative = ({
               disabled={isEmpty(relationData.relationshipTypeUUID)}
             >
               ADD
-            </Button>
-            <Button variant="outlined" className={classes.cancelBtn} onClick={cancelRelation}>
-              CANCEL
             </Button>
           </Box>
         </Box>
