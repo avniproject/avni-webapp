@@ -115,10 +115,13 @@ function* setupNewEnrolmentWorker({
   const enrolFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const enrolForm = mapForm(enrolFormJson);
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    enrolForm,
-    programEnrolment
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(enrolForm, programEnrolment);
   yield put.resolve(
     enrolmentOnLoadSuccess(
       programEnrolment,
@@ -126,7 +129,8 @@ function* setupNewEnrolmentWorker({
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
 }
@@ -513,45 +517,60 @@ export function* resetStateWatcher() {
 }
 
 export function* enrolmentNextWatcher() {
-  yield takeLatest(enrolmentTypes.ON_NEXT, enrolmentWizardWorker, commonFormUtil.onNext);
+  yield takeLatest(enrolmentTypes.ON_NEXT, enrolmentWizardWorker, commonFormUtil.onNext, true);
 }
 
 export function* enrolmentPreviousWatcher() {
-  yield takeLatest(enrolmentTypes.ON_PREVIOUS, enrolmentWizardWorker, commonFormUtil.onPrevious);
+  yield takeLatest(
+    enrolmentTypes.ON_PREVIOUS,
+    enrolmentWizardWorker,
+    commonFormUtil.onPrevious,
+    false
+  );
 }
 
-export function* enrolmentWizardWorker(getNextState) {
+export function* enrolmentWizardWorker(getNextState, isNext) {
   const state = yield select(selectProgramEnrolmentState);
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    observations,
-    onSummaryPage,
-    wizard
-  } = getNextState({
-    formElementGroup: state.formElementGroup,
-    filteredFormElements: state.filteredFormElements,
-    observations: state.programEnrolment.observations,
-    entity: state.programEnrolment,
-    validationResults: state.validationResults,
-    onSummaryPage: state.onSummaryPage,
-    wizard: state.wizard.clone()
-  });
+  if (state.isFormEmpty) {
+    yield put(
+      setProgramEnrolmentState({
+        ...state,
+        onSummaryPage: isNext,
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
+      })
+    );
+  } else {
+    const {
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      onSummaryPage,
+      wizard
+    } = getNextState({
+      formElementGroup: state.formElementGroup,
+      filteredFormElements: state.filteredFormElements,
+      observations: state.programEnrolment.observations,
+      entity: state.programEnrolment,
+      validationResults: state.validationResults,
+      onSummaryPage: state.onSummaryPage,
+      wizard: state.wizard.clone()
+    });
 
-  const programEnrolment = state.programEnrolment.cloneForEdit();
-  programEnrolment.observations = observations;
-  const nextState = {
-    ...state,
-    programEnrolment,
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    onSummaryPage,
-    wizard
-  };
-  yield put(setProgramEnrolmentState(nextState));
+    const programEnrolment = state.programEnrolment.cloneForEdit();
+    programEnrolment.observations = observations;
+    const nextState = {
+      ...state,
+      programEnrolment,
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      onSummaryPage,
+      wizard
+    };
+    yield put(setProgramEnrolmentState(nextState));
+  }
 }
 
 export default function* subjectSaga() {

@@ -34,6 +34,7 @@ import {
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import Wizard from "dataEntryApp/state/Wizard";
 
 export default function*() {
   yield all(
@@ -198,10 +199,13 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
   const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    programEncounterForm,
-    programEncounter
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(programEncounterForm, programEncounter);
 
   yield put.resolve(
     onLoadSuccess(
@@ -210,7 +214,8 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
   yield put.resolve(setSubjectProfile(subject));
@@ -301,10 +306,13 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
   const cancelProgramEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const cancelProgramEncounterForm = mapForm(cancelProgramEncounterFormJson);
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    cancelProgramEncounterForm,
-    programEncounter
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(cancelProgramEncounterForm, programEncounter);
 
   yield put.resolve(
     onLoadSuccess(
@@ -313,50 +321,61 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
   yield put.resolve(setSubjectProfile(subject));
 }
 
 export function* nextWatcher() {
-  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext);
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext, true);
 }
 
 export function* previousWatcher() {
-  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious);
+  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious, false);
 }
 
-export function* wizardWorker(getNextState) {
+export function* wizardWorker(getNextState, isNext) {
   const state = yield select(selectProgramEncounterState);
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    observations,
-    onSummaryPage,
-    wizard
-  } = getNextState({
-    formElementGroup: state.formElementGroup,
-    filteredFormElements: state.filteredFormElements,
-    observations: state.programEncounter.observations,
-    entity: state.programEncounter,
-    validationResults: state.validationResults,
-    onSummaryPage: state.onSummaryPage,
-    wizard: state.wizard.clone()
-  });
+  if (state.isFormEmpty) {
+    yield put(
+      setState({
+        ...state,
+        onSummaryPage: isNext,
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
+      })
+    );
+  } else {
+    const {
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      onSummaryPage,
+      wizard
+    } = getNextState({
+      formElementGroup: state.formElementGroup,
+      filteredFormElements: state.filteredFormElements,
+      observations: state.programEncounter.observations,
+      entity: state.programEncounter,
+      validationResults: state.validationResults,
+      onSummaryPage: state.onSummaryPage,
+      wizard: state.wizard.clone()
+    });
 
-  const programEncounter = state.programEncounter.cloneForEdit();
-  programEncounter.observations = observations;
-  const nextState = {
-    ...state,
-    programEncounter,
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    onSummaryPage,
-    wizard
-  };
-  yield put(setState(nextState));
+    const programEncounter = state.programEncounter.cloneForEdit();
+    programEncounter.observations = observations;
+    const nextState = {
+      ...state,
+      programEncounter,
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      onSummaryPage,
+      wizard
+    };
+    yield put(setState(nextState));
+  }
 }

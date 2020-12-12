@@ -60,7 +60,8 @@ export const onLoadSuccess = (
   formElementGroup,
   filteredFormElements,
   onSummaryPage,
-  wizard
+  wizard,
+  isFormEmpty
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   programEncounter,
@@ -68,7 +69,8 @@ export const onLoadSuccess = (
   formElementGroup,
   filteredFormElements,
   onSummaryPage,
-  wizard
+  wizard,
+  isFormEmpty
 });
 
 export const updateObs = (formElement, value) => ({
@@ -213,7 +215,8 @@ export default function(state = initialState, action) {
         formElementGroup: action.formElementGroup,
         filteredFormElements: action.filteredFormElements,
         onSummaryPage: action.onSummaryPage,
-        wizard: action.wizard
+        wizard: action.wizard,
+        isFormEmpty: action.isFormEmpty
       };
     }
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {

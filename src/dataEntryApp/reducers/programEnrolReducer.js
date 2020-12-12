@@ -34,7 +34,8 @@ export const onLoadSuccess = (
   formElementGroup,
   filteredFormElements,
   onSummaryPage,
-  wizard
+  wizard,
+  isFormEmpty
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   programEnrolment,
@@ -42,7 +43,8 @@ export const onLoadSuccess = (
   formElementGroup,
   filteredFormElements,
   onSummaryPage,
-  wizard
+  wizard,
+  isFormEmpty
 });
 
 export const saveProgramEnrolment = isExit => ({
@@ -184,6 +186,7 @@ export default function(state = initialState, action) {
         filteredFormElements: action.filteredFormElements,
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
+        isFormEmpty: action.isFormEmpty,
         load: true
       };
     }

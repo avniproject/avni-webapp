@@ -273,10 +273,13 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   );
   const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
   const encounterCancellationForm = mapForm(cancelEncounterFormJson);
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard } = commonFormUtil.onLoad(
-    encounterCancellationForm,
-    encounter
-  );
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(encounterCancellationForm, encounter);
 
   yield put.resolve(
     onLoadSuccess(
@@ -285,7 +288,8 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
-      wizard
+      wizard,
+      isFormEmpty
     )
   );
   yield put.resolve(setSubjectProfile(subject));
