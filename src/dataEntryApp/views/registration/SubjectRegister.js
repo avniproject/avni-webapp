@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper, Button } from "@material-ui/core";
+import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
 import { ObservationsHolder, AddressLevel } from "avni-models";
 import {
   getRegistrationForm,
@@ -282,25 +282,25 @@ const DefaultPage = props => {
             >
               <Typography variant="subtitle1" gutterBottom>
                 {" "}
-                1. {t("Basic")} {t("details")}
+                {t("Basic Details")}
               </Typography>
-              <Box>
-                <Button className={classes.topprevnav} type="button" disabled>
-                  {t("previous")}
-                </Button>
-                {props.form && <label className={classes.toppagenum}> X / X</label>}
-                <RelativeLink
-                  to="form"
-                  params={{
-                    type: props.subject.subjectType.name
-                  }}
-                  noUnderline
-                >
-                  <Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>
-                    {t("next")}
-                  </Button>
-                </RelativeLink>
-              </Box>
+              {/*<Box>*/}
+              {/*<Button className={classes.topprevnav} type="button" disabled>*/}
+              {/*{t("previous")}*/}
+              {/*</Button>*/}
+              {/*{props.form && <label className={classes.toppagenum}> X / X</label>}*/}
+              {/*<RelativeLink*/}
+              {/*to="form"*/}
+              {/*params={{*/}
+              {/*type: props.subject.subjectType.name*/}
+              {/*}}*/}
+              {/*noUnderline*/}
+              {/*>*/}
+              {/*<Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>*/}
+              {/*{t("next")}*/}
+              {/*</Button>*/}
+              {/*</RelativeLink>*/}
+              {/*</Box>*/}
             </Box>
 
             <Paper className={classes.form}>

@@ -153,7 +153,7 @@ const FormWizard = ({
   const isFirstPage = registrationFlow ? false : wizard.isFirstFormPage();
   const pageTitleText = onSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
-  const pageCounter = `X / X`;
+  // const pageCounter = `X / X`;
 
   return (
     <Fragment>
@@ -165,20 +165,20 @@ const FormWizard = ({
               {" "}
               {pageTitle}
             </Typography>
-            <Box flexDirection={"row"} display={"flex"}>
-              <FormWizardButton
-                className={classes.topnav}
-                text={t("previous")}
-                disabled={isFirstPage}
-                onClick={onPrevious}
-              />
-              <label className={classes.toppagenum}>{pageCounter}</label>
-              <FormWizardButton
-                className={classes.topnav}
-                onClick={onSummaryPage ? onSave : onNext}
-                text={onSummaryPage ? t("save") : t("next")}
-              />
-            </Box>
+            {/*<Box flexDirection={"row"} display={"flex"}>*/}
+            {/*<FormWizardButton*/}
+            {/*className={classes.topnav}*/}
+            {/*text={t("previous")}*/}
+            {/*disabled={isFirstPage}*/}
+            {/*onClick={onPrevious}*/}
+            {/*/>*/}
+            {/*<label className={classes.toppagenum}>{pageCounter}</label>*/}
+            {/*<FormWizardButton*/}
+            {/*className={classes.topnav}*/}
+            {/*onClick={onSummaryPage ? onSave : onNext}*/}
+            {/*text={onSummaryPage ? t("save") : t("next")}*/}
+            {/*/>*/}
+            {/*</Box>*/}
           </Box>
           <Paper className={classes.form}>
             {onSummaryPage ? (
