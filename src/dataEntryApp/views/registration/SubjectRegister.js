@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper, Button } from "@material-ui/core";
+import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
 import { ObservationsHolder, AddressLevel } from "avni-models";
 import {
   getRegistrationForm,
@@ -13,7 +13,9 @@ import {
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  onLoadEdit
+  onLoadEdit,
+  onNext,
+  onReset
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -28,9 +30,13 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
-import { setFilteredFormElements } from "../../reducers/RulesReducer";
 import Stepper from "./Stepper";
-import { fetchRegistrationRulesResponse } from "dataEntryApp/reducers/registrationReducer";
+import {
+  fetchRegistrationRulesResponse,
+  onPrevious,
+  selectRegistrationState,
+  staticPageOnNext
+} from "dataEntryApp/reducers/registrationReducer";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { dateFormat } from "dataEntryApp/constants";
 
@@ -164,8 +170,7 @@ const DefaultPage = props => {
     setValidationResultToError(props.subject.validateGender());
     setValidationResultToError(props.subject.validateAddress());
 
-    //needs to used when village location is set
-    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+    let shouldPreventDefault = false;
     if (props.subject.subjectType.isPerson()) {
       if (
         !(
@@ -178,6 +183,7 @@ const DefaultPage = props => {
         )
       ) {
         event.preventDefault();
+        shouldPreventDefault = true;
       }
     } else {
       if (
@@ -188,14 +194,14 @@ const DefaultPage = props => {
         )
       ) {
         event.preventDefault();
+        shouldPreventDefault = true;
       }
     }
-  };
 
-  const formElementGroups = props.form
-    .getFormElementGroups()
-    .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
-  const totalNumberOfPages = formElementGroups.length + 2;
+    if (!shouldPreventDefault) {
+      props.staticPageOnNext();
+    }
+  };
 
   function renderAddress() {
     const {
@@ -276,28 +282,25 @@ const DefaultPage = props => {
             >
               <Typography variant="subtitle1" gutterBottom>
                 {" "}
-                1. {t("Basic")} {t("details")}
+                {t("Basic Details")}
               </Typography>
-              <Box>
-                <Button className={classes.topprevnav} type="button" disabled>
-                  {t("previous")}
-                </Button>
-                {props.form && (
-                  <label className={classes.toppagenum}> 1 / {totalNumberOfPages}</label>
-                )}
-                <RelativeLink
-                  to="form"
-                  params={{
-                    type: props.subject.subjectType.name,
-                    from: props.location.pathname + props.location.search
-                  }}
-                  noUnderline
-                >
-                  <Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>
-                    {t("next")}
-                  </Button>
-                </RelativeLink>
-              </Box>
+              {/*<Box>*/}
+              {/*<Button className={classes.topprevnav} type="button" disabled>*/}
+              {/*{t("previous")}*/}
+              {/*</Button>*/}
+              {/*{props.form && <label className={classes.toppagenum}> X / X</label>}*/}
+              {/*<RelativeLink*/}
+              {/*to="form"*/}
+              {/*params={{*/}
+              {/*type: props.subject.subjectType.name*/}
+              {/*}}*/}
+              {/*noUnderline*/}
+              {/*>*/}
+              {/*<Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>*/}
+              {/*{t("next")}*/}
+              {/*</Button>*/}
+              {/*</RelativeLink>*/}
+              {/*</Box>*/}
             </Box>
 
             <Paper className={classes.form}>
@@ -460,8 +463,7 @@ const DefaultPage = props => {
                   <RelativeLink
                     to="form"
                     params={{
-                      type: props.subject.subjectType.name,
-                      from: props.location.pathname + props.location.search
+                      type: props.subject.subjectType.name
                     }}
                     noUnderline
                   >
@@ -483,18 +485,21 @@ const DefaultPage = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  user: state.app.user,
-  genders: state.dataEntry.metadata.genders,
-  addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
-  customRegistrationLocations:
-    state.dataEntry.metadata.operationalModules.customRegistrationLocations,
-  form: state.dataEntry.registration.registrationForm,
-  subject: state.dataEntry.registration.subject,
-  loaded: state.dataEntry.registration.loaded,
-  saved: state.dataEntry.registration.saved,
-  selectedAddressLevelType: state.dataEntry.registration.selectedAddressLevelType
-});
+const mapStateToProps = state => {
+  const registrationState = selectRegistrationState(state);
+  return {
+    user: state.app.user,
+    genders: state.dataEntry.metadata.genders,
+    addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
+    customRegistrationLocations:
+      state.dataEntry.metadata.operationalModules.customRegistrationLocations,
+    form: registrationState.registrationForm,
+    subject: registrationState.subject,
+    loaded: registrationState.loaded,
+    saved: registrationState.saved,
+    selectedAddressLevelType: registrationState.selectedAddressLevelType
+  };
+};
 
 const mapDispatchToProps = {
   getRegistrationForm,
@@ -505,7 +510,8 @@ const mapDispatchToProps = {
   setSubject,
   saveCompleteFalse,
   setValidationResults,
-  selectAddressLevelType
+  selectAddressLevelType,
+  staticPageOnNext
 };
 
 const ConnectedDefaultPage = withRouter(
@@ -517,27 +523,35 @@ const ConnectedDefaultPage = withRouter(
   )
 );
 
-const mapFormStateToProps = state => ({
-  form: state.dataEntry.registration.registrationForm,
-  obsHolder:
-    state.dataEntry.registration.subject &&
-    new ObservationsHolder(state.dataEntry.registration.subject.observations),
-  observations:
-    state.dataEntry.registration.subject && state.dataEntry.registration.subject.observations,
-  saved: state.dataEntry.registration.saved,
-  subject: state.dataEntry.registration.subject,
-  onSaveGoto: `/app/subject?uuid=${state.dataEntry.registration.subject.uuid}`,
-  validationResults: state.dataEntry.registration.validationResults,
-  registrationFlow: true,
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
-  entity: state.dataEntry.registration.subject
-});
+const mapFormStateToProps = state => {
+  const registrationState = selectRegistrationState(state);
+  return {
+    form: registrationState.registrationForm,
+    obsHolder:
+      registrationState.subject && new ObservationsHolder(registrationState.subject.observations),
+    observations: registrationState.subject && registrationState.subject.observations,
+    saved: registrationState.saved,
+    subject: registrationState.subject,
+    onSaveGoto: `/app/subject?uuid=${registrationState.subject.uuid}`,
+    validationResults: registrationState.validationResults,
+    registrationFlow: true,
+    filteredFormElements: registrationState.filteredFormElements,
+    entity: registrationState.subject,
+    formElementGroup: registrationState.formElementGroup,
+    onSummaryPage: registrationState.onSummaryPage,
+    renderStaticPage: registrationState.renderStaticPage,
+    staticPageUrl: `/app/register?type=${registrationState.subject.subjectType.name}`,
+    wizard: registrationState.wizard
+  };
+};
 
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveSubject,
   setValidationResults,
-  setFilteredFormElements
+  onNext,
+  onPrevious,
+  onReset
 };
 
 const RegistrationForm = withRouter(

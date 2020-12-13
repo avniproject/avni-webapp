@@ -11,14 +11,20 @@ export const types = {
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   ON_LOAD: `${prefix}ON_LOAD`,
   ON_LOAD_EDIT: `${prefix}ON_LOAD_EDIT`,
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
   SET_LOADED: `${prefix}SET_LOADED`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
   SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
-  GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`,
-  SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`
+  SET_INITIAL_SUBJECT_STATE: `${prefix}SET_INITIAL_SUBJECT_STATE`,
+  ON_NEXT: `${prefix}ON_NEXT`,
+  ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
+  SET_STATE: `${prefix}SET_STATE`,
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
+  STATIC_PAGE_ON_NEXT: `${prefix}STATIC_PAGE_ON_NEXT`,
+  ON_RESET: `${prefix}ON_RESET`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -65,6 +71,25 @@ export const onLoadEdit = subjectUuid => ({
   subjectUuid
 });
 
+export const onLoadSuccess = (
+  subject,
+  registrationForm,
+  formElementGroup,
+  filteredFormElements,
+  onSummaryPage,
+  wizard,
+  isFormEmpty
+) => ({
+  type: types.ON_LOAD_SUCCESS,
+  subject,
+  registrationForm,
+  formElementGroup,
+  filteredFormElements,
+  onSummaryPage,
+  wizard,
+  isFormEmpty
+});
+
 export const setLoaded = () => ({
   type: types.SET_LOADED
 });
@@ -88,12 +113,34 @@ export const setValidationResults = validationResults => ({
   validationResults
 });
 
-export const getValidationResults = () => ({
-  type: types.GET_VALIDATION_RESULTS
-});
-
 export const setInitialSubjectState = () => ({
   type: types.SET_INITIAL_SUBJECT_STATE
+});
+
+export const onNext = () => ({
+  type: types.ON_NEXT
+});
+
+export const onPrevious = () => ({
+  type: types.ON_PREVIOUS
+});
+
+export const setState = state => ({
+  type: types.SET_STATE,
+  state
+});
+
+export const setFilteredFormElements = filteredFormElements => ({
+  type: types.SET_FILTERED_FORM_ELEMENTS,
+  filteredFormElements
+});
+
+export const staticPageOnNext = () => ({
+  type: types.STATIC_PAGE_ON_NEXT
+});
+
+export const onReset = () => ({
+  type: types.ON_RESET
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -111,6 +158,8 @@ export const fetchRegistrationRulesResponse = () => {
     );
   };
 };
+
+export const selectRegistrationState = state => state.dataEntry.registration;
 
 const initialState = {
   saved: false,
@@ -174,6 +223,28 @@ export default function(state = initialState, action) {
     }
     case types.SET_INITIAL_SUBJECT_STATE: {
       return initialState;
+    }
+    case types.ON_LOAD_SUCCESS: {
+      return {
+        ...state,
+        subject: action.subject,
+        formElementGroup: action.formElementGroup,
+        registrationForm: action.registrationForm,
+        filteredFormElements: action.filteredFormElements,
+        loaded: true,
+        onSummaryPage: action.onSummaryPage,
+        wizard: action.wizard,
+        isFormEmpty: action.isFormEmpty
+      };
+    }
+    case types.SET_STATE: {
+      return action.state;
+    }
+    case types.SET_FILTERED_FORM_ELEMENTS: {
+      return {
+        ...state,
+        filteredFormElements: action.filteredFormElements
+      };
     }
     default:
       return state;

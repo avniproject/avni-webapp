@@ -6,9 +6,10 @@ import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
   updateCancelObs,
   saveEncounter,
-  setValidationResults
+  setValidationResults,
+  onNext,
+  onPrevious
 } from "dataEntryApp/reducers/encounterReducer";
-import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 const mapFormStateToProps = state => {
   const encounter = state.dataEntry.encounterReducer.encounter;
@@ -19,7 +20,6 @@ const mapFormStateToProps = state => {
     obsHolder: new ObservationsHolder(encounter.cancelObservations),
     saved: state.dataEntry.encounterReducer.saved,
     onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-    staticValidationResults: state.dataEntry.encounterReducer.enconterDateValidation,
     validationResults: state.dataEntry.encounterReducer.validationResults,
     message: encounter.name
       ? `${encounter.name} Encounter Canceled`
@@ -32,8 +32,11 @@ const mapFormStateToProps = state => {
         value: moment(encounter.cancelDateTime).format("DD-MMM-YYYY")
       }
     ],
-    filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
-    entity: encounter
+    filteredFormElements: state.dataEntry.encounterReducer.filteredFormElements,
+    entity: encounter,
+    formElementGroup: state.dataEntry.encounterReducer.formElementGroup,
+    onSummaryPage: state.dataEntry.encounterReducer.onSummaryPage,
+    wizard: state.dataEntry.encounterReducer.wizard
   };
 };
 
@@ -41,7 +44,8 @@ const mapFormDispatchToProps = {
   updateObs: updateCancelObs,
   onSave: () => saveEncounter(true),
   setValidationResults,
-  setFilteredFormElements
+  onNext,
+  onPrevious
 };
 
 const CancelEncounterForm = withRouter(

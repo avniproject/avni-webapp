@@ -1,18 +1,14 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper, Typography } from "@material-ui/core";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { isNil, isEqual, isEmpty, first } from "lodash";
+import { Grid, Paper } from "@material-ui/core";
+import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   onLoad,
   updateProgramEncounter,
-  setEncounterDateValidation,
   editProgramEncounter,
   resetState,
   createProgramEncounter,
@@ -20,9 +16,13 @@ import {
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import programEncounterService from "../../../services/ProgramEncounterService";
-import { fetchProgramEncounterRulesResponse } from "dataEntryApp/reducers/programEncounterReducer";
-import { dateFormat } from "dataEntryApp/constants";
+import {
+  fetchProgramEncounterRulesResponse,
+  setEncounterDate
+} from "dataEntryApp/reducers/programEncounterReducer";
+import { AbstractEncounter } from "openchs-models";
+import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
+import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,8 +32,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
-  const { t } = useTranslation();
+const ProgramEncounter = ({
+  match,
+  programEncounter,
+  validationResults,
+  setEncounterDate,
+  ...props
+}) => {
   const classes = useStyles();
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
@@ -61,46 +66,13 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
           <Grid item xs={12}>
             {props.programEncounterForm && programEncounter && props.subjectProfile ? (
               <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-                  >
-                    Visit Date
-                  </Typography>
-                  <KeyboardDatePicker
-                    style={{ width: "30%" }}
-                    margin="none"
-                    size="small"
-                    id="date-picker-dialog"
-                    format={dateFormat}
-                    placeholder={dateFormat}
-                    name="visitDateTime"
-                    autoComplete="off"
-                    required
-                    value={new Date(programEncounter.encounterDateTime)}
-                    error={
-                      !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
-                    }
-                    helperText={
-                      !isEmpty(enconterDateValidation) &&
-                      t(first(enconterDateValidation).messageKey)
-                    }
-                    onChange={date => {
-                      const visitDate = isNil(date) ? undefined : new Date(date);
-                      programEncounter.encounterDateTime = visitDate;
-                      props.updateProgramEncounter("encounterDateTime", visitDate);
-                      props.setEncounterDateValidation([
-                        programEncounterService.validateVisitDate(programEncounter)
-                      ]);
-                    }}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                      color: "primary"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <DateFormElement
+                  uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
+                  formElement={new StaticFormElement("Visit Date", true, true)}
+                  value={programEncounter.encounterDateTime}
+                  validationResults={validationResults}
+                  update={setEncounterDate}
+                />
               </ProgramEncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />
@@ -116,17 +88,17 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
+  validationResults: state.dataEntry.programEncounterReducer.validationResults
 });
 
 const mapDispatchToProps = {
   onLoad,
   updateProgramEncounter,
-  setEncounterDateValidation,
   editProgramEncounter,
   resetState,
   createProgramEncounter,
-  createProgramEncounterForScheduled
+  createProgramEncounterForScheduled,
+  setEncounterDate
 };
 
 export default withRouter(

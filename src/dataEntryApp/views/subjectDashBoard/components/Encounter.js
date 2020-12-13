@@ -1,27 +1,25 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper, Typography } from "@material-ui/core";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { isNil, isEmpty, first, isEqual } from "lodash";
+import { Grid, Paper } from "@material-ui/core";
+import { isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   updateEncounter,
-  setEncounterDateValidation,
   resetState,
   createEncounter,
   createEncounterForScheduled,
   editEncounter,
-  fetchEncounterRulesResponse
+  fetchEncounterRulesResponse,
+  setEncounterDate
 } from "dataEntryApp/reducers/encounterReducer";
-import encounterService from "../../../services/EncounterService";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import { dateFormat } from "dataEntryApp/constants";
+import { DateFormElement } from "dataEntryApp/components/DateFormElement";
+import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
+import { AbstractEncounter } from "openchs-models";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,8 +29,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
-  const { t } = useTranslation();
+const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...props }) => {
   const classes = useStyles();
   const editEncounter = isEqual(match.path, "/app/subject/editEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
@@ -59,46 +56,13 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
           <Grid item xs={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-                  >
-                    Visit Date
-                  </Typography>
-                  <KeyboardDatePicker
-                    style={{ width: "30%" }}
-                    margin="none"
-                    size="small"
-                    id="date-picker-dialog"
-                    format={dateFormat}
-                    placeholder={dateFormat}
-                    name="visitDateTime"
-                    autoComplete="off"
-                    required
-                    value={new Date(encounter.encounterDateTime)}
-                    error={
-                      !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
-                    }
-                    helperText={
-                      !isEmpty(enconterDateValidation) &&
-                      t(first(enconterDateValidation).messageKey)
-                    }
-                    onChange={date => {
-                      const visitDate = isNil(date) ? undefined : new Date(date);
-                      encounter.encounterDateTime = visitDate;
-                      props.updateEncounter("encounterDateTime", visitDate);
-                      props.setEncounterDateValidation([
-                        encounterService.validateVisitDate(encounter)
-                      ]);
-                    }}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                      color: "primary"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <DateFormElement
+                  uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
+                  formElement={new StaticFormElement("Visit Date", true, true)}
+                  value={encounter.encounterDateTime}
+                  validationResults={validationResults}
+                  update={setEncounterDate}
+                />
               </EncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />
@@ -114,16 +78,16 @@ const mapStateToProps = state => ({
   encounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter,
-  enconterDateValidation: state.dataEntry.encounterReducer.enconterDateValidation
+  validationResults: state.dataEntry.encounterReducer.validationResults
 });
 
 const mapDispatchToProps = {
   updateEncounter,
-  setEncounterDateValidation,
   resetState,
   createEncounter,
   createEncounterForScheduled,
-  editEncounter
+  editEncounter,
+  setEncounterDate
 };
 
 export default withRouter(

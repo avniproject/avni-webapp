@@ -4,11 +4,14 @@ import {
   types,
   setProgramEnrolment,
   setUnplanProgramEncounters,
-  setProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
-  setValidationResults
-} from "../reducers/programEncounterReducer";
+  setValidationResults,
+  onLoadSuccess,
+  selectProgramEncounterState,
+  setState,
+  setFilteredFormElements
+} from "dataEntryApp/reducers/programEncounterReducer";
 import api from "../api";
 import {
   selectFormMappingForSubjectType,
@@ -26,11 +29,12 @@ import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProgramEncounter, mapProgramEnrolment, mapProfile } from "common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
-import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
   selectDecisions,
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import Wizard from "dataEntryApp/state/Wizard";
 
 export default function*() {
   yield all(
@@ -43,7 +47,9 @@ export default function*() {
       createProgramEncounterWatcher,
       createProgramEncounterForScheduledWatcher,
       createCancelProgramEncounterWatcher,
-      editCancelProgramEncounterWatcher
+      editCancelProgramEncounterWatcher,
+      nextWatcher,
+      previousWatcher
     ].map(fork)
   );
 }
@@ -188,12 +194,30 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
       subjectProfileJson.subjectType.uuid
     )
   );
-  const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const programEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const programEncounterForm = mapForm(programEncounterFormJson);
   const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
   programEncounter.programEnrolment = programEnrolment;
 
-  yield put.resolve(setProgramEncounter(programEncounter));
-  yield put.resolve(setProgramEncounterForm(mapForm(programEncounterForm)));
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(programEncounterForm, programEncounter);
+
+  yield put.resolve(
+    onLoadSuccess(
+      programEncounter,
+      programEncounterForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage,
+      wizard,
+      isFormEmpty
+    )
+  );
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -269,6 +293,9 @@ export function* editCancelProgramEncounterWorker({ programEncounterUuid }) {
 export function* setCancelProgramEncounterDetails(programEncounter, programEnrolmentJson) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolmentJson.subjectUuid);
   const subject = mapProfile(subjectProfileJson);
+  const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
+  programEncounter.programEnrolment = programEnrolment;
+
   const formMapping = yield select(
     selectFormMappingForCancelProgramEncounter(
       programEncounter.encounterType.uuid,
@@ -276,11 +303,79 @@ export function* setCancelProgramEncounterDetails(programEncounter, programEnrol
       subjectProfileJson.subjectType.uuid
     )
   );
-  const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  const programEnrolment = mapProgramEnrolment(programEnrolmentJson, subject);
-  programEncounter.programEnrolment = programEnrolment;
+  const cancelProgramEncounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const cancelProgramEncounterForm = mapForm(cancelProgramEncounterFormJson);
 
-  yield put.resolve(setProgramEncounter(programEncounter));
-  yield put.resolve(setProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(cancelProgramEncounterForm, programEncounter);
+
+  yield put.resolve(
+    onLoadSuccess(
+      programEncounter,
+      cancelProgramEncounterForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage,
+      wizard,
+      isFormEmpty
+    )
+  );
   yield put.resolve(setSubjectProfile(subject));
+}
+
+export function* nextWatcher() {
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext, true);
+}
+
+export function* previousWatcher() {
+  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious, false);
+}
+
+export function* wizardWorker(getNextState, isNext) {
+  const state = yield select(selectProgramEncounterState);
+
+  if (state.isFormEmpty) {
+    yield put(
+      setState({
+        ...state,
+        onSummaryPage: isNext,
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
+      })
+    );
+  } else {
+    const {
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      onSummaryPage,
+      wizard
+    } = getNextState({
+      formElementGroup: state.formElementGroup,
+      filteredFormElements: state.filteredFormElements,
+      observations: state.programEncounter.observations,
+      entity: state.programEncounter,
+      validationResults: state.validationResults,
+      onSummaryPage: state.onSummaryPage,
+      wizard: state.wizard.clone()
+    });
+
+    const programEncounter = state.programEncounter.cloneForEdit();
+    programEncounter.observations = observations;
+    const nextState = {
+      ...state,
+      programEncounter,
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      onSummaryPage,
+      wizard
+    };
+    yield put(setState(nextState));
+  }
 }

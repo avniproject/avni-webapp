@@ -14,7 +14,6 @@ import relations from "./relationshipReducer";
 import encounterReducer from "./encounterReducer";
 import loadReducer from "./loadReducer";
 import searchFilterReducer from "./searchFilterReducer";
-import rulesReducer from "./RulesReducer";
 import serverSideRulesReducer from "./serverSideRulesReducer";
 
 export default combineReducers({
@@ -33,6 +32,5 @@ export default combineReducers({
   encounterReducer,
   loadReducer,
   searchFilterReducer,
-  rulesReducer,
   serverSideRulesReducer
 });

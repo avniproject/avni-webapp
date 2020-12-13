@@ -1,4 +1,5 @@
 import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 const prefix = "app/dataEntry/reducer/programEncounter/";
 
@@ -13,14 +14,19 @@ export const types = {
   SAVE_PROGRAM_ENCOUNTER_COMPLETE: `${prefix}SAVE_PROGRAM_ENCOUNTER_COMPLETE`,
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
-  SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
   RESET_STATE: `${prefix}RESET_STATE`,
   CREATE_PROGRAM_ENCOUNTER: `${prefix}CREATE_PROGRAM_ENCOUNTER`,
   CREATE_PROGRAM_ENCOUNTER_FOR_SCHEDULED: `${prefix}CREATE_PROGRAM_ENCOUNTER_FOR_SCHEDULED`,
   EDIT_PROGRAM_ENCOUNTER: `${prefix}EDIT_PROGRAM_ENCOUNTER`,
   UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   CREATE_CANCEL_PROGRAM_ENCOUNTER: `${prefix}CREATE_CANCEL_PROGRAM_ENCOUNTER`,
-  EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}EDIT_CANCEL_PROGRAM_ENCOUNTER`
+  EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}EDIT_CANCEL_PROGRAM_ENCOUNTER`,
+  ON_LOAD_SUCCESS: `${prefix}ON_LOAD_SUCCESS`,
+  ON_NEXT: `${prefix}ON_NEXT`,
+  ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
+  SET_STATE: `${prefix}SET_STATE`,
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
+  SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -46,6 +52,25 @@ export const setProgramEncounterForm = programEncounterForm => ({
 export const setProgramEncounter = programEncounter => ({
   type: types.SET_PROGRAM_ENCOUNTER,
   programEncounter
+});
+
+export const onLoadSuccess = (
+  programEncounter,
+  programEncounterForm,
+  formElementGroup,
+  filteredFormElements,
+  onSummaryPage,
+  wizard,
+  isFormEmpty
+) => ({
+  type: types.ON_LOAD_SUCCESS,
+  programEncounter,
+  programEncounterForm,
+  formElementGroup,
+  filteredFormElements,
+  onSummaryPage,
+  wizard,
+  isFormEmpty
 });
 
 export const updateObs = (formElement, value) => ({
@@ -80,11 +105,6 @@ export const setValidationResults = validationResults => ({
   validationResults
 });
 
-export const setEncounterDateValidation = enconterDateValidation => ({
-  type: types.SET_ENCOUNTER_DATE_VALIDATION,
-  enconterDateValidation
-});
-
 export const editProgramEncounter = programEncounterUuid => ({
   type: types.EDIT_PROGRAM_ENCOUNTER,
   programEncounterUuid
@@ -115,6 +135,29 @@ export const editCancelProgramEncounter = programEncounterUuid => ({
   programEncounterUuid
 });
 
+export const onNext = () => ({
+  type: types.ON_NEXT
+});
+
+export const onPrevious = () => ({
+  type: types.ON_PREVIOUS
+});
+
+export const setState = state => ({
+  type: types.SET_STATE,
+  state
+});
+
+export const setFilteredFormElements = filteredFormElements => ({
+  type: types.SET_FILTERED_FORM_ELEMENTS,
+  filteredFormElements
+});
+
+export const setEncounterDate = encounterDate => ({
+  type: types.SET_ENCOUNTER_DATE,
+  encounterDate
+});
+
 export const fetchProgramEncounterRulesResponse = () => {
   return (dispatch, getState) => {
     const state = getState();
@@ -131,10 +174,11 @@ export const fetchProgramEncounterRulesResponse = () => {
   };
 };
 
+export const selectProgramEncounterState = state => state.dataEntry.programEncounterReducer;
+
 const initialState = {
   saved: false,
-  validationResults: [],
-  enconterDateValidation: []
+  validationResults: []
 };
 
 export default function(state = initialState, action) {
@@ -163,6 +207,18 @@ export default function(state = initialState, action) {
         programEncounter: action.programEncounter
       };
     }
+    case types.ON_LOAD_SUCCESS: {
+      return {
+        ...state,
+        programEncounter: action.programEncounter,
+        programEncounterForm: action.programEncounterForm,
+        formElementGroup: action.formElementGroup,
+        filteredFormElements: action.filteredFormElements,
+        onSummaryPage: action.onSummaryPage,
+        wizard: action.wizard,
+        isFormEmpty: action.isFormEmpty
+      };
+    }
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {
       return {
         ...state,
@@ -183,10 +239,18 @@ export default function(state = initialState, action) {
         validationResults: action.validationResults
       };
     }
-    case types.SET_ENCOUNTER_DATE_VALIDATION: {
+    case types.SET_ENCOUNTER_DATE: {
+      const programEncounter = state.programEncounter.cloneForEdit();
+      programEncounter.encounterDateTime = action.encounterDate;
+      const validationResults = commonFormUtil.handleValidationResult(
+        programEncounter.validate(),
+        state.validationResults
+      );
+
       return {
         ...state,
-        enconterDateValidation: action.enconterDateValidation
+        programEncounter,
+        validationResults
       };
     }
     case types.RESET_STATE: {
@@ -194,11 +258,19 @@ export default function(state = initialState, action) {
         ...state,
         saved: false,
         validationResults: [],
-        enconterDateValidation: [],
         programEncounter: null,
         programEncounterForm: null,
         programEnrolment: null,
         unplanProgramEncounters: null
+      };
+    }
+    case types.SET_STATE: {
+      return action.state;
+    }
+    case types.SET_FILTERED_FORM_ELEMENTS: {
+      return {
+        ...state,
+        filteredFormElements: action.filteredFormElements
       };
     }
     default:

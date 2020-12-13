@@ -3,10 +3,11 @@ import { find } from "lodash";
 import {
   types,
   setEncounterFormMappings,
-  setEncounterForm,
   setEncounter,
   saveEncounterComplete,
-  setValidationResults
+  setValidationResults,
+  onLoadSuccess,
+  setFilteredFormElements
 } from "../reducers/encounterReducer";
 import api from "../api";
 import {
@@ -26,11 +27,13 @@ import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
-import { setFilteredFormElements } from "../reducers/RulesReducer";
 import {
   selectDecisions,
   selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
+import Wizard from "dataEntryApp/state/Wizard";
 
 export default function*() {
   yield all(
@@ -43,7 +46,9 @@ export default function*() {
       editEncounterWatcher,
       updateCancelEncounterObsWatcher,
       createCancelEncounterWatcher,
-      editCancelEncounterWatcher
+      editCancelEncounterWatcher,
+      nextWatcher,
+      previousWatcher
     ].map(fork)
   );
 }
@@ -169,11 +174,29 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   const formMapping = yield select(
     selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
   );
-  const encounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const encounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
+  const encounterForm = mapForm(encounterFormJson);
   encounter.individual = subject;
 
-  yield put.resolve(setEncounter(encounter));
-  yield put.resolve(setEncounterForm(mapForm(encounterForm)));
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(encounterForm, encounter);
+
+  yield put.resolve(
+    onLoadSuccess(
+      encounter,
+      encounterForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage,
+      wizard,
+      isFormEmpty
+    )
+  );
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -240,16 +263,86 @@ export function* editCancelEncounterWorker({ encounterUuid }) {
 
 export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   const subject = mapProfile(subjectProfileJson);
+  encounter.individual = subject;
+
   const cancelFormMapping = yield select(
     selectFormMappingForCancelEncounter(
       encounter.encounterType.uuid,
       subjectProfileJson.subjectType.uuid
     )
   );
-  const cancelEncounterForm = yield call(api.fetchForm, cancelFormMapping.formUUID);
-  encounter.individual = subject;
+  const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
+  const encounterCancellationForm = mapForm(cancelEncounterFormJson);
+  const {
+    formElementGroup,
+    filteredFormElements,
+    onSummaryPage,
+    wizard,
+    isFormEmpty
+  } = commonFormUtil.onLoad(encounterCancellationForm, encounter);
 
-  yield put.resolve(setEncounter(encounter));
-  yield put.resolve(setEncounterForm(mapForm(cancelEncounterForm)));
+  yield put.resolve(
+    onLoadSuccess(
+      encounter,
+      encounterCancellationForm,
+      formElementGroup,
+      filteredFormElements,
+      onSummaryPage,
+      wizard,
+      isFormEmpty
+    )
+  );
   yield put.resolve(setSubjectProfile(subject));
+}
+
+export function* nextWatcher() {
+  yield takeLatest(types.ON_NEXT, wizardWorker, commonFormUtil.onNext, true);
+}
+
+export function* previousWatcher() {
+  yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious, false);
+}
+
+export function* wizardWorker(getNextState, isNext) {
+  const state = yield select(selectEncounterState);
+
+  if (state.isFormEmpty) {
+    yield put(
+      setState({
+        ...state,
+        onSummaryPage: isNext,
+        wizard: isNext ? new Wizard(1, 1, 2) : new Wizard(1)
+      })
+    );
+  } else {
+    const {
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      onSummaryPage,
+      wizard
+    } = getNextState({
+      formElementGroup: state.formElementGroup,
+      filteredFormElements: state.filteredFormElements,
+      observations: state.encounter.observations,
+      entity: state.encounter,
+      validationResults: state.validationResults,
+      onSummaryPage: state.onSummaryPage,
+      wizard: state.wizard.clone()
+    });
+
+    const encounter = state.encounter.cloneForEdit();
+    encounter.observations = observations;
+    const nextState = {
+      ...state,
+      encounter,
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      onSummaryPage,
+      wizard
+    };
+    yield put(setState(nextState));
+  }
 }

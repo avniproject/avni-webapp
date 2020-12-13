@@ -1,11 +1,9 @@
-import { get, isNil } from "lodash";
+import { get } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
-import { filterFormElements } from "../services/FormElementService";
 
 export const FormElementGroup = ({
-  children: feg,
   obsHolder,
   updateObs,
   parentChildren,
@@ -14,15 +12,12 @@ export const FormElementGroup = ({
   entity,
   renderParent
 }) => {
-  const formElements = isNil(filteredFormElements)
-    ? filterFormElements(feg, entity)
-    : filteredFormElements;
   return (
     <div>
       <LineBreak num={1} />
       {parentChildren && renderParent ? parentChildren : ""}
 
-      {formElements.map(fe => {
+      {filteredFormElements.map(fe => {
         const observation = obsHolder.findObservation(fe.concept);
         const observationValue = observation
           ? observation.concept.isDurationConcept()

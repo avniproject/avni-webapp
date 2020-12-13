@@ -6,9 +6,10 @@ import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
   updateObs,
   saveEncounter,
-  setValidationResults
+  setValidationResults,
+  onNext,
+  onPrevious
 } from "dataEntryApp/reducers/encounterReducer";
-import { setFilteredFormElements } from "../../../reducers/RulesReducer";
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.encounterReducer.encounterForm,
@@ -17,7 +18,6 @@ const mapFormStateToProps = state => ({
   obsHolder: new ObservationsHolder(state.dataEntry.encounterReducer.encounter.observations),
   saved: state.dataEntry.encounterReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  staticValidationResults: state.dataEntry.encounterReducer.enconterDateValidation,
   validationResults: state.dataEntry.encounterReducer.validationResults,
   message: state.dataEntry.encounterReducer.encounter.name
     ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Saved`
@@ -32,15 +32,19 @@ const mapFormStateToProps = state => ({
       )
     }
   ],
-  filteredFormElements: state.dataEntry.rulesReducer.filteredFormElements,
-  entity: state.dataEntry.encounterReducer.encounter
+  filteredFormElements: state.dataEntry.encounterReducer.filteredFormElements,
+  entity: state.dataEntry.encounterReducer.encounter,
+  formElementGroup: state.dataEntry.encounterReducer.formElementGroup,
+  onSummaryPage: state.dataEntry.encounterReducer.onSummaryPage,
+  wizard: state.dataEntry.encounterReducer.wizard
 });
 
 const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveEncounter(false),
   setValidationResults,
-  setFilteredFormElements
+  onNext,
+  onPrevious
 };
 
 const EncounterForm = withRouter(

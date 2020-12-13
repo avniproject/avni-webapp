@@ -1,15 +1,11 @@
 import React, { Fragment } from "react";
-import { filter, find, findIndex, isEmpty, isNil, sortBy, unionBy } from "lodash";
 import { withParams } from "../../../common/components/utils";
 import { Redirect, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import Summary from "./Summary";
-import { Box, Button, Paper, Typography } from "@material-ui/core";
+import { Box, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { StaticFormElementGroup, ValidationResults, FormElementGroup } from "avni-models";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
-import { filterFormElements } from "../../services/FormElementService";
-import { getFormElementsStatuses } from "../../services/RuleEvaluationService";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
@@ -109,16 +105,6 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const filterFormElementsWithStatus = (formElementGroup, entity) => {
-  let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
-  return {
-    filteredFormElements: formElementGroup.filterElements(formElementStatuses),
-    formElementStatuses
-  };
-};
-
-const getPageNumber = index => (index === -1 ? 1 : index + 1);
-
 const FormWizard = ({
   form,
   obsHolder,
@@ -131,16 +117,21 @@ const FormWizard = ({
   message,
   subject,
   validationResults,
-  staticValidationResults,
-  setValidationResults,
   additionalRows,
   registrationFlow,
   children,
   filteredFormElements,
   entity,
-  setFilteredFormElements,
   history,
-  fetchRulesResponse
+  fetchRulesResponse,
+  formElementGroup,
+  onNext,
+  onPrevious,
+  onSummaryPage,
+  renderStaticPage,
+  onReset,
+  staticPageUrl,
+  wizard
 }) => {
   if (!form) return <div />;
 
@@ -150,137 +141,19 @@ const FormWizard = ({
     }, 1000);
   }
 
-  const { from } = match.queryParams;
-
-  const firstGroupWithAtLeastOneVisibleElement = find(
-    sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
-    formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
-  );
-
-  const indexOfGroup = firstGroupWithAtLeastOneVisibleElement
-    ? findIndex(
-        form.getFormElementGroups(),
-        feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
-      )
-    : registrationFlow
-    ? 1
-    : -1;
-
-  const currentPageNumber = match.queryParams.page
-    ? parseInt(match.queryParams.page)
-    : getPageNumber(indexOfGroup);
-
   const [redirect, setRedirect] = React.useState(false);
   const classes = useStyle();
   const { t } = useTranslation();
 
-  const formElementGroups =
-    (isNil(form) ||
-      isNil(form.firstFormElementGroup) ||
-      isNil(firstGroupWithAtLeastOneVisibleElement)) &&
-    !registrationFlow
-      ? new Array(new StaticFormElementGroup(form))
-      : form.getFormElementGroups().filter(feg => !isEmpty(feg.nonVoidedFormElements()));
-  const formElementGroupsLength = formElementGroups.length;
-  const isOnSummaryPage = currentPageNumber > formElementGroupsLength;
-
-  let currentFormElementGroup;
-  if (!isOnSummaryPage) {
-    currentFormElementGroup = formElementGroups[currentPageNumber - 1];
+  if (renderStaticPage) {
+    onReset();
+    return <Redirect to={staticPageUrl} />;
   }
 
-  const isFirstGroup = currentFormElementGroup && currentFormElementGroup.isFirst;
-
-  const isFirstPage =
-    firstGroupWithAtLeastOneVisibleElement && currentFormElementGroup
-      ? currentFormElementGroup.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
-      : isFirstGroup;
-
-  const handleNext = (event, feg, page, skippedGroupCount = 0) => {
-    const filteredFormElement = filterFormElements(feg, entity);
-    const formElementGroup = new FormElementGroup();
-    const formElementGroupValidations = formElementGroup.validate(obsHolder, filteredFormElement);
-    const elementsWithValidationError = filter(
-      formElementGroupValidations,
-      ({ success }) => !success
-    );
-    const allRuleValidationResults = unionBy(
-      elementsWithValidationError,
-      validationResults,
-      "formIdentifier"
-    );
-    const staticValidationResultsError =
-      staticValidationResults &&
-      new ValidationResults(staticValidationResults).hasValidationError();
-    setValidationResults(allRuleValidationResults);
-    if (
-      new ValidationResults(allRuleValidationResults).hasValidationError() ||
-      staticValidationResultsError
-    ) {
-      event.preventDefault();
-      return;
-    }
-    const nextGroup = feg.next();
-    const { filteredFormElements, formElementStatuses } = !isEmpty(nextGroup)
-      ? filterFormElementsWithStatus(nextGroup, entity)
-      : { filteredFormElements: null };
-    const nextPage = page + 1;
-    if (!isEmpty(nextGroup) && isEmpty(filteredFormElements)) {
-      obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), filteredFormElements);
-      obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-      handleNext(event, nextGroup, nextPage, skippedGroupCount + 1);
-    } else {
-      setFilteredFormElements(filteredFormElements);
-      let currentUrlParams = new URLSearchParams(history.location.search);
-      currentUrlParams.set("page", (nextPage - skippedGroupCount).toString());
-      history.push(history.location.pathname + "?" + currentUrlParams.toString());
-    }
-  };
-
-  const getPreviousGroup = feg => (feg && feg.previous()) || [];
-
-  const handlePrevious = (event, feg, currentPage, skippedGroupCount = 0) => {
-    const previousGroup =
-      currentPage > formElementGroupsLength
-        ? form.getLastFormElementElementGroup()
-        : getPreviousGroup(feg);
-    const { filteredFormElements, formElementStatuses } = !isEmpty(previousGroup)
-      ? filterFormElementsWithStatus(previousGroup, entity)
-      : { filteredFormElements: null };
-    const previousPage = currentPage - 1;
-    if (
-      (!isEmpty(previousGroup) || registrationFlow) &&
-      isEmpty(filteredFormElements) &&
-      previousPage > 0
-    ) {
-      if (!isEmpty(previousGroup)) {
-        obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), filteredFormElements);
-        obsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-      }
-      handlePrevious(event, previousGroup, previousPage, skippedGroupCount + 1);
-    } else {
-      setFilteredFormElements(filteredFormElements);
-      let currentUrlParams = new URLSearchParams(history.location.search);
-      if (previousPage + skippedGroupCount !== 0) {
-        currentUrlParams.set("page", (previousPage + skippedGroupCount).toString());
-        history.push(history.location.pathname + "?" + currentUrlParams.toString());
-      } else {
-        const pathName = registrationFlow ? "/app/register" : history.location.pathname;
-        currentUrlParams.delete("page");
-        history.push(pathName + "?" + currentUrlParams.toString());
-      }
-    }
-  };
-
-  const pageTitleNumber = registrationFlow ? currentPageNumber + 1 : currentPageNumber;
-  const pageTitleText = isOnSummaryPage
-    ? t("summaryAndRecommendations")
-    : t(currentFormElementGroup.name);
-  const pageTitle = `${pageTitleNumber}. ${pageTitleText}`;
-  const totalNumberOfPages = formElementGroupsLength + (registrationFlow ? 2 : 1);
-  const pageCounter = `${pageTitleNumber} / ${totalNumberOfPages}`;
-
-  const goBackToRegistrationDefaultPage = registrationFlow && currentPageNumber === 1;
+  const isFirstPage = registrationFlow ? false : wizard.isFirstFormPage();
+  const pageTitleText = onSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
+  const pageTitle = `${pageTitleText}`;
+  // const pageCounter = `X / X`;
 
   return (
     <Fragment>
@@ -292,32 +165,23 @@ const FormWizard = ({
               {" "}
               {pageTitle}
             </Typography>
-            <Box flexDirection={"row"} display={"flex"}>
-              <FormWizardButton
-                className={classes.topnav}
-                to={goBackToRegistrationDefaultPage ? from : null}
-                params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
-                text={t("previous")}
-                disabled={!registrationFlow && isFirstPage}
-                onClick={e => handlePrevious(e, currentFormElementGroup, currentPageNumber)}
-              />
-              <label className={classes.toppagenum}>{pageCounter}</label>
-              {!isOnSummaryPage ? (
-                <FormWizardButton
-                  className={classes.topnav}
-                  onClick={e => handleNext(e, currentFormElementGroup, currentPageNumber)}
-                  params={{ page: currentPageNumber + 1 }}
-                  text={t("next")}
-                />
-              ) : (
-                <Button className={classes.topnav} onClick={onSave} type="button">
-                  {t("save")}
-                </Button>
-              )}
-            </Box>
+            {/*<Box flexDirection={"row"} display={"flex"}>*/}
+            {/*<FormWizardButton*/}
+            {/*className={classes.topnav}*/}
+            {/*text={t("previous")}*/}
+            {/*disabled={isFirstPage}*/}
+            {/*onClick={onPrevious}*/}
+            {/*/>*/}
+            {/*<label className={classes.toppagenum}>{pageCounter}</label>*/}
+            {/*<FormWizardButton*/}
+            {/*className={classes.topnav}*/}
+            {/*onClick={onSummaryPage ? onSave : onNext}*/}
+            {/*text={onSummaryPage ? t("save") : t("next")}*/}
+            {/*/>*/}
+            {/*</Box>*/}
           </Box>
           <Paper className={classes.form}>
-            {isOnSummaryPage ? (
+            {onSummaryPage ? (
               <Summary
                 observations={observations}
                 additionalRows={additionalRows}
@@ -327,42 +191,31 @@ const FormWizard = ({
             ) : (
               <FormElementGroupComponent
                 parentChildren={children}
-                key={currentFormElementGroup.uuid}
+                key={formElementGroup.uuid}
                 obsHolder={obsHolder}
                 updateObs={updateObs}
                 validationResults={validationResults}
                 filteredFormElements={filteredFormElements}
                 entity={entity}
                 renderParent={isFirstPage}
-              >
-                {currentFormElementGroup}
-              </FormElementGroupComponent>
+              />
             )}
 
             <Box className={classes.buttomstyle} display="flex">
               <Box style={{ marginRight: 20 }}>
                 <FormWizardButton
                   className={classes.privbuttonStyle}
-                  to={goBackToRegistrationDefaultPage ? from : null}
-                  params={goBackToRegistrationDefaultPage ? {} : { page: currentPageNumber - 1 }}
                   text={t("previous")}
-                  disabled={!registrationFlow && isFirstPage}
-                  onClick={e => handlePrevious(e, currentFormElementGroup, currentPageNumber)}
+                  disabled={isFirstPage}
+                  onClick={onPrevious}
                 />
               </Box>
               <Box>
-                {!isOnSummaryPage ? (
-                  <FormWizardButton
-                    className={classes.nextbuttonStyle}
-                    onClick={e => handleNext(e, currentFormElementGroup, currentPageNumber)}
-                    params={{ page: currentPageNumber + 1 }}
-                    text={t("next")}
-                  />
-                ) : (
-                  <Button className={classes.nextbuttonStyle} onClick={onSave} type="button">
-                    {t("save")}
-                  </Button>
-                )}
+                <FormWizardButton
+                  className={classes.nextbuttonStyle}
+                  onClick={onSummaryPage ? onSave : onNext}
+                  text={onSummaryPage ? t("save") : t("next")}
+                />
               </Box>
             </Box>
             {redirect && <Redirect to={onSaveGoto} />}
