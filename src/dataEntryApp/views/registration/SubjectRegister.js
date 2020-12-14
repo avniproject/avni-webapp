@@ -540,7 +540,6 @@ const mapFormStateToProps = state => {
     formElementGroup: registrationState.formElementGroup,
     onSummaryPage: registrationState.onSummaryPage,
     renderStaticPage: registrationState.renderStaticPage,
-    staticPageUrl: `/app/register?type=${registrationState.subject.subjectType.name}`,
     wizard: registrationState.wizard
   };
 };
@@ -578,6 +577,10 @@ const SubjectRegister = props => {
     })();
   }, [match.queryParams.type]);
 
+  const staticPageUrl = edit
+    ? `/app/editSubject?uuid=${props.match.queryParams.uuid}&type=${props.match.queryParams.type}`
+    : `/app/register?type=${props.match.queryParams.type}`;
+
   return (
     <Fragment>
       <Breadcrumbs path={props.match.path} />
@@ -585,7 +588,12 @@ const SubjectRegister = props => {
         <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
         <Route
           path={`${match.path}/form`}
-          component={() => <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse} />}
+          component={() => (
+            <RegistrationForm
+              staticPageUrl={staticPageUrl}
+              fetchRulesResponse={fetchRegistrationRulesResponse}
+            />
+          )}
         />
       </Paper>
     </Fragment>
