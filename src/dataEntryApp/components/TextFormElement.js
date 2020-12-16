@@ -26,6 +26,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
       </Typography>
       <TextField
         // label={t(fe.display || fe.name)}
+        id={fe.name.replaceAll(" ", "-")}
         type={"text"}
         autoComplete="off"
         required={fe.mandatory}
