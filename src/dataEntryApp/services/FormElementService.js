@@ -1,65 +1,63 @@
-import { Concept, ObservationsHolder, ValidationResult, FormElementGroup } from "avni-models";
+import { Concept, ValidationResult, FormElementGroup } from "avni-models";
 import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
-  updateObservations(observations = [], formElement, value) {
-    const observationHolder = new ObservationsHolder(observations);
+  updateObservations(observationsHolder, formElement, value) {
     if (
       formElement.isMultiSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
         formElement.concept.datatype === Concept.dataType.Subject)
     ) {
-      observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
+      const observation = observationsHolder.toggleMultiSelectAnswer(formElement.concept, value);
+      return observation && observation.getValueWrapper();
     } else if (
       formElement.isSingleSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
         formElement.concept.datatype === Concept.dataType.Subject)
     ) {
-      observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
+      const observation = observationsHolder.toggleSingleSelectAnswer(formElement.concept, value);
+      return observation && observation.getValueWrapper();
     } else if (
       formElement.concept.datatype === Concept.dataType.Duration &&
       !isNil(formElement.durationOptions)
     ) {
-      observationHolder.updateCompositeDurationValue(formElement.concept, value);
+      const observation = observationsHolder.updateCompositeDurationValue(
+        formElement.concept,
+        value
+      );
+      return observation && observation.getValueWrapper();
     } else if (
       formElement.concept.datatype === Concept.dataType.Date &&
       !isNil(formElement.durationOptions)
     ) {
-      observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
+      observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
+      return value;
     } else {
-      observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
+      observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
+      return value;
     }
-    return observationHolder.observations;
   },
 
   validate(formElement, value, observations, validationResults, formElementStatuses) {
-    let isNullForMultiselect = false;
-    if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-      const observationHolder = new ObservationsHolder(observations);
-      const answers =
-        observationHolder.findObservation(formElement.concept) &&
-        observationHolder.findObservation(formElement.concept).getValue();
-
-      isNullForMultiselect = isNil(answers);
-    }
-
-    const validationResult = formElement.validate(isNullForMultiselect ? null : value);
-
+    const validationResult = formElement.validate(value);
     remove(
       validationResults,
       existingValidationResult =>
         existingValidationResult.formIdentifier === validationResult.formIdentifier
     );
-
     validationResults.push(validationResult);
     const ruleValidationErrors = getRuleValidationErrors(formElementStatuses);
-    const hiddenFormElementStatus = filter(formElementStatuses, form => form.visibility === false);
+    const hiddenFormElementStatus = filter(
+      formElementStatuses,
+      status => status.visibility === false
+    );
     const ruleErrorsAdded = addPreviousValidationErrors(
       ruleValidationErrors,
       validationResult,
       validationResults
     );
+    remove(ruleErrorsAdded, result => result.success);
     return differenceWith(
       ruleErrorsAdded,
       hiddenFormElementStatus,

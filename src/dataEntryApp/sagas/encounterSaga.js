@@ -108,12 +108,8 @@ export function* updateEncounterObsWorker({ formElement, value }) {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
   const validationResults = state.dataEntry.encounterReducer.validationResults;
-  const observations = formElementService.updateObservations(
-    encounter.observations,
-    formElement,
-    value
-  );
-  const observationsHolder = new ObservationsHolder(observations);
+  const observationsHolder = new ObservationsHolder(encounter.observations);
+  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
   const formElementStatuses = getFormElementStatuses(
     encounter,
     formElement.formElementGroup,
@@ -124,14 +120,13 @@ export function* updateEncounterObsWorker({ formElement, value }) {
   );
   yield put(setFilteredFormElements(filteredFormElements));
   observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-  encounter.observations = observationsHolder.observations;
 
   yield put(setEncounter(encounter));
   yield put(
     setValidationResults(
       formElementService.validate(
         formElement,
-        value,
+        obsValue,
         encounter.observations,
         validationResults,
         formElementStatuses
@@ -207,13 +202,10 @@ export function* updateCancelEncounterObsWorker({ formElement, value }) {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
   const validationResults = state.dataEntry.encounterReducer.validationResults;
-  const cancelObservations = formElementService.updateObservations(
-    encounter.cancelObservations,
-    formElement,
-    value
-  );
+  const observationsHolder = new ObservationsHolder(encounter.cancelObservations);
 
-  const observationsHolder = new ObservationsHolder(cancelObservations);
+  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
+
   const formElementStatuses = getFormElementStatuses(
     encounter,
     formElement.formElementGroup,
@@ -224,14 +216,13 @@ export function* updateCancelEncounterObsWorker({ formElement, value }) {
   );
   yield put(setFilteredFormElements(filteredFormElements));
   observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-  encounter.cancelObservations = observationsHolder.observations;
 
   yield put(setEncounter(encounter));
   yield put(
     setValidationResults(
       formElementService.validate(
         formElement,
-        value,
+        obsValue,
         encounter.cancelObservations,
         validationResults,
         formElementStatuses
