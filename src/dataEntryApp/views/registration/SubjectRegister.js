@@ -349,6 +349,7 @@ const DefaultPage = props => {
                       {"*"}
                     </Typography>
                     <TextField
+                      id={"firstName"}
                       type="text"
                       autoComplete="off"
                       required
@@ -370,6 +371,7 @@ const DefaultPage = props => {
                       {"*"}
                     </Typography>
                     <TextField
+                      id={"lastName"}
                       type="text"
                       autoComplete="off"
                       required
@@ -454,6 +456,7 @@ const DefaultPage = props => {
               >
                 <Box>
                   <Chip
+                    id={"previous"}
                     className={classes.prevbuttonspace}
                     label={t("previous")}
                     disabled
@@ -468,6 +471,7 @@ const DefaultPage = props => {
                     noUnderline
                   >
                     <Chip
+                      id={"next"}
                       className={classes.nextBtn}
                       label={t("next")}
                       onClick={e => handleNext(e)}

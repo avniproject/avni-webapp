@@ -106,9 +106,13 @@ export default ({
           aria-label="scrollable auto tabs example"
           className={classes.wrapper}
         >
-          <Tab label={t("programs")} icon={<AssessmentIcon />} {...a11yProps(0)} />
-          <Tab label={t("profile")} icon={<PersonIcon />} {...a11yProps(1)} />
-          <Tab label={t("General")} icon={<ListIcon />} {...a11yProps(2)} />
+          <Tab
+            label={t("programs")}
+            icon={<AssessmentIcon id={"program-tab"} />}
+            {...a11yProps(0)}
+          />
+          <Tab label={t("profile")} icon={<PersonIcon id={"profile-tab"} />} {...a11yProps(1)} />
+          <Tab label={t("General")} icon={<ListIcon id={"general-tab"} />} {...a11yProps(2)} />
         </Tabs>
       </MUAppBar>
       <TabContent value={value} index={0}>

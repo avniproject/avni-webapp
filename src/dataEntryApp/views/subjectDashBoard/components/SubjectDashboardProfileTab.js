@@ -122,7 +122,7 @@ const SubjectDashboardProfileTab = ({
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
           aria-controls="registrationPanelbh-content"
-          id="registrationPanelbh-header"
+          id="profile-detail"
         >
           <Typography component={"span"}>
             <p className={classes.expansionHeading}>{t("registrationDetails")}</p>
@@ -154,7 +154,7 @@ const SubjectDashboardProfileTab = ({
             )}
             {/* <Button color="primary">{t("edit")}</Button> */}
             {!enableReadOnly ? (
-              <Button color="primary">
+              <Button color="primary" id={"edit-profile"}>
                 <InternalLink
                   to={`/app/editSubject?uuid=${profile.uuid}&type=${profile.subjectType.name}`}
                 >

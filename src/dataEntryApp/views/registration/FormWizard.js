@@ -208,6 +208,7 @@ const FormWizard = ({
                   text={t("previous")}
                   disabled={isFirstPage}
                   onClick={onPrevious}
+                  id={"previous"}
                 />
               </Box>
               <Box>
@@ -215,6 +216,7 @@ const FormWizard = ({
                   className={classes.nextbuttonStyle}
                   onClick={onSummaryPage ? onSave : onNext}
                   text={onSummaryPage ? t("save") : t("next")}
+                  id={"next"}
                 />
               </Box>
             </Box>
