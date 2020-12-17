@@ -104,7 +104,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
         {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardDatePicker
-        // label={fe.display || fe.name}
+        id={fe.name.replaceAll(" ", "-")}
         required={fe.mandatory}
         value={value}
         onChange={update}
@@ -172,6 +172,7 @@ export const DateAndDurationFormElement = ({
           {`${t("Select Date")}${fe.mandatory ? "*" : ""}`}
         </Typography>
         <KeyboardDatePicker
+          id={fe.name.replaceAll(" ", "-")}
           autoOk
           required={fe.mandatory}
           value={date}

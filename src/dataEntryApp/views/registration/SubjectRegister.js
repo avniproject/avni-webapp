@@ -322,7 +322,7 @@ const DefaultPage = props => {
                     helperText={t(subjectRegErrors.REGISTRATION_DATE)}
                     style={{ width: "30%" }}
                     margin="normal"
-                    id="date-picker-dialog"
+                    id="Date-of-registration"
                     format={dateFormat}
                     placeholder={dateFormat}
                     onChange={date => {
