@@ -151,6 +151,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
     <React.Fragment>
       {mainButton ? (
         <Fab
+          id={mainButton.label.replaceAll(" ", "-")}
           className={mainButton.classes}
           variant="extended"
           color="primary"
@@ -165,6 +166,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
 
       {filterButton ? (
         <Fab
+          id={filterButton.label.replaceAll(" ", "-")}
           className={filterButton.classes}
           variant="extended"
           color="primary"
@@ -195,6 +197,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
               btnLabel={cancelButton.label}
               btnClass={cancelButton.classes}
               btnClick={handleClose}
+              id={"cancel-dialog-button"}
             />
           ) : (
             ""
@@ -208,6 +211,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 // handleClose();
               }}
               btnDisabled={findButton.disabled}
+              id={"find-dialog-button"}
             />
           ) : (
             ""
@@ -221,6 +225,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 // handleClose();
               }}
               btnDisabled={modifysearch.disabled}
+              id={"modify-search-dialog-button"}
             />
           ) : (
             ""
@@ -231,6 +236,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 btnLabel={saveButton.label}
                 btnClass={saveButton.classes}
                 btnClick={handleClose}
+                id={"save-required-dialog-button"}
               />
             </Link>
           ) : saveButton ? (
@@ -238,6 +244,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
               btnLabel={saveButton.label}
               btnClass={saveButton.classes}
               btnClick={handleError.bind(this, true)}
+              id={"save-dialog-button"}
             />
           ) : (
             ""
@@ -251,6 +258,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 handleClose();
               }}
               btnDisabled={applyButton.disabled}
+              id={"apply-dialog-button"}
             />
           ) : (
             ""

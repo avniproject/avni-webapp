@@ -97,7 +97,7 @@ const Visit = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
+  const encounterId = name.replaceAll(" ", "-");
   let visitUrl;
   switch (type) {
     case "programEncounter":
@@ -116,7 +116,7 @@ const Visit = ({
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
             {visitDate !== null ? (
-              <Link to={visitUrl}>
+              <Link to={visitUrl} id={encounterId}>
                 <ListItemText
                   className={classes.ListItemText}
                   title={t(name)}
@@ -174,13 +174,21 @@ const Visit = ({
           <>
             {encounterDateTime && uuid && !isEmpty(programEncounterFormMapping) ? (
               <InternalLink to={`/app/subject/editProgramEncounter?uuid=${uuid}`}>
-                <Button color="primary" className={classes.visitButton}>
+                <Button
+                  id={`edit-visit-${encounterId}`}
+                  color="primary"
+                  className={classes.visitButton}
+                >
                   {t("edit visit")}
                 </Button>
               </InternalLink>
             ) : cancelDateTime && uuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
               <InternalLink to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}`}>
-                <Button color="primary" className={classes.visitButton}>
+                <Button
+                  id={`edit-cancel-visit-${encounterId}`}
+                  color="primary"
+                  className={classes.visitButton}
+                >
                   {t("edit visit")}
                 </Button>
               </InternalLink>
@@ -188,7 +196,11 @@ const Visit = ({
               <>
                 {uuid && !isEmpty(programEncounterFormMapping) ? (
                   <InternalLink to={`/app/subject/programEncounter?encounterUuid=${uuid}`}>
-                    <Button color="primary" className={classes.visitButton}>
+                    <Button
+                      id={`do-visit-${encounterId}`}
+                      color="primary"
+                      className={classes.visitButton}
+                    >
                       {t("do visit")}
                     </Button>
                   </InternalLink>
@@ -197,7 +209,11 @@ const Visit = ({
                 )}
                 {uuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
                   <InternalLink to={`/app/subject/cancelProgramEncounter?uuid=${uuid}`}>
-                    <Button color="primary" className={classes.visitButton}>
+                    <Button
+                      id={`cancel-visit-${encounterId}`}
+                      color="primary"
+                      className={classes.visitButton}
+                    >
                       {t("cancel Visit")}
                     </Button>
                   </InternalLink>

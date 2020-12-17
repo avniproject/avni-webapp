@@ -76,7 +76,7 @@ const PlannedEncounter = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
+  const encounterId = encounter.name.replaceAll(" ", "-");
   const statusMap = {
     overdue: t("Overdue"),
     due: t("Due")
@@ -120,13 +120,18 @@ const PlannedEncounter = ({
               <div className={classes.visitButton}>
                 {encounter.uuid && !isEmpty(encounterFormMapping) ? (
                   <InternalLink to={`/app/subject/encounter?encounterUuid=${encounter.uuid}`}>
-                    <Button color="primary">{t("do visit")}</Button>
+                    <Button id={`do-visit-${encounterId}`} color="primary">
+                      {t("do visit")}
+                    </Button>
                   </InternalLink>
                 ) : (
                   ""
                 )}
                 {encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
-                  <InternalLink to={`/app/subject/cancelEncounter?uuid=${encounter.uuid}`}>
+                  <InternalLink
+                    id={`cancel-visit-${encounterId}`}
+                    to={`/app/subject/cancelEncounter?uuid=${encounter.uuid}`}
+                  >
                     <Button color="primary">{t("cancel Visit")}</Button>
                   </InternalLink>
                 ) : (

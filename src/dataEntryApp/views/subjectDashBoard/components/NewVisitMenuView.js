@@ -70,6 +70,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
                                 width="50%"
                               >
                                 <InternalLink
+                                  id={encounter.name.replaceAll(" ", "-")}
                                   to={
                                     isEqual(section.title, t("plannedVisits"))
                                       ? `${scheduledVisitUrl}?encounterUuid=${encounter.uuid}`

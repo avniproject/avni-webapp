@@ -81,7 +81,7 @@ const CompletedEncounter = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
+  const encounterId = encounter.name.replaceAll(" ", "-");
   const statusMap = {
     cancelled: t("Cancelled")
   };
@@ -139,7 +139,10 @@ const CompletedEncounter = ({
         {!enableReadOnly ? (
           <>
             {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
-              <InternalLink to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}>
+              <InternalLink
+                id={`edit-visit-${encounterId}`}
+                to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}
+              >
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>
@@ -147,7 +150,10 @@ const CompletedEncounter = ({
             ) : encounter.cancelDateTime &&
               encounter.uuid &&
               !isEmpty(cancelEncounterFormMapping) ? (
-              <InternalLink to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}>
+              <InternalLink
+                id={`edit-cancel-visit-${encounterId}`}
+                to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}
+              >
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>
