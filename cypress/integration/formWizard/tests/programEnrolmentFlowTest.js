@@ -2,11 +2,13 @@
 
 import { dashboardPage } from "../dashboardPage";
 import { wizardPage } from "../wizardPage";
-import { setup } from "../setup";
+import { setupTest } from "../setup";
+import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
 
 describe("Program Enrolment Flow tests for form wizard", () => {
   beforeEach(() => {
-    setup.cleanAllOptionsFromRegistration("Test Individual");
+    setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
+    setupTest.cleanAllOptionsFromRegistration("Test Individual");
   });
   it("Enrolment page should give validation error and should not move to next page", () => {
     dashboardPage.openDashboard("Test Individual");

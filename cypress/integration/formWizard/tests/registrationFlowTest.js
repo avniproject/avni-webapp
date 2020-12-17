@@ -3,11 +3,11 @@
 import { wizardPage } from "../wizardPage";
 import { dashboardPage } from "../dashboardPage";
 import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
+import { setupTest } from "../setup";
 
 describe("Registration Flow tests for form wizard", () => {
-  it("Login and open Data Entry App", () => {
-    cy.login({ username: formWizardOrgUsername, password: formWizardOrgPassword });
-    cy.contains("Data Entry").click();
+  beforeEach(() => {
+    setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
   });
   it("All four groups are visible in the Person registration form", () => {
     dashboardPage.editProfile("Test Person");

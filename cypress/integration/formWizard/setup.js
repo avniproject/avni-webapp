@@ -1,7 +1,7 @@
 import { dashboardPage } from "./dashboardPage";
 import { wizardPage } from "./wizardPage";
 
-export const setup = {
+export const setupTest = {
   cleanAllOptionsFromRegistration(subjectName) {
     dashboardPage.editProfile(subjectName);
     wizardPage.clickNext();
@@ -20,5 +20,9 @@ export const setup = {
     );
     wizardPage.clickNext();
     wizardPage.clickSave();
+  },
+
+  login(username, password) {
+    cy.login(username, password);
   }
 };
