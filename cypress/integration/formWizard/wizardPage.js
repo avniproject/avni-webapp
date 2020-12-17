@@ -44,7 +44,7 @@ export const wizardPage = {
   },
 
   assertIfPageDoesNotContains(...strings) {
-    forEach(strings, string => cy.get(string).should("not.exist"));
+    forEach(strings, string => cy.contains(string).should("not.exist"));
   },
 
   clearInput(formElementName) {
