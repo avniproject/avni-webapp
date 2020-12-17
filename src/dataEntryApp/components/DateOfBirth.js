@@ -50,7 +50,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             helperText={t(dobErrorMsg)}
             required
             margin="normal"
-            id="date-picker-dialog"
+            id="Date-of-Birth"
             autoComplete="off"
             placeholder={dateFormat}
             format={dateFormat}

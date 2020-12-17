@@ -23,9 +23,9 @@ export const wizardPage = {
 
   selectOption(formElementName) {
     const formElementId = `#${formElementName.replaceAll(" ", "-")}`;
-    const formElement = cy.get(formElementId);
-    formElement.uncheck();
-    formElement.click();
+    cy.get(formElementId)
+      .uncheck()
+      .click();
   },
 
   selectOptions(...formElementNames) {
@@ -34,9 +34,9 @@ export const wizardPage = {
 
   typeInput(formElementName, text) {
     const formElementId = `#${formElementName.replaceAll(" ", "-")}`;
-    const fromElement = cy.get(formElementId);
-    fromElement.clear();
-    fromElement.type(text);
+    cy.get(formElementId)
+      .clear()
+      .type(text);
   },
 
   assertIfPageContains(...strings) {
@@ -61,5 +61,12 @@ export const wizardPage = {
 
   unCheckOptions(...formElementNames) {
     forEach(formElementNames, wizardPage.unCheckOption);
+  },
+
+  enterDate(formElementName, dateString) {
+    const formElementId = `#${formElementName.replaceAll(" ", "-")}`;
+    cy.get(formElementId)
+      .clear()
+      .type(dateString);
   }
 };
