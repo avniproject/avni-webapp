@@ -213,6 +213,7 @@ const ProgramView = ({
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
           {!enableReadOnly && !subjectVoided && isNotExited ? (
             <InternalLink
+              id={"new-program-visit"}
               to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
               noUnderline
             >
@@ -228,7 +229,7 @@ const ProgramView = ({
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="enrollmentPanelbh-content"
-            id="panel1bh-header"
+            id="enrolment-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("enrolmentDetails")}{" "}
@@ -273,7 +274,9 @@ const ProgramView = ({
                         programData.uuid
                       }&subjectTypeName=${subjectProfile.subjectType.name}`}
                     >
-                      <Button color="primary">{t("Exit")}</Button>
+                      <Button id={"exit-program"} color="primary">
+                        {t("Exit")}
+                      </Button>
                     </Link>
                     <Link
                       to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
@@ -282,7 +285,9 @@ const ProgramView = ({
                         programData.uuid
                       }&subjectTypeName=${subjectProfile.subjectType.name}`}
                     >
-                      <Button color="primary">{t("Edit")}</Button>
+                      <Button id={"edit-program"} color="primary">
+                        {t("Edit")}
+                      </Button>
                     </Link>
                   </>
                 ) : (
@@ -294,10 +299,12 @@ const ProgramView = ({
                         programData.uuid
                       }&subjectTypeName=${subjectProfile.subjectType.name}`}
                     >
-                      <Button color="primary">{t("Edit Exit")}</Button>
+                      <Button id={"edit-exit"} color="primary">
+                        {t("Edit Exit")}
+                      </Button>
                     </Link>
 
-                    <Button color="primary" onClick={handleClickOpen}>
+                    <Button id={"undo-exit"} color="primary" onClick={handleClickOpen}>
                       {t("Undo Exit")}
                     </Button>
 
@@ -342,7 +349,7 @@ const ProgramView = ({
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="plannedVisitPanelbh-content"
-            id="plannedVisitPanelbh-header"
+            id="planned-program-encounter-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("plannedVisits")}
@@ -392,7 +399,7 @@ const ProgramView = ({
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
-            id="completedVisitPanelbh-header"
+            id="completed-program-encounter-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("completedVisits")}

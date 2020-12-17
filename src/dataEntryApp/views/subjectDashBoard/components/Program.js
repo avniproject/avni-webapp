@@ -87,6 +87,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
                 (element.programExitDateTime == null && type === "active") ||
                 (element.programExitDateTime != null && type === "exited") ? (
                   <AntTab
+                    id={element.program.operationalProgramName.replaceAll(" ", "-")}
                     key={index}
                     value={index}
                     label={t(element.program.operationalProgramName)}

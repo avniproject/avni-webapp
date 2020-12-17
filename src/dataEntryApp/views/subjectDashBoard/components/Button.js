@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Button = ({ btnLabel, btnClass, btnClick, btnDisabled }) => {
+const Button = ({ btnLabel, btnClass, btnClick, btnDisabled, id }) => {
   const classes = useStyles();
   return (
     <Fab
@@ -20,6 +20,7 @@ const Button = ({ btnLabel, btnClass, btnClick, btnDisabled }) => {
       aria-label="add"
       onClick={btnClick}
       disabled={btnDisabled}
+      id={id}
     >
       {btnLabel}
     </Fab>

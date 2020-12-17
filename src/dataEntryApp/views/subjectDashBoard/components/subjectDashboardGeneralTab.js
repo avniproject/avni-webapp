@@ -99,6 +99,7 @@ const SubjectDashboardGeneralTab = ({
             <InternalLink
               to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
               noUnderline
+              id={"new-general-visit"}
             >
               <SubjectButton btnLabel={t("newGeneralVisit")} />
             </InternalLink>
@@ -110,7 +111,7 @@ const SubjectDashboardGeneralTab = ({
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="plannedVisitPanelbh-content"
-            id="plannedVisitPanelbh-header"
+            id="planned-general-encounter-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("plannedVisits")}
@@ -141,7 +142,7 @@ const SubjectDashboardGeneralTab = ({
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
-            id="completedVisitPanelbh-header"
+            id="completed-general-encounter-details"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               {t("completedVisits")}
