@@ -425,13 +425,12 @@ describe("Program Encounter Flow tests for form wizard", () => {
     wizardPage.clickNextNTimes(3);
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
-  // it("Performing new program encounter should not move to next page in case of validation error in visit date", () => {
-  //    dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
+  it("Performing new program encounter should not move to next page in case of validation error in visit date", () => {
+    dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
 
-  //    wizardPage.clearInput("Visit Date");
-  //    wizardPage.typeInput("Visit Date", "11/01/2021");
-  //    wizardPage.assertIfPageContains("Encounter date cannot be in future");
-  //    wizardPage.clickNext(); //it should not go to next page because of the error.
-  //    wizardPage.assertIfPageContains("First FEG");
-  //  });
+    wizardPage.enterDate("Visit Date", "11/01/2021");
+    wizardPage.assertIfPageContains("Encounter date cannot be in future");
+    wizardPage.clickNext(); //it should not go to next page because of the error.
+    wizardPage.assertIfPageContains("First FEG");
+  });
 });
