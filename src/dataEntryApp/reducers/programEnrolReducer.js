@@ -145,7 +145,9 @@ export const fetchEnrolmentRulesResponse = () => {
   };
 };
 
-export const selectProgramEnrolmentState = state => state.dataEntry.enrolmentReducer;
+export const selectProgramEnrolmentState = state => {
+  return state.dataEntry.enrolmentReducer;
+};
 
 const initialState = {
   saved: false,
@@ -153,8 +155,7 @@ const initialState = {
   load: false
 };
 
-// reducer
-export default function(state = initialState, action) {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_INITIAL_STATE: {
       return initialState;
@@ -236,4 +237,7 @@ export default function(state = initialState, action) {
     default:
       return state;
   }
-}
+};
+
+// reducer
+export default reducer;

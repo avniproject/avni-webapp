@@ -1,16 +1,16 @@
 import { FormElementGroup, Individual, ObservationsHolder, ProgramEnrolment } from "avni-models";
 import {
+  onLoadSuccess,
   saveComplete,
   selectAddressLevelType,
+  selectRegistrationState,
+  setFilteredFormElements as setFilteredFormElementsRegistration,
+  setInitialSubjectState,
   setRegistrationForm,
+  setState as setRegistrationState,
   setSubject,
   setValidationResults as setValidationResultsRegistration,
-  setInitialSubjectState,
-  onLoadSuccess,
-  types as subjectTypes,
-  selectRegistrationState,
-  setState as setRegistrationState,
-  setFilteredFormElements as setFilteredFormElementsRegistration
+  types as subjectTypes
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
@@ -24,20 +24,20 @@ import {
 } from "./selectors";
 import {
   selectEnrolmentFormMappingForSubjectType,
-  selectProgramEnrolment,
-  selectProgram
+  selectProgram,
+  selectProgramEnrolment
 } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
+  onLoadSuccess as enrolmentOnLoadSuccess,
   saveProgramComplete,
+  selectProgramEnrolmentState,
+  setFilteredFormElements as setFilteredFormElementsEnrolment,
   setInitialState,
   setProgramEnrolment,
-  onLoadSuccess as enrolmentOnLoadSuccess,
-  types as enrolmentTypes,
-  selectProgramEnrolmentState,
   setState as setProgramEnrolmentState,
-  setFilteredFormElements as setFilteredFormElementsEnrolment,
-  setValidationResults as setValidationResultsEnrolment
+  setValidationResults as setValidationResultsEnrolment,
+  types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
 import _ from "lodash";
@@ -46,9 +46,9 @@ import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import {
+  selectChecklists,
   selectDecisions,
-  selectVisitSchedules,
-  selectChecklists
+  selectVisitSchedules
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
@@ -303,34 +303,25 @@ function* updateObsWatcher() {
 }
 
 export function* updateObsWorker({ formElement, value }) {
-  yield put.resolve(setFilteredFormElementsRegistration());
+  const state = yield select(selectProgramEnrolmentState);
   const subject = yield select(state => state.dataEntry.registration.subject);
-  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  const observationsHolder = new ObservationsHolder(subject.observations);
-
-  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
-  const formElementStatuses = getFormElementStatuses(
+  const stateValidationResults = yield select(
+    state => state.dataEntry.registration.validationResults
+  );
+  const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
+    formElement,
+    value,
     subject,
-    formElement.formElementGroup,
-    observationsHolder
+    new ObservationsHolder(subject.observations),
+    stateValidationResults
   );
-  const filteredFormElements = FormElementGroup._sortedFormElements(
-    formElement.formElementGroup.filterElements(formElementStatuses)
-  );
-  yield put(setFilteredFormElementsRegistration(filteredFormElements));
-  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-
-  yield put(setSubject(subject));
   yield put(
-    setValidationResultsRegistration(
-      formElementService.validate(
-        formElement,
-        obsValue,
-        subject.observations,
-        validationResults,
-        formElementStatuses
-      )
-    )
+    setRegistrationState({
+      ...state,
+      filteredFormElements,
+      subject,
+      validationResults
+    })
   );
 }
 
@@ -343,70 +334,42 @@ function* updateExitEnrolmentObsWatcher() {
 }
 
 export function* updateExitEnrolmentObsWorker({ formElement, value }) {
-  const state = yield select();
-  const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
-  const validationResults = yield select(
-    state => state.dataEntry.enrolmentReducer.validationResults
-  );
-  const observationsHolder = new ObservationsHolder(programEnrolment.programExitObservations);
-
-  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
-  const formElementStatuses = getFormElementStatuses(
+  const state = yield select(selectProgramEnrolmentState);
+  const programEnrolment = state.programEnrolment.cloneForEdit();
+  const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
+    formElement,
+    value,
     programEnrolment,
-    formElement.formElementGroup,
-    observationsHolder
+    new ObservationsHolder(programEnrolment.programExitObservations),
+    state.validationResults
   );
-  const filteredFormElements = FormElementGroup._sortedFormElements(
-    formElement.formElementGroup.filterElements(formElementStatuses)
-  );
-  yield put(setFilteredFormElementsEnrolment(filteredFormElements));
-  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-
-  yield put(setProgramEnrolment(programEnrolment));
   yield put(
-    setValidationResultsEnrolment(
-      formElementService.validate(
-        formElement,
-        obsValue,
-        programEnrolment.programExitObservations,
-        validationResults,
-        formElementStatuses
-      )
-    )
+    setProgramEnrolmentState({
+      ...state,
+      filteredFormElements,
+      programEnrolment,
+      validationResults
+    })
   );
 }
 
 export function* updateEnrolmentObsWorker({ formElement, value }) {
-  const state = yield select();
-  const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
-  const validationResults = yield select(
-    state => state.dataEntry.enrolmentReducer.validationResults
-  );
-  const observationsHolder = new ObservationsHolder(programEnrolment.observations);
-
-  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
-  const formElementStatuses = getFormElementStatuses(
+  const state = yield select(selectProgramEnrolmentState);
+  const programEnrolment = state.programEnrolment.cloneForEdit();
+  const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
+    formElement,
+    value,
     programEnrolment,
-    formElement.formElementGroup,
-    observationsHolder
+    new ObservationsHolder(programEnrolment.observations),
+    state.validationResults
   );
-  const filteredFormElements = FormElementGroup._sortedFormElements(
-    formElement.formElementGroup.filterElements(formElementStatuses)
-  );
-  yield put(setFilteredFormElementsEnrolment(filteredFormElements));
-  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-
-  yield put(setProgramEnrolment(programEnrolment));
   yield put(
-    setValidationResultsEnrolment(
-      formElementService.validate(
-        formElement,
-        obsValue,
-        programEnrolment.observations,
-        validationResults,
-        formElementStatuses
-      )
-    )
+    setProgramEnrolmentState({
+      ...state,
+      filteredFormElements,
+      programEnrolment,
+      validationResults
+    })
   );
 }
 
