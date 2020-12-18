@@ -4,37 +4,15 @@
 --
 
 CREATE OR REPLACE VIEW virtual_catchment_address_mapping_table AS (
-  WITH RECURSIVE intermediary_table AS (
-      SELECT
-        c.id   cid,
-        al1.id aid,
-        al2.id parent_id
-      FROM address_level al1
-        LEFT OUTER JOIN location_location_mapping llm ON al1.id = llm.location_id
-        LEFT OUTER JOIN address_level al2 ON llm.parent_location_id = al2.id
-        LEFT OUTER JOIN catchment_address_mapping cam ON cam.addresslevel_id = al1.id
-        LEFT OUTER JOIN catchment c ON cam.catchment_id = c.id
-  ), vt AS (
-    SELECT
-      cid,
-      aid,
-      parent_id
-    FROM intermediary_table
-    UNION ALL
-    SELECT
-      vt.cid,
-      it.aid,
-      it.parent_id
-    FROM intermediary_table it, vt
-    WHERE vt.aid = it.parent_id
-  ) SELECT
-      row_number()
-      OVER () AS id,
-      cid     AS catchment_id,
-      aid     AS addresslevel_id
-    FROM vt
-    WHERE cid IS NOT NULL
-    GROUP BY cid, aid
+    select row_number() OVER ()  AS id,
+           cam.catchment_id::int AS catchment_id,
+           al.id                 AS addresslevel_id
+    from address_level al
+             left outer join regexp_split_to_table((al.lineage)::text, '[.]'::text) WITH ORDINALITY lineage(point_id, level)
+                             ON (true)
+             left outer join catchment_address_mapping cam on cam.addresslevel_id = point_id::int
+    where catchment_id notnull
+    group by 2, 3
 );
 
 DROP VIEW if exists address_level_type_view;
