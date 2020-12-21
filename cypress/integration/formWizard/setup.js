@@ -9,7 +9,13 @@ export const setupTest = {
     wizardPage.clickNext();
     wizardPage.clickSave();
   },
-
+  cleanAllOptionsFromEnrolment(subjectName, programName) {
+    dashboardPage.openDashboard(subjectName);
+    dashboardPage.editProgramEnrolment(programName);
+    cy.get(":checkbox").uncheck();
+    wizardPage.clickNextNTimes(3);
+    wizardPage.clickSave();
+  },
   login(username, password) {
     cy.login(username, password);
   }

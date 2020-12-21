@@ -9,6 +9,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
   beforeEach(() => {
     setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
     setupTest.cleanAllOptionsFromRegistration("Test Individual");
+    setupTest.cleanAllOptionsFromEnrolment("Test Individual", "Program1");
   });
   it("Enrolment page should give validation error and should not move to next page", () => {
     dashboardPage.openDashboard("Test Individual");

@@ -2,8 +2,8 @@ import { URL } from "../../constants";
 
 export const dashboardPage = {
   openDashboard(subjectName) {
-    // cy.visit(`${URL}#/app`);
-    cy.window().then(win => (win.location.hash = "/app"));
+    cy.visit(`${URL}#/app`);
+    // cy.window().then(win => (win.location.hash = "/app"));
     cy.get(`[value="${subjectName}"] > a`).click();
   },
   editProfile(subjectName) {
