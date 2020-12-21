@@ -4,9 +4,7 @@ import {
   types,
   setProgramEnrolment,
   setUnplanProgramEncounters,
-  setProgramEncounter,
   saveProgramEncounterComplete,
-  setValidationResults,
   onLoadSuccess,
   selectProgramEncounterState,
   setState,
@@ -19,15 +17,9 @@ import {
   selectFormMappingForCancelProgramEncounter
 } from "./programEncounterSelector";
 import { mapForm } from "../../common/adapters";
-import {
-  ProgramEncounter,
-  ModelGeneral as General,
-  ObservationsHolder,
-  FormElementGroup
-} from "avni-models";
+import { ProgramEncounter, ModelGeneral as General, ObservationsHolder } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProgramEncounter, mapProgramEnrolment, mapProfile } from "common/subjectModelMapper";
-import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import { setLoad } from "../reducers/loadReducer";
 import {
   selectDecisions,
@@ -118,33 +110,22 @@ function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
 export function* updateEncounterObsWorker({ formElement, value }) {
-  const state = yield select();
-  const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  const validationResults = state.dataEntry.programEncounterReducer.validationResults;
-  const observationsHolder = new ObservationsHolder(programEncounter.observations);
-  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
-  const formElementStatuses = getFormElementStatuses(
+  const state = yield select(selectProgramEncounterState);
+  const programEncounter = state.programEncounter.cloneForEdit();
+  const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
+    formElement,
+    value,
     programEncounter,
-    formElement.formElementGroup,
-    observationsHolder
+    new ObservationsHolder(programEncounter.observations),
+    state.validationResults
   );
-  const filteredFormElements = FormElementGroup._sortedFormElements(
-    formElement.formElementGroup.filterElements(formElementStatuses)
-  );
-  yield put(setFilteredFormElements(filteredFormElements));
-  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-
-  yield put(setProgramEncounter(programEncounter));
   yield put(
-    setValidationResults(
-      formElementService.validate(
-        formElement,
-        obsValue,
-        programEncounter.observations,
-        validationResults,
-        formElementStatuses
-      )
-    )
+    setState({
+      ...state,
+      filteredFormElements,
+      programEncounter,
+      validationResults
+    })
   );
 }
 
@@ -220,34 +201,22 @@ function* updateEncounterCancelObsWatcher() {
   yield takeEvery(types.UPDATE_CANCEL_OBS, updateEncounterCancelObsWorker);
 }
 export function* updateEncounterCancelObsWorker({ formElement, value }) {
-  const state = yield select();
-  const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  const validationResults = state.dataEntry.programEncounterReducer.validationResults;
-  const observationsHolder = new ObservationsHolder(programEncounter.cancelObservations);
-
-  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
-  const formElementStatuses = getFormElementStatuses(
+  const state = yield select(selectProgramEncounterState);
+  const programEncounter = state.programEncounter.cloneForEdit();
+  const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
+    formElement,
+    value,
     programEncounter,
-    formElement.formElementGroup,
-    observationsHolder
+    new ObservationsHolder(programEncounter.cancelObservations),
+    state.validationResults
   );
-  const filteredFormElements = FormElementGroup._sortedFormElements(
-    formElement.formElementGroup.filterElements(formElementStatuses)
-  );
-  yield put(setFilteredFormElements(filteredFormElements));
-  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
-
-  yield put(setProgramEncounter(programEncounter));
   yield put(
-    setValidationResults(
-      formElementService.validate(
-        formElement,
-        obsValue,
-        programEncounter.cancelObservations,
-        validationResults,
-        formElementStatuses
-      )
-    )
+    setState({
+      ...state,
+      filteredFormElements,
+      programEncounter,
+      validationResults
+    })
   );
 }
 

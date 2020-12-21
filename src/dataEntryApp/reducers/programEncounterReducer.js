@@ -181,7 +181,7 @@ const initialState = {
   validationResults: []
 };
 
-export default function(state = initialState, action) {
+export default (state = initialState, action) => {
   switch (action.type) {
     case types.SET_PROGRAM_ENROLMENT: {
       return {
@@ -276,4 +276,4 @@ export default function(state = initialState, action) {
     default:
       return state;
   }
-}
+};

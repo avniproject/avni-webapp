@@ -8,6 +8,7 @@ import thunkMiddleware from "redux-thunk";
 import { isDevEnv } from "../constants";
 import rootReducer from "../../rootApp/rootReducer";
 import rootSaga from "../../rootApp/rootSaga";
+import { isTestEnv } from "common/constants";
 
 export const adminHistory = createHashHistory({ basename: "/admin" });
 export const appDesignerHistory = createHashHistory({ basename: "/appdesigner" });
@@ -30,7 +31,9 @@ const configureStore = initialState => {
     )
   );
 
-  sagaMiddleware.run(rootSaga);
+  if (!isTestEnv) {
+    sagaMiddleware.run(rootSaga);
+  }
 
   return store;
 };

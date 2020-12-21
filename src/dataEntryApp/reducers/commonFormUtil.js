@@ -1,5 +1,8 @@
 import { filter, find, isEmpty, isNil, sortBy, unionBy, remove, findIndex } from "lodash";
-import { filterFormElements } from "dataEntryApp/services/FormElementService";
+import {
+  filterFormElements,
+  getFormElementStatuses
+} from "dataEntryApp/services/FormElementService";
 import {
   FormElementGroup,
   ObservationsHolder,
@@ -8,6 +11,7 @@ import {
 } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
 import Wizard from "dataEntryApp/state/Wizard";
+import formElementService from "dataEntryApp/services/FormElementService";
 
 const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
@@ -221,9 +225,38 @@ const handleValidationResult = (newValidationResults, existingValidationResults)
   return existingValidationResultClones;
 };
 
+const updateObservations = (
+  formElement,
+  value,
+  entity,
+  observationsHolder,
+  existingValidationResults
+) => {
+  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
+  const formElementStatuses = getFormElementStatuses(
+    entity,
+    formElement.formElementGroup,
+    observationsHolder
+  );
+  const filteredFormElements = FormElementGroup._sortedFormElements(
+    formElement.formElementGroup.filterElements(formElementStatuses)
+  );
+  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+
+  const validationResults = formElementService.validate(
+    formElement,
+    obsValue,
+    observationsHolder.observations,
+    existingValidationResults,
+    formElementStatuses
+  );
+  return { filteredFormElements, validationResults };
+};
+
 export default {
   onLoad,
   onNext,
   onPrevious,
-  handleValidationResult
+  handleValidationResult,
+  updateObservations
 };

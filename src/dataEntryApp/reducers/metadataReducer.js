@@ -78,10 +78,12 @@ export const selectLegacyRulesBundleLoaded = state => state.dataEntry.metadata.r
 export const selectLegacyRules = state => state.dataEntry.metadata.rules;
 export const selectLegacyRulesLoaded = state => state.dataEntry.metadata.rulesLoaded;
 
-// const initialState = {};
+const initialState = {
+  rules: []
+};
 
 // reducer
-export default function(state = {}, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_OPERATIONAL_MODULES: {
       return {
