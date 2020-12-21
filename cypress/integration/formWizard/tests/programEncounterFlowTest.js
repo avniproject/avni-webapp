@@ -31,8 +31,8 @@ describe("Program Encounter Flow tests for form wizard", () => {
     );
     wizardPage.assertIfPageContains(
       "Second FEG",
-      "First FE of Second FEG",
-      "Last FE of Second FG",
+      "First FE of second FEG",
+      "Last FE of second FEG",
       "Visit Date"
     );
     wizardPage.clickNextNTimes(2);
@@ -40,8 +40,8 @@ describe("Program Encounter Flow tests for form wizard", () => {
     wizardPage.clickPreviousNTimes(2);
     wizardPage.assertIfPageContains(
       "Second FEG",
-      "First FE of Second FEG",
-      "Last FE of Second FG",
+      "First FE of second FEG",
+      "Last FE of second FEG",
       "Visit Date"
     );
     wizardPage.clickNextNTimes(2);
@@ -61,8 +61,8 @@ describe("Program Encounter Flow tests for form wizard", () => {
     );
     wizardPage.assertIfPageContains(
       "Second FEG",
-      "First FE of Second FEG",
-      "Last FE of Second FG",
+      "First FE of second FEG",
+      "Last FE of second FEG",
       "Visit Date"
     );
     wizardPage.clickNextNTimes(2);
@@ -70,8 +70,8 @@ describe("Program Encounter Flow tests for form wizard", () => {
     wizardPage.clickPreviousNTimes(2);
     wizardPage.assertIfPageContains(
       "Second FEG",
-      "First FE of Second FEG",
-      "Last FE of Second FG",
+      "First FE of second FEG",
+      "Last FE of second FEG",
       "Visit Date"
     );
     wizardPage.clickNextNTimes(2);
@@ -207,7 +207,7 @@ describe("Program Encounter Flow tests for form wizard", () => {
     );
     wizardPage.clickNext();
     wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
-    wizardPage.assertIfPageContains("Second FEG", "Last FE of Second FG");
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
     wizardPage.clickNextNTimes(2);
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPreviousNTimes(3);
@@ -234,8 +234,8 @@ describe("Program Encounter Flow tests for form wizard", () => {
       "Visit Date"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Last FE of second FG");
-    wizardPage.assertIfPageContains("Second FEG", "First FE of Second FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
     wizardPage.clickNextNTimes(2);
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPreviousNTimes(3);
@@ -270,7 +270,11 @@ describe("Program Encounter Flow tests for form wizard", () => {
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Second FEG", "First FE of Second FEG", "Last FE of Second FG");
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
@@ -413,13 +417,13 @@ describe("Program Encounter Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Visit Date", "First FE of first FEG", "Last FE of first FEG");
     wizardPage.selectOption("Hide first FE of second FEG");
     wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Second FEG", "First FE of Second FEG");
-    wizardPage.assertIfPageDoesNotContains("Last FE of Second FG");
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
     wizardPage.clickNextNTimes(2);
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPreviousNTimes(2);
-    wizardPage.assertIfPageContains("Second FEG", "First FE of Second FEG");
-    wizardPage.assertIfPageDoesNotContains("Last FE of Second FG");
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains("Visit Date", "First FEG");
     wizardPage.clickNextNTimes(3);
