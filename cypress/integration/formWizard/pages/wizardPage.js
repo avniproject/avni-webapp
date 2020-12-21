@@ -23,9 +23,7 @@ export const wizardPage = {
 
   selectOption(formElementName) {
     const formElementId = `#${formElementName.replaceAll(" ", "-")}`;
-    cy.get(formElementId)
-      .uncheck()
-      .click();
+    cy.get(formElementId).check();
   },
 
   selectOptions(...formElementNames) {

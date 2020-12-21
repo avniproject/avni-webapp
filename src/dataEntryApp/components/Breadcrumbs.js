@@ -60,7 +60,8 @@ const Breadcrumbs = ({
     ENCOUNTER: "encounter",
     EDIT_ENCOUNTER: "editEncounter",
     CANCEL_ENCOUNTER: "cancelEncounter",
-    EDIT_CANCEL_ENCOUNTER: "editCancelEncounter"
+    EDIT_CANCEL_ENCOUNTER: "editCancelEncounter",
+    EDIT_SUBJECT: "editSubject"
   };
   const urlMapper = part => {
     switch (part) {
@@ -147,6 +148,12 @@ const Breadcrumbs = ({
       }
       case urlPartLabels.EDIT_CANCEL_ENCOUNTER: {
         return { breadcrumb: `${t("Edit Cancel Encounter")} : ${t(encounterName)}`, url: "#/app" };
+      }
+      case urlPartLabels.EDIT_SUBJECT: {
+        return {
+          breadcrumb: subjectName,
+          url: "#/app/subject?uuid=" + subjectUuid
+        };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
-import { dashboardPage } from "../dashboardPage";
-import { wizardPage } from "../wizardPage";
+import { dashboardPage } from "../pages/dashboardPage";
+import { wizardPage } from "../pages/wizardPage";
 import { setupTest } from "../setup";
 import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
 

@@ -1,23 +1,11 @@
-import { dashboardPage } from "./dashboardPage";
-import { wizardPage } from "./wizardPage";
+import { dashboardPage } from "./pages/dashboardPage";
+import { wizardPage } from "./pages/wizardPage";
 
 export const setupTest = {
   cleanAllOptionsFromRegistration(subjectName) {
     dashboardPage.editProfile(subjectName);
     wizardPage.clickNext();
-    wizardPage.unCheckOptions(
-      "Hide first FEG",
-      "Hide last FEG",
-      "Hide second FEG",
-      "Hide first FE of first FEG",
-      "Hide last FE of last FEG",
-      "Hide all FEs in first FEG",
-      "Hide last FE of first FEG",
-      "Hide first FE of second FEG",
-      "Hide last FE of second FEG",
-      "Hide first FE of last FEG",
-      "Encounter1"
-    );
+    cy.get(":checkbox").uncheck();
     wizardPage.clickNext();
     wizardPage.clickSave();
   },

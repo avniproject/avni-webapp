@@ -1,13 +1,16 @@
 /// <reference types="Cypress" />
 
-import { wizardPage } from "../wizardPage";
-import { dashboardPage } from "../dashboardPage";
+import { wizardPage } from "../pages/wizardPage";
+import { dashboardPage } from "../pages/dashboardPage";
 import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
 import { setupTest } from "../setup";
 
 describe("Registration Flow tests for form wizard", () => {
-  beforeEach(() => {
+  before(() => {
     setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
+  });
+  beforeEach(() => {
+    setupTest.cleanAllOptionsFromRegistration("Test Person");
   });
   it("All four groups are visible in the Person registration form", () => {
     dashboardPage.editProfile("Test Person");
@@ -43,15 +46,23 @@ describe("Registration Flow tests for form wizard", () => {
   it("Second FEG should be hidden when all FE of the group are hidden", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
-    wizardPage.selectOption("Hide all FEs in first FEG");
+    wizardPage.selectOptions("Hide first FE of first FEG", "Hide last FE of first FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Second FEG", "First FE of Second FEG", "Last FE of Second FG");
     wizardPage.clickNextNTimes(2);
-    wizardPage.assertIfPageContains("Summary & Recommendations", "Hide all FEs in first FEG");
+    wizardPage.assertIfPageContains(
+      "Summary & Recommendations",
+      "Hide first FE of first FEG",
+      "Hide last FE of first FEG"
+    );
     wizardPage.clickPreviousNTimes(4);
     wizardPage.assertIfPageContains("Register Person");
     wizardPage.clickNextNTimes(4);
-    wizardPage.assertIfPageContains("Summary & Recommendations", "Hide all FEs in first FEG");
+    wizardPage.assertIfPageContains(
+      "Summary & Recommendations",
+      "Hide first FE of first FEG",
+      "Hide last FE of first FEG"
+    );
   });
   it("First FE in second FEG should be hidden when option 'Hide first FE of first FEG' is selected", () => {
     dashboardPage.editProfile("Test Person");
