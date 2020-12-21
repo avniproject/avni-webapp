@@ -7,7 +7,8 @@ import {
   PrimitiveValue,
   ProgramEnrolment,
   Encounter,
-  ProgramEncounter
+  ProgramEncounter,
+  SubjectType
 } from "openchs-models";
 import EntityFactory from "dataEntryApp/test/EntityFactory";
 
@@ -30,7 +31,8 @@ export default (observationValue, { isExit, isCancel }) => {
     new Date(2010, 1, 1),
     true,
     male,
-    1
+    1,
+    SubjectType.create("Individual", false, false, SubjectType.types.Person)
   );
   subject.lowestAddressLevel = address;
   programEnrolment.individual = subject;

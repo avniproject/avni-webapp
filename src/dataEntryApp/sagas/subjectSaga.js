@@ -298,17 +298,14 @@ function* updateObsWatcher() {
 }
 
 export function* updateObsWorker({ formElement, value }) {
-  const state = yield select(selectProgramEnrolmentState);
-  const subject = yield select(state => state.dataEntry.registration.subject);
-  const stateValidationResults = yield select(
-    state => state.dataEntry.registration.validationResults
-  );
+  const state = yield select(selectRegistrationState);
+  const subject = state.subject.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
     formElement,
     value,
     subject,
     new ObservationsHolder(subject.observations),
-    stateValidationResults
+    state.validationResults
   );
   yield put(
     setRegistrationState({
