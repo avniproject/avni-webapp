@@ -30,7 +30,7 @@ describe("Registration Flow tests for form wizard", () => {
   //     wizardPage.clickNextNTimes(4);
   //     wizardPage.assertIfPageContains("Summary & Recommendations");
   // });
-  it("Second FEG should be hidden when option 'Hide first FEG' is selected", () => {
+  it("First FEG should be hidden when option 'Hide first FEG' is selected", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
     wizardPage.selectOption("Hide first FEG");
@@ -43,7 +43,7 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.clickNextNTimes(4);
     wizardPage.assertIfPageContains("Summary & Recommendations", "Hide first FEG");
   });
-  it("Second FEG should be hidden when all FE of the group are hidden", () => {
+  it("First FEG should be hidden when all FE of the group are hidden", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
     wizardPage.selectOptions("Hide first FE of first FEG", "Hide last FE of first FEG");
@@ -64,7 +64,7 @@ describe("Registration Flow tests for form wizard", () => {
       "Hide last FE of first FEG"
     );
   });
-  it("First FE in second FEG should be hidden when option 'Hide first FE of first FEG' is selected", () => {
+  it("First FE in first FEG should be hidden when option 'Hide first FE of first FEG' is selected", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
     wizardPage.selectOption("Hide first FE of first FEG");
@@ -78,7 +78,7 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.clickNextNTimes(5);
     wizardPage.assertIfPageContains("Summary & Recommendations", "Hide first FE of first FEG");
   });
-  it("Last FE in second FEG should be hidden when option 'Hide last FE of first FEG' is selected", () => {
+  it("Last FE in first FEG should be hidden when option 'Hide last FE of first FEG' is selected", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
     wizardPage.selectOption("Hide last FE of first FEG");
@@ -111,5 +111,20 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("There is no value specified");
     wizardPage.assertIfPageContains("Register Person");
+  });
+  it("Second FEG is hidden using FEG rule", () => {
+    dashboardPage.editProfile("Test Person");
+    wizardPage.clickNext();
+    wizardPage.selectOption("Hide second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains("Second FEG", "First FE of second FEG");
+    wizardPage.clickNextNTimes(2);
+    wizardPage.assertIfPageContains("Summary & Recommendations", "Hide second FEG");
+    wizardPage.clickPreviousNTimes(4);
+    wizardPage.assertIfPageContains("Modify Registration");
+    wizardPage.clickNextNTimes(4);
+    wizardPage.assertIfPageContains("Summary & Recommendations", "Hide second FEG");
   });
 });
