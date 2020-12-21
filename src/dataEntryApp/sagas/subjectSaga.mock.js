@@ -6,13 +6,15 @@ import {
   Observation,
   PrimitiveValue,
   ProgramEnrolment,
-  Encounter
+  Encounter,
+  ProgramEncounter
 } from "openchs-models";
 import EntityFactory from "dataEntryApp/test/EntityFactory";
 
 export default (observationValue, { isExit, isCancel }) => {
   const encounter = Encounter.create();
   const programEnrolment = ProgramEnrolment.createEmptyInstance();
+  const programEncounter = ProgramEncounter.createEmptyInstance();
   let address = AddressLevel.create({
     uuid: "eea64e54-dd5b-41fb-91aa-c6b4f4490bea",
     title: "Boarding",
@@ -49,6 +51,7 @@ export default (observationValue, { isExit, isCancel }) => {
 
   subject.observations = observations;
   encounter[isCancel ? "cancelObservations" : "observations"] = observations;
+  programEncounter[isCancel ? "cancelObservations" : "observations"] = observations;
   programEnrolment[isExit ? "programExitObservations" : "observations"] = observations;
 
   const form = EntityFactory.createForm("foo");
@@ -72,5 +75,13 @@ export default (observationValue, { isExit, isCancel }) => {
   formElementGroup1.addFormElement(formElement1);
   formElementGroup1.addFormElement(formElement2);
 
-  return { programEnrolment, formElement1, formElement2, formElementGroup1, subject, encounter };
+  return {
+    programEnrolment,
+    formElement1,
+    formElement2,
+    formElementGroup1,
+    subject,
+    encounter,
+    programEncounter
+  };
 };

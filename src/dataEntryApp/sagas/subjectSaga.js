@@ -1,4 +1,4 @@
-import { FormElementGroup, Individual, ObservationsHolder, ProgramEnrolment } from "avni-models";
+import { Individual, ObservationsHolder, ProgramEnrolment } from "avni-models";
 import {
   onLoadSuccess,
   saveComplete,
@@ -8,8 +8,6 @@ import {
   setInitialSubjectState,
   setRegistrationForm,
   setState as setRegistrationState,
-  setSubject,
-  setValidationResults as setValidationResultsRegistration,
   types as subjectTypes
 } from "../reducers/registrationReducer";
 import SubjectSearchService from "../services/SubjectSearchService";
@@ -34,9 +32,7 @@ import {
   selectProgramEnrolmentState,
   setFilteredFormElements as setFilteredFormElementsEnrolment,
   setInitialState,
-  setProgramEnrolment,
   setState as setProgramEnrolmentState,
-  setValidationResults as setValidationResultsEnrolment,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
@@ -44,7 +40,6 @@ import _ from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
-import formElementService, { getFormElementStatuses } from "../services/FormElementService";
 import {
   selectChecklists,
   selectDecisions,
