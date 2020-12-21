@@ -112,19 +112,52 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("There is no value specified");
     wizardPage.assertIfPageContains("Register Person");
   });
-  it("Second FEG is hidden using FEG rule", () => {
+  it.only("Second FEG is hidden using FEG rule", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
-    wizardPage.selectOption("Hide second FEG");
+    wizardPage.selectOptions("Hide second FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
     wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Second FEG", "First FE of second FEG");
-    wizardPage.clickNextNTimes(2);
-    wizardPage.assertIfPageContains("Summary & Recommendations", "Hide second FEG");
-    wizardPage.clickPreviousNTimes(4);
-    wizardPage.assertIfPageContains("Modify Registration");
-    wizardPage.clickNextNTimes(4);
-    wizardPage.assertIfPageContains("Summary & Recommendations", "Hide second FEG");
+    wizardPage.assertIfPageDoesNotContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.assertIfPageContains("Last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Modifier");
+    wizardPage.clickNextNTimes(3);
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  });
+  it("Second FEG is hidden using all FE rule", () => {
+    dashboardPage.editProfile("Test Person");
+    wizardPage.clickNext();
+    wizardPage.selectOptions("Hide first FE of second FEG", "Hide last FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.assertIfPageContains("Last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Modifier");
+    wizardPage.clickNextNTimes(3);
+    wizardPage.assertIfPageContains("Summary & Recommendations");
   });
 });
