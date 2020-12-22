@@ -19,7 +19,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");
   });
-  it.only("First FEG should be hidden by FEG rule", () => {
+  it("First FEG should be hidden by FEG rule", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide first FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageDoesNotContains(
@@ -119,7 +119,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("Second FEG should be hidden by FEG rule", () => {
-    dashboardPage.modifyRegistration("Test Individual", "Hide second FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide second FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageContains(
       "Enrolment Date",
@@ -145,7 +145,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("Second FEG is hidden using all FE rule", () => {
-    dashboardPage.modifyRegistration(
+    wizardPage.modifyRegistration(
       "Test Individual",
       "Hide first FE of second FEG",
       "Hide last FE of second FEG"
@@ -175,7 +175,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("First FE in second FEG is hidden", () => {
-    dashboardPage.modifyRegistration("Test Individual", "Hide first FE of second FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide first FE of second FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageContains(
       "Enrolment Date",
@@ -204,7 +204,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("Last FE in second FEG is hidden", () => {
-    dashboardPage.modifyRegistration("Test Individual", "Hide last FE of second FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide last FE of second FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageContains(
       "Enrolment Date",
@@ -233,7 +233,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("Last FEG should be hidden by FEG rule", () => {
-    dashboardPage.modifyRegistration("Test Individual", "Hide last FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide last FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageContains(
       "Enrolment Date",
@@ -258,7 +258,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("Last FEG is hidden using all FE rule", () => {
-    dashboardPage.modifyRegistration(
+    wizardPage.modifyRegistration(
       "Test Individual",
       "Hide first FE of last FEG",
       "Hide last FE of last FEG"
@@ -287,7 +287,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("First FE in last FEG is hidden", () => {
-    dashboardPage.modifyRegistration("Test Individual", "Hide first FE of last FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide first FE of last FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageContains(
       "Enrolment Date",
@@ -316,7 +316,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("Last FE in last FEG is hidden", () => {
-    dashboardPage.modifyRegistration("Test Individual", "Hide last FE of last FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide last FE of last FEG");
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.assertIfPageContains(
       "Enrolment Date",
@@ -345,7 +345,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
   it("All the FE in the form are hidden", () => {
-    dashboardPage.modifyRegistration(
+    wizardPage.modifyRegistration(
       "Test Individual",
       "Hide first FE of first FEG",
       "Hide last FE of last FEG",
