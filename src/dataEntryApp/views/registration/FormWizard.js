@@ -216,7 +216,7 @@ const FormWizard = ({
                   className={classes.nextbuttonStyle}
                   onClick={onSummaryPage ? onSave : onNext}
                   text={onSummaryPage ? t("save") : t("next")}
-                  id={"next"}
+                  id={onSummaryPage ? "save" : "next"}
                 />
               </Box>
             </Box>

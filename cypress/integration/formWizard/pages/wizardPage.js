@@ -7,8 +7,7 @@ export const wizardPage = {
   },
 
   clickSave() {
-    //TODO: Change id to save
-    cy.get("#next").click();
+    cy.get("#save").click();
   },
 
   clickNextNTimes(n) {
