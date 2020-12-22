@@ -6,10 +6,8 @@ import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
 import { setupTest } from "../setup";
 
 describe("Registration Flow tests for form wizard", () => {
-  before(() => {
-    setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
-  });
   beforeEach(() => {
+    setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
     setupTest.cleanAllOptionsFromRegistration("Test Person");
   });
   it("All four groups are visible in the Person registration form", () => {
@@ -120,7 +118,7 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("There is no value specified");
     wizardPage.assertIfPageContains("Register Person");
   });
-  it.only("Second FEG is hidden using FEG rule", () => {
+  it("Second FEG is hidden using FEG rule", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
     wizardPage.selectOptions("Hide second FEG");
