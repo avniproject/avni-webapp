@@ -1,4 +1,5 @@
 import { forEach, range } from "lodash";
+import { dashboardPage } from "./dashboardPage";
 
 export const wizardPage = {
   clickNext() {
@@ -66,5 +67,12 @@ export const wizardPage = {
     cy.get(formElementId)
       .clear()
       .type(dateString);
+  },
+  modifyRegistration(subjectName, ...formElementNames) {
+    dashboardPage.editProfile(subjectName);
+    wizardPage.clickNext();
+    wizardPage.selectOptions(formElementNames);
+    wizardPage.clickNext();
+    wizardPage.clickSave();
   }
 };
