@@ -14,6 +14,9 @@ deps: check-node-v
 start: check-node-v
 	yarn start
 
+storybook: check-node-v
+	yarn storybook
+
 test: check-node-v
 	yarn test
 
