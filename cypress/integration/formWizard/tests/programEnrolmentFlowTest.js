@@ -360,7 +360,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
-  it("Another FEG in same form is hidden by skip logic in current form", () => {
+  it.only("Another FEG in same form is hidden by skip logic in current form", () => {
     dashboardPage.editProgramEnrolment("Program1");
     wizardPage.selectOption("Hide second FEG");
     wizardPage.assertIfPageContains("First FEG", "Enrolment Date", "Last FE of first FEG");
