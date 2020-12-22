@@ -26,12 +26,6 @@ export const CodedFormElement = ({
   errorMsg,
   ...props
 }) => {
-  let genwidth = "";
-  if (groupName === "Gender") {
-    genwidth = "10%";
-  } else {
-    genwidth = "20%";
-  }
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
@@ -43,7 +37,7 @@ export const CodedFormElement = ({
 
   const renderError = () => {
     return validationResult || errorMsg ? (
-      <FormHelperText style={{ marginTop: "-10px", marginBottom: "20px" }}>
+      <FormHelperText style={{ marginBottom: "20px" }}>
         {(validationResult && t(validationResult.messageKey, validationResult.extra)) ||
           t(errorMsg)}
       </FormHelperText>
@@ -64,7 +58,7 @@ export const CodedFormElement = ({
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
           {items.map(item => (
-            <Box width={genwidth}>
+            <Box>
               <FormControlLabel
                 key={item.uuid}
                 control={
