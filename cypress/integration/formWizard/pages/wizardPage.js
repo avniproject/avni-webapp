@@ -7,6 +7,7 @@ export const wizardPage = {
   },
 
   clickSave() {
+    //TODO: Change id to save
     cy.get("#next").click();
   },
 
@@ -71,7 +72,7 @@ export const wizardPage = {
   modifyRegistration(subjectName, ...formElementNames) {
     dashboardPage.editProfile(subjectName);
     wizardPage.clickNext();
-    wizardPage.selectOptions(formElementNames);
+    wizardPage.selectOptions(...formElementNames);
     wizardPage.clickNext();
     wizardPage.clickSave();
   }
