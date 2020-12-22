@@ -16,7 +16,7 @@ import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
 import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
-import IncludeVoiedForm from "../GlobalSearch/IncludeVoiedForm";
+import IncludeVoidedForm from "../GlobalSearch/IncludeVoidedForm";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import Grid from "@material-ui/core/Grid";
 import moment from "moment/moment";
@@ -494,7 +494,7 @@ function SearchFilterForm({
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <IncludeVoiedForm
+                  <IncludeVoidedForm
                     includeVoied={includeVoied}
                     includeVoiedChange={includeVoiedChange}
                   />

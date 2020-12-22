@@ -4,24 +4,26 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import useCommonStyles from "dataEntryApp/styles/commonStyles";
 import moment from "moment";
-import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
+import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   highlightBackground: {
     backgroundColor: Colors.HighlightBackgroundColor
+  },
+  tableContainer: {
+    borderRadius: "3px",
+    boxShadow: "0px 0px 1px"
   }
 }));
 
 const ScheduledVisitsTable = ({ visitSchedules }) => {
-  const commonStyles = useCommonStyles();
   const classes = useStyles();
 
   return (
     <Table
-      className={`${commonStyles.tableContainer} ${classes.highlightBackground}`}
+      className={`${classes.tableContainer} ${classes.highlightBackground}`}
       aria-label="caption table"
     >
       <TableHead>

@@ -8,10 +8,9 @@ import programEncounterSaga from "./programEncounterSaga";
 import encounterSaga from "./encounterSaga";
 import { saveUserInfoWatcher } from "rootApp/saga";
 import programSaga from "./programSaga";
-import viewVisitSaga from "./ViewVisitSaga";
+import viewVisitSaga from "./viewVisitSaga";
 import completedVisitSaga from "./completedVisitSaga";
 import relationshipSaga from "./relationshipSaga";
-// import translationApiSaga from "../sagas/TranslationSaga"
 
 export default function* rootSaga() {
   yield all(

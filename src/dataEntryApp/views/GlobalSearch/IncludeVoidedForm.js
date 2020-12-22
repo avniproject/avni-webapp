@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: "1%"
   }
 }));
-function IncludeVoiedForm({ includeVoied, includeVoiedChange }) {
+function IncludeVoidedForm({ includeVoied, includeVoiedChange }) {
   const classes = useStyles();
   return (
     <Fragment>
@@ -31,4 +31,4 @@ function IncludeVoiedForm({ includeVoied, includeVoiedChange }) {
   );
 }
 
-export default IncludeVoiedForm;
+export default IncludeVoidedForm;

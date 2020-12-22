@@ -4,21 +4,19 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import { Observation, Concept } from "avni-models";
+import { Concept, Observation } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
 import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { isEmpty, isNil } from "lodash";
-import useCommonStyles from "dataEntryApp/styles/commonStyles";
+import _, { isEmpty, isNil } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
-import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -30,6 +28,10 @@ const useStyles = makeStyles(theme => ({
   },
   highlightBackground: {
     backgroundColor: Colors.HighlightBackgroundColor
+  },
+  tableContainer: {
+    borderRadius: "3px",
+    boxShadow: "0px 0px 1px"
   }
 }));
 
@@ -37,7 +39,6 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
-  const commonStyles = useCommonStyles();
 
   const [showMedia, setShowMedia] = React.useState(false);
   const [currentMediaItemIndex, setCurrentMediaItemIndex] = React.useState(0);
@@ -191,7 +192,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   ) : (
     <div>
       <Table
-        className={clsx(commonStyles.tableContainer, highlight && classes.highlightBackground)}
+        className={clsx(classes.tableContainer, highlight && classes.highlightBackground)}
         size="small"
         aria-label="a dense table"
       >

@@ -21,11 +21,6 @@ export const getProgramEncounter = encounterUuid => ({
   encounterUuid
 });
 
-export const setProgramEncounter = encounter => ({
-  type: types.SET_PROGRAM_ENCOUNTER,
-  encounter
-});
-
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_ENCOUNTER: {

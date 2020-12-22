@@ -17,11 +17,6 @@ export const setRelations = relationships => ({
   relationships
 });
 
-export const setRelationlist = relationData => ({
-  type: types.SET_LISTOFRELATIVES,
-  relationData
-});
-
 export const saveRelationShip = relationData => ({
   type: types.SAVE_RELATION,
   relationData

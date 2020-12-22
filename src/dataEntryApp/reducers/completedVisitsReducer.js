@@ -9,18 +9,6 @@ export const types = {
   LOAD_ENCOUNTERS: `${prefix}LOAD_ENCOUNTERS`
 };
 
-export const getCompletedProgramEncounters = (enrolmentUuid, filterQueryString) => ({
-  type: types.GET_COMPLETED_PROGRAM_ENCOUNTERS,
-  enrolmentUuid,
-  filterQueryString
-});
-
-export const getCompletedEncounters = (subjectUuid, filterQueryString) => ({
-  type: types.GET_COMPLETED_ENCOUNTERS,
-  subjectUuid,
-  filterQueryString
-});
-
 export const loadProgramEncounters = (enrolmentUuid, filterQueryString) => ({
   type: types.LOAD_PROGRAM_ENCOUNTERS,
   enrolmentUuid,

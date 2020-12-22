@@ -1,6 +1,4 @@
 import React from "react";
-import { Chip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 
 class SubjectValidation {
   constructor(success, formIdentifier, messageKey, extra) {
@@ -67,15 +65,6 @@ class SubjectValidation {
       return new SubjectValidation(false, formIdentifier, errormsg);
     }
   }
-
-  //  static contactvalidation(formIdentifier) {
-  //     var regex = /^\d{10}$/;
-  //    // var regex = /[a-z]ear/;
-  //     var result = regex.test(formIdentifier);
-  //     console.log("jkljkljkljlkj",regex.test(formIdentifier));
-
-  //     return new SubjectValidation(result, formIdentifier);
-  // }
 }
 
 export default SubjectValidation;
