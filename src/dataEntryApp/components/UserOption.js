@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import { saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import { Auth } from "aws-amplify";
+import Auth from "@aws-amplify/auth";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({

@@ -1,5 +1,5 @@
 import React from "react";
-import { Auth } from "aws-amplify";
+import Auth from "@aws-amplify/auth";
 import { connect } from "react-redux";
 import { userLogout } from "react-admin";
 import MenuItem from "@material-ui/core/MenuItem";
