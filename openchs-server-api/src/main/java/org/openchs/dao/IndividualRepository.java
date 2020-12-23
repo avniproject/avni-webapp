@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.application.projections.WebSearchResultProjection;
 import org.openchs.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -151,4 +152,8 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     Individual findByLegacyId(String legacyId);
 
     Individual findByLegacyIdAndSubjectType(String legacyId, SubjectType subjectType);
+
+    @Query(value = "select firstname,lastname,fullname,id,uuid,title_lineage,subject_type_name,gender_name,date_of_birth,enrolments,total_elements from web_search_function(:jsonSearch, :dbUser)", nativeQuery = true)
+    List<WebSearchResultProjection> getWebSearchResults(String jsonSearch, String dbUser);
+
 }
