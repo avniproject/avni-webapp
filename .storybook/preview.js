@@ -9,7 +9,7 @@ export const parameters = {
 
 const theme = createMuiTheme({
   palette: {
-    primary: Colors.red,
+    primary: Colors.blue,
     secondary: Colors.grey
   }
 });
