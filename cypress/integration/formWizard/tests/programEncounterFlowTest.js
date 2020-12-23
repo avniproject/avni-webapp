@@ -17,11 +17,10 @@ describe("Program Encounter Flow tests for form wizard", () => {
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");
   });
-  it.only("First FEG should be hidden using FEG rule", () => {
+  it("First FEG should be hidden using FEG rule", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide first FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.test();
-    //wizardPage.checkScenarioHideFirstFEG();
+    wizardPage.checkScenarioHideFirstFEG();
   });
   it("First FEG should be hidden using all FE rule", () => {
     wizardPage.modifyRegistration(
@@ -30,107 +29,22 @@ describe("Program Encounter Flow tests for form wizard", () => {
       "Hide last FE of first FEG"
     );
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageDoesNotContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG"
-    );
-    wizardPage.assertIfPageContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideFirstFEGbyAllFEG();
   });
   it("First FE should be hidden in first FEG", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide first FE of first FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageDoesNotContains("First FE of first FEG");
-    wizardPage.assertIfPageContains("First FEG", "Last FE of first FEG", "Visit Date");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Second FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("First FEG", "Last FE of first FEG", "Visit Date");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideFirstFEofFirstFEG();
   });
   it("Last FE should be hidden in first FEG", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide last FE of first FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
-    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Visit Date");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Second FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
-    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Visit Date");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideLastFEofFirstFEG();
   });
   it("Second FEG is hidden using FEG rule", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide second FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG"
-    );
-    wizardPage.assertIfPageContains("Last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageDoesNotContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG"
-    );
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideSecondFEG();
   });
   it("Second FEG is hidden using all FE rule", () => {
     wizardPage.modifyRegistration(
@@ -139,122 +53,22 @@ describe("Program Encounter Flow tests for form wizard", () => {
       "Hide last FE of second FEG"
     );
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG"
-    );
-    wizardPage.assertIfPageContains("Last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageDoesNotContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG"
-    );
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideSecondFEGbyAllFEG();
   });
   it("First FE in second FEG is hidden", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide first FE of second FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
-    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideFirstFEofSecondFEG();
   });
   it("Last FE in second FEG is hidden", () => {
-    wizardPage.editProfile("Test Individual", "Hide last FE of second FEG");
+    wizardPage.modifyRegistration("Test Individual", "Hide last FE of second FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
-    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideLastFEofSecondFEG();
   });
   it("Last FEG should be hidden using FEG rule", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide last FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains(
-      "Last FEG",
-      "First FE of last FEG",
-      "Last FE of last FEG"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains(
-      "Second FEG",
-      "First FE of second FEG",
-      "Last FE of second FEG"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideLastFEG();
   });
   it("Last FEG is hidden using all FE rule", () => {
     wizardPage.modifyRegistration(
@@ -263,72 +77,17 @@ describe("Program Encounter Flow tests for form wizard", () => {
       "Hide last FE of last FEG"
     );
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains(
-      "Last FEG",
-      "First FE of last FEG",
-      "Last FE of last FEG"
-    );
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideLastFEGbyAllFEG();
   });
   it("First FE in last FEG is hidden", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide first FE of last FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("First FE of last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideFirstFEofLastFEG();
   });
   it("Last FE in last FEG is hidden", () => {
     wizardPage.modifyRegistration("Test Individual", "Hide last FE of last FEG");
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG",
-      "Visit Date"
-    );
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Last FE of last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideLastFEofLastFEG();
   });
   it("All the FE in the form are hidden", () => {
     wizardPage.modifyRegistration(
@@ -342,22 +101,7 @@ describe("Program Encounter Flow tests for form wizard", () => {
     );
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
     wizardPage.assertIfPageContains("Visit Date");
-    wizardPage.assertIfPageDoesNotContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Visit Date");
-    wizardPage.assertIfPageDoesNotContains(
-      "First FEG",
-      "First FE of first FEG",
-      "Last FE of first FEG"
-    );
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideAllFEG();
   });
   it("An Empty encounter without any FEG created", () => {
     dashboardPage.performNewProgramEncounter("Program1", "Empty Program Encounter");
@@ -367,63 +111,18 @@ describe("Program Encounter Flow tests for form wizard", () => {
   });
   it("Another FEG in same form is hidden by skip logic in current form", () => {
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains("Visit Date", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.selectOption("Hide second FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Second FEG");
-    wizardPage.assertIfPageContains("Last FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Visit Date", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioFEGhiddeninSameForm();
   });
   it("FE in same group in same form is hidden", () => {
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains("Visit Date", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.selectOption("Hide last FE of first FEG");
-    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Visit Date", "First FE of first FEG");
-    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioFEhiddeninSameFEG();
   });
-  it("FE in another group in same form is hidden", () => {
+  it.only("FE in another group in same form is hidden", () => {
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-    wizardPage.assertIfPageContains("Visit Date", "First FE of first FEG", "Last FE of first FEG");
-    wizardPage.selectOption("Hide first FE of second FEG");
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
-    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
-    wizardPage.clickPrevious();
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
-    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
-    wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Visit Date", "First FEG");
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.checkScenarioHideFEinAnotherFEGInSameForm();
   });
-  it("Performing new program encounter should not move to next page in case of validation error in visit date", () => {
+  it("Performing new program encounter should not move to next page in case of validation error in visit date(static element)", () => {
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
-
     wizardPage.enterDate("Visit Date", "11/01/2021");
     wizardPage.assertIfPageContains("Encounter date cannot be in future");
     wizardPage.clickNext(); //it should not go to next page because of the error.

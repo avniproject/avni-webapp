@@ -67,9 +67,11 @@ describe("Program Enrolment Flow tests for form wizard", () => {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains(
       "Second FEG",
@@ -78,6 +80,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
@@ -87,15 +90,22 @@ describe("Program Enrolment Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("Enrolment Date", "First FEG", "Last FE of first FEG");
     wizardPage.assertIfPageDoesNotContains("First FE of first FEG");
     wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
     wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of second FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of second FEG");
     wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains("Enrolment Date", "First FEG", "Last FE of first FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of first FEG");
     wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
     wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of second FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
   });
