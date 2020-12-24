@@ -7,6 +7,7 @@ import TableRow from "@material-ui/core/TableRow";
 import moment from "moment";
 import Colors from "../Colors";
 import { makeStyles } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   highlightBackground: {
@@ -21,6 +22,7 @@ const useStyles = makeStyles(theme => ({
 const ScheduledVisitsTable = ({ visitSchedules }) => {
   const classes = useStyles();
 
+  const { t } = useTranslation();
   return (
     <Table
       className={`${classes.tableContainer} ${classes.highlightBackground}`}
@@ -28,9 +30,9 @@ const ScheduledVisitsTable = ({ visitSchedules }) => {
     >
       <TableHead>
         <TableRow>
-          <TableCell align="left">Visit Name</TableCell>
-          <TableCell align="left">Scheduling for</TableCell>
-          <TableCell align="left">Overdue after</TableCell>
+          <TableCell align="left">t("visitName")</TableCell>
+          <TableCell align="left">t("schedulingFor")</TableCell>
+          <TableCell align="left">t("overdueBy")</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
