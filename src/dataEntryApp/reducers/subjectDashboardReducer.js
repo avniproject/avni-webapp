@@ -6,7 +6,8 @@ export const types = {
   GET_PROGRAMS: `${prefix}GET_PROGRAMS`,
   SET_PROGRAMS: `${prefix}SET_PROGRAMS`,
   VOID_SUBJECT: `${prefix}VOID_SUBJECT`,
-  UN_VOID_SUBJECT: `${prefix}UN_VOID_SUBJECT`
+  UN_VOID_SUBJECT: `${prefix}UN_VOID_SUBJECT`,
+  SET_TABS_STATUS: `${prefix}SET_TABS_STATUS`
 };
 
 export const getSubjectProfile = subjectUUID => ({
@@ -39,6 +40,11 @@ export const setPrograms = program => ({
   program
 });
 
+export const setTabsStatus = tabsStatus => ({
+  type: types.SET_TABS_STATUS,
+  tabsStatus
+});
+
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_SUBJECT_PROFILE: {
@@ -51,6 +57,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         programs: action.program
+      };
+    }
+    case types.SET_TABS_STATUS: {
+      return {
+        ...state,
+        tabsStatus: action.tabsStatus
       };
     }
     default:
