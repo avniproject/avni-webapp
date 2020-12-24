@@ -37,7 +37,7 @@ const ScheduledVisitsTable = ({ visitSchedules }) => {
         {visitSchedules.map(row => (
           <TableRow key={row.name}>
             <TableCell align="left" component="th" scope="row">
-              {row.name}
+              {t(row.name)}
             </TableCell>
             <TableCell align="left">{moment(row.earliestDate).format("DD-MM-YYYY")}</TableCell>
             <TableCell align="left">{moment(row.maxDate).format("DD-MM-YYYY")}</TableCell>

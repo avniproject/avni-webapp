@@ -83,7 +83,7 @@ const ProgramEnrol = ({
       <Paper className={classes.root}>
         <div className={classes.tableView}>
           <Typography component={"span"} className={classes.mainHeading}>
-            {match.queryParams.programName}
+            {t(match.queryParams.programName)}
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>

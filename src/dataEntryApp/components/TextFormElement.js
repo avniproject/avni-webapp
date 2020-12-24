@@ -21,11 +21,10 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
   return (
     <div>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-        {t(fe.display || fe.name)}
+        {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
       <TextField
-        // label={t(fe.display || fe.name)}
         id={fe.name.replaceAll(" ", "-")}
         type={"text"}
         autoComplete="off"

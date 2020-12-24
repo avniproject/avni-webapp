@@ -47,13 +47,12 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
   return (
     <Fragment>
       <Typography variant="body1" gutterBottom className={classes.labelStyle}>
-        {t(fe.display || fe.name)}
+        {t(fe.name)}
         {fe.mandatory ? "*" : ""}
         {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}
         {rangeText(fe.concept.lowNormal, fe.concept.hiNormal)}
       </Typography>
       <TextField
-        // label={t(fe.display || fe.name)}
         type={"numeric"}
         autoComplete="off"
         required={fe.mandatory}
