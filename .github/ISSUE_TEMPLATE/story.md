@@ -14,3 +14,6 @@ assignees: ''
 ### Visual Design
 
 ### Tech Approach
+
+### Test Scenarios
+- [ ] Including all required translations
