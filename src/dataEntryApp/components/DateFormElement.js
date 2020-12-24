@@ -52,7 +52,7 @@ export const DateTimeFormElement = ({
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-        {t(fe.display || fe.name)}
+        {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardDateTimePicker
@@ -99,7 +99,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
   ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-        {t(fe.display || fe.name)}
+        {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardDatePicker
@@ -165,7 +165,7 @@ export const DateAndDurationFormElement = ({
 
   return (
     <FormControl style={{ width: "100%" }}>
-      <FormLabel>{fe.display || fe.name}</FormLabel>
+      <FormLabel>{t(fe.name)}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
           {`${t("Select Date")}${fe.mandatory ? "*" : ""}`}

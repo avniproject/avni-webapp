@@ -49,7 +49,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
                   <Table className={classes.tableContainer} size="small" aria-label="a dense table">
                     <TableHead>
                       <TableRow key={index}>
-                        <TableCell className={classes.tableHeader}>{t("Name")}</TableCell>
+                        <TableCell className={classes.tableHeader}>{t("name")}</TableCell>
                         {isEqual(section.title, t("plannedVisits")) ? (
                           <TableCell className={classes.tableHeader}>{t("Date")}</TableCell>
                         ) : (
@@ -77,7 +77,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
                                       : `${actualVisitUrl}&uuid=${encounter.encounterType.uuid}`
                                   }
                                 >
-                                  {encounter.name}
+                                  {t(encounter.name)}
                                 </InternalLink>
                               </TableCell>
                             ) : (

@@ -153,7 +153,7 @@ const ProfileDetails = ({
             id="demo-simple-select-placeholder-label-label"
             className={errorStatus ? classes.errorText : ""}
           >
-            Program
+            {t("Program")}
           </InputLabel>
 
           <NativeSelect
@@ -170,7 +170,7 @@ const ProfileDetails = ({
             {programs
               ? programs.map((element, index) => (
                   <option key={index} value={element.name}>
-                    {element.name}
+                    {t(element.name)}
                   </option>
                 ))
               : ""}
@@ -188,13 +188,6 @@ const ProfileDetails = ({
         {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
-        {/* <Grid item>
-          <Avatar
-            src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
-            className={classes.bigAvatar}
-          />
-
-        </Grid> */}
         <Grid item>
           <AccountCircle className={classes.iconStyle} />
         </Grid>
