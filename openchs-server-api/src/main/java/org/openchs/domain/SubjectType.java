@@ -6,7 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.openchs.application.Subject;
 import org.openchs.application.projections.BaseProjection;
-import org.openchs.web.request.webapp.GroupRoleContract;
+import org.openchs.web.request.GroupRoleContract;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;

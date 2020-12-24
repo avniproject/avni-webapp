@@ -7,7 +7,9 @@ public class GroupRoleContract extends CHSRequest {
     private String groupSubjectTypeUUID;
     private String memberSubjectTypeUUID;
     private String role;
-    private boolean isPrimary;
+    private String subjectMemberName;
+    private String groupRoleUUID;
+    private Boolean isPrimary;
     private Long maximumNumberOfMembers;
     private Long minimumNumberOfMembers;
 
@@ -17,6 +19,8 @@ public class GroupRoleContract extends CHSRequest {
         groupRoleContract.setMemberSubjectTypeUUID(groupRole.getMemberSubjectTypeUUID());
         groupRoleContract.setRole(groupRole.getRole());
         groupRoleContract.setPrimary(groupRole.isPrimary());
+        groupRoleContract.setGroupRoleUUID(groupRole.getUuid());
+        groupRoleContract.setSubjectMemberName(groupRole.getMemberSubjectType().getName());
         groupRoleContract.setMaximumNumberOfMembers(groupRole.getMaximumNumberOfMembers());
         groupRoleContract.setMinimumNumberOfMembers(groupRole.getMinimumNumberOfMembers());
         return groupRoleContract;
@@ -46,12 +50,28 @@ public class GroupRoleContract extends CHSRequest {
         this.role = role;
     }
 
-    public boolean isPrimary() {
+    public Boolean getPrimary() {
         return isPrimary;
     }
 
-    public void setPrimary(boolean primary) {
+    public void setPrimary(Boolean primary) {
         isPrimary = primary;
+    }
+
+    public String getSubjectMemberName() {
+        return subjectMemberName;
+    }
+
+    public void setSubjectMemberName(String subjectMemberName) {
+        this.subjectMemberName = subjectMemberName;
+    }
+
+    public String getGroupRoleUUID() {
+        return groupRoleUUID;
+    }
+
+    public void setGroupRoleUUID(String groupRoleUUID) {
+        this.groupRoleUUID = groupRoleUUID;
     }
 
     public Long getMaximumNumberOfMembers() {

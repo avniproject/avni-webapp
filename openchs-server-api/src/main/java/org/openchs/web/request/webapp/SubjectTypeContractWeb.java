@@ -3,6 +3,7 @@ package org.openchs.web.request.webapp;
 import org.joda.time.DateTime;
 import org.openchs.domain.OperationalSubjectType;
 import org.springframework.hateoas.core.Relation;
+import org.openchs.web.request.GroupRoleContract;
 
 import java.util.List;
 

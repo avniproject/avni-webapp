@@ -16,7 +16,7 @@ import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.SubjectTypeContract;
 import org.openchs.web.request.webapp.SubjectTypeSetting;
-import org.openchs.web.request.webapp.GroupRoleContract;
+import org.openchs.web.request.GroupRoleContract;
 import org.openchs.web.request.webapp.SubjectTypeContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
