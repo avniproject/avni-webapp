@@ -74,5 +74,427 @@ export const wizardPage = {
     wizardPage.selectOptions(...formElementNames);
     wizardPage.clickNext();
     wizardPage.clickSave();
+  },
+  checkScenarioHideFirstFEG() {
+    wizardPage.assertIfPageDoesNotContains(
+      "First FEG",
+      "First FE of first FEG",
+      "Last FE of first FEG"
+    );
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideFirstFEGbyAllFEG() {
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideFirstFEofFirstFEG() {
+    wizardPage.assertIfPageContains("First FEG", "Last FE of first FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "Last FE of first FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideLastFEofFirstFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideSecondFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("Second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideSecondFEGbyAllFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("Second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideFirstFEofSecondFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideLastFEofSecondFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "First FE of second FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideLastFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains("Last FEG");
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains("Last FEG");
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideLastFEGbyAllFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains("Last FEG");
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains("Last FEG");
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains("Last FEG");
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideFirstFEofLastFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("First FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideLastFEofLastFEG() {
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideAllFEG() {
+    wizardPage.assertIfPageDoesNotContains(
+      "First FEG",
+      "First FE of first FEG",
+      "Last FE of first FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains(
+      "Last FEG",
+      "First FE of last FEG",
+      "Last FE of last FEG"
+    );
+    wizardPage.assertIfPageDoesNotContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of last FEG"
+    );
+    wizardPage.assertIfPageDoesNotContains(
+      "First FEG",
+      "First FE of first FEG",
+      "Last FE of first FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioFEGhiddeninSameForm() {
+    wizardPage.selectOption("Hide second FEG");
+    wizardPage.assertIfPageContains("First FEG", "Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.assertIfPageContains("First FEG");
+  },
+  checkScenarioFEhiddeninSameFEG() {
+    wizardPage.assertIfPageContains("First FE of first FEG", "Last FE of first FEG");
+    wizardPage.selectOption("Hide last FE of first FEG");
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG");
+    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains(
+      "Second FEG",
+      "First FE of second FEG",
+      "Last FE of second FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains("Last FE of first FEG");
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  },
+  checkScenarioHideFEinAnotherFEGInSameForm() {
+    wizardPage.selectOption("Hide first FE of second FEG");
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("First FEG", "First FE of first FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageDoesNotContains("First FE of second FEG");
+    wizardPage.assertIfPageContains("Second FEG", "Last FE of second FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
   }
 };

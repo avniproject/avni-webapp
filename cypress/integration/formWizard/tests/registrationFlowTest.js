@@ -217,10 +217,18 @@ describe("Registration Flow tests for form wizard", () => {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains(
+      "Last FEG",
+      "First FE of last FEG",
+      "Last FE of last FEG"
+    );
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
-    wizardPage.assertIfPageDoesNotContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains(
+      "Last FEG",
+      "First FE of last FEG",
+      "Last FE of last FEG"
+    );
     wizardPage.assertIfPageContains(
       "Second FEG",
       "First FE of second FEG",
@@ -245,10 +253,18 @@ describe("Registration Flow tests for form wizard", () => {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageDoesNotContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains(
+      "Last FEG",
+      "First FE of last FEG",
+      "Last FE of last FEG"
+    );
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
-    wizardPage.assertIfPageDoesNotContains("Last FEG", "First FE of last FEG", "Last FE of last FEG");
+    wizardPage.assertIfPageDoesNotContains(
+      "Last FEG",
+      "First FE of last FEG",
+      "Last FE of last FEG"
+    );
     wizardPage.assertIfPageContains(
       "Second FEG",
       "First FE of second FEG",
@@ -301,35 +317,28 @@ describe("Registration Flow tests for form wizard", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
     wizardPage.selectOptions("Hide last FE of last FEG");
-
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
-
     wizardPage.clickNext();
     wizardPage.assertIfPageContains(
       "Second FEG",
       "First FE of second FEG",
       "Last FE of second FEG"
     );
-
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.assertIfPageDoesNotContains("Last FE of last FEG");
-
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
-
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.assertIfPageDoesNotContains("Last FE of last FEG");
-
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains(
       "Second FEG",
       "First FE of second FEG",
       "Last FE of second FEG"
     );
-
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
   });
