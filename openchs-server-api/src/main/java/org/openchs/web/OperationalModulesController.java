@@ -11,6 +11,7 @@ import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationRepository;
 import org.openchs.domain.JsonObject;
 import org.openchs.service.OrganisationConfigService;
 import org.openchs.util.ObjectMapperSingleton;
@@ -18,6 +19,7 @@ import org.openchs.web.request.AddressLevelTypeContract;
 import org.openchs.web.request.CustomRegistrationLocationTypeContract;
 import org.openchs.web.request.FormMappingContract;
 import org.openchs.web.request.application.FormContractWeb;
+import org.openchs.web.request.webapp.IndividualRelationContract;
 import org.openchs.web.request.webapp.SubjectTypeSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +40,7 @@ public class OperationalModulesController {
     private FormRepository formRepository;
     private AddressLevelTypeRepository addressLevelTypeRepository;
     private OrganisationConfigService organisationConfigService;
+    private IndividualRelationRepository individualRelationRepository;
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -47,7 +50,8 @@ public class OperationalModulesController {
                                         FormMappingRepository formMappingRepository,
                                         FormRepository formRepository,
                                         AddressLevelTypeRepository addressLevelTypeRepository,
-                                        OrganisationConfigService organisationConfigService) {
+                                        OrganisationConfigService organisationConfigService,
+                                        IndividualRelationRepository individualRelationRepository) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.programRepository = programRepository;
@@ -55,6 +59,7 @@ public class OperationalModulesController {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.organisationConfigService = organisationConfigService;
+        this.individualRelationRepository = individualRelationRepository;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -78,6 +83,10 @@ public class OperationalModulesController {
                 .stream()
                 .map(this::getCustomRegistrationLocationTypeContract)
                 .collect(Collectors.toList());
+        List<IndividualRelationContract> relations = individualRelationRepository.findAll()
+                .stream()
+                .map(IndividualRelationContract::fromEntity)
+                .collect(Collectors.toList());
         return new JsonObject()
                 .with("subjectTypes", subjectTypeRepository.findAllOperational())
                 .with("programs", programRepository.findAllOperational())
@@ -85,7 +94,8 @@ public class OperationalModulesController {
                 .with("formMappings", formMappingContracts)
                 .with("forms", formsWeb)
                 .with("addressLevelTypes", addressLevelTypeContracts)
-                .with("customRegistrationLocations", customRegistrationLocationTypeContracts);
+                .with("customRegistrationLocations", customRegistrationLocationTypeContracts)
+                .with("relations", relations);
     }
 
     private CustomRegistrationLocationTypeContract getCustomRegistrationLocationTypeContract(SubjectTypeSetting lt) {
