@@ -277,8 +277,6 @@
     "language": "ભાષા",
     "Your details have been successfully registered.": "તમારી વિગતો સફળતાપૂર્વક નોંધાયેલ છે.",
     "Individual": "વ્યક્તિગત",
-    "details": "વિગતો",
-    "Basic": "પાયાની",
     "Date of registration": "નોંધણી તારીખ",
     "SYSTEM RECOMMENDATIONS": "સિસ્ટમ દ્વારા આપવા માં આવતી ભલામણો",
     "OBSERVATIONS": "અવલોકન",
@@ -291,7 +289,6 @@
     "filterResult": "પરિણામો ને ફિલ્ટર કરો",
     "apply": "લાગુ કરો",
     "Date": "તારીખ",
-    "Age": "ઉંમર",
     "Village": "ગામ",
     "Enrol": "નોંધણી",
     "Cancel": "રદ કરો",
@@ -332,6 +329,7 @@
     "filterResults": "ફિલ્ટર પરિણામો",
     "invalidDateFormat": "માન્ય તારીખ નથી",
     "resetFilter": "ફિલ્ટર ફરીથી સેટ કરો",
-    "visitCanceldate": "મુલાકાત રદ કર્યા ની તારીખ"
+    "visitCanceldate": "મુલાકાત રદ કર્યા ની તારીખ",
+    "basicDetails": "મૂળભૂત વિગતો"
   }
 }

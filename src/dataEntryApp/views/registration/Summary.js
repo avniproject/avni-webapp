@@ -42,7 +42,7 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
       {!isEmpty(rulesResponse.decisionObservations) && (
         <Box pb={6}>
           <Typography variant="button" display="block" gutterBottom>
-            {t("System Recommendations")}
+            {t("systemRecommendations")}
           </Typography>
           <Box pt={1} className={classes.tableContainer}>
             <Observations
@@ -57,7 +57,7 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
       {!isEmpty(rulesResponse.visitSchedules) && (
         <Box pb={6}>
           <Typography variant="button" display="block" gutterBottom>
-            {t("Visits being scheduled")}
+            {t("visitsBeingScheduled")}
           </Typography>
           <Box pt={1} className={classes.tableContainer}>
             <ScheduledVisitsTable visitSchedules={rulesResponse.visitSchedules} />
@@ -68,7 +68,7 @@ const Summary = ({ observations, additionalRows, form, fetchRulesResponse }) => 
       {!isEmpty(observations) && (
         <Box>
           <Typography variant="button" display="block" gutterBottom>
-            {t("OBSERVATIONS")}
+            {t("observations")}
           </Typography>
           <Box pt={1} className={classes.tableContainer}>
             <Observations

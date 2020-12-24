@@ -69,7 +69,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
             <TableRow>
               <TableCell />
               <TableCell align="left">{t("name")}</TableCell>
-              <TableCell align="left">{t("Age")}</TableCell>
+              <TableCell align="left">{t("age")}</TableCell>
               <TableCell align="left">{t("Village")}</TableCell>
               <TableCell align="left">{t("subjectType")}</TableCell>
             </TableRow>

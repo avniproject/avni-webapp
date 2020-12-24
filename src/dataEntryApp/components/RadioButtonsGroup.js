@@ -4,8 +4,11 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
+import { useTranslation } from "react-i18next";
 
 export default function RadioButtonsGroup({ items, value, label, onChange }) {
+  const { t } = useTranslation();
+
   const handleChange = event => {
     const selectedValue = parseInt(event.target.value);
     const item = items.find(i => i.id === selectedValue);
@@ -27,7 +30,7 @@ export default function RadioButtonsGroup({ items, value, label, onChange }) {
             key={index}
             value={item.id}
             control={<Radio color="primary" />}
-            label={item.name}
+            label={t(item.name)}
           />
         ))}
       </RadioGroup>

@@ -346,8 +346,6 @@
     "language": "Language",
     "Your details have been successfully registered.": "Your details have been succesfully registered",
     "Individual": "Individual",
-    "details": "Details",
-    "Basic": "Basic",
     "Date of registration": "Date of registration",
     "Address": "Address",
     "SYSTEM RECOMMENDATIONS": "SYSTEM RECOMMENDATIONS",
@@ -361,7 +359,6 @@
     "filterResult": "Filter Result",
     "apply": "Apply",
     "Date": "Date",
-    "Age": "Age",
     "Village": "Village",
     "Enrol": "Enrol",
     "Cancel": "Cancel",
@@ -393,6 +390,8 @@
     "filterRelative": "Filter Relative",
     "invalidDateFormat": "Is not a valid date",
     "resetFilter": "Reset Filter",
-    "visitCanceldate": "Visit Cancel Date"
+    "visitCanceldate": "Visit Cancel Date",
+    "basicDetails": "Basic Details",
+    "selectAddress": "Select Address"
   }
 }

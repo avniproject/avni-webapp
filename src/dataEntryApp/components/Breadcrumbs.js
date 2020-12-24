@@ -62,7 +62,8 @@ const Breadcrumbs = ({
     CANCEL_ENCOUNTER: "cancelEncounter",
     EDIT_CANCEL_ENCOUNTER: "editCancelEncounter",
     EDIT_SUBJECT: "editSubject",
-    SEARCH: "searchFilter"
+    SEARCH: "searchFilter",
+    REGISTER: "register"
   };
   const urlMapper = part => {
     switch (part) {
@@ -158,6 +159,9 @@ const Breadcrumbs = ({
       }
       case urlPartLabels.SEARCH: {
         return { breadcrumb: t("search"), url: "#/app" };
+      }
+      case urlPartLabels.REGISTER: {
+        return { breadcrumb: t("register"), url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

@@ -58,7 +58,6 @@ export const DateTimeFormElement = ({
       <KeyboardDateTimePicker
         autoOk
         ampm={true}
-        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}

@@ -177,7 +177,7 @@ function BasicForm({
               </FormControl>
               <Select
                 isMulti
-                placeholder={"Select location"}
+                placeholder={t("selectAddress")}
                 value={selectedAddress}
                 options={location.map(({ name, id }) => ({ label: name, value: id }))}
                 onChange={onAddressSelect}
