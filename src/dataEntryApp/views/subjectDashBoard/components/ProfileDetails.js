@@ -119,7 +119,8 @@ const ProfileDetails = ({
   subjectUuid,
   match,
   enableReadOnly,
-  load
+  load,
+  tabsStatus
 }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
@@ -237,7 +238,7 @@ const ProfileDetails = ({
           </Table>
         </Grid>
         <Grid item xs={7} align="right">
-          {!enableReadOnly && !profileDetails.voided ? (
+          {tabsStatus.showProgramTab && !enableReadOnly && !profileDetails.voided ? (
             <div>
               <Modal
                 content={content}
@@ -279,7 +280,8 @@ const ProfileDetails = ({
 
 const mapStateToProps = state => ({
   programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
-  load: state.dataEntry.loadReducer.load
+  load: state.dataEntry.loadReducer.load,
+  tabsStatus: state.dataEntry.subjectProfile.tabsStatus
 });
 
 const mapDispatchToProps = {
