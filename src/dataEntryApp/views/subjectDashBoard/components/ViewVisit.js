@@ -90,7 +90,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
       <Paper className={classes.root}>
         <Grid container direction="row" justify="space-between" alignItems="baseline">
           <Typography component={"span"} className={classes.mainHeading}>
-            {t("ViewVisit")}: {t(defaultTo(encounter.name, encounter.encounterType.name))}
+            {t(defaultTo(encounter.name, encounter.encounterType.name))}
           </Typography>
           {encounter.earliestVisitDateTime ? (
             <Typography component={"span"} className={classes.scheduledHeading}>
@@ -111,13 +111,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
           </Typography>
         </div>
 
-        <Paper className={classes.innerPaper}>
-          <Typography component={"span"} className={classes.summaryHeading}>
-            {t("summary")}
-          </Typography>
-          <LineBreak num={2} />
-          <Observations observations={encounter ? encounter.observations : []} />
-        </Paper>
+        <Observations observations={encounter ? encounter.observations : []} />
 
         <InternalLink to={viewAllCompletedUrl}>
           <Button color="primary" className={classes.visitButton}>

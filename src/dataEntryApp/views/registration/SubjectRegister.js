@@ -220,7 +220,7 @@ const DefaultPage = props => {
       <>
         <LineBreak num={1} />
         <RadioButtonsGroup
-          label={t("Address*")}
+          label={`${t("address")}*`}
           items={addressLevelTypesToRender.map(a => ({ id: a.id, name: a.name }))}
           value={props.selectedAddressLevelType.id}
           onChange={item => props.selectAddressLevelType(item)}

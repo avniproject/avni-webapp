@@ -212,7 +212,7 @@ export const DateAndDurationFormElement = ({
               value={item}
               style={{ marginLeft: 20 }}
               control={<Radio color="primary" />}
-              label={item}
+              label={t(item)}
             />
           ))}
         </RadioGroup>

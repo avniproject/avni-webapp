@@ -181,39 +181,8 @@ const UserOption = ({
                   ))
                 : ""}
             </RadioGroup>
-            {!enableReadOnly && <FormLabel component="legend">{t("trackLocation")}</FormLabel>}
-            {!enableReadOnly && (
-              <FormControlLabel control={<Switch checked={true} value="checkedA" />} label="On" />
-            )}
           </FormControl>
         </Collapse>
-        <hr className={classes.horizontalLine} />
-        {!enableReadOnly && (
-          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-            <ListItemIcon>
-              <VideoIcon style={{ color: "blue" }} />
-            </ListItemIcon>
-            <ListItemText primary={t("VideoList")} />
-          </ListItem>
-        )}
-        {!enableReadOnly && <hr className={classes.horizontalLine} />}
-        {!enableReadOnly && (
-          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-            <ListItemIcon>
-              <SyncIcon style={{ color: "blue" }} />
-            </ListItemIcon>
-            <ListItemText primary={t("entitySyncStatus")} />
-          </ListItem>
-        )}
-        {!enableReadOnly && <hr className={classes.horizontalLine} />}
-        {!enableReadOnly && (
-          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-            <ListItemIcon>
-              <LockIcon style={{ color: "blue" }} />
-            </ListItemIcon>
-            <ListItemText primary={t("changePassword")} />
-          </ListItem>
-        )}
         <hr className={classes.horizontalLine} />
         <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>

@@ -136,7 +136,7 @@ function BasicForm({
                         color="primary"
                       />
                     }
-                    label={gender.name}
+                    label={t(gender.name)}
                     key={index}
                   />
                 ))}
@@ -169,7 +169,7 @@ function BasicForm({
                           key={index}
                           value={addressLevelType.name}
                           control={<Radio color="primary" />}
-                          label={addressLevelType.name}
+                          label={t(addressLevelType.name)}
                         />
                       ))
                     : ""}
