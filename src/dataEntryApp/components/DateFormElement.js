@@ -58,7 +58,6 @@ export const DateTimeFormElement = ({
       <KeyboardDateTimePicker
         autoOk
         ampm={true}
-        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
@@ -212,7 +211,7 @@ export const DateAndDurationFormElement = ({
               value={item}
               style={{ marginLeft: 20 }}
               control={<Radio color="primary" />}
-              label={item}
+              label={t(item)}
             />
           ))}
         </RadioGroup>

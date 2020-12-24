@@ -136,7 +136,7 @@ function BasicForm({
                         color="primary"
                       />
                     }
-                    label={gender.name}
+                    label={t(gender.name)}
                     key={index}
                   />
                 ))}
@@ -169,7 +169,7 @@ function BasicForm({
                           key={index}
                           value={addressLevelType.name}
                           control={<Radio color="primary" />}
-                          label={addressLevelType.name}
+                          label={t(addressLevelType.name)}
                         />
                       ))
                     : ""}
@@ -177,7 +177,7 @@ function BasicForm({
               </FormControl>
               <Select
                 isMulti
-                placeholder={"Select location"}
+                placeholder={t("selectAddress")}
                 value={selectedAddress}
                 options={location.map(({ name, id }) => ({ label: name, value: id }))}
                 onChange={onAddressSelect}

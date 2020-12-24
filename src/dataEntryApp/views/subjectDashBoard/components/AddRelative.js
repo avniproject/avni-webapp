@@ -218,7 +218,7 @@ const AddRelative = ({
                                   {t("gender")}
                                 </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "20%" }}>
-                                  {t("Age")}
+                                  {t("age")}
                                 </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "35%" }}>
                                   {t("Village")}

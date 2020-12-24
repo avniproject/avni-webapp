@@ -226,7 +226,7 @@ const FilterResult = ({ encounterTypes, setFilterParams }) => {
                   color="primary"
                 />
               }
-              label={visitType.name}
+              label={t(visitType.name)}
             />
           ))}
         </FormGroup>

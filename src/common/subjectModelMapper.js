@@ -50,6 +50,7 @@ export const mapIndividual = individualDetails => {
   addressLevel.uuid = individualDetails.addressLevelUUID;
   addressLevel.name = individualDetails.addressLevel;
   addressLevel.type = individualDetails.addressLevelTypeName;
+  addressLevel.titleLineage = individualDetails.addressLevelLineage;
   individual.lowestAddressLevel = addressLevel;
 
   return individual;
