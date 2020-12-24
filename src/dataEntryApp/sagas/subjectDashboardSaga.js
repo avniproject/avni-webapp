@@ -1,10 +1,11 @@
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
-import { types, setSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { types, setSubjectProfile, setTabsStatus } from "../reducers/subjectDashboardReducer";
 import { mapProfile } from "../../common/subjectModelMapper";
 import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
-import { selectSubjectProfile } from "./selectors";
+import { selectSubjectProfile, selectOperationalModules } from "./selectors";
 import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
+import { filter, isEmpty } from "lodash";
 
 export default function*() {
   yield all([subjectProfileFetchWatcher, voidSubjectWatcher, unVoidSubjectWatcher].map(fork));
@@ -20,6 +21,34 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   yield put.resolve(setSubjectProfile());
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
+  const subjectType = subjectProfile.subjectType;
+  const operationalModules = yield select(selectOperationalModules);
+  const showProgramTab =
+    filter(
+      operationalModules.formMappings,
+      ({ subjectTypeUUID, programUUID }) =>
+        subjectTypeUUID === subjectType.uuid && !isEmpty(programUUID)
+    ).length > 0;
+  const showGeneralTab =
+    filter(
+      operationalModules.formMappings,
+      ({ subjectTypeUUID, programUUID, encounterTypeUUID }) =>
+        subjectTypeUUID === subjectType.uuid && isEmpty(programUUID) && !isEmpty(encounterTypeUUID)
+    ).length > 0;
+  const showRelatives = filter(operationalModules.relations).length > 0;
+  const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
+  const registrationTabIndex = showProgramTab ? 1 : 0;
+  const generalTabIndex = showProgramTab ? 2 : 1;
+  yield put(
+    setTabsStatus({
+      showProgramTab,
+      showGeneralTab,
+      showRelatives,
+      defaultTabIndex,
+      registrationTabIndex,
+      generalTabIndex
+    })
+  );
   yield put.resolve(getRegistrationForm(subjectProfile.subjectType.name));
   yield put(setSubjectProfile(subjectProfile));
   yield put.resolve(setLoad(true));

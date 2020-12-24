@@ -38,7 +38,8 @@ const SubjectDashboard = ({
   unVoidSubject,
   load,
   registrationForm,
-  tab
+  tab,
+  tabsStatus
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -69,6 +70,7 @@ const SubjectDashboard = ({
           unVoidSubject={unVoidSubject}
           registrationForm={registrationForm}
           tab={tab}
+          tabsStatus={tabsStatus}
         />
       </Paper>
     );
@@ -95,7 +97,8 @@ const mapStateToProps = state => ({
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
   enableReadOnly: selectEnableReadonly(state),
   load: state.dataEntry.loadReducer.load,
-  registrationForm: state.dataEntry.registration.registrationForm
+  registrationForm: state.dataEntry.registration.registrationForm,
+  tabsStatus: state.dataEntry.subjectProfile.tabsStatus
 });
 
 const mapDispatchToProps = {

@@ -81,7 +81,9 @@ const CompletedEncounter = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const encounterId = encounter.name.replaceAll(" ", "-");
+  const encounterId = isEmpty(encounter.earliestVisitDateTime)
+    ? encounter.encounterType.name.replaceAll(" ", "-")
+    : encounter.name.replaceAll(" ", "-");
   const statusMap = {
     cancelled: t("Cancelled")
   };

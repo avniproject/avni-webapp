@@ -86,7 +86,8 @@ const SubjectDashboardProfileTab = ({
   enableReadOnly,
   voidSubject,
   unVoidSubject,
-  registrationForm
+  registrationForm,
+  showRelatives
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -237,7 +238,7 @@ const SubjectDashboardProfileTab = ({
       ) : (
         <Paper className={classes.root}>
           {renderSubjectProfile()}
-          {profile.isPerson() && renderRelatives()}
+          {showRelatives && profile.isPerson() && renderRelatives()}
           {renderDialog(
             "Void the subject",
             voidConfirmation,
