@@ -232,6 +232,7 @@ export default function(state = initialState, action) {
         registrationForm: action.registrationForm,
         filteredFormElements: action.filteredFormElements,
         loaded: true,
+        saved: false,
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
         isFormEmpty: action.isFormEmpty

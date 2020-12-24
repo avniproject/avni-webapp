@@ -21,7 +21,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
 import _, { get, sortBy, isEmpty, find } from "lodash";
-import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
+import { LineBreak, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
 import LocationSelect from "dataEntryApp/components/LocationSelect";
@@ -30,7 +30,6 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
-import Stepper from "./Stepper";
 import {
   fetchRegistrationRulesResponse,
   onPrevious,
@@ -269,218 +268,153 @@ const DefaultPage = props => {
 
   return loaded ? (
     <div>
-      <Stepper subjectTypeName={props.subject.subjectType.name} />
+      <Typography variant="h6" gutterBottom>
+        {t("register")} {t(props.subject.subjectType.name)}
+      </Typography>
       <LineBreak num={1} />
       <div>
         {props.subject && (
-          <div>
-            <Box
-              display="flex"
-              flexDirection={"row"}
-              flexWrap="wrap"
-              justifyContent="space-between"
-            >
-              <Typography variant="subtitle1" gutterBottom>
-                {" "}
-                {t("Basic Details")}
+          <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                {t("Date of registration")}
+                {"*"}
               </Typography>
-              {/*<Box>*/}
-              {/*<Button className={classes.topprevnav} type="button" disabled>*/}
-              {/*{t("previous")}*/}
-              {/*</Button>*/}
-              {/*{props.form && <label className={classes.toppagenum}> X / X</label>}*/}
-              {/*<RelativeLink*/}
-              {/*to="form"*/}
-              {/*params={{*/}
-              {/*type: props.subject.subjectType.name*/}
-              {/*}}*/}
-              {/*noUnderline*/}
-              {/*>*/}
-              {/*<Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>*/}
-              {/*{t("next")}*/}
-              {/*</Button>*/}
-              {/*</RelativeLink>*/}
-              {/*</Box>*/}
-            </Box>
+              <KeyboardDatePicker
+                autoComplete="off"
+                required
+                name="registrationDate"
+                // label={t("Date of registration")}
+                value={
+                  _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
+                }
+                error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
+                helperText={t(subjectRegErrors.REGISTRATION_DATE)}
+                style={{ width: "30%" }}
+                margin="normal"
+                id="Date-of-registration"
+                format={dateFormat}
+                placeholder={dateFormat}
+                onChange={date => {
+                  const dateOfReg = _.isNil(date) ? undefined : new Date(date);
+                  props.updateSubject("registrationDate", dateOfReg);
+                  props.subject.registrationDate = dateOfReg;
+                  setValidationResultToError(props.subject.validateRegistrationDate());
+                }}
+                InputLabelProps={{
+                  shrink: true
+                }}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                  color: "primary"
+                }}
+              />
+            </MuiPickersUtilsProvider>
 
-            <Paper className={classes.form}>
-              <Box className={classes.topboxstyle} display="flex" flexDirection="column">
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                    {t("Date of registration")}
-                    {"*"}
-                  </Typography>
-                  <KeyboardDatePicker
-                    autoComplete="off"
-                    required
-                    name="registrationDate"
-                    // label={t("Date of registration")}
-                    value={
-                      _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
-                    }
-                    error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
-                    helperText={t(subjectRegErrors.REGISTRATION_DATE)}
-                    style={{ width: "30%" }}
-                    margin="normal"
-                    id="Date-of-registration"
-                    format={dateFormat}
-                    placeholder={dateFormat}
-                    onChange={date => {
-                      const dateOfReg = _.isNil(date) ? undefined : new Date(date);
-                      props.updateSubject("registrationDate", dateOfReg);
-                      props.subject.registrationDate = dateOfReg;
-                      setValidationResultToError(props.subject.validateRegistrationDate());
-                    }}
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                      color: "primary"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
-
+            <LineBreak num={1} />
+            {props.subject.subjectType.isPerson() && (
+              <>
+                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                  {t("firstName")}
+                  {"*"}
+                </Typography>
+                <TextField
+                  id={"firstName"}
+                  type="text"
+                  autoComplete="off"
+                  required
+                  name="firstName"
+                  value={props.subject.firstName || ""}
+                  error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                  helperText={t(subjectRegErrors.FIRST_NAME)}
+                  style={{ width: "30%" }}
+                  // label={t("firstName")}
+                  onChange={e => {
+                    props.updateSubject("firstName", e.target.value);
+                    props.subject.setFirstName(e.target.value);
+                    setValidationResultToError(props.subject.validateFirstName());
+                  }}
+                />
                 <LineBreak num={1} />
-                {props.subject.subjectType.isPerson() && (
-                  <React.Fragment>
-                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {t("firstName")}
-                      {"*"}
-                    </Typography>
-                    <TextField
-                      id={"firstName"}
-                      type="text"
-                      autoComplete="off"
-                      required
-                      name="firstName"
-                      value={props.subject.firstName || ""}
-                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                      helperText={t(subjectRegErrors.FIRST_NAME)}
-                      style={{ width: "30%" }}
-                      // label={t("firstName")}
-                      onChange={e => {
-                        props.updateSubject("firstName", e.target.value);
-                        props.subject.setFirstName(e.target.value);
-                        setValidationResultToError(props.subject.validateFirstName());
-                      }}
-                    />
-                    <LineBreak num={1} />
-                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {t("lastName")}
-                      {"*"}
-                    </Typography>
-                    <TextField
-                      id={"lastName"}
-                      type="text"
-                      autoComplete="off"
-                      required
-                      name="lastName"
-                      value={props.subject.lastName || ""}
-                      error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
-                      helperText={t(subjectRegErrors.LAST_NAME)}
-                      style={{ width: "30%" }}
-                      // label={t("lastName")}
-                      onChange={e => {
-                        props.updateSubject("lastName", e.target.value);
-                        props.subject.setLastName(e.target.value);
-                        setValidationResultToError(props.subject.validateLastName());
-                      }}
-                    />
-                    <LineBreak num={1} />
-                    <DateOfBirth
-                      dateOfBirth={props.subject.dateOfBirth || null}
-                      dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                      dobErrorMsg={subjectRegErrors.DOB}
-                      onChange={date => {
-                        const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
-                        props.updateSubject("dateOfBirth", dateOfBirth);
-                        props.subject.setDateOfBirth(dateOfBirth);
-                        setValidationResultToError(props.subject.validateDateOfBirth());
-                      }}
-                      markVerified={verified =>
-                        props.updateSubject("dateOfBirthVerified", verified)
-                      }
-                    />
-                    <LineBreak num={1} />
-                    <CodedFormElement
-                      groupName={t("gender")}
-                      items={sortBy(props.genders, "name")}
-                      isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                      mandatory={true}
-                      errorMsg={subjectRegErrors.GENDER}
-                      onChange={selected => {
-                        props.updateSubject("gender", selected);
-                        props.subject.gender = selected;
-                        setValidationResultToError(props.subject.validateGender());
-                      }}
-                    />
-                    <LineBreak num={1} />
-                    {renderAddress()}
-                  </React.Fragment>
-                )}
-
-                {!props.subject.subjectType.isPerson() && (
-                  <React.Fragment>
-                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {/* {t("Name")} */}
-                      Name
-                    </Typography>
-                    <TextField
-                      // label="Name"
-                      type="text"
-                      autoComplete="off"
-                      required
-                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                      helperText={t(subjectRegErrors.FIRST_NAME)}
-                      name="firstName"
-                      value={props.subject.firstName}
-                      style={{ width: "30%" }}
-                      onChange={e => {
-                        props.updateSubject("firstName", e.target.value);
-                        props.subject.setFirstName(e.target.value);
-                        setValidationResultToError(props.subject.validateFirstName());
-                      }}
-                    />
-                    {renderAddress()}
-                  </React.Fragment>
-                )}
+                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                  {t("lastName")}
+                  {"*"}
+                </Typography>
+                <TextField
+                  id={"lastName"}
+                  type="text"
+                  autoComplete="off"
+                  required
+                  name="lastName"
+                  value={props.subject.lastName || ""}
+                  error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
+                  helperText={t(subjectRegErrors.LAST_NAME)}
+                  style={{ width: "30%" }}
+                  // label={t("lastName")}
+                  onChange={e => {
+                    props.updateSubject("lastName", e.target.value);
+                    props.subject.setLastName(e.target.value);
+                    setValidationResultToError(props.subject.validateLastName());
+                  }}
+                />
                 <LineBreak num={1} />
-              </Box>
-              <Box
-                className={classes.buttomboxstyle}
-                display="flex"
-                flexDirection={"row"}
-                flexWrap="wrap"
-                justifyContent="flex-start"
-              >
-                <Box>
-                  <Chip
-                    id={"previous"}
-                    className={classes.prevbuttonspace}
-                    label={t("previous")}
-                    disabled
-                    variant="outlined"
-                  />
+                <DateOfBirth
+                  dateOfBirth={props.subject.dateOfBirth || null}
+                  dateOfBirthVerified={props.subject.dateOfBirthVerified}
+                  dobErrorMsg={subjectRegErrors.DOB}
+                  onChange={date => {
+                    const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
+                    props.updateSubject("dateOfBirth", dateOfBirth);
+                    props.subject.setDateOfBirth(dateOfBirth);
+                    setValidationResultToError(props.subject.validateDateOfBirth());
+                  }}
+                  markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
+                />
+                <LineBreak num={1} />
+                <CodedFormElement
+                  groupName={t("gender")}
+                  items={sortBy(props.genders, "name")}
+                  isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
+                  mandatory={true}
+                  errorMsg={subjectRegErrors.GENDER}
+                  onChange={selected => {
+                    props.updateSubject("gender", selected);
+                    props.subject.gender = selected;
+                    setValidationResultToError(props.subject.validateGender());
+                  }}
+                />
+                <LineBreak num={1} />
+                {renderAddress()}
+              </>
+            )}
 
-                  <RelativeLink
-                    to="form"
-                    params={{
-                      type: props.subject.subjectType.name
-                    }}
-                    noUnderline
-                  >
-                    <Chip
-                      id={"next"}
-                      className={classes.nextBtn}
-                      label={t("next")}
-                      onClick={e => handleNext(e)}
-                    />
-                  </RelativeLink>
-                </Box>
-              </Box>
-            </Paper>
-          </div>
+            {!props.subject.subjectType.isPerson() && (
+              <>
+                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                  {/* {t("Name")} */}
+                  Name
+                </Typography>
+                <TextField
+                  // label="Name"
+                  type="text"
+                  autoComplete="off"
+                  required
+                  error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                  helperText={t(subjectRegErrors.FIRST_NAME)}
+                  name="firstName"
+                  value={props.subject.firstName}
+                  style={{ width: "30%" }}
+                  onChange={e => {
+                    props.updateSubject("firstName", e.target.value);
+                    props.subject.setFirstName(e.target.value);
+                    setValidationResultToError(props.subject.validateFirstName());
+                  }}
+                />
+                {renderAddress()}
+              </>
+            )}
+            <LineBreak num={1} />
+          </RegistrationForm>
         )}
       </div>
     </div>
@@ -543,7 +477,6 @@ const mapFormStateToProps = state => {
     entity: registrationState.subject,
     formElementGroup: registrationState.formElementGroup,
     onSummaryPage: registrationState.onSummaryPage,
-    renderStaticPage: registrationState.renderStaticPage,
     wizard: registrationState.wizard
   };
 };
@@ -570,35 +503,19 @@ const SubjectRegister = props => {
   const edit = match.path === "/app/editSubject";
 
   React.useEffect(() => {
-    (async function fetchData() {
-      if (edit) {
-        const subjectUuid = props.match.queryParams.uuid;
-        await props.onLoadEdit(subjectUuid);
-      } else {
-        await props.onLoad(props.match.queryParams.type);
-      }
-      props.saveCompleteFalse();
-    })();
+    if (edit) {
+      const subjectUuid = props.match.queryParams.uuid;
+      props.onLoadEdit(subjectUuid);
+    } else {
+      props.onLoad(props.match.queryParams.type);
+    }
   }, [match.queryParams.type]);
-
-  const staticPageUrl = edit
-    ? `/app/editSubject?uuid=${props.match.queryParams.uuid}&type=${props.match.queryParams.type}`
-    : `/app/register?type=${props.match.queryParams.type}`;
 
   return (
     <Fragment>
       <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
         <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
-        <Route
-          path={`${match.path}/form`}
-          component={() => (
-            <RegistrationForm
-              staticPageUrl={staticPageUrl}
-              fetchRulesResponse={fetchRegistrationRulesResponse}
-            />
-          )}
-        />
       </Paper>
     </Fragment>
   );
@@ -606,7 +523,6 @@ const SubjectRegister = props => {
 
 const mapRegisterDispatchToProps = {
   onLoad,
-  setSubject,
   saveCompleteFalse,
   onLoadEdit
 };

@@ -128,7 +128,6 @@ const FormWizard = ({
   onNext,
   onPrevious,
   onSummaryPage,
-  renderStaticPage,
   onReset,
   staticPageUrl,
   wizard
@@ -145,13 +144,19 @@ const FormWizard = ({
   const classes = useStyle();
   const { t } = useTranslation();
 
-  if (renderStaticPage) {
-    onReset();
-    return <Redirect to={staticPageUrl} />;
-  }
+  const isRegistrationFirstPage =
+    registrationFlow && subject.subjectType.isPerson()
+      ? wizard.isNonFormPage()
+      : wizard.isFirstFormPage();
 
-  const isFirstPage = registrationFlow ? false : wizard.isFirstFormPage();
-  const pageTitleText = onSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
+  const isFirstPage = registrationFlow
+    ? subject.subjectType.isPerson()
+      ? wizard.isNonFormPage()
+      : wizard.isFirstFormPage()
+    : wizard.isFirstFormPage();
+  const pageTitleText = onSummaryPage
+    ? t("summaryAndRecommendations")
+    : t(isRegistrationFirstPage ? "Basic Details" : formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
   // const pageCounter = `X / X`;
 
@@ -159,26 +164,12 @@ const FormWizard = ({
     <Fragment>
       {form && (
         <div>
-          {subject ? <FormWizardHeader subject={subject} /> : ""}
+          {subject && !wizard.isNonFormPage() ? <FormWizardHeader subject={subject} /> : ""}
           <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
               {pageTitle}
             </Typography>
-            {/*<Box flexDirection={"row"} display={"flex"}>*/}
-            {/*<FormWizardButton*/}
-            {/*className={classes.topnav}*/}
-            {/*text={t("previous")}*/}
-            {/*disabled={isFirstPage}*/}
-            {/*onClick={onPrevious}*/}
-            {/*/>*/}
-            {/*<label className={classes.toppagenum}>{pageCounter}</label>*/}
-            {/*<FormWizardButton*/}
-            {/*className={classes.topnav}*/}
-            {/*onClick={onSummaryPage ? onSave : onNext}*/}
-            {/*text={onSummaryPage ? t("save") : t("next")}*/}
-            {/*/>*/}
-            {/*</Box>*/}
           </Box>
           <Paper className={classes.form}>
             {onSummaryPage ? (
@@ -190,15 +181,16 @@ const FormWizard = ({
               />
             ) : (
               <FormElementGroupComponent
-                parentChildren={children}
                 key={formElementGroup.uuid}
                 obsHolder={obsHolder}
                 updateObs={updateObs}
                 validationResults={validationResults}
                 filteredFormElements={filteredFormElements}
                 entity={entity}
-                renderParent={isFirstPage}
-              />
+                renderChildren={isFirstPage}
+              >
+                {children}
+              </FormElementGroupComponent>
             )}
 
             <Box className={classes.buttomstyle} display="flex">
@@ -206,7 +198,7 @@ const FormWizard = ({
                 <FormWizardButton
                   className={classes.privbuttonStyle}
                   text={t("previous")}
-                  disabled={isFirstPage}
+                  disabled={!onSummaryPage && isFirstPage}
                   onClick={onPrevious}
                   id={"previous"}
                 />

@@ -56,7 +56,6 @@ function nextState(
   observations,
   entity,
   onSummaryPage,
-  renderStaticPage,
   wizard
 ) {
   return {
@@ -66,7 +65,6 @@ function nextState(
     observations,
     entity,
     onSummaryPage,
-    renderStaticPage,
     wizard
   };
 }
@@ -79,7 +77,8 @@ const onNext = ({
   entity,
   filteredFormElements,
   validationResults,
-  wizard
+  wizard,
+  entityValidations
 }) => {
   const obsHolder = new ObservationsHolder(observations);
   const formElementGroupValidations = new FormElementGroup().validate(
@@ -90,6 +89,7 @@ const onNext = ({
   const allRuleValidationResults = unionBy(
     errors(formElementGroupValidations),
     errors(validationResults),
+    errors(entityValidations),
     "formIdentifier"
   );
   const thereAreValidationErrors = !isEmpty(allRuleValidationResults);
@@ -101,7 +101,6 @@ const onNext = ({
       allRuleValidationResults,
       observations,
       entity,
-      false,
       false,
       wizard
     );
@@ -117,7 +116,6 @@ const onNext = ({
       observations,
       entity,
       onSummaryPage,
-      false,
       wizard
     );
   }
@@ -128,9 +126,7 @@ const onNext = ({
   wizard.moveNext();
   if (isEmpty(nextFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), []);
-    return onNext(
-      nextState(nextGroup, [], [], obsHolder.observations, entity, false, false, wizard)
-    );
+    return onNext(nextState(nextGroup, [], [], obsHolder.observations, entity, false, wizard));
   } else {
     return nextState(
       nextGroup,
@@ -138,7 +134,6 @@ const onNext = ({
       [],
       obsHolder.observations,
       entity,
-      false,
       false,
       wizard
     );
@@ -155,21 +150,6 @@ const onPrevious = ({
   wizard
 }) => {
   const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
-
-  if (isEmpty(previousGroup)) {
-    const renderStaticPage = true;
-    return nextState(
-      formElementGroup,
-      filteredFormElements,
-      validationResults,
-      observations,
-      entity,
-      false,
-      renderStaticPage,
-      wizard
-    );
-  }
-
   const { filteredFormElements: previousFilteredFormElements, formElementStatuses } = !isEmpty(
     previousGroup
   )
@@ -189,7 +169,6 @@ const onPrevious = ({
         obsHolder.observations,
         entity,
         false,
-        false,
         wizard
       )
     );
@@ -200,7 +179,6 @@ const onPrevious = ({
       validationResults,
       observations,
       entity,
-      false,
       false,
       wizard
     );

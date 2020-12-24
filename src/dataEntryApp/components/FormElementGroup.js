@@ -6,16 +6,16 @@ import { FormElement } from "./FormElement";
 export const FormElementGroup = ({
   obsHolder,
   updateObs,
-  parentChildren,
+  children,
   validationResults,
   filteredFormElements,
   entity,
-  renderParent
+  renderChildren
 }) => {
   return (
     <div>
       <LineBreak num={1} />
-      {parentChildren && renderParent ? parentChildren : ""}
+      {children && renderChildren ? children : ""}
 
       {filteredFormElements.map(fe => {
         const observation = obsHolder.findObservation(fe.concept);

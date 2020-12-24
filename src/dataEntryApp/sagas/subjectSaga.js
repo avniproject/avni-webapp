@@ -36,7 +36,7 @@ import {
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
-import _ from "lodash";
+import _, { find, isNil, sortBy } from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
@@ -47,8 +47,14 @@ import {
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
+import { StaticFormElementGroup } from "openchs-models";
+import { filterFormElements } from "dataEntryApp/services/FormElementService";
 
 //TODO: Lots of updateObs functions looks the same. See if it's possible to remove duplication.
+
+export function* dataEntryLoadRegistrationFormWatcher() {
+  yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
+}
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
@@ -142,8 +148,8 @@ function* dataEntrySearchWorker({ params }) {
   yield put.resolve(setLoad(true));
 }
 
-export function* dataEntryLoadRegistrationFormWatcher() {
-  yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
+export function* saveSubjectWatcher() {
+  yield takeLatest(subjectTypes.SAVE_SUBJECT, saveSubjectWorker);
 }
 
 export function* saveSubjectWorker() {
@@ -157,10 +163,6 @@ export function* saveSubjectWorker() {
 
   yield call(api.saveSubject, resource);
   yield put(saveComplete());
-}
-
-export function* saveSubjectWatcher() {
-  yield takeLatest(subjectTypes.SAVE_SUBJECT, saveSubjectWorker);
 }
 
 export function* saveProgramEnrolmentWorker(params) {
@@ -226,25 +228,7 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationForm = mapForm(registrationFormJson);
   yield put(setRegistrationForm(registrationForm));
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    onSummaryPage,
-    wizard,
-    isFormEmpty
-  } = commonFormUtil.onLoad(registrationForm, subject);
-
-  yield put.resolve(
-    onLoadSuccess(
-      subject,
-      registrationForm,
-      formElementGroup,
-      filteredFormElements,
-      onSummaryPage,
-      wizard,
-      isFormEmpty
-    )
-  );
+  yield setRegistrationOnLoadState(registrationForm, subject);
 }
 
 function* loadEditRegistrationPageWatcher() {
@@ -267,30 +251,59 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const registrationForm = mapForm(registrationFormJson);
 
-  const subjectType = yield select(selectSubjectTypeFromName(subject.subjectType.name));
-  if (subjectType.isPerson()) {
+  if (subject.subjectType.isPerson()) {
     yield put.resolve(getGenders());
   }
+  yield setRegistrationOnLoadState(registrationForm, subject);
+}
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    onSummaryPage,
-    wizard,
-    isFormEmpty
-  } = commonFormUtil.onLoad(registrationForm, subject);
+export function* setRegistrationOnLoadState(registrationForm, subject) {
+  if (subject.subjectType.isPerson()) {
+    const formElementGroup = new StaticFormElementGroup(registrationForm);
+    const wizard = new Wizard(
+      _.isNil(registrationForm) ? 1 : registrationForm.numberOfPages + 1,
+      2
+    );
+    const filteredFormElements = [];
+    const onSummaryPage = false;
+    const firstGroupWithAtLeastOneVisibleElement = find(
+      sortBy(registrationForm.nonVoidedFormElementGroups(), "displayOrder"),
+      formElementGroup => filterFormElements(formElementGroup, subject).length !== 0
+    );
+    const isFormEmpty = isNil(firstGroupWithAtLeastOneVisibleElement);
 
-  yield put.resolve(
-    onLoadSuccess(
-      subject,
-      registrationForm,
+    yield put.resolve(
+      onLoadSuccess(
+        subject,
+        registrationForm,
+        formElementGroup,
+        filteredFormElements,
+        onSummaryPage,
+        wizard,
+        isFormEmpty
+      )
+    );
+  } else {
+    const {
       formElementGroup,
       filteredFormElements,
       onSummaryPage,
       wizard,
       isFormEmpty
-    )
-  );
+    } = commonFormUtil.onLoad(registrationForm, subject);
+
+    yield put.resolve(
+      onLoadSuccess(
+        subject,
+        registrationForm,
+        formElementGroup,
+        filteredFormElements,
+        onSummaryPage,
+        wizard,
+        isFormEmpty
+      )
+    );
+  }
 }
 
 function* updateObsWatcher() {
@@ -375,25 +388,24 @@ export function* registrationStaticPageNextWorker() {
     yield put(
       setRegistrationState({
         ...state,
-        renderStaticPage: false,
         onSummaryPage: true,
         wizard: new Wizard(1, 1, 2)
       })
     );
   } else {
-    yield put(setRegistrationState({ ...state, renderStaticPage: false }));
+    yield put(setRegistrationState({ ...state }));
   }
 }
 
 export function* registrationNextWatcher() {
-  yield takeLatest(subjectTypes.ON_NEXT, registrationWizardWorker, commonFormUtil.onNext);
+  yield takeLatest(subjectTypes.ON_NEXT, registrationWizardWorkerNext);
 }
 
 export function* registrationPreviousWatcher() {
-  yield takeLatest(subjectTypes.ON_PREVIOUS, registrationWizardWorker, commonFormUtil.onPrevious);
+  yield takeLatest(subjectTypes.ON_PREVIOUS, registrationWizardWorkerPrev);
 }
 
-export function* registrationWizardWorker(getNextState) {
+export function* registrationWizardWorkerNext() {
   const state = yield select(selectRegistrationState);
   const subject = state.subject.cloneForEdit();
 
@@ -403,16 +415,16 @@ export function* registrationWizardWorker(getNextState) {
     validationResults,
     observations,
     onSummaryPage,
-    renderStaticPage,
     wizard
-  } = getNextState({
+  } = commonFormUtil.onNext({
     formElementGroup: state.formElementGroup,
     filteredFormElements: state.filteredFormElements,
     observations: subject.observations,
     entity: subject,
     validationResults: state.validationResults,
     onSummaryPage: state.onSummaryPage,
-    wizard: state.wizard.clone()
+    wizard: state.wizard.clone(),
+    entityValidations: subject.validate()
   });
 
   subject.observations = observations;
@@ -423,10 +435,60 @@ export function* registrationWizardWorker(getNextState) {
     filteredFormElements,
     validationResults,
     onSummaryPage,
-    renderStaticPage,
     wizard
   };
   yield put(setRegistrationState(nextState));
+}
+
+export function* registrationWizardWorkerPrev() {
+  const state = yield select(selectRegistrationState);
+  const subject = state.subject.cloneForEdit();
+
+  const previousGroup = state.formElementGroup.previous();
+
+  //The previousGroup is going to be null only when we are going to the static page for the person subject type.
+  //In that case we need to set formElementGroup as static FEG and filteredFormElements as empty.
+  const shouldGoToStaticPageForPersonSubjectType = isNil(previousGroup);
+  if (shouldGoToStaticPageForPersonSubjectType) {
+    const wizard = state.wizard.clone();
+    wizard.movePrevious();
+    const nextState = {
+      ...state,
+      formElementGroup: new StaticFormElementGroup(state.registrationForm),
+      filteredFormElements: [],
+      wizard
+    };
+    yield put(setRegistrationState(nextState));
+  } else {
+    const {
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      onSummaryPage,
+      wizard
+    } = commonFormUtil.onPrevious({
+      formElementGroup: state.formElementGroup,
+      filteredFormElements: state.filteredFormElements,
+      observations: subject.observations,
+      entity: subject,
+      validationResults: state.validationResults,
+      onSummaryPage: state.onSummaryPage,
+      wizard: state.wizard.clone(),
+      entityValidations: subject.validate()
+    });
+    subject.observations = observations;
+    const nextState = {
+      ...state,
+      subject,
+      formElementGroup: formElementGroup,
+      filteredFormElements,
+      validationResults,
+      onSummaryPage,
+      wizard
+    };
+    yield put(setRegistrationState(nextState));
+  }
 }
 
 export function* resetStateWorker() {

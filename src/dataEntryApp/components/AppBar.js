@@ -236,7 +236,6 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
           <Button
             variant="contained"
             className={classes.button}
-            endIcon={<Icon>search</Icon>}
             component={Link}
             to="/app/searchFilter"
             style={{
