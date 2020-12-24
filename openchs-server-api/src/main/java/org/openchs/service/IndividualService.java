@@ -100,6 +100,7 @@ public class IndividualService {
         individualContract.setAddressLevelTypeId(individual.getAddressLevel().getType().getId());
         individualContract.setRegistrationDate(individual.getRegistrationDate());
         individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
+        individualContract.setAddressLevelLineage(individual.getAddressLevel().getTitleLineage());
         individualContract.setAddressLevelUUID(individual.getAddressLevel().getUuid());
         individualContract.setVoided(individual.isVoided());
         return individualContract;

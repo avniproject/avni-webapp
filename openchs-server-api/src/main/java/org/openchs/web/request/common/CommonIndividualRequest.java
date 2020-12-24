@@ -27,6 +27,7 @@ public class CommonIndividualRequest extends CHSRequest {
     private String catchmentUUID;
     private LocalDate registrationDate;
     private PointRequest registrationLocation;
+    private String addressLevelLineage;
 
     public String getFirstName() {
         return firstName;
@@ -148,5 +149,13 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setSubjectTypeUUID(String subjectTypeUUID) {
         this.subjectTypeUUID = subjectTypeUUID;
+    }
+
+    public String getAddressLevelLineage() {
+        return addressLevelLineage;
+    }
+
+    public void setAddressLevelLineage(String addressLevelLineage) {
+        this.addressLevelLineage = addressLevelLineage;
     }
 }
