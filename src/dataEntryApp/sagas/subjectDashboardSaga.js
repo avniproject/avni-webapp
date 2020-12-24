@@ -5,7 +5,7 @@ import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
 import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
-import { filter, isEmpty } from "lodash";
+import { filter, isEmpty, map, includes } from "lodash";
 
 export default function*() {
   yield all([subjectProfileFetchWatcher, voidSubjectWatcher, unVoidSubjectWatcher].map(fork));
@@ -23,17 +23,23 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   const subjectProfile = mapProfile(subjectProfileJson);
   const subjectType = subjectProfile.subjectType;
   const operationalModules = yield select(selectOperationalModules);
+  const programUUIDs = map(operationalModules.programs, ({ uuid }) => uuid);
+  const encounterTypeUUIDs = map(operationalModules.encounterTypes, ({ uuid }) => uuid);
   const showProgramTab =
     filter(
       operationalModules.formMappings,
       ({ subjectTypeUUID, programUUID }) =>
-        subjectTypeUUID === subjectType.uuid && !isEmpty(programUUID)
+        subjectTypeUUID === subjectType.uuid &&
+        !isEmpty(programUUID) &&
+        includes(programUUIDs, programUUID)
     ).length > 0;
   const showGeneralTab =
     filter(
       operationalModules.formMappings,
-      ({ subjectTypeUUID, programUUID, encounterTypeUUID }) =>
-        subjectTypeUUID === subjectType.uuid && isEmpty(programUUID) && !isEmpty(encounterTypeUUID)
+      ({ subjectTypeUUID, formType, encounterTypeUUID }) =>
+        subjectTypeUUID === subjectType.uuid &&
+        formType === "Encounter" &&
+        includes(encounterTypeUUIDs, encounterTypeUUID)
     ).length > 0;
   const showRelatives = filter(operationalModules.relations).length > 0;
   const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
