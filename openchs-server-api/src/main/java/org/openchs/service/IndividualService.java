@@ -1,12 +1,15 @@
 package org.openchs.service;
 
+import org.openchs.application.Subject;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.EncounterRepository;
+import org.openchs.dao.GroupSubjectRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.web.request.*;
+import org.openchs.web.request.common.CommonIndividualRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +30,17 @@ public class IndividualService {
     private final ProjectionFactory projectionFactory;
     private final EncounterRepository encounterRepository;
     private final ObservationService observationService;
+    private final GroupSubjectRepository groupSubjectRepository;
 
     @Autowired
-    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory,EncounterRepository encounterRepository,ObservationService observationService) {
+    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory, EncounterRepository encounterRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository) {
         this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
+        this.groupSubjectRepository = groupSubjectRepository;
     }
 
     public  IndividualContract getSubjectEncounters(String individualUuid){
@@ -73,6 +78,7 @@ public class IndividualService {
         List<ObservationContract> observationContractsList = observationService.constructObservations(individual.getObservations());
         List<RelationshipContract> relationshipContractList = constructRelationships(individual);
         List<EnrolmentContract> enrolmentContractList = constructEnrolments(individual);
+        List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByMemberSubject(individual);
         individualContract.setId(individual.getId());
         individualContract.setSubjectType(constructSubjectType(individual.getSubjectType()));
         individualContract.setObservations(observationContractsList);
@@ -86,6 +92,9 @@ public class IndividualService {
         if(null!=individual.getGender()) {
             individualContract.setGender(individual.getGender().getName());
             individualContract.setGenderUUID(individual.getGender().getUuid());
+        }
+        if (groupSubjects != null) {
+            individualContract.setRoles(groupSubjects.stream().map(groupSubject -> GroupRoleContract.fromEntity(groupSubject.getGroupRole())).collect(Collectors.toList()));
         }
         individualContract.setAddressLevelTypeName(individual.getAddressLevel().getType().getName());
         individualContract.setAddressLevelTypeId(individual.getAddressLevel().getType().getId());
@@ -225,7 +234,25 @@ public class IndividualService {
         return relationshipContract;
     }
 
+    public GroupSubjectMemberContract createGroupSubjectMemberContract(Individual member, GroupRole groupRole) {
+        GroupSubjectMemberContract groupSubjectMemberContract = new GroupSubjectMemberContract();
 
+        groupSubjectMemberContract.setMember(createIndividualContractWeb(member));
+        groupSubjectMemberContract.setRole(GroupRoleContract.fromEntity(groupRole));
+        return groupSubjectMemberContract;
+    }
+
+    private CommonIndividualRequest createIndividualContractWeb(Individual individual) {
+        CommonIndividualRequest individualContractWeb = new CommonIndividualRequest();
+        individualContractWeb.setId(individual.getId());
+        individualContractWeb.setUuid(individual.getUuid());
+        individualContractWeb.setFirstName(individual.getFirstName());
+        individualContractWeb.setLastName(individual.getLastName());
+        individualContractWeb.setDateOfBirth(individual.getDateOfBirth());
+        if (individual.getSubjectType().getType().equals(Subject.Person)) individualContractWeb.setGender(individual.getGender().getName());
+
+        return individualContractWeb;
+    }
 
 
 }

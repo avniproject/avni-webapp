@@ -30,7 +30,7 @@ public class GroupRoleService {
         groupRole.setGroupSubjectType(groupSubjectType);
         groupRole.setMemberSubjectType(memberSubjectType);
         groupRole.setRole(groupRoleRequest.getRole());
-        groupRole.setPrimary(groupRoleRequest.isPrimary());
+        groupRole.setPrimary(groupRoleRequest.getPrimary());
         groupRole.setMaximumNumberOfMembers(groupRoleRequest.getMaximumNumberOfMembers());
         groupRole.setMinimumNumberOfMembers(groupRoleRequest.getMinimumNumberOfMembers());
         groupRole.setUuid(groupRoleRequest.getUuid() == null ? UUID.randomUUID().toString() : groupRoleRequest.getUuid());

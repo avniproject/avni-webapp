@@ -10,6 +10,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
@@ -51,4 +53,8 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
 
     GroupSubject findByGroupSubjectAndGroupRoleAndIsVoidedFalse(Individual groupSubject, GroupRole headOfHousehold);
+
+    List<GroupSubject> findAllByGroupSubject(Individual groupSubject);
+
+    List<GroupSubject> findAllByMemberSubject(Individual memberSubject);
 }

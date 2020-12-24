@@ -17,6 +17,8 @@ public class IndividualContract extends CommonIndividualRequest {
 
     private Set<EncounterContract> encounters = new HashSet<>();
 
+    private List<GroupRoleContract> roles = new ArrayList<>();
+
     private SubjectTypeContract subjectType;
     private String subjectTypeName;
     private String fullName;
@@ -68,6 +70,14 @@ public class IndividualContract extends CommonIndividualRequest {
 
     public void setEncounters(Set<EncounterContract> encounters) {
         this.encounters = encounters;
+    }
+
+    public List<GroupRoleContract> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<GroupRoleContract> roles) {
+        this.roles = roles;
     }
 
     public SubjectTypeContract getSubjectType() {

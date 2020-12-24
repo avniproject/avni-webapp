@@ -6,8 +6,11 @@ import org.openchs.domain.GroupRole;
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
+import org.openchs.service.IndividualService;
 import org.openchs.service.UserService;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.GroupSubjectContract;
+import org.openchs.web.request.GroupSubjectMemberContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class GroupSubjectController extends AbstractController<GroupSubject> implements RestControllerResourceProcessor<GroupSubject>, OperatingIndividualScopeAwareFilterController<GroupSubject> {
@@ -31,15 +37,17 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
     private final IndividualRepository individualRepository;
     private final GroupRoleRepository groupRoleRepository;
     private final SubjectTypeRepository subjectTypeRepository;
+    private final IndividualService individualService;
     private final Logger logger;
 
     @Autowired
-    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository) {
+    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, IndividualService individualService) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.userService = userService;
         this.individualRepository = individualRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.subjectTypeRepository = subjectTypeRepository;
+        this.individualService = individualService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -74,6 +82,24 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         existingOrNewGroupSubject.setVoided(request.isVoided());
 
         groupSubjectRepository.save(existingOrNewGroupSubject);
+    }
+
+    @RequestMapping(value = "/web/groupSubjects/{groupId}/members", method = RequestMethod.GET)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    public List<GroupSubjectMemberContract> getGroupMembers(@PathVariable Long groupId) {
+        Optional<Individual> optionalGroup = individualRepository.findById(groupId);
+        if (optionalGroup.isPresent()) {
+            Individual group =  optionalGroup.get();
+            List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubject(group);
+            return groupSubjects.stream().map(groupSubject -> {
+                Individual individual = individualRepository.findByUuid(groupSubject.getMemberSubjectUUID());
+                GroupRole groupRole = groupRoleRepository.findByUuid(groupSubject.getGroupRole().getUuid());
+                return individualService.createGroupSubjectMemberContract(individual, groupRole);
+            }).collect(Collectors.toList());
+        } else {
+            throw new BadRequestError("Invalid Group Id");
+        }
     }
 
     @Override
