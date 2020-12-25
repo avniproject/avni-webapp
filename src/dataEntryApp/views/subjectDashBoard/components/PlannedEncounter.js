@@ -78,8 +78,8 @@ const PlannedEncounter = ({
   const { t } = useTranslation();
   const encounterId = encounter.name.replaceAll(" ", "-");
   const statusMap = {
-    overdue: t("Overdue"),
-    due: t("Due")
+    overdue: t("overdue"),
+    due: t("due")
   };
 
   let status;
@@ -121,7 +121,7 @@ const PlannedEncounter = ({
                 {encounter.uuid && !isEmpty(encounterFormMapping) ? (
                   <InternalLink to={`/app/subject/encounter?encounterUuid=${encounter.uuid}`}>
                     <Button id={`do-visit-${encounterId}`} color="primary">
-                      {t("do visit")}
+                      {t("do")}
                     </Button>
                   </InternalLink>
                 ) : (
@@ -132,7 +132,7 @@ const PlannedEncounter = ({
                     id={`cancel-visit-${encounterId}`}
                     to={`/app/subject/cancelEncounter?uuid=${encounter.uuid}`}
                   >
-                    <Button color="primary">{t("cancel Visit")}</Button>
+                    <Button color="primary">{t("cancelVisit")}</Button>
                   </InternalLink>
                 ) : (
                   ""
