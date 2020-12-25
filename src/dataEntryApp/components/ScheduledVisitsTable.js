@@ -30,9 +30,9 @@ const ScheduledVisitsTable = ({ visitSchedules }) => {
     >
       <TableHead>
         <TableRow>
-          <TableCell align="left">t("visitName")</TableCell>
-          <TableCell align="left">t("schedulingFor")</TableCell>
-          <TableCell align="left">t("overdueBy")</TableCell>
+          <TableCell align="left">{t("visitName")}</TableCell>
+          <TableCell align="left">{t("schedulingFor")}</TableCell>
+          <TableCell align="left">{t("overdueBy")}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
