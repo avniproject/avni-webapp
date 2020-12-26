@@ -87,11 +87,11 @@ export const wizardPage = {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains(
       "Second FEG",
@@ -99,7 +99,7 @@ export const wizardPage = {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
   },
