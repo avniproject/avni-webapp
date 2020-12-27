@@ -1,21 +1,18 @@
 import React, { Fragment } from "react";
-import { Route, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
-import { ObservationsHolder, AddressLevel } from "avni-models";
+import { TextField, Typography, Paper } from "@material-ui/core";
+import { AddressLevel } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
   saveSubject,
-  updateObs,
   updateSubject,
   setSubject,
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  onLoadEdit,
-  onNext,
-  onReset
+  onLoadEdit
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -27,17 +24,15 @@ import { CodedFormElement } from "../../components/CodedFormElement";
 import LocationSelect from "dataEntryApp/components/LocationSelect";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 import {
   fetchRegistrationRulesResponse,
-  onPrevious,
-  selectRegistrationState,
-  staticPageOnNext
+  selectRegistrationState
 } from "dataEntryApp/reducers/registrationReducer";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { dateFormat } from "dataEntryApp/constants";
+import RegistrationForm from "./RegistrationForm";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -142,11 +137,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DefaultPage = props => {
-  if (!props.form) return <div />;
+const SubjectRegister = props => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const loaded = !!props.loaded;
+  const match = props.match;
+  const edit = match.path === "/app/editSubject";
+
+  React.useEffect(() => {
+    if (edit) {
+      const subjectUuid = props.match.queryParams.uuid;
+      props.onLoadEdit(subjectUuid);
+    } else {
+      props.onLoad(props.match.queryParams.type);
+    }
+  }, [match.queryParams.type]);
+
+  const loaded = props.loaded;
   const [subjectRegErrors, setSubjectRegErrors] = React.useState({
     REGISTRATION_DATE: "",
     FIRST_NAME: "",
@@ -159,47 +165,6 @@ const DefaultPage = props => {
   const setValidationResultToError = validationResult => {
     subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
     setSubjectRegErrors({ ...subjectRegErrors });
-  };
-
-  const handleNext = event => {
-    setValidationResultToError(props.subject.validateRegistrationDate());
-    setValidationResultToError(props.subject.validateFirstName());
-    setValidationResultToError(props.subject.validateLastName());
-    setValidationResultToError(props.subject.validateDateOfBirth());
-    setValidationResultToError(props.subject.validateGender());
-    setValidationResultToError(props.subject.validateAddress());
-
-    let shouldPreventDefault = false;
-    if (props.subject.subjectType.isPerson()) {
-      if (
-        !(
-          _.isEmpty(subjectRegErrors.FIRST_NAME) &&
-          _.isEmpty(subjectRegErrors.LAST_NAME) &&
-          _.isEmpty(subjectRegErrors.DOB) &&
-          _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
-          _.isEmpty(subjectRegErrors.GENDER) &&
-          _.isEmpty(subjectRegErrors.LOWEST_ADDRESS_LEVEL)
-        )
-      ) {
-        event.preventDefault();
-        shouldPreventDefault = true;
-      }
-    } else {
-      if (
-        !(
-          _.isEmpty(subjectRegErrors.FIRST_NAME) &&
-          _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
-          _.isEmpty(subjectRegErrors.LOWEST_ADDRESS_LEVEL)
-        )
-      ) {
-        event.preventDefault();
-        shouldPreventDefault = true;
-      }
-    }
-
-    if (!shouldPreventDefault) {
-      props.staticPageOnNext();
-    }
   };
 
   function renderAddress() {
@@ -267,157 +232,164 @@ const DefaultPage = props => {
   }
 
   return loaded ? (
-    <div>
-      <Typography variant="h6" gutterBottom>
-        {t("register")} {t(props.subject.subjectType.name)}
-      </Typography>
-      <LineBreak num={1} />
-      <div>
-        {props.subject && (
-          <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                {t("Date of registration")}
-                {"*"}
-              </Typography>
-              <KeyboardDatePicker
-                autoComplete="off"
-                required
-                name="registrationDate"
-                // label={t("Date of registration")}
-                value={
-                  _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
-                }
-                error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
-                helperText={t(subjectRegErrors.REGISTRATION_DATE)}
-                style={{ width: "30%" }}
-                margin="normal"
-                id="Date-of-registration"
-                format={dateFormat}
-                placeholder={dateFormat}
-                onChange={date => {
-                  const dateOfReg = _.isNil(date) ? undefined : new Date(date);
-                  props.updateSubject("registrationDate", dateOfReg);
-                  props.subject.registrationDate = dateOfReg;
-                  setValidationResultToError(props.subject.validateRegistrationDate());
-                }}
-                InputLabelProps={{
-                  shrink: true
-                }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                  color: "primary"
-                }}
-              />
-            </MuiPickersUtilsProvider>
+    <Fragment>
+      <Breadcrumbs path={props.match.path} />
+      <Paper className={classes.root}>
+        <div>
+          <Typography variant="h6" gutterBottom>
+            {t("register")} {t(props.subject.subjectType.name)}
+          </Typography>
+          <LineBreak num={1} />
+          <div>
+            {props.subject && (
+              <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                    {t("Date of registration")}
+                    {"*"}
+                  </Typography>
+                  <KeyboardDatePicker
+                    autoComplete="off"
+                    required
+                    name="registrationDate"
+                    // label={t("Date of registration")}
+                    value={
+                      _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
+                    }
+                    error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
+                    helperText={t(subjectRegErrors.REGISTRATION_DATE)}
+                    style={{ width: "30%" }}
+                    margin="normal"
+                    id="Date-of-registration"
+                    format={dateFormat}
+                    placeholder={dateFormat}
+                    onChange={date => {
+                      const dateOfReg = _.isNil(date) ? undefined : new Date(date);
+                      props.updateSubject("registrationDate", dateOfReg);
+                      props.subject.registrationDate = dateOfReg;
+                      setValidationResultToError(props.subject.validateRegistrationDate());
+                    }}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    KeyboardButtonProps={{
+                      "aria-label": "change date",
+                      color: "primary"
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
 
-            <LineBreak num={1} />
-            {props.subject.subjectType.isPerson() && (
-              <>
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                  {t("firstName")}
-                  {"*"}
-                </Typography>
-                <TextField
-                  id={"firstName"}
-                  type="text"
-                  autoComplete="off"
-                  required
-                  name="firstName"
-                  value={props.subject.firstName || ""}
-                  error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                  helperText={t(subjectRegErrors.FIRST_NAME)}
-                  style={{ width: "30%" }}
-                  // label={t("firstName")}
-                  onChange={e => {
-                    props.updateSubject("firstName", e.target.value);
-                    props.subject.setFirstName(e.target.value);
-                    setValidationResultToError(props.subject.validateFirstName());
-                  }}
-                />
                 <LineBreak num={1} />
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                  {t("lastName")}
-                  {"*"}
-                </Typography>
-                <TextField
-                  id={"lastName"}
-                  type="text"
-                  autoComplete="off"
-                  required
-                  name="lastName"
-                  value={props.subject.lastName || ""}
-                  error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
-                  helperText={t(subjectRegErrors.LAST_NAME)}
-                  style={{ width: "30%" }}
-                  // label={t("lastName")}
-                  onChange={e => {
-                    props.updateSubject("lastName", e.target.value);
-                    props.subject.setLastName(e.target.value);
-                    setValidationResultToError(props.subject.validateLastName());
-                  }}
-                />
-                <LineBreak num={1} />
-                <DateOfBirth
-                  dateOfBirth={props.subject.dateOfBirth || null}
-                  dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                  dobErrorMsg={subjectRegErrors.DOB}
-                  onChange={date => {
-                    const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
-                    props.updateSubject("dateOfBirth", dateOfBirth);
-                    props.subject.setDateOfBirth(dateOfBirth);
-                    setValidationResultToError(props.subject.validateDateOfBirth());
-                  }}
-                  markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
-                />
-                <LineBreak num={1} />
-                <CodedFormElement
-                  groupName={t("gender")}
-                  items={sortBy(props.genders, "name")}
-                  isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                  mandatory={true}
-                  errorMsg={subjectRegErrors.GENDER}
-                  onChange={selected => {
-                    props.updateSubject("gender", selected);
-                    props.subject.gender = selected;
-                    setValidationResultToError(props.subject.validateGender());
-                  }}
-                />
-                <LineBreak num={1} />
-                {renderAddress()}
-              </>
-            )}
+                {props.subject.subjectType.isPerson() && (
+                  <>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t("firstName")}
+                      {"*"}
+                    </Typography>
+                    <TextField
+                      id={"firstName"}
+                      type="text"
+                      autoComplete="off"
+                      required
+                      name="firstName"
+                      value={props.subject.firstName || ""}
+                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                      helperText={t(subjectRegErrors.FIRST_NAME)}
+                      style={{ width: "30%" }}
+                      // label={t("firstName")}
+                      onChange={e => {
+                        props.updateSubject("firstName", e.target.value);
+                        props.subject.setFirstName(e.target.value);
+                        setValidationResultToError(props.subject.validateFirstName());
+                      }}
+                    />
+                    <LineBreak num={1} />
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t("lastName")}
+                      {"*"}
+                    </Typography>
+                    <TextField
+                      id={"lastName"}
+                      type="text"
+                      autoComplete="off"
+                      required
+                      name="lastName"
+                      value={props.subject.lastName || ""}
+                      error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
+                      helperText={t(subjectRegErrors.LAST_NAME)}
+                      style={{ width: "30%" }}
+                      // label={t("lastName")}
+                      onChange={e => {
+                        props.updateSubject("lastName", e.target.value);
+                        props.subject.setLastName(e.target.value);
+                        setValidationResultToError(props.subject.validateLastName());
+                      }}
+                    />
+                    <LineBreak num={1} />
+                    <DateOfBirth
+                      dateOfBirth={props.subject.dateOfBirth || null}
+                      dateOfBirthVerified={props.subject.dateOfBirthVerified}
+                      dobErrorMsg={subjectRegErrors.DOB}
+                      onChange={date => {
+                        const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
+                        props.updateSubject("dateOfBirth", dateOfBirth);
+                        props.subject.setDateOfBirth(dateOfBirth);
+                        setValidationResultToError(props.subject.validateDateOfBirth());
+                      }}
+                      markVerified={verified =>
+                        props.updateSubject("dateOfBirthVerified", verified)
+                      }
+                    />
+                    <LineBreak num={1} />
+                    <CodedFormElement
+                      name={t("gender")}
+                      items={sortBy(props.genders, "name")}
+                      isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
+                      mandatory={true}
+                      errorMsg={subjectRegErrors.GENDER}
+                      onChange={selected => {
+                        props.updateSubject("gender", selected);
+                        props.subject.gender = selected;
+                        setValidationResultToError(props.subject.validateGender());
+                      }}
+                    />
+                    <LineBreak num={1} />
+                    {renderAddress()}
+                  </>
+                )}
 
-            {!props.subject.subjectType.isPerson() && (
-              <>
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                  {/* {t("Name")} */}
-                  Name
-                </Typography>
-                <TextField
-                  // label="Name"
-                  type="text"
-                  autoComplete="off"
-                  required
-                  error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                  helperText={t(subjectRegErrors.FIRST_NAME)}
-                  name="firstName"
-                  value={props.subject.firstName}
-                  style={{ width: "30%" }}
-                  onChange={e => {
-                    props.updateSubject("firstName", e.target.value);
-                    props.subject.setFirstName(e.target.value);
-                    setValidationResultToError(props.subject.validateFirstName());
-                  }}
-                />
-                {renderAddress()}
-              </>
+                {!props.subject.subjectType.isPerson() && (
+                  <>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {/* {t("Name")} */}
+                      Name
+                    </Typography>
+                    <TextField
+                      // label="Name"
+                      type="text"
+                      autoComplete="off"
+                      required
+                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                      helperText={t(subjectRegErrors.FIRST_NAME)}
+                      name="firstName"
+                      value={props.subject.firstName}
+                      style={{ width: "30%" }}
+                      onChange={e => {
+                        props.updateSubject("firstName", e.target.value);
+                        props.subject.setFirstName(e.target.value);
+                        setValidationResultToError(props.subject.validateFirstName());
+                      }}
+                    />
+                    {renderAddress()}
+                  </>
+                )}
+                <LineBreak num={1} />
+              </RegistrationForm>
             )}
-            <LineBreak num={1} />
-          </RegistrationForm>
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      </Paper>
+    </Fragment>
   ) : (
     <CustomizedBackdrop load={false} />
   );
@@ -431,7 +403,6 @@ const mapStateToProps = state => {
     addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
     customRegistrationLocations:
       state.dataEntry.metadata.operationalModules.customRegistrationLocations,
-    form: registrationState.registrationForm,
     subject: registrationState.subject,
     loaded: registrationState.loaded,
     saved: registrationState.saved,
@@ -449,89 +420,14 @@ const mapDispatchToProps = {
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  staticPageOnNext
-};
-
-const ConnectedDefaultPage = withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(DefaultPage)
-  )
-);
-
-const mapFormStateToProps = state => {
-  const registrationState = selectRegistrationState(state);
-  return {
-    form: registrationState.registrationForm,
-    obsHolder:
-      registrationState.subject && new ObservationsHolder(registrationState.subject.observations),
-    observations: registrationState.subject && registrationState.subject.observations,
-    saved: registrationState.saved,
-    subject: registrationState.subject,
-    onSaveGoto: `/app/subject?uuid=${registrationState.subject.uuid}`,
-    validationResults: registrationState.validationResults,
-    registrationFlow: true,
-    filteredFormElements: registrationState.filteredFormElements,
-    entity: registrationState.subject,
-    formElementGroup: registrationState.formElementGroup,
-    onSummaryPage: registrationState.onSummaryPage,
-    wizard: registrationState.wizard
-  };
-};
-
-const mapFormDispatchToProps = {
-  updateObs,
-  onSave: saveSubject,
-  setValidationResults,
-  onNext,
-  onPrevious,
-  onReset
-};
-
-const RegistrationForm = withRouter(
-  connect(
-    mapFormStateToProps,
-    mapFormDispatchToProps
-  )(FormWizard)
-);
-
-const SubjectRegister = props => {
-  const classes = useStyles();
-  const match = props.match;
-  const edit = match.path === "/app/editSubject";
-
-  React.useEffect(() => {
-    if (edit) {
-      const subjectUuid = props.match.queryParams.uuid;
-      props.onLoadEdit(subjectUuid);
-    } else {
-      props.onLoad(props.match.queryParams.type);
-    }
-  }, [match.queryParams.type]);
-
-  return (
-    <Fragment>
-      <Breadcrumbs path={props.match.path} />
-      <Paper className={classes.root}>
-        <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
-      </Paper>
-    </Fragment>
-  );
-};
-
-const mapRegisterDispatchToProps = {
-  onLoad,
-  saveCompleteFalse,
   onLoadEdit
 };
 
 export default withRouter(
   withParams(
     connect(
-      null,
-      mapRegisterDispatchToProps
+      mapStateToProps,
+      mapDispatchToProps
     )(SubjectRegister)
   )
 );

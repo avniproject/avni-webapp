@@ -1,8 +1,8 @@
+import { updateObsWorker } from "dataEntryApp/sagas/subjectSaga";
 import {
   updateEnrolmentObsWorker,
-  updateExitEnrolmentObsWorker,
-  updateObsWorker
-} from "dataEntryApp/sagas/subjectSaga";
+  updateExitEnrolmentObsWorker
+} from "dataEntryApp/sagas/enrolmentSaga";
 import enrolmentReducer from "dataEntryApp/reducers/programEnrolReducer";
 import { expectSaga } from "redux-saga-test-plan";
 import mockData from "dataEntryApp/sagas/subjectSaga.mock";

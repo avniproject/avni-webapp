@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
-import { withParams } from "../../../common/components/utils";
-import { Redirect, withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import Summary from "./Summary";
 import { Box, Paper, Typography } from "@material-ui/core";
@@ -110,7 +109,6 @@ const FormWizard = ({
   obsHolder,
   updateObs,
   observations,
-  match,
   saved,
   onSaveGoto,
   onSave,
@@ -122,14 +120,11 @@ const FormWizard = ({
   children,
   filteredFormElements,
   entity,
-  history,
   fetchRulesResponse,
   formElementGroup,
   onNext,
   onPrevious,
   onSummaryPage,
-  onReset,
-  staticPageUrl,
   wizard
 }) => {
   if (!form) return <div />;
@@ -225,4 +220,4 @@ const FormWizard = ({
   );
 };
 
-export default withRouter(withParams(FormWizard));
+export default FormWizard;

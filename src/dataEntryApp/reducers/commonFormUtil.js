@@ -21,7 +21,7 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   };
 };
 
-const onLoad = (form, entity, defaultWizard = null) => {
+const onLoad = (form, entity) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
@@ -44,7 +44,6 @@ const onLoad = (form, entity, defaultWizard = null) => {
   return {
     filteredFormElements,
     formElementGroup: firstGroupWithAtLeastOneVisibleElement,
-    // wizard: defaultWizard ? defaultWizard : new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup),
     wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup)
   };
 };
@@ -149,7 +148,18 @@ const onPrevious = ({
   onSummaryPage,
   wizard
 }) => {
-  const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
+  if (onSummaryPage) {
+    return nextState(
+      formElementGroup,
+      filteredFormElements,
+      validationResults,
+      observations,
+      entity,
+      false,
+      wizard
+    );
+  }
+  const previousGroup = formElementGroup.previous();
   const { filteredFormElements: previousFilteredFormElements, formElementStatuses } = !isEmpty(
     previousGroup
   )

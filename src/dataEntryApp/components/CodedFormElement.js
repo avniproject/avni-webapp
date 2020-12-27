@@ -15,7 +15,7 @@ import Colors from "../Colors";
 import { isEmpty } from "lodash";
 
 export const CodedFormElement = ({
-  groupName,
+  name,
   items,
   isChecked,
   onChange,
@@ -54,7 +54,7 @@ export const CodedFormElement = ({
       required={mandatory}
       error={(validationResult && !validationResult.success) || !isEmpty(errorMsg)}
     >
-      <FormLabel component="legend">{t(groupName)}</FormLabel>
+      <FormLabel component="legend">{t(name)}</FormLabel>
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
           {items.map(item => (

@@ -22,9 +22,7 @@ export const types = {
   ON_NEXT: `${prefix}ON_NEXT`,
   ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
   SET_STATE: `${prefix}SET_STATE`,
-  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
-  STATIC_PAGE_ON_NEXT: `${prefix}STATIC_PAGE_ON_NEXT`,
-  ON_RESET: `${prefix}ON_RESET`
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -133,14 +131,6 @@ export const setState = state => ({
 export const setFilteredFormElements = filteredFormElements => ({
   type: types.SET_FILTERED_FORM_ELEMENTS,
   filteredFormElements
-});
-
-export const staticPageOnNext = () => ({
-  type: types.STATIC_PAGE_ON_NEXT
-});
-
-export const onReset = () => ({
-  type: types.ON_RESET
 });
 
 export const fetchRegistrationRulesResponse = () => {
