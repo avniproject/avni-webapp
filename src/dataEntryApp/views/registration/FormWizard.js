@@ -140,9 +140,8 @@ const FormWizard = ({
   const { t } = useTranslation();
 
   const isRegistrationFirstPage =
-    registrationFlow && subject.subjectType.isPerson()
-      ? wizard.isNonFormPage()
-      : wizard.isFirstFormPage();
+    registrationFlow &&
+    (subject.subjectType.isPerson() ? wizard.isNonFormPage() : wizard.isFirstFormPage());
 
   const isFirstPage = registrationFlow
     ? subject.subjectType.isPerson()

@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { TextField, Typography, Paper } from "@material-ui/core";
-import { AddressLevel } from "avni-models";
+import { Typography, Paper } from "@material-ui/core";
+import { AddressLevel, Individual } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -12,10 +12,16 @@ import {
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  onLoadEdit
-} from "../../reducers/registrationReducer";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+  onLoadEdit,
+  fetchRegistrationRulesResponse,
+  selectRegistrationState,
+  setRegistrationDate,
+  setFirstName,
+  setLastName,
+  setDateOfBirth,
+  setGender,
+  setAddress
+} from "dataEntryApp/reducers/registrationReducer";
 import { getGenders } from "../../reducers/metadataReducer";
 import _, { get, sortBy, isEmpty, find } from "lodash";
 import { LineBreak, withParams } from "../../../common/components/utils";
@@ -26,13 +32,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { useTranslation } from "react-i18next";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
-import {
-  fetchRegistrationRulesResponse,
-  selectRegistrationState
-} from "dataEntryApp/reducers/registrationReducer";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
-import { dateFormat } from "dataEntryApp/constants";
 import RegistrationForm from "./RegistrationForm";
+import { DateFormElement } from "dataEntryApp/components/DateFormElement";
+import TextFormElement from "dataEntryApp/components/TextFormElement";
+import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -153,19 +158,16 @@ const SubjectRegister = props => {
   }, [match.queryParams.type]);
 
   const loaded = props.loaded;
-  const [subjectRegErrors, setSubjectRegErrors] = React.useState({
-    REGISTRATION_DATE: "",
-    FIRST_NAME: "",
-    LAST_NAME: "",
-    DOB: "",
-    GENDER: "",
-    LOWEST_ADDRESS_LEVEL: ""
-  });
 
-  const setValidationResultToError = validationResult => {
-    subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
-    setSubjectRegErrors({ ...subjectRegErrors });
-  };
+  const dobError = commonFormUtil.getValidationResult(
+    props.validationResults,
+    Individual.validationKeys.DOB
+  );
+
+  const genderError = commonFormUtil.getValidationResult(
+    props.validationResults,
+    Individual.validationKeys.GENDER
+  );
 
   function renderAddress() {
     const {
@@ -180,6 +182,11 @@ const SubjectRegister = props => {
       isEmpty(customRegistrationLocation) || isEmpty(customRegistrationLocation.addressLevels)
         ? addressLevelTypes
         : customRegistrationLocation.addressLevels;
+
+    const error = commonFormUtil.getValidationResult(
+      props.validationResults,
+      Individual.validationKeys.LOWEST_ADDRESS_LEVEL
+    );
     return (
       <>
         <LineBreak num={1} />
@@ -194,10 +201,8 @@ const SubjectRegister = props => {
             <div>
               <LocationSelect
                 selectedLocation={props.subject.lowestAddressLevel.name || ""}
-                errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
                 onSelect={location => {
-                  props.updateSubject(
-                    "lowestAddressLevel",
+                  props.setAddress(
                     AddressLevel.create({
                       uuid: location.uuid,
                       title: location.name,
@@ -205,22 +210,13 @@ const SubjectRegister = props => {
                       typeString: location.type
                     })
                   );
-                  props.subject.lowestAddressLevel = AddressLevel.create({
-                    uuid: location.uuid,
-                    title: location.name,
-                    level: location.level,
-                    typeString: location.type
-                  });
                 }}
-                subjectProps={props}
                 placeholder={props.selectedAddressLevelType.name}
                 typeId={props.selectedAddressLevelType.id}
               />
             </div>
           )}
-          {subjectRegErrors.LOWEST_ADDRESS_LEVEL && (
-            <span className={classes.errmsg}>{t(subjectRegErrors.LOWEST_ADDRESS_LEVEL)}</span>
-          )}
+          {error && <span className={classes.errmsg}>{t(error.messageKey)}</span>}
         </div>
       </>
     );
@@ -238,99 +234,40 @@ const SubjectRegister = props => {
           <div>
             {props.subject && (
               <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                    {t("registrationDate")}
-                    {"*"}
-                  </Typography>
-                  <KeyboardDatePicker
-                    autoComplete="off"
-                    required
-                    name="registrationDate"
-                    value={
-                      _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
-                    }
-                    error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
-                    helperText={t(subjectRegErrors.REGISTRATION_DATE)}
-                    style={{ width: "30%" }}
-                    margin="normal"
-                    id="Date-of-registration"
-                    format={dateFormat}
-                    placeholder={dateFormat}
-                    onChange={date => {
-                      const dateOfReg = _.isNil(date) ? undefined : new Date(date);
-                      props.updateSubject("registrationDate", dateOfReg);
-                      props.subject.registrationDate = dateOfReg;
-                      setValidationResultToError(props.subject.validateRegistrationDate());
-                    }}
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                      color: "primary"
-                    }}
-                  />
-                </MuiPickersUtilsProvider>
+                <DateFormElement
+                  uuid={Individual.validationKeys.REGISTRATION_DATE}
+                  formElement={new StaticFormElement("registrationDate", true, true)}
+                  value={props.subject.registrationDate || ""}
+                  validationResults={props.validationResults}
+                  update={props.setRegistrationDate}
+                />
 
                 <LineBreak num={1} />
                 {props.subject.subjectType.isPerson() && (
                   <>
-                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {t("firstName")}
-                      {"*"}
-                    </Typography>
-                    <TextField
-                      id={"firstName"}
-                      type="text"
-                      autoComplete="off"
-                      required
-                      name="firstName"
-                      value={props.subject.firstName || ""}
-                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                      helperText={t(subjectRegErrors.FIRST_NAME)}
-                      style={{ width: "30%" }}
-                      onChange={e => {
-                        props.updateSubject("firstName", e.target.value);
-                        props.subject.setFirstName(e.target.value);
-                        setValidationResultToError(props.subject.validateFirstName());
-                      }}
+                    <TextFormElement
+                      uuid={Individual.validationKeys.FIRST_NAME}
+                      formElement={new StaticFormElement("firstName", true, true)}
+                      value={props.subject.firstName}
+                      validationResults={props.validationResults}
+                      update={props.setFirstName}
                     />
                     <LineBreak num={1} />
-                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {t("lastName")}
-                      {"*"}
-                    </Typography>
-                    <TextField
-                      id={"lastName"}
-                      type="text"
-                      autoComplete="off"
-                      required
-                      name="lastName"
-                      value={props.subject.lastName || ""}
-                      error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
-                      helperText={t(subjectRegErrors.LAST_NAME)}
-                      style={{ width: "30%" }}
-                      onChange={e => {
-                        props.updateSubject("lastName", e.target.value);
-                        props.subject.setLastName(e.target.value);
-                        setValidationResultToError(props.subject.validateLastName());
-                      }}
+                    <TextFormElement
+                      uuid={Individual.validationKeys.LAST_NAME}
+                      formElement={new StaticFormElement("lastName", true, true)}
+                      value={props.subject.lastName}
+                      validationResults={props.validationResults}
+                      update={props.setLastName}
                     />
                     <LineBreak num={1} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || null}
-                      dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                      dobErrorMsg={subjectRegErrors.DOB}
+                      dobErrorMsg={dobError ? dobError.messageKey : ""}
                       onChange={date => {
                         const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
-                        props.updateSubject("dateOfBirth", dateOfBirth);
-                        props.subject.setDateOfBirth(dateOfBirth);
-                        setValidationResultToError(props.subject.validateDateOfBirth());
+                        props.setDateOfBirth(dateOfBirth);
                       }}
-                      markVerified={verified =>
-                        props.updateSubject("dateOfBirthVerified", verified)
-                      }
                     />
                     <LineBreak num={1} />
                     <CodedFormElement
@@ -338,11 +275,9 @@ const SubjectRegister = props => {
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       mandatory={true}
-                      errorMsg={subjectRegErrors.GENDER}
+                      errorMsg={genderError ? genderError.messageKey : ""}
                       onChange={selected => {
-                        props.updateSubject("gender", selected);
-                        props.subject.gender = selected;
-                        setValidationResultToError(props.subject.validateGender());
+                        props.setGender(selected);
                       }}
                     />
                     <LineBreak num={1} />
@@ -352,23 +287,12 @@ const SubjectRegister = props => {
 
                 {!props.subject.subjectType.isPerson() && (
                   <>
-                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {t("name")}
-                    </Typography>
-                    <TextField
-                      type="text"
-                      autoComplete="off"
-                      required
-                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                      helperText={t(subjectRegErrors.FIRST_NAME)}
-                      name="firstName"
+                    <TextFormElement
+                      uuid={Individual.validationKeys.FIRST_NAME}
+                      formElement={new StaticFormElement("name", true, true)}
                       value={props.subject.firstName}
-                      style={{ width: "30%" }}
-                      onChange={e => {
-                        props.updateSubject("firstName", e.target.value);
-                        props.subject.setFirstName(e.target.value);
-                        setValidationResultToError(props.subject.validateFirstName());
-                      }}
+                      validationResults={props.validationResults}
+                      update={props.setFirstName}
                     />
                     {renderAddress()}
                   </>
@@ -396,7 +320,8 @@ const mapStateToProps = state => {
     subject: registrationState.subject,
     loaded: registrationState.loaded,
     saved: registrationState.saved,
-    selectedAddressLevelType: registrationState.selectedAddressLevelType
+    selectedAddressLevelType: registrationState.selectedAddressLevelType,
+    validationResults: registrationState.validationResults
   };
 };
 
@@ -410,7 +335,13 @@ const mapDispatchToProps = {
   saveCompleteFalse,
   setValidationResults,
   selectAddressLevelType,
-  onLoadEdit
+  onLoadEdit,
+  setRegistrationDate,
+  setFirstName,
+  setLastName,
+  setDateOfBirth,
+  setGender,
+  setAddress
 };
 
 export default withRouter(

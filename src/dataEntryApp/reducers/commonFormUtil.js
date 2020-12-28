@@ -148,7 +148,9 @@ const onPrevious = ({
   onSummaryPage,
   wizard
 }) => {
-  if (onSummaryPage) {
+  const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
+
+  if (isEmpty(previousGroup)) {
     return nextState(
       formElementGroup,
       filteredFormElements,
@@ -159,14 +161,14 @@ const onPrevious = ({
       wizard
     );
   }
-  const previousGroup = formElementGroup.previous();
+
   const { filteredFormElements: previousFilteredFormElements, formElementStatuses } = !isEmpty(
     previousGroup
   )
     ? filterFormElementsWithStatus(previousGroup, entity)
     : { filteredFormElements: null };
 
-  if (!onSummaryPage) wizard.movePrevious();
+  if (!onSummaryPage && previousGroup != null) wizard.movePrevious();
   const obsHolder = new ObservationsHolder(observations);
   if (isEmpty(previousFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
@@ -241,10 +243,17 @@ const updateObservations = (
   return { filteredFormElements, validationResults };
 };
 
+const getValidationResult = (validationResults, formElementIdentifier) =>
+  find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === formElementIdentifier
+  );
+
 export default {
   onLoad,
   onNext,
   onPrevious,
   handleValidationResult,
-  updateObservations
+  updateObservations,
+  getValidationResult
 };
