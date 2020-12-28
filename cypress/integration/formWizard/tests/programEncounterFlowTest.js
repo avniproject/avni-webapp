@@ -117,7 +117,7 @@ describe("Program Encounter Flow tests for form wizard", () => {
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
     wizardPage.checkScenarioFEhiddeninSameFEG();
   });
-  it.only("FE in another group in same form is hidden", () => {
+  it("FE in another group in same form is hidden", () => {
     dashboardPage.editProgramEncounter("Program1", "ProgramEncounter1");
     wizardPage.checkScenarioHideFEinAnotherFEGInSameForm();
   });

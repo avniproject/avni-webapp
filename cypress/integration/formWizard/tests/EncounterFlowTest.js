@@ -17,4 +17,23 @@ describe("General Enrolment Flow tests for form wizard", () => {
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");
   });
+  it("First FEG should be hidden using FEG rule", () => {
+    wizardPage.modifyRegistration("Test Individual", "Hide first FEG");
+    dashboardPage.editGeneralEncounter("Encounter1");
+    //wizardPage.checkScenarioHideFirstFEG();
+  });
+  it("First FEG should be hidden using all FE rule", () => {
+    wizardPage.modifyRegistration(
+      "Test Individual",
+      "Hide first FE of first FEG",
+      "Hide last FE of first FEG"
+    );
+    dashboardPage.editGeneralEncounter("Encounter1");
+    wizardPage.checkScenarioHideFirstFEGbyAllFEG();
+  });
+  it("First FE should be hidden in first FEG", () => {
+    wizardPage.modifyRegistration("Test Individual", "Hide first FE of first FEG");
+    dashboardPage.editGeneralEncounter("Encounter1");
+    wizardPage.checkScenarioHideFirstFEofFirstFEG();
+  });
 });
