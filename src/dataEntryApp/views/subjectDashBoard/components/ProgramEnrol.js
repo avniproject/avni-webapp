@@ -21,6 +21,7 @@ import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import { ProgramEnrolment } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,6 +66,7 @@ const ProgramEnrol = ({
   setExitDate
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const formType = match.queryParams.formType;
   const subjectTypeName = match.queryParams.subjectTypeName;
   useEffect(() => {
@@ -83,7 +85,7 @@ const ProgramEnrol = ({
       <Paper className={classes.root}>
         <div className={classes.tableView}>
           <Typography component={"span"} className={classes.mainHeading}>
-            {match.queryParams.programName}
+            {t(match.queryParams.programName)}
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>

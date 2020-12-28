@@ -12,7 +12,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
 
   return (
     <TextField
-      label={t(fe.display || fe.name)}
+      label={t(fe.name)}
       type={"text"}
       required={fe.mandatory}
       name={fe.name}

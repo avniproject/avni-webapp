@@ -61,3 +61,6 @@ export const selectEnableReadonly = state => {
   }
   return enableReadonly;
 };
+
+export const selectOperationalModules = state =>
+  get(state, "dataEntry.metadata.operationalModules");

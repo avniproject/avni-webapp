@@ -55,7 +55,7 @@ const FormWizardHeader = ({ subject }) => {
     ? subject.lowestAddressLevel.name || "-"
     : "";
   const lowestAddressLevelType = subject.lowestAddressLevel
-    ? subject.lowestAddressLevel.type || "-"
+    ? t(subject.lowestAddressLevel.type) || "-"
     : "";
   headerElements = addElement(lowestAddressLevelType, lowestAddressLevel, headerElements);
   return (

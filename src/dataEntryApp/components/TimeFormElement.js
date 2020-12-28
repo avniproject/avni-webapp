@@ -23,11 +23,10 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
         gutterBottom
         style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
       >
-        {t(fe.display || fe.name)}
+        {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardTimePicker
-        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={!isNil(value) ? new Date().setHours(hrs, mins) : value}
         ampm={false}

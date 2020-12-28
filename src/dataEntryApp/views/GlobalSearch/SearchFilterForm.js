@@ -23,6 +23,7 @@ import moment from "moment/moment";
 import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -112,6 +113,7 @@ function SearchFilterForm({
   searchRequest
 }) {
   const classes = useStyles();
+  const { t } = useTranslation();
   const {
     subjectType,
     name,
@@ -307,10 +309,10 @@ function SearchFilterForm({
     );
   };
   // is voided
-  const [includeVoied, setIncludeVoied] = React.useState(includeVoided || false);
+  const [includeVoied, setIncludeVoided] = React.useState(includeVoided || false);
 
-  const includeVoiedChange = event => {
-    setIncludeVoied(event.target.checked);
+  const includeVoidedChange = event => {
+    setIncludeVoided(event.target.checked);
   };
   //concept
   const selectedConceptApi = selectedConcepts.filter(selectedConcept => {
@@ -422,7 +424,7 @@ function SearchFilterForm({
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Typography component={"span"} className={classes.mainHeading}>
-          Search
+          {t("search")}
         </Typography>
         <LineBreak num={1} />
         <FormControl component="fieldset">
@@ -433,7 +435,7 @@ function SearchFilterForm({
               focused: classes.formLabelFocused
             }}
           >
-            Subject Type
+            {t("subjectType")}
           </FormLabel>
           <RadioGroup
             row
@@ -448,7 +450,7 @@ function SearchFilterForm({
                     key={index}
                     value={subjectType.uuid}
                     control={<Radio color="primary" />}
-                    label={subjectType.name}
+                    label={t(subjectType.name)}
                   />
                 ))
               : ""}
@@ -495,8 +497,8 @@ function SearchFilterForm({
                 </Grid>
                 <Grid item xs={12}>
                   <IncludeVoidedForm
-                    includeVoied={includeVoied}
-                    includeVoiedChange={includeVoiedChange}
+                    includeVoided={includeVoied}
+                    includeVoidedChange={includeVoidedChange}
                   />
                 </Grid>
               </Grid>
@@ -512,10 +514,10 @@ function SearchFilterForm({
               component={Link}
               to="/app/search"
             >
-              Search
+              {t("search")}
             </Button>
             <Button variant="contained" component={Link} to="/app/">
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
         </FormControl>

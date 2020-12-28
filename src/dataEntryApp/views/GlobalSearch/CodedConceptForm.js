@@ -58,7 +58,7 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedCo
                               color="primary"
                             />
                           }
-                          label={conceptAnswer.answerConcept.name}
+                          label={t(conceptAnswer.answerConcept.name)}
                           key={index}
                         />
                       ))

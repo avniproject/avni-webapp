@@ -61,12 +61,14 @@ const Breadcrumbs = ({
     EDIT_ENCOUNTER: "editEncounter",
     CANCEL_ENCOUNTER: "cancelEncounter",
     EDIT_CANCEL_ENCOUNTER: "editCancelEncounter",
-    EDIT_SUBJECT: "editSubject"
+    EDIT_SUBJECT: "editSubject",
+    SEARCH: "searchFilter",
+    REGISTER: "register"
   };
   const urlMapper = part => {
     switch (part) {
       case urlPartLabels.APP: {
-        return { breadcrumb: "Home", url: "#/app" };
+        return { breadcrumb: t("home"), url: "#/app" };
       }
       case urlPartLabels.SUBJECT: {
         if (subjectName && subjectUuid) {
@@ -84,7 +86,7 @@ const Breadcrumbs = ({
       case urlPartLabels.VIEW_VISIT: {
         if (viewVisitName) {
           return {
-            breadcrumb: `${t("ViewVisit")} : ${t(viewVisitName)}`,
+            breadcrumb: `${t(viewVisitName)}`,
             url: "#/app"
           };
         } else {
@@ -97,7 +99,7 @@ const Breadcrumbs = ({
       case urlPartLabels.VIEW_ENCOUNTER: {
         if (viewVisitName) {
           return {
-            breadcrumb: `${t("ViewVisit")} : ${t(viewVisitName)}`,
+            breadcrumb: `${t(viewVisitName)}`,
             url: "#/app"
           };
         } else {
@@ -154,6 +156,12 @@ const Breadcrumbs = ({
           breadcrumb: subjectName,
           url: "#/app/subject?uuid=" + subjectUuid
         };
+      }
+      case urlPartLabels.SEARCH: {
+        return { breadcrumb: t("search"), url: "#/app" };
+      }
+      case urlPartLabels.REGISTER: {
+        return { breadcrumb: t("register"), url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

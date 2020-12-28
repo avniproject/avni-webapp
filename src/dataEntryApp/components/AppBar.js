@@ -202,7 +202,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
                   onClick={handleToggle}
                   style={{ color: "#0e6eff" }}
                 >
-                  {t("new")}
+                  {t("register")}
                   <ExpandMoreIcon />
                 </Button>
                 <Popper
@@ -248,7 +248,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
               borderRadius: "3px"
             }}
           >
-            {t("Search")}
+            {t("search")}
           </Button>
           <div className={classes.users}>
             <Typography component={"div"} color="inherit">

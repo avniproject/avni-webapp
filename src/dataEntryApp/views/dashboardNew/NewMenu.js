@@ -29,10 +29,6 @@ const useStyle = makeStyles(theme => ({
   },
   FormControlRadio: {
     marginTop: "20px"
-  },
-  FormLabel: {
-    color: "grey",
-    marginLeft: "15px"
   }
 }));
 
@@ -43,7 +39,6 @@ function NewMenu({ operationalModules, handleClose }) {
   return (
     <div className={classes.container}>
       <List component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
-        <label className={classes.FormLabel}>{t("register")}</label>
         {operationalModules.subjectTypes.map((element, index) => {
           return (
             <React.Fragment key={index}>

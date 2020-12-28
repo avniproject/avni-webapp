@@ -4,14 +4,18 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
+
 const useStyles = makeStyles(theme => ({
   componentSpacing: {
     marginTop: "1%",
     marginBottom: "1%"
   }
 }));
-function IncludeVoidedForm({ includeVoied, includeVoiedChange }) {
+
+function IncludeVoidedForm({ includeVoided, includeVoidedChange }) {
   const classes = useStyles();
+  const { t } = useTranslation();
   return (
     <Fragment>
       <Grid container spacing={3} className={classes.componentSpacing}>
@@ -19,9 +23,9 @@ function IncludeVoidedForm({ includeVoied, includeVoiedChange }) {
           <FormControl component="fieldset">
             <FormControlLabel
               control={
-                <Checkbox checked={includeVoied} onChange={includeVoiedChange} color="primary" />
+                <Checkbox checked={includeVoided} onChange={includeVoidedChange} color="primary" />
               }
-              label="Include Voided"
+              label={t("includeVoided")}
               labelPlacement="end"
             />
           </FormControl>

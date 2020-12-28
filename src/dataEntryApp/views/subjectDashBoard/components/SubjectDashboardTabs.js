@@ -75,13 +75,21 @@ export default ({
   voidSubject,
   unVoidSubject,
   registrationForm,
-  tab
+  tab,
+  tabsStatus
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const {
+    showProgramTab,
+    showGeneralTab,
+    showRelatives,
+    defaultTabIndex,
+    registrationTabIndex,
+    generalTabIndex
+  } = tabsStatus;
 
-  const [value, setValue] = React.useState(tab || 0);
-
+  const [value, setValue] = React.useState(tab || defaultTabIndex);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -106,27 +114,41 @@ export default ({
           aria-label="scrollable auto tabs example"
           className={classes.wrapper}
         >
+          {showProgramTab && (
+            <Tab
+              label={t("programs")}
+              icon={<AssessmentIcon id={"program-tab"} />}
+              {...a11yProps(0)}
+            />
+          )}
           <Tab
-            label={t("programs")}
-            icon={<AssessmentIcon id={"program-tab"} />}
-            {...a11yProps(0)}
+            label={t("profile")}
+            icon={<PersonIcon id={"profile-tab"} />}
+            {...a11yProps(registrationTabIndex)}
           />
-          <Tab label={t("profile")} icon={<PersonIcon id={"profile-tab"} />} {...a11yProps(1)} />
-          <Tab label={t("General")} icon={<ListIcon id={"general-tab"} />} {...a11yProps(2)} />
+          {showGeneralTab && (
+            <Tab
+              label={t("General")}
+              icon={<ListIcon id={"general-tab"} />}
+              {...a11yProps(generalTabIndex)}
+            />
+          )}
         </Tabs>
       </MUAppBar>
-      <TabContent value={value} index={0}>
-        <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProgramTab
-            program={program}
-            handleUpdateComponent={handleUpdateComponent}
-            enableReadOnly={enableReadOnly}
-            subjectTypeUuid={profile.subjectType.uuid}
-            subjectVoided={profile.voided}
-          />
-        </Paper>
-      </TabContent>
-      <TabContent value={value} index={1}>
+      {showProgramTab && (
+        <TabContent value={value} index={0}>
+          <Paper className={classes.tabsDisplay}>
+            <SubjectDashboardProgramTab
+              program={program}
+              handleUpdateComponent={handleUpdateComponent}
+              enableReadOnly={enableReadOnly}
+              subjectTypeUuid={profile.subjectType.uuid}
+              subjectVoided={profile.voided}
+            />
+          </Paper>
+        </TabContent>
+      )}
+      <TabContent value={value} index={registrationTabIndex}>
         <Paper className={classes.tabsDisplay}>
           <SubjectDashboardProfileTab
             profile={profile}
@@ -134,20 +156,23 @@ export default ({
             voidSubject={voidSubject}
             unVoidSubject={unVoidSubject}
             registrationForm={registrationForm}
+            showRelatives={showRelatives}
           />
         </Paper>
       </TabContent>
-      <TabContent value={value} index={2}>
-        <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardGeneralTab
-            subjectUuid={profile.uuid}
-            general={general}
-            enableReadOnly={enableReadOnly}
-            subjectTypeUuid={profile.subjectType.uuid}
-            subjectVoided={profile.voided}
-          />
-        </Paper>
-      </TabContent>
+      {showGeneralTab && (
+        <TabContent value={value} index={generalTabIndex}>
+          <Paper className={classes.tabsDisplay}>
+            <SubjectDashboardGeneralTab
+              subjectUuid={profile.uuid}
+              general={general}
+              enableReadOnly={enableReadOnly}
+              subjectTypeUuid={profile.subjectType.uuid}
+              subjectVoided={profile.voided}
+            />
+          </Paper>
+        </TabContent>
+      )}
     </Fragment>
   );
 };

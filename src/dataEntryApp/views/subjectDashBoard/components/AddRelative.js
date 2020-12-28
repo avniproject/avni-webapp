@@ -191,7 +191,7 @@ const AddRelative = ({
         <div className={classes.innerPaper}>
           <Grid container direction="row" justify="space-between" alignItems="baseline">
             <Typography component={"span"} className={classes.mainHeading}>
-              Add Relative
+              {t("addRelative")}
             </Typography>
           </Grid>
 
@@ -218,7 +218,7 @@ const AddRelative = ({
                                   {t("gender")}
                                 </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "20%" }}>
-                                  {t("Age")}
+                                  {t("age")}
                                 </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "35%" }}>
                                   {t("Village")}

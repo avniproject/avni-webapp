@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Observations from "dataEntryApp/components/Observations";
 import Button from "@material-ui/core/Button";
-import { InternalLink, LineBreak } from "../../../../common/components/utils";
+import { InternalLink } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -90,7 +90,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
       <Paper className={classes.root}>
         <Grid container direction="row" justify="space-between" alignItems="baseline">
           <Typography component={"span"} className={classes.mainHeading}>
-            {t("ViewVisit")}: {t(defaultTo(encounter.name, encounter.encounterType.name))}
+            {t(defaultTo(encounter.name, encounter.encounterType.name))}
           </Typography>
           {encounter.earliestVisitDateTime ? (
             <Typography component={"span"} className={classes.scheduledHeading}>
@@ -111,13 +111,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
           </Typography>
         </div>
 
-        <Paper className={classes.innerPaper}>
-          <Typography component={"span"} className={classes.summaryHeading}>
-            {t("summary")}
-          </Typography>
-          <LineBreak num={2} />
-          <Observations observations={encounter ? encounter.observations : []} />
-        </Paper>
+        <Observations observations={encounter ? encounter.observations : []} />
 
         <InternalLink to={viewAllCompletedUrl}>
           <Button color="primary" className={classes.visitButton}>

@@ -6,9 +6,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import SettingsIcon from "@material-ui/icons/Settings";
-import VideoIcon from "@material-ui/icons/VideoLibrary";
-import SyncIcon from "@material-ui/icons/Sync";
-import LockIcon from "@material-ui/icons/Lock";
 import LogoutIcon from "@material-ui/icons/Input";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -17,7 +14,6 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
-import Switch from "@material-ui/core/Switch";
 import { LOCALES } from "../../common/constants";
 import { useTranslation } from "react-i18next";
 import { saveUserInfo } from "rootApp/ducks";
@@ -181,39 +177,8 @@ const UserOption = ({
                   ))
                 : ""}
             </RadioGroup>
-            {!enableReadOnly && <FormLabel component="legend">{t("trackLocation")}</FormLabel>}
-            {!enableReadOnly && (
-              <FormControlLabel control={<Switch checked={true} value="checkedA" />} label="On" />
-            )}
           </FormControl>
         </Collapse>
-        <hr className={classes.horizontalLine} />
-        {!enableReadOnly && (
-          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-            <ListItemIcon>
-              <VideoIcon style={{ color: "blue" }} />
-            </ListItemIcon>
-            <ListItemText primary={t("VideoList")} />
-          </ListItem>
-        )}
-        {!enableReadOnly && <hr className={classes.horizontalLine} />}
-        {!enableReadOnly && (
-          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-            <ListItemIcon>
-              <SyncIcon style={{ color: "blue" }} />
-            </ListItemIcon>
-            <ListItemText primary={t("entitySyncStatus")} />
-          </ListItem>
-        )}
-        {!enableReadOnly && <hr className={classes.horizontalLine} />}
-        {!enableReadOnly && (
-          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-            <ListItemIcon>
-              <LockIcon style={{ color: "blue" }} />
-            </ListItemIcon>
-            <ListItemText primary={t("changePassword")} />
-          </ListItem>
-        )}
         <hr className={classes.horizontalLine} />
         <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>

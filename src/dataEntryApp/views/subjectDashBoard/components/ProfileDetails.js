@@ -119,7 +119,8 @@ const ProfileDetails = ({
   subjectUuid,
   match,
   enableReadOnly,
-  load
+  load,
+  tabsStatus
 }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
@@ -152,7 +153,7 @@ const ProfileDetails = ({
             id="demo-simple-select-placeholder-label-label"
             className={errorStatus ? classes.errorText : ""}
           >
-            Program
+            {t("Program")}
           </InputLabel>
 
           <NativeSelect
@@ -169,7 +170,7 @@ const ProfileDetails = ({
             {programs
               ? programs.map((element, index) => (
                   <option key={index} value={element.name}>
-                    {element.name}
+                    {t(element.name)}
                   </option>
                 ))
               : ""}
@@ -187,13 +188,6 @@ const ProfileDetails = ({
         {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
-        {/* <Grid item>
-          <Avatar
-            src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
-            className={classes.bigAvatar}
-          />
-
-        </Grid> */}
         <Grid item>
           <AccountCircle className={classes.iconStyle} />
         </Grid>
@@ -205,11 +199,9 @@ const ProfileDetails = ({
                   <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
                 )}
                 {profileDetails.subjectType.isPerson() && (
-                  <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                  <TableCell className={classes.tableCell}>{t("age")}</TableCell>
                 )}
-                <TableCell className={classes.tableCell}>
-                  {t(profileDetails.lowestAddressLevel.type)}
-                </TableCell>
+                <TableCell className={classes.tableCell}>{t("Address")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -230,14 +222,14 @@ const ProfileDetails = ({
                   </TableCell>
                 )}
                 <TableCell className={classes.tableCellDetails}>
-                  {profileDetails.lowestAddressLevel.name}
+                  {profileDetails.lowestAddressLevel.titleLineage}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </Grid>
         <Grid item xs={7} align="right">
-          {!enableReadOnly && !profileDetails.voided ? (
+          {tabsStatus.showProgramTab && !enableReadOnly && !profileDetails.voided ? (
             <div>
               <Modal
                 content={content}
@@ -279,7 +271,8 @@ const ProfileDetails = ({
 
 const mapStateToProps = state => ({
   programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
-  load: state.dataEntry.loadReducer.load
+  load: state.dataEntry.loadReducer.load,
+  tabsStatus: state.dataEntry.subjectProfile.tabsStatus
 });
 
 const mapDispatchToProps = {

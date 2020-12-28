@@ -184,7 +184,7 @@ const SubjectRegister = props => {
       <>
         <LineBreak num={1} />
         <RadioButtonsGroup
-          label={t("Address*")}
+          label={`${t("Address")}*`}
           items={addressLevelTypesToRender.map(a => ({ id: a.id, name: a.name }))}
           value={props.selectedAddressLevelType.id}
           onChange={item => props.selectAddressLevelType(item)}
@@ -212,11 +212,6 @@ const SubjectRegister = props => {
                     typeString: location.type
                   });
                 }}
-                //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
-                //   setValidationResultToError(props.subject.validateAddress());
-                // }
-
-                // }
                 subjectProps={props}
                 placeholder={props.selectedAddressLevelType.name}
                 typeId={props.selectedAddressLevelType.id}
@@ -245,14 +240,13 @@ const SubjectRegister = props => {
               <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                    {t("Date of registration")}
+                    {t("registrationDate")}
                     {"*"}
                   </Typography>
                   <KeyboardDatePicker
                     autoComplete="off"
                     required
                     name="registrationDate"
-                    // label={t("Date of registration")}
                     value={
                       _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
                     }
@@ -296,7 +290,6 @@ const SubjectRegister = props => {
                       error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
                       helperText={t(subjectRegErrors.FIRST_NAME)}
                       style={{ width: "30%" }}
-                      // label={t("firstName")}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                         props.subject.setFirstName(e.target.value);
@@ -318,7 +311,6 @@ const SubjectRegister = props => {
                       error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
                       helperText={t(subjectRegErrors.LAST_NAME)}
                       style={{ width: "30%" }}
-                      // label={t("lastName")}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
                         props.subject.setLastName(e.target.value);
@@ -361,11 +353,9 @@ const SubjectRegister = props => {
                 {!props.subject.subjectType.isPerson() && (
                   <>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                      {/* {t("Name")} */}
-                      Name
+                      {t("name")}
                     </Typography>
                     <TextField
-                      // label="Name"
                       type="text"
                       autoComplete="off"
                       required
