@@ -24,7 +24,6 @@ import { useTranslation } from "react-i18next";
 import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
-import Icon from "@material-ui/core/Icon";
 import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles(theme => ({
@@ -236,7 +235,6 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
           <Button
             variant="contained"
             className={classes.button}
-            endIcon={<Icon>search</Icon>}
             component={Link}
             to="/app/searchFilter"
             style={{

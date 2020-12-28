@@ -8,7 +8,7 @@ import { setupTest } from "../setup";
 describe("Registration Flow tests for form wizard", () => {
   beforeEach(() => {
     setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
-    setupTest.cleanAllOptionsFromRegistration("Test Person");
+    setupTest.cleanAllOptionsFromPersonRegistration("Test Person");
   });
   //TODO: uncomment it after fixing the bug
   // it("First form element group should be hidden when first name is 'Hide first FEG'", () => {

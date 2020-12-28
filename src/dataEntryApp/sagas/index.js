@@ -1,5 +1,6 @@
 import referenceDataSaga from "./referenceDataSaga";
 import subjectSaga from "./subjectSaga";
+import enrolmentSaga from "./enrolmentSaga";
 import { all, fork } from "redux-saga/effects";
 import subjectDashboardSaga from "./subjectDashboardSaga";
 import generalSubjectDashboardSaga from "./generalSubjectDashboardSaga";
@@ -17,6 +18,7 @@ export default function* rootSaga() {
     [
       referenceDataSaga,
       subjectSaga,
+      enrolmentSaga,
       subjectDashboardSaga,
       generalSubjectDashboardSaga,
       programSubjectDashboardSaga,
@@ -27,7 +29,6 @@ export default function* rootSaga() {
       programEncounterSaga,
       relationshipSaga,
       encounterSaga
-      // translationApiSaga
     ].map(fork)
   );
 }

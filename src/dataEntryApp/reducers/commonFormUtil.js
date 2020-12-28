@@ -21,7 +21,7 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   };
 };
 
-const onLoad = (form, entity, defaultWizard = null) => {
+const onLoad = (form, entity) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
@@ -44,7 +44,6 @@ const onLoad = (form, entity, defaultWizard = null) => {
   return {
     filteredFormElements,
     formElementGroup: firstGroupWithAtLeastOneVisibleElement,
-    // wizard: defaultWizard ? defaultWizard : new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup),
     wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup)
   };
 };
@@ -56,7 +55,6 @@ function nextState(
   observations,
   entity,
   onSummaryPage,
-  renderStaticPage,
   wizard
 ) {
   return {
@@ -66,7 +64,6 @@ function nextState(
     observations,
     entity,
     onSummaryPage,
-    renderStaticPage,
     wizard
   };
 }
@@ -79,7 +76,8 @@ const onNext = ({
   entity,
   filteredFormElements,
   validationResults,
-  wizard
+  wizard,
+  entityValidations
 }) => {
   const obsHolder = new ObservationsHolder(observations);
   const formElementGroupValidations = new FormElementGroup().validate(
@@ -90,6 +88,7 @@ const onNext = ({
   const allRuleValidationResults = unionBy(
     errors(formElementGroupValidations),
     errors(validationResults),
+    errors(entityValidations),
     "formIdentifier"
   );
   const thereAreValidationErrors = !isEmpty(allRuleValidationResults);
@@ -101,7 +100,6 @@ const onNext = ({
       allRuleValidationResults,
       observations,
       entity,
-      false,
       false,
       wizard
     );
@@ -117,7 +115,6 @@ const onNext = ({
       observations,
       entity,
       onSummaryPage,
-      false,
       wizard
     );
   }
@@ -128,9 +125,7 @@ const onNext = ({
   wizard.moveNext();
   if (isEmpty(nextFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), []);
-    return onNext(
-      nextState(nextGroup, [], [], obsHolder.observations, entity, false, false, wizard)
-    );
+    return onNext(nextState(nextGroup, [], [], obsHolder.observations, entity, false, wizard));
   } else {
     return nextState(
       nextGroup,
@@ -138,7 +133,6 @@ const onNext = ({
       [],
       obsHolder.observations,
       entity,
-      false,
       false,
       wizard
     );
@@ -157,7 +151,6 @@ const onPrevious = ({
   const previousGroup = !onSummaryPage ? formElementGroup.previous() : formElementGroup;
 
   if (isEmpty(previousGroup)) {
-    const renderStaticPage = true;
     return nextState(
       formElementGroup,
       filteredFormElements,
@@ -165,7 +158,6 @@ const onPrevious = ({
       observations,
       entity,
       false,
-      renderStaticPage,
       wizard
     );
   }
@@ -176,7 +168,7 @@ const onPrevious = ({
     ? filterFormElementsWithStatus(previousGroup, entity)
     : { filteredFormElements: null };
 
-  if (!onSummaryPage) wizard.movePrevious();
+  if (!onSummaryPage && previousGroup != null) wizard.movePrevious();
   const obsHolder = new ObservationsHolder(observations);
   if (isEmpty(previousFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
@@ -189,7 +181,6 @@ const onPrevious = ({
         obsHolder.observations,
         entity,
         false,
-        false,
         wizard
       )
     );
@@ -200,7 +191,6 @@ const onPrevious = ({
       validationResults,
       observations,
       entity,
-      false,
       false,
       wizard
     );
@@ -253,10 +243,17 @@ const updateObservations = (
   return { filteredFormElements, validationResults };
 };
 
+const getValidationResult = (validationResults, formElementIdentifier) =>
+  find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === formElementIdentifier
+  );
+
 export default {
   onLoad,
   onNext,
   onPrevious,
   handleValidationResult,
-  updateObservations
+  updateObservations,
+  getValidationResult
 };

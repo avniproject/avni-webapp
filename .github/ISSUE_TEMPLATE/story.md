@@ -1,10 +1,9 @@
 ---
 name: Story
 about: Template for webapp stories
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ### Motivation
@@ -16,4 +15,5 @@ assignees: ''
 ### Tech Approach
 
 ### Test Scenarios
+
 - [ ] Including all required translations

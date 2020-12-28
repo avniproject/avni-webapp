@@ -5,7 +5,7 @@ import { sortBy, assign } from "lodash";
 export const CodedConceptFormElement = ({ children: fe, validationResults, uuid, ...props }) => {
   return (
     <CodedFormElement
-      groupName={fe.name}
+      name={fe.name}
       items={sortBy(fe.getAnswers(), "answerOrder").map(answer =>
         assign(answer.concept, { abnormal: answer.abnormal })
       )}
