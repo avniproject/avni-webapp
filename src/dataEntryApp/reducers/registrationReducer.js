@@ -1,4 +1,5 @@
 import { fetchRulesResponse } from "dataEntryApp/reducers/serverSideRulesReducer";
+import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 
 const prefix = "app/dataEntry/reducer/registration/";
 
@@ -23,8 +24,12 @@ export const types = {
   ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
   SET_STATE: `${prefix}SET_STATE`,
   SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
-  STATIC_PAGE_ON_NEXT: `${prefix}STATIC_PAGE_ON_NEXT`,
-  ON_RESET: `${prefix}ON_RESET`
+  SET_REGISTRATION_DATE: `${prefix}SET_REGISTRATION_DATE`,
+  SET_FIRST_NAME: `${prefix}SET_FIRST_NAME`,
+  SET_LAST_NAME: `${prefix}SET_LAST_NAME`,
+  SET_DATE_OF_BIRTH: `${prefix}SET_DATE_OF_BIRTH`,
+  SET_GENDER: `${prefix}SET_GENDER`,
+  SET_ADDRESS: `${prefix}SET_ADDRESS`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -135,12 +140,34 @@ export const setFilteredFormElements = filteredFormElements => ({
   filteredFormElements
 });
 
-export const staticPageOnNext = () => ({
-  type: types.STATIC_PAGE_ON_NEXT
+export const setRegistrationDate = registrationDate => ({
+  type: types.SET_REGISTRATION_DATE,
+  registrationDate
 });
 
-export const onReset = () => ({
-  type: types.ON_RESET
+export const setFirstName = firstName => ({
+  type: types.SET_FIRST_NAME,
+  firstName
+});
+
+export const setLastName = lastName => ({
+  type: types.SET_LAST_NAME,
+  lastName
+});
+
+export const setDateOfBirth = dateOfBirth => ({
+  type: types.SET_DATE_OF_BIRTH,
+  dateOfBirth
+});
+
+export const setGender = gender => ({
+  type: types.SET_GENDER,
+  gender
+});
+
+export const setAddress = lowestAddressLevel => ({
+  type: types.SET_ADDRESS,
+  lowestAddressLevel
 });
 
 export const fetchRegistrationRulesResponse = () => {
@@ -169,7 +196,7 @@ const initialState = {
 };
 
 // reducer
-export default function(state = initialState, action) {
+export default (state = initialState, action) => {
   switch (action.type) {
     case types.SET_REGISTRATION_FORM: {
       return {
@@ -232,6 +259,7 @@ export default function(state = initialState, action) {
         registrationForm: action.registrationForm,
         filteredFormElements: action.filteredFormElements,
         loaded: true,
+        saved: false,
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
         isFormEmpty: action.isFormEmpty
@@ -246,7 +274,85 @@ export default function(state = initialState, action) {
         filteredFormElements: action.filteredFormElements
       };
     }
+    case types.SET_REGISTRATION_DATE: {
+      const subject = state.subject.cloneForEdit();
+      subject.registrationDate = action.registrationDate;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateRegistrationDate()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
+    case types.SET_FIRST_NAME: {
+      const subject = state.subject.cloneForEdit();
+      subject.firstName = action.firstName;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateFirstName()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
+    case types.SET_LAST_NAME: {
+      const subject = state.subject.cloneForEdit();
+      subject.lastName = action.lastName;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateLastName()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
+    case types.SET_DATE_OF_BIRTH: {
+      const subject = state.subject.cloneForEdit();
+      subject.dateOfBirth = action.dateOfBirth;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateDateOfBirth()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
+    case types.SET_GENDER: {
+      const subject = state.subject.cloneForEdit();
+      subject.gender = action.gender;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateGender()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
+    case types.SET_ADDRESS: {
+      const subject = state.subject.cloneForEdit();
+      subject.lowestAddressLevel = action.lowestAddressLevel;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateAddress()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
     default:
       return state;
   }
-}
+};

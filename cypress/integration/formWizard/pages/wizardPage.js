@@ -68,9 +68,8 @@ export const wizardPage = {
       .clear()
       .type(dateString);
   },
-  modifyRegistration(subjectName, ...formElementNames) {
+  modifyIndividualRegistration(subjectName, ...formElementNames) {
     dashboardPage.editProfile(subjectName);
-    wizardPage.clickNext();
     wizardPage.selectOptions(...formElementNames);
     wizardPage.clickNext();
     wizardPage.clickSave();
@@ -87,11 +86,11 @@ export const wizardPage = {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
     wizardPage.clickPrevious();
-    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains(
       "Second FEG",
@@ -99,7 +98,7 @@ export const wizardPage = {
       "Last FE of second FEG"
     );
     wizardPage.clickNext();
-    wizardPage.assertIfPageContains("Last FEG", "First FE of Last FEG");
+    wizardPage.assertIfPageContains("Last FEG", "First FE of last FEG");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
   },

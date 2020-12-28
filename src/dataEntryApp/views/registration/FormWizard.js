@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
-import { withParams } from "../../../common/components/utils";
-import { Redirect, withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import Summary from "./Summary";
 import { Box, Paper, Typography } from "@material-ui/core";
@@ -110,7 +109,6 @@ const FormWizard = ({
   obsHolder,
   updateObs,
   observations,
-  match,
   saved,
   onSaveGoto,
   onSave,
@@ -122,15 +120,11 @@ const FormWizard = ({
   children,
   filteredFormElements,
   entity,
-  history,
   fetchRulesResponse,
   formElementGroup,
   onNext,
   onPrevious,
   onSummaryPage,
-  renderStaticPage,
-  onReset,
-  staticPageUrl,
   wizard
 }) => {
   if (!form) return <div />;
@@ -145,13 +139,18 @@ const FormWizard = ({
   const classes = useStyle();
   const { t } = useTranslation();
 
-  if (renderStaticPage) {
-    onReset();
-    return <Redirect to={staticPageUrl} />;
-  }
+  const isRegistrationFirstPage =
+    registrationFlow &&
+    (subject.subjectType.isPerson() ? wizard.isNonFormPage() : wizard.isFirstFormPage());
 
-  const isFirstPage = registrationFlow ? false : wizard.isFirstFormPage();
-  const pageTitleText = onSummaryPage ? t("summaryAndRecommendations") : t(formElementGroup.name);
+  const isFirstPage = registrationFlow
+    ? subject.subjectType.isPerson()
+      ? wizard.isNonFormPage()
+      : wizard.isFirstFormPage()
+    : wizard.isFirstFormPage();
+  const pageTitleText = onSummaryPage
+    ? t("summaryAndRecommendations")
+    : t(isRegistrationFirstPage ? "Basic Details" : formElementGroup.name);
   const pageTitle = `${pageTitleText}`;
   // const pageCounter = `X / X`;
 
@@ -159,7 +158,7 @@ const FormWizard = ({
     <Fragment>
       {form && (
         <div>
-          {subject ? <FormWizardHeader subject={subject} /> : ""}
+          {subject && !wizard.isNonFormPage() ? <FormWizardHeader subject={subject} /> : ""}
           <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
@@ -176,15 +175,16 @@ const FormWizard = ({
               />
             ) : (
               <FormElementGroupComponent
-                parentChildren={children}
                 key={formElementGroup.uuid}
                 obsHolder={obsHolder}
                 updateObs={updateObs}
                 validationResults={validationResults}
                 filteredFormElements={filteredFormElements}
                 entity={entity}
-                renderParent={isFirstPage}
-              />
+                renderChildren={isFirstPage}
+              >
+                {children}
+              </FormElementGroupComponent>
             )}
 
             <Box className={classes.buttomstyle} display="flex">
@@ -192,7 +192,7 @@ const FormWizard = ({
                 <FormWizardButton
                   className={classes.privbuttonStyle}
                   text={t("previous")}
-                  disabled={isFirstPage}
+                  disabled={!onSummaryPage && isFirstPage}
                   onClick={onPrevious}
                   id={"previous"}
                 />
@@ -219,4 +219,4 @@ const FormWizard = ({
   );
 };
 
-export default withRouter(withParams(FormWizard));
+export default FormWizard;

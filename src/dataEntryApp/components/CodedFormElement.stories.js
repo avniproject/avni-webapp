@@ -29,7 +29,7 @@ const items = [
 
 export const MultiSelect = Template.bind({});
 MultiSelect.args = {
-  groupName: "Choose among the following",
+  name: "Choose among the following",
   items: items,
   isChecked,
   multiSelect: true,
