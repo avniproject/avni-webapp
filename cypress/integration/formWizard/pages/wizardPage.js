@@ -68,9 +68,8 @@ export const wizardPage = {
       .clear()
       .type(dateString);
   },
-  modifyRegistration(subjectName, ...formElementNames) {
+  modifyIndividualRegistration(subjectName, ...formElementNames) {
     dashboardPage.editProfile(subjectName);
-    wizardPage.clickNext();
     wizardPage.selectOptions(...formElementNames);
     wizardPage.clickNext();
     wizardPage.clickSave();
