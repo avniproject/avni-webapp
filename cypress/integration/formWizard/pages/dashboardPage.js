@@ -21,6 +21,7 @@ export const dashboardPage = {
   },
   openProgram: function(programName) {
     cy.get(`#${this.generateIdFromName(programName)}`).click();
+    cy.wait(1000);
   },
   generateIdFromName: function(string) {
     return string.replaceAll(" ", "-");
