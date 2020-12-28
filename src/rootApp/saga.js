@@ -84,6 +84,7 @@ function* setUserDetails() {
     ns: ["translations"],
     defaultNS: "translations",
     keySeparator: false,
+    nsSeparator: false,
     interpolation: {
       escapeValue: false,
       formatSeparator: ","
