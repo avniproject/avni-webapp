@@ -147,13 +147,13 @@ const Visit = ({
           {cancelDateTime ? (
             <ListItem className={classes.listItem}>
               <ListItemText>
-                <label className={classes.cancelLabel}>{t("Cancelled")}</label>
+                <label className={classes.cancelLabel}>{t("cancelled")}</label>
               </ListItemText>
             </ListItem>
           ) : overdueDate && new Date() > new Date(overdueDate) ? (
             <ListItem className={classes.listItem}>
               <ListItemText>
-                <label className={classes.programStatusStyle}>{t("Overdue")}</label>
+                <label className={classes.programStatusStyle}>{t("overdue")}</label>
               </ListItemText>
             </ListItem>
           ) : (
@@ -179,7 +179,7 @@ const Visit = ({
                   color="primary"
                   className={classes.visitButton}
                 >
-                  {t("edit visit")}
+                  {t("edit")}
                 </Button>
               </InternalLink>
             ) : cancelDateTime && uuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
@@ -189,7 +189,7 @@ const Visit = ({
                   color="primary"
                   className={classes.visitButton}
                 >
-                  {t("edit visit")}
+                  {t("edit")}
                 </Button>
               </InternalLink>
             ) : (
@@ -201,7 +201,7 @@ const Visit = ({
                       color="primary"
                       className={classes.visitButton}
                     >
-                      {t("do visit")}
+                      {t("do")}
                     </Button>
                   </InternalLink>
                 ) : (
@@ -214,7 +214,7 @@ const Visit = ({
                       color="primary"
                       className={classes.visitButton}
                     >
-                      {t("cancel Visit")}
+                      {t("cancelVisit")}
                     </Button>
                   </InternalLink>
                 ) : (
