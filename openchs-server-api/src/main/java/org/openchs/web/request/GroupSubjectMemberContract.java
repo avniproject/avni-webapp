@@ -5,6 +5,7 @@ import org.openchs.web.request.common.CommonIndividualRequest;
 public class GroupSubjectMemberContract {
     CommonIndividualRequest member;
     GroupRoleContract role;
+    EncounterMetadataContract encounterMetadata;
 
     public CommonIndividualRequest getMember() {
         return member;
@@ -20,5 +21,13 @@ public class GroupSubjectMemberContract {
 
     public void setRole(GroupRoleContract role) {
         this.role = role;
+    }
+
+    public EncounterMetadataContract getEncounterMetadata() {
+        return encounterMetadata;
+    }
+
+    public void setEncounterMetadata(EncounterMetadataContract encounterMetadata) {
+        this.encounterMetadata = encounterMetadata;
     }
 }

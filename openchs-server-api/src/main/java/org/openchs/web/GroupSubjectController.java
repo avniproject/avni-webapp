@@ -9,6 +9,7 @@ import org.openchs.domain.SubjectType;
 import org.openchs.service.IndividualService;
 import org.openchs.service.UserService;
 import org.openchs.util.BadRequestError;
+import org.openchs.web.request.GroupRoleContract;
 import org.openchs.web.request.GroupSubjectContract;
 import org.openchs.web.request.GroupSubjectMemberContract;
 import org.slf4j.Logger;
@@ -97,6 +98,21 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
                 GroupRole groupRole = groupRoleRepository.findByUuid(groupSubject.getGroupRole().getUuid());
                 return individualService.createGroupSubjectMemberContract(individual, groupRole);
             }).collect(Collectors.toList());
+        } else {
+            throw new BadRequestError("Invalid Group Id");
+        }
+    }
+
+    @RequestMapping(value = "/web/groupSubjects/{groupId}/roles", method = RequestMethod.GET)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    public List<GroupRoleContract> getGroupRoles(@PathVariable Long groupId) {
+        Optional<Individual> optionalGroup = individualRepository.findById(groupId);
+        if (optionalGroup.isPresent()) {
+            Individual group =  optionalGroup.get();
+            return groupRoleRepository.findByGroupSubjectType_IdAndIsVoidedFalse(group.getSubjectType().getId())
+                    .stream()
+                    .map(GroupRoleContract::fromEntity).collect(Collectors.toList());
         } else {
             throw new BadRequestError("Invalid Group Id");
         }

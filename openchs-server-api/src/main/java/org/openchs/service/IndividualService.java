@@ -240,6 +240,7 @@ public class IndividualService {
 
         groupSubjectMemberContract.setMember(createIndividualContractWeb(member));
         groupSubjectMemberContract.setRole(GroupRoleContract.fromEntity(groupRole));
+        groupSubjectMemberContract.setEncounterMetadata(createEncounterMetadataContract(member));
         return groupSubjectMemberContract;
     }
 
@@ -253,6 +254,17 @@ public class IndividualService {
         if (individual.getSubjectType().getType().equals(Subject.Person)) individualContractWeb.setGender(individual.getGender().getName());
 
         return individualContractWeb;
+    }
+
+    private EncounterMetadataContract createEncounterMetadataContract(Individual individual) {
+        EncounterMetadataContract encounterMetadataContract = new EncounterMetadataContract();
+
+        Long scheduledEncounters = individual.scheduledEncounters().count();
+        Long overdueEncounters = individual.scheduledEncounters().filter(encounter -> encounter.getMaxVisitDateTime().isAfterNow()).count();
+
+        encounterMetadataContract.setDueEncounters(scheduledEncounters - overdueEncounters);
+        encounterMetadataContract.setOverdueEncounters(overdueEncounters);
+        return encounterMetadataContract;
     }
 
 
