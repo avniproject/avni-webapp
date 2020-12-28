@@ -3,7 +3,8 @@ const prefix = "app/dataEntry/reducer/viewVisit";
 export const types = {
   GET_ENCOUNTER: `${prefix}GET_ENCOUNTER`,
   SET_ENCOUNTER: `${prefix}SET_ENCOUNTER`,
-  GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`
+  GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`,
+  SET_FORM: `${prefix}SET_FORM`
 };
 
 export const getEncounter = encounterUuid => ({
@@ -14,6 +15,11 @@ export const getEncounter = encounterUuid => ({
 export const setEncounter = encounter => ({
   type: types.SET_ENCOUNTER,
   encounter
+});
+
+export const setForm = form => ({
+  type: types.SET_FORM,
+  form
 });
 
 export const getProgramEncounter = encounterUuid => ({
@@ -27,6 +33,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         encounter: action.encounter
+      };
+    }
+    case types.SET_FORM: {
+      return {
+        ...state,
+        form: action.form
       };
     }
     default:

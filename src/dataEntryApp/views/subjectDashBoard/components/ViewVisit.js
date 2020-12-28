@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }) => {
+const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, form }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
@@ -111,7 +111,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
           </Typography>
         </div>
 
-        <Observations observations={encounter ? encounter.observations : []} />
+        <Observations observations={encounter ? encounter.observations : []} form={form} />
 
         <InternalLink to={viewAllCompletedUrl}>
           <Button color="primary" className={classes.visitButton}>
@@ -130,13 +130,13 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
       </Paper>
     </Fragment>
   ) : (
-    <CustomizedBackdrop load={load} />
+    <CustomizedBackdrop load={false} />
   );
 };
 
 const mapStateToProps = state => ({
   encounter: state.dataEntry.viewVisitReducer.encounter,
-  load: state.dataEntry.loadReducer.load
+  form: state.dataEntry.viewVisitReducer.form
 });
 
 const mapDispatchToProps = {
