@@ -85,13 +85,12 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         groupSubjectRepository.save(existingOrNewGroupSubject);
     }
 
-    @RequestMapping(value = "/web/groupSubjects/{groupId}/members", method = RequestMethod.GET)
+    @RequestMapping(value = "/web/groupSubjects/{groupUuid}/members", method = RequestMethod.GET)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
-    public List<GroupSubjectMemberContract> getGroupMembers(@PathVariable Long groupId) {
-        Optional<Individual> optionalGroup = individualRepository.findById(groupId);
-        if (optionalGroup.isPresent()) {
-            Individual group =  optionalGroup.get();
+    public List<GroupSubjectMemberContract> getGroupMembers(@PathVariable String groupUuid) {
+        Individual group = individualRepository.findByUuid(groupUuid);
+        if (group != null) {
             List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubject(group);
             return groupSubjects.stream().map(groupSubject -> {
                 Individual individual = individualRepository.findByUuid(groupSubject.getMemberSubjectUUID());
@@ -103,13 +102,12 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         }
     }
 
-    @RequestMapping(value = "/web/groupSubjects/{groupId}/roles", method = RequestMethod.GET)
+    @RequestMapping(value = "/web/groupSubjects/{groupUuid}/roles", method = RequestMethod.GET)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
-    public List<GroupRoleContract> getGroupRoles(@PathVariable Long groupId) {
-        Optional<Individual> optionalGroup = individualRepository.findById(groupId);
-        if (optionalGroup.isPresent()) {
-            Individual group =  optionalGroup.get();
+    public List<GroupRoleContract> getGroupRoles(@PathVariable String groupUuid) {
+        Individual group = individualRepository.findByUuid(groupUuid);
+        if (group != null) {
             return groupRoleRepository.findByGroupSubjectType_IdAndIsVoidedFalse(group.getSubjectType().getId())
                     .stream()
                     .map(GroupRoleContract::fromEntity).collect(Collectors.toList());

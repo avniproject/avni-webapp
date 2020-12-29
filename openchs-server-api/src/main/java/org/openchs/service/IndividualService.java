@@ -1,10 +1,7 @@
 package org.openchs.service;
 
 import org.openchs.application.Subject;
-import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.EncounterRepository;
-import org.openchs.dao.GroupSubjectRepository;
-import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
@@ -31,9 +28,10 @@ public class IndividualService {
     private final EncounterRepository encounterRepository;
     private final ObservationService observationService;
     private final GroupSubjectRepository groupSubjectRepository;
+    private final GroupRoleRepository groupRoleRepository;
 
     @Autowired
-    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory, EncounterRepository encounterRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository) {
+    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory, EncounterRepository encounterRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository) {
         this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
@@ -41,6 +39,7 @@ public class IndividualService {
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.groupSubjectRepository = groupSubjectRepository;
+        this.groupRoleRepository = groupRoleRepository;
     }
 
     public  IndividualContract getSubjectEncounters(String individualUuid){
@@ -79,6 +78,7 @@ public class IndividualService {
         List<RelationshipContract> relationshipContractList = constructRelationships(individual);
         List<EnrolmentContract> enrolmentContractList = constructEnrolments(individual);
         List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByMemberSubject(individual);
+        List<GroupRole> groupRoles = groupRoleRepository.findByGroupSubjectType_IdAndIsVoidedFalse(individual.getSubjectType().getId());
         individualContract.setId(individual.getId());
         individualContract.setSubjectType(constructSubjectType(individual.getSubjectType()));
         individualContract.setObservations(observationContractsList);
@@ -94,7 +94,10 @@ public class IndividualService {
             individualContract.setGenderUUID(individual.getGender().getUuid());
         }
         if (groupSubjects != null) {
-            individualContract.setRoles(groupSubjects.stream().map(groupSubject -> GroupRoleContract.fromEntity(groupSubject.getGroupRole())).collect(Collectors.toList()));
+            individualContract.setMemberships(groupSubjects.stream().map(GroupSubjectContract::fromEntity).collect(Collectors.toList()));
+        }
+        if (groupRoles != null) {
+            individualContract.setRoles(groupRoles.stream().map(GroupRoleContract::fromEntity).collect(Collectors.toList()));
         }
         individualContract.setAddressLevelTypeName(individual.getAddressLevel().getType().getName());
         individualContract.setAddressLevelTypeId(individual.getAddressLevel().getType().getId());

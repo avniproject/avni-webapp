@@ -15,6 +15,7 @@ public class GroupRoleContract extends CHSRequest {
 
     public static GroupRoleContract fromEntity(GroupRole groupRole) {
         GroupRoleContract groupRoleContract = new GroupRoleContract();
+        groupRoleContract.setUuid(groupRole.getUuid());
         groupRoleContract.setGroupSubjectTypeUUID(groupRole.getGroupSubjectTypeUUID());
         groupRoleContract.setMemberSubjectTypeUUID(groupRole.getMemberSubjectTypeUUID());
         groupRoleContract.setRole(groupRole.getRole());

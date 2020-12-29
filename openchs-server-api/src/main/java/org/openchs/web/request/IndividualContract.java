@@ -19,10 +19,12 @@ public class IndividualContract extends CommonIndividualRequest {
 
     private List<GroupRoleContract> roles = new ArrayList<>();
 
+    private List<GroupSubjectContract> memberships = new ArrayList<>();
+
     private SubjectTypeContract subjectType;
+
     private String subjectTypeName;
     private String fullName;
-
 
     public String getFullName() {
         return fullName;
@@ -78,6 +80,14 @@ public class IndividualContract extends CommonIndividualRequest {
 
     public void setRoles(List<GroupRoleContract> roles) {
         this.roles = roles;
+    }
+
+    public List<GroupSubjectContract> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(List<GroupSubjectContract> memberships) {
+        this.memberships = memberships;
     }
 
     public SubjectTypeContract getSubjectType() {

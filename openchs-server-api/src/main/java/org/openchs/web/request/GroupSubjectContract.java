@@ -1,14 +1,28 @@
 package org.openchs.web.request;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.GroupSubject;
 
 public class GroupSubjectContract extends CHSRequest {
 
     private String groupSubjectUUID;
     private String memberSubjectUUID;
     private String groupRoleUUID;
+    private String groupRoleName;
     private DateTime membershipStartDate;
     private DateTime membershipEndDate;
+
+    public static GroupSubjectContract fromEntity(GroupSubject groupSubject) {
+        GroupSubjectContract groupSubjectContract = new GroupSubjectContract();
+        groupSubjectContract.setUuid(groupSubject.getUuid());
+        groupSubjectContract.setGroupSubjectUUID(groupSubject.getGroupSubjectUUID());
+        groupSubjectContract.setMemberSubjectUUID(groupSubject.getMemberSubjectUUID());
+        groupSubjectContract.setGroupRoleUUID(groupSubject.getGroupRoleUUID());
+        groupSubjectContract.setGroupRoleName(groupSubject.getGroupRole().getRole());
+        groupSubjectContract.setMembershipStartDate(groupSubject.getMembershipStartDate());
+        groupSubjectContract.setMembershipEndDate(groupSubject.getMembershipEndDate());
+        return groupSubjectContract;
+    }
 
     public String getGroupSubjectUUID() {
         return groupSubjectUUID;
@@ -32,6 +46,14 @@ public class GroupSubjectContract extends CHSRequest {
 
     public void setGroupRoleUUID(String groupRoleUUID) {
         this.groupRoleUUID = groupRoleUUID;
+    }
+
+    public String getGroupRoleName() {
+        return groupRoleName;
+    }
+
+    public void setGroupRoleName(String groupRoleName) {
+        this.groupRoleName = groupRoleName;
     }
 
     public DateTime getMembershipStartDate() {
