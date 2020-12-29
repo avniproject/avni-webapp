@@ -20,7 +20,7 @@ describe("General Enrolment Flow tests for form wizard", () => {
   it("First FEG should be hidden using FEG rule", () => {
     wizardPage.modifyIndividualRegistration("Test Individual", "Hide first FEG");
     dashboardPage.editGeneralEncounter("Encounter1");
-    //wizardPage.checkScenarioHideFirstFEG();
+    wizardPage.checkScenarioHideFirstFEG();
   });
   it("First FEG should be hidden using all FE rule", () => {
     wizardPage.modifyIndividualRegistration(

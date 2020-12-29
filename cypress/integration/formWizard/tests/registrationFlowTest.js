@@ -312,7 +312,6 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
   });
-
   it("Last FE in last FEG is hidden", () => {
     dashboardPage.editProfile("Test Person");
     wizardPage.clickNext();
