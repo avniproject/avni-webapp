@@ -14,7 +14,9 @@ import {
   Gender,
   AddressLevel,
   SubjectType,
-  ConceptAnswer
+  ConceptAnswer,
+  GroupRole,
+  GroupSubject
 } from "avni-models";
 import { map, isNil } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
@@ -114,6 +116,10 @@ export const mapProfile = subjectProfile => {
     let individual = mapIndividual(subjectProfile);
     individual.observations = mapObservations(subjectProfile["observations"]);
     individual.relationships = mapRelationships(subjectProfile["relationships"]);
+    individual.memberships = mapMemberships(subjectProfile["memberships"]);
+    console.log(`M:===${JSON.stringify(individual.memberships)}===`);
+    individual.roles = mapRoles(subjectProfile["roles"]);
+    console.log(`R:===${JSON.stringify(individual.roles)}===`);
     return individual;
   }
 };
@@ -180,6 +186,47 @@ export const mapIndividualRelationshipType = relationShipType => {
 export const mapIndividualRelation = individualRelation => {
   if (individualRelation) {
     return General.assignFields(individualRelation, new IndividualRelation(), ["name"]);
+  }
+};
+
+export const mapMemberships = memberships => {
+  if (memberships) {
+    return memberships.map(membership => {
+      let groupSubject = General.assignFields(membership, new GroupSubject(), ["uuid"]);
+      groupSubject.groupRole = mapGroupRole(
+        membership["groupRoleUUID"],
+        membership["groupRoleName"]
+      );
+      return groupSubject;
+    });
+  }
+};
+
+export const mapGroupRole = (groupRoleUuid, groupRoleName) => {
+  if (groupRoleUuid && groupRoleName) {
+    let groupRole = new GroupRole();
+    groupRole.uuid = groupRoleUuid;
+    groupRole.role = groupRoleName;
+    return groupRole;
+  }
+};
+
+export const mapRoles = groupRoles => {
+  if (groupRoles) {
+    return groupRoles.map(groupRole => {
+      return mapGroupRole(groupRole.uuid, groupRole.role);
+    });
+  }
+};
+
+export const mapGroupMembers = groupMembers => {
+  if (groupMembers) {
+    return groupMembers.map(groupMember => {
+      let groupSubject = new GroupSubject();
+      groupSubject.memberSubject = mapIndividual(groupMember.member);
+      groupSubject.groupRole = mapGroupRole(groupMember.role.uuid, groupMember.role.role);
+      return groupSubject;
+    });
   }
 };
 

@@ -15,7 +15,6 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
-import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import SubjectVoided from "../../../components/SubjectVoided";
 
@@ -87,7 +86,10 @@ const SubjectDashboardProfileTab = ({
   voidSubject,
   unVoidSubject,
   registrationForm,
-  showRelatives
+  showRelatives,
+  showGroupMembers,
+  getGroupMembers,
+  groupMembers
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -96,9 +98,9 @@ const SubjectDashboardProfileTab = ({
   const [unVoidConfirmation, setUnVoidConfirmation] = React.useState(false);
 
   useEffect(() => {
-    (async function fetchData() {
-      await getSubjectProfile(profile.uuid);
-    })();
+    if (showGroupMembers) {
+      getGroupMembers(profile.uuid);
+    }
     sessionStorage.removeItem("selectedRelativeslist");
   }, []);
 
