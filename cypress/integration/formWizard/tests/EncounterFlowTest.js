@@ -89,7 +89,7 @@ describe("General Enrolment Flow tests for form wizard", () => {
     dashboardPage.editGeneralEncounter("Encounter1");
     wizardPage.checkScenarioHideLastFEofLastFEG();
   });
-  it("All the FE in the form are hidden", () => {
+  it.only("All the FE in the form are hidden", () => {
     wizardPage.modifyIndividualRegistration(
       "Test Individual",
       "Hide first FE of first FEG",
@@ -121,7 +121,7 @@ describe("General Enrolment Flow tests for form wizard", () => {
     dashboardPage.editGeneralEncounter("Encounter1");
     wizardPage.checkScenarioHideFEinAnotherFEGInSameForm();
   });
-  it("Performing new program encounter should not move to next page in case of validation error in visit date(static element)", () => {
+  it("Performing new encounter should not move to next page in case of validation error in visit date(static element)", () => {
     dashboardPage.editGeneralEncounter("Encounter1");
     wizardPage.enterDate("Visit Date", "11/01/2021");
     wizardPage.assertIfPageContains("Encounter date cannot be in future");
