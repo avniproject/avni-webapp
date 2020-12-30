@@ -7,7 +7,9 @@ export const types = {
   SET_PROGRAMS: `${prefix}SET_PROGRAMS`,
   VOID_SUBJECT: `${prefix}VOID_SUBJECT`,
   UN_VOID_SUBJECT: `${prefix}UN_VOID_SUBJECT`,
-  SET_TABS_STATUS: `${prefix}SET_TABS_STATUS`
+  SET_TABS_STATUS: `${prefix}SET_TABS_STATUS`,
+  GET_GROUP_MEMBERS: `${prefix}GET_GROUP_MEMBERS`,
+  SET_GROUP_MEMBERS: `${prefix}SET_GROUP_MEMBERS`
 };
 
 export const getSubjectProfile = subjectUUID => ({
@@ -45,6 +47,16 @@ export const setTabsStatus = tabsStatus => ({
   tabsStatus
 });
 
+export const getGroupMembers = groupUUID => ({
+  type: types.GET_GROUP_MEMBERS,
+  groupUUID
+});
+
+export const setGroupMembers = groupMembers => ({
+  type: types.SET_GROUP_MEMBERS,
+  groupMembers
+});
+
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_SUBJECT_PROFILE: {
@@ -63,6 +75,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         tabsStatus: action.tabsStatus
+      };
+    }
+    case types.SET_GROUP_MEMBERS: {
+      return {
+        ...state,
+        groupMembers: action.groupMembers
       };
     }
     default:

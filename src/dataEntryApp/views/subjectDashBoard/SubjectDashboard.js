@@ -6,7 +6,8 @@ import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import {
   getSubjectProfile,
   unVoidSubject,
-  voidSubject
+  voidSubject,
+  getGroupMembers
 } from "../../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../../reducers/generalSubjectDashboardReducer";
 import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
@@ -39,7 +40,9 @@ const SubjectDashboard = ({
   load,
   registrationForm,
   tab,
-  tabsStatus
+  tabsStatus,
+  getGroupMembers,
+  groupMembers
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -71,6 +74,8 @@ const SubjectDashboard = ({
           registrationForm={registrationForm}
           tab={tab}
           tabsStatus={tabsStatus}
+          getGroupMembers={getGroupMembers}
+          groupMembers={groupMembers}
         />
       </Paper>
     );
@@ -98,13 +103,15 @@ const mapStateToProps = state => ({
   enableReadOnly: selectEnableReadonly(state),
   load: state.dataEntry.loadReducer.load,
   registrationForm: state.dataEntry.registration.registrationForm,
-  tabsStatus: state.dataEntry.subjectProfile.tabsStatus
+  tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
+  groupMembers: state.dataEntry.subjectProfile.groupMembers
 });
 
 const mapDispatchToProps = {
   getSubjectProfile,
   getSubjectGeneral,
   getSubjectProgram,
+  getGroupMembers,
   voidSubject,
   unVoidSubject
 };

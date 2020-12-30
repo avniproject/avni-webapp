@@ -76,7 +76,9 @@ export default ({
   unVoidSubject,
   registrationForm,
   tab,
-  tabsStatus
+  tabsStatus,
+  getGroupMembers,
+  groupMembers
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -86,7 +88,8 @@ export default ({
     showRelatives,
     defaultTabIndex,
     registrationTabIndex,
-    generalTabIndex
+    generalTabIndex,
+    showGroupMembers
   } = tabsStatus;
 
   const [value, setValue] = React.useState(tab || defaultTabIndex);
@@ -157,6 +160,9 @@ export default ({
             unVoidSubject={unVoidSubject}
             registrationForm={registrationForm}
             showRelatives={showRelatives}
+            showGroupMembers={showGroupMembers}
+            getGroupMembers={getGroupMembers}
+            groupMembers={groupMembers}
           />
         </Paper>
       </TabContent>
