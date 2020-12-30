@@ -214,6 +214,48 @@ const SubjectDashboardProfileTab = ({
     );
   }
 
+  function renderGroupMembers() {
+    return (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+          aria-controls="groupMembersPanelbh-content"
+          id="groupMembersPanelbh-header"
+        >
+          <Typography component={"span"} className={classes.expansionHeading}>
+            {t("Group Members")}
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
+          {groupMembers !== undefined && groupMembers.length !== 0 ? (
+            //TODO: Change this to newly created component to display subjects
+            <GridCommonList
+              profileUUID={profile.uuid}
+              profileName={profile.firstName + " " + profile.lastName}
+              gridListDetails={profile.relationships}
+              enableReadOnly={enableReadOnly}
+            />
+          ) : (
+            <Typography variant="caption" gutterBottom className={classes.infomsg}>
+              {" "}
+              {t("noGroupMembersAdded")}{" "}
+            </Typography>
+          )}
+        </ExpansionPanelDetails>
+        {!enableReadOnly ? (
+          <Button color="primary">
+            <InternalLink to={`/app/subject/addGroupMember?uuid=${profile.uuid}`}>
+              {" "}
+              {t("addAGroupMember")}{" "}
+            </InternalLink>{" "}
+          </Button>
+        ) : (
+          ""
+        )}
+      </ExpansionPanel>
+    );
+  }
+
   const renderDialog = (title, open, setOpen, message, onConfirm) => (
     <ConfirmDialog
       title={title}
@@ -241,6 +283,7 @@ const SubjectDashboardProfileTab = ({
         <Paper className={classes.root}>
           {renderSubjectProfile()}
           {showRelatives && profile.isPerson() && renderRelatives()}
+          {showGroupMembers && renderGroupMembers()}
           {renderDialog(
             "Void the subject",
             voidConfirmation,
