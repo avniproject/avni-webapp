@@ -89,7 +89,7 @@ describe("General Enrolment Flow tests for form wizard", () => {
     dashboardPage.editGeneralEncounter("Encounter1");
     wizardPage.checkScenarioHideLastFEofLastFEG();
   });
-  it.only("All the FE in the form are hidden", () => {
+  it("All the FE in the form are hidden", () => {
     wizardPage.modifyIndividualRegistration(
       "Test Individual",
       "Hide first FE of first FEG",
@@ -104,7 +104,7 @@ describe("General Enrolment Flow tests for form wizard", () => {
     wizardPage.checkScenarioHideAllFEG();
   });
   it("An Empty encounter without any FEG created", () => {
-    dashboardPage.performNewGeneralEncounter("Encounter1");
+    dashboardPage.performNewGeneralEncounter("Empty Encounter");
     wizardPage.assertIfPageContains("Visit Date");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");
