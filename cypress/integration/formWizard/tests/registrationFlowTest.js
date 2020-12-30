@@ -341,4 +341,40 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.clickPrevious();
     wizardPage.assertIfPageContains("First FEG", "First FE of first FEG", "Last FE of first FEG");
   });
+  it("All the FE in the form are hidden", () => {
+    dashboardPage.editProfile("Test Person");
+    wizardPage.clickNext();
+    wizardPage.selectOptions(
+      "Hide first FE of first FEG",
+      "Hide last FE of last FEG",
+      "Hide last FE of first FEG",
+      "Hide first FE of second FEG",
+      "Hide last FE of second FEG",
+      "Hide first FE of last FEG"
+    );
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageDoesNotContains("Last FEG");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  });
+  it("Validation error in last FE of first FEG", () => {
+    dashboardPage.editProfile("Test Person");
+    wizardPage.clickNext();
+    wizardPage.clickNext();
+    wizardPage.typeInput("Last FE of first FEG", 123);
+    wizardPage.assertIfPageContains("123 is invalid");
+    wizardPage.clickNext(); //it should not go to next page because of the error.
+    wizardPage.assertIfPageContains("First FEG");
+  });
+  it.only("An Empty registration without any FEG created", () => {
+    dashboardPage.editProfile("empty Test");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Registration date");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("Summary & Recommendations");
+  });
 });
