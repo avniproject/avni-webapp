@@ -151,7 +151,7 @@ public class LocationService {
             throw new RuntimeException("Empty 'title' received");
         }
 
-        if (location.getParentId() != null && !location.getParentId().equals(locationEditContract.getParentId())) {
+        if (locationEditContract.getParentId() != null && !locationEditContract.getParentId().equals(location.getParentId())) {
             Long oldParentId = location.getParentId();
             Long newParentId = locationEditContract.getParentId();
             String lineage = location.getLineage();
@@ -180,8 +180,11 @@ public class LocationService {
         locationMappingRepository.saveAll(updatedLocationMappings);
     }
 
-    private String updateLineage(String lineage, Long oldId, Long newId) {
-        return lineage.replaceAll(oldId.toString(), newId.toString());
+    private String updateLineage(String lineage, Long oldParentId, Long newParentId) {
+        if (oldParentId == null) {
+            return newParentId + "." + lineage;
+        }
+        return lineage.replaceAll(oldParentId.toString(), newParentId.toString());
     }
 
     private void updateDescendantLocationLineage(List<AddressLevel> children, Long oldId, Long newId) {
