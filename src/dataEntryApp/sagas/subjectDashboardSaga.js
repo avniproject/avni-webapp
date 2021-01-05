@@ -1,6 +1,11 @@
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
-import { types, setSubjectProfile, setTabsStatus } from "../reducers/subjectDashboardReducer";
-import { mapProfile } from "../../common/subjectModelMapper";
+import {
+  types,
+  setSubjectProfile,
+  setTabsStatus,
+  setGroupMembers
+} from "../reducers/subjectDashboardReducer";
+import { mapProfile, mapGroupMembers } from "../../common/subjectModelMapper";
 import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
@@ -8,7 +13,14 @@ import { getRegistrationForm, setRegistrationForm } from "../reducers/registrati
 import { filter, isEmpty, map, includes } from "lodash";
 
 export default function*() {
-  yield all([subjectProfileFetchWatcher, voidSubjectWatcher, unVoidSubjectWatcher].map(fork));
+  yield all(
+    [
+      subjectProfileFetchWatcher,
+      voidSubjectWatcher,
+      unVoidSubjectWatcher,
+      fetchGroupMembersWatcher
+    ].map(fork)
+  );
 }
 
 export function* subjectProfileFetchWatcher() {
@@ -42,6 +54,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
         includes(encounterTypeUUIDs, encounterTypeUUID)
     ).length > 0;
   const showRelatives = filter(operationalModules.relations).length > 0;
+  const showGroupMembers = subjectType.isGroup();
   const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
   const registrationTabIndex = showProgramTab ? 1 : 0;
   const generalTabIndex = showProgramTab ? 2 : 1;
@@ -52,7 +65,8 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
       showRelatives,
       defaultTabIndex,
       registrationTabIndex,
-      generalTabIndex
+      generalTabIndex,
+      showGroupMembers
     })
   );
   yield put.resolve(getRegistrationForm(subjectProfile.subjectType.name));
@@ -76,4 +90,16 @@ export function* voidUnVoidSubject({ voided }) {
 
 export function* unVoidSubjectWatcher() {
   yield takeLatest(types.UN_VOID_SUBJECT, voidUnVoidSubject);
+}
+
+export function* fetchGroupMembersWatcher() {
+  yield takeLatest(types.GET_GROUP_MEMBERS, fetchGroupMembersWorker);
+}
+export function* fetchGroupMembersWorker({ groupUUID }) {
+  yield put.resolve(setLoad(false));
+  yield put.resolve(setGroupMembers());
+  const groupMembersJson = yield call(api.fetchGroupMembers, groupUUID);
+  const groupMembers = mapGroupMembers(groupMembersJson);
+  yield put(setGroupMembers(groupMembers));
+  yield put.resolve(setLoad(true));
 }

@@ -83,6 +83,6 @@ export const dashboardPage = {
   editGeneralEncounter(encounterName) {
     this.openGeneralTab();
     cy.get("#completed-general-encounter-details").click();
-    cy.get(`#edit-visit-${this.generateIdFromName(encounterName)}`);
+    cy.get(`#edit-visit-${this.generateIdFromName(encounterName)}`).click();
   }
 };

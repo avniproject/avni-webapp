@@ -112,5 +112,13 @@ export default {
   getLegacyRules: () =>
     httpClient
       .get("/rule/search/lastModified?lastModifiedDateTime=1900-01-01T00:00:00.000Z&size=1000")
-      .then(response => get(response, "data._embedded.rule"))
+      .then(response => get(response, "data._embedded.rule")),
+  fetchGroupMembers: groupUUID =>
+    httpClient.fetchJson(`/web/groupSubjects/${groupUUID}/members`).then(response => {
+      return response.json;
+    }),
+  fetchGroupRoles: groupUUID =>
+    httpClient.fetchJson(`/web/groupSubjects/${groupUUID}/roles`).then(response => {
+      return response.json;
+    })
 };
