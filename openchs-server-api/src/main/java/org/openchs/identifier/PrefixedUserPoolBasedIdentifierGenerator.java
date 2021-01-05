@@ -57,6 +57,22 @@ public class PrefixedUserPoolBasedIdentifierGenerator {
         identifierAssignmentRepository.saveAll(generatedIdentifiers);
     }
 
+    @Transactional
+    public IdentifierAssignment generateSingleIdentifier(IdentifierSource identifierSource, User user, String prefix) {
+        List<IdentifierUserAssignment> identifierUserAssignments = identifierUserAssignmentRepository.getAllNonExhaustedUserAssignments(user, identifierSource);
+        NextIdentifierUserAssignment nextIdentifierUserAssignment = new NextIdentifierUserAssignment(identifierUserAssignments, 1L);
+        List<IdentifierAssignment> generatedIdentifiers = new ArrayList<>();
+
+        while(nextIdentifierUserAssignment.hasNext()) {
+            IdentifierUserAssignment identifierUserAssignment = nextIdentifierUserAssignment.next();
+            generatedIdentifiers.add(assignNextIdentifier(identifierUserAssignment, prefix));
+        }
+
+        identifierUserAssignmentRepository.saveAll(identifierUserAssignments);
+        identifierAssignmentRepository.saveAll(generatedIdentifiers);
+        return generatedIdentifiers.stream().findFirst().orElse(null);
+    }
+
     private IdentifierAssignment assignNextIdentifier(IdentifierUserAssignment identifierUserAssignment, String prefix) {
         String lastAssignedIdentifier = identifierUserAssignment.getLastAssignedIdentifier();
         IdentifierSource identifierSource = identifierUserAssignment.getIdentifierSource();

@@ -1,5 +1,6 @@
 package org.openchs.identifier;
 
+import org.openchs.domain.IdentifierAssignment;
 import org.openchs.domain.IdentifierSource;
 import org.openchs.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,12 @@ public class UserPoolBasedIdentifierGenerator implements IdentifierGenerator {
     public void generateIdentifiers(IdentifierSource identifierSource, User user) {
         String prefix = (String) identifierSource.getOptions().get(PREFIX);
         prefixedUserPoolBasedIdentifierGenerator.generateIdentifiers(identifierSource, user, prefix);
+    }
+
+    @Override
+    public IdentifierAssignment generateSingleIdentifier(IdentifierSource identifierSource, User user) {
+        String prefix = (String) identifierSource.getOptions().get(PREFIX);
+        IdentifierAssignment identifierAssignment = prefixedUserPoolBasedIdentifierGenerator.generateSingleIdentifier(identifierSource, user, prefix);
+        return identifierAssignment;
     }
 }

@@ -11,8 +11,11 @@ import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.FormWebProjection;
+import org.openchs.projection.IdentifierAssignmentProjection;
 import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
+import org.openchs.service.IdentifierAssignmentService;
+import org.openchs.service.UserService;
 import org.openchs.util.BadRequestError;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ConceptContract;
@@ -63,6 +66,8 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private RepositoryEntityLinks entityLinks;
     private ProjectionFactory projectionFactory;
+    private UserService userService;
+    private IdentifierAssignmentService identifierAssignmentService;
 
     @Autowired
     public FormController(FormRepository formRepository,
@@ -72,7 +77,10 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                           OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                           RepositoryEntityLinks entityLinks,
                           ProjectionFactory projectionFactory,
-                          FormMappingService formMappingService, FormService formService) {
+                          FormMappingService formMappingService,
+                          FormService formService,
+                          UserService userService,
+                          IdentifierAssignmentService identifierAssignmentService) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
@@ -82,6 +90,8 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         this.projectionFactory = projectionFactory;
         this.formMappingService = formMappingService;
         this.formService = formService;
+        this.userService = userService;
+        this.identifierAssignmentService = identifierAssignmentService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -451,5 +461,25 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     @ResponseBody
     public FormWebProjection getFormForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(FormWebProjection.class, formRepository.findByUuid(uuid));
+    }
+
+    @GetMapping(value = "/web/form/{uuid}/identifierAssignments")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
+    @ResponseBody
+    public List<IdentifierAssignmentProjection> getFormIdentifiers(@PathVariable String uuid) {
+        try {
+            User currentUser = userService.getCurrentUser();
+            Form form = formRepository.findByUuid(uuid);
+            return identifierAssignmentService
+                    .generateIdentifiersForAForm(form, currentUser)
+                    .stream()
+                    .filter(identifierAssignment -> identifierAssignment != null)
+                    .map(identifierAssignment -> projectionFactory.createProjection(IdentifierAssignmentProjection.class, identifierAssignment))
+                    .collect(Collectors.toList());
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage());
+            throw e;
+        }
     }
 }
