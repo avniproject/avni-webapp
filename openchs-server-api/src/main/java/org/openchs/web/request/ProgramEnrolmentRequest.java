@@ -15,6 +15,7 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
     private List<VisitSchedule> visitSchedules;
     private Decisions decisions;
     private List<ChecklistContract> checklists;
+    private List<String> identifierAssignmentUuids;
 
     public List<VisitSchedule> getVisitSchedules() {
         return visitSchedules;
@@ -74,5 +75,13 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
 
     public void setChecklists(List<ChecklistContract> checklists) {
         this.checklists = checklists;
+    }
+
+    public List<String> getIdentifierAssignmentUuids() {
+        return identifierAssignmentUuids;
+    }
+
+    public void setIdentifierAssignmentUuids(List<String> identifierAssignmentUuids) {
+        this.identifierAssignmentUuids = identifierAssignmentUuids;
     }
 }

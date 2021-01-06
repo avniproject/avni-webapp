@@ -28,7 +28,7 @@ public class IdentifierAssignment extends OrganisationAwareEntity {
     @JoinColumn(name = "individual_id")
     private Individual individual;
 
-    @ManyToOne(fetch= FetchType.LAZY)
+    @ManyToOne(fetch= FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 

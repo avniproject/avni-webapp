@@ -46,9 +46,22 @@ public class IndividualController extends AbstractController<Individual> impleme
     private ConceptService conceptService;
     private final EncounterService encounterService;
     private final IndividualSearchService individualSearchService;
+    private final IdentifierAssignmentRepository identifierAssignmentRepository;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService, EncounterService encounterService, IndividualSearchService individualSearchService) {
+    public IndividualController(IndividualRepository individualRepository,
+                                LocationRepository locationRepository,
+                                GenderRepository genderRepository,
+                                ObservationService observationService,
+                                UserService userService,
+                                SubjectTypeRepository subjectTypeRepository,
+                                ProjectionFactory projectionFactory,
+                                IndividualService individualService,
+                                ConceptRepository conceptRepository,
+                                ConceptService conceptService,
+                                EncounterService encounterService,
+                                IndividualSearchService individualSearchService,
+                                IdentifierAssignmentRepository identifierAssignmentRepository) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -61,6 +74,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.conceptService = conceptService;
         this.encounterService = encounterService;
         this.individualSearchService = individualSearchService;
+        this.identifierAssignmentRepository = identifierAssignmentRepository;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -100,18 +114,38 @@ public class IndividualController extends AbstractController<Individual> impleme
 
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
-        Decisions decisions = individualRequest.getDecisions();
+        addObservationsFromDecisions(individual, individualRequest.getDecisions());
+        individualRepository.save(individual);
+        saveVisitSchedules(individualRequest);
+        saveIdentifierAssignments(individual, individualRequest);
+        logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
+    }
+
+    private void addObservationsFromDecisions(Individual individual, Decisions decisions) {
         if (decisions != null) {
             ObservationCollection observationsFromDecisions = observationService
                     .createObservationsFromDecisions(decisions.getRegistrationDecisions());
             individual.getObservations().putAll(observationsFromDecisions);
         }
-        individualRepository.save(individual);
+    }
+
+    private void saveVisitSchedules(IndividualRequest individualRequest) {
         if (individualRequest.getVisitSchedules() != null && individualRequest.getVisitSchedules().size() > 0) {
             encounterService.saveVisitSchedules(individualRequest.getUuid(), individualRequest.getVisitSchedules(), null);
         }
-        logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
     }
+
+    private void saveIdentifierAssignments(Individual individual, IndividualRequest individualRequest) {
+        List<String> identifierAssignmentUuids = individualRequest.getIdentifierAssignmentUuids();
+        if(identifierAssignmentUuids != null) {
+            identifierAssignmentUuids.forEach(uuid -> {
+                IdentifierAssignment identifierAssignment = identifierAssignmentRepository.findByUuid(uuid);
+                identifierAssignment.setIndividual(individual);
+                identifierAssignmentRepository.save(identifierAssignment);
+            });
+        }
+    }
+
 
     @GetMapping(value = {"/individual", /*-->Both are Deprecated */ "/individual/search/byCatchmentAndLastModified", "/individual/search/lastModified"})
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")

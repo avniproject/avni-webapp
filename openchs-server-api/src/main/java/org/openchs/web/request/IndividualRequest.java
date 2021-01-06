@@ -13,6 +13,7 @@ public class IndividualRequest extends org.openchs.web.request.common.CommonIndi
     private List<ObservationRequest> observations;
     private List<VisitSchedule> visitSchedules;
     private Decisions decisions;
+    private List<String> identifierAssignmentUuids;
 
 
     public IndividualRequest() {
@@ -63,5 +64,13 @@ public class IndividualRequest extends org.openchs.web.request.common.CommonIndi
 
     public void setDecisions(Decisions decisions) {
         this.decisions = decisions;
+    }
+
+    public List<String> getIdentifierAssignmentUuids() {
+        return identifierAssignmentUuids;
+    }
+
+    public void setIdentifierAssignmentUuids(List<String> identifierAssignmentUuids) {
+        this.identifierAssignmentUuids = identifierAssignmentUuids;
     }
 }

@@ -39,9 +39,21 @@ public class ProgramEnrolmentService {
     private ChecklistItemDetailRepository checklistItemDetailRepository;
     private ChecklistRepository checklistRepository;
     private ChecklistItemRepository checklistItemRepository;
+    private final IdentifierAssignmentRepository identifierAssignmentRepository;
 
     @Autowired
-    public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository, ProgramEncounterService programEncounterService, ProgramEncounterRepository programEncounterRepository, ProgramRepository programRepository, ObservationService observationService, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ChecklistDetailRepository checklistDetailRepository, ChecklistItemDetailRepository checklistItemDetailRepository, ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository) {
+    public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository,
+                                   ProgramEncounterService programEncounterService,
+                                   ProgramEncounterRepository programEncounterRepository,
+                                   ProgramRepository programRepository,
+                                   ObservationService observationService,
+                                   IndividualRepository individualRepository,
+                                   ProgramOutcomeRepository programOutcomeRepository,
+                                   ChecklistDetailRepository checklistDetailRepository,
+                                   ChecklistItemDetailRepository checklistItemDetailRepository,
+                                   ChecklistRepository checklistRepository,
+                                   ChecklistItemRepository checklistItemRepository,
+                                   IdentifierAssignmentRepository identifierAssignmentRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.programEncounterService = programEncounterService;
         this.programEncounterRepository = programEncounterRepository;
@@ -53,6 +65,7 @@ public class ProgramEnrolmentService {
         this.checklistItemDetailRepository = checklistItemDetailRepository;
         this.checklistRepository = checklistRepository;
         this.checklistItemRepository = checklistItemRepository;
+        this.identifierAssignmentRepository = identifierAssignmentRepository;
     }
 
     @Transactional
@@ -145,18 +158,41 @@ public class ProgramEnrolmentService {
             }
         }
 
+
         if (programEnrolment.isNew()) {
             Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
             programEnrolment.setIndividual(individual);
             individual.addEnrolment(programEnrolment);
+            saveIdentifierAssignments(programEnrolment, request);
             individualRepository.save(individual);
         } else {
             programEnrolmentRepository.save(programEnrolment);
         }
+
+        if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+            programEncounterService.saveVisitSchedules(request.getUuid(), request.getVisitSchedules(), null);
+        }
+        if (request.getChecklists() != null && request.getChecklists().size() > 0) {
+            request.getChecklists()
+                    .forEach(checklist -> saveChecklist(checklist, request.getUuid()));
+        }
+
+
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
     }
 
-    public Checklist saveChecklist(ChecklistContract checklistContract, String programEnrolmentUUID){
+    private void saveIdentifierAssignments(ProgramEnrolment programEnrolment, ProgramEnrolmentRequest programEnrolmentRequest) {
+        List<String> identifierAssignmentUuids = programEnrolmentRequest.getIdentifierAssignmentUuids();
+        if(identifierAssignmentUuids != null) {
+            identifierAssignmentUuids.forEach(uuid -> {
+                IdentifierAssignment identifierAssignment = identifierAssignmentRepository.findByUuid(uuid);
+                identifierAssignment.setProgramEnrolment(programEnrolment);
+                identifierAssignmentRepository.save(identifierAssignment);
+            });
+        }
+    }
+
+    private Checklist saveChecklist(ChecklistContract checklistContract, String programEnrolmentUUID){
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
         Checklist existingChecklist = checklistRepository.findByProgramEnrolmentId(programEnrolment.getId());
         if (existingChecklist != null) {

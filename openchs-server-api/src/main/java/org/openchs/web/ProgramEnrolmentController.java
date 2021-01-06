@@ -89,13 +89,6 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         programEnrolmentService.programEnrolmentSave(request);
-        if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
-            programEncounterService.saveVisitSchedules(request.getUuid(), request.getVisitSchedules(), null);
-        }
-        if (request.getChecklists() != null && request.getChecklists().size() > 0) {
-            request.getChecklists()
-                    .forEach(checklist -> programEnrolmentService.saveChecklist(checklist, request.getUuid()));
-        }
     }
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})
