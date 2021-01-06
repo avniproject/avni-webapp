@@ -1,4 +1,4 @@
-import { Individual, ObservationsHolder } from "avni-models";
+import { Individual, ObservationsHolder, FormElement, Concept } from "avni-models";
 import {
   onLoadSuccess,
   saveComplete,
@@ -20,7 +20,7 @@ import {
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
-import { find, isNil, sortBy } from "lodash";
+import { find, isNil, sortBy, filter } from "lodash";
 import { mapProfile } from "common/subjectModelMapper";
 import {
   selectDecisions,
@@ -92,7 +92,8 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const registrationForm = mapForm(registrationFormJson);
 
-  yield setRegistrationOnLoadState(registrationForm, subject);
+  const identifiersJson = yield call(api.fetchIdentifiers, formMapping.formUUID);
+  yield setRegistrationOnLoadState(registrationForm, subject, identifiersJson);
 }
 
 function* loadEditRegistrationPageWatcher() {
@@ -123,7 +124,21 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   yield setRegistrationOnLoadState(registrationForm, subject);
 }
 
-export function* setRegistrationOnLoadState(registrationForm, subject) {
+export function* setRegistrationOnLoadState(registrationForm, subject, identifierAssignments) {
+  if (!isNil(registrationForm)) {
+    const observationHolder = new ObservationsHolder(subject.observations);
+    filter(registrationForm.getFormElementsOfType(Concept.dataType.Id), fe =>
+      isNil(observationHolder.findObservation(fe.concept))
+    ).forEach(fe => {
+      const idSourceUuid = fe.recordValueByKey(FormElement.keys.IdSourceUUID);
+      const identifierAssignment = find(
+        identifierAssignments,
+        assignment => assignment.identifierSource.uuid === idSourceUuid
+      );
+      observationHolder.addOrUpdateObservation(fe.concept, identifierAssignment.identifier);
+    });
+  }
+
   if (subject.subjectType.isPerson()) {
     const formElementGroup = new StaticFormElementGroup(registrationForm);
     const wizard = new Wizard(isNil(registrationForm) ? 1 : registrationForm.numberOfPages + 1, 2);

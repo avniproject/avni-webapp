@@ -27,7 +27,7 @@ const elements = {
   NA: div,
   Image: div,
   Video: div,
-  Id: div,
+  Id: TextFormElement,
   Subject: SubjectFormElement
   // Location: LocationFormElement
 };

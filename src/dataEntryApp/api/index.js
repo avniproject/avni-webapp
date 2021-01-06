@@ -120,5 +120,7 @@ export default {
   fetchGroupRoles: groupUUID =>
     httpClient.fetchJson(`/web/groupSubjects/${groupUUID}/roles`).then(response => {
       return response.json;
-    })
+    }),
+  fetchIdentifiers: formUuid =>
+    httpClient.get(`/web/form/${formUuid}/identifierAssignments`).then(response => response.data)
 };
