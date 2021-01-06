@@ -142,7 +142,7 @@ public class OrganisationConfigService {
             organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
         if (request.getSettings() != null)
             organisationConfig.setSettings(updateOrganisationConfigSettings(request.getSettings(), organisationConfig.getSettings()));
-
+        organisationConfig.updateAudit();
         return organisationConfigRepository.save(organisationConfig);
     }
 
