@@ -40,6 +40,9 @@ export const setupTest = {
       "Hide first FE of last FEG"
     );
     wizardPage.clickNext();
+    wizardPage.clickNext();
+    wizardPage.clickNext();
+    wizardPage.clickNext();
     wizardPage.clickSave();
   }
 };

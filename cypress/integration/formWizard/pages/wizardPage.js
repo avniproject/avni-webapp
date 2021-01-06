@@ -74,6 +74,11 @@ export const wizardPage = {
     wizardPage.clickNext();
     wizardPage.clickSave();
   },
+  modifyGroupRegistration(subjectName, ...formElementNames) {
+    dashboardPage.editProfile(subjectName);
+    wizardPage.selectOptions(...formElementNames);
+    wizardPage.clickNext();
+  },
   checkScenarioHideFirstFEG() {
     wizardPage.assertIfPageDoesNotContains(
       "First FEG",
