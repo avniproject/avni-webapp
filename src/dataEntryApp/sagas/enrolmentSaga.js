@@ -11,6 +11,8 @@ import {
   onLoadSuccess,
   saveProgramComplete,
   selectProgramEnrolmentState,
+  selectEnrolmentForm,
+  selectIdentifierAssignments,
   setFilteredFormElements as setFilteredFormElementsEnrolment,
   setInitialState,
   setState as setProgramEnrolmentState,
@@ -27,6 +29,7 @@ import {
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
+import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
 
 export function* enrolmentOnLoadWatcher() {
   yield takeLatest(enrolmentTypes.ON_LOAD, setupNewEnrolmentWorker);
@@ -52,6 +55,8 @@ function* setupNewEnrolmentWorker({
   const subject = state.dataEntry.subjectProfile.subjectProfile;
 
   let programEnrolment;
+  let isNewEnrolment = false;
+  let identifierAssignments = [];
 
   if (formType === "ProgramEnrolment" && programEnrolmentUuid) {
     programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
@@ -60,6 +65,7 @@ function* setupNewEnrolmentWorker({
     assign(programEnrolment, { program });
   } else if (formType === "ProgramEnrolment") {
     programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
+    isNewEnrolment = true;
   } else if (formType === "ProgramExit" && programEnrolmentUuid) {
     programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment, subject);
@@ -82,6 +88,15 @@ function* setupNewEnrolmentWorker({
   const enrolFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const enrolForm = mapForm(enrolFormJson);
 
+  if (isNewEnrolment) {
+    identifierAssignments = yield call(api.fetchIdentifierAssignments, formMapping.formUUID);
+    identifierAssignmentService.addIdentifiersToObservations(
+      enrolForm,
+      programEnrolment.observations,
+      identifierAssignments
+    );
+  }
+
   const {
     formElementGroup,
     filteredFormElements,
@@ -97,7 +112,8 @@ function* setupNewEnrolmentWorker({
       filteredFormElements,
       onSummaryPage,
       wizard,
-      isFormEmpty
+      isFormEmpty,
+      identifierAssignments
     )
   );
 }
@@ -107,13 +123,20 @@ export function* saveProgramEnrolmentWorker(params) {
     const programEnrolment = yield select(selectProgramEnrolment);
     const visitSchedules = yield select(selectVisitSchedules);
     const decisions = yield select(selectDecisions);
-    const checklists = yield select(selectChecklists);
     if (decisions) decisions.exit = params.isExit;
+    const checklists = yield select(selectChecklists);
+    const enrolmentForm = yield select(selectEnrolmentForm);
+    const identifierAssignments = yield select(selectIdentifierAssignments);
 
     let resource = programEnrolment.toResource;
     resource.visitSchedules = visitSchedules;
     resource.decisions = decisions;
     resource.checklists = checklists;
+    resource.identifierAssignmentUuids = identifierAssignmentService.getIdentifierAssignmentUuids(
+      enrolmentForm,
+      programEnrolment.observations,
+      identifierAssignments
+    );
 
     yield call(api.saveProgramEnrolment, resource);
     yield put(saveProgramComplete());

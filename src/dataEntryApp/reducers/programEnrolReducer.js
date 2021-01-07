@@ -35,7 +35,8 @@ export const onLoadSuccess = (
   filteredFormElements,
   onSummaryPage,
   wizard,
-  isFormEmpty
+  isFormEmpty,
+  identifierAssignments
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   programEnrolment,
@@ -44,7 +45,8 @@ export const onLoadSuccess = (
   filteredFormElements,
   onSummaryPage,
   wizard,
-  isFormEmpty
+  isFormEmpty,
+  identifierAssignments
 });
 
 export const saveProgramEnrolment = isExit => ({
@@ -145,9 +147,9 @@ export const fetchEnrolmentRulesResponse = () => {
   };
 };
 
-export const selectProgramEnrolmentState = state => {
-  return state.dataEntry.enrolmentReducer;
-};
+export const selectProgramEnrolmentState = state => state.dataEntry.enrolmentReducer;
+export const selectEnrolmentForm = state => selectProgramEnrolmentState(state).enrolForm;
+export const selectIdentifierAssignments = state => selectProgramEnrolmentState(state).identifierAssignments;
 
 const initialState = {
   saved: false,
@@ -188,6 +190,7 @@ const reducer = (state = initialState, action) => {
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
         isFormEmpty: action.isFormEmpty,
+        identifierAssignments: action.identifierAssignments,
         load: true
       };
     }

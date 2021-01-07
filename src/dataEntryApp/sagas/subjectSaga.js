@@ -1,8 +1,9 @@
-import { Individual, ObservationsHolder, FormElement, Concept } from "avni-models";
+import { Individual, ObservationsHolder } from "avni-models";
 import {
   onLoadSuccess,
   saveComplete,
   selectAddressLevelType,
+  selectIdentifierAssignments,
   selectRegistrationState,
   setRegistrationForm,
   setState as setRegistrationState,
@@ -20,7 +21,7 @@ import {
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
-import { find, isNil, sortBy, filter } from "lodash";
+import { find, isNil, sortBy } from "lodash";
 import { mapProfile } from "common/subjectModelMapper";
 import {
   selectDecisions,
@@ -31,9 +32,11 @@ import Wizard from "dataEntryApp/state/Wizard";
 import { StaticFormElementGroup } from "openchs-models";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
 import {
+  selectRegistrationForm,
   setFilteredFormElements,
   setInitialSubjectState
 } from "dataEntryApp/reducers/registrationReducer";
+import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
 
 export function* dataEntryLoadRegistrationFormWatcher() {
   yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
@@ -64,20 +67,27 @@ export function* saveSubjectWorker() {
   const subject = yield select(selectRegistrationSubject);
   const visitSchedules = yield select(selectVisitSchedules);
   const decisions = yield select(selectDecisions);
+  const registrationForm = yield select(selectRegistrationForm);
+  const identifierAssignments = yield select(selectIdentifierAssignments);
 
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
   resource.decisions = decisions;
+  resource.identifierAssignmentUuids = identifierAssignmentService.getIdentifierAssignmentUuids(
+    registrationForm,
+    subject.observations,
+    identifierAssignments
+  );
 
   yield call(api.saveSubject, resource);
   yield put(saveComplete());
 }
 
-function* loadRegistrationPageWatcher() {
-  yield takeLatest(subjectTypes.ON_LOAD, loadRegistrationPageWorker);
+function* loadNewRegistrationPageWatcher() {
+  yield takeLatest(subjectTypes.ON_LOAD, loadNewRegistrationPageWorker);
 }
 
-export function* loadRegistrationPageWorker({ subjectTypeName }) {
+export function* loadNewRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setInitialSubjectState());
   yield put.resolve(setFilteredFormElements());
 
@@ -92,8 +102,13 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const registrationForm = mapForm(registrationFormJson);
 
-  const identifiersJson = yield call(api.fetchIdentifiers, formMapping.formUUID);
-  yield setRegistrationOnLoadState(registrationForm, subject, identifiersJson);
+  const identifierAssignments = yield call(api.fetchIdentifierAssignments, formMapping.formUUID);
+  identifierAssignmentService.addIdentifiersToObservations(
+    registrationForm,
+    subject.observations,
+    identifierAssignments
+  );
+  yield setRegistrationOnLoadState(registrationForm, subject, identifierAssignments);
 }
 
 function* loadEditRegistrationPageWatcher() {
@@ -121,24 +136,10 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   if (subject.subjectType.isPerson()) {
     yield put.resolve(getGenders());
   }
-  yield setRegistrationOnLoadState(registrationForm, subject);
+  yield setRegistrationOnLoadState(registrationForm, subject, []);
 }
 
 export function* setRegistrationOnLoadState(registrationForm, subject, identifierAssignments) {
-  if (!isNil(registrationForm)) {
-    const observationHolder = new ObservationsHolder(subject.observations);
-    filter(registrationForm.getFormElementsOfType(Concept.dataType.Id), fe =>
-      isNil(observationHolder.findObservation(fe.concept))
-    ).forEach(fe => {
-      const idSourceUuid = fe.recordValueByKey(FormElement.keys.IdSourceUUID);
-      const identifierAssignment = find(
-        identifierAssignments,
-        assignment => assignment.identifierSource.uuid === idSourceUuid
-      );
-      observationHolder.addOrUpdateObservation(fe.concept, identifierAssignment.identifier);
-    });
-  }
-
   if (subject.subjectType.isPerson()) {
     const formElementGroup = new StaticFormElementGroup(registrationForm);
     const wizard = new Wizard(isNil(registrationForm) ? 1 : registrationForm.numberOfPages + 1, 2);
@@ -158,7 +159,8 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
         filteredFormElements,
         onSummaryPage,
         wizard,
-        isFormEmpty
+        isFormEmpty,
+        identifierAssignments
       )
     );
   } else {
@@ -178,7 +180,8 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
         filteredFormElements,
         onSummaryPage,
         wizard,
-        isFormEmpty
+        isFormEmpty,
+        identifierAssignments
       )
     );
   }
@@ -308,7 +311,7 @@ export default function* subjectSaga() {
     [
       dataEntrySearchWatcher,
       dataEntryLoadRegistrationFormWatcher,
-      loadRegistrationPageWatcher,
+      loadNewRegistrationPageWatcher,
       loadEditRegistrationPageWatcher,
       updateObsWatcher,
       registrationNextWatcher,

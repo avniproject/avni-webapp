@@ -54,7 +54,7 @@ class EntityFactory {
     return form;
   }
 
-  static createFormElement(name, mandatory, concept, displayOrder, type, formElementGroup) {
+  static createFormElement(name, mandatory, concept, displayOrder, type, formElementGroup, keyValues) {
     const formElement = new FormElement();
     formElement.uuid = General.randomUUID();
     formElement.name = name;
@@ -63,6 +63,7 @@ class EntityFactory {
     formElement.displayOrder = displayOrder;
     formElement.type = type;
     formElement.formElementGroup = formElementGroup;
+    formElement.keyValues = keyValues;
     return formElement;
   }
 

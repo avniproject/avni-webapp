@@ -83,7 +83,8 @@ export const onLoadSuccess = (
   filteredFormElements,
   onSummaryPage,
   wizard,
-  isFormEmpty
+  isFormEmpty,
+  identifierAssignments
 ) => ({
   type: types.ON_LOAD_SUCCESS,
   subject,
@@ -92,7 +93,8 @@ export const onLoadSuccess = (
   filteredFormElements,
   onSummaryPage,
   wizard,
-  isFormEmpty
+  isFormEmpty,
+  identifierAssignments
 });
 
 export const setLoaded = () => ({
@@ -187,6 +189,8 @@ export const fetchRegistrationRulesResponse = () => {
 };
 
 export const selectRegistrationState = state => state.dataEntry.registration;
+export const selectRegistrationForm = state => selectRegistrationState(state).registrationForm;
+export const selectIdentifierAssignments = state => selectRegistrationState(state).identifierAssignments;
 
 const initialState = {
   saved: false,
@@ -262,7 +266,8 @@ export default (state = initialState, action) => {
         saved: false,
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
-        isFormEmpty: action.isFormEmpty
+        isFormEmpty: action.isFormEmpty,
+        identifierAssignments: action.identifierAssignments
       };
     }
     case types.SET_STATE: {
