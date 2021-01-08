@@ -9,6 +9,7 @@ import { DateFormElement, DateTimeFormElement } from "./DateFormElement";
 import TimeFormElement from "./TimeFormElement";
 import DurationFormElement from "./DurationFormElement";
 import SubjectFormElement from "./SubjectFormElement";
+import { Concept, KeyValue } from "avni-models";
 // import LocationFormElement from "./LocationFormElement";
 
 const div = () => <div />;
@@ -41,6 +42,10 @@ export const FormElement = ({
   uuid
 }) => {
   const type = formElement.getType();
+  if (type === Concept.dataType.Id) {
+    formElement.keyValues = [KeyValue.fromResource({ key: "editable", value: false })];
+    formElement.mandatory = false;
+  }
   const props = { formElement, value, update, obsHolder, validationResults, uuid };
   const Element = elements[type];
   return (

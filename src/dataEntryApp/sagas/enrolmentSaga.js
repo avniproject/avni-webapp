@@ -252,7 +252,7 @@ export function* enrolmentWizardWorker(getNextState, isNext) {
       filteredFormElements: state.filteredFormElements,
       observations: state.programEnrolment.observations,
       entity: state.programEnrolment,
-      validationResults: state.validationResults,
+      validationResults: [],
       onSummaryPage: state.onSummaryPage,
       wizard: state.wizard.clone()
     });

@@ -392,6 +392,7 @@
     "resetFilter": "Reset Filter",
     "visitCanceldate": "Visit Cancel Date",
     "basicDetails": "Basic Details",
-    "selectAddress": "Select Address"
+    "selectAddress": "Select Address",
+    "ranOutOfIds": "Id not available. Please contact your administrator."
   }
 }

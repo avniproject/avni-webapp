@@ -1,4 +1,4 @@
-import { Individual, ObservationsHolder } from "avni-models";
+import { Individual, ObservationsHolder, StaticFormElementGroup } from "avni-models";
 import {
   onLoadSuccess,
   saveComplete,
@@ -29,7 +29,6 @@ import {
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
-import { StaticFormElementGroup } from "openchs-models";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
 import {
   selectRegistrationForm,
@@ -231,7 +230,7 @@ export function* registrationWizardWorkerNext() {
     filteredFormElements: state.filteredFormElements,
     observations: subject.observations,
     entity: subject,
-    validationResults: state.validationResults,
+    validationResults: [],
     onSummaryPage: state.onSummaryPage,
     wizard: state.wizard.clone(),
     entityValidations: subject.validate()

@@ -1,9 +1,10 @@
-import { filter, find, isEmpty, isNil, sortBy, unionBy, remove, findIndex } from "lodash";
-import {
+import { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy } from "lodash";
+import formElementService, {
   filterFormElements,
   getFormElementStatuses
 } from "dataEntryApp/services/FormElementService";
 import {
+  Concept,
   FormElementGroup,
   ObservationsHolder,
   StaticFormElementGroup,
@@ -11,7 +12,6 @@ import {
 } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
 import Wizard from "dataEntryApp/state/Wizard";
-import formElementService from "dataEntryApp/services/FormElementService";
 
 const filterFormElementsWithStatus = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
@@ -70,6 +70,13 @@ function nextState(
 
 const errors = validationResults => filter(validationResults, result => !result.success);
 
+const getIdValidationErrors = (filteredFormElements, obsHolder) => {
+  return filter(
+    filteredFormElements,
+    fe => fe.getType() === Concept.dataType.Id && isNil(obsHolder.findObservation(fe.concept))
+  ).map(fe => ValidationResult.failure(fe.uuid, "ranOutOfIds"));
+};
+
 const onNext = ({
   formElementGroup,
   observations,
@@ -80,12 +87,16 @@ const onNext = ({
   entityValidations
 }) => {
   const obsHolder = new ObservationsHolder(observations);
+
+  const idValidationErrors = getIdValidationErrors(filteredFormElements, obsHolder);
+
   const formElementGroupValidations = new FormElementGroup().validate(
     obsHolder,
     filterFormElements(formElementGroup, entity)
   );
 
   const allRuleValidationResults = unionBy(
+    errors(idValidationErrors),
     errors(formElementGroupValidations),
     errors(validationResults),
     errors(entityValidations),
