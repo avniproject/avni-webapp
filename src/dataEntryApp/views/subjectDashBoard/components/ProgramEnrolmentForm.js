@@ -35,8 +35,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveProgramEnrolment(false),
   setValidationResults,
-  onNext,
-  onPrevious
+  onNext: () => onNext(false),
+  onPrevious: () => onPrevious(false)
 };
 
 const ProgramEnrolmentForm = withRouter(

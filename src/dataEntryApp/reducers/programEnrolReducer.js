@@ -103,12 +103,14 @@ export const setValidationResults = validationResults => ({
   validationResults
 });
 
-export const onNext = () => ({
-  type: types.ON_NEXT
+export const onNext = isExit => ({
+  type: types.ON_NEXT,
+  isExit
 });
 
-export const onPrevious = () => ({
-  type: types.ON_PREVIOUS
+export const onPrevious = isExit => ({
+  type: types.ON_PREVIOUS,
+  isExit
 });
 
 export const setState = state => ({
@@ -149,7 +151,8 @@ export const fetchEnrolmentRulesResponse = () => {
 
 export const selectProgramEnrolmentState = state => state.dataEntry.enrolmentReducer;
 export const selectEnrolmentForm = state => selectProgramEnrolmentState(state).enrolForm;
-export const selectIdentifierAssignments = state => selectProgramEnrolmentState(state).identifierAssignments;
+export const selectIdentifierAssignments = state =>
+  selectProgramEnrolmentState(state).identifierAssignments;
 
 const initialState = {
   saved: false,

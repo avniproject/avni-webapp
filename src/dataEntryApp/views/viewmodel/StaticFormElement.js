@@ -3,6 +3,7 @@ class StaticFormElement {
     this.name = name;
     this.mandatory = mandatory;
     this.editable = editable;
+    this.staticElement = true;
   }
 }
 

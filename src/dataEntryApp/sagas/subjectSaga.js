@@ -230,7 +230,7 @@ export function* registrationWizardWorkerNext() {
     filteredFormElements: state.filteredFormElements,
     observations: subject.observations,
     entity: subject,
-    validationResults: [],
+    validationResults: state.validationResults,
     onSummaryPage: state.onSummaryPage,
     wizard: state.wizard.clone(),
     entityValidations: subject.validate()
@@ -288,8 +288,7 @@ export function* registrationWizardWorkerPrev() {
       entity: subject,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
-      wizard: state.wizard.clone(),
-      entityValidations: subject.validate()
+      wizard: state.wizard.clone()
     });
     subject.observations = observations;
     const nextState = {

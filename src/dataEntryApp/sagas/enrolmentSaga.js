@@ -228,7 +228,7 @@ export function* enrolmentPreviousWatcher() {
   );
 }
 
-export function* enrolmentWizardWorker(getNextState, isNext) {
+export function* enrolmentWizardWorker(getNextState, isNext, params) {
   const state = yield select(selectProgramEnrolmentState);
 
   if (state.isFormEmpty) {
@@ -252,9 +252,12 @@ export function* enrolmentWizardWorker(getNextState, isNext) {
       filteredFormElements: state.filteredFormElements,
       observations: state.programEnrolment.observations,
       entity: state.programEnrolment,
-      validationResults: [],
+      validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
-      wizard: state.wizard.clone()
+      wizard: state.wizard.clone(),
+      entityValidations: params.isExit
+        ? state.programEnrolment.validateExit()
+        : state.programEnrolment.validateEnrolment()
     });
 
     const programEnrolment = state.programEnrolment.cloneForEdit();

@@ -1,4 +1,4 @@
-import { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy } from "lodash";
+import { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy, some } from "lodash";
 import formElementService, {
   filterFormElements,
   getFormElementStatuses
@@ -77,6 +77,12 @@ const getIdValidationErrors = (filteredFormElements, obsHolder) => {
   ).map(fe => ValidationResult.failure(fe.uuid, "ranOutOfIds"));
 };
 
+const removePreviousValidationErrors = (validationResults, filteredFormElements) => {
+  return validationResults.filter(result =>
+    some(filteredFormElements, fe => fe.uuid === result.formIdentifier)
+  );
+};
+
 const onNext = ({
   formElementGroup,
   observations,
@@ -98,7 +104,7 @@ const onNext = ({
   const allRuleValidationResults = unionBy(
     errors(idValidationErrors),
     errors(formElementGroupValidations),
-    errors(validationResults),
+    errors(removePreviousValidationErrors(validationResults, filteredFormElements)),
     errors(entityValidations),
     "formIdentifier"
   );
