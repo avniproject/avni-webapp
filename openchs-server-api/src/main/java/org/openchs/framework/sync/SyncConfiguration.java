@@ -75,7 +75,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "groupRole",
             "locationHierarchy",
             "card",
-            "dashboard"
+            "dashboard",
+            "dashboardCardMapping"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired
