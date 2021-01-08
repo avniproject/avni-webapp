@@ -35,7 +35,7 @@ describe("Registration Flow tests for form wizard", () => {
       "Hide first FE of first FEG",
       "Hide last FE of first FEG"
     );
-    checkScenarioHideFirstFEGbyAllFEG();
+    wizardPage.checkScenarioHideFirstFEGbyAllFEG();
   });
   it("Second FEG is hidden using FEG rule", () => {
     wizardPage.modifyGroupRegistration("Test Group", "Hide second FEG");
@@ -71,15 +71,15 @@ describe("Registration Flow tests for form wizard", () => {
   });
   it("First FE in last FEG is hidden", () => {
     wizardPage.modifyGroupRegistration("Test Group", "Hide first FE of last FEG");
-    wizardPage.checkScenarioHideLastFEGbyAllFEG();
+    wizardPage.checkScenarioHideFirstFEofLastFEG();
   });
   it("Last FE in last FEG is hidden", () => {
     wizardPage.modifyGroupRegistration("Test Group", "Hide last FE of last FEG");
     wizardPage.checkScenarioHideLastFEofLastFEG();
   });
   it("All the FE in the form are hidden", () => {
-    dashboardPage.modifyIndividualRegistration(
-      "Test Group",
+    dashboardPage.editProfile("Test Group");
+    wizardPage.selectOptions(
       "Hide first FE of first FEG",
       "Hide last FE of first FEG",
       "Hide first FE of second FEG",

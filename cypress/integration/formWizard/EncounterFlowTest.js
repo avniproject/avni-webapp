@@ -123,7 +123,7 @@ describe("General Enrolment Flow tests for form wizard", () => {
   });
   it("Performing new encounter should not move to next page in case of validation error in visit date(static element)", () => {
     dashboardPage.editGeneralEncounter("Encounter1");
-    wizardPage.enterDate("Visit Date", "11/01/2021");
+    wizardPage.enterDate("Visit Date", "11/01/2050");
     wizardPage.assertIfPageContains("Encounter date cannot be in future");
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");
