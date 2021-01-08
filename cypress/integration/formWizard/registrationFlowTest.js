@@ -1,9 +1,9 @@
 /// <reference types="Cypress" />
 
-import { wizardPage } from "../pages/wizardPage";
-import { dashboardPage } from "../pages/dashboardPage";
+import { wizardPage } from "../../pages/wizardPage";
+import { dashboardPage } from "../../pages/dashboardPage";
 import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
-import { setupTest } from "../setup";
+import { setupTest } from "../../pages/setup";
 
 describe("Registration Flow tests for form wizard", () => {
   beforeEach(() => {
@@ -368,7 +368,7 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");
   });
-  it.only("An Empty registration without any FEG created", () => {
+  it("An Empty registration without any FEG created", () => {
     dashboardPage.editProfile("empty Test");
     wizardPage.clickNext();
     wizardPage.assertIfPageContains("Summary & Recommendations");

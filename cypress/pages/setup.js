@@ -1,5 +1,5 @@
-import { dashboardPage } from "./pages/dashboardPage";
-import { wizardPage } from "./pages/wizardPage";
+import { dashboardPage } from "./dashboardPage";
+import { wizardPage } from "./wizardPage";
 
 export const setupTest = {
   cleanAllOptionsFromPersonRegistration(subjectName) {

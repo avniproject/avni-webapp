@@ -23,6 +23,12 @@ test: check-node-v
 prettier-all: check-node-v
 	yarn prettier-all
 
+cy-run: check-node-v
+	yarn cy:run
+
+cy-open: check-node-v
+	yarn cy:open
+
 port:= $(if $(port),$(port),8021)
 server:= $(if $(server),$(server),http://localhost)
 

@@ -1,4 +1,4 @@
-import { URL } from "../../constants";
+import { URL } from "../constants";
 
 export const dashboardPage = {
   openDashboard(subjectName) {

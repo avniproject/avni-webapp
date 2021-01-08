@@ -1,9 +1,9 @@
 /// <reference types="Cypress" />
 
-import { wizardPage } from "../pages/wizardPage";
-import { dashboardPage } from "../pages/dashboardPage";
+import { wizardPage } from "../../pages/wizardPage";
+import { dashboardPage } from "../../pages/dashboardPage";
 import { formWizardOrgPassword, formWizardOrgUsername } from "../../constants";
-import { setupTest } from "../setup";
+import { setupTest } from "../../pages/setup";
 
 describe("Registration Flow tests for form wizard", () => {
   beforeEach(() => {
