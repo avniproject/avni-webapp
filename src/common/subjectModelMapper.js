@@ -117,9 +117,7 @@ export const mapProfile = subjectProfile => {
     individual.observations = mapObservations(subjectProfile["observations"]);
     individual.relationships = mapRelationships(subjectProfile["relationships"]);
     individual.memberships = mapMemberships(subjectProfile["memberships"]);
-    console.log(`M:===${JSON.stringify(individual.memberships)}===`);
     individual.roles = mapRoles(subjectProfile["roles"]);
-    console.log(`R:===${JSON.stringify(individual.roles)}===`);
     return individual;
   }
 };
@@ -192,7 +190,9 @@ export const mapIndividualRelation = individualRelation => {
 export const mapMemberships = memberships => {
   if (memberships) {
     return memberships.map(membership => {
-      let groupSubject = General.assignFields(membership, new GroupSubject(), ["uuid"]);
+      let groupSubject = GroupSubject.createEmptyInstance(membership.uuid);
+      groupSubject.groupSubject.uuid = membership["groupSubjectUUID"];
+      groupSubject.groupSubject.name = membership["groupSubjectName"];
       groupSubject.groupRole = mapGroupRole(
         membership["groupRoleUUID"],
         membership["groupRoleName"]
@@ -225,6 +225,7 @@ export const mapGroupMembers = groupMembers => {
       let groupSubject = new GroupSubject();
       groupSubject.memberSubject = mapIndividual(groupMember.member);
       groupSubject.groupRole = mapGroupRole(groupMember.role.uuid, groupMember.role.role);
+      groupSubject.encounterMetadata = groupMember.encounterMetadata;
       return groupSubject;
     });
   }
