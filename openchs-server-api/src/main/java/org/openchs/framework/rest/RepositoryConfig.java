@@ -29,5 +29,7 @@ public class RepositoryConfig extends RepositoryRestConfigurerAdapter {
         config.exposeIdsFor(GroupPrivilege.class);
         config.exposeIdsFor(UserGroup.class);
         config.exposeIdsFor(GroupRole.class);
+        config.exposeIdsFor(Card.class);
+        config.exposeIdsFor(Dashboard.class);
     }
 }
