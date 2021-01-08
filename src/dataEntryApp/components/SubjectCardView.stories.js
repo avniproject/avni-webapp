@@ -3,7 +3,10 @@ import SubjectCardView from "./SubjectCardView";
 
 export default {
   component: SubjectCardView,
-  title: "DEA/Components/SubjectCardView"
+  title: "DEA/Components/SubjectCardView",
+  parameters: {
+    layout: "centered"
+  }
 };
 
 const Template = args => <SubjectCardView {...args} />;
