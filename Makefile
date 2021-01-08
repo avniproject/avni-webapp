@@ -45,6 +45,7 @@ _build_db:
 	psql -h localhost -U $(su) -d postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
 	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
+	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "hstore"';
 	-psql -h localhost -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
 	-psql -h localhost -U $(su) -d postgres  -c 'grant demo to openchs';
 	-psql -h localhost -U $(su) -d postgres  -c 'create role openchs_impl';
@@ -147,6 +148,7 @@ debug_server_live: build_server
 ci-test:
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
+	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "hstore"';
 
 	./gradlew clean test --stacktrace
 
