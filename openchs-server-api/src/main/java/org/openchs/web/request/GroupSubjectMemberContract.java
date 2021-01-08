@@ -3,15 +3,24 @@ package org.openchs.web.request;
 import org.openchs.web.request.common.CommonIndividualRequest;
 
 public class GroupSubjectMemberContract {
-    CommonIndividualRequest member;
+    IndividualContract group;
+    IndividualContract member;
     GroupRoleContract role;
     EncounterMetadataContract encounterMetadata;
+
+    public IndividualContract getGroup() {
+        return group;
+    }
+
+    public void setGroup(IndividualContract group) {
+        this.group = group;
+    }
 
     public CommonIndividualRequest getMember() {
         return member;
     }
 
-    public void setMember(CommonIndividualRequest member) {
+    public void setMember(IndividualContract member) {
         this.member = member;
     }
 

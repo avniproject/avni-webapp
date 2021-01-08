@@ -30,7 +30,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -244,7 +243,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         }
         groupRole.setUuid(groupRoleContract.getGroupRoleUUID());
         groupRole.setGroupSubjectType(groupSubjectType);
-        groupRole.setMemberSubjectType(subjectTypeRepository.findByName(groupRoleContract.getSubjectMemberName()));
+        groupRole.setMemberSubjectType(subjectTypeRepository.findByName(groupRoleContract.getMemberSubjectTypeName()));
         groupRole.setVoided(groupRoleContract.isVoided());
         groupRole.setRole(groupRoleContract.getRole());
         groupRole.setMinimumNumberOfMembers(groupRoleContract.getMinimumNumberOfMembers());
