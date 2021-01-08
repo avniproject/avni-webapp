@@ -58,7 +58,7 @@ public class DashboardService {
 
     private void setDashboardCardMappings(DashboardContract dashboardContract, Dashboard dashboard) {
         Set<DashboardCardMapping> updatedMappings = new HashSet<>();
-        List<CardContract> cardContracts = dashboardContract.getCardContracts();
+        List<CardContract> cardContracts = dashboardContract.getCards();
         for (CardContract cardContract : cardContracts) {
             DashboardCardMapping dashboardCardMapping = new DashboardCardMapping();
             dashboardCardMapping.assignUUID();

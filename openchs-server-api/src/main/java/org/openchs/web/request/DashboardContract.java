@@ -9,7 +9,7 @@ public class DashboardContract extends CHSRequest {
 
     private String name;
     private String description;
-    private List<CardContract> cardContracts = new ArrayList<>();
+    private List<CardContract> cards = new ArrayList<>();
 
     public static DashboardContract fromEntity(Dashboard dashboard) {
         DashboardContract dashboardContract = new DashboardContract();
@@ -18,7 +18,7 @@ public class DashboardContract extends CHSRequest {
         dashboardContract.setVoided(dashboard.isVoided());
         dashboardContract.setName(dashboard.getName());
         dashboardContract.setDescription(dashboard.getDescription());
-        dashboardContract.setCardContracts(dashboard.getCards());
+        dashboardContract.setCards(dashboard.getCards());
         return dashboardContract;
     }
 
@@ -38,11 +38,11 @@ public class DashboardContract extends CHSRequest {
         this.description = description;
     }
 
-    public List<CardContract> getCardContracts() {
-        return cardContracts;
+    public List<CardContract> getCards() {
+        return cards;
     }
 
-    public void setCardContracts(List<CardContract> cardContracts) {
-        this.cardContracts = cardContracts;
+    public void setCards(List<CardContract> cards) {
+        this.cards = cards;
     }
 }
