@@ -247,13 +247,14 @@ public class IndividualService {
         return groupSubjectMemberContract;
     }
 
-    private CommonIndividualRequest createIndividualContractWeb(Individual individual) {
-        CommonIndividualRequest individualContractWeb = new CommonIndividualRequest();
+    private IndividualContract createIndividualContractWeb(Individual individual) {
+        IndividualContract individualContractWeb = new IndividualContract();
         individualContractWeb.setId(individual.getId());
         individualContractWeb.setUuid(individual.getUuid());
         individualContractWeb.setFirstName(individual.getFirstName());
         individualContractWeb.setLastName(individual.getLastName());
         individualContractWeb.setDateOfBirth(individual.getDateOfBirth());
+        individualContractWeb.setSubjectType(SubjectTypeContract.fromSubjectType(individual.getSubjectType()));
         if (individual.getSubjectType().getType().equals(Subject.Person)) individualContractWeb.setGender(individual.getGender().getName());
 
         return individualContractWeb;

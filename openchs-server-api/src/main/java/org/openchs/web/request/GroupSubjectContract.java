@@ -6,6 +6,7 @@ import org.openchs.domain.GroupSubject;
 public class GroupSubjectContract extends CHSRequest {
 
     private String groupSubjectUUID;
+    private String groupSubjectName;
     private String memberSubjectUUID;
     private String groupRoleUUID;
     private String groupRoleName;
@@ -16,6 +17,8 @@ public class GroupSubjectContract extends CHSRequest {
         GroupSubjectContract groupSubjectContract = new GroupSubjectContract();
         groupSubjectContract.setUuid(groupSubject.getUuid());
         groupSubjectContract.setGroupSubjectUUID(groupSubject.getGroupSubjectUUID());
+        groupSubjectContract.setGroupSubjectName(groupSubject.getGroupSubject().getFirstName()
+                + (groupSubject.getGroupSubject().getLastName() != null ? " " + groupSubject.getGroupSubject().getLastName() : ""));
         groupSubjectContract.setMemberSubjectUUID(groupSubject.getMemberSubjectUUID());
         groupSubjectContract.setGroupRoleUUID(groupSubject.getGroupRoleUUID());
         groupSubjectContract.setGroupRoleName(groupSubject.getGroupRole().getRole());
@@ -30,6 +33,14 @@ public class GroupSubjectContract extends CHSRequest {
 
     public void setGroupSubjectUUID(String groupSubjectUUID) {
         this.groupSubjectUUID = groupSubjectUUID;
+    }
+
+    public String getGroupSubjectName() {
+        return groupSubjectName;
+    }
+
+    public void setGroupSubjectName(String groupSubjectName) {
+        this.groupSubjectName = groupSubjectName;
     }
 
     public String getMemberSubjectUUID() {
