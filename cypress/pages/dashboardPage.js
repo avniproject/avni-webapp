@@ -67,6 +67,7 @@ export const dashboardPage = {
   },
   performNewGeneralEncounter(encounterTypeName) {
     this.openGeneralTab();
+    cy.wait(1000);
     cy.get("#new-general-visit").click();
     cy.get(`#${this.generateIdFromName(encounterTypeName)}`).click();
   },
