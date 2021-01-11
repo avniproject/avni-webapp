@@ -43,8 +43,8 @@ const mapFormDispatchToProps = {
   updateObs,
   onSave: () => saveEncounter(false),
   setValidationResults,
-  onNext,
-  onPrevious
+  onNext: () => onNext(false),
+  onPrevious: () => onPrevious(false)
 };
 
 const EncounterForm = withRouter(

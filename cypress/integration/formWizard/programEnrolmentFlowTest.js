@@ -306,7 +306,7 @@ describe("Program Enrolment Flow tests for form wizard", () => {
   });
   it("Performing new program encounter should not move to next page in case of validation error in visit date", () => {
     dashboardPage.editProgramEnrolment("Program1");
-    wizardPage.enterDate("Enrolment Date", "11/01/2021");
+    wizardPage.enterDate("Enrolment Date", "11/01/2050");
     wizardPage.assertIfPageContains("Enrolment date cannot be in future");
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");

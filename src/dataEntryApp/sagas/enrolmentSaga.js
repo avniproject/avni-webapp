@@ -18,7 +18,7 @@ import {
   setState as setProgramEnrolmentState,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
-import { assign } from "lodash";
+import { assign, keys } from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
@@ -257,7 +257,8 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
       wizard: state.wizard.clone(),
       entityValidations: params.isExit
         ? state.programEnrolment.validateExit()
-        : state.programEnrolment.validateEnrolment()
+        : state.programEnrolment.validateEnrolment(),
+      staticFormElementIds: state.wizard.isFirstPage() ? keys(ProgramEnrolment.validationKeys) : []
     });
 
     const programEnrolment = state.programEnrolment.cloneForEdit();

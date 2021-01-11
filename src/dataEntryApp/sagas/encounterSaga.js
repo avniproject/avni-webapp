@@ -1,5 +1,5 @@
 import { all, call, fork, put, select, takeLatest, takeEvery } from "redux-saga/effects";
-import { find } from "lodash";
+import { find, keys } from "lodash";
 import {
   types,
   setEncounterFormMappings,
@@ -26,6 +26,7 @@ import {
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
 import Wizard from "dataEntryApp/state/Wizard";
+import { AbstractEncounter } from "openchs-models";
 
 export default function*() {
   yield all(
@@ -262,7 +263,7 @@ export function* previousWatcher() {
   yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious, false);
 }
 
-export function* wizardWorker(getNextState, isNext) {
+export function* wizardWorker(getNextState, isNext, params) {
   const state = yield select(selectEncounterState);
 
   if (state.isFormEmpty) {
@@ -288,7 +289,9 @@ export function* wizardWorker(getNextState, isNext) {
       entity: state.encounter,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
-      wizard: state.wizard.clone()
+      wizard: state.wizard.clone(),
+      entityValidations: params.isCancel ? [] : state.encounter.validate(),
+      staticFormElementIds: state.wizard.isFirstPage() ? keys(AbstractEncounter.fieldKeys) : []
     });
 
     const encounter = state.encounter.cloneForEdit();

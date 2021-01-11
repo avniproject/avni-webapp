@@ -129,12 +129,14 @@ export const editCancelEncounter = encounterUuid => ({
   encounterUuid
 });
 
-export const onNext = () => ({
-  type: types.ON_NEXT
+export const onNext = isCancel => ({
+  type: types.ON_NEXT,
+  isCancel
 });
 
-export const onPrevious = () => ({
-  type: types.ON_PREVIOUS
+export const onPrevious = isCancel => ({
+  type: types.ON_PREVIOUS,
+  isCancel
 });
 
 export const setState = state => ({

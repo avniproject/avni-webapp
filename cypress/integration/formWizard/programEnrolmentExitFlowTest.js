@@ -123,7 +123,7 @@ describe("Program Enrolment Exit Flow tests for form wizard", () => {
   });
   it("Exit form should not move to next page in case of validation error in Exit enrolment date(static element)", () => {
     dashboardPage.exitProgram("Program1");
-    wizardPage.enterDate("Exit Enrolment Date", "11/01/2021");
+    wizardPage.enterDate("Exit Enrolment Date", "01/01/2050");
     wizardPage.assertIfPageContains("Exit date cannot be in future");
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");

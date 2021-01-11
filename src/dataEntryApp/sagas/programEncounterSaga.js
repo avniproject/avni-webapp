@@ -1,5 +1,5 @@
 import { all, call, fork, put, select, takeLatest, takeEvery } from "redux-saga/effects";
-import { find } from "lodash";
+import { find, keys } from "lodash";
 import {
   types,
   setProgramEnrolment,
@@ -17,7 +17,12 @@ import {
   selectFormMappingForCancelProgramEncounter
 } from "./programEncounterSelector";
 import { mapForm } from "../../common/adapters";
-import { ProgramEncounter, ModelGeneral as General, ObservationsHolder } from "avni-models";
+import {
+  ProgramEncounter,
+  ModelGeneral as General,
+  ObservationsHolder,
+  AbstractEncounter
+} from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProgramEncounter, mapProgramEnrolment, mapProfile } from "common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
@@ -296,7 +301,7 @@ export function* previousWatcher() {
   yield takeLatest(types.ON_PREVIOUS, wizardWorker, commonFormUtil.onPrevious, false);
 }
 
-export function* wizardWorker(getNextState, isNext) {
+export function* wizardWorker(getNextState, isNext, params) {
   const state = yield select(selectProgramEncounterState);
 
   if (state.isFormEmpty) {
@@ -322,7 +327,9 @@ export function* wizardWorker(getNextState, isNext) {
       entity: state.programEncounter,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
-      wizard: state.wizard.clone()
+      wizard: state.wizard.clone(),
+      entityValidations: params.isCancel ? [] : state.programEncounter.validate(),
+      staticFormElementIds: state.wizard.isFirstPage() ? keys(AbstractEncounter.fieldKeys) : []
     });
 
     const programEncounter = state.programEncounter.cloneForEdit();

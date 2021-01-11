@@ -10,19 +10,6 @@ describe("Registration Flow tests for form wizard", () => {
     setupTest.login(formWizardOrgUsername, formWizardOrgPassword);
     setupTest.cleanAllOptionsFromPersonRegistration("Test Person");
   });
-  //TODO: uncomment it after fixing the bug
-  // it("First form element group should be hidden when first name is 'Hide first FEG'", () => {
-  //     dashboardPage.editProfile('Test Person');
-  //     wizardPage.typeInput('firstName', 'Hide first FEG');
-  //     wizardPage.clickNext();
-  //     wizardPage.assertIfPageContains("First FEG");
-  //     wizardPage.clickNextNTimes(3);
-  //     wizardPage.assertIfPageContains("Summary & Recommendations");
-  //     wizardPage.clickPreviousNTimes(4);
-  //     wizardPage.assertIfPageContains("Register Person");
-  //     wizardPage.clickNextNTimes(4);
-  //     wizardPage.assertIfPageContains("Summary & Recommendations");
-  // });
 
   it("First FEG is hidden using FEG rule", () => {
     dashboardPage.editProfile("Test Person");
@@ -367,6 +354,11 @@ describe("Registration Flow tests for form wizard", () => {
     wizardPage.assertIfPageContains("123 is invalid");
     wizardPage.clickNext(); //it should not go to next page because of the error.
     wizardPage.assertIfPageContains("First FEG");
+    wizardPage.clickPrevious();
+    wizardPage.assertIfPageContains("Modifier");
+    wizardPage.clickNext();
+    wizardPage.assertIfPageContains("First FEG");
+    wizardPage.assertIfPageContains("123 is invalid");
   });
   it("An Empty registration without any FEG created", () => {
     dashboardPage.editProfile("empty Test");

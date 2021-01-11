@@ -1,4 +1,15 @@
-import { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy, some } from "lodash";
+import {
+  filter,
+  find,
+  findIndex,
+  isEmpty,
+  isNil,
+  remove,
+  sortBy,
+  unionBy,
+  some,
+  union
+} from "lodash";
 import formElementService, {
   filterFormElements,
   getFormElementStatuses
@@ -77,12 +88,6 @@ const getIdValidationErrors = (filteredFormElements, obsHolder) => {
   ).map(fe => ValidationResult.failure(fe.uuid, "ranOutOfIds"));
 };
 
-const removePreviousValidationErrors = (validationResults, filteredFormElements) => {
-  return validationResults.filter(result =>
-    some(filteredFormElements, fe => fe.uuid === result.formIdentifier)
-  );
-};
-
 const onNext = ({
   formElementGroup,
   observations,
@@ -90,7 +95,8 @@ const onNext = ({
   filteredFormElements,
   validationResults,
   wizard,
-  entityValidations
+  entityValidations,
+  staticFormElementIds
 }) => {
   const obsHolder = new ObservationsHolder(observations);
 
@@ -104,11 +110,22 @@ const onNext = ({
   const allRuleValidationResults = unionBy(
     errors(idValidationErrors),
     errors(formElementGroupValidations),
-    errors(removePreviousValidationErrors(validationResults, filteredFormElements)),
+    errors(validationResults),
     errors(entityValidations),
     "formIdentifier"
   );
-  const thereAreValidationErrors = !isEmpty(allRuleValidationResults);
+
+  const anyFailedResultForCurrentFEG = () => {
+    const formUUIDs = union(formElementGroup.formElementIds, staticFormElementIds);
+    return some(allRuleValidationResults, validationResult => {
+      return (
+        validationResult.success === false &&
+        formUUIDs.indexOf(validationResult.formIdentifier) !== -1
+      );
+    });
+  };
+
+  const thereAreValidationErrors = anyFailedResultForCurrentFEG();
 
   if (thereAreValidationErrors)
     return nextState(
@@ -128,7 +145,7 @@ const onNext = ({
     return nextState(
       formElementGroup,
       filteredFormElements,
-      [],
+      allRuleValidationResults,
       observations,
       entity,
       onSummaryPage,
@@ -142,12 +159,22 @@ const onNext = ({
   wizard.moveNext();
   if (isEmpty(nextFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(nextGroup.getFormElements(), []);
-    return onNext(nextState(nextGroup, [], [], obsHolder.observations, entity, false, wizard));
+    return onNext(
+      nextState(
+        nextGroup,
+        [],
+        allRuleValidationResults,
+        obsHolder.observations,
+        entity,
+        false,
+        wizard
+      )
+    );
   } else {
     return nextState(
       nextGroup,
       nextFilteredFormElements,
-      [],
+      allRuleValidationResults,
       obsHolder.observations,
       entity,
       false,

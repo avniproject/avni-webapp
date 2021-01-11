@@ -21,7 +21,7 @@ import {
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
-import { find, isNil, sortBy } from "lodash";
+import { find, isNil, sortBy, keys } from "lodash";
 import { mapProfile } from "common/subjectModelMapper";
 import {
   selectDecisions,
@@ -233,7 +233,8 @@ export function* registrationWizardWorkerNext() {
     validationResults: state.validationResults,
     onSummaryPage: state.onSummaryPage,
     wizard: state.wizard.clone(),
-    entityValidations: subject.validate()
+    entityValidations: subject.validate(),
+    staticFormElementIds: state.wizard.isFirstPage() ? keys(Individual.validationKeys) : []
   });
 
   subject.observations = observations;
