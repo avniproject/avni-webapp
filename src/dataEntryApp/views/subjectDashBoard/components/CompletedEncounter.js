@@ -74,7 +74,6 @@ const truncate = input => {
 const CompletedEncounter = ({
   index,
   encounter,
-  enableReadOnly,
   subjectTypeUuid,
   encounterFormMapping,
   cancelEncounterFormMapping
@@ -138,7 +137,7 @@ const CompletedEncounter = ({
             </ListItem>
           )}
         </List>
-        {!enableReadOnly ? (
+        {
           <>
             {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
               <InternalLink
@@ -164,9 +163,7 @@ const CompletedEncounter = ({
               ""
             )}
           </>
-        ) : (
-          ""
-        )}
+        }
       </Paper>
     </Grid>
   );

@@ -71,7 +71,6 @@ export default ({
   general,
   program,
   handleUpdateComponent,
-  enableReadOnly,
   voidSubject,
   unVoidSubject,
   registrationForm,
@@ -144,7 +143,6 @@ export default ({
             <SubjectDashboardProgramTab
               program={program}
               handleUpdateComponent={handleUpdateComponent}
-              enableReadOnly={enableReadOnly}
               subjectTypeUuid={profile.subjectType.uuid}
               subjectVoided={profile.voided}
             />
@@ -155,7 +153,6 @@ export default ({
         <Paper className={classes.tabsDisplay}>
           <SubjectDashboardProfileTab
             profile={profile}
-            enableReadOnly={enableReadOnly}
             voidSubject={voidSubject}
             unVoidSubject={unVoidSubject}
             registrationForm={registrationForm}
@@ -172,7 +169,6 @@ export default ({
             <SubjectDashboardGeneralTab
               subjectUuid={profile.uuid}
               general={general}
-              enableReadOnly={enableReadOnly}
               subjectTypeUuid={profile.subjectType.uuid}
               subjectVoided={profile.voided}
             />

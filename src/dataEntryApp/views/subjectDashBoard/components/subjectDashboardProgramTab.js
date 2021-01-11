@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboardProgramTab = ({
   program,
   handleUpdateComponent,
-  enableReadOnly,
   subjectTypeUuid,
   subjectVoided
 }) => {
@@ -108,7 +107,6 @@ const SubjectDashboardProgramTab = ({
             tabPanelValue={selectedTab}
             programData={program}
             handleUpdateComponent={handleUpdateComponent}
-            enableReadOnly={enableReadOnly}
             subjectTypeUuid={subjectTypeUuid}
             subjectVoided={subjectVoided}
           />
@@ -117,7 +115,6 @@ const SubjectDashboardProgramTab = ({
             tabPanelValue={selectedTabExited}
             programData={program}
             handleUpdateComponent={handleUpdateComponent}
-            enableReadOnly={enableReadOnly}
             subjectTypeUuid={subjectTypeUuid}
             subjectVoided={subjectVoided}
           />

@@ -134,7 +134,6 @@ const ProgramView = ({
   subjectUuid,
   undoExitEnrolment,
   handleUpdateComponent,
-  enableReadOnly,
   subjectTypeUuid,
   subjectVoided,
   programEnrolmentForm,
@@ -211,7 +210,7 @@ const ProgramView = ({
         </Grid>
 
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          {!enableReadOnly && !subjectVoided && isNotExited ? (
+          {!subjectVoided && isNotExited ? (
             <InternalLink
               id={"new-program-visit"}
               to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
@@ -264,83 +263,79 @@ const ProgramView = ({
                   form={programEnrolmentForm}
                 />
               </List>
-              {!enableReadOnly ? (
-                !programData.programExitDateTime ? (
-                  <>
-                    <Link
-                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                        programData.program.operationalProgramName
-                      }&formType=ProgramExit&programEnrolmentUuid=${
-                        programData.uuid
-                      }&subjectTypeName=${subjectProfile.subjectType.name}`}
-                    >
-                      <Button id={"exit-program"} color="primary">
-                        {t("Exit")}
-                      </Button>
-                    </Link>
-                    <Link
-                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                        programData.program.operationalProgramName
-                      }&formType=ProgramEnrolment&programEnrolmentUuid=${
-                        programData.uuid
-                      }&subjectTypeName=${subjectProfile.subjectType.name}`}
-                    >
-                      <Button id={"edit-program"} color="primary">
-                        {t("Edit")}
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                        programData.program.operationalProgramName
-                      }&formType=ProgramExit&programEnrolmentUuid=${
-                        programData.uuid
-                      }&subjectTypeName=${subjectProfile.subjectType.name}`}
-                    >
-                      <Button id={"edit-exit"} color="primary">
-                        {t("Edit Exit")}
-                      </Button>
-                    </Link>
-
-                    <Button id={"undo-exit"} color="primary" onClick={handleClickOpen}>
-                      {t("Undo Exit")}
+              {!programData.programExitDateTime ? (
+                <>
+                  <Link
+                    to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                      programData.program.operationalProgramName
+                    }&formType=ProgramExit&programEnrolmentUuid=${
+                      programData.uuid
+                    }&subjectTypeName=${subjectProfile.subjectType.name}`}
+                  >
+                    <Button id={"exit-program"} color="primary">
+                      {t("Exit")}
                     </Button>
-
-                    <Dialog
-                      open={open}
-                      onClose={handleClose}
-                      aria-labelledby="alert-dialog-title"
-                      aria-describedby="alert-dialog-description"
-                    >
-                      <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
-                      <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                          Do you want to undo exit and restore to enrolled state shows up
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={handleClose} color="primary">
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={handleUndoExit.bind(
-                            this,
-                            programData.uuid,
-                            `/app/subject?uuid=${subjectUuid}&undo=true`
-                          )}
-                          color="primary"
-                          autoFocus
-                        >
-                          Undo Exit
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </>
-                )
+                  </Link>
+                  <Link
+                    to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                      programData.program.operationalProgramName
+                    }&formType=ProgramEnrolment&programEnrolmentUuid=${
+                      programData.uuid
+                    }&subjectTypeName=${subjectProfile.subjectType.name}`}
+                  >
+                    <Button id={"edit-program"} color="primary">
+                      {t("Edit")}
+                    </Button>
+                  </Link>
+                </>
               ) : (
-                ""
+                <>
+                  <Link
+                    to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                      programData.program.operationalProgramName
+                    }&formType=ProgramExit&programEnrolmentUuid=${
+                      programData.uuid
+                    }&subjectTypeName=${subjectProfile.subjectType.name}`}
+                  >
+                    <Button id={"edit-exit"} color="primary">
+                      {t("Edit Exit")}
+                    </Button>
+                  </Link>
+
+                  <Button id={"undo-exit"} color="primary" onClick={handleClickOpen}>
+                    {t("Undo Exit")}
+                  </Button>
+
+                  <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Do you want to undo exit and restore to enrolled state shows up
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleClose} color="primary">
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleUndoExit.bind(
+                          this,
+                          programData.uuid,
+                          `/app/subject?uuid=${subjectUuid}&undo=true`
+                        )}
+                        color="primary"
+                        autoFocus
+                      >
+                        Undo Exit
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </>
               )}
             </Grid>
           </ExpansionPanelDetails>
@@ -380,7 +375,6 @@ const ProgramView = ({
                       overdueDate={row.maxVisitDateTime}
                       enrolUuid={programData.uuid}
                       encounterTypeUuid={row.encounterType.uuid}
-                      enableReadOnly={enableReadOnly}
                       cancelDateTime={row.cancelDateTime}
                       programUuid={programData.program.uuid}
                       subjectTypeUuid={subjectTypeUuid}
@@ -436,7 +430,6 @@ const ProgramView = ({
                       earliestVisitDate={row.earliestVisitDateTime}
                       encounterDateTime={row.encounterDateTime}
                       enrolUuid={programData.uuid}
-                      enableReadOnly={enableReadOnly}
                       cancelDateTime={row.cancelDateTime}
                       encounterTypeUuid={row.encounterType.uuid}
                       programUuid={programData.program.uuid}

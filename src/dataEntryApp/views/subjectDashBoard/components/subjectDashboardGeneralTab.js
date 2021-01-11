@@ -68,7 +68,6 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboardGeneralTab = ({
   general,
   subjectUuid,
-  enableReadOnly,
   subjectTypeUuid,
   encounterFormMappings,
   subjectVoided
@@ -93,9 +92,7 @@ const SubjectDashboardGeneralTab = ({
       <Paper className={classes.root}>
         {subjectVoided && <SubjectVoided showUnVoid={false} />}
         <Grid container justify="flex-end">
-          {!enableReadOnly &&
-          !(isEmpty(plannedVisits) && isEmpty(encounterFormMappings)) &&
-          !subjectVoided ? (
+          {!(isEmpty(plannedVisits) && isEmpty(encounterFormMappings)) && !subjectVoided ? (
             <InternalLink
               to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
               noUnderline
@@ -125,7 +122,6 @@ const SubjectDashboardGeneralTab = ({
                     index={index}
                     encounter={row}
                     subjectUuid={subjectUuid}
-                    enableReadOnly={enableReadOnly}
                     subjectTypeUuid={subjectTypeUuid}
                   />
                 ))
@@ -155,7 +151,6 @@ const SubjectDashboardGeneralTab = ({
                   <CompletedEncounter
                     index={index}
                     encounter={row}
-                    enableReadOnly={enableReadOnly}
                     subjectTypeUuid={subjectTypeUuid}
                   />
                 ))

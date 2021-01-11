@@ -54,10 +54,5 @@ export const selectGeneralEncounterTypes = subjectTypeUuid => state => {
   return encounterTypes;
 };
 
-export const selectEnableReadonly = state => {
-  //Turning off the toggle permanently
-  return false;
-};
-
 export const selectOperationalModules = state =>
   get(state, "dataEntry.metadata.operationalModules");

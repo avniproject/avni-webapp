@@ -187,12 +187,6 @@ export const UserDetail = ({ user, ...props }) => (
           !isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : ""
         }
       />
-      <FunctionField
-        label="DataEntry WebApp Enable Writes"
-        render={user =>
-          !isNil(user.settings) ? (user.settings.dataEntryAppEnableWrites ? "True" : "False") : ""
-        }
-      />
       <TextField label="Identifier prefix" source="settings.idPrefix" />
       <FunctionField label="Created" render={audit => createdAudit(audit)} />
       <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
@@ -358,11 +352,6 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           source="settings.registerEnrol"
           label="Register + Enrol"
           toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"}
-        />
-        <AvniBooleanInput
-          source="settings.dataEntryAppEnableWrites"
-          label="DataEntry WebApp Enable Writes"
-          toolTipKey={"ADMIN_USER_SETTINGS_DATA_ENTRY_APP_ENABLE_WRITES"}
         />
         <AvniTextInput
           source="settings.idPrefix"

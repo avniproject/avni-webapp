@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 import CompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/CompletedVisitsTable";
 
 const useStyle = makeStyles(theme => ({
@@ -75,7 +74,6 @@ const CompleteVisit = ({
   getCompletedVisit,
   getEnrolments,
   completedVisits,
-  enableReadOnly,
   encounterTypes,
   load,
   loadProgramEncounters,
@@ -129,7 +127,6 @@ const CompleteVisit = ({
               entityUuid={match.queryParams.uuid}
               editEncounterUrl={editEncounterUrl}
               isForProgramEncounters={isForProgramEncounters}
-              enableReadOnly={enableReadOnly}
             />
           </Paper>
         </Paper>
@@ -143,7 +140,6 @@ const CompleteVisit = ({
 const mapStateToProps = state => {
   return {
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-    enableReadOnly: selectEnableReadonly(state),
     load: state.dataEntry.loadReducer.load
   };
 };
