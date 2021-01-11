@@ -1,5 +1,5 @@
 --[Data Extract Report]
-with concepts as (select hstore(array_agg(uuid), array_agg(name)) map from concept)
+${concept_maps}
 SELECT individual.id                                                                          "individual_id",
        oet.name                                                                               "encounter_type_name",
        oet.encounter_type_id                                                                  "encounter_type_id",
@@ -16,7 +16,7 @@ SELECT individual.id                                                            
        encounter.cancel_location                                                              "cancel_location",
        ${encounterCancellation}
 FROM encounter encounter
-         CROSS JOIN concepts
+  ${cross_join_concept_maps}
          LEFT OUTER JOIN operational_encounter_type oet on encounter.encounter_type_id = oet.encounter_type_id
          LEFT OUTER JOIN individual individual ON encounter.individual_id = individual.id
          LEFT OUTER JOIN operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id

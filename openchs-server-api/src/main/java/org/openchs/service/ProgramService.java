@@ -29,14 +29,12 @@ public class ProgramService {
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
     private final FormMappingRepository formMappingRepository;
-    private final IndividualRepository individualRepository;
 
     @Autowired
-    public ProgramService(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, FormMappingRepository formMappingRepository, IndividualRepository individualRepository) {
+    public ProgramService(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, FormMappingRepository formMappingRepository) {
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.formMappingRepository = formMappingRepository;
-        this.individualRepository = individualRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 

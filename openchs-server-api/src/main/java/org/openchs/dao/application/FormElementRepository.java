@@ -1,6 +1,7 @@
 package org.openchs.dao.application;
 
 import org.openchs.application.FormElement;
+import org.openchs.application.FormElementGroup;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
 import org.openchs.domain.Concept;
@@ -19,4 +20,6 @@ public interface FormElementRepository extends ReferenceDataRepository<FormEleme
     List<String> getAllNames();
 
     List<FormElement> findAllByConceptUuidAndIsVoidedFalse(String conceptUUID);
+
+    List<FormElement> findAllByFormElementGroupIdAndConceptDataType(long formGroupId, String dataType);
 }

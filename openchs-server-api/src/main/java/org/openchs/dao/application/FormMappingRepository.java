@@ -34,6 +34,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType, Long subjectTypeId);
 
     List<FormMapping> findBySubjectTypeAndFormFormTypeAndIsVoidedFalse(SubjectType subjectType, FormType formType);
+    FormMapping findBySubjectTypeNameAndFormFormTypeAndIsVoidedFalse(String subjectType, FormType formType);
 
     @Query("select m from FormMapping m where m.isVoided = false")
     List<FormMapping> findAllOperational();

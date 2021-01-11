@@ -1,5 +1,5 @@
 --[Data Extract Report] Registration
-with concepts as (select hstore(array_agg(uuid), array_agg(name)) map from concept)
+${concept_maps}
 SELECT individual.id                                                                       as "id",
        individual.address_id                                                               as "address_id",
        individual.uuid                                                                     as "uuid",
@@ -20,7 +20,7 @@ SELECT individual.id                                                            
        individual.is_voided                                                                as "is_voided",
        ${selections}
 FROM individual individual
-       CROSS JOIN concepts
+  ${cross_join_concept_maps}
        LEFT OUTER JOIN operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
        LEFT OUTER JOIN gender g ON g.id = individual.gender_id
        LEFT OUTER JOIN address_level a ON individual.address_id = a.id

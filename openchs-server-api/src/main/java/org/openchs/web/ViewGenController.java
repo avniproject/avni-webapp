@@ -54,7 +54,7 @@ public class ViewGenController {
     public Map<String, String> query(@RequestBody ViewConfig viewConfig) {
         switch (viewConfig.getType()) {
             case Registration:
-                return viewGenService.registrationReport(viewConfig.getSubjectType(), viewConfig.getSpreadMultiSelectObs());
+                return viewGenService.registrationViews(viewConfig.getSubjectType(), viewConfig.getSpreadMultiSelectObs());
             case ProgramEncounter:
                 return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs(), viewConfig.getSubjectType());
             case Encounter:
@@ -91,12 +91,12 @@ public class ViewGenController {
     }
 
     private void createRequiredViews(Organisation organisation, SubjectType subjectType) {
-        Map<String, String> registrationViewMap = viewGenService.registrationReport(subjectType.getOperationalSubjectTypeName(), false);
+        Map<String, String> registrationViewMap = viewGenService.registrationViews(subjectType.getOperationalSubjectTypeName(), false);
         String registrationViewName = getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName()), "Registration");
         createView(registrationViewMap.get("Registration"), registrationViewName);
         List<FormMapping> allEnrolmentFormMappings = formMappingRepository.getAllEnrolmentFormMappings(subjectType.getUuid());
         List<FormMapping> allGeneralEncounterFormMappings = formMappingRepository.getAllGeneralEncounterFormMappings(subjectType.getUuid());
-        allEnrolmentFormMappings.forEach(fm -> createProgramEnrolmentViews(organisation, subjectType, fm));
+        allEnrolmentFormMappings.forEach(fm -> createProgramEnrolmentAndProgramEncounterViews(organisation, subjectType, fm));
         allGeneralEncounterFormMappings.forEach(fm -> createGeneralEncounterViews(organisation, subjectType, fm));
     }
 
@@ -109,9 +109,9 @@ public class ViewGenController {
         });
     }
 
-    private void createProgramEnrolmentViews(Organisation organisation, SubjectType subjectType, FormMapping enrolmentMapping) {
+    private void createProgramEnrolmentAndProgramEncounterViews(Organisation organisation, SubjectType subjectType, FormMapping enrolmentMapping) {
         Program program = enrolmentMapping.getProgram();
-        Map<String, String> programEnrolmentSqlMap = viewGenService.enrolmentReport(subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName());
+        Map<String, String> programEnrolmentSqlMap = viewGenService.enrolmentViews(subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName());
         programEnrolmentSqlMap.forEach((prg, programSql) -> {
             String programEnrolmentViewName = getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), prg), "ProgramEnrolment");
             createView(programSql, programEnrolmentViewName);
@@ -132,6 +132,7 @@ public class ViewGenController {
             organisationRepository.createView(viewName, viewSql);
         } catch (Exception e) {
             logger.error("Error while creating view {}", viewName, e);
+            logger.error(String.format("View SQL: %s", viewSql));
             throw new RuntimeException(String.format("Error while creating view %s, %s", viewName, ExceptionUtils.getRootCause(e).getMessage()));
         }
     }

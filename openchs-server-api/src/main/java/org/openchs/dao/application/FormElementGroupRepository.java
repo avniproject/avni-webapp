@@ -14,7 +14,6 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formElementGroup", path = "formElementGroup")
 public interface FormElementGroupRepository extends ReferenceDataRepository<FormElementGroup>, FindByLastModifiedDateTime<FormElementGroup> {
-
     @Query("select f.name from FormElementGroup f where f.isVoided = false")
     List<String> getAllNames();
 }
