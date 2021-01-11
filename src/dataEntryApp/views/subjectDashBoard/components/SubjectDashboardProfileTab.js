@@ -86,7 +86,6 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboardProfileTab = ({
   profile,
   path,
-  enableReadOnly,
   voidSubject,
   unVoidSubject,
   registrationForm,
@@ -152,15 +151,13 @@ const SubjectDashboardProfileTab = ({
                 form={registrationForm}
               />
             </List>
-            {!enableReadOnly ? (
+            {
               <Button color="primary" onClick={() => setVoidConfirmation(true)}>
                 {t("void")}
               </Button>
-            ) : (
-              ""
-            )}
+            }
             {/* <Button color="primary">{t("edit")}</Button> */}
-            {!enableReadOnly ? (
+            {
               <Button color="primary" id={"edit-profile"}>
                 <InternalLink
                   to={`/app/editSubject?uuid=${profile.uuid}&type=${profile.subjectType.name}`}
@@ -168,9 +165,7 @@ const SubjectDashboardProfileTab = ({
                   {t("edit")}{" "}
                 </InternalLink>
               </Button>
-            ) : (
-              ""
-            )}
+            }
           </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -195,7 +190,6 @@ const SubjectDashboardProfileTab = ({
               profileUUID={profile.uuid}
               profileName={profile.firstName + " " + profile.lastName}
               gridListDetails={profile.relationships}
-              enableReadOnly={enableReadOnly}
             />
           ) : (
             <Typography variant="caption" gutterBottom className={classes.infomsg}>
@@ -204,16 +198,14 @@ const SubjectDashboardProfileTab = ({
             </Typography>
           )}
         </ExpansionPanelDetails>
-        {!enableReadOnly ? (
+        {
           <Button color="primary">
             <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}>
               {" "}
               {t("addARelative")}{" "}
             </InternalLink>{" "}
           </Button>
-        ) : (
-          ""
-        )}
+        }
       </ExpansionPanel>
     );
   }
@@ -270,16 +262,14 @@ const SubjectDashboardProfileTab = ({
             </Typography>
           )}
         </ExpansionPanelDetails>
-        {!enableReadOnly ? (
+        {
           <Button color="primary">
             {/*<InternalLink to={`/app/subject/addGroupSubjectMember?uuid=${profile.uuid}`}>*/}
             {/*  {" "}*/}
             {/*  {t("addAGroupMember")}{" "}*/}
             {/*</InternalLink>{" "}*/}
           </Button>
-        ) : (
-          ""
-        )}
+        }
       </ExpansionPanel>
     );
   }

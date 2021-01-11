@@ -124,8 +124,7 @@ const CompletedVisitsTable = ({
   filterParams,
   entityUuid,
   editEncounterUrl,
-  isForProgramEncounters,
-  enableReadOnly
+  isForProgramEncounters
 }) => {
   const { t } = useTranslation();
   usePrevious(filterParams);
@@ -158,7 +157,6 @@ const CompletedVisitsTable = ({
     {
       title: t("actions"),
       field: "actions",
-      hidden: enableReadOnly,
       sorting: false,
       render: row => (
         <EditVisit

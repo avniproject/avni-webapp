@@ -88,7 +88,6 @@ const Visit = ({
   enrolUuid,
   encounterTypeUuid,
   cancelDateTime,
-  enableReadOnly,
   type,
   programUuid,
   subjectTypeUuid,
@@ -170,7 +169,7 @@ const Visit = ({
             ""
           )}  */}
         </List>
-        {!enableReadOnly ? (
+        {
           <>
             {encounterDateTime && uuid && !isEmpty(programEncounterFormMapping) ? (
               <InternalLink to={`/app/subject/editProgramEncounter?uuid=${uuid}`}>
@@ -223,9 +222,7 @@ const Visit = ({
               </>
             )}
           </>
-        ) : (
-          ""
-        )}
+        }
       </Paper>
     </Grid>
   );

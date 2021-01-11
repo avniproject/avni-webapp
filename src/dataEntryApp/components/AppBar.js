@@ -23,7 +23,6 @@ import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
-import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles(theme => ({
@@ -105,7 +104,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
+const PrimarySearchAppBar = ({ user, history }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -191,7 +190,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
             </InternalLink>
           </Typography>
 
-          {!enableReadOnly ? (
+          {
             <ClickAwayListener onClickAway={newHandleclose}>
               <div>
                 <Button
@@ -228,9 +227,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
                 </Popper>
               </div>
             </ClickAwayListener>
-          ) : (
-            ""
-          )}
+          }
 
           <Button
             variant="contained"
@@ -289,8 +286,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user, history }) => {
 };
 
 const mapStateToProps = state => ({
-  user: state.app.user,
-  enableReadOnly: selectEnableReadonly(state)
+  user: state.app.user
 });
 
 export default withRouter(

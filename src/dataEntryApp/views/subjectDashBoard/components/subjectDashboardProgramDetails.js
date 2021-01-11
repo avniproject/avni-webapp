@@ -22,7 +22,6 @@ const programDetails = ({
   tabPanelValue,
   programData,
   handleUpdateComponent,
-  enableReadOnly,
   subjectTypeUuid,
   subjectVoided
 }) => {
@@ -37,7 +36,6 @@ const programDetails = ({
                   programData={element}
                   key={index}
                   handleUpdateComponent={handleUpdateComponent}
-                  enableReadOnly={enableReadOnly}
                   subjectTypeUuid={subjectTypeUuid}
                   subjectVoided={subjectVoided}
                 />

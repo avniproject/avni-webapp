@@ -16,7 +16,6 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
-import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +33,6 @@ const SubjectDashboard = ({
   subjectGeneral,
   getSubjectProgram,
   subjectProgram,
-  enableReadOnly,
   voidSubject,
   unVoidSubject,
   load,
@@ -58,17 +56,12 @@ const SubjectDashboard = ({
   if (subjectProfile !== undefined) {
     paperInfo = (
       <Paper className={classes.root}>
-        <ProfileDetails
-          profileDetails={subjectProfile}
-          subjectUuid={match.queryParams.uuid}
-          enableReadOnly={enableReadOnly}
-        />
+        <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
         <SubjectDashboardTabs
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
           handleUpdateComponent={handleUpdateComponent}
-          enableReadOnly={enableReadOnly}
           voidSubject={voidSubject}
           unVoidSubject={unVoidSubject}
           registrationForm={registrationForm}
@@ -100,7 +93,6 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
-  enableReadOnly: selectEnableReadonly(state),
   load: state.dataEntry.loadReducer.load,
   registrationForm: state.dataEntry.registration.registrationForm,
   tabsStatus: state.dataEntry.subjectProfile.tabsStatus,

@@ -20,7 +20,6 @@ import { saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
 import Auth from "@aws-amplify/auth";
-import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -90,14 +89,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserOption = ({
-  orgConfig,
-  userInfo,
-  defaultLanguage,
-  saveUserInfo,
-  logout,
-  enableReadOnly
-}) => {
+const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -199,8 +191,7 @@ const mapStateToProps = state => ({
   defaultLanguage:
     state.app.userInfo.settings && state.app.userInfo.settings.locale
       ? state.app.userInfo.settings.locale
-      : "en",
-  enableReadOnly: selectEnableReadonly(state)
+      : "en"
 });
 
 const mapDispatchToProps = {

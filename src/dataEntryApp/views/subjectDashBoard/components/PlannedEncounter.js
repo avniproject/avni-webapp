@@ -69,7 +69,6 @@ const PlannedEncounter = ({
   index,
   encounter,
   subjectUuid,
-  enableReadOnly,
   subjectTypeUuid,
   encounterFormMapping,
   cancelEncounterFormMapping
@@ -114,7 +113,7 @@ const PlannedEncounter = ({
             </ListItem>
           )}
         </List>
-        {!enableReadOnly ? (
+        {
           <>
             {
               <div className={classes.visitButton}>
@@ -140,9 +139,7 @@ const PlannedEncounter = ({
               </div>
             }
           </>
-        ) : (
-          ""
-        )}
+        }
       </Paper>
     </Grid>
   );

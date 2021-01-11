@@ -118,7 +118,6 @@ const ProfileDetails = ({
   programs,
   subjectUuid,
   match,
-  enableReadOnly,
   load,
   tabsStatus
 }) => {
@@ -229,7 +228,7 @@ const ProfileDetails = ({
           </Table>
         </Grid>
         <Grid item xs={7} align="right">
-          {tabsStatus.showProgramTab && !enableReadOnly && !profileDetails.voided ? (
+          {tabsStatus.showProgramTab && !profileDetails.voided ? (
             <div>
               <Modal
                 content={content}
