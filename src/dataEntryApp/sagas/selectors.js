@@ -1,4 +1,4 @@
-import { find, get, isNil, some, filter } from "lodash";
+import { filter, find, get, isNil, some } from "lodash";
 
 export const selectSubjectTypeFromName = subjectTypeName => state =>
   find(
@@ -55,11 +55,8 @@ export const selectGeneralEncounterTypes = subjectTypeUuid => state => {
 };
 
 export const selectEnableReadonly = state => {
-  let enableReadonly = true;
-  if (state.app.userInfo.settings && state.app.userInfo.settings.dataEntryAppEnableWrites) {
-    enableReadonly = false;
-  }
-  return enableReadonly;
+  //Turning off the toggle permanently
+  return false;
 };
 
 export const selectOperationalModules = state =>
