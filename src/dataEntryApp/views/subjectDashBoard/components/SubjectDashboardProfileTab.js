@@ -101,9 +101,9 @@ const SubjectDashboardProfileTab = ({
   const [unVoidConfirmation, setUnVoidConfirmation] = React.useState(false);
 
   useEffect(() => {
-    if (showGroupMembers) {
-      getGroupMembers(profile.uuid);
-    }
+    // if (showGroupMembers) {
+    //   getGroupMembers(profile.uuid);
+    // }
     sessionStorage.removeItem("selectedRelativeslist");
   }, []);
 
@@ -323,8 +323,8 @@ const SubjectDashboardProfileTab = ({
         <Paper className={classes.root}>
           {renderSubjectProfile()}
           {showRelatives && profile.isPerson() && renderRelatives()}
-          {showGroupMembers && renderGroupMembers()}
-          {profile.memberships && profile.memberships.length > 0 && renderGroupMemberships()}
+          {/*{showGroupMembers && renderGroupMembers()}*/}
+          {/*{profile.memberships && profile.memberships.length > 0 && renderGroupMemberships()}*/}
           {renderDialog(
             "Void the subject",
             voidConfirmation,
