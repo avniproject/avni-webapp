@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "card")
+@Table(name = "report_card")
 @BatchSize(size = 100)
 public class Card extends OrganisationAwareEntity {
 

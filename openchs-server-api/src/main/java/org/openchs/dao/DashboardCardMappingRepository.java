@@ -1,5 +1,6 @@
 package org.openchs.dao;
 
+import org.openchs.domain.Dashboard;
 import org.openchs.domain.DashboardCardMapping;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,4 +18,6 @@ public interface DashboardCardMappingRepository extends ReferenceDataRepository<
     default DashboardCardMapping findByNameIgnoreCase(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");
     }
+
+    DashboardCardMapping findByCardIdAndDashboardAndIsVoidedFalse(Long cardId, Dashboard dashboard);
 }

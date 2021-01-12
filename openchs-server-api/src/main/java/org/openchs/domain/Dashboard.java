@@ -2,6 +2,7 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
+import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.CardContract;
 
 import javax.persistence.*;
@@ -38,10 +39,7 @@ public class Dashboard extends OrganisationAwareEntity {
     }
 
     public void setDashboardCardMappings(Set<DashboardCardMapping> dashboardCardMappings) {
-        this.dashboardCardMappings.clear();
-        if (dashboardCardMappings != null) {
-            this.dashboardCardMappings.addAll(dashboardCardMappings);
-        }
+        this.dashboardCardMappings.addAll(dashboardCardMappings);
     }
 
     public String getDescription() {
@@ -55,6 +53,7 @@ public class Dashboard extends OrganisationAwareEntity {
     public List<CardContract> getCards() {
         Set<DashboardCardMapping> dashboardCardMappings = getDashboardCardMappings();
         return dashboardCardMappings.stream()
+                .filter(c -> !c.isVoided())
                 .map(this::buildCardContract)
                 .collect(Collectors.toList());
     }
