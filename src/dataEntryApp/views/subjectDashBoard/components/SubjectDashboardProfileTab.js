@@ -17,10 +17,10 @@ import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import SubjectVoided from "../../../components/SubjectVoided";
-import GroupSubjectMemberCardView from "../../../components/GroupSubjectMemberCardView";
-import GridCardView from "../../../components/GridCardView";
-import { sortBy } from "lodash";
-import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
+// import GroupSubjectMemberCardView from "../../../components/GroupSubjectMemberCardView";
+// import GridCardView from "../../../components/GridCardView";
+// import { sortBy } from "lodash";
+// import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -210,91 +210,91 @@ const SubjectDashboardProfileTab = ({
     );
   }
 
-  function renderGroupMembers() {
-    // const groupMemberCards = groupMembers && groupMembers.length > 0 && sortBy(groupMembers, [groupMember => groupMember.memberSubject.firstName.toLowerCase()]).map((groupMember) => {
-    //   return <GroupSubjectMemberCardView
-    //     groupSubject={groupMember}
-    //   />
-    // });
-    return (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-          aria-controls="groupMembersPanelbh-content"
-          id="groupMembersPanelbh-header"
-        >
-          <Typography component={"span"} className={classes.expansionHeading}>
-            {t("Members")}
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ paddingTop: "0px", display: "block" }}>
-          {profile.roles && profile.roles.length > 0 ? (
-            sortBy(profile.roles, [profileRole => profileRole.role]).map(profileRole => {
-              return (
-                <ExpansionPanel className={classes.expansionPanel} defaultExpanded>
-                  <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-                    aria-controls="groupMembersRolePanelbh-content"
-                    id="groupMembersRolePanelbh-header"
-                  >
-                    <Typography component={"span"} className={classes.expansionHeading}>
-                      {profileRole.role}
-                    </Typography>
-                  </ExpansionPanelSummary>
-                  <ExpansionPanelDetails>
-                    <GridCardView
-                      cards={sortBy(groupMembers, [
-                        groupMember => groupMember.memberSubject.firstName.toLowerCase()
-                      ])
-                        .filter(groupMember => groupMember.groupRole.role === profileRole.role)
-                        .map(groupMember => (
-                          <GroupSubjectMemberCardView groupSubject={groupMember} />
-                        ))}
-                    />
-                  </ExpansionPanelDetails>
-                </ExpansionPanel>
-              );
-            })
-          ) : (
-            <Typography variant="caption" gutterBottom className={classes.infomsg}>
-              {" "}
-              {t("noGroupMembersAdded")}{" "}
-            </Typography>
-          )}
-        </ExpansionPanelDetails>
-        {
-          <Button color="primary">
-            {/*<InternalLink to={`/app/subject/addGroupSubjectMember?uuid=${profile.uuid}`}>*/}
-            {/*  {" "}*/}
-            {/*  {t("addAGroupMember")}{" "}*/}
-            {/*</InternalLink>{" "}*/}
-          </Button>
-        }
-      </ExpansionPanel>
-    );
-  }
+  // function renderGroupMembers() {
+  //   // const groupMemberCards = groupMembers && groupMembers.length > 0 && sortBy(groupMembers, [groupMember => groupMember.memberSubject.firstName.toLowerCase()]).map((groupMember) => {
+  //   //   return <GroupSubjectMemberCardView
+  //   //     groupSubject={groupMember}
+  //   //   />
+  //   // });
+  //   return (
+  //     <ExpansionPanel className={classes.expansionPanel}>
+  //       <ExpansionPanelSummary
+  //         expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+  //         aria-controls="groupMembersPanelbh-content"
+  //         id="groupMembersPanelbh-header"
+  //       >
+  //         <Typography component={"span"} className={classes.expansionHeading}>
+  //           {t("Members")}
+  //         </Typography>
+  //       </ExpansionPanelSummary>
+  //       <ExpansionPanelDetails style={{ paddingTop: "0px", display: "block" }}>
+  //         {profile.roles && profile.roles.length > 0 ? (
+  //           sortBy(profile.roles, [profileRole => profileRole.role]).map(profileRole => {
+  //             return (
+  //               <ExpansionPanel className={classes.expansionPanel} defaultExpanded>
+  //                 <ExpansionPanelSummary
+  //                   expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+  //                   aria-controls="groupMembersRolePanelbh-content"
+  //                   id="groupMembersRolePanelbh-header"
+  //                 >
+  //                   <Typography component={"span"} className={classes.expansionHeading}>
+  //                     {profileRole.role}
+  //                   </Typography>
+  //                 </ExpansionPanelSummary>
+  //                 <ExpansionPanelDetails>
+  //                   <GridCardView
+  //                     cards={sortBy(groupMembers, [
+  //                       groupMember => groupMember.memberSubject.firstName.toLowerCase()
+  //                     ])
+  //                       .filter(groupMember => groupMember.groupRole.role === profileRole.role)
+  //                       .map(groupMember => (
+  //                         <GroupSubjectMemberCardView groupSubject={groupMember} />
+  //                       ))}
+  //                   />
+  //                 </ExpansionPanelDetails>
+  //               </ExpansionPanel>
+  //             );
+  //           })
+  //         ) : (
+  //           <Typography variant="caption" gutterBottom className={classes.infomsg}>
+  //             {" "}
+  //             {t("noGroupMembersAdded")}{" "}
+  //           </Typography>
+  //         )}
+  //       </ExpansionPanelDetails>
+  //       {
+  //         <Button color="primary">
+  //           {/*<InternalLink to={`/app/subject/addGroupSubjectMember?uuid=${profile.uuid}`}>*/}
+  //           {/*  {" "}*/}
+  //           {/*  {t("addAGroupMember")}{" "}*/}
+  //           {/*</InternalLink>{" "}*/}
+  //         </Button>
+  //       }
+  //     </ExpansionPanel>
+  //   );
+  // }
 
-  function renderGroupMemberships() {
-    const groupMembershipCards = profile.memberships.map(membership => {
-      return <GroupMembershipCardView groupMembership={membership} />;
-    });
-    return (
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-          aria-controls="groupMembershipsPanelbh-content"
-          id="groupMembershipsPanelbh-header"
-        >
-          <Typography component={"span"} className={classes.expansionHeading}>
-            {t("Memberships")}
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-          <GridCardView cards={groupMembershipCards} />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    );
-  }
+  // function renderGroupMemberships() {
+  //   const groupMembershipCards = profile.memberships.map(membership => {
+  //     return <GroupMembershipCardView groupMembership={membership} />;
+  //   });
+  //   return (
+  //     <ExpansionPanel className={classes.expansionPanel}>
+  //       <ExpansionPanelSummary
+  //         expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+  //         aria-controls="groupMembershipsPanelbh-content"
+  //         id="groupMembershipsPanelbh-header"
+  //       >
+  //         <Typography component={"span"} className={classes.expansionHeading}>
+  //           {t("Memberships")}
+  //         </Typography>
+  //       </ExpansionPanelSummary>
+  //       <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
+  //         <GridCardView cards={groupMembershipCards} />
+  //       </ExpansionPanelDetails>
+  //     </ExpansionPanel>
+  //   );
+  // }
 
   const renderDialog = (title, open, setOpen, message, onConfirm) => (
     <ConfirmDialog
