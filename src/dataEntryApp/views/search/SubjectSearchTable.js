@@ -57,11 +57,6 @@ const SubjectSearchTable = ({ searchRequest }) => {
   ];
 
   const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
-
-  useEffect(() => {
-    refreshTable(tableRef);
-  });
 
   const fetchData = query =>
     new Promise(resolve => {
@@ -86,27 +81,25 @@ const SubjectSearchTable = ({ searchRequest }) => {
     });
 
   return (
-    <>
-      <div>
-        <MaterialTable
-          title=""
-          components={{
-            Toolbar: props => <Fragment>{props.children}</Fragment>
-          }}
-          tableRef={tableRef}
-          columns={columns}
-          data={fetchData}
-          options={{
-            pageSize: 10,
-            pageSizeOptions: [10, 15, 20],
-            addRowPosition: "first",
-            sorting: true,
-            debounceInterval: 500,
-            search: false
-          }}
-        />
-      </div>
-    </>
+    <div>
+      <MaterialTable
+        title=""
+        components={{
+          Toolbar: props => <Fragment>{props.children}</Fragment>
+        }}
+        tableRef={tableRef}
+        columns={columns}
+        data={fetchData}
+        options={{
+          pageSize: 10,
+          pageSizeOptions: [10, 15, 20],
+          addRowPosition: "first",
+          sorting: true,
+          debounceInterval: 500,
+          search: false
+        }}
+      />
+    </div>
   );
 };
 
