@@ -8,9 +8,9 @@ import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
-import { Link } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import { isEmpty } from "lodash";
 
 const useStyle = makeStyles(theme => ({
@@ -81,9 +81,9 @@ const SubjectSearch = ({ searchRequest }) => {
         >
           {!isEmpty(searchRequest.subjectType) ? t("searchResults") : ""}
         </Typography>
-        <Link onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
+        <Button onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
           <CancelIcon style={{ fontSize: "12px" }} /> {t("resetFilter")}
-        </Link>
+        </Button>
       </Grid>
 
       <SubjectSearchTable searchRequest={searchRequest} />
