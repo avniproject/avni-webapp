@@ -402,3 +402,22 @@ where fe.organisation_id = :orgId
   or fea.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null)
   or fa.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null)
   or ca.last_modified_by_id in (select id from users where organisation_id != :orgId and organisation_id is not null));
+                                
+ --- To get a full list of locations with respect herierachies
+ --- Update the type_id as per the address_level_type setup done for the org
+ with state as (select address_level.title as name, id from address_level where type_id = 85 and address_level.is_voided = false),
+     city as (select address_level.title as name, id, parent_id from address_level where type_id = 86 and address_level.is_voided = false),
+     zone as (select address_level.title as name, id, parent_id from address_level where type_id = 87 and address_level.is_voided = false),
+     taluka as (select address_level.title as name, id, parent_id from address_level where type_id = 268 and address_level.is_voided = false),
+     ward as (select address_level.title as name, id, parent_id from address_level where type_id = 88 and address_level.is_voided = false)
+
+select state.name as "State",
+       city.name as "City",
+       zone.name as "Zone",
+       taluka.name as "Taluka",
+       ward.name as "Ward"
+from state
+           left join city on city.parent_id = state.id
+           left join zone on zone.parent_id = city.id
+           left join taluka on taluka.parent_id = city.id
+           left join ward on ward.parent_id = zone.id;
