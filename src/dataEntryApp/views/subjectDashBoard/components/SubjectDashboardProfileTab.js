@@ -99,6 +99,13 @@ const SubjectDashboardProfileTab = ({
 
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   const [unVoidConfirmation, setUnVoidConfirmation] = React.useState(false);
+  const [membersChanged, setMembersChanged] = React.useState(false);
+  React.useEffect(() => {
+    if (membersChanged) {
+      getGroupMembers(profile.uuid);
+      setMembersChanged(false);
+    }
+  }, [membersChanged]);
 
   useEffect(() => {
     if (showGroupMembers) {
@@ -211,11 +218,6 @@ const SubjectDashboardProfileTab = ({
   }
 
   function renderGroupMembers() {
-    // const groupMemberCards = groupMembers && groupMembers.length > 0 && sortBy(groupMembers, [groupMember => groupMember.memberSubject.firstName.toLowerCase()]).map((groupMember) => {
-    //   return <GroupSubjectMemberCardView
-    //     groupSubject={groupMember}
-    //   />
-    // });
     return (
       <ExpansionPanel className={classes.expansionPanel}>
         <ExpansionPanelSummary
@@ -229,7 +231,7 @@ const SubjectDashboardProfileTab = ({
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ paddingTop: "0px", display: "block" }}>
           {profile.roles && profile.roles.length > 0 ? (
-            sortBy(profile.roles, [profileRole => profileRole.role]).map(profileRole => {
+            sortBy(profile.roles, [profileRole => profileRole.role]).map((profileRole, index) => {
               return (
                 <ExpansionPanel className={classes.expansionPanel} defaultExpanded>
                   <ExpansionPanelSummary
@@ -237,7 +239,7 @@ const SubjectDashboardProfileTab = ({
                     aria-controls="groupMembersRolePanelbh-content"
                     id="groupMembersRolePanelbh-header"
                   >
-                    <Typography component={"span"} className={classes.expansionHeading}>
+                    <Typography component={"span"} className={classes.expansionHeading} key={index}>
                       {profileRole.role}
                     </Typography>
                   </ExpansionPanelSummary>
@@ -246,9 +248,12 @@ const SubjectDashboardProfileTab = ({
                       cards={sortBy(groupMembers, [
                         groupMember => groupMember.memberSubject.firstName.toLowerCase()
                       ])
-                        .filter(groupMember => groupMember.groupRole.role === profileRole.role)
+                        .filter(groupMember => groupMember.groupRole.uuid === profileRole.uuid)
                         .map(groupMember => (
-                          <GroupSubjectMemberCardView groupSubject={groupMember} />
+                          <GroupSubjectMemberCardView
+                            setMembersChanged={setMembersChanged}
+                            groupSubject={groupMember}
+                          />
                         ))}
                     />
                   </ExpansionPanelDetails>
@@ -264,10 +269,9 @@ const SubjectDashboardProfileTab = ({
         </ExpansionPanelDetails>
         {
           <Button color="primary">
-            {/*<InternalLink to={`/app/subject/addGroupSubjectMember?uuid=${profile.uuid}`}>*/}
-            {/*  {" "}*/}
-            {/*  {t("addAGroupMember")}{" "}*/}
-            {/*</InternalLink>{" "}*/}
+            <InternalLink to={`/app/subject/addGroupMember`}>
+              {/*?groupSubject=${profile.uuid}*/} {t("addAGroupMember")}{" "}
+            </InternalLink>{" "}
           </Button>
         }
       </ExpansionPanel>

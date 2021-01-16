@@ -26,6 +26,7 @@ import SearchFilterFormContainer from "./views/GlobalSearch/SearchFilterForm";
 import Encounter from "./views/subjectDashBoard/components/Encounter";
 import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter";
 import AppBar from "dataEntryApp/components/AppBar";
+import GroupMembershipAddEdit from "./components/GroupMembershipAddEdit";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import i18n from "i18next";
@@ -79,6 +80,16 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
             <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
             <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
             <Route exact path={`${path}/subject/addRelative`} component={AddRelative} />
+            <Route
+              exact
+              path={`${path}/subject/addGroupMember`}
+              component={GroupMembershipAddEdit}
+            />
+            <Route
+              exact
+              path={`${path}/subject/editGroupMembership`}
+              component={GroupMembershipAddEdit}
+            />
             {/* <Route exact path={`${path}/completeVisit/:id/:uuid`} component={CompleteVisit} /> */}
             <Route exact path={`${path}/subject/completedEncounters`} component={CompletedVisits} />
             <Route
