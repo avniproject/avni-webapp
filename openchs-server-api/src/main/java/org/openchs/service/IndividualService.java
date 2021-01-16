@@ -6,7 +6,6 @@ import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.web.request.*;
-import org.openchs.web.request.common.CommonIndividualRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -238,13 +237,13 @@ public class IndividualService {
         return relationshipContract;
     }
 
-    public GroupSubjectMemberContract createGroupSubjectMemberContract(Individual member, GroupRole groupRole) {
-        GroupSubjectMemberContract groupSubjectMemberContract = new GroupSubjectMemberContract();
-
-        groupSubjectMemberContract.setMember(createIndividualContractWeb(member));
-        groupSubjectMemberContract.setRole(GroupRoleContract.fromEntity(groupRole));
-        groupSubjectMemberContract.setEncounterMetadata(createEncounterMetadataContract(member));
-        return groupSubjectMemberContract;
+    public GroupSubjectContractWeb createGroupSubjectContractWeb(String uuid, Individual member, GroupRole groupRole) {
+        GroupSubjectContractWeb groupSubjectContractWeb = new GroupSubjectContractWeb();
+        groupSubjectContractWeb.setUuid(uuid);
+        groupSubjectContractWeb.setMember(createIndividualContractWeb(member));
+        groupSubjectContractWeb.setRole(GroupRoleContract.fromEntity(groupRole));
+        groupSubjectContractWeb.setEncounterMetadata(createEncounterMetadataContract(member));
+        return groupSubjectContractWeb;
     }
 
     private IndividualContract createIndividualContractWeb(Individual individual) {
@@ -264,7 +263,7 @@ public class IndividualService {
         EncounterMetadataContract encounterMetadataContract = new EncounterMetadataContract();
 
         Long scheduledEncounters = individual.scheduledEncounters().count();
-        Long overdueEncounters = individual.scheduledEncounters().filter(encounter -> encounter.getMaxVisitDateTime().isAfterNow()).count();
+        Long overdueEncounters = individual.scheduledEncounters().filter(encounter -> encounter.getMaxVisitDateTime().isBeforeNow()).count();
 
         encounterMetadataContract.setDueEncounters(scheduledEncounters - overdueEncounters);
         encounterMetadataContract.setOverdueEncounters(overdueEncounters);

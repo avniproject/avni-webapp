@@ -11,7 +11,7 @@ import org.openchs.service.UserService;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.GroupRoleContract;
 import org.openchs.web.request.GroupSubjectContract;
-import org.openchs.web.request.GroupSubjectMemberContract;
+import org.openchs.web.request.GroupSubjectContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -85,17 +84,30 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         groupSubjectRepository.save(existingOrNewGroupSubject);
     }
 
+    @RequestMapping(value = "/groupSubjects/{groupSubjectUuid}", method = RequestMethod.DELETE)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public void delete(@PathVariable String groupSubjectUuid) {
+        GroupSubject groupSubject = groupSubjectRepository.findByUuid(groupSubjectUuid);
+        if (groupSubject != null) {
+            groupSubject.setVoided(true);
+            groupSubjectRepository.save(groupSubject);
+        } else {
+            throw new BadRequestError("Invalid GroupSubject Uuid");
+        }
+    }
+
     @RequestMapping(value = "/web/groupSubjects/{groupUuid}/members", method = RequestMethod.GET)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
-    public List<GroupSubjectMemberContract> getGroupMembers(@PathVariable String groupUuid) {
+    public List<GroupSubjectContractWeb> getGroupMembers(@PathVariable String groupUuid) {
         Individual group = individualRepository.findByUuid(groupUuid);
         if (group != null) {
-            List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubject(group);
+            List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubjectAndIsVoidedFalse(group);
             return groupSubjects.stream().map(groupSubject -> {
-                Individual individual = individualRepository.findByUuid(groupSubject.getMemberSubjectUUID());
+                Individual member = individualRepository.findByUuid(groupSubject.getMemberSubjectUUID());
                 GroupRole groupRole = groupRoleRepository.findByUuid(groupSubject.getGroupRole().getUuid());
-                return individualService.createGroupSubjectMemberContract(individual, groupRole);
+                return individualService.createGroupSubjectContractWeb(groupSubject.getUuid(), member, groupRole);
             }).collect(Collectors.toList());
         } else {
             throw new BadRequestError("Invalid Group Id");

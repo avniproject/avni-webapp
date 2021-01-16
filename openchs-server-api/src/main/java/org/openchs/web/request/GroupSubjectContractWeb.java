@@ -2,7 +2,7 @@ package org.openchs.web.request;
 
 import org.openchs.web.request.common.CommonIndividualRequest;
 
-public class GroupSubjectMemberContract {
+public class GroupSubjectContractWeb extends CHSRequest {
     IndividualContract group;
     IndividualContract member;
     GroupRoleContract role;
