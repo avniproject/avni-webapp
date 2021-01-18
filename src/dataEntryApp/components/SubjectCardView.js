@@ -4,11 +4,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { InternalLink } from "../../common/components/utils";
 
 const useStyles = () =>
-  makeStyles(theme => ({
+  makeStyles(() => ({
     card: {
       boxShadow: "0px 0px 0px 0px",
       borderRadius: "0",
-      width: 150,
+      width: 100,
       whiteSpace: "pre-wrap",
       overflowWrap: "break-word",
       height: 150,
@@ -22,12 +22,12 @@ const useStyles = () =>
 const SubjectCardView = ({ uuid, name, gender, age, location, ...props }) => {
   const classes = useStyles();
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} key={uuid}>
       <CardContent className={classes.cardContent}>
         <Typography component={"div"} align={"center"} color="primary" gutterBottom>
           <InternalLink to={`/app/subject?uuid=${uuid}`}>{name}</InternalLink>
         </Typography>
-        {[gender, age, location].map(element => {
+        {[gender, age, location].map((element, index) => {
           return (
             element && (
               <Typography
@@ -35,6 +35,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, ...props }) => {
                 className={classes[element]}
                 gutterBottom
                 align={"center"}
+                key={index}
               >
                 {element}
               </Typography>

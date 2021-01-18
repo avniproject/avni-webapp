@@ -1,57 +1,136 @@
 import React from "react";
 import SubjectCardView from "./SubjectCardView";
-// import {CardActions} from "@material-ui/core";
-// import Button from "@material-ui/core/Button";
-// import {InternalLink} from "../../common/components/utils";
+import { CardActions } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import Typography from "@material-ui/core/Typography";
+import DialogContent from "@material-ui/core/DialogContent";
+import Grid from "@material-ui/core/Grid";
+import Modal from "../views/subjectDashBoard/components/CommonModal";
+import { noop } from "lodash";
+import { makeStyles } from "@material-ui/core/styles";
+import api from "../api";
 
-// const handleDelete = () => {
+const useStyles = makeStyles(() => ({
+  removeButtonStyle: {
+    height: "28px",
+    zIndex: 1,
+    marginTop: "1px",
+    paddingLeft: "10px",
+    boxShadow: "none",
+    color: "#0e6eff",
+    backgroundColor: "#fff",
+    "&:hover": {
+      color: "#0e6eff",
+      backgroundColor: "#fff"
+    }
+  },
+  btnCustom: {
+    float: "left",
+    backgroundColor: "#f27510",
+    height: "30px",
+    boxShadow: "none",
+    "&:hover": {
+      backgroundColor: "#f27510"
+    }
+  },
+  cancelBtnCustom: {
+    float: "left",
+    backgroundColor: "#F8F9F9",
+    color: "#fc9153",
+    border: "1px solid #fc9153",
+    height: "30px",
+    boxShadow: "none",
+    "&:hover": {
+      backgroundColor: "#F8F9F9"
+    }
+  }
+}));
 
-// }
 const GroupSubjectMemberCardView = ({
+  setMembersChanged,
   groupSubject: {
     memberSubject,
     encounterMetadata: { dueEncounters, overdueEncounters },
-    groupRole,
+    // groupRole,
     uuid
   }
 }) => {
   const { t } = useTranslation();
+  const classes = useStyles();
+
+  const removeGroupMemberDialogContent = (
+    <DialogContent style={{ width: 600, height: "auto" }}>
+      <Grid container direction="row" justify="flex-end" alignItems="flex-start">
+        <Typography variant="subtitle1" gutterBottom>
+          Do you want to remove {memberSubject.nameString} from this group?
+        </Typography>
+      </Grid>
+    </DialogContent>
+  );
 
   return (
-    <SubjectCardView
-      uuid={memberSubject.uuid}
-      name={memberSubject.nameString}
-      gender={memberSubject.gender && memberSubject.gender.name}
-      age={memberSubject.dateOfBirth && memberSubject.getAgeInYears() + " " + t("years")}
-      location={memberSubject.lowestAddressLevel && memberSubject.lowestAddressLevel.name}
-    >
-      {dueEncounters && dueEncounters > 0 ? (
-        <Typography color="textSecondary" align={"center"}>
-          {t("Due") + ": " + dueEncounters}
-        </Typography>
-      ) : (
-        ""
-      )}
-      {overdueEncounters && overdueEncounters > 0 ? (
-        <Typography color="textSecondary" align={"center"}>
-          {t("Overdue") + ": " + overdueEncounters}
-        </Typography>
-      ) : (
-        ""
-      )}
-      {/*<CardActions>*/}
-      {/*  <Button color="primary">*/}
-      {/*    <InternalLink to={`/app/subject/editGroupSubjectMembership?uuid=${uuid}`}>*/}
-      {/*      {t("edit")}*/}
-      {/*    </InternalLink>*/}
-      {/*  </Button>*/}
-      {/*  <Button color="primary" onClick={handleDelete}>*/}
-      {/*      {t("remove")}*/}
-      {/*  </Button>*/}
-      {/*</CardActions>*/}
-    </SubjectCardView>
+    <div>
+      <SubjectCardView
+        uuid={memberSubject.uuid}
+        name={memberSubject.nameString}
+        gender={memberSubject.gender && memberSubject.gender.name}
+        age={memberSubject.dateOfBirth && memberSubject.getAgeInYears() + " " + t("years")}
+        location={memberSubject.lowestAddressLevel && memberSubject.lowestAddressLevel.name}
+      >
+        {dueEncounters && dueEncounters > 0 ? (
+          <Typography color="textSecondary" align={"center"}>
+            {t("Due") + ": " + dueEncounters}
+          </Typography>
+        ) : (
+          ""
+        )}
+        {overdueEncounters && overdueEncounters > 0 ? (
+          <Typography color="textSecondary" align={"center"}>
+            {t("Overdue") + ": " + overdueEncounters}
+          </Typography>
+        ) : (
+          ""
+        )}
+        <CardActions>
+          <Button color="primary">
+            <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>
+              {t("edit")}
+            </InternalLink>
+          </Button>
+          <Modal
+            content={removeGroupMemberDialogContent}
+            handleError={noop}
+            buttonsSet={[
+              {
+                buttonType: "openButton",
+                label: t("Remove"),
+                classes: classes.removeButtonStyle
+              },
+              {
+                buttonType: "applyButton",
+                label: "Remove",
+                redirectTo: ``,
+                classes: classes.btnCustom,
+                click: () => {
+                  api
+                    .deleteGroupSubject(uuid)
+                    .then(() => setTimeout(() => setMembersChanged(true), 250));
+                }
+              },
+              {
+                buttonType: "cancelButton",
+                label: t("cancel"),
+                classes: classes.cancelBtnCustom
+              }
+            ]}
+            title="Remove Member"
+            btnHandleClose={noop}
+          />
+        </CardActions>
+      </SubjectCardView>
+    </div>
   );
 };
 

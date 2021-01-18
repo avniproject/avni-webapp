@@ -193,20 +193,24 @@ export const mapMemberships = memberships => {
       let groupSubject = GroupSubject.createEmptyInstance(membership.uuid);
       groupSubject.groupSubject.uuid = membership["groupSubjectUUID"];
       groupSubject.groupSubject.name = membership["groupSubjectName"];
-      groupSubject.groupRole = mapGroupRole(
-        membership["groupRoleUUID"],
-        membership["groupRoleName"]
-      );
+      groupSubject.groupRole = mapGroupRole({
+        uuid: membership["groupRoleUUID"],
+        role: membership["groupRoleName"]
+      });
       return groupSubject;
     });
   }
 };
 
-export const mapGroupRole = (groupRoleUuid, groupRoleName) => {
-  if (groupRoleUuid && groupRoleName) {
-    let groupRole = new GroupRole();
-    groupRole.uuid = groupRoleUuid;
-    groupRole.role = groupRoleName;
+export const mapGroupRole = groupRoleData => {
+  if (groupRoleData) {
+    let groupRole = General.assignFields(groupRoleData, new GroupRole(), [
+      "uuid",
+      "role",
+      "maximumNumberOfMembers",
+      "minimumNumberOfMembers"
+    ]);
+    groupRole.memberSubjectTypeUUID = groupRoleData.memberSubjectTypeUUID;
     return groupRole;
   }
 };
@@ -214,19 +218,20 @@ export const mapGroupRole = (groupRoleUuid, groupRoleName) => {
 export const mapRoles = groupRoles => {
   if (groupRoles) {
     return groupRoles.map(groupRole => {
-      return mapGroupRole(groupRole.uuid, groupRole.role);
+      return mapGroupRole(groupRole);
     });
   }
 };
 
-export const mapGroupMembers = groupMembers => {
-  if (groupMembers) {
-    return groupMembers.map(groupMember => {
-      let groupSubject = new GroupSubject();
-      groupSubject.memberSubject = mapIndividual(groupMember.member);
-      groupSubject.groupRole = mapGroupRole(groupMember.role.uuid, groupMember.role.role);
-      groupSubject.encounterMetadata = groupMember.encounterMetadata;
-      return groupSubject;
+export const mapGroupMembers = groupSubjects => {
+  if (groupSubjects) {
+    return groupSubjects.map(groupSubject => {
+      let mappedGroupSubject = new GroupSubject();
+      mappedGroupSubject.uuid = groupSubject.uuid;
+      mappedGroupSubject.memberSubject = mapIndividual(groupSubject.member);
+      mappedGroupSubject.groupRole = mapGroupRole(groupSubject.role);
+      mappedGroupSubject.encounterMetadata = groupSubject.encounterMetadata;
+      return mappedGroupSubject;
     });
   }
 };

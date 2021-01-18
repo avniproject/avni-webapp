@@ -122,5 +122,9 @@ export default {
       return response.json;
     }),
   fetchIdentifierAssignments: formUuid =>
-    httpClient.get(`/web/form/${formUuid}/identifierAssignments`).then(response => response.data)
+    httpClient.get(`/web/form/${formUuid}/identifierAssignments`).then(response => response.data),
+  addEditGroupSubject: groupSubjectContract =>
+    httpClient.post("/groupSubjects", groupSubjectContract).then(response => response.data),
+  deleteGroupSubject: uuid =>
+    httpClient.delete(`/groupSubjects/${uuid}`).then(response => response.data)
 };
