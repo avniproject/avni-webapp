@@ -77,7 +77,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         existingOrNewGroupSubject.setGroupSubject(groupSubject);
         existingOrNewGroupSubject.setMemberSubject(memberSubject);
         existingOrNewGroupSubject.setGroupRole(groupRole);
-        existingOrNewGroupSubject.setMembershipStartDate(request.getMembershipStartDate());
+        existingOrNewGroupSubject.setMembershipStartDate(request.getMembershipStartDate() != null ? request.getMembershipStartDate() : new DateTime());
         existingOrNewGroupSubject.setMembershipEndDate(request.getMembershipEndDate());
         existingOrNewGroupSubject.setVoided(request.isVoided());
 
