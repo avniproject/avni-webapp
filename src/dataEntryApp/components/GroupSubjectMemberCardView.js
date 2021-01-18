@@ -13,11 +13,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import api from "../api";
 
 const useStyles = makeStyles(() => ({
+  cardActions: {
+    display: "flex",
+    justifyContent: "space-between"
+  },
   removeButtonStyle: {
     height: "28px",
     zIndex: 1,
     marginTop: "1px",
-    paddingLeft: "10px",
     boxShadow: "none",
     color: "#0e6eff",
     backgroundColor: "#fff",
@@ -62,7 +65,7 @@ const GroupSubjectMemberCardView = ({
 
   const removeGroupMemberDialogContent = (
     <DialogContent style={{ width: 600, height: "auto" }}>
-      <Grid container direction="row" justify="flex-end" alignItems="flex-start">
+      <Grid container direction="row" alignItems="flex-start">
         <Typography variant="subtitle1" gutterBottom>
           Do you want to remove {memberSubject.nameString} from this group?
         </Typography>
@@ -93,7 +96,7 @@ const GroupSubjectMemberCardView = ({
         ) : (
           ""
         )}
-        <CardActions>
+        <CardActions className={classes.cardActions}>
           <Button color="primary">
             <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>
               {t("edit")}
