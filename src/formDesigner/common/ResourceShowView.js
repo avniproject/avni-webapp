@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from "react";
-import http from "../../../common/utils/httpClient";
+import http from "../../common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import EditIcon from "@material-ui/icons/Edit";
 import Box from "@material-ui/core/Box";
 import { Redirect } from "react-router-dom";
 import { Title } from "react-admin";
-import { ShowLabelValue } from "../../common/ShowLabelValue";
 
-export const VideoShow = props => {
-  const [video, setVideo] = React.useState({});
+const ResourceShowView = ({ title, resourceId, resourceName, resourceURLName, renderColumns }) => {
+  const [resource, setResource] = React.useState({});
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {
-    http.get(`/web/video/${props.match.params.id}`).then(res => setVideo(res.data));
+    http.get(`/web/${resourceName}/${resourceId}`).then(res => setResource(res.data));
   }, []);
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"Show Video : " + video.title} />
+      <Title title={`Show ${title} : ${resource.name}`} />
       <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
         <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
           <EditIcon />
@@ -26,16 +25,11 @@ export const VideoShow = props => {
         </Button>
       </Grid>
       <div className="container" style={{ float: "left" }}>
-        <ShowLabelValue label={"Name"} value={video.title} />
-        <p />
-        <ShowLabelValue label={"Description"} value={video.description} />
-        <p />
-        <ShowLabelValue label={"File name"} value={video.fileName} />
-        <p />
-        <ShowLabelValue label={"Duration"} value={video.duration} />
-        <p />
+        {renderColumns(resource)}
       </div>
-      {editAlert && <Redirect to={"/appDesigner/video/" + props.match.params.id} />}
+      {editAlert && <Redirect to={`/appDesigner/${resourceURLName}/${resourceId}`} />}
     </Box>
   );
 };
+
+export default ResourceShowView;

@@ -158,3 +158,11 @@ export const sampleWorkListUpdationRule = () => {
 
 };`;
 };
+
+export const sampleCardQuery = () => {
+  return `'use strict';
+({params, imports}) => {
+    //return params.db.objects('Individual')
+        //.filter(individual => individual.voided === false)
+};`;
+};

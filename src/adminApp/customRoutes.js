@@ -22,6 +22,8 @@ import RelationshipTypeCreate from "../formDesigner/components/RelationshipTypes
 import { CreateEditVideo } from "../formDesigner/components/Video/CreateEditVideo";
 import { VideoShow } from "../formDesigner/components/Video/VideoShow";
 import { WithProps } from "../common/components/utils";
+import { CreateEditReportCard } from "../formDesigner/components/ReportCard/CreateEditReportCard";
+import { ReportCardShow } from "../formDesigner/components/ReportCard/ReportCardShow";
 
 const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
@@ -48,5 +50,16 @@ export default [
   <Route exact path="/relationshiptype/create" component={RelationshipTypeCreate} />,
   <Route exact path="/video/create" component={WithProps({ edit: false }, CreateEditVideo)} />,
   <Route exact path="/video/:id" component={WithProps({ edit: true }, CreateEditVideo)} />,
-  <Route exact path="/video/:id/show" component={VideoShow} />
+  <Route exact path="/video/:id/show" component={VideoShow} />,
+  <Route
+    exact
+    path="/reportCard/create"
+    component={WithProps({ edit: false }, CreateEditReportCard)}
+  />,
+  <Route
+    exact
+    path="/reportCard/:id"
+    component={WithProps({ edit: true }, CreateEditReportCard)}
+  />,
+  <Route exact path="/reportCard/:id/show" component={ReportCardShow} />
 ];

@@ -105,5 +105,9 @@
   "ADMIN_USER_SETTINGS_DATA_ENTRY_APP_ENABLE_WRITES": "Enable write functionality for web based data entry app. Write functionality is in beta so may have issues.",
   "ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX": "Identifier prefix for ids generated for this user. See [documentation](https://avni.readme.io/docs/creating-identifiers) for more information",
   "ADMIN_USER_SETTINGS_DATE_PICKER_MODE": "Set default date picker for the Field App",
-  "ADMIN_USER_SETTINGS_TIME_PICKER_MODE": "Set default time picker for the Field App"
+  "ADMIN_USER_SETTINGS_TIME_PICKER_MODE": "Set default time picker for the Field App",
+  "APP_DESIGNER_CARD_NAME": "Name of the card that will be shown in the Field App",
+  "APP_DESIGNER_CARD_DESCRIPTION": "Description of the card",
+  "APP_DESIGNER_CARD_COLOR": "Colour of the card",
+  "APP_DESIGNER_CARD_QUERY": "Actual query function to fetch subjects"
 }

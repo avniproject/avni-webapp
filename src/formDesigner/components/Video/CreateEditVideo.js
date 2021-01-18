@@ -99,7 +99,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"Create Relationship"} />
+      <Title title={"Create Video"} />
       <DocumentationContainer filename={"Video.md"}>
         {edit && (
           <Grid container style={{ justifyContent: "flex-end" }}>
