@@ -24,6 +24,7 @@ import RelationshipTypeList from "../formDesigner/components/RelationshipTypes/R
 import { VideoList } from "../formDesigner/components/Video/VideoList";
 import ReportingViews from "../formDesigner/components/ReportingViews/ReportingViews";
 import ReportCardList from "../formDesigner/components/ReportCard/ReportCardList";
+import DashboardList from "../formDesigner/components/Dashboard/DashboardList";
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -89,6 +90,7 @@ class OrgManagerAppDesigner extends Component {
             list={ReportingViews}
           />
           <Resource name="reportCard" options={{ label: "Report Card" }} list={ReportCardList} />
+          <Resource name="dashboard" options={{ label: "Dashboard" }} list={DashboardList} />
         </Admin>
       </React.Fragment>
     );

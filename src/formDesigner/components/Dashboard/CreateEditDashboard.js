@@ -1,36 +1,32 @@
 import React from "react";
-import { ReportCardReducer } from "./ReportCardReducer";
+import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
 import { find, get, isEmpty, isNil } from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
-import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
+import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { SaveComponent } from "../../../common/components/SaveComponent";
+import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect } from "react-router-dom";
-import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
-import ColorPicker from "material-ui-rc-color-picker";
-import { colorPickerCSS } from "../../../adminApp/Constant";
-import { sampleCardQuery } from "../../common/SampleRule";
+import DraggableDashboardCards from "./DraggableDashboardCards";
+import { SelectCardsView } from "./SelectCardsView";
 
-const initialState = { name: "", description: "", color: "#ff0000", query: "" };
-export const CreateEditReportCard = ({ edit, ...props }) => {
-  const [card, dispatch] = React.useReducer(ReportCardReducer, initialState);
+const initialState = { name: "", description: "", cards: [] };
+export const CreateEditDashboard = ({ edit, history, ...props }) => {
+  const [dashboard, dispatch] = React.useReducer(DashboardReducer, initialState);
   const [error, setError] = React.useState([]);
   const [id, setId] = React.useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
-
   React.useEffect(() => {
     if (edit) {
       http
-        .get(`/web/card/${props.match.params.id}`)
+        .get(`/web/dashboard/${props.match.params.id}`)
         .then(res => res.data)
         .then(res => {
           dispatch({ type: "setData", payload: res });
@@ -39,28 +35,25 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   }, []);
 
   const validateRequest = () => {
-    const { name, color, query } = card;
-    if (isEmpty(name) && isEmpty(color) && isEmpty(query)) {
+    const { name, cards } = dashboard;
+    if (isEmpty(name) && isEmpty(cards)) {
       setError([
         { key: "EMPTY_NAME", message: "Name cannot be empty" },
-        { key: "EMPTY_COLOR", message: "Colour cannot be empty" },
-        { key: "EMPTY_QUERY", message: "Query cannot be empty" }
+        { key: "EMPTY_CARDS", message: "Cards cannot be empty" }
       ]);
     } else if (isEmpty(name)) {
       setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-    } else if (isEmpty(color)) {
-      setError([...error, { key: "EMPTY_COLOR", message: "Colour cannot be empty" }]);
-    } else if (isEmpty(query)) {
-      setError([...error, { key: "EMPTY_QUERY", message: "Query cannot be empty" }]);
+    } else if (isEmpty(cards)) {
+      setError([...error, { key: "EMPTY_CARDS", message: "Cards cannot be empty" }]);
     }
   };
 
   const onSave = () => {
     validateRequest();
-    if (!isEmpty(card.name) && !isEmpty(card.color) && !isEmpty(card.query)) {
-      const url = edit ? `/web/card/${props.match.params.id}` : "/web/card";
+    if (!isEmpty(dashboard.name) && !isEmpty(dashboard.cards)) {
+      const url = edit ? `/web/dashboard/${props.match.params.id}` : "/web/dashboard";
       const methodName = edit ? "put" : "post";
-      http[methodName](url, card)
+      http[methodName](url, dashboard)
         .then(res => {
           if (res.status === 200) {
             setId(res.data.id);
@@ -72,7 +65,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
               key: "SERVER_ERROR",
               message: `${get(error, "response.data") ||
                 get(error, "message") ||
-                "error while saving card"}`
+                "error while saving dashboard"}`
             }
           ]);
         });
@@ -80,9 +73,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   };
 
   const onDelete = () => {
-    if (window.confirm("Do you really want to delete card record?")) {
+    if (window.confirm("Do you really want to delete dashboard record?")) {
       http
-        .delete(`/web/card/${props.match.params.id}`)
+        .delete(`/web/dashboard/${props.match.params.id}`)
         .then(response => {
           if (response.status === 200) {
             setRedirectAfterDelete(true);
@@ -108,8 +101,8 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"Create Card"} />
-      <DocumentationContainer filename={"Card.md"}>
+      <Title title={"Create Dashboard"} />
+      <DocumentationContainer filename={"Dashboard.md"}>
         {edit && (
           <Grid container style={{ justifyContent: "flex-end" }}>
             <Button color="primary" type="button" onClick={() => setId(props.match.params.id)}>
@@ -122,9 +115,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           id="name"
           label="Name*"
           autoComplete="off"
-          value={card.name}
+          value={dashboard.name}
           onChange={event => onChange("name", event, "EMPTY_NAME")}
-          toolTipKey={"APP_DESIGNER_CARD_NAME"}
+          toolTipKey={"APP_DESIGNER_DASHBOARD_NAME"}
         />
         {getErrorByKey("EMPTY_NAME")}
         <p />
@@ -133,36 +126,17 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           id="description"
           label="Description"
           autoComplete="off"
-          value={card.description}
+          value={dashboard.description}
           onChange={event => dispatch({ type: "description", payload: event.target.value })}
-          toolTipKey={"APP_DESIGNER_CARD_DESCRIPTION"}
+          toolTipKey={"APP_DESIGNER_DASHBOARD_DESCRIPTION"}
         />
         <p />
-        <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_CARD_COLOR"} />
-        <ColorPicker
-          id="colour"
-          label="Colour"
-          style={colorPickerCSS}
-          color={card.color}
-          onChange={color => dispatch({ type: "color", payload: color.color })}
-        />
-        <p />
-        {getErrorByKey("EMPTY_COLOR")}
-        <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
-        <Editor
-          value={card.query || sampleCardQuery()}
-          onValueChange={event => dispatch({ type: "query", payload: event })}
-          highlight={code => highlight(code, languages.js)}
-          padding={10}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 15,
-            height: "auto",
-            borderStyle: "solid",
-            borderWidth: "1px"
-          }}
-        />
-        {getErrorByKey("EMPTY_QUERY")}
+        <AvniFormLabel label={"Cards"} toolTipKey={"APP_DESIGNER_DASHBOARD_CARDS"} />
+        <div style={{ width: "80%" }}>
+          <SelectCardsView dashboardCards={dashboard.cards} dispatch={dispatch} />
+          <DraggableDashboardCards cards={dashboard.cards} dispatch={dispatch} history={history} />
+        </div>
+        {getErrorByKey("EMPTY_CARDS")}
         <p />
         {getErrorByKey("SERVER_ERROR")}
         <Grid container direction={"row"}>
@@ -177,8 +151,8 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             )}
           </Grid>
         </Grid>
-        {!isNil(id) && <Redirect to={`/appDesigner/reportCard/${id}/show`} />}
-        {redirectAfterDelete && <Redirect to="/appDesigner/reportCard" />}
+        {!isNil(id) && <Redirect to={`/appDesigner/dashboard/${id}/show`} />}
+        {redirectAfterDelete && <Redirect to="/appDesigner/dashboard" />}
       </DocumentationContainer>
     </Box>
   );

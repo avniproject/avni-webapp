@@ -24,6 +24,8 @@ import { VideoShow } from "../formDesigner/components/Video/VideoShow";
 import { WithProps } from "../common/components/utils";
 import { CreateEditReportCard } from "../formDesigner/components/ReportCard/CreateEditReportCard";
 import { ReportCardShow } from "../formDesigner/components/ReportCard/ReportCardShow";
+import { CreateEditDashboard } from "../formDesigner/components/Dashboard/CreateEditDashboard";
+import { DashboardShow } from "../formDesigner/components/Dashboard/DashboardShow";
 
 const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
@@ -61,5 +63,12 @@ export default [
     path="/reportCard/:id"
     component={WithProps({ edit: true }, CreateEditReportCard)}
   />,
-  <Route exact path="/reportCard/:id/show" component={ReportCardShow} />
+  <Route exact path="/reportCard/:id/show" component={ReportCardShow} />,
+  <Route
+    exact
+    path="/dashboard/create"
+    component={WithProps({ edit: false }, CreateEditDashboard)}
+  />,
+  <Route exact path="/dashboard/:id" component={WithProps({ edit: true }, CreateEditDashboard)} />,
+  <Route exact path="/dashboard/:id/show" component={DashboardShow} />
 ];
