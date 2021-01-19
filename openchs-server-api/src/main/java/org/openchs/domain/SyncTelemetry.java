@@ -49,6 +49,18 @@ public class SyncTelemetry {
     @Column
     private String deviceName;
 
+    @Column
+    @Type(type = "jsonObject")
+    private JsonObject deviceInfo;
+
+    public JsonObject getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public void setDeviceInfo(JsonObject deviceInfo) {
+        this.deviceInfo = deviceInfo;
+    }
+
     public User getUser() {
         return user;
     }

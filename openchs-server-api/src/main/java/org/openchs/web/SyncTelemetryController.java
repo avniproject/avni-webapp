@@ -51,6 +51,7 @@ public class SyncTelemetryController implements RestControllerResourceProcessor<
         syncTelemetry.setAppVersion(request.getAppVersion());
         syncTelemetry.setAndroidVersion(request.getAndroidVersion());
         syncTelemetry.setDeviceName(request.getDeviceName());
+        syncTelemetry.setDeviceInfo(request.getDeviceInfo());
         syncTelemetryRepository.save(syncTelemetry);
     }
 }

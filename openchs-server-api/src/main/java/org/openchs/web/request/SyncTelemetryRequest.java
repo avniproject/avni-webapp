@@ -13,6 +13,15 @@ public class SyncTelemetryRequest {
     private String appVersion;
     private String androidVersion;
     private String deviceName;
+    private JsonObject deviceInfo;
+
+    public JsonObject getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public void setDeviceInfo(JsonObject deviceInfo) {
+        this.deviceInfo = deviceInfo;
+    }
 
     public String getUuid() {
         return uuid;
