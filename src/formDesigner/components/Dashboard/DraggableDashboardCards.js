@@ -12,6 +12,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Box from "@material-ui/core/Box";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { isEmpty, map, orderBy } from "lodash";
+import Grid from "@material-ui/core/Grid";
+import DragHandleIcon from "@material-ui/icons/DragHandle";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -33,6 +35,7 @@ class DraggableDashboardCards extends Component {
   constructor(props) {
     super(props);
     this.onDragEnd = this.onDragEnd.bind(this);
+    this.state = { currentCardId: undefined };
   }
 
   onDragEnd(result) {
@@ -43,13 +46,44 @@ class DraggableDashboardCards extends Component {
     this.props.dispatch({ type: "changeDisplayOrder", payload: cards });
   }
 
+  renderDragIcon(cardId) {
+    return (
+      <div style={{ height: 5, align: "center" }}>
+        <div hidden={this.state.currentCardId !== cardId}>
+          <DragHandleIcon color={"disabled"} />
+        </div>
+      </div>
+    );
+  }
+
+  renderCard(card) {
+    return (
+      <ListItem
+        onMouseEnter={() => this.setState({ currentCardId: card.id })}
+        onMouseLeave={() => this.setState({ currentCardId: undefined })}
+      >
+        <ListItemText primary={card.name} secondary={card.description} />
+        <ListItemSecondaryAction>
+          <IconButton
+            onClick={() => this.props.history.push(`/appDesigner/reportCard/${card.id}/show`)}
+          >
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton onClick={() => this.props.dispatch({ type: "deleteCard", payload: card })}>
+            <DeleteIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+    );
+  }
+
   render() {
     const cards = this.props.cards;
     return (
       !isEmpty(cards) && (
         <Box border={2} mt={2} borderColor={"rgba(133,133,133,0.49)"}>
           <DragDropContext onDragEnd={this.onDragEnd}>
-            <Droppable droppableId="droppable">
+            <Droppable droppableId="drop_card">
               {(provided, snapshot) => (
                 <RootRef rootRef={provided.innerRef}>
                   <List style={getListStyle(snapshot.isDraggingOver)}>
@@ -63,30 +97,12 @@ class DraggableDashboardCards extends Component {
                             style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                           >
                             <Box border={2} m={3} borderColor={"rgba(133,133,133,0.49)"}>
-                              <ListItem>
-                                <ListItemText primary={card.name} secondary={card.description} />
-                                <ListItemSecondaryAction>
-                                  <IconButton
-                                    onClick={() =>
-                                      this.props.history.push(
-                                        `/appDesigner/reportCard/${card.id}/show`
-                                      )
-                                    }
-                                  >
-                                    <VisibilityIcon />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() =>
-                                      this.props.dispatch({
-                                        type: "deleteCard",
-                                        payload: card
-                                      })
-                                    }
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </ListItemSecondaryAction>
-                              </ListItem>
+                              <Grid container direction={"column"}>
+                                <Grid item align="center">
+                                  {this.renderDragIcon(card.id)}
+                                </Grid>
+                                <Grid item>{this.renderCard(card)}</Grid>
+                              </Grid>
                             </Box>
                           </div>
                         )}

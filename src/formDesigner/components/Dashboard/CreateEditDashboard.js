@@ -132,10 +132,16 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         />
         <p />
         <AvniFormLabel label={"Cards"} toolTipKey={"APP_DESIGNER_DASHBOARD_CARDS"} />
-        <div style={{ width: "80%" }}>
-          <SelectCardsView dashboardCards={dashboard.cards} dispatch={dispatch} />
-          <DraggableDashboardCards cards={dashboard.cards} dispatch={dispatch} history={history} />
-        </div>
+        <Grid container>
+          <Grid item xs={10}>
+            <SelectCardsView dashboardCards={dashboard.cards} dispatch={dispatch} />
+            <DraggableDashboardCards
+              cards={dashboard.cards}
+              dispatch={dispatch}
+              history={history}
+            />
+          </Grid>
+        </Grid>
         {getErrorByKey("EMPTY_CARDS")}
         <p />
         {getErrorByKey("SERVER_ERROR")}

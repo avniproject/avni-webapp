@@ -34,7 +34,7 @@ export const SelectCardsView = ({ dashboardCards, dispatch }) => {
 
   return (
     <div>
-      <Grid container spacing={2} style={{ width: "100%" }}>
+      <Grid container spacing={2}>
         <Grid item xs={10}>
           <Select
             name="addCard"
