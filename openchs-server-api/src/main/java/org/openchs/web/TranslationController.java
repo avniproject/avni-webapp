@@ -47,6 +47,8 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
     private final PlatformTranslationRepository platformTranslationRepository;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
+    private final CardRepository cardRepository;
+    private final DashboardRepository dashboardRepository;
     private final String REGISTRATION_PREFIX = "REG_DISPLAY-";
     private final String ENROLMENT_PREFIX = "REG_ENROL_DISPLAY-";
 
@@ -66,7 +68,10 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                           OrganisationConfigRepository organisationConfigRepository,
                           FormRepository formRepository,
                           PlatformTranslationRepository platformTranslationRepository,
-                          AddressLevelTypeRepository addressLevelTypeRepository, OperationalSubjectTypeRepository operationalSubjectTypeRepository) {
+                          AddressLevelTypeRepository addressLevelTypeRepository,
+                          OperationalSubjectTypeRepository operationalSubjectTypeRepository,
+                          CardRepository cardRepository,
+                          DashboardRepository dashboardRepository) {
         this.translationRepository = translationRepository;
         this.formElementGroupRepository = formElementGroupRepository;
         this.formElementRepository = formElementRepository;
@@ -84,6 +89,8 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
         this.platformTranslationRepository = platformTranslationRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
+        this.cardRepository = cardRepository;
+        this.dashboardRepository = dashboardRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -153,7 +160,9 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                 conceptAnswerRepository.getAllNames(),
                 formRepository.getAllNames(),
                 addressLevelTypeRepository.getAllNames(),
-                operationalSubjectTypeRepository.getAllNames()
+                operationalSubjectTypeRepository.getAllNames(),
+                cardRepository.getAllNames(),
+                dashboardRepository.getAllNames()
         ).forEach(list -> list.forEach(e -> {
             if (e != null) {
                 result.put(e, valueForEmptyKey);
