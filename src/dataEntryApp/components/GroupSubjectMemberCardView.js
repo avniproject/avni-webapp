@@ -67,7 +67,7 @@ const GroupSubjectMemberCardView = ({
     <DialogContent style={{ width: 600, height: "auto" }}>
       <Grid container direction="row" alignItems="flex-start">
         <Typography variant="subtitle1" gutterBottom>
-          Do you want to remove {memberSubject.nameString} from this group?
+          {t("removeMemberConfirmationMessage")}
         </Typography>
       </Grid>
     </DialogContent>

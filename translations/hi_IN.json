@@ -343,6 +343,12 @@
     "resetFilter": "फ़िल्टर रीसेट करें",
     "visitCanceldate": "विजिट रद्द करने की तारीख",
     "basicDetails": "बुनियादी जानकारी",
-    "selectAddress": "पता चुनें"
+    "selectAddress": "पता चुनें",
+    "noGroupMembersAdded": "कोई सदस्य नहीं जोड़ा गया",
+    "selectRoleToEnable": "भूमिका का चयन करें",
+    "typeNameToSearch": "खोज करने के लिए नाम टाइप करें",
+    "editGroupMemberTitle": "सदस्य को संपादित करें",
+    "addGroupMemberTitle": "सदस्य जोड़ें",
+    "member": "सदस्य"
   }
 }

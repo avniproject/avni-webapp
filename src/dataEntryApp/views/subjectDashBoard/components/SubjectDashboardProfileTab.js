@@ -226,7 +226,7 @@ const SubjectDashboardProfileTab = ({
           id="groupMembersPanelbh-header"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
-            {t("Members")}
+            {t("members")}
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ paddingTop: "0px", display: "block" }}>

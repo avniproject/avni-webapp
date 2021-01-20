@@ -320,7 +320,7 @@
     "programsEnrolled": "Programs",
     "newMemberAddedMsg": "New member added",
     "newRelativeAddedMsg": "New relative added",
-    "removeMemberTitle": "Are you sure you want to the member from group?",
+    "removeMemberTitle": "Are you sure you want to remove the member from group?",
     "removeMemberConfirmationMessage": "Remove member from this group",
     "memberAlreadyAddedMessage": "Member is already present in the group",
     "maxLimitReachedMsg": "Maximum limit reached for this role",
@@ -381,7 +381,7 @@
     "Question": "Question",
     "addressVillage": "Address/ Village",
     "subjectType": "Subject Type",
-    "searchHelpText": "Search is based on Name, SubjectType, Gender, Adrdress, Observations",
+    "searchHelpText": "Search is based on Name, SubjectType, Gender, Address, Observations",
     "resetAll": "Reset All",
     "notEnroledInAnyProgram": "Not enroled in any program",
     "noRelativesAdded": "No Relatives Added",
@@ -393,6 +393,12 @@
     "visitCanceldate": "Visit Cancel Date",
     "basicDetails": "Basic Details",
     "selectAddress": "Select Address",
-    "ranOutOfIds": "Id not available. Please contact your administrator."
+    "ranOutOfIds": "Id not available. Please contact your administrator.",
+    "noGroupMembersAdded": "No Group Members Added",
+    "selectRoleToEnable": "Select a role to enable",
+    "typeNameToSearch": "Type name to search",
+    "editGroupMemberTitle": "Edit Group Member",
+    "addGroupMemberTitle": "Add Group Member",
+    "member": "Member"
   }
 }

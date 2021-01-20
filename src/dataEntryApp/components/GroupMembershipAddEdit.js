@@ -130,13 +130,11 @@ const GroupMembershipAddEdit = ({
         isSearchable
         isClearable
         isDisabled={selectedRole === null}
-        placeholder={
-          selectedRole === null ? t("Select a role to enable") : t("Type name to search")
-        }
+        placeholder={selectedRole === null ? t("selectRoleToEnable") : t("typeNameToSearch")}
         value={memberSubject}
         onChange={subject => setMemberSubject(subject)}
         noOptionsMessage={() => {
-          return t("noResults");
+          return t("zeroNumberOfResults");
         }}
       />
     );
@@ -182,13 +180,13 @@ const GroupMembershipAddEdit = ({
         <div className={classes.innerPaper}>
           <Grid container>
             <Typography component={"span"} className={classes.mainHeading}>
-              {editFlow ? t("editGroupMember") : t("addGroupMember")}
+              {editFlow ? t("editGroupMemberTitle") : t("addGroupMemberTitle")}
             </Typography>
           </Grid>
           <br />
           <Grid container>
             <Grid item xs={10}>
-              <FormLabel component="legend">{t("Role")}</FormLabel>
+              <FormLabel component="legend">{t("role")}</FormLabel>
               <RadioGroup
                 row
                 aria-label="roles"
@@ -216,7 +214,7 @@ const GroupMembershipAddEdit = ({
             </Grid>
             <br />
             <Grid item xs={6}>
-              <FormLabel component="legend">{t("Member")}</FormLabel>
+              <FormLabel component="legend">{t("member")}</FormLabel>
               {editFlow ? renderMember(memberGroupSubject) : renderSearch()}
             </Grid>
           </Grid>
