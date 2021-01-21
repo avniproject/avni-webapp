@@ -269,9 +269,7 @@ const SubjectDashboardProfileTab = ({
         </ExpansionPanelDetails>
         {
           <Button color="primary">
-            <InternalLink to={`/app/subject/addGroupMember`}>
-              {/*?groupSubject=${profile.uuid}*/} {t("addAGroupMember")}{" "}
-            </InternalLink>{" "}
+            <InternalLink to={`/app/subject/addGroupMember`}>{t("addMember")}</InternalLink>{" "}
           </Button>
         }
       </ExpansionPanel>

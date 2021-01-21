@@ -349,6 +349,8 @@
     "typeNameToSearch": "खोज करने के लिए नाम टाइप करें",
     "editGroupMemberTitle": "सदस्य को संपादित करें",
     "addGroupMemberTitle": "सदस्य जोड़ें",
-    "member": "सदस्य"
+    "member": "सदस्य",
+    "remove": "हटा दें",
+    "addMember": "सदस्य जोड़ें"
   }
 }
