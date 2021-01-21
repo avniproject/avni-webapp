@@ -350,7 +350,11 @@
     "editGroupMemberTitle": "सदस्य को संपादित करें",
     "addGroupMemberTitle": "सदस्य जोड़ें",
     "member": "सदस्य",
+    "Member": "सदस्य",
     "remove": "हटा दें",
-    "addMember": "सदस्य जोड़ें"
+    "addMember": "सदस्य जोड़ें",
+    "members": "सदस्यों",
+    "headOfHousehold": "घर के मुखिया",
+    "Head of household": "घर के मुखिया"
   }
 }

@@ -335,6 +335,7 @@
     "searchExisting": "Search existing {{member}}",
     "addMemberRole": "Add {{role}}",
     "headOfHousehold": "Head of household",
+    "Head of household": "Head of household",
     "unavailable": "Unavailable",
     "headOfHouseholdReg": "Head of household ",
     "memberReg": "Member ",
@@ -399,6 +400,7 @@
     "typeNameToSearch": "Type name to search",
     "editGroupMemberTitle": "Edit Group Member",
     "addGroupMemberTitle": "Add Group Member",
-    "member": "Member"
+    "member": "Member",
+    "Member": "Member"
   }
 }

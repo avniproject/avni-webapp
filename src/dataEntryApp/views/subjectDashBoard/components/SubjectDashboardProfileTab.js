@@ -240,7 +240,7 @@ const SubjectDashboardProfileTab = ({
                     id="groupMembersRolePanelbh-header"
                   >
                     <Typography component={"span"} className={classes.expansionHeading} key={index}>
-                      {profileRole.role}
+                      {t(profileRole.role)}
                     </Typography>
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails>

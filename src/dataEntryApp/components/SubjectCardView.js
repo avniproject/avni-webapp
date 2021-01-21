@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { InternalLink } from "../../common/components/utils";
+import { useTranslation } from "react-i18next";
 
 const useStyles = () =>
   makeStyles(() => ({
@@ -21,6 +22,8 @@ const useStyles = () =>
 
 const SubjectCardView = ({ uuid, name, gender, age, location, ...props }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   return (
     <Card className={classes.card} key={uuid}>
       <CardContent className={classes.cardContent}>
@@ -37,7 +40,7 @@ const SubjectCardView = ({ uuid, name, gender, age, location, ...props }) => {
                 align={"center"}
                 key={index}
               >
-                {element}
+                {t(element)}
               </Typography>
             )
           );

@@ -108,7 +108,7 @@ const GroupSubjectMemberCardView = ({
             buttonsSet={[
               {
                 buttonType: "openButton",
-                label: t("Remove"),
+                label: t("remove"),
                 classes: classes.removeButtonStyle
               },
               {
