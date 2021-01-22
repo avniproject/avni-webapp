@@ -7,8 +7,8 @@ import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.domain.*;
+import org.openchs.service.AddressLevelService;
 import org.openchs.service.FormMappingService;
-import org.openchs.util.O;
 import org.openchs.web.request.ReportType;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
@@ -59,23 +59,28 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private LinkedHashMap<String, FormElement> programEncounterCancelMap = new LinkedHashMap<>();
     private LinkedHashMap<String, FormElement> encounterMap = new LinkedHashMap<>();
     private LinkedHashMap<String, FormElement> encounterCancelMap = new LinkedHashMap<>();
+    private List<String> addressLevelTypes = new ArrayList<>();
     private String encounterTypeName;
     private Long maxVisitCount = 0L;
     private FormMappingService formMappingService;
+    private AddressLevelService addressLevelService;
 
     public ExportCSVFieldExtractor(EncounterTypeRepository encounterTypeRepository,
                                    EncounterRepository encounterRepository,
                                    ProgramEncounterRepository programEncounterRepository,
-                                   FormMappingService formMappingService) {
+                                   FormMappingService formMappingService,
+                                   AddressLevelService addressLevelService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.formMappingService = formMappingService;
+        this.addressLevelService = addressLevelService;
     }
 
     @PostConstruct
     public void init() {
         this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
+        this.addressLevelTypes = addressLevelService.getAllAddressLevelTypeNames();
         if (reportType.equals(ReportType.All.name())) {
             if (programUUID == null) {
                 this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
@@ -106,7 +111,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     @Override
     public Object[] extract(ExportItemRow exportItemRow) {
         List<Object> row = new ArrayList<>();
-
+        AddressLevel addressLevel = exportItemRow.getIndividual().getAddressLevel();
         //Registration
         Gender gender = exportItemRow.getIndividual().getGender();
         row.add(exportItemRow.getIndividual().getId());
@@ -116,7 +121,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(exportItemRow.getIndividual().getDateOfBirth());
         row.add(exportItemRow.getIndividual().getRegistrationDate());
         row.add(gender == null ? "" : gender.getName());
-        row.add(massageStringValue(exportItemRow.getIndividual().getAddressLevel().getTitle()));
+        row.add(massageStringValue(addressLevel.getTitle()));
+        addAddressLevels(row, addressLevel);
         row.addAll(getObs(exportItemRow.getIndividual().getObservations(), registrationMap));
         if (programUUID == null) {
             addGeneralEncounterRelatedFields(exportItemRow, row);
@@ -176,6 +182,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         sb.append(",").append("ind.registration_date");
         sb.append(",").append("ind.gender");
         sb.append(",").append("ind.area");
+        addAddressLevelColumns(sb);
         appendObsColumns(sb, "ind", registrationMap);
 
         if (programUUID != null) {
@@ -266,4 +273,26 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
                 .collect(Collectors.toList());
     }
 
+    private void addAddressLevelColumns(StringBuilder sb) {
+        this.addressLevelTypes.forEach(level -> sb.append(",").append(massageStringValue(level)));
+    }
+
+    private void addAddressLevels(List<Object> row, AddressLevel addressLevel) {
+        Map<String, String> addressLevelMap = getAddressTypeAddressLevelMap(addressLevel, addressLevel.getParentLocationMapping());
+        this.addressLevelTypes.forEach(level -> row.add(addressLevelMap.getOrDefault(level, "")));
+    }
+
+    private Map<String, String> getAddressTypeAddressLevelMap(AddressLevel addressLevel, ParentLocationMapping parentLocationMapping) {
+        Map<String, String> addressTypeAddressLevelMap = new HashMap<>();
+        addressTypeAddressLevelMap.put(addressLevel.getType().getName(), addressLevel.getTitle());
+        if (parentLocationMapping == null) {
+            return addressTypeAddressLevelMap;
+        }
+        AddressLevel parentLocation = parentLocationMapping.getParentLocation();
+        while (parentLocation != null) {
+            addressTypeAddressLevelMap.put(parentLocation.getType().getName(), parentLocation.getTitle());
+            parentLocation = parentLocation.getParentLocation();
+        }
+        return addressTypeAddressLevelMap;
+    }
 }
