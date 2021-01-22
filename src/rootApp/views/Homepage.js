@@ -7,7 +7,6 @@ import Grid from "@material-ui/core/Grid";
 import Icon from "@material-ui/core/Icon";
 
 import CardActionArea from "@material-ui/core/CardActionArea";
-import FreshChat from "../../common/components/FreshChat";
 
 const Homepage = ({ user }) => {
   const renderCard = (href, name, customicon) => (
@@ -66,7 +65,6 @@ const Homepage = ({ user }) => {
         {renderCard("/#/app", "Data Entry App", "keyboard")}
         {renderCard("/#/help", "Support And Training", "help")}
       </Grid>
-      {!window.location.href.includes("localhost") && <FreshChat user={user} />}
     </ScreenWithAppBar>
   );
 };
