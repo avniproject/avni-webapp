@@ -43,7 +43,7 @@ export const ReportCardShow = props => {
 
   return (
     <ResourceShowView
-      title={"Report Card"}
+      title={"Offline Report Card"}
       resourceId={props.match.params.id}
       resourceName={"card"}
       resourceURLName={"reportCard"}

@@ -17,7 +17,7 @@ const DashboardList = ({ history }) => {
   return (
     <ResourceListView
       history={history}
-      title={"Dashboard"}
+      title={"Offline Dashboard"}
       resourceName={"dashboard"}
       resourceURLName={"dashboard"}
       columns={columns}

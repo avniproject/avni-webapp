@@ -24,7 +24,7 @@ const ReportCardList = ({ history }) => {
   return (
     <ResourceListView
       history={history}
-      title={"Report Card"}
+      title={"Offline Report Card"}
       resourceName={"card"}
       resourceURLName={"reportCard"}
       columns={columns}

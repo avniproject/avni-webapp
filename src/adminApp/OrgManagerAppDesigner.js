@@ -89,8 +89,16 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Reporting Views" }}
             list={ReportingViews}
           />
-          <Resource name="reportCard" options={{ label: "Report Card" }} list={ReportCardList} />
-          <Resource name="dashboard" options={{ label: "Dashboard" }} list={DashboardList} />
+          <Resource
+            name="reportCard"
+            options={{ label: "Offline Report Card" }}
+            list={ReportCardList}
+          />
+          <Resource
+            name="dashboard"
+            options={{ label: "Offline Dashboard" }}
+            list={DashboardList}
+          />
         </Admin>
       </React.Fragment>
     );

@@ -101,7 +101,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"Create Dashboard"} />
+      <Title title={"Create Offline Dashboard"} />
       <DocumentationContainer filename={"Dashboard.md"}>
         {edit && (
           <Grid container style={{ justifyContent: "flex-end" }}>

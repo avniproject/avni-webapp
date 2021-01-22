@@ -108,7 +108,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"Create Card"} />
+      <Title title={"Create offline Card"} />
       <DocumentationContainer filename={"Card.md"}>
         {edit && (
           <Grid container style={{ justifyContent: "flex-end" }}>

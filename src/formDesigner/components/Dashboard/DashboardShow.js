@@ -28,7 +28,7 @@ export const DashboardShow = props => {
 
   return (
     <ResourceShowView
-      title={"Dashboard"}
+      title={"Offline Dashboard"}
       resourceId={props.match.params.id}
       resourceName={"dashboard"}
       resourceURLName={"dashboard"}
