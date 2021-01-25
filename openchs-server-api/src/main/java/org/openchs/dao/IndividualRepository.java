@@ -97,6 +97,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
                 }
                 if (values.length > 1) {
                     predicates[1] = cb.like(cb.upper(root.get("lastName")), values[1].toUpperCase() + "%");
+                    return cb.and(predicates[0], predicates[1]);
                 }
                 return cb.or(predicates[0], predicates[1]);
             }
