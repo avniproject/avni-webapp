@@ -121,7 +121,6 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(exportItemRow.getIndividual().getDateOfBirth());
         row.add(exportItemRow.getIndividual().getRegistrationDate());
         row.add(gender == null ? "" : gender.getName());
-        row.add(massageStringValue(addressLevel.getTitle()));
         addAddressLevels(row, addressLevel);
         row.addAll(getObs(exportItemRow.getIndividual().getObservations(), registrationMap));
         if (programUUID == null) {
@@ -181,7 +180,6 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         sb.append(",").append("ind.date_of_birth");
         sb.append(",").append("ind.registration_date");
         sb.append(",").append("ind.gender");
-        sb.append(",").append("ind.area");
         addAddressLevelColumns(sb);
         appendObsColumns(sb, "ind", registrationMap);
 
