@@ -11,6 +11,7 @@ import Modal from "../views/subjectDashBoard/components/CommonModal";
 import { noop } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import api from "../api";
+import { withStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -62,6 +63,11 @@ const GroupSubjectMemberCardView = ({
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const EditButton = withStyles({
+    root: {
+      minWidth: "0px"
+    }
+  })(Button);
 
   const removeGroupMemberDialogContent = (
     <DialogContent style={{ width: 600, height: "auto" }}>
@@ -97,11 +103,11 @@ const GroupSubjectMemberCardView = ({
           ""
         )}
         <CardActions className={classes.cardActions}>
-          <Button color="primary">
+          <EditButton color="primary">
             <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>
               {t("edit")}
             </InternalLink>
-          </Button>
+          </EditButton>
           <Modal
             content={removeGroupMemberDialogContent}
             handleError={noop}

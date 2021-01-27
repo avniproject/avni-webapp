@@ -91,7 +91,9 @@ export default ({
     showGroupMembers
   } = tabsStatus;
 
-  const [value, setValue] = React.useState(tab || defaultTabIndex);
+  const [value, setValue] = React.useState(
+    tab && tab > 0 ? (showProgramTab ? tab : tab - 1) : defaultTabIndex
+  );
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };

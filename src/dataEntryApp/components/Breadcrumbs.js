@@ -47,6 +47,7 @@ const Breadcrumbs = ({
   const urlPartLabels = {
     APP: "app",
     SUBJECT: "subject",
+    SUBJECT_PROFILE: "subjectProfile",
     VIEW_VISIT: "viewProgramEncounter",
     COMPLETED_VISITS: "completedProgramEncounters",
     VIEW_ENCOUNTER: "viewEncounter",
@@ -82,6 +83,12 @@ const Breadcrumbs = ({
             url: "#/app"
           };
         }
+      }
+      case urlPartLabels.SUBJECT_PROFILE: {
+        return {
+          breadcrumb: t(urlPartLabels.SUBJECT_PROFILE),
+          url: "#/app"
+        };
       }
       case urlPartLabels.VIEW_VISIT: {
         if (viewVisitName) {
