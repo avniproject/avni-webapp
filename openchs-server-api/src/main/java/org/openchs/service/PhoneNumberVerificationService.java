@@ -4,6 +4,7 @@ import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.external.Msg91RestClient;
 import org.openchs.web.request.Msg91Request;
 import org.openchs.web.response.Msg91Response;
+import org.openchs.web.response.PhoneNumberVerificationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.ConnectException;
+
+import static java.lang.String.format;
 
 @Service
 public class PhoneNumberVerificationService {
@@ -28,53 +32,87 @@ public class PhoneNumberVerificationService {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public void sendOTP(String phoneNumber) {
+    public PhoneNumberVerificationResponse sendOTP(String phoneNumber) throws IOException {
         Msg91Request msg91Request = new Msg91Request();
         msg91Request.setMobile(phoneNumber);
-
         addTemplateIdParam(msg91Request);
         addAuthKeyParam(msg91Request);
-        try {
-            Msg91Response sendOTPResponse = mapStringResponseToObject(msg91RestClient.callAPI(HttpMethod.GET, sendOTPEndpoint, msg91Request));
-            logger.info(sendOTPResponse.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+        PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.GET, sendOTPEndpoint, msg91Request, true);
+        if (!phoneNumberVerificationResponse.isSuccess()) {
+            switch (phoneNumberVerificationResponse.getMsg91Response().getMessage()) {
+                case "Message don't contains otp":
+                    throw new ConnectException("Message template does not contain OTP");
+                case "invalid_otp_expiry":
+                    throw new ConnectException("Invalid OTP expiry");
+                case "otp_expiry_out_of_limit":
+                    throw new ConnectException("OTP Expiry Out of Limit.");
+            }
+            switch (phoneNumberVerificationResponse.getMsg91Response().getCode()) {
+                case "207":
+                    throw new ConnectException("Invalid authentication key");
+                case "302":
+                    throw new ConnectException("Expired user account");
+                case "303":
+                    throw new ConnectException("Banned user account");
+                case "304":
+                    throw new ConnectException("304");
+                case "418":
+                    throw new ConnectException("IP not whitelisted");
+            }
         }
+        return phoneNumberVerificationResponse;
+
     }
 
-    public void resendOTP(String phoneNumber) {
+    public PhoneNumberVerificationResponse resendOTP(String phoneNumber) throws IOException {
         Msg91Request msg91Request = new Msg91Request();
         msg91Request.setMobile(phoneNumber);
-        msg91Request.setRetryType("text");      //Default for retry is OTP via phone call. Setting to text forces resending OTP via SMS.
+        msg91Request.setRetryType("text");      //Default Msg91 behaviour for retry is OTP via phone call. Setting to text forces resending OTP via SMS.
         addAuthKeyParam(msg91Request);
-        try {
-            Msg91Response resendOTPResponse = mapStringResponseToObject(msg91RestClient.callAPI(HttpMethod.POST, resendOTPEndpoint, msg91Request));
-            logger.info(resendOTPResponse.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        PhoneNumberVerificationResponse phoneNumberVerificationResponse =  processMsg91Request(HttpMethod.POST, resendOTPEndpoint, msg91Request, true);
+        if (!phoneNumberVerificationResponse.isSuccess()) {
+            switch (phoneNumberVerificationResponse.getMsg91Response().getMessage()) {
+                case "Invalid authkey":
+                    throw new ConnectException("Invalid authkey");
+                case "OTP request invalid":
+                    throw new ConnectException("OTP request invalid");
+            }
         }
+        return phoneNumberVerificationResponse;
     }
 
-    public boolean verifyOTP(String phoneNumber, String otp) {
+    public PhoneNumberVerificationResponse verifyOTP(String phoneNumber, String otp) throws IOException {
         Msg91Request msg91Request = new Msg91Request();
         msg91Request.setMobile(phoneNumber);
         msg91Request.setOtp(otp);
         addAuthKeyParam(msg91Request);
-        try {
-            Msg91Response verifyOTPResponse = mapStringResponseToObject(msg91RestClient.callAPI(HttpMethod.POST, verifyOTPEndpoint, msg91Request));
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, verifyOTPEndpoint, msg91Request, true);
+        if (!phoneNumberVerificationResponse.isSuccess()) {
+            if ("Invalid authkey".equals(phoneNumberVerificationResponse.getMsg91Response().getMessage())) {
+                throw new ConnectException("Invalid authkey");
+            }
         }
-        return false;
+        return phoneNumberVerificationResponse;
     }
 
-    public boolean checkBalance(String authKey) {
+    public PhoneNumberVerificationResponse checkBalance(String authKey) throws IOException {
         Msg91Request msg91Request = new Msg91Request();
         msg91Request.setAuthKey(authKey);
-        msg91Request.setType("106");    //106 is send otp
+        msg91Request.setType("106");    //106 is send otp balance type
 
-        String response = msg91RestClient.callAPI(HttpMethod.GET, checkBalanceEndpoint, msg91Request); //API returns string so no mapping performed
-        return false;
+        PhoneNumberVerificationResponse phoneNumberVerificationResponse =  processMsg91Request(HttpMethod.GET, checkBalanceEndpoint, msg91Request, false);
+        String responseText = phoneNumberVerificationResponse.getMsg91Response().getMessage();
+        try {
+            Integer.parseInt(responseText);
+            return phoneNumberVerificationResponse;
+        } catch (NumberFormatException numberFormatException) {
+            logger.error(format("Msg91: Check Balance API response is not an integer. Response: %s", responseText));
+            phoneNumberVerificationResponse.setSuccess(false);
+
+        }
+        return phoneNumberVerificationResponse;
     }
 
     private Msg91Request addAuthKeyParam(Msg91Request msg91Request) {
@@ -92,4 +130,34 @@ public class PhoneNumberVerificationService {
     private Msg91Response mapStringResponseToObject(String responseString) throws IOException {
         return ObjectMapperSingleton.getObjectMapper().readValue(responseString, Msg91Response.class);
     }
+
+    private PhoneNumberVerificationResponse processMsg91Request(HttpMethod method, String uri, Msg91Request msg91Request, boolean convertResponseStringToObject) throws IOException {
+        try {
+            String apiResponse = msg91RestClient.callAPI(method, uri, msg91Request);
+            if (convertResponseStringToObject) {
+                Msg91Response msg91Response = mapStringResponseToObject(apiResponse);
+                return processMsg91Response(msg91Response);
+            } else {
+                Msg91Response msg91Response = new Msg91Response();
+                msg91Response.setMessage(apiResponse);
+                return new PhoneNumberVerificationResponse(true, msg91Response);
+            }
+        } catch (IOException ioException) {
+            logger.error(format("Error in phone number verification flow. API: %s, Request: %s", uri, msg91Request));
+            ioException.printStackTrace();
+            throw ioException;
+        }
+
+    }
+
+    private PhoneNumberVerificationResponse processMsg91Response(Msg91Response msg91Response) {
+        String responseType = msg91Response.getType() != null ? msg91Response.getType() : msg91Response.getMsgType();
+        if (responseType.equals(Msg91Response.responseTypes.success.toString())) {
+            return new PhoneNumberVerificationResponse(true, msg91Response);
+        } else {
+            logger.error(format("Error in phone number verification flow. Response: %s", msg91Response));
+            return new PhoneNumberVerificationResponse(false, msg91Response);
+        }
+    }
+
 }

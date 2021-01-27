@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.ConnectException;
 import java.util.Collections;
 
 import static java.lang.String.format;
@@ -26,7 +27,7 @@ public class Msg91RestClient {
         this.restTemplate = builder.build();
     }
 
-    public String callAPI(HttpMethod method, String url, Msg91Request msg91Request) {
+    public String callAPI(HttpMethod method, String url, Msg91Request msg91Request) throws ConnectException {
         HttpHeaders headers = new HttpHeaders();
         if (method == HttpMethod.POST) {
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -39,8 +40,9 @@ public class Msg91RestClient {
         if (msg91ResponseResponse.getStatusCode() == HttpStatus.OK) {
             return msg91ResponseResponse.getBody();
         } else {
-            //handle exceptions
-            return null;
+            logger.error(format("Error connecting to Msg91 for Request to Msg91: %s, %s, %s", method, url, msg91Request));
+            logger.error(format("Msg91 Error response: %s, %s", msg91ResponseResponse.getStatusCode(), msg91ResponseResponse.getBody()));
+            throw new ConnectException("Error connecting to Msg91. ${msg91ResponseResponse.getStatusCode()}: ${msg91ResponseResponse.getBody()}");
         }
     }
 }
