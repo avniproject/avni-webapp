@@ -64,7 +64,8 @@ const Breadcrumbs = ({
     EDIT_CANCEL_ENCOUNTER: "editCancelEncounter",
     EDIT_SUBJECT: "editSubject",
     SEARCH: "searchFilter",
-    REGISTER: "register"
+    REGISTER: "register",
+    EDIT_GROUP_MEMBERSHIP: "editGroupMembership"
   };
   const urlMapper = part => {
     switch (part) {
@@ -169,6 +170,9 @@ const Breadcrumbs = ({
       }
       case urlPartLabels.REGISTER: {
         return { breadcrumb: t("register"), url: "#/app" };
+      }
+      case urlPartLabels.EDIT_GROUP_MEMBERSHIP: {
+        return { breadcrumb: t(urlPartLabels.EDIT_GROUP_MEMBERSHIP), url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

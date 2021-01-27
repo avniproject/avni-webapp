@@ -402,6 +402,7 @@
     "addGroupMemberTitle": "Add Group Member",
     "member": "Member",
     "Member": "Member",
-    "subjectProfile": "Profile"
+    "subjectProfile": "Profile",
+    "editGroupMembership": "Edit Group Membership"
   }
 }
