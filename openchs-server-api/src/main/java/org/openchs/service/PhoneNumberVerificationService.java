@@ -34,7 +34,6 @@ public class PhoneNumberVerificationService {
 
         addTemplateIdParam(msg91Request);
         addAuthKeyParam(msg91Request);
-        logger.info("Request to Msg91: " + sendOTPEndpoint + msg91Request);
         try {
             Msg91Response sendOTPResponse = mapStringResponseToObject(msg91RestClient.callAPI(HttpMethod.GET, sendOTPEndpoint, msg91Request));
             logger.info(sendOTPResponse.toString());
