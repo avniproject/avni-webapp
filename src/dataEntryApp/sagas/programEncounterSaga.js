@@ -323,7 +323,9 @@ export function* wizardWorker(getNextState, isNext, params) {
     } = getNextState({
       formElementGroup: state.formElementGroup,
       filteredFormElements: state.filteredFormElements,
-      observations: state.programEncounter.observations,
+      observations: params.isCancel
+        ? state.programEncounter.cancelObservations
+        : state.programEncounter.observations,
       entity: state.programEncounter,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,

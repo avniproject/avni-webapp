@@ -250,7 +250,9 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
     } = getNextState({
       formElementGroup: state.formElementGroup,
       filteredFormElements: state.filteredFormElements,
-      observations: state.programEnrolment.observations,
+      observations: params.isExit
+        ? state.programEnrolment.programExitObservations
+        : state.programEnrolment.observations,
       entity: state.programEnrolment,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
