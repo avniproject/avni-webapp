@@ -313,6 +313,7 @@ export function* wizardWorker(getNextState, isNext, params) {
       })
     );
   } else {
+    const obsToUpdate = params.isCancel ? "cancelObservations" : "observations";
     const {
       formElementGroup,
       filteredFormElements,
@@ -323,9 +324,7 @@ export function* wizardWorker(getNextState, isNext, params) {
     } = getNextState({
       formElementGroup: state.formElementGroup,
       filteredFormElements: state.filteredFormElements,
-      observations: params.isCancel
-        ? state.programEncounter.cancelObservations
-        : state.programEncounter.observations,
+      observations: state.programEncounter[obsToUpdate],
       entity: state.programEncounter,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
@@ -335,7 +334,7 @@ export function* wizardWorker(getNextState, isNext, params) {
     });
 
     const programEncounter = state.programEncounter.cloneForEdit();
-    programEncounter.observations = observations;
+    programEncounter[obsToUpdate] = observations;
     const nextState = {
       ...state,
       programEncounter,

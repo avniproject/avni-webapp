@@ -240,6 +240,7 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
       })
     );
   } else {
+    const obsToUpdate = params.isExit ? "programExitObservations" : "observations";
     const {
       formElementGroup,
       filteredFormElements,
@@ -250,9 +251,7 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
     } = getNextState({
       formElementGroup: state.formElementGroup,
       filteredFormElements: state.filteredFormElements,
-      observations: params.isExit
-        ? state.programEnrolment.programExitObservations
-        : state.programEnrolment.observations,
+      observations: state.programEnrolment[obsToUpdate],
       entity: state.programEnrolment,
       validationResults: state.validationResults,
       onSummaryPage: state.onSummaryPage,
@@ -264,7 +263,7 @@ export function* enrolmentWizardWorker(getNextState, isNext, params) {
     });
 
     const programEnrolment = state.programEnrolment.cloneForEdit();
-    programEnrolment.observations = observations;
+    programEnrolment[obsToUpdate] = observations;
     const nextState = {
       ...state,
       programEnrolment,
