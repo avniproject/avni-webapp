@@ -39,26 +39,8 @@ public class PhoneNumberVerificationService {
         addAuthKeyParam(msg91Request);
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.GET, sendOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
-            switch (phoneNumberVerificationResponse.getMsg91Response().getMessage()) {
-                case "Message don't contains otp":
-                    throw new ConnectException("Message template does not contain OTP");
-                case "invalid_otp_expiry":
-                    throw new ConnectException("Invalid OTP expiry");
-                case "otp_expiry_out_of_limit":
-                    throw new ConnectException("OTP Expiry Out of Limit.");
-            }
-            switch (phoneNumberVerificationResponse.getMsg91Response().getCode()) {
-                case "207":
-                    throw new ConnectException("Invalid authentication key");
-                case "302":
-                    throw new ConnectException("Expired user account");
-                case "303":
-                    throw new ConnectException("Banned user account");
-                case "304":
-                    throw new ConnectException("304");
-                case "418":
-                    throw new ConnectException("IP not whitelisted");
-            }
+            handleMsg91Errors(phoneNumberVerificationResponse.getMsg91Response().getMessage());
+            handleMsg91Errors(phoneNumberVerificationResponse.getMsg91Response().getCode());
         }
         return phoneNumberVerificationResponse;
 
@@ -72,12 +54,7 @@ public class PhoneNumberVerificationService {
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse =  processMsg91Request(HttpMethod.POST, resendOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
-            switch (phoneNumberVerificationResponse.getMsg91Response().getMessage()) {
-                case "Invalid authkey":
-                    throw new ConnectException("Invalid authkey");
-                case "OTP request invalid":
-                    throw new ConnectException("OTP request invalid");
-            }
+            handleMsg91Errors(phoneNumberVerificationResponse.getMsg91Response().getMessage());
         }
         return phoneNumberVerificationResponse;
     }
@@ -90,9 +67,7 @@ public class PhoneNumberVerificationService {
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, verifyOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
-            if ("Invalid authkey".equals(phoneNumberVerificationResponse.getMsg91Response().getMessage())) {
-                throw new ConnectException("Invalid authkey");
-            }
+            handleMsg91Errors(phoneNumberVerificationResponse.getMsg91Response().getMessage());
         }
         return phoneNumberVerificationResponse;
     }
@@ -102,17 +77,19 @@ public class PhoneNumberVerificationService {
         msg91Request.setAuthKey(authKey);
         msg91Request.setType("106");    //106 is send otp balance type
 
-        PhoneNumberVerificationResponse phoneNumberVerificationResponse =  processMsg91Request(HttpMethod.GET, checkBalanceEndpoint, msg91Request, false);
+        PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.GET, checkBalanceEndpoint, msg91Request, false);
         String responseText = phoneNumberVerificationResponse.getMsg91Response().getMessage();
         try {
             Integer.parseInt(responseText);
             return phoneNumberVerificationResponse;
         } catch (NumberFormatException numberFormatException) {
             logger.error(format("Msg91: Check Balance API response is not an integer. Response: %s", responseText));
-            phoneNumberVerificationResponse.setSuccess(false);
-
+            logger.error("Attempting to treat response as Msg91Response");
+            Msg91Response msg91Response = mapStringResponseToObject(responseText);
+            PhoneNumberVerificationResponse checkBalanceResponse = processMsg91Response(msg91Response);
+            handleMsg91Errors(checkBalanceResponse.getMsg91Response().getMsg());
+            return checkBalanceResponse;
         }
-        return phoneNumberVerificationResponse;
     }
 
     private Msg91Request addAuthKeyParam(Msg91Request msg91Request) {
@@ -155,9 +132,33 @@ public class PhoneNumberVerificationService {
         if (responseType.equals(Msg91Response.responseTypes.success.toString())) {
             return new PhoneNumberVerificationResponse(true, msg91Response);
         } else {
-            logger.error(format("Error in phone number verification flow. Response: %s", msg91Response));
+            logger.error(format("Error response from Msg91. Response: %s", msg91Response));
             return new PhoneNumberVerificationResponse(false, msg91Response);
         }
     }
 
+    private void handleMsg91Errors(String errorString) throws ConnectException {
+        switch (errorString) {
+            case "Message don't contains otp":
+                throw new ConnectException("Msg91 - Message template does not contain OTP");
+            case "invalid_otp_expiry":
+                throw new ConnectException("Msg91 - Invalid OTP expiry");
+            case "otp_expiry_out_of_limit":
+                throw new ConnectException("Msg91 - OTP Expiry Out of Limit.");
+            case "OTP request invalid":
+                throw new ConnectException("Msg 91 - OTP request invalid");
+            case "Invalid authkey":
+            case "201":               //Not in Msg91 documentation but receiving this while testing with invalid authkey
+            case "207":
+                throw new ConnectException("Msg91 - Invalid authentication key");
+            case "302":
+                throw new ConnectException("Msg91 - Expired user account");
+            case "303":
+                throw new ConnectException("Msg91 - Banned user account");
+            case "304":
+                throw new ConnectException("Msg91 - 304");
+            case "418":
+                throw new ConnectException("Msg91 - Additional security enabled. IP not whitelisted.");
+        }
+    }
 }
