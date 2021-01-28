@@ -7,7 +7,8 @@ import {
   getSubjectProfile,
   unVoidSubject,
   voidSubject,
-  getGroupMembers
+  getGroupMembers,
+  clearVoidServerError
 } from "../../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../../reducers/generalSubjectDashboardReducer";
 import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
@@ -40,7 +41,9 @@ const SubjectDashboard = ({
   tab,
   tabsStatus,
   getGroupMembers,
-  groupMembers
+  groupMembers,
+  voidError,
+  clearVoidServerError
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -63,6 +66,8 @@ const SubjectDashboard = ({
           program={subjectProgram}
           handleUpdateComponent={handleUpdateComponent}
           voidSubject={voidSubject}
+          voidError={voidError}
+          clearVoidServerError={clearVoidServerError}
           unVoidSubject={unVoidSubject}
           registrationForm={registrationForm}
           tab={tab}
@@ -96,7 +101,8 @@ const mapStateToProps = state => ({
   load: state.dataEntry.loadReducer.load,
   registrationForm: state.dataEntry.registration.registrationForm,
   tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
-  groupMembers: state.dataEntry.subjectProfile.groupMembers
+  groupMembers: state.dataEntry.subjectProfile.groupMembers,
+  voidError: state.dataEntry.subjectProfile.voidError
 });
 
 const mapDispatchToProps = {
@@ -105,7 +111,8 @@ const mapDispatchToProps = {
   getSubjectProgram,
   getGroupMembers,
   voidSubject,
-  unVoidSubject
+  unVoidSubject,
+  clearVoidServerError
 };
 
 export default withRouter(

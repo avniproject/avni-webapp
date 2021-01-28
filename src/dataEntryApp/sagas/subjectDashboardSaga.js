@@ -3,14 +3,22 @@ import {
   types,
   setSubjectProfile,
   setTabsStatus,
-  setGroupMembers
+  setGroupMembers,
+  setVoidServerError
 } from "../reducers/subjectDashboardReducer";
-import { mapProfile, mapGroupMembers } from "../../common/subjectModelMapper";
+import {
+  mapProfile,
+  mapGroupMembers,
+  mapProgram,
+  mapGeneral
+} from "../../common/subjectModelMapper";
 import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
 import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
 import { filter, isEmpty, map, includes } from "lodash";
+import { setSubjectProgram } from "../reducers/programSubjectDashboardReducer";
+import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 
 export default function*() {
   yield all(
@@ -18,7 +26,10 @@ export default function*() {
       subjectProfileFetchWatcher,
       voidSubjectWatcher,
       unVoidSubjectWatcher,
-      fetchGroupMembersWatcher
+      fetchGroupMembersWatcher,
+      voidProgramEnrolmentWatcher,
+      voidProgramEncounterWatcher,
+      voidGeneralEncounterWatcher
     ].map(fork)
   );
 }
@@ -75,13 +86,26 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
 }
 
 export function* voidSubjectWatcher() {
-  yield takeLatest(types.VOID_SUBJECT, voidUnVoidSubject);
+  yield takeLatest(types.VOID_SUBJECT, voidSubject);
 }
 
-export function* voidUnVoidSubject({ voided }) {
+export function* voidSubject() {
   yield put.resolve(setLoad(false));
   const subject = yield select(selectSubjectProfile);
-  subject.voided = voided;
+  const [response, error] = yield call(api.voidSubject, subject.uuid);
+  if (!response && error) {
+    yield put(setVoidServerError(error));
+  } else {
+    subject.voided = response.data.voided;
+    yield put(setSubjectProfile(subject));
+  }
+  yield put.resolve(setLoad(true));
+}
+
+export function* unVoidSubject() {
+  yield put.resolve(setLoad(false));
+  const subject = yield select(selectSubjectProfile);
+  subject.voided = false;
   const resource = subject.toResource;
   yield call(api.saveSubject, resource);
   yield put(setSubjectProfile(subject));
@@ -89,7 +113,7 @@ export function* voidUnVoidSubject({ voided }) {
 }
 
 export function* unVoidSubjectWatcher() {
-  yield takeLatest(types.UN_VOID_SUBJECT, voidUnVoidSubject);
+  yield takeLatest(types.UN_VOID_SUBJECT, unVoidSubject);
 }
 
 export function* fetchGroupMembersWatcher() {
@@ -101,5 +125,56 @@ export function* fetchGroupMembersWorker({ groupUUID }) {
   const groupMembersJson = yield call(api.fetchGroupMembers, groupUUID);
   const groupMembers = mapGroupMembers(groupMembersJson);
   yield put(setGroupMembers(groupMembers));
+  yield put.resolve(setLoad(true));
+}
+
+export function* voidProgramEnrolmentWatcher() {
+  yield takeLatest(types.VOID_PROGRAM_ENROLMENT, voidProgramEnrolmentWorker);
+}
+
+export function* voidProgramEnrolmentWorker({ uuid }) {
+  yield put.resolve(setLoad(false));
+  const [response, error] = yield call(api.voidProgramEnrolment, uuid);
+  if (!response && error) {
+    yield put(setVoidServerError(error));
+  } else {
+    const subject = yield select(selectSubjectProfile);
+    const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);
+    yield put(setSubjectProgram(mapProgram(subjectProgram)));
+  }
+  yield put.resolve(setLoad(true));
+}
+
+export function* voidProgramEncounterWatcher() {
+  yield takeLatest(types.VOID_PROGRAM_ENCOUNTER, voidProgramEncounterWorker);
+}
+
+export function* voidProgramEncounterWorker({ uuid }) {
+  yield put.resolve(setLoad(false));
+  const [response, error] = yield call(api.voidProgramEncounter, uuid);
+  if (!response && error) {
+    yield put(setVoidServerError(error));
+  } else {
+    const subject = yield select(selectSubjectProfile);
+    const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);
+    yield put(setSubjectProgram(mapProgram(subjectProgram)));
+  }
+  yield put.resolve(setLoad(true));
+}
+
+export function* voidGeneralEncounterWatcher() {
+  yield takeLatest(types.VOID_GENERAL_ENCOUNTER, voidGeneralEncounterWorker);
+}
+
+export function* voidGeneralEncounterWorker({ uuid }) {
+  yield put.resolve(setLoad(false));
+  const [response, error] = yield call(api.voidEncounter, uuid);
+  if (!response && error) {
+    yield put(setVoidServerError(error));
+  } else {
+    const subject = yield select(selectSubjectProfile);
+    const subjectGeneral = yield call(api.fetchSubjectGeneral, subject.uuid);
+    yield put(setSubjectGeneral(mapGeneral(subjectGeneral)));
+  }
   yield put.resolve(setLoad(true));
 }

@@ -77,7 +77,9 @@ export default ({
   tab,
   tabsStatus,
   getGroupMembers,
-  groupMembers
+  groupMembers,
+  voidError,
+  clearVoidServerError
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -156,6 +158,8 @@ export default ({
           <SubjectDashboardProfileTab
             profile={profile}
             voidSubject={voidSubject}
+            voidError={voidError}
+            clearVoidServerError={clearVoidServerError}
             unVoidSubject={unVoidSubject}
             registrationForm={registrationForm}
             showRelatives={showRelatives}

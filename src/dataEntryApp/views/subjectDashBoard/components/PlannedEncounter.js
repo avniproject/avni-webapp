@@ -10,6 +10,9 @@ import {
   selectFormMappingForEncounter,
   selectFormMappingForCancelEncounter
 } from "../../../sagas/encounterSelector";
+import { voidProgramEncounter } from "../../../reducers/subjectDashboardReducer";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import { DeleteButton } from "../../../components/DeleteButton";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,7 +58,6 @@ const useStyles = makeStyles(theme => ({
     }
   },
   visitButton: {
-    marginLeft: "8px",
     fontSize: "14px"
   }
 }));
@@ -71,7 +73,8 @@ const PlannedEncounter = ({
   subjectUuid,
   subjectTypeUuid,
   encounterFormMapping,
-  cancelEncounterFormMapping
+  cancelEncounterFormMapping,
+  voidGeneralEncounter
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -80,7 +83,7 @@ const PlannedEncounter = ({
     overdue: t("overdue"),
     due: t("due")
   };
-
+  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   let status;
   if (encounter.maxVisitDateTime && new Date() > encounter.maxVisitDateTime) {
     status = "overdue";
@@ -136,8 +139,17 @@ const PlannedEncounter = ({
                 ) : (
                   ""
                 )}
+                <DeleteButton onDelete={() => setVoidConfirmation(true)} />
               </div>
             }
+
+            <ConfirmDialog
+              title={t("GeneralEncounterVoidAlertTitle")}
+              open={voidConfirmation}
+              setOpen={setVoidConfirmation}
+              message={t("GeneralEncounterVoidAlertMessage")}
+              onConfirm={() => voidGeneralEncounter(encounter.uuid)}
+            />
           </>
         }
       </Paper>
@@ -156,4 +168,11 @@ const mapStateToProps = (state, props) => ({
   )(state)
 });
 
-export default connect(mapStateToProps)(PlannedEncounter);
+const mapDispatchToProps = {
+  voidProgramEncounter
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PlannedEncounter);

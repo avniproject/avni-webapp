@@ -126,5 +126,25 @@ export default {
   addEditGroupSubject: groupSubjectContract =>
     httpClient.post("/groupSubjects", groupSubjectContract).then(response => response.data),
   deleteGroupSubject: uuid =>
-    httpClient.delete(`/groupSubjects/${uuid}`).then(response => response.data)
+    httpClient.delete(`/groupSubjects/${uuid}`).then(response => response.data),
+  voidSubject: uuid =>
+    httpClient
+      .delete(`/web/subject/${uuid}`)
+      .then(response => [response, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  voidEncounter: uuid =>
+    httpClient
+      .delete(`/web/encounter/${uuid}`)
+      .then(response => [response, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  voidProgramEnrolment: uuid =>
+    httpClient
+      .delete(`/web/programEnrolment/${uuid}`)
+      .then(response => [response, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  voidProgramEncounter: uuid =>
+    httpClient
+      .delete(`/web/programEncounter/${uuid}`)
+      .then(response => [response, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`])
 };

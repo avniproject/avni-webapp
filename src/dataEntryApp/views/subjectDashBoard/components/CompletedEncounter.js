@@ -12,6 +12,9 @@ import {
   selectFormMappingForEncounter
 } from "../../../sagas/encounterSelector";
 import clsx from "clsx";
+import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import { DeleteButton } from "../../../components/DeleteButton";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -76,7 +79,8 @@ const CompletedEncounter = ({
   encounter,
   subjectTypeUuid,
   encounterFormMapping,
-  cancelEncounterFormMapping
+  cancelEncounterFormMapping,
+  voidGeneralEncounter
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -93,7 +97,7 @@ const CompletedEncounter = ({
   } else {
     visitUrl = `/app/subject/viewEncounter?uuid=${encounter.uuid}`;
   }
-
+  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>
@@ -164,6 +168,14 @@ const CompletedEncounter = ({
             )}
           </>
         }
+        <DeleteButton onDelete={() => setVoidConfirmation(true)} />
+        <ConfirmDialog
+          title={t("GeneralEncounterVoidAlertTitle")}
+          open={voidConfirmation}
+          setOpen={setVoidConfirmation}
+          message={t("GeneralEncounterVoidAlertMessage")}
+          onConfirm={() => voidGeneralEncounter(encounter.uuid)}
+        />
       </Paper>
     </Grid>
   );
@@ -180,4 +192,11 @@ const mapStateToProps = (state, props) => ({
   )(state)
 });
 
-export default connect(mapStateToProps)(CompletedEncounter);
+const mapDispatchToProps = {
+  voidGeneralEncounter
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CompletedEncounter);

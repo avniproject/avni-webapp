@@ -27,7 +27,14 @@ import { connect } from "react-redux";
 import { InternalLink, withParams } from "../../../../common/components/utils";
 import moment from "moment";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
-import { defaultTo, isNil } from "lodash";
+import { defaultTo, isEmpty, isNil } from "lodash";
+import {
+  clearVoidServerError,
+  voidProgramEnrolment
+} from "../../../reducers/subjectDashboardReducer";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import MessageDialog from "../../../components/MessageDialog";
+import { DeleteButton } from "../../../components/DeleteButton";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -138,7 +145,10 @@ const ProgramView = ({
   subjectVoided,
   programEnrolmentForm,
   getProgramEnrolmentForm,
-  subjectProfile
+  subjectProfile,
+  voidError,
+  clearVoidServerError,
+  voidProgramEnrolment
 }) => {
   React.useEffect(() => {
     const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
@@ -154,6 +164,7 @@ const ProgramView = ({
   const isNotExited = isNil(programData.programExitDateTime);
 
   const [open, setOpen] = React.useState(false);
+  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -337,6 +348,7 @@ const ProgramView = ({
                   </Dialog>
                 </>
               )}
+              <DeleteButton onDelete={() => setVoidConfirmation(true)} />
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -455,6 +467,19 @@ const ProgramView = ({
           )}
         </ExpansionPanel>
       </Paper>
+      <ConfirmDialog
+        title={t("ProgramEnrolmentVoidAlertTitle")}
+        open={voidConfirmation}
+        setOpen={setVoidConfirmation}
+        message={t("ProgramEnrolmentVoidAlertMessage")}
+        onConfirm={() => voidProgramEnrolment(programData.uuid)}
+      />
+      <MessageDialog
+        title={t("ProgramEnrolmentErrorTitle")}
+        open={!isEmpty(voidError)}
+        message={voidError}
+        onOk={clearVoidServerError}
+      />
     </div>
   );
 };
@@ -462,12 +487,15 @@ const ProgramView = ({
 const mapStateToProps = state => ({
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEnrolmentForm: state.dataEntry.subjectProgram.programEnrolmentForm
+  programEnrolmentForm: state.dataEntry.subjectProgram.programEnrolmentForm,
+  voidError: state.dataEntry.subjectProfile.voidError
 });
 
 const mapDispatchToProps = {
   undoExitEnrolment,
-  getProgramEnrolmentForm
+  getProgramEnrolmentForm,
+  voidProgramEnrolment,
+  clearVoidServerError
 };
 
 export default withRouter(

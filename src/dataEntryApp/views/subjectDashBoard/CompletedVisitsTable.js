@@ -5,7 +5,7 @@ import http from "common/utils/httpClient";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import { mapObservations } from "common/subjectModelMapper";
-import { Box } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import moment from "moment/moment";
 import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer";
 import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import { DeleteButton } from "../../components/DeleteButton";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -124,7 +125,8 @@ const CompletedVisitsTable = ({
   filterParams,
   entityUuid,
   editEncounterUrl,
-  isForProgramEncounters
+  isForProgramEncounters,
+  onDelete
 }) => {
   const { t } = useTranslation();
   usePrevious(filterParams);
@@ -159,11 +161,18 @@ const CompletedVisitsTable = ({
       field: "actions",
       sorting: false,
       render: row => (
-        <EditVisit
-          editEncounterUrl={editEncounterUrl(row.cancelDateTime ? "cancel" : "")}
-          encounter={row}
-          isForProgramEncounters={isForProgramEncounters}
-        />
+        <Grid container alignItems={"center"} alignContent={"center"} spacing={10}>
+          <Grid item>
+            <EditVisit
+              editEncounterUrl={editEncounterUrl(row.cancelDateTime ? "cancel" : "")}
+              encounter={row}
+              isForProgramEncounters={isForProgramEncounters}
+            />
+          </Grid>
+          <Grid item>
+            <DeleteButton onDelete={() => onDelete(row)} />
+          </Grid>
+        </Grid>
       )
     }
   ];

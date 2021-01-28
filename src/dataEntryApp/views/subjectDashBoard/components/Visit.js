@@ -16,6 +16,9 @@ import {
   selectFormMappingForCancelProgramEncounter,
   selectFormMappingForProgramEncounter
 } from "../../../sagas/programEncounterSelector";
+import { voidProgramEncounter } from "../../../reducers/subjectDashboardReducer";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import { DeleteButton } from "../../../components/DeleteButton";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -92,11 +95,13 @@ const Visit = ({
   programUuid,
   subjectTypeUuid,
   programEncounterFormMapping,
-  cancelProgramEncounterFormMapping
+  cancelProgramEncounterFormMapping,
+  voidProgramEncounter
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const encounterId = name.replaceAll(" ", "-");
+  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   let visitUrl;
   switch (type) {
     case "programEncounter":
@@ -223,7 +228,15 @@ const Visit = ({
             )}
           </>
         }
+        <DeleteButton onDelete={() => setVoidConfirmation(true)} />
       </Paper>
+      <ConfirmDialog
+        title={t("ProgramEncounterVoidAlertTitle")}
+        open={voidConfirmation}
+        setOpen={setVoidConfirmation}
+        message={t("ProgramEncounterVoidAlertMessage")}
+        onConfirm={() => voidProgramEncounter(uuid)}
+      />
     </Grid>
   );
 };
@@ -241,4 +254,13 @@ const mapStateToProps = (state, props) => ({
   )(state)
 });
 
-export default withRouter(connect(mapStateToProps)(Visit));
+const mapDispatchToProps = {
+  voidProgramEncounter
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Visit)
+);

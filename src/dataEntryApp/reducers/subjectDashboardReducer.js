@@ -9,7 +9,11 @@ export const types = {
   UN_VOID_SUBJECT: `${prefix}UN_VOID_SUBJECT`,
   SET_TABS_STATUS: `${prefix}SET_TABS_STATUS`,
   GET_GROUP_MEMBERS: `${prefix}GET_GROUP_MEMBERS`,
-  SET_GROUP_MEMBERS: `${prefix}SET_GROUP_MEMBERS`
+  SET_GROUP_MEMBERS: `${prefix}SET_GROUP_MEMBERS`,
+  VOID_SERVER_ERROR: `${prefix}VOID_SERVER_ERROR`,
+  VOID_PROGRAM_ENROLMENT: `${prefix}VOID_PROGRAM_ENROLMENT`,
+  VOID_PROGRAM_ENCOUNTER: `${prefix}VOID_PROGRAM_ENCOUNTER`,
+  VOID_GENERAL_ENCOUNTER: `${prefix}VOID_GENERAL_ENCOUNTER`
 };
 
 export const getSubjectProfile = subjectUUID => ({
@@ -57,6 +61,30 @@ export const setGroupMembers = groupMembers => ({
   groupMembers
 });
 
+export const setVoidServerError = voidError => ({
+  type: types.VOID_SERVER_ERROR,
+  voidError
+});
+
+export const clearVoidServerError = () => ({
+  type: types.VOID_SERVER_ERROR
+});
+
+export const voidProgramEnrolment = programEnrolmentUUID => ({
+  type: types.VOID_PROGRAM_ENROLMENT,
+  uuid: programEnrolmentUUID
+});
+
+export const voidProgramEncounter = programEncounterUUID => ({
+  type: types.VOID_PROGRAM_ENCOUNTER,
+  uuid: programEncounterUUID
+});
+
+export const voidGeneralEncounter = encounterUUID => ({
+  type: types.VOID_GENERAL_ENCOUNTER,
+  uuid: encounterUUID
+});
+
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_SUBJECT_PROFILE: {
@@ -81,6 +109,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         groupMembers: action.groupMembers
+      };
+    }
+    case types.VOID_SERVER_ERROR: {
+      return {
+        ...state,
+        voidError: action.voidError
       };
     }
     default:

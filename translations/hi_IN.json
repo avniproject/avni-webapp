@@ -357,6 +357,16 @@
     "headOfHousehold": "घर के मुखिया",
     "Head of household": "घर के मुखिया",
     "subjectProfile": "प्रोफाइल",
-    "editGroupMembership": "सदस्य को संपादित करें"
+    "editGroupMembership": "सदस्य को संपादित करें",
+    "SubjectVoidAlertTitle": "वोइड् सुब्जेcट्",
+    "SubjectVoidAlertMessage": "क्या आप वाकई इस सुब्जेcट् को वोइड् करना चाहते हैं?",
+    "SubjectErrorTitle": "इस सुब्जेcट् को वोइड् करते समय त्रुटि",
+    "ProgramEnrolmentVoidAlertTitle": "कार्यक्रम नामांकन हटाएं",
+    "ProgramEnrolmentVoidAlertMessage": "क्या आप वाकई इस कार्यक्रम के नामांकन को हटाना चाहते हैं? एक बार हटाए जाने के बाद आप इस नामांकन को नहीं देख पाएंगे।",
+    "ProgramEnrolmentErrorTitle": "इस कार्यक्रम के नामांकन को हटाते समय त्रुटि",
+    "ProgramEncounterVoidAlertTitle": "प्रोग्राम एनकाउंटर को डिलीट करें",
+    "ProgramEncounterVoidAlertMessage": "क्या आप वाकई इस प्रोग्राम एनकाउंटर को हटाना चाहते हैं? हटाए जाने के बाद आप इस प्रोग्राम एनकाउंटर को नहीं देख पाएंगे।",
+    "GeneralEncounterVoidAlertTitle": "एनकाउंटर को डिलीट करें",
+    "GeneralEncounterVoidAlertMessage": "क्या आप वाकई इस एनकाउंटर को हटाना चाहते हैं? हटाए जाने के बाद आप इस एनकाउंटर को नहीं देख पाएंगे।"
   }
 }

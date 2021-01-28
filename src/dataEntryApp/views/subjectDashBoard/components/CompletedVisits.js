@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { Paper } from "@material-ui/core";
+import { Button, Paper } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { withRouter } from "react-router-dom";
@@ -12,6 +12,11 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import CompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/CompletedVisitsTable";
+import {
+  voidGeneralEncounter,
+  voidProgramEncounter
+} from "../../../reducers/subjectDashboardReducer";
+import ConfirmDialog from "../../../components/ConfirmDialog";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -77,7 +82,9 @@ const CompleteVisit = ({
   encounterTypes,
   load,
   loadProgramEncounters,
-  loadEncounters
+  loadEncounters,
+  voidGeneralEncounter,
+  voidProgramEncounter
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -104,6 +111,9 @@ const CompleteVisit = ({
       : loadEncounters(match.queryParams.uuid, filterQueryString);
   }, []);
 
+  const [encounterUUID, setEncounterUUID] = React.useState();
+  const voidEncounter = isForProgramEncounters ? voidProgramEncounter : voidGeneralEncounter;
+
   return encounterTypes && load ? (
     <div>
       <Fragment>
@@ -127,6 +137,22 @@ const CompleteVisit = ({
               entityUuid={match.queryParams.uuid}
               editEncounterUrl={editEncounterUrl}
               isForProgramEncounters={isForProgramEncounters}
+              onDelete={encounter => setEncounterUUID(encounter.uuid)}
+            />
+            <ConfirmDialog
+              title={
+                isForProgramEncounters
+                  ? t("ProgramEncounterVoidAlertTitle")
+                  : t("GeneralEncounterVoidAlertTitle")
+              }
+              open={encounterUUID !== undefined}
+              setOpen={() => setEncounterUUID()}
+              message={
+                isForProgramEncounters
+                  ? t("ProgramEncounterVoidAlertMessage")
+                  : t("GeneralEncounterVoidAlertMessage")
+              }
+              onConfirm={() => voidEncounter(encounterUUID)}
             />
           </Paper>
         </Paper>
@@ -146,7 +172,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   loadEncounters,
-  loadProgramEncounters
+  loadProgramEncounters,
+  voidGeneralEncounter,
+  voidProgramEncounter
 };
 
 export default withRouter(

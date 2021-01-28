@@ -19,8 +19,9 @@ import ConfirmDialog from "../../../components/ConfirmDialog";
 import SubjectVoided from "../../../components/SubjectVoided";
 import GroupSubjectMemberCardView from "../../../components/GroupSubjectMemberCardView";
 import GridCardView from "../../../components/GridCardView";
-import { sortBy } from "lodash";
+import { sortBy, isEmpty } from "lodash";
 import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
+import MessageDialog from "../../../components/MessageDialog";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -92,7 +93,9 @@ const SubjectDashboardProfileTab = ({
   showRelatives,
   showGroupMembers,
   getGroupMembers,
-  groupMembers
+  groupMembers,
+  voidError,
+  clearVoidServerError
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -328,14 +331,20 @@ const SubjectDashboardProfileTab = ({
           {showGroupMembers && renderGroupMembers()}
           {profile.memberships && profile.memberships.length > 0 && renderGroupMemberships()}
           {renderDialog(
-            "Void the subject",
+            t("SubjectVoidAlertTitle"),
             voidConfirmation,
             setVoidConfirmation,
-            "Are you sure you want to void this subject?",
+            t("SubjectVoidAlertMessage"),
             voidSubject
           )}
         </Paper>
       )}
+      <MessageDialog
+        title={t("SubjectErrorTitle")}
+        open={!isEmpty(voidError)}
+        message={voidError}
+        onOk={clearVoidServerError}
+      />
     </Fragment>
   );
 };
