@@ -34,10 +34,16 @@ public class Msg91RestClient {
         }
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         HttpEntity<Object> request = new HttpEntity<>(headers);
-        logger.info(format("Request to Msg91: %s, %s, %s", method, url, msg91Request));
+
+        logger.info(format("Msg91 Request: %s %s", method, url.substring(0, url.indexOf("?"))));
+        logger.debug(format("Msg91 Request Body: %s", msg91Request));
+        long start = System.currentTimeMillis();
         ResponseEntity<String> msg91ResponseResponse = restTemplate.exchange(MSG91_SERVER_HOST.concat(url), method, request, String.class, msg91Request.toMap());
-        logger.info(format("Response from Msg91: %s, %s", msg91ResponseResponse.getStatusCode(), msg91ResponseResponse.getBody()));
-        if (msg91ResponseResponse.getStatusCode() == HttpStatus.OK) {
+        long end = System.currentTimeMillis();
+        logger.info(format("Msg91 Response: Response Code: %s Time: %s ms", msg91ResponseResponse.getStatusCode(), end - start));
+        logger.debug(format("Msg91 Response Body: %s", msg91ResponseResponse.getBody()));
+
+        if (msg91ResponseResponse.getStatusCode().equals(HttpStatus.OK)) {
             return msg91ResponseResponse.getBody();
         } else {
             logger.error(format("Error connecting to Msg91 for Request to Msg91: %s, %s, %s", method, url, msg91Request));

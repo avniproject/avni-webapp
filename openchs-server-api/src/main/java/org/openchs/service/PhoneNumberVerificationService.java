@@ -1,10 +1,14 @@
 package org.openchs.service;
 
+import org.openchs.dao.Msg91ConfigRepository;
+import org.openchs.domain.Msg91Config;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.external.Msg91RestClient;
 import org.openchs.web.request.Msg91Request;
 import org.openchs.web.response.Msg91Response;
 import org.openchs.web.response.PhoneNumberVerificationResponse;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import static java.lang.String.format;
 public class PhoneNumberVerificationService {
 
     private final Msg91RestClient msg91RestClient;
+    private final Msg91ConfigRepository msg91ConfigRepository;
     private final Logger logger;
     private final static String sendOTPEndpoint = "/api/v5/otp?authkey={authkey}&template_id={template_id}&mobile={mobile}&otp_length={otp_length}&otp_expiry={otp_expiry}";
     private final static String resendOTPEndpoint = "/api/v5/otp/retry?authkey={authkey}&mobile={mobile}&retrytype={retrytype}";
@@ -27,16 +32,16 @@ public class PhoneNumberVerificationService {
     private final static String checkBalanceEndpoint = "/api/balance.php?authkey={authkey}&type={type}";
 
     @Autowired
-    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient) {
+    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient, Msg91ConfigRepository msg91ConfigRepository) {
         this.msg91RestClient = msg91RestClient;
+        this.msg91ConfigRepository = msg91ConfigRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
     public PhoneNumberVerificationResponse sendOTP(String phoneNumber) throws IOException {
-        Msg91Request msg91Request = new Msg91Request();
-        msg91Request.setMobile(phoneNumber);
-        addTemplateIdParam(msg91Request);
-        addAuthKeyParam(msg91Request);
+        Msg91Request msg91Request = createMsg91Request();
+        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
+
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.GET, sendOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
             handleMsg91Errors(phoneNumberVerificationResponse.getMsg91Response().getMessage());
@@ -47,10 +52,9 @@ public class PhoneNumberVerificationService {
     }
 
     public PhoneNumberVerificationResponse resendOTP(String phoneNumber) throws IOException {
-        Msg91Request msg91Request = new Msg91Request();
-        msg91Request.setMobile(phoneNumber);
+        Msg91Request msg91Request = createMsg91Request();
+        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
         msg91Request.setRetryType("text");      //Default Msg91 behaviour for retry is OTP via phone call. Setting to text forces resending OTP via SMS.
-        addAuthKeyParam(msg91Request);
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse =  processMsg91Request(HttpMethod.POST, resendOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
@@ -60,10 +64,9 @@ public class PhoneNumberVerificationService {
     }
 
     public PhoneNumberVerificationResponse verifyOTP(String phoneNumber, String otp) throws IOException {
-        Msg91Request msg91Request = new Msg91Request();
+        Msg91Request msg91Request = createMsg91Request();
         msg91Request.setMobile(phoneNumber);
         msg91Request.setOtp(otp);
-        addAuthKeyParam(msg91Request);
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, verifyOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
@@ -92,18 +95,6 @@ public class PhoneNumberVerificationService {
         }
     }
 
-    private Msg91Request addAuthKeyParam(Msg91Request msg91Request) {
-        String authKey = "352153AeIrN0yEO0T600670dfP1";
-        msg91Request.setAuthKey(authKey);
-        return msg91Request;
-    }
-
-    private Msg91Request addTemplateIdParam(Msg91Request msg91Request) {
-        String templateId = "600e91b4c61ef736bf0b88b2";
-        msg91Request.setTemplateId(templateId);
-        return msg91Request;
-    }
-
     private Msg91Response mapStringResponseToObject(String responseString) throws IOException {
         return ObjectMapperSingleton.getObjectMapper().readValue(responseString, Msg91Response.class);
     }
@@ -124,7 +115,6 @@ public class PhoneNumberVerificationService {
             ioException.printStackTrace();
             throw ioException;
         }
-
     }
 
     private PhoneNumberVerificationResponse processMsg91Response(Msg91Response msg91Response) {
@@ -160,5 +150,28 @@ public class PhoneNumberVerificationService {
             case "418":
                 throw new ConnectException("Msg91 - Additional security enabled. IP not whitelisted.");
         }
+    }
+
+    private Msg91Request createMsg91Request() throws ConnectException {
+        Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
+        Msg91Config msg91Config = msg91ConfigRepository.findByOrganisationIdAndIsVoidedFalse(orgId);
+        if (msg91Config == null) {
+            throw new ConnectException("Msg91 not configured for organisation");
+        }
+        Msg91Request msg91Request = new Msg91Request();
+        msg91Request.setAuthKey(msg91Config.getAuthKey());
+        msg91Request.setTemplateId(msg91Config.getOtpSmsTemplateId());
+        msg91Request.setOtpLength(msg91Config.getOtpLength() != null ? String.valueOf(msg91Config.getOtpLength()) : "4");
+        msg91Request.setOtpExpiry("10");        // Default expiry value in minutes for all OTPs
+        return msg91Request;
+    }
+
+    private String validateAndAddCountryCodeToPhoneNumber(String phoneNumber) {
+        String MOBILE_NUMBER_PATTERN = "^[0-9]{10}";
+
+        if (!phoneNumber.trim().matches(MOBILE_NUMBER_PATTERN)) {
+            throw new ValidationException(String.format("Invalid phone number: %s", phoneNumber));
+        }
+        return "91"+phoneNumber.trim();
     }
 }

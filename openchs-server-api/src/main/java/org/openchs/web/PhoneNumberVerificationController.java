@@ -57,21 +57,4 @@ public class PhoneNumberVerificationController {
                 ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse) :
                 ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse);
     }
-
-    @RequestMapping(value = "/phoneNumberVerification/otp/setup", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public void storeConfiguration() {
-
-    }
-
-    @RequestMapping(value = "/phoneNumberVerification/otp/setup/check", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<PhoneNumberVerificationResponse> verifyConfiguration() throws IOException {
-        PhoneNumberVerificationResponse phoneNumberVerificationResponse
-                = phoneNumberVerificationService.checkBalance("352153AeIrN0yEO0T600670dfP1");
-        return phoneNumberVerificationResponse.isSuccess() ?
-                ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse) :
-                ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse);
-    }
-
 }
