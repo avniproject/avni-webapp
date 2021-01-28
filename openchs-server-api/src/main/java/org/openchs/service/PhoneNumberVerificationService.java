@@ -12,6 +12,7 @@ import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +31,24 @@ public class PhoneNumberVerificationService {
     private final static String resendOTPEndpoint = "/api/v5/otp/retry?authkey={authkey}&mobile={mobile}&retrytype={retrytype}";
     private final static String verifyOTPEndpoint = "/api/v5/otp/verify?authkey={authkey}&mobile={mobile}&otp={otp}";
     private final static String checkBalanceEndpoint = "/api/balance.php?authkey={authkey}&type={type}";
+    @Value("${openchs.connectToMsg91InDev}")
+    private boolean msg91InDev;
+
+    private final Boolean isDev;
 
     @Autowired
-    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient, Msg91ConfigRepository msg91ConfigRepository) {
+    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient, Msg91ConfigRepository msg91ConfigRepository, Boolean isDev) {
         this.msg91RestClient = msg91RestClient;
         this.msg91ConfigRepository = msg91ConfigRepository;
+        this.isDev = isDev;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
     public PhoneNumberVerificationResponse sendOTP(String phoneNumber) throws IOException {
+        if (isDev && !msg91InDev) {
+            return new PhoneNumberVerificationResponse(true, null);
+        }
+
         Msg91Request msg91Request = createMsg91Request();
         msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
 
@@ -52,11 +62,15 @@ public class PhoneNumberVerificationService {
     }
 
     public PhoneNumberVerificationResponse resendOTP(String phoneNumber) throws IOException {
+        if (isDev && !msg91InDev) {
+            return new PhoneNumberVerificationResponse(true, null);
+        }
+
         Msg91Request msg91Request = createMsg91Request();
         msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
         msg91Request.setRetryType("text");      //Default Msg91 behaviour for retry is OTP via phone call. Setting to text forces resending OTP via SMS.
 
-        PhoneNumberVerificationResponse phoneNumberVerificationResponse =  processMsg91Request(HttpMethod.POST, resendOTPEndpoint, msg91Request, true);
+        PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, resendOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
             handleMsg91Errors(phoneNumberVerificationResponse.getMsg91Response().getMessage());
         }
@@ -64,8 +78,12 @@ public class PhoneNumberVerificationService {
     }
 
     public PhoneNumberVerificationResponse verifyOTP(String phoneNumber, String otp) throws IOException {
+        if (isDev && !msg91InDev) {
+            return new PhoneNumberVerificationResponse(otp.equals("1234"), null);
+        }
+
         Msg91Request msg91Request = createMsg91Request();
-        msg91Request.setMobile(phoneNumber);
+        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
         msg91Request.setOtp(otp);
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, verifyOTPEndpoint, msg91Request, true);
@@ -172,6 +190,6 @@ public class PhoneNumberVerificationService {
         if (!phoneNumber.trim().matches(MOBILE_NUMBER_PATTERN)) {
             throw new ValidationException(String.format("Invalid phone number: %s", phoneNumber));
         }
-        return "91"+phoneNumber.trim();
+        return "91" + phoneNumber.trim();
     }
 }
