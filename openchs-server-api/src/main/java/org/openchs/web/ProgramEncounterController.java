@@ -142,6 +142,20 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         }
     }
 
+    @DeleteMapping("/web/programEncounter/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+        ProgramEncounter programEncounter = programEncounterRepository.findByUuid(uuid);
+        if (programEncounter == null) {
+            return ResponseEntity.notFound().build();
+        }
+        programEncounter.setVoided(true);
+        ProgramEncounter voidedEncounter = programEncounterRepository.save(programEncounter);
+        return ResponseEntity.ok(voidedEncounter);
+    }
+
     @Override
     public Resource<ProgramEncounter> process(Resource<ProgramEncounter> resource) {
         ProgramEncounter programEncounter = resource.getContent();

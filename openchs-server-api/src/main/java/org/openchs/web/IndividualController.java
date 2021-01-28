@@ -236,6 +236,19 @@ public class IndividualController extends AbstractController<Individual> impleme
         return encounterService.getAllCompletedEncounters(uuid, encounterTypeUuids, encounterDateTime, earliestVisitDateTime, pageable);
     }
 
+    @DeleteMapping("/web/subject/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+        Individual individual = individualRepository.findByUuid(uuid);
+        if (individual == null) {
+            ResponseEntity.notFound().build();
+        }
+        Individual voidedIndividual = individualService.voidSubject(individual);
+        return ResponseEntity.ok(voidedIndividual);
+    }
+
     @Override
     public Resource<Individual> process(Resource<Individual> resource) {
         Individual individual = resource.getContent();

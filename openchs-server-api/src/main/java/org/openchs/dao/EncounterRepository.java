@@ -91,6 +91,10 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("encounterDateTime"));
     }
 
+    default Specification<Encounter> withVoidedFalse() {
+        return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isFalse(root.get("isVoided"));
+    }
+
     default Specification<Encounter> withNotNullCancelDateTime() {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("cancelDateTime"));
     }

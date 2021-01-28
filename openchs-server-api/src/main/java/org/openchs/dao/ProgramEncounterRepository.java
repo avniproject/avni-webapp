@@ -93,6 +93,10 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("encounterDateTime"));
     }
 
+    default Specification<ProgramEncounter> withVoidedFalse() {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isFalse(root.get("isVoided"));
+    }
+
     default Specification<ProgramEncounter> withNotNullCancelDateTime() {
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("cancelDateTime"));
     }

@@ -140,6 +140,19 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         return programEnrolmentService.getAllCompletedEncounters(uuid, encounterTypeUuids, encounterDateTime, earliestVisitDateTime, pageable);
     }
 
+    @DeleteMapping("/web/programEnrolment/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
+        if (programEnrolment == null) {
+            return ResponseEntity.notFound().build();
+        }
+        ProgramEnrolment voidedEnrolment = programEnrolmentService.voidEnrolment(programEnrolment);
+        return ResponseEntity.ok(voidedEnrolment);
+    }
+
     @Override
     public Resource<ProgramEnrolment> process(Resource<ProgramEnrolment> resource) {
         ProgramEnrolment programEnrolment = resource.getContent();

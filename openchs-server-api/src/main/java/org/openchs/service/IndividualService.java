@@ -5,6 +5,7 @@ import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -46,7 +48,7 @@ public class IndividualService {
         if (individual == null)  {
             return null;
         }
-        Set<EncounterContract> encountersContractList = constructEncounters(individual.getEncounters());
+        Set<EncounterContract> encountersContractList = constructEncounters(individual.nonVoidedEncounters());
         IndividualContract individualContract = new IndividualContract();
         individualContract.setEncounters(encountersContractList);
         return individualContract;
@@ -128,7 +130,7 @@ public class IndividualService {
             enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
             enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
-            enrolmentContract.setProgramEncounters(constructProgramEncounters(programEnrolment.getProgramEncounters()));
+            enrolmentContract.setProgramEncounters(constructProgramEncounters(programEnrolment.nonVoidedEncounters()));
             enrolmentContract.setVoided(programEnrolment.isVoided());
             enrolmentContract.setProgramName(programEnrolment.getProgram().getName());
             List<ObservationContract> observationContractsList = observationService.constructObservations(programEnrolment.getObservations());
@@ -140,8 +142,8 @@ public class IndividualService {
         }).collect(Collectors.toList());
     }
 
-    public Set<EncounterContract> constructEncounters(Set<Encounter> encounters) {
-        return encounters.stream().map(encounter -> {
+    public Set<EncounterContract> constructEncounters(Stream<Encounter> encounters) {
+        return encounters.map(encounter -> {
             EncounterContract encounterContract = new EncounterContract();
             EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
             encounterTypeContract.setUuid(encounter.getEncounterType().getUuid());
@@ -160,8 +162,8 @@ public class IndividualService {
     }
 
 
-    public Set <ProgramEncountersContract> constructProgramEncounters(Set<ProgramEncounter> programEncounters) {
-        return programEncounters.stream().map(programEncounter -> {
+    public Set <ProgramEncountersContract> constructProgramEncounters(Stream<ProgramEncounter> programEncounters) {
+        return programEncounters.map(programEncounter -> {
             ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
             EncounterTypeContract encounterTypeContract =
                     EncounterTypeContract.fromEncounterType(programEncounter.getEncounterType());
@@ -270,5 +272,28 @@ public class IndividualService {
         return encounterMetadataContract;
     }
 
+    public Individual voidSubject(Individual individual) {
+        assertNoUnVoidedEncounters(individual);
+        assertNoUnVoidedEnrolments(individual);
+        individual.setVoided(true);
+        return individualRepository.save(individual);
+    }
+
+    private void assertNoUnVoidedEnrolments(Individual individual) {
+        long nonVoidedProgramEnrolments = individual.getProgramEnrolments()
+                .stream()
+                .filter(pe -> !pe.isVoided())
+                .count();
+        if (nonVoidedProgramEnrolments != 0) {
+            throw new BadRequestError(String.format("There are non voided program enrolments for the subject %s", individual.getFirstName()));
+        }
+    }
+
+    private void assertNoUnVoidedEncounters(Individual individual) {
+        long nonVoidedEncounterCount = individual.nonVoidedEncounters().count();
+        if (nonVoidedEncounterCount != 0) {
+            throw new BadRequestError(String.format("There are non voided general encounters for the subject %s", individual.getFirstName()));
+        }
+    }
 
 }

@@ -211,6 +211,20 @@ public class EncounterController extends AbstractController<Encounter> implement
         }
     }
 
+    @DeleteMapping("/web/encounter/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+        Encounter encounter = encounterRepository.findByUuid(uuid);
+        if (encounter == null) {
+            return ResponseEntity.notFound().build();
+        }
+        encounter.setVoided(true);
+        Encounter voidedEncounter = encounterRepository.save(encounter);
+        return ResponseEntity.ok(voidedEncounter);
+    }
+
     @Override
     public Resource<Encounter> process(Resource<Encounter> resource) {
         Encounter encounter = resource.getContent();

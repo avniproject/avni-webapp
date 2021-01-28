@@ -5,6 +5,7 @@ import org.openchs.common.EntityHelper;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.ChecklistContract;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
@@ -92,8 +93,7 @@ public class ProgramEnrolmentService {
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
         enrolmentContract.setSubjectUuid(programEnrolment.getIndividual().getUuid());
         enrolmentContract.setVoided(programEnrolment.isVoided());
-        Set<ProgramEncountersContract> programEncounters = programEnrolment.getProgramEncounters()
-                .stream()
+        Set<ProgramEncountersContract> programEncounters = programEnrolment.nonVoidedEncounters()
                 .map(programEncounter -> programEncounterService.constructProgramEncounters(programEncounter))
                 .collect(Collectors.toSet());
         enrolmentContract.setProgramEncounters(programEncounters);
@@ -113,7 +113,8 @@ public class ProgramEnrolmentService {
         }
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
         Specification<ProgramEncounter> completedEncounterSpecification = Specification.where(programEncounterRepository.withNotNullEncounterDateTime())
-                .or(programEncounterRepository.withNotNullCancelDateTime());
+                .or(programEncounterRepository.withNotNullCancelDateTime())
+                .and(programEncounterRepository.withVoidedFalse());
         programEncountersContract = programEncounterRepository.findAll(
                 where(programEncounterRepository.withProgramEncounterId(programEnrolment.getId()))
                         .and(programEncounterRepository.withProgramEncounterTypeIdUuids(encounterTypeIdList))
@@ -217,5 +218,19 @@ public class ProgramEnrolmentService {
             checklistItemRepository.save(checklistItem);
         });
         return savedChecklist;
+    }
+
+    public ProgramEnrolment voidEnrolment(ProgramEnrolment programEnrolment) {
+        assertNoUnVoidedProgramEncounters(programEnrolment);
+        programEnrolment.setVoided(true);
+        return programEnrolmentRepository.save(programEnrolment);
+    }
+
+    private void assertNoUnVoidedProgramEncounters(ProgramEnrolment programEnrolment) {
+        long unVoidedProgramEncounters = programEnrolment.nonVoidedEncounters().count();
+        if (unVoidedProgramEncounters != 0) {
+            String programName = programEnrolment.getProgram().getName();
+            throw new BadRequestError(String.format("There are non voided program encounters for the program %s", programName));
+        }
     }
 }

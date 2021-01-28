@@ -63,6 +63,7 @@ public class EncounterService {
                         .and(encounterRepository.withEncounterTypeIdUuids(encounterTypeIdList))
                         .and(encounterRepository.withEncounterEarliestVisitDateTime(earliestVisitDateTime))
                         .and(encounterRepository.withEncounterDateTime(encounterDateTime))
+                        .and(encounterRepository.withVoidedFalse())
                         .and(completedEncounterSpecification)
                 ,pageable).map(encounter -> constructEncounters(encounter));
         return encountersContract;
