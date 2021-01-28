@@ -10,7 +10,7 @@ import {
   selectFormMappingForEncounter,
   selectFormMappingForCancelEncounter
 } from "../../../sagas/encounterSelector";
-import { voidProgramEncounter } from "../../../reducers/subjectDashboardReducer";
+import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import { DeleteButton } from "../../../components/DeleteButton";
 
@@ -169,7 +169,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = {
-  voidProgramEncounter
+  voidGeneralEncounter
 };
 
 export default connect(

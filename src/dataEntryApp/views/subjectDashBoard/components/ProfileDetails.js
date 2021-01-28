@@ -228,7 +228,7 @@ const ProfileDetails = ({
           </Table>
         </Grid>
         <Grid item xs={7} align="right">
-          {tabsStatus.showProgramTab && !profileDetails.voided ? (
+          {tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided ? (
             <div>
               <Modal
                 content={content}
