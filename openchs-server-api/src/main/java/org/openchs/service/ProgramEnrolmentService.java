@@ -230,7 +230,7 @@ public class ProgramEnrolmentService {
         long unVoidedProgramEncounters = programEnrolment.nonVoidedEncounters().count();
         if (unVoidedProgramEncounters != 0) {
             String programName = programEnrolment.getProgram().getName();
-            throw new BadRequestError(String.format("There are non voided program encounters for the program %s", programName));
+            throw new BadRequestError(String.format("There are non deleted program encounters for the program %s", programName));
         }
     }
 }
