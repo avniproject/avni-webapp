@@ -19,6 +19,7 @@ import { getRegistrationForm, setRegistrationForm } from "../reducers/registrati
 import { filter, isEmpty, map, includes } from "lodash";
 import { setSubjectProgram } from "../reducers/programSubjectDashboardReducer";
 import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
+import { setPrograms } from "../reducers/programReducer";
 
 export default function*() {
   yield all(
@@ -141,6 +142,8 @@ export function* voidProgramEnrolmentWorker({ uuid }) {
     const subject = yield select(selectSubjectProfile);
     const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);
     yield put(setSubjectProgram(mapProgram(subjectProgram)));
+    const programs = yield call(api.fetchPrograms, subject.uuid);
+    yield put(setPrograms(programs));
   }
   yield put.resolve(setLoad(true));
 }
