@@ -6,6 +6,8 @@ import org.openchs.domain.*;
 import org.openchs.geo.Point;
 import org.openchs.projection.IndividualWebProjection;
 import org.openchs.service.*;
+import org.openchs.util.BadRequestError;
+import org.openchs.util.O;
 import org.openchs.util.S;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
@@ -27,6 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -82,13 +85,20 @@ public class IndividualController extends AbstractController<Individual> impleme
     public ResponsePage getSubjects(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                     @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                     @RequestParam(value = "subjectType", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String subjectType,
+                                    @RequestParam(value = "concepts", required = false) String concepts,
                                     Pageable pageable) {
         Page<Individual> subjects;
         boolean subjectTypeRequested = S.isEmpty(subjectType);
+        Map<String, String> jsonMap;
+        try {
+            jsonMap = O.readMap(concepts);
+        } catch (IOException e) {
+            throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
+        }
         if (subjectTypeRequested) {
-            subjects = individualRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+            subjects = individualRepository.findByConcepts(lastModifiedDateTime, now, jsonMap, pageable);
         } else
-            subjects = individualRepository.findByAuditLastModifiedDateTimeIsBetweenAndSubjectTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, subjectType, pageable);
+            subjects = individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, jsonMap, subjectType, pageable);
         ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
         subjects.forEach(subject -> {
             subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService));
@@ -137,7 +147,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     private void saveIdentifierAssignments(Individual individual, IndividualRequest individualRequest) {
         List<String> identifierAssignmentUuids = individualRequest.getIdentifierAssignmentUuids();
-        if(identifierAssignmentUuids != null) {
+        if (identifierAssignmentUuids != null) {
             identifierAssignmentUuids.forEach(uuid -> {
                 IdentifierAssignment identifierAssignment = identifierAssignmentRepository.findByUuid(uuid);
                 identifierAssignment.setIndividual(individual);
@@ -159,7 +169,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         } else {
             if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
             SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
-            if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
+            if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
             return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
         }
     }

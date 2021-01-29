@@ -1,12 +1,15 @@
 package org.openchs.dao;
 
+import org.joda.time.DateTime;
+import org.openchs.domain.Audit;
 import org.openchs.domain.CHSEntity;
+import org.openchs.domain.Individual;
+import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface CHSRepository<T extends CHSEntity> {
     T findByUuid(String uuid);
@@ -24,5 +27,23 @@ public interface CHSRepository<T extends CHSEntity> {
                 jsonb,
                 builder.literal(key)
         );
+    }
+
+    default Specification<T> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts) {
+
+        Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<T, Audit> audit = root.join("audit", JoinType.LEFT);
+
+            List<Predicate> predicates = new ArrayList<>();
+            concepts.forEach((conceptUuid, value) -> {
+                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), conceptUuid, cb), value));
+            });
+
+            predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
+            query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return spec;
     }
 }

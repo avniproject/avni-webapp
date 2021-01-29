@@ -1,8 +1,6 @@
 package org.openchs.web;
 
 import com.bugsnag.Bugsnag;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
@@ -15,12 +13,11 @@ import org.openchs.service.EncounterService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.util.BadRequestError;
-import org.openchs.util.ObjectMapperSingleton;
+import org.openchs.util.O;
 import org.openchs.util.S;
 import org.openchs.web.request.EncounterContract;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.web.request.PointRequest;
-import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.response.EncounterResponse;
 import org.openchs.web.response.ResponsePage;
@@ -87,11 +84,9 @@ public class EncounterController extends AbstractController<Encounter> implement
                                       @RequestParam(value = "concepts", required = false) String concepts,
                                       Pageable pageable) {
         Page<Encounter> encounters;
-        Map<String, String> jsonMap = new HashMap<>();
-        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
+        Map<String, String> jsonMap;
         try {
-            if(!S.isEmpty(concepts))
-                jsonMap = objectMapper.readValue(concepts, new TypeReference<Map<String,String>>(){});
+            jsonMap = O.readMap(concepts);
         } catch (IOException e) {
             throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
         }

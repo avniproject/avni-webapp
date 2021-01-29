@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.Map;
 
 import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
 import static org.openchs.domain.OperatingIndividualScope.ByFacility;
@@ -156,5 +157,24 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     @Query(value = "select firstname,lastname,fullname,id,uuid,title_lineage,subject_type_name,gender_name,date_of_birth,enrolments,total_elements from web_search_function(:jsonSearch, :dbUser)", nativeQuery = true)
     List<WebSearchResultProjection> getWebSearchResults(String jsonSearch, String dbUser);
+
+    default Specification<Individual> findBySubjectTypeSpec(String subjectType) {
+        Specification<Individual> spec = (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Individual, SubjectType> subjectTypeJoin = root.join("subjectType", JoinType.LEFT);
+            return cb.and(cb.equal(subjectTypeJoin.get("name"), subjectType));
+        };
+        return spec;
+    }
+
+    default Page<Individual> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts, Pageable pageable) {
+        return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
+    }
+
+    default Page<Individual> findByConceptsAndSubjectType(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts, String subjectType, Pageable pageable) {
+        return findAll(
+                findByConceptsSpec(lastModifiedDateTime, now, concepts)
+                        .and(findBySubjectTypeSpec(subjectType)),
+                pageable);
+    }
 
 }

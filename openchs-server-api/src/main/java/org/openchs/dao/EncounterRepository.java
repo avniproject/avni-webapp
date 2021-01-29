@@ -107,24 +107,6 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
     }
 
-    default Specification<Encounter> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts) {
-
-        Specification<Encounter> spec = (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            Join<Encounter, Audit> audit = root.join("audit", JoinType.LEFT);
-
-            List<Predicate> predicates = new ArrayList<>();
-            concepts.forEach((conceptUuid, value) -> {
-                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), conceptUuid, cb), value));
-            });
-
-            predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
-            query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
-
-            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-        };
-        return spec;
-    }
-
     default Specification<Encounter> findByEncounterTypeSpec(String encounterType) {
         Specification<Encounter> spec = (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             Join<Encounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
