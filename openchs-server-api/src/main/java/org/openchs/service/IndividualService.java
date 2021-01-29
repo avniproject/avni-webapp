@@ -285,14 +285,14 @@ public class IndividualService {
                 .filter(pe -> !pe.isVoided())
                 .count();
         if (nonVoidedProgramEnrolments != 0) {
-            throw new BadRequestError(String.format("There are non voided program enrolments for the subject %s", individual.getFirstName()));
+            throw new BadRequestError(String.format("There are non deleted program enrolments for the subject %s", individual.getFirstName()));
         }
     }
 
     private void assertNoUnVoidedEncounters(Individual individual) {
         long nonVoidedEncounterCount = individual.nonVoidedEncounters().count();
         if (nonVoidedEncounterCount != 0) {
-            throw new BadRequestError(String.format("There are non voided general encounters for the subject %s", individual.getFirstName()));
+            throw new BadRequestError(String.format("There are non deleted general encounters for the subject %s", individual.getFirstName()));
         }
     }
 
