@@ -1,7 +1,9 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.Audit;
 import org.openchs.domain.Encounter;
+import org.openchs.domain.EncounterType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,12 +12,12 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
@@ -23,6 +25,7 @@ import java.util.List;
 public interface EncounterRepository extends TransactionalDataRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Encounter> {
     Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+
     Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAudit_LastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime, DateTime now, String encounterType, Pageable pageable);
 
@@ -102,5 +105,42 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     default Specification<Encounter> withEncounterTypeIdUuids(List<String> encounterTypeUuids) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
+    }
+
+    default Specification<Encounter> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts) {
+
+        Specification<Encounter> spec = (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Encounter, Audit> audit = root.join("audit", JoinType.LEFT);
+
+            List<Predicate> predicates = new ArrayList<>();
+            concepts.forEach((conceptUuid, value) -> {
+                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), conceptUuid, cb), value));
+            });
+
+            predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
+            query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return spec;
+    }
+
+    default Specification<Encounter> findByEncounterTypeSpec(String encounterType) {
+        Specification<Encounter> spec = (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Encounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
+            return cb.and(cb.equal(encounterTypeJoin.get("name"), encounterType));
+        };
+        return spec;
+    }
+
+    default Page<Encounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts, Pageable pageable) {
+        return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
+    }
+
+    default Page<Encounter> findByConceptsAndEncounterType(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts, String encounterType, Pageable pageable) {
+        return findAll(
+                findByConceptsSpec(lastModifiedDateTime, now, concepts)
+                        .and(findByEncounterTypeSpec(encounterType)),
+                pageable);
     }
 }

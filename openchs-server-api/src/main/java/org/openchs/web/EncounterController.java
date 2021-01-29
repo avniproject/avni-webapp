@@ -1,6 +1,8 @@
 package org.openchs.web;
 
 import com.bugsnag.Bugsnag;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
@@ -12,6 +14,8 @@ import org.openchs.service.ConceptService;
 import org.openchs.service.EncounterService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.util.BadRequestError;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.util.S;
 import org.openchs.web.request.EncounterContract;
 import org.openchs.web.request.EncounterRequest;
@@ -35,8 +39,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter>, OperatingIndividualScopeAwareFilterController<Encounter> {
@@ -77,12 +84,21 @@ public class EncounterController extends AbstractController<Encounter> implement
     public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                       @RequestParam(value = "encounterType", required = false) String encounterType,
+                                      @RequestParam(value = "concepts", required = false) String concepts,
                                       Pageable pageable) {
         Page<Encounter> encounters;
+        Map<String, String> jsonMap = new HashMap<>();
+        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
+        try {
+            if(!S.isEmpty(concepts))
+                jsonMap = objectMapper.readValue(concepts, new TypeReference<Map<String,String>>(){});
+        } catch (IOException e) {
+            throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
+        }
         if (S.isEmpty(encounterType)) {
-            encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+            encounters = encounterRepository.findByConcepts(lastModifiedDateTime, now, jsonMap, pageable);
         } else {
-            encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
+            encounters = encounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, jsonMap, encounterType, pageable);
         }
 
         ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();
