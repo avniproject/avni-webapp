@@ -14,10 +14,10 @@ import org.openchs.domain.SubjectType;
 import org.openchs.service.*;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.util.ReactAdminUtil;
-import org.openchs.web.request.SubjectTypeContract;
-import org.openchs.web.request.webapp.SubjectTypeSetting;
 import org.openchs.web.request.GroupRoleContract;
+import org.openchs.web.request.SubjectTypeContract;
 import org.openchs.web.request.webapp.SubjectTypeContractWeb;
+import org.openchs.web.request.webapp.SubjectTypeSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -243,7 +243,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         }
         groupRole.setUuid(groupRoleContract.getGroupRoleUUID());
         groupRole.setGroupSubjectType(groupSubjectType);
-        groupRole.setMemberSubjectType(subjectTypeRepository.findByName(groupRoleContract.getMemberSubjectTypeName()));
+        groupRole.setMemberSubjectType(subjectTypeRepository.findByName(groupRoleContract.getSubjectMemberName()));
         groupRole.setVoided(groupRoleContract.isVoided());
         groupRole.setRole(groupRoleContract.getRole());
         groupRole.setMinimumNumberOfMembers(groupRoleContract.getMinimumNumberOfMembers());
