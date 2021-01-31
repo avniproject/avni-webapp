@@ -89,16 +89,11 @@ public class IndividualController extends AbstractController<Individual> impleme
                                     Pageable pageable) {
         Page<Individual> subjects;
         boolean subjectTypeRequested = S.isEmpty(subjectType);
-        Map<String, String> jsonMap;
-        try {
-            jsonMap = O.readMap(concepts);
-        } catch (IOException e) {
-            throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
-        }
+        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         if (subjectTypeRequested) {
-            subjects = individualRepository.findByConcepts(lastModifiedDateTime, now, jsonMap, pageable);
+            subjects = individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
         } else
-            subjects = individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, jsonMap, subjectType, pageable);
+            subjects = individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, pageable);
         ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
         subjects.forEach(subject -> {
             subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService));

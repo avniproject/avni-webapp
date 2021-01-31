@@ -3,6 +3,7 @@ package org.openchs.dao;
 import org.joda.time.DateTime;
 import org.openchs.domain.Audit;
 import org.openchs.domain.CHSEntity;
+import org.openchs.domain.Concept;
 import org.openchs.domain.Individual;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -29,14 +30,14 @@ public interface CHSRepository<T extends CHSEntity> {
         );
     }
 
-    default Specification<T> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts) {
+    default Specification<T> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts) {
 
         Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             Join<T, Audit> audit = root.join("audit", JoinType.LEFT);
 
             List<Predicate> predicates = new ArrayList<>();
-            concepts.forEach((conceptUuid, value) -> {
-                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), conceptUuid, cb), value));
+            concepts.forEach((concept, value) -> {
+                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), concept.getUuid(), cb), value));
             });
 
             predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));

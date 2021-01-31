@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.Audit;
+import org.openchs.domain.Concept;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.springframework.data.domain.Page;
@@ -115,11 +116,11 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         return spec;
     }
 
-    default Page<Encounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts, Pageable pageable) {
+    default Page<Encounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
         return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
     }
 
-    default Page<Encounter> findByConceptsAndEncounterType(DateTime lastModifiedDateTime, DateTime now, Map<String, String> concepts, String encounterType, Pageable pageable) {
+    default Page<Encounter> findByConceptsAndEncounterType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
         return findAll(
                 findByConceptsSpec(lastModifiedDateTime, now, concepts)
                         .and(findByEncounterTypeSpec(encounterType)),

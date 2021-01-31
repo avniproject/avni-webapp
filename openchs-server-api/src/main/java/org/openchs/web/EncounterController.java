@@ -3,10 +3,7 @@ package org.openchs.web;
 import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.Encounter;
-import org.openchs.domain.EncounterType;
-import org.openchs.domain.Individual;
-import org.openchs.domain.ObservationCollection;
+import org.openchs.domain.*;
 import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
 import org.openchs.service.EncounterService;
@@ -84,16 +81,11 @@ public class EncounterController extends AbstractController<Encounter> implement
                                       @RequestParam(value = "concepts", required = false) String concepts,
                                       Pageable pageable) {
         Page<Encounter> encounters;
-        Map<String, String> jsonMap;
-        try {
-            jsonMap = O.readMap(concepts);
-        } catch (IOException e) {
-            throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
-        }
+        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         if (S.isEmpty(encounterType)) {
-            encounters = encounterRepository.findByConcepts(lastModifiedDateTime, now, jsonMap, pageable);
+            encounters = encounterRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
         } else {
-            encounters = encounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, jsonMap, encounterType, pageable);
+            encounters = encounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, conceptsMap, encounterType, pageable);
         }
 
         ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();

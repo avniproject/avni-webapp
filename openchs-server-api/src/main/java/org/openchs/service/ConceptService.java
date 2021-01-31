@@ -1,5 +1,7 @@
 package org.openchs.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.FormElement;
 import org.openchs.application.KeyType;
 import org.openchs.dao.ConceptAnswerRepository;
@@ -11,6 +13,8 @@ import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.BadRequestError;
 import org.openchs.util.O;
+import org.openchs.util.ObjectMapperSingleton;
+import org.openchs.util.S;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
 import org.openchs.web.request.application.ConceptUsageContract;
@@ -23,9 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -35,15 +38,11 @@ public class ConceptService {
     private ConceptRepository conceptRepository;
     private ConceptAnswerRepository conceptAnswerRepository;
     private OrganisationRepository organisationRepository;
-    private UserService userService;
     private FormElementRepository formElementRepository;
-    private final OrganisationConfigRepository organisationConfigRepository;
 
     @Autowired
     public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository, OrganisationConfigRepository organisationConfigRepository) {
-        this.userService = userService;
         this.formElementRepository = formElementRepository;
-        this.organisationConfigRepository = organisationConfigRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
@@ -246,5 +245,33 @@ public class ConceptService {
     public void addDependentFormDetails(ConceptUsageContract conceptUsageContract, Concept concept) {
         List<FormElement> formElements = formElementRepository.findAllByConceptUuidAndIsVoidedFalse(concept.getUuid());
         formElements.forEach(formElement -> conceptUsageContract.addForms(FormUsageContract.fromEntity(formElement)));
+    }
+
+    public Map<Concept, String> readConceptsFromJsonObject(String jsonObject) {
+        Map<Concept, String> jsonMap = new HashMap<>();
+        try {
+            Map<String, String> conceptsMap = readMap(jsonObject);
+            for (Map.Entry<String, String> entry : conceptsMap.entrySet()) {
+                String conceptName = entry.getKey();
+                String value = entry.getValue();
+                Concept concept = conceptRepository.findByName(conceptName);
+                if(concept == null)
+                    throw new BadRequestError("Bad Request: One of the specified concept(%s) does not exist", conceptName);
+                jsonMap.put(concept, value);
+            }
+            return jsonMap;
+        } catch (IOException e) {
+            throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
+        }
+    }
+
+    private static Map<String, String> readMap(String concepts) throws IOException {
+        Map<String, String> jsonMap = new HashMap<>();
+        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
+        if (!S.isEmpty(concepts)) {
+            jsonMap = objectMapper.readValue(concepts, new TypeReference<Map<String, String>>() {
+            });
+        }
+        return jsonMap;
     }
 }
