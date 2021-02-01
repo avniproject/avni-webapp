@@ -216,7 +216,7 @@ const onPrevious = ({
   const obsHolder = new ObservationsHolder(observations);
   if (isEmpty(previousFilteredFormElements)) {
     obsHolder.removeNonApplicableObs(previousGroup.getFormElements(), previousFilteredFormElements);
-    obsHolder.updatePrimitiveObs(previousFilteredFormElements, formElementStatuses);
+    obsHolder.updatePrimitiveCodedObs(previousFilteredFormElements, formElementStatuses);
     return onPrevious(
       nextState(
         previousGroup,
@@ -275,7 +275,7 @@ const updateObservations = (
   const filteredFormElements = FormElementGroup._sortedFormElements(
     formElement.formElementGroup.filterElements(formElementStatuses)
   );
-  observationsHolder.updatePrimitiveObs(filteredFormElements, formElementStatuses);
+  observationsHolder.updatePrimitiveCodedObs(filteredFormElements, formElementStatuses);
 
   const validationResults = formElementService.validate(
     formElement,
