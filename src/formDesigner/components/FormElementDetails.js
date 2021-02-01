@@ -721,7 +721,7 @@ function FormElementDetails(props) {
           </AvniFormControl>
         </Grid>
         <Grid item sm={6}>
-          {["Numeric", "Text", "Date", "DateTime", "Time"].includes(
+          {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(
             props.formElementData.concept.dataType
           ) && (
             <AvniFormControl
