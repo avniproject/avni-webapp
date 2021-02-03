@@ -9,10 +9,14 @@ import java.util.UUID;
 public class EntityHelper<T extends CHSEntity> {
 
     public static <T extends CHSEntity> T newOrExistingEntity(CHSRepository<T> chsRepository, CHSRequest chsRequest, T chsEntity) {
-        T t = chsRepository.findByUuid(chsRequest.getUuid());
+        return newOrExistingEntity(chsRepository, chsRequest.getUuid(), chsEntity);
+    }
+
+    public static <T extends CHSEntity> T newOrExistingEntity(CHSRepository<T> chsRepository, String uuid, T chsEntity) {
+        T t = chsRepository.findByUuid(uuid);
         if (t == null) {
             t = chsEntity;
-            t.setUuid(chsRequest.getUuid() != null ? chsRequest.getUuid() : UUID.randomUUID().toString());
+            t.setUuid(uuid != null ? uuid : UUID.randomUUID().toString());
         }
         return t;
     }
