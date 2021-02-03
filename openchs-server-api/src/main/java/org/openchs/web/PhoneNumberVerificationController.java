@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @RestController
 public class PhoneNumberVerificationController {
@@ -29,7 +30,7 @@ public class PhoneNumberVerificationController {
 
     @RequestMapping(value = "/phoneNumberVerification/otp/send", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<PhoneNumberVerificationResponse> sendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException {
+    public ResponseEntity<PhoneNumberVerificationResponse> sendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         logger.info("Request: " + phoneNumberVerificationRequest.getPhoneNumber());
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
                 = phoneNumberVerificationService.sendOTP(phoneNumberVerificationRequest.getPhoneNumber());
@@ -40,7 +41,7 @@ public class PhoneNumberVerificationController {
 
     @RequestMapping(value = "/phoneNumberVerification/otp/resend", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<PhoneNumberVerificationResponse> resendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException {
+    public ResponseEntity<PhoneNumberVerificationResponse> resendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
                 = phoneNumberVerificationService.resendOTP(phoneNumberVerificationRequest.getPhoneNumber());
         return phoneNumberVerificationResponse.isSuccess() ?
@@ -50,7 +51,7 @@ public class PhoneNumberVerificationController {
 
     @RequestMapping(value = "/phoneNumberVerification/otp/verify", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<PhoneNumberVerificationResponse> verifyOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException {
+    public ResponseEntity<PhoneNumberVerificationResponse> verifyOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
                 = phoneNumberVerificationService.verifyOTP(phoneNumberVerificationRequest.getPhoneNumber(), phoneNumberVerificationRequest.getOtp());
         return phoneNumberVerificationResponse.isSuccess() ?
