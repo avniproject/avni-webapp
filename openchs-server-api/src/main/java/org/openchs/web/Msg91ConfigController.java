@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.openchs.dao.Msg91ConfigRepository;
 import org.openchs.domain.Msg91Config;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.Msg91ConfigService;
 import org.openchs.service.PhoneNumberVerificationService;
 import org.openchs.web.request.Msg91ConfigContract;
 import org.openchs.web.response.PhoneNumberVerificationResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.UUID;
 
 @RestController
@@ -25,38 +27,43 @@ public class Msg91ConfigController extends AbstractController<Msg91Config> imple
     private final Logger logger;
     private final Msg91ConfigRepository msg91ConfigRepository;
     private final PhoneNumberVerificationService phoneNumberVerificationService;
+    private final Msg91ConfigService msg91ConfigService;
 
     @Autowired
-    public Msg91ConfigController(Msg91ConfigRepository msg91ConfigRepository, PhoneNumberVerificationService phoneNumberVerificationService) {
+    public Msg91ConfigController(Msg91ConfigRepository msg91ConfigRepository, PhoneNumberVerificationService phoneNumberVerificationService, Msg91ConfigService msg91ConfigService) {
         this.msg91ConfigRepository = msg91ConfigRepository;
         this.phoneNumberVerificationService = phoneNumberVerificationService;
+        this.msg91ConfigService = msg91ConfigService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/web/msg91Config", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity<Msg91ConfigContract> storeConfiguration(@RequestBody Msg91ConfigContract request) {
+    public ResponseEntity<Msg91ConfigContract> storeConfiguration(@RequestBody Msg91ConfigContract request) throws GeneralSecurityException {
         Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
         Msg91Config msg91Config = msg91ConfigRepository.findByOrganisationIdAndIsVoidedFalse(orgId);
         if (msg91Config == null) {
             msg91Config = new Msg91Config();
             msg91Config.setUuid(UUID.randomUUID().toString());
         }
-        msg91Config.setAuthKey(request.getAuthKey());
+        msg91Config.setAuthKey(msg91ConfigService.encryptAuthKey(request.getAuthKey()));
         msg91Config.setOtpSmsTemplateId(request.getOtpSmsTemplateId());
         msg91Config.setOtpLength(request.getOtpLength());
         msg91Config.setVoided(request.isVoided());
-        return ResponseEntity.ok().body(Msg91ConfigContract.fromMsg91Config(msg91ConfigRepository.save(msg91Config)));
+        return ResponseEntity.ok().body(Msg91ConfigContract.fromMsg91Config(msg91ConfigRepository.save(msg91Config), null));
     }
 
     @RequestMapping(value = "/web/msg91Config", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity<Msg91ConfigContract> getConfiguration() {
+    public ResponseEntity<Msg91ConfigContract> getConfiguration() throws GeneralSecurityException {
         Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
         Msg91Config msg91Config = msg91ConfigRepository.findByOrganisationIdAndIsVoidedFalse(orgId);
-        return msg91Config != null ?
-            ResponseEntity.ok().body(Msg91ConfigContract.fromMsg91Config(msg91ConfigRepository.save(msg91Config))) :
-                ResponseEntity.badRequest().body(new Msg91ConfigContract());
+        if (msg91Config != null) {
+            String decryptedAuthKey = msg91ConfigService.decryptAuthKey(msg91Config.getAuthKey());
+            return ResponseEntity.ok().body(Msg91ConfigContract.fromMsg91Config(msg91Config, msg91ConfigService.maskAuthKey(decryptedAuthKey)));
+        } else {
+            return ResponseEntity.ok().body(new Msg91ConfigContract());
+        }
     }
 
     @RequestMapping(value = "/web/msg91Config/check", method = RequestMethod.POST)

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.security.GeneralSecurityException;
 
 import static java.lang.String.format;
 
@@ -26,6 +27,7 @@ public class PhoneNumberVerificationService {
 
     private final Msg91RestClient msg91RestClient;
     private final Msg91ConfigRepository msg91ConfigRepository;
+    private final Msg91ConfigService msg91ConfigService;
     private final Logger logger;
     private final static String sendOTPEndpoint = "/api/v5/otp?authkey={authkey}&template_id={template_id}&mobile={mobile}&otp_length={otp_length}&otp_expiry={otp_expiry}";
     private final static String resendOTPEndpoint = "/api/v5/otp/retry?authkey={authkey}&mobile={mobile}&retrytype={retrytype}";
@@ -37,14 +39,15 @@ public class PhoneNumberVerificationService {
     private final Boolean isDev;
 
     @Autowired
-    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient, Msg91ConfigRepository msg91ConfigRepository, Boolean isDev) {
+    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient, Msg91ConfigRepository msg91ConfigRepository, Msg91ConfigService msg91ConfigService, Boolean isDev) {
         this.msg91RestClient = msg91RestClient;
         this.msg91ConfigRepository = msg91ConfigRepository;
+        this.msg91ConfigService = msg91ConfigService;
         this.isDev = isDev;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public PhoneNumberVerificationResponse sendOTP(String phoneNumber) throws IOException {
+    public PhoneNumberVerificationResponse sendOTP(String phoneNumber) throws IOException, GeneralSecurityException {
         if (isDev && !msg91InDev) {
             return new PhoneNumberVerificationResponse(true, null);
         }
@@ -61,7 +64,7 @@ public class PhoneNumberVerificationService {
 
     }
 
-    public PhoneNumberVerificationResponse resendOTP(String phoneNumber) throws IOException {
+    public PhoneNumberVerificationResponse resendOTP(String phoneNumber) throws IOException, GeneralSecurityException {
         if (isDev && !msg91InDev) {
             return new PhoneNumberVerificationResponse(true, null);
         }
@@ -77,7 +80,7 @@ public class PhoneNumberVerificationService {
         return phoneNumberVerificationResponse;
     }
 
-    public PhoneNumberVerificationResponse verifyOTP(String phoneNumber, String otp) throws IOException {
+    public PhoneNumberVerificationResponse verifyOTP(String phoneNumber, String otp) throws IOException, GeneralSecurityException {
         if (isDev && !msg91InDev) {
             return new PhoneNumberVerificationResponse(otp.equals("1234"), null);
         }
@@ -170,14 +173,14 @@ public class PhoneNumberVerificationService {
         }
     }
 
-    private Msg91Request createMsg91Request() throws ConnectException {
+    private Msg91Request createMsg91Request() throws ConnectException, GeneralSecurityException {
         Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
         Msg91Config msg91Config = msg91ConfigRepository.findByOrganisationIdAndIsVoidedFalse(orgId);
         if (msg91Config == null) {
             throw new ConnectException("Msg91 not configured for organisation");
         }
         Msg91Request msg91Request = new Msg91Request();
-        msg91Request.setAuthKey(msg91Config.getAuthKey());
+        msg91Request.setAuthKey(msg91ConfigService.decryptAuthKey(msg91Config.getAuthKey()));
         msg91Request.setTemplateId(msg91Config.getOtpSmsTemplateId());
         msg91Request.setOtpLength(msg91Config.getOtpLength() != null ? String.valueOf(msg91Config.getOtpLength()) : "4");
         msg91Request.setOtpExpiry("10");        // Default expiry value in minutes for all OTPs

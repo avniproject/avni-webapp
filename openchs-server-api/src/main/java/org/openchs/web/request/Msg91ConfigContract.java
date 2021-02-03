@@ -34,10 +34,10 @@ public class Msg91ConfigContract extends CHSRequest {
         this.otpLength = otpLength;
     }
 
-    public static Msg91ConfigContract fromMsg91Config(Msg91Config msg91Config) {
+    public static Msg91ConfigContract fromMsg91Config(Msg91Config msg91Config, String maskedAuthKey) {
         Msg91ConfigContract msg91ConfigContract = new Msg91ConfigContract();
         msg91ConfigContract.setUuid(msg91Config.getUuid());
-        msg91ConfigContract.setAuthKey(msg91Config.getAuthKey());
+        msg91ConfigContract.setAuthKey(maskedAuthKey != null ? maskedAuthKey : msg91Config.getAuthKey());
         msg91ConfigContract.setOtpLength(msg91Config.getOtpLength());
         msg91ConfigContract.setOtpSmsTemplateId(msg91Config.getOtpSmsTemplateId());
         msg91ConfigContract.setVoided(msg91Config.isVoided());
