@@ -32,7 +32,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "videotelemetric",
             "identifierAssignmentPool",
             "api",
-            "groupSubject"
+            "groupSubject",
+            "entityApprovalStatus"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     private final String[] metadataPathList = Stream.of("addressLevel",
@@ -76,7 +77,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "locationHierarchy",
             "card",
             "dashboard",
-            "dashboardCardMapping"
+            "dashboardCardMapping",
+            "groupDashboard"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired

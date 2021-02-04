@@ -8,6 +8,7 @@ import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.importer.batch.JobService;
+import org.openchs.service.EntityApprovalStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -36,6 +37,22 @@ public class OpenCHS {
         app.run(args);
     }
 
+
+    @Bean
+    public ResourceProcessor<Resource<EntityApprovalStatus>> EntityApprovalStatusProcessor() {
+        return new ResourceProcessor<Resource<EntityApprovalStatus>>() {
+            @Autowired
+            private EntityApprovalStatusService entityApprovalStatusService;
+
+            @Override
+            public Resource<EntityApprovalStatus> process(Resource<EntityApprovalStatus> resource) {
+                EntityApprovalStatus entityApprovalStatus = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(entityApprovalStatusService.getEntityUuid(entityApprovalStatus), "entityUUID"));
+                return resource;
+            }
+        };
+    }
 
     @Bean
     public ResourceProcessor<Resource<IndividualRelationshipType>> IndividualRelationshipTypeProcessor() {
@@ -130,7 +147,7 @@ public class OpenCHS {
                 FormMapping formMapping = resource.getContent();
                 resource.removeLinks();
                 Form form = formMapping.getForm();
-                if(form != null){
+                if (form != null) {
                     resource.add(new Link(formMapping.getForm().getUuid(), "formUUID"));
 
 

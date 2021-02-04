@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import org.openchs.dao.CardRepository;
+import org.openchs.dao.StandardReportCardTypeRepository;
 import org.openchs.domain.Card;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.CardContract;
@@ -14,10 +15,12 @@ import java.util.stream.Collectors;
 public class CardService {
 
     private final CardRepository cardRepository;
+    private final StandardReportCardTypeRepository standardReportCardTypeRepository;
 
     @Autowired
-    public CardService(CardRepository cardRepository) {
+    public CardService(CardRepository cardRepository, StandardReportCardTypeRepository standardReportCardTypeRepository) {
         this.cardRepository = cardRepository;
+        this.standardReportCardTypeRepository = standardReportCardTypeRepository;
     }
 
     public Card saveCard(CardContract cardContract) {
@@ -63,6 +66,7 @@ public class CardService {
         card.setDescription(cardContract.getDescription());
         card.setQuery(cardContract.getQuery());
         card.setVoided(cardContract.isVoided());
+        card.setStandardReportCardType(standardReportCardTypeRepository.findByUuid(cardContract.getStandardReportCardTypeUUID()));
     }
 
     private void assertNewNameIsUnique(String newName, String oldName) {

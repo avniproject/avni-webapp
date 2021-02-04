@@ -1,15 +1,16 @@
 package org.openchs.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "report_card")
 @BatchSize(size = 100)
+@JsonIgnoreProperties({"standardReportCardType"})
 public class Card extends OrganisationAwareEntity {
 
     @NotNull
@@ -22,6 +23,10 @@ public class Card extends OrganisationAwareEntity {
 
     private String colour;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "standard_report_card_type_id")
+    private StandardReportCardType standardReportCardType;
 
     public String getName() {
         return name;
@@ -53,5 +58,17 @@ public class Card extends OrganisationAwareEntity {
 
     public void setColour(String colour) {
         this.colour = colour;
+    }
+
+    public StandardReportCardType getStandardReportCardType() {
+        return standardReportCardType;
+    }
+
+    public void setStandardReportCardType(StandardReportCardType standardReportCardType) {
+        this.standardReportCardType = standardReportCardType;
+    }
+
+    public String getStandardReportCardTypeUUID() {
+        return standardReportCardType.getUuid();
     }
 }
