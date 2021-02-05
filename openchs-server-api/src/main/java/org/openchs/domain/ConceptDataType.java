@@ -18,7 +18,8 @@ public enum ConceptDataType {
     Id,
     Video,
     Subject,
-    Location;
+    Location,
+    PhoneNumber;
 
     private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes, Image, Video, Id);
     private static List<ConceptDataType> dateTypes = Arrays.asList(Date, DateTime, Duration, Time);
