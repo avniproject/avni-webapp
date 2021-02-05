@@ -81,6 +81,7 @@ class FormDetails extends Component {
     this.handleInlineNumericAttributes = this.handleInlineNumericAttributes.bind(this);
     this.handleInlineLocationAttributes = this.handleInlineLocationAttributes.bind(this);
     this.handleInlineSubjectAttributes = this.handleInlineSubjectAttributes.bind(this);
+    this.handleInlinePhoneNumberAttributes = this.handleInlinePhoneNumberAttributes.bind(this);
   }
 
   onUpdateFormName = name => {
@@ -435,6 +436,7 @@ class FormDetails extends Component {
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
           handleInlineLocationAttributes: this.handleInlineLocationAttributes,
           handleInlineSubjectAttributes: this.handleInlineSubjectAttributes,
+          handleInlinePhoneNumberAttributes: this.handleInlinePhoneNumberAttributes,
           onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
           updateFormElementGroupRule: this.updateFormElementGroupRule,
           entityName: this.getEntityNameForRules(),
@@ -648,6 +650,16 @@ class FormDetails extends Component {
     );
   }
 
+  handleInlinePhoneNumberAttributes(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex][
+          "inlinePhoneNumberDataTypeKeyValues"
+        ][propertyName] = value;
+      })
+    );
+  }
+
   assignEmptyFormElementMetaData = () => {
     return {
       uuid: UUID.v4(),
@@ -694,6 +706,9 @@ class FormDetails extends Component {
       inlineSubjectDataTypeKeyValues: {
         subjectTypeUUID: "",
         error: {}
+      },
+      inlinePhoneNumberDataTypeKeyValues: {
+        verifyPhoneNumber: false
       }
     };
   };
@@ -1054,6 +1069,15 @@ class FormDetails extends Component {
         };
         inlineConceptObject.keyValues = keyValues;
       }
+    }
+
+    if (inlineConceptObject.dataType === "PhoneNumber") {
+      const keyValues = [];
+      keyValues.push({
+        key: "verifyPhoneNumber",
+        value: clonedFormElement["inlinePhoneNumberDataTypeKeyValues"].verifyPhoneNumber
+      });
+      inlineConceptObject.keyValues = keyValues;
     }
 
     if (inlineConceptObject.dataType === "Numeric") {

@@ -19,6 +19,7 @@ import QueryBuilderIcon from "@material-ui/icons/QueryBuilder";
 import TimerIcon from "@material-ui/icons/Timer";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import DateRangeIcon from "@material-ui/icons/DateRange";
+import PhoneIcon from "@material-ui/icons/Phone";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import NoteIcon from "@material-ui/icons/Note";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -134,6 +135,7 @@ export const dataTypeIcons = {
   Id: <b>Id</b>,
   Location: <PinDropIcon />,
   Subject: <b>ST</b>,
+  PhoneNumber: <PhoneIcon />,
   "": <b />
 };
 
@@ -198,7 +200,8 @@ function FormElement(props) {
                   "Video",
                   "Id",
                   "Location",
-                  "Subject"
+                  "Subject",
+                  "PhoneNumber"
                 ].includes(props.formElementData.concept.dataType) && (
                   <div className={classes.iconDataType}>
                     <Tooltip title={props.formElementData.concept.dataType}>

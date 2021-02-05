@@ -247,6 +247,7 @@ function FormElementDetails(props) {
               handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
               handleInlineLocationAttributes={props.handleInlineLocationAttributes}
               handleInlineSubjectAttributes={props.handleInlineSubjectAttributes}
+              handleInlinePhoneNumberAttributes={props.handleInlinePhoneNumberAttributes}
               onDragInlineCodedConceptAnswer={props.onDragInlineCodedConceptAnswer}
               handleConceptFormLibrary={props.handleConceptFormLibrary}
             />

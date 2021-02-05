@@ -11,8 +11,20 @@ import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
+import { PhoneNumberConcept } from "./PhoneNumberConcept";
 
 function InlineConcept(props) {
+  const renderInlinePhoneNumber = () => {
+    const onKeyValueChange = ({ key, value }) =>
+      props.handleInlinePhoneNumberAttributes(props.groupIndex, key, value, props.index);
+    return (
+      <PhoneNumberConcept
+        onKeyValueChange={(keyValue, index) => onKeyValueChange(keyValue)}
+        checked={props.formElementData.inlinePhoneNumberDataTypeKeyValues.verifyPhoneNumber}
+      />
+    );
+  };
+
   return (
     <>
       {props.formElementData.inlineConceptErrorMessage.inlineConceptError !== "" && (
@@ -160,6 +172,8 @@ function InlineConcept(props) {
           <br />
         </>
       )}
+
+      {props.formElementData.inlineConceptDataType === "PhoneNumber" && renderInlinePhoneNumber()}
 
       <Button
         variant="contained"

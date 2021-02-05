@@ -15,7 +15,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, trim } from "lodash";
+import { filter, find, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -27,6 +27,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
+import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -68,7 +69,8 @@ class CreateEditConcept extends Component {
         "isWithinCatchment",
         "lowestAddressLevelTypeUUIDs",
         "highestAddressLevelTypeUUID",
-        "subjectTypeUUID"
+        "subjectTypeUUID",
+        "verifyPhoneNumber"
       ]
     };
   }
@@ -613,6 +615,26 @@ class CreateEditConcept extends Component {
           inlineConcept={false}
         />
       );
+    }
+
+    if (this.state.dataType === "PhoneNumber") {
+      const verificationKey = find(
+        this.state.keyValues,
+        ({ key, value }) => key === "verifyPhoneNumber"
+      );
+      if (verificationKey) {
+        dataType = (
+          <PhoneNumberConcept
+            onKeyValueChange={this.onKeyValueChange}
+            checked={verificationKey.value}
+          />
+        );
+      } else {
+        this.setState(prevState => ({
+          ...prevState,
+          keyValues: [{ key: "verifyPhoneNumber", value: false }]
+        }));
+      }
     }
 
     return (

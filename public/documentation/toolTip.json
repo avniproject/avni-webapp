@@ -112,5 +112,6 @@
   "APP_DESIGNER_CARD_QUERY": "Actual query function to fetch subjects",
   "APP_DESIGNER_DASHBOARD_NAME": "Name of the dashboard",
   "APP_DESIGNER_DASHBOARD_DESCRIPTION": "Dashboard description",
-  "APP_DESIGNER_DASHBOARD_CARDS": "All the cards that will be shown in this dashboard"
+  "APP_DESIGNER_DASHBOARD_CARDS": "All the cards that will be shown in this dashboard",
+  "APP_DESIGNER_PHONE_NUMBER_VERIFICATION": "If enabled, OTP is sent for the verification"
 }

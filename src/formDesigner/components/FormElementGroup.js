@@ -179,6 +179,7 @@ function FormElementGroup(props) {
           handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
           handleInlineLocationAttributes: props.handleInlineLocationAttributes,
           handleInlineSubjectAttributes: props.handleInlineSubjectAttributes,
+          handleInlinePhoneNumberAttributes: props.handleInlinePhoneNumberAttributes,
           onDragInlineCodedConceptAnswer: props.onDragInlineCodedConceptAnswer,
           entityName: props.entityName,
           disableFormElement: props.disableGroup

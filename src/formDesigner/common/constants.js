@@ -22,5 +22,6 @@ export const inlineConceptDataType = [
   "Id",
   "Video",
   "Subject",
-  "Location"
+  "Location",
+  "PhoneNumber"
 ];
