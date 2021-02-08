@@ -5,6 +5,7 @@ import org.openchs.domain.Msg91Config;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.Msg91ConfigService;
 import org.openchs.service.PhoneNumberVerificationService;
+import org.openchs.util.BadRequestError;
 import org.openchs.web.request.Msg91ConfigContract;
 import org.openchs.web.response.PhoneNumberVerificationResponse;
 import org.slf4j.Logger;
@@ -43,10 +44,15 @@ public class Msg91ConfigController extends AbstractController<Msg91Config> imple
         Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
         Msg91Config msg91Config = msg91ConfigRepository.findByOrganisationIdAndIsVoidedFalse(orgId);
         if (msg91Config == null) {
+            if (request.getAuthKey() == null || request.getOtpSmsTemplateId() == null) {
+                throw new BadRequestError("authKey and otpSmsTemplateId are mandatory fields");
+            }
             msg91Config = new Msg91Config();
             msg91Config.setUuid(UUID.randomUUID().toString());
         }
-        msg91Config.setAuthKey(msg91ConfigService.encryptAuthKey(request.getAuthKey()));
+        if (request.getAuthKey() != null) {
+            msg91Config.setAuthKey(msg91ConfigService.encryptAuthKey(request.getAuthKey()));
+        }
         msg91Config.setOtpSmsTemplateId(request.getOtpSmsTemplateId());
         msg91Config.setOtpLength(request.getOtpLength());
         msg91Config.setVoided(request.isVoided());
