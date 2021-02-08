@@ -72,6 +72,8 @@ public class OrganisationService {
     private final TranslationRepository translationRepository;
     private final VideoRepository videoRepository;
     private final VideoService videoService;
+    private final CardService cardService;
+    private final DashboardService dashboardService;
 
     //Tx repositories
     private final RuleFailureTelemetryRepository ruleFailureTelemetryRepository;
@@ -122,6 +124,8 @@ public class OrganisationService {
                                TranslationRepository translationRepository,
                                VideoRepository videoRepository,
                                VideoService videoService,
+                               CardService cardService,
+                               DashboardService dashboardService,
                                RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
                                IdentifierAssignmentRepository identifierAssignmentRepository,
                                SyncTelemetryRepository syncTelemetryRepository,
@@ -168,6 +172,8 @@ public class OrganisationService {
         this.translationRepository = translationRepository;
         this.videoRepository = videoRepository;
         this.videoService = videoService;
+        this.cardService = cardService;
+        this.dashboardService = dashboardService;
         this.ruleFailureTelemetryRepository = ruleFailureTelemetryRepository;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.syncTelemetryRepository = syncTelemetryRepository;
@@ -401,6 +407,27 @@ public class OrganisationService {
         for (Form form : forms) {
             FormContract formContract = FormContract.fromForm(form);
             addFileToZip(zos, String.format("forms/%s.json", form.getName().replaceAll("/", "_")), formContract);
+        }
+    }
+
+    public void addReportCards(ZipOutputStream zos) throws IOException {
+        List<CardContract> cardContracts = cardService.getAll();
+        if (!cardContracts.isEmpty()) {
+            addFileToZip(zos, "reportCard.json", cardContracts);
+        }
+    }
+
+    public void addReportDashboard(ZipOutputStream zos) throws IOException {
+        List<DashboardContract> dashboardContracts = dashboardService.getAll();
+        if (!dashboardContracts.isEmpty()) {
+            addFileToZip(zos, "reportDashboard.json", dashboardContracts);
+        }
+    }
+
+    public void addDashboardCardMappings(ZipOutputStream zos) throws IOException {
+        List<DashboardCardMappingContract> dashboardCardMappings = dashboardService.getAllDashboardCardMappings();
+        if (!dashboardCardMappings.isEmpty()) {
+            addFileToZip(zos, "dashboardCardMappings.json", dashboardCardMappings);
         }
     }
 

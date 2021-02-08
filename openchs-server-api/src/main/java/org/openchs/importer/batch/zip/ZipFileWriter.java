@@ -56,6 +56,8 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
     private SubjectTypeRepository subjectTypeRepository;
     private GroupPrivilegeService groupPrivilegeService;
     private VideoService videoService;
+    private CardService cardService;
+    private DashboardService dashboardService;
 
     @Value("#{jobParameters['userId']}")
     private Long userId;
@@ -84,19 +86,34 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         add("groupRole.json");
         add("groupPrivilege.json");
         add("video.json");
+        add("reportCard.json");
+        add("reportDashboard.json");
+        add("dashboardCardMappings.json");
     }};
 
 
     @Autowired
-    public ZipFileWriter(AuthService authService, ConceptService conceptService, FormService formService,
-                         LocationService locationService, CatchmentService catchmentService,
-                         SubjectTypeService subjectTypeService, ProgramService programService,
-                         EncounterTypeService encounterTypeService, FormMappingService formMappingService,
-                         OrganisationConfigService organisationConfigService, IndividualRelationService individualRelationService,
-                         IndividualRelationshipTypeService individualRelationshipTypeService, ChecklistDetailService checklistDetailService,
-                         IdentifierSourceService identifierSourceService, GroupsService groupsService,
-                         GroupRoleService groupRoleService, SubjectTypeRepository subjectTypeRepository,
-                         GroupPrivilegeService groupPrivilegeService, VideoService videoService) {
+    public ZipFileWriter(AuthService authService,
+                         ConceptService conceptService,
+                         FormService formService,
+                         LocationService locationService,
+                         CatchmentService catchmentService,
+                         SubjectTypeService subjectTypeService,
+                         ProgramService programService,
+                         EncounterTypeService encounterTypeService,
+                         FormMappingService formMappingService,
+                         OrganisationConfigService organisationConfigService,
+                         IndividualRelationService individualRelationService,
+                         IndividualRelationshipTypeService individualRelationshipTypeService,
+                         ChecklistDetailService checklistDetailService,
+                         IdentifierSourceService identifierSourceService,
+                         GroupsService groupsService,
+                         GroupRoleService groupRoleService,
+                         SubjectTypeRepository subjectTypeRepository,
+                         GroupPrivilegeService groupPrivilegeService,
+                         VideoService videoService,
+                         CardService cardService,
+                         DashboardService dashboardService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -116,6 +133,8 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         this.subjectTypeRepository = subjectTypeRepository;
         this.groupPrivilegeService = groupPrivilegeService;
         this.videoService = videoService;
+        this.cardService = cardService;
+        this.dashboardService = dashboardService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -264,6 +283,25 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                 for (VideoContract videoContract : videoContracts) {
                     videoService.saveVideo(videoContract);
                 }
+                break;
+            case "reportCard.json":
+                CardContract[] cardContracts = convertString(fileData, CardContract[].class);
+                for (CardContract cardContract : cardContracts) {
+                    cardService.uploadCard(cardContract);
+                }
+                break;
+            case "reportDashboard.json":
+                DashboardContract[] dashboardContracts = convertString(fileData, DashboardContract[].class);
+                for (DashboardContract dashboardContract : dashboardContracts) {
+                    dashboardService.uploadDashboard(dashboardContract);
+                }
+                break;
+            case "dashboardCardMappings.json":
+                DashboardCardMappingContract[] dashboardCardMappingContracts = convertString(fileData, DashboardCardMappingContract[].class);
+                for (DashboardCardMappingContract dashboardCardMappingContract : dashboardCardMappingContracts) {
+                    dashboardService.uploadDashboardCardMapping(dashboardCardMappingContract);
+                }
+                break;
         }
     }
 

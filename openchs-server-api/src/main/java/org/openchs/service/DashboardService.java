@@ -8,6 +8,7 @@ import org.openchs.domain.Dashboard;
 import org.openchs.domain.DashboardCardMapping;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.CardContract;
+import org.openchs.web.request.DashboardCardMappingContract;
 import org.openchs.web.request.DashboardContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,35 @@ public class DashboardService {
         return buildDashboard(dashboardContract, dashboard);
     }
 
+    public void uploadDashboard(DashboardContract dashboardContract) {
+        Dashboard dashboard = dashboardRepository.findByUuid(dashboardContract.getUuid());
+        if (dashboard == null) {
+            dashboard = new Dashboard();
+            dashboard.setUuid(dashboardContract.getUuid());
+        }
+        dashboard.setName(dashboardContract.getName());
+        dashboard.setDescription(dashboardContract.getDescription());
+        dashboard.setVoided(dashboardContract.isVoided());
+        dashboardRepository.save(dashboard);
+    }
+
+    public void uploadDashboardCardMapping(DashboardCardMappingContract dashboardCardMappingContract) {
+        DashboardCardMapping dashboardCardMapping = dashboardCardMappingRepository.findByUuid(dashboardCardMappingContract.getUuid());
+        if (dashboardCardMapping == null) {
+            dashboardCardMapping = new DashboardCardMapping();
+            dashboardCardMapping.setUuid(dashboardCardMappingContract.getUuid());
+        }
+        dashboardCardMapping.setDashboard(dashboardRepository.findByUuid(dashboardCardMappingContract.getDashboardUUID()));
+        dashboardCardMapping.setCard(cardRepository.findByUuid(dashboardCardMappingContract.getReportCardUUID()));
+        dashboardCardMapping.setDisplayOrder(dashboardCardMappingContract.getDisplayOrder());
+        dashboardCardMappingRepository.save(dashboardCardMapping);
+    }
+
+    public List<DashboardCardMappingContract> getAllDashboardCardMappings() {
+        List<DashboardCardMapping> dashboardCardMappings = dashboardCardMappingRepository.findAll();
+        return dashboardCardMappings.stream().map(DashboardCardMappingContract::fromEntity).collect(Collectors.toList());
+    }
+
     public Dashboard editDashboard(DashboardContract newDashboard, Long dashboardId) {
         Dashboard existingDashboard = dashboardRepository.findOne(dashboardId);
         assertNewNameIsUnique(newDashboard.getName(), existingDashboard.getName());
@@ -49,6 +79,11 @@ public class DashboardService {
     public void deleteDashboard(Dashboard dashboard) {
         dashboard.setVoided(true);
         dashboardRepository.save(dashboard);
+    }
+
+    public List<DashboardContract> getAll() {
+        List<Dashboard> dashboards = dashboardRepository.findAll();
+        return dashboards.stream().map(DashboardContract::fromEntity).collect(Collectors.toList());
     }
 
     private Dashboard buildDashboard(DashboardContract dashboardContract, Dashboard dashboard) {

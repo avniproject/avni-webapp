@@ -7,6 +7,9 @@ import org.openchs.web.request.CardContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class CardService {
 
@@ -26,6 +29,16 @@ public class CardService {
         return card;
     }
 
+    public void uploadCard(CardContract cardContract) {
+        Card card = cardRepository.findByUuid(cardContract.getUuid());
+        if(card == null){
+            card = new Card();
+            card.setUuid(cardContract.getUuid());
+        }
+        buildCard(cardContract, card);
+        cardRepository.save(card);
+    }
+
     public Card editCard(CardContract newCard, Long cardId) {
         Card existingCard = cardRepository.findOne(cardId);
         assertNewNameIsUnique(newCard.getName(), existingCard.getName());
@@ -37,6 +50,11 @@ public class CardService {
     public void deleteCard(Card card) {
         card.setVoided(true);
         cardRepository.save(card);
+    }
+
+    public List<CardContract> getAll() {
+        List<Card> reportCards = cardRepository.findAll();
+        return reportCards.stream().map(CardContract::fromEntity).collect(Collectors.toList());
     }
 
     private void buildCard(CardContract cardContract, Card card) {
