@@ -58,6 +58,7 @@ import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import { OrganisationDetail } from "./OrganisationDetail";
+import Msg91Config from "../phoneNumberVerification/Msg91Config";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -192,6 +193,11 @@ class OrgManager extends Component {
           name="organisationDetails"
           options={{ label: "Organisation Details" }}
           list={WithProps({ organisation }, OrganisationDetail)}
+        />
+        <Resource
+          name="phoneNumberVerification"
+          options={{ label: "Phone Verification" }}
+          list={Msg91Config}
         />
       </Admin>
     );

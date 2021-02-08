@@ -113,5 +113,8 @@
   "APP_DESIGNER_DASHBOARD_NAME": "Name of the dashboard",
   "APP_DESIGNER_DASHBOARD_DESCRIPTION": "Dashboard description",
   "APP_DESIGNER_DASHBOARD_CARDS": "All the cards that will be shown in this dashboard",
-  "APP_DESIGNER_PHONE_NUMBER_VERIFICATION": "If enabled, OTP is sent for the verification"
+  "APP_DESIGNER_PHONE_NUMBER_VERIFICATION": "If enabled, OTP is sent for the verification",
+  "ADMIN_PHONE_VERIFICATION_MSG91AUTHKEY": "The API Auth key generated from the Msg91 console",
+  "ADMIN_PHONE_VERIFICATION_MSG91TEMPLATEID": "The SMS Template ID created from the Msg91 console",
+  "ADMIN_PHONE_VERIFICATION_OTPLENGTH": "The length of the OTP to be sent"
 }
