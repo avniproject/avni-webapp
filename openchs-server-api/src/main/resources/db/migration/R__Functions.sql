@@ -9,6 +9,7 @@ $BODY$
     END IF;
     EXECUTE 'GRANT ' || quote_ident(inrolname) || ' TO openchs';
     PERFORM grant_all_on_all(inrolname);
+--     EXECUTE 'CREATE SCHEMA IF NOT EXISTS ' || inrolname || ' AUTHORIZATION ' || inrolname;
     RETURN 1;
   END
 $BODY$ LANGUAGE PLPGSQL;
@@ -584,20 +585,22 @@ $BODY$
 
 
 
-CREATE OR REPLACE FUNCTION create_view(view_name text, sql_query text)
+CREATE OR REPLACE FUNCTION create_view(view_name text, sql_query text, organisation_name text)
     RETURNS BIGINT AS
 $BODY$
 BEGIN
+--     EXECUTE 'set search_path = ' || organisation_name;
     EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
     EXECUTE 'CREATE OR REPLACE VIEW ' || view_name || ' AS ' || sql_query;
     RETURN 1;
 END
 $BODY$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION drop_view(view_name text)
+CREATE OR REPLACE FUNCTION drop_view(view_name text, organisation_name text)
     RETURNS BIGINT AS
 $BODY$
 BEGIN
+--     EXECUTE 'set search_path = ' || organisation_name;
     EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
     RETURN 1;
 END

@@ -7,7 +7,6 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Parameter;
@@ -48,6 +47,9 @@ import java.util.stream.Stream;
 @BatchSize(size = 100)
 @DynamicInsert
 public class Concept extends OrganisationAwareEntity {
+    private static final int POSTGRES_MAX_COLUMN_NAME_LENGTH = 63;
+    private static final int NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE = 14;
+
     @Field
     @Analyzer(definition = "edgeNgram")
     @NotNull
@@ -270,5 +272,16 @@ public class Concept extends OrganisationAwareEntity {
 
     public Boolean isCoded() {
         return ConceptDataType.Coded.toString().equals(this.dataType);
+    }
+
+    public String getViewColumnName() {
+        if (isViewColumnNameTruncated()) {
+            return String.format("%s (%s)", this.getName().substring(0, POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE), Math.abs(this.getName().hashCode()));
+        }
+        return this.getName();
+    }
+
+    public boolean isViewColumnNameTruncated() {
+        return this.getName().length() > POSTGRES_MAX_COLUMN_NAME_LENGTH;
     }
 }

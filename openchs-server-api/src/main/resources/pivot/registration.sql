@@ -19,9 +19,9 @@ SELECT individual.id                                                            
        a.title                                                                             as "location_name",
        individual.is_voided                                                                as "is_voided",
        ${selections}
-FROM individual individual
+FROM public.individual individual
   ${cross_join_concept_maps}
-       LEFT OUTER JOIN operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
-       LEFT OUTER JOIN gender g ON g.id = individual.gender_id
-       LEFT OUTER JOIN address_level a ON individual.address_id = a.id
+       LEFT OUTER JOIN public.operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
+       LEFT OUTER JOIN public.gender g ON g.id = individual.gender_id
+       LEFT OUTER JOIN public.address_level a ON individual.address_id = a.id
 where ost.uuid = '${operationalSubjectTypeUuid}'

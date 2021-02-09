@@ -104,7 +104,6 @@ public class ViewGenService {
         }
         Long subjectTypeId = operationalSubjectType.getSubjectType().getId();
         List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram, subjectTypeId);
-        List<FormElement> registrationFormElements = getRegistrationFormElements(subjectTypeId);
         FormMapping enrolmentFormMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(operationalProgram.getProgram().getId(), null, FormType.ProgramEnrolment, subjectTypeId);
 
         String enrolmentSql = replaceSubjectAndEnrolmentObsInTemplate(PROGRAM_ENROLMENT_TEMPLATE, false, operationalSubjectType.getUuid(), enrolmentFormElements, operationalProgram.getUuid());
@@ -269,24 +268,24 @@ public class ViewGenService {
         return elements.parallelStream().map(formElement -> {
             Concept concept = formElement.getConcept();
             String conceptUUID = concept.getUuid();
-            String conceptName = concept.getName();
+            String columnName = concept.getViewColumnName();
             switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
                     if (spreadMultiSelectObs) {
                         return spreadMultiSelectSQL(obsColumn, concept);
                     }
                     return String.format("get_coded_string_value(%s->'%s', concepts_%d.map)::TEXT as \"%s\"",
-                            obsColumn, conceptUUID, formElement.getFormElementGroup().getId(), conceptName);
+                            obsColumn, conceptUUID, formElement.getFormElementGroup().getId(), columnName);
                 }
                 case Date:
                 case DateTime: {
-                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, conceptName);
+                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, columnName);
                 }
                 case Numeric: {
-                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, conceptName);
+                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
                 }
                 default: {
-                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, conceptName);
+                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
                 }
             }
         }).collect(Collectors.joining(",\n"));

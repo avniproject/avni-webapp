@@ -10,6 +10,7 @@ import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.reporting.ReportingViews;
 import org.openchs.reporting.ViewGenService;
+import org.openchs.service.ViewNameGenerator;
 import org.openchs.web.request.ViewConfig;
 import org.openchs.web.response.ReportingViewResponse;
 import org.slf4j.Logger;
@@ -19,12 +20,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RestController
 public class ViewGenController {
@@ -33,12 +32,6 @@ public class ViewGenController {
     private final OrganisationRepository organisationRepository;
     private final FormMappingRepository formMappingRepository;
     private final Logger logger;
-    private final Map<String, List<Integer>> viewTypeTrimmingMap = new HashMap<String, List<Integer>>() {{
-        put("Registration", Arrays.asList(0, 6));
-        put("Encounter", Arrays.asList(0, 6, 20));
-        put("ProgramEnrolment", Arrays.asList(0, 6, 20));
-        put("ProgramEncounter", Arrays.asList(0, 6, 6, 20));
-    }};
 
     public ViewGenController(ViewGenService viewGenService, SubjectTypeRepository subjectTypeRepository,
                              OrganisationRepository organisationRepository, FormMappingRepository formMappingRepository) {
@@ -70,8 +63,9 @@ public class ViewGenController {
     public List<ReportingViewResponse> createViews() {
         UserContext userContext = UserContextHolder.getUserContext();
         Organisation organisation = userContext.getOrganisation();
+        ViewNameGenerator viewNameGenerator = new ViewNameGenerator(organisation);
         List<SubjectType> allSubjectTypes = subjectTypeRepository.findAllByIsVoidedFalse();
-        allSubjectTypes.forEach(subjectType -> createRequiredViews(organisation, subjectType));
+        allSubjectTypes.forEach(subjectType -> createRequiredViews(viewNameGenerator, subjectType));
         return getAllReportingViews(organisation);
     }
 
@@ -90,39 +84,39 @@ public class ViewGenController {
         return ResponseEntity.ok().build();
     }
 
-    private void createRequiredViews(Organisation organisation, SubjectType subjectType) {
+    private void createRequiredViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType) {
         Map<String, String> registrationViewMap = viewGenService.registrationViews(subjectType.getOperationalSubjectTypeName(), false);
-        String registrationViewName = getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName()), "Registration");
+        String registrationViewName = viewNameGenerator.getSubjectRegistrationViewName(subjectType);
         createView(registrationViewMap.get("Registration"), registrationViewName);
         List<FormMapping> allEnrolmentFormMappings = formMappingRepository.getAllEnrolmentFormMappings(subjectType.getUuid());
         List<FormMapping> allGeneralEncounterFormMappings = formMappingRepository.getAllGeneralEncounterFormMappings(subjectType.getUuid());
-        allEnrolmentFormMappings.forEach(fm -> createProgramEnrolmentAndProgramEncounterViews(organisation, subjectType, fm));
-        allGeneralEncounterFormMappings.forEach(fm -> createGeneralEncounterViews(organisation, subjectType, fm));
+        allEnrolmentFormMappings.forEach(fm -> createProgramEnrolmentAndProgramEncounterViews(viewNameGenerator, subjectType, fm));
+        allGeneralEncounterFormMappings.forEach(fm -> createGeneralEncounterViews(viewNameGenerator, subjectType, fm));
     }
 
-    private void createGeneralEncounterViews(Organisation organisation, SubjectType subjectType, FormMapping generalEncounterFormMapping) {
+    private void createGeneralEncounterViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType, FormMapping generalEncounterFormMapping) {
         EncounterType encounterType = generalEncounterFormMapping.getEncounterType();
         Map<String, String> generalEncounterViewMap = viewGenService.getSqlsFor(null, encounterType.getOperationalEncounterTypeName(), false, subjectType.getOperationalSubjectTypeName());
         generalEncounterViewMap.forEach((et, etSql) -> {
-            String generalEncounterViewName = getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), et), "Encounter");
+            String generalEncounterViewName = viewNameGenerator.getGeneralEncounterViewName(subjectType, et);
             createView(etSql, generalEncounterViewName);
         });
     }
 
-    private void createProgramEnrolmentAndProgramEncounterViews(Organisation organisation, SubjectType subjectType, FormMapping enrolmentMapping) {
+    private void createProgramEnrolmentAndProgramEncounterViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType, FormMapping enrolmentMapping) {
         Program program = enrolmentMapping.getProgram();
         Map<String, String> programEnrolmentSqlMap = viewGenService.enrolmentViews(subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName());
         programEnrolmentSqlMap.forEach((prg, programSql) -> {
-            String programEnrolmentViewName = getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), prg), "ProgramEnrolment");
+            String programEnrolmentViewName = viewNameGenerator.getProgramEnrolmentViewName(subjectType, prg);
             createView(programSql, programEnrolmentViewName);
         });
-        createProgramEncounterViews(organisation, subjectType, program);
+        createProgramEncounterViews(viewNameGenerator, subjectType, program);
     }
 
-    private void createProgramEncounterViews(Organisation organisation, SubjectType subjectType, Program program) {
+    private void createProgramEncounterViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType, Program program) {
         Map<String, String> programEncounterViewMap = viewGenService.getSqlsFor(program.getOperationalProgramName(), null, false, subjectType.getOperationalSubjectTypeName());
         programEncounterViewMap.forEach((encounterType, programEncounterSql) -> {
-            String programEncounterViewName = getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName(), encounterType), "ProgramEncounter");
+            String programEncounterViewName = viewNameGenerator.getProgramEncounterViewName(subjectType, program, encounterType);
             createView(programEncounterSql, programEncounterViewName);
         });
     }
@@ -135,54 +129,6 @@ public class ViewGenController {
             logger.error(String.format("View SQL: %s", viewSql));
             throw new RuntimeException(String.format("Error while creating view %s, %s", viewName, ExceptionUtils.getRootCause(e).getMessage()));
         }
-    }
-
-    private String getViewName(List<String> entities, String viewType) {
-        String viewName = buildProperViewName(entities);
-        return viewName.length() > 63 ? getTrimmedViewName(entities, viewType) : viewName;
-    }
-
-    private String buildProperViewName(List<String> entities) {
-        List<String> list = entities.stream()
-                .map(String::toLowerCase)
-                .map(e -> e.replaceAll("[^a-z0-9_\\s]", "").replaceAll("\\s+", "_"))
-                .collect(Collectors.toList());
-        return String.join("_", list);
-    }
-
-    private String getTrimmedViewName(List<String> entities, String viewType) {
-        List<Integer> trimmingList = viewTypeTrimmingMap.get(viewType);
-        List<String> trimmedNameList = IntStream
-                .range(0, entities.size())
-                .mapToObj(i -> getTrimmedName(entities, new StringBuilder(), trimmingList, i))
-                .map(StringBuilder::toString)
-                .collect(Collectors.toList());
-        return buildProperViewName(trimmedNameList);
-    }
-
-    private StringBuilder getTrimmedName(List<String> entities, StringBuilder sb, List<Integer> trimmingList, int i) {
-        int lengthToConsider = trimmingList.get(i);
-        String entityName = entities.get(i);
-        if (lengthToConsider == 0) {
-            sb.append(entityName);
-        } else {
-            String trimmedName = entityName.substring(0, Math.min(entityName.length(), lengthToConsider));
-            sb.append(trimmedName);
-        }
-        appendCancelOrExit(sb, entityName);
-        return sb;
-    }
-
-    private void appendCancelOrExit(StringBuilder sb, String entityName) {
-        if (entityName.contains("EXIT")) {
-            sb.append(" EXIT");
-        } else if (entityName.contains("CANCEL")) {
-            sb.append(" CANCEL");
-        }
-    }
-
-    private String getViewNamePrefix(Organisation organisation) {
-        return organisation.getUsernameSuffix() == null ? organisation.getName() : organisation.getUsernameSuffix();
     }
 
     private List<ReportingViewResponse> getAllReportingViews(Organisation organisation) {

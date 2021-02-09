@@ -1,4 +1,4 @@
---[Data Extract Report]
+--[SQL template for auto generated view]
 ${concept_maps}
 SELECT individual.id                                                                          "individual_id",
        oet.name                                                                               "encounter_type_name",
@@ -15,11 +15,11 @@ SELECT individual.id                                                            
        encounter.cancel_date_time                                                             "cancel_date_time",
        encounter.cancel_location                                                              "cancel_location",
        ${encounterCancellation}
-FROM encounter encounter
+FROM public.encounter encounter
   ${cross_join_concept_maps}
-         LEFT OUTER JOIN operational_encounter_type oet on encounter.encounter_type_id = oet.encounter_type_id
-         LEFT OUTER JOIN individual individual ON encounter.individual_id = individual.id
-         LEFT OUTER JOIN operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
+         LEFT OUTER JOIN public.operational_encounter_type oet on encounter.encounter_type_id = oet.encounter_type_id
+         LEFT OUTER JOIN public.individual individual ON encounter.individual_id = individual.id
+         LEFT OUTER JOIN public.operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
 WHERE oet.uuid = '${encounterTypeUuid}'
   AND ost.uuid = '${operationalSubjectTypeUuid}'
   AND encounter.cancel_date_time notnull;
