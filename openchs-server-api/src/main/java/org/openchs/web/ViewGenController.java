@@ -7,10 +7,13 @@ import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
+import org.openchs.domain.metadata.SubjectTypes;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.reporting.ReportingViews;
 import org.openchs.reporting.ViewGenService;
+import org.openchs.service.MetaDataRepository;
 import org.openchs.service.ViewNameGenerator;
+import org.openchs.visitor.CreateReportingViewVisitor;
 import org.openchs.web.request.ViewConfig;
 import org.openchs.web.response.ReportingViewResponse;
 import org.slf4j.Logger;
@@ -31,14 +34,18 @@ public class ViewGenController {
     private final SubjectTypeRepository subjectTypeRepository;
     private final OrganisationRepository organisationRepository;
     private final FormMappingRepository formMappingRepository;
+    private MetaDataRepository metaDataService;
+    private CreateReportingViewVisitor createReportingViewVisitor;
     private final Logger logger;
 
     public ViewGenController(ViewGenService viewGenService, SubjectTypeRepository subjectTypeRepository,
-                             OrganisationRepository organisationRepository, FormMappingRepository formMappingRepository) {
+                             OrganisationRepository organisationRepository, FormMappingRepository formMappingRepository, MetaDataRepository metaDataService, CreateReportingViewVisitor createReportingViewVisitor) {
         this.viewGenService = viewGenService;
         this.subjectTypeRepository = subjectTypeRepository;
         this.organisationRepository = organisationRepository;
         this.formMappingRepository = formMappingRepository;
+        this.metaDataService = metaDataService;
+        this.createReportingViewVisitor = createReportingViewVisitor;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -63,9 +70,8 @@ public class ViewGenController {
     public List<ReportingViewResponse> createViews() {
         UserContext userContext = UserContextHolder.getUserContext();
         Organisation organisation = userContext.getOrganisation();
-        ViewNameGenerator viewNameGenerator = new ViewNameGenerator(organisation);
-        List<SubjectType> allSubjectTypes = subjectTypeRepository.findAllByIsVoidedFalse();
-        allSubjectTypes.forEach(subjectType -> createRequiredViews(viewNameGenerator, subjectType));
+        SubjectTypes subjectTypes = metaDataService.getSubjectTypes();
+        subjectTypes.accept(createReportingViewVisitor);
         return getAllReportingViews(organisation);
     }
 
@@ -82,53 +88,6 @@ public class ViewGenController {
     public ResponseEntity deleteView(@PathVariable String viewName) {
         organisationRepository.dropView(viewName);
         return ResponseEntity.ok().build();
-    }
-
-    private void createRequiredViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType) {
-        Map<String, String> registrationViewMap = viewGenService.registrationViews(subjectType.getOperationalSubjectTypeName(), false);
-        String registrationViewName = viewNameGenerator.getSubjectRegistrationViewName(subjectType);
-        createView(registrationViewMap.get("Registration"), registrationViewName);
-        List<FormMapping> allEnrolmentFormMappings = formMappingRepository.getAllEnrolmentFormMappings(subjectType.getUuid());
-        List<FormMapping> allGeneralEncounterFormMappings = formMappingRepository.getAllGeneralEncounterFormMappings(subjectType.getUuid());
-        allEnrolmentFormMappings.forEach(fm -> createProgramEnrolmentAndProgramEncounterViews(viewNameGenerator, subjectType, fm));
-        allGeneralEncounterFormMappings.forEach(fm -> createGeneralEncounterViews(viewNameGenerator, subjectType, fm));
-    }
-
-    private void createGeneralEncounterViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType, FormMapping generalEncounterFormMapping) {
-        EncounterType encounterType = generalEncounterFormMapping.getEncounterType();
-        Map<String, String> generalEncounterViewMap = viewGenService.getSqlsFor(null, encounterType.getOperationalEncounterTypeName(), false, subjectType.getOperationalSubjectTypeName());
-        generalEncounterViewMap.forEach((et, etSql) -> {
-            String generalEncounterViewName = viewNameGenerator.getGeneralEncounterViewName(subjectType, et);
-            createView(etSql, generalEncounterViewName);
-        });
-    }
-
-    private void createProgramEnrolmentAndProgramEncounterViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType, FormMapping enrolmentMapping) {
-        Program program = enrolmentMapping.getProgram();
-        Map<String, String> programEnrolmentSqlMap = viewGenService.enrolmentViews(subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName());
-        programEnrolmentSqlMap.forEach((prg, programSql) -> {
-            String programEnrolmentViewName = viewNameGenerator.getProgramEnrolmentViewName(subjectType, prg);
-            createView(programSql, programEnrolmentViewName);
-        });
-        createProgramEncounterViews(viewNameGenerator, subjectType, program);
-    }
-
-    private void createProgramEncounterViews(ViewNameGenerator viewNameGenerator, SubjectType subjectType, Program program) {
-        Map<String, String> programEncounterViewMap = viewGenService.getSqlsFor(program.getOperationalProgramName(), null, false, subjectType.getOperationalSubjectTypeName());
-        programEncounterViewMap.forEach((encounterType, programEncounterSql) -> {
-            String programEncounterViewName = viewNameGenerator.getProgramEncounterViewName(subjectType, program, encounterType);
-            createView(programEncounterSql, programEncounterViewName);
-        });
-    }
-
-    private void createView(String viewSql, String viewName) {
-        try {
-            organisationRepository.createView(viewName, viewSql);
-        } catch (Exception e) {
-            logger.error("Error while creating view {}", viewName, e);
-            logger.error(String.format("View SQL: %s", viewSql));
-            throw new RuntimeException(String.format("Error while creating view %s, %s", viewName, ExceptionUtils.getRootCause(e).getMessage()));
-        }
     }
 
     private List<ReportingViewResponse> getAllReportingViews(Organisation organisation) {

@@ -274,6 +274,7 @@ public class Concept extends OrganisationAwareEntity {
         return ConceptDataType.Coded.toString().equals(this.dataType);
     }
 
+    @JsonIgnore
     public String getViewColumnName() {
         if (isViewColumnNameTruncated()) {
             return String.format("%s (%s)", this.getName().substring(0, POSTGRES_MAX_COLUMN_NAME_LENGTH - NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE), Math.abs(this.getName().hashCode()));
@@ -281,6 +282,7 @@ public class Concept extends OrganisationAwareEntity {
         return this.getName();
     }
 
+    @JsonIgnore
     public boolean isViewColumnNameTruncated() {
         return this.getName().length() > POSTGRES_MAX_COLUMN_NAME_LENGTH;
     }

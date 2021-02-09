@@ -80,6 +80,11 @@ public class SubjectType extends OrganisationAwareEntity {
         return operationalSubjectTypes;
     }
 
+    @JsonIgnore
+    public OperationalSubjectType getOperationalSubjectType() {
+        return operationalSubjectTypes.stream().findFirst().orElse(null);
+    }
+
     public void setOperationalSubjectTypes(Set<OperationalSubjectType> operationalSubjectTypes) {
         this.operationalSubjectTypes = operationalSubjectTypes;
     }
@@ -102,11 +107,9 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @JsonIgnore
     public String getOperationalSubjectTypeName() {
-        return operationalSubjectTypes.stream()
-                .map(OperationalSubjectType::getName)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+        OperationalSubjectType operationalSubjectType = getOperationalSubjectType();
+        if (operationalSubjectType == null) return null;
+        return operationalSubjectType.getName();
     }
 
     @JsonIgnore

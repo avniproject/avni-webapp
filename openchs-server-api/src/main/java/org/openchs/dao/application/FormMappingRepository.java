@@ -4,6 +4,7 @@ import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
+import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,8 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     default FormMapping findByNameIgnoreCase(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");
     }
+
+    List<FormMapping> findAllByProgramAndEncounterTypeNotNull(Program program);
 
     //left join to fetch eagerly in first select
     @Query("select fm from FormMapping fm " +
