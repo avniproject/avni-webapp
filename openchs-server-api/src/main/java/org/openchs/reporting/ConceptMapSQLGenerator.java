@@ -21,7 +21,7 @@ public class ConceptMapSQLGenerator {
             String[] conceptUuids = formElements.stream().map(formElement -> formElement.getConcept().getUuid()).distinct().toArray(String[]::new);
             withClauses.add(conceptMapTemplate.replace("${mapNumber}", formElementGroup.getId().toString()).replace("${conceptUuids}", Stream.of(conceptUuids).collect(Collectors.joining("','", "'", "'"))));
         });
-        return Stream.of(withClauses.toArray(new String[formElementGroups.size()])).collect(Collectors.joining(",", "with ", ""));
+        return withClauses.isEmpty()? " ": Stream.of(withClauses.toArray(new String[formElementGroups.size()])).collect(Collectors.joining(",", "with ", ""));
     }
 
     static String generateJoins(FormMapping formMapping) {

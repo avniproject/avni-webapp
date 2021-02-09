@@ -170,9 +170,10 @@ public class ViewGenService {
         Map<String, String> generalEncounterSqlMap = new HashMap<>();
         types.forEach(type -> {
                     FormMapping formMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(null, type.getEncounterType().getId(), FormType.Encounter, subjectTypeId);
+                    FormMapping cancelFormMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(null, type.getEncounterType().getId(), FormType.IndividualEncounterCancellation, subjectTypeId);
                     if (formMapping != null) {
                         generalEncounterSqlMap.put(type.getName(), getSqlForGeneralEncounter(generalEncounterQuery, type, spreadMultiSelectObs, getGeneralEncounterFormElements(subjectTypeId, type), formMapping));
-                        generalEncounterSqlMap.put(type.getName().concat(" CANCEL"), getSqlForGeneralEncounterCancel(generalEncounterCancelQuery, type, spreadMultiSelectObs, getGeneralEncounterCancelFormElements(subjectTypeId, type), formMapping));
+                        generalEncounterSqlMap.put(type.getName().concat(" CANCEL"), getSqlForGeneralEncounterCancel(generalEncounterCancelQuery, type, spreadMultiSelectObs, getGeneralEncounterCancelFormElements(subjectTypeId, type), cancelFormMapping));
                     }
                 });
         return generalEncounterSqlMap;
