@@ -48,6 +48,7 @@ export const OrganisationList = ({ history, ...props }) => {
           <TextField source="name" />
         </ReferenceField>
         <TextField source="dbUser" label="DB User" />
+        <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
         <ShowButton />
@@ -63,6 +64,7 @@ export const OrganisationDetails = props => {
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField source="dbUser" label="DB User" />
+        <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
         <ReferenceField
@@ -101,6 +103,7 @@ export const OrganisationEdit = props => {
           <TextInput source="name" validate={isRequired} autoComplete="off" />
         )}
         <DisabledInput source="dbUser" validate={isRequired} />
+        <DisabledInput source="schemaName" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
         <ReferenceInput
@@ -130,6 +133,7 @@ export const OrganisationCreate = props => {
       <SimpleForm redirect="list">
         <TextInput source="name" validate={isRequired} />
         <TextInput source="dbUser" validate={isRequired} />
+        <TextInput source="schemaName" validate={isRequired} />
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
         <ReferenceInput
