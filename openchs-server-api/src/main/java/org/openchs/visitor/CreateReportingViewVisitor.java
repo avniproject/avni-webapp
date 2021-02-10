@@ -1,6 +1,7 @@
 package org.openchs.visitor;
 
 import org.flywaydb.core.internal.util.ExceptionUtils;
+import org.openchs.dao.ImplementationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Organisation;
@@ -18,11 +19,13 @@ import java.util.Map;
 @Component
 public class CreateReportingViewVisitor implements MetaDataVisitor {
     private ViewGenService viewGenService;
+    private ImplementationRepository implementationRepository;
     private OrganisationRepository organisationRepository;
     private static Logger logger = LoggerFactory.getLogger(CreateReportingViewVisitor.class);
 
-    public CreateReportingViewVisitor(ViewGenService viewGenService, OrganisationRepository organisationRepository) {
+    public CreateReportingViewVisitor(ViewGenService viewGenService, ImplementationRepository implementationRepository, OrganisationRepository organisationRepository) {
         this.viewGenService = viewGenService;
+        this.implementationRepository = implementationRepository;
         this.organisationRepository = organisationRepository;
     }
 
@@ -71,7 +74,7 @@ public class CreateReportingViewVisitor implements MetaDataVisitor {
 
     private void createView(String viewSql, String viewName) {
         try {
-            organisationRepository.createView(viewName, viewSql);
+            implementationRepository.createView(viewName, viewSql);
         } catch (Exception e) {
             logger.error("Error while creating view {}", viewName, e);
             logger.error(String.format("View SQL: %s", viewSql));

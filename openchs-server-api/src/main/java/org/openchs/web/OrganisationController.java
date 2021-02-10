@@ -25,14 +25,16 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     private final GenderRepository genderRepository;
     private final OrganisationConfigRepository organisationConfigRepository;
     private GroupRepository groupRepository;
+    private ImplementationRepository implementationRepository;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository, ImplementationRepository implementationRepository) {
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
         this.genderRepository = genderRepository;
         this.organisationConfigRepository = organisationConfigRepository;
         this.groupRepository = groupRepository;
+        this.implementationRepository = implementationRepository;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -41,12 +43,14 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     public ResponseEntity save(@RequestBody OrganisationContract request) {
         String tempPassword = "password";
         Organisation org = organisationRepository.findByUuid(request.getUuid());
-        organisationRepository.createDBUser(request.getDbUser(), tempPassword);
+        implementationRepository.createDBUser(request.getDbUser(), tempPassword);
+        implementationRepository.createImplementationSchema(request.getSchemaName(), request.getDbUser());
         if (org == null) {
             org = new Organisation();
         }
         org.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         org.setDbUser(request.getDbUser());
+        org.setSchemaName(request.getSchemaName());
         setAttributesOnOrganisation(request, org);
         setOrgAccountByIdOrDefault(org, request.getAccountId());
 
@@ -120,6 +124,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         }
         setAttributesOnOrganisation(request, organisation);
         setOrgAccountByIdOrDefault(organisation, request.getAccountId());
+        implementationRepository.createImplementationSchema(organisation.getSchemaName(), organisation.getDbUser());
         return organisationRepository.save(organisation);
     }
 

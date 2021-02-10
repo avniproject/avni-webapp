@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.openchs.dao.ImplementationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
@@ -28,20 +29,20 @@ import java.util.Map;
 public class ViewGenController {
     private final ViewGenService viewGenService;
     private final SubjectTypeRepository subjectTypeRepository;
-    private final OrganisationRepository organisationRepository;
     private final FormMappingRepository formMappingRepository;
     private MetaDataRepository metaDataService;
     private CreateReportingViewVisitor createReportingViewVisitor;
+    private ImplementationRepository implementationRepository;
     private final Logger logger;
 
     public ViewGenController(ViewGenService viewGenService, SubjectTypeRepository subjectTypeRepository,
-                             OrganisationRepository organisationRepository, FormMappingRepository formMappingRepository, MetaDataRepository metaDataService, CreateReportingViewVisitor createReportingViewVisitor) {
+                             FormMappingRepository formMappingRepository, MetaDataRepository metaDataService, CreateReportingViewVisitor createReportingViewVisitor, ImplementationRepository implementationRepository) {
         this.viewGenService = viewGenService;
         this.subjectTypeRepository = subjectTypeRepository;
-        this.organisationRepository = organisationRepository;
         this.formMappingRepository = formMappingRepository;
         this.metaDataService = metaDataService;
         this.createReportingViewVisitor = createReportingViewVisitor;
+        this.implementationRepository = implementationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -64,12 +65,11 @@ public class ViewGenController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @Transactional
     public List<ReportingViewResponse> createViews() {
-        UserContext userContext = UserContextHolder.getUserContext();
-        Organisation organisation = userContext.getOrganisation();
+        Organisation organisation = UserContextHolder.getOrganisation();
         SubjectTypes subjectTypes = metaDataService.getSubjectTypes();
         subjectTypes.accept(createReportingViewVisitor);
 
-        GetReportingViewSourceVisitor getReportingViewSourceVisitor = new GetReportingViewSourceVisitor(organisationRepository, organisation, formMappingRepository);
+        GetReportingViewSourceVisitor getReportingViewSourceVisitor = new GetReportingViewSourceVisitor(implementationRepository, organisation, formMappingRepository);
         subjectTypes.accept(getReportingViewSourceVisitor);
         return getReportingViewSourceVisitor.getReportingViewResponses();
     }
@@ -77,10 +77,9 @@ public class ViewGenController {
     @GetMapping(value = "/viewsInDb")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public List<ReportingViewResponse> getAllViews() {
-        UserContext userContext = UserContextHolder.getUserContext();
-        Organisation organisation = userContext.getOrganisation();
+        Organisation organisation = UserContextHolder.getOrganisation();
         SubjectTypes subjectTypes = metaDataService.getSubjectTypes();
-        GetReportingViewSourceVisitor getReportingViewSourceVisitor = new GetReportingViewSourceVisitor(organisationRepository, organisation, formMappingRepository);
+        GetReportingViewSourceVisitor getReportingViewSourceVisitor = new GetReportingViewSourceVisitor(implementationRepository, organisation, formMappingRepository);
         subjectTypes.accept(getReportingViewSourceVisitor);
         return getReportingViewSourceVisitor.getReportingViewResponses();
     }
@@ -88,7 +87,8 @@ public class ViewGenController {
     @DeleteMapping(value = "/reportingView/{viewName}")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public ResponseEntity deleteView(@PathVariable String viewName) {
-        organisationRepository.dropView(viewName);
+        Organisation organisation = UserContextHolder.getOrganisation();
+        implementationRepository.dropView(viewName, organisation.getSchemaName());
         return ResponseEntity.ok().build();
     }
 }

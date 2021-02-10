@@ -9,10 +9,22 @@ $BODY$
     END IF;
     EXECUTE 'GRANT ' || quote_ident(inrolname) || ' TO openchs';
     PERFORM grant_all_on_all(inrolname);
---     EXECUTE 'CREATE SCHEMA IF NOT EXISTS ' || inrolname || ' AUTHORIZATION ' || inrolname;
     RETURN 1;
   END
 $BODY$ LANGUAGE PLPGSQL;
+
+
+DROP FUNCTION IF EXISTS create_implementation_schema(text);
+CREATE OR REPLACE FUNCTION create_implementation_schema(schema_name text, db_user text)
+  RETURNS BIGINT AS
+$BODY$
+BEGIN
+  EXECUTE 'CREATE SCHEMA IF NOT EXISTS "' || schema_name || '" AUTHORIZATION "' || db_user || '"';
+  EXECUTE 'GRANT ALL PRIVILEGES ON SCHEMA "' || schema_name || '" TO "' || db_user || '"';
+  RETURN 1;
+END
+$BODY$ LANGUAGE PLPGSQL;
+
 
 CREATE OR REPLACE FUNCTION jsonb_object_values_contain(obs JSONB, pattern TEXT)
   RETURNS BOOLEAN AS $$
@@ -584,23 +596,24 @@ $BODY$
   LANGUAGE plpgsql;
 
 
-
-CREATE OR REPLACE FUNCTION create_view(view_name text, sql_query text, organisation_name text)
+DROP FUNCTION IF EXISTS create_view(text, text, text);
+CREATE OR REPLACE FUNCTION create_view(schema_name text, view_name text, sql_query text)
     RETURNS BIGINT AS
 $BODY$
 BEGIN
---     EXECUTE 'set search_path = ' || organisation_name;
+    EXECUTE 'set search_path = ' || schema_name;
     EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
     EXECUTE 'CREATE OR REPLACE VIEW ' || view_name || ' AS ' || sql_query;
     RETURN 1;
 END
 $BODY$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION drop_view(view_name text, organisation_name text)
+DROP FUNCTION IF EXISTS drop_view(text, text);
+CREATE OR REPLACE FUNCTION drop_view(schema_name text, view_name text)
     RETURNS BIGINT AS
 $BODY$
 BEGIN
---     EXECUTE 'set search_path = ' || organisation_name;
+    EXECUTE 'set search_path = ' || schema_name;
     EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
     RETURN 1;
 END

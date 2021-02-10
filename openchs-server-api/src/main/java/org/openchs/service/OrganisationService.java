@@ -137,8 +137,7 @@ public class OrganisationService {
                                ProgramEncounterRepository programEncounterRepository,
                                ProgramEnrolmentRepository programEnrolmentRepository,
                                EncounterRepository encounterRepository,
-                               IndividualRepository individualRepository,
-                               ObjectMapper objectMapper) {
+                               IndividualRepository individualRepository) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -186,7 +185,6 @@ public class OrganisationService {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
-        this.objectMapper = objectMapper;
     }
 
 

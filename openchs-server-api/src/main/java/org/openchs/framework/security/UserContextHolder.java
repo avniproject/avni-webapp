@@ -1,5 +1,6 @@
 package org.openchs.framework.security;
 
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 
@@ -24,5 +25,9 @@ public class UserContextHolder {
     public static User getUser() {
         UserContext context = getUserContext();
         return context != null ? context.getUser() : null;
+    }
+
+    public static Organisation getOrganisation() {
+        return getUserContext().getOrganisation();
     }
 }

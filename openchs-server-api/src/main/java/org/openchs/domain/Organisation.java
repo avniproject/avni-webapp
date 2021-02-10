@@ -23,6 +23,9 @@ public class Organisation {
     private String dbUser;
 
     @Column
+    private String schemaName;
+
+    @Column
     private String mediaDirectory;
 
     @Column
@@ -147,5 +150,13 @@ public class Organisation {
 
     public void setVoided(boolean voided) {
         isVoided = voided;
+    }
+
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
     }
 }

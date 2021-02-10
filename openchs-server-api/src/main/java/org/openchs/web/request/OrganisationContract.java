@@ -6,6 +6,7 @@ public class OrganisationContract extends CHSRequest {
     private Long parentOrganisationId;
     private String name;
     private String dbUser;
+    private String schemaName;
     private String mediaDirectory;
     private String usernameSuffix;
     private Long accountId;
@@ -17,6 +18,7 @@ public class OrganisationContract extends CHSRequest {
         organisationContract.setParentOrganisationId(organisation.getParentOrganisationId());
         organisationContract.setName(organisation.getName());
         organisationContract.setDbUser(organisation.getDbUser());
+        organisationContract.setSchemaName(organisation.getSchemaName());
         organisationContract.setMediaDirectory(organisation.getMediaDirectory());
         organisationContract.setUsernameSuffix(organisation.getUsernameSuffix());
         organisationContract.setAccountId(organisation.getAccount() == null ? null : organisation.getAccount().getId());
@@ -69,5 +71,13 @@ public class OrganisationContract extends CHSRequest {
 
     public void setMediaDirectory(String mediaDirectory) {
         this.mediaDirectory = mediaDirectory;
+    }
+
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
     }
 }

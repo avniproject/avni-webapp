@@ -2,6 +2,7 @@ package org.openchs.web;
 
 
 import org.openchs.dao.AccountRepository;
+import org.openchs.dao.ImplementationRepository;
 import org.openchs.dao.OrganisationGroupRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Organisation;
@@ -32,13 +33,15 @@ public class OrganisationGroupController implements RestControllerResourceProces
     private OrganisationGroupRepository organisationGroupRepository;
     private OrganisationRepository organisationRepository;
     private AccountRepository accountRepository;
+    private ImplementationRepository implementationRepository;
 
     public OrganisationGroupController(OrganisationGroupRepository organisationGroupRepository,
                                        OrganisationRepository organisationRepository,
-                                       AccountRepository accountRepository) {
+                                       AccountRepository accountRepository, ImplementationRepository implementationRepository) {
         this.organisationGroupRepository = organisationGroupRepository;
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
+        this.implementationRepository = implementationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -50,7 +53,7 @@ public class OrganisationGroupController implements RestControllerResourceProces
             throw new ValidationException(String.format("Organisation group %s already exists", request.getName()));
         }
         String tempPassword = "password";
-        organisationRepository.createDBUser(request.getDbUser(), tempPassword);
+        implementationRepository.createDBUser(request.getDbUser(), tempPassword);
         OrganisationGroup organisationGroup = new OrganisationGroup();
         organisationGroup.setName(request.getName());
         organisationGroup.setDbUser(request.getDbUser());

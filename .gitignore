@@ -22,3 +22,6 @@ major_version
 bin/
 openchs-server-api/org.openchs.domain.Concept/
 local.properties
+_1*
+segments_2
+write.lock

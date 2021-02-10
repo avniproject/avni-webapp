@@ -3,6 +3,7 @@ package org.openchs.visitor;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormMapping;
 import org.openchs.application.projections.ReportingViewProjection;
+import org.openchs.dao.ImplementationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.EncounterType;
@@ -23,9 +24,9 @@ public class GetReportingViewSourceVisitor implements MetaDataVisitor {
     private List<ReportingViewResponse> reportingViewResponses = new ArrayList<>();
     private FormMappingRepository formMappingRepository;
 
-    public GetReportingViewSourceVisitor(OrganisationRepository organisationRepository, Organisation organisation, FormMappingRepository formMappingRepository) {
+    public GetReportingViewSourceVisitor(ImplementationRepository implementationRepository, Organisation organisation, FormMappingRepository formMappingRepository) {
         this.formMappingRepository = formMappingRepository;
-        allViews = organisationRepository.getAllViewsWithDdlOwnedBy(organisation.getDbUser());
+        allViews = implementationRepository.getAllViewsInSchema(organisation.getSchemaName());
         this.viewNameGenerator = new ViewNameGenerator(organisation);
     }
 
