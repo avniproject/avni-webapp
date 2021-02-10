@@ -2,7 +2,6 @@ package org.openchs.service;
 
 import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
 import org.openchs.dao.*;
@@ -15,6 +14,7 @@ import org.openchs.dao.individualRelationship.IndividualRelationRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.*;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.openchs.web.request.application.FormContract;
@@ -88,7 +88,6 @@ public class OrganisationService {
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final EncounterRepository encounterRepository;
     private final IndividualRepository individualRepository;
-    private ObjectMapper objectMapper;
 
     @Autowired
     public OrganisationService(FormRepository formRepository,
@@ -434,7 +433,7 @@ public class OrganisationService {
         zos.putNextEntry(entry);
         if (fileContent != null) {
             PrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
-            byte[] bytes = objectMapper.writer(prettyPrinter).writeValueAsBytes(fileContent);
+            byte[] bytes = ObjectMapperSingleton.getObjectMapper().writer(prettyPrinter).writeValueAsBytes(fileContent);
             zos.write(bytes);
         }
         zos.closeEntry();
