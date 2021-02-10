@@ -18,7 +18,7 @@ storybook: check-node-v
 	yarn storybook
 
 test: check-node-v
-	yarn test
+	yarn test --watchAll
 
 prettier-all: check-node-v
 	yarn prettier-all
