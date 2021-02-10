@@ -51,17 +51,17 @@ public class FormMapping extends OrganisationAwareEntity {
     public String getFormName() {
         return this.getForm() != null ? this.getForm().getName() : null;
     }
-    
+
     public Program getProgram() {
         return program;
     }
 
     public String getProgramUuid() {
-        return this.getProgram() != null? this.getProgram().getUuid(): null;
+        return this.getProgram() != null ? this.getProgram().getUuid() : null;
     }
 
     public String getEncounterTypeUuid() {
-        return this.getEncounterType() != null? this.getEncounterType().getUuid(): null;
+        return this.getEncounterType() != null ? this.getEncounterType().getUuid() : null;
     }
 
     public void setProgram(Program program) {
@@ -86,6 +86,16 @@ public class FormMapping extends OrganisationAwareEntity {
 
     public void setSubjectType(SubjectType subjectType) {
         this.subjectType = subjectType;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Form=").append(getForm().getName());
+        stringBuilder.append(", subjectType=").append(getSubjectType().getName());
+        stringBuilder.append(", program=").append(getProgram() == null ? "null" : getProgram().getName());
+        stringBuilder.append(", encounterType=").append(getEncounterType() == null ? "null" : getEncounterType().getName());
+        return stringBuilder.toString();
     }
 
     @Projection(name = "FormMappingProjection", types = {FormMapping.class})

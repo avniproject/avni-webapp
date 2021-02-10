@@ -1,19 +1,16 @@
 package org.openchs.web;
 
-import org.flywaydb.core.internal.util.ExceptionUtils;
-import org.openchs.application.FormMapping;
-import org.openchs.application.projections.ReportingViewProjection;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.domain.*;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.UserContext;
 import org.openchs.domain.metadata.SubjectTypes;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.reporting.ReportingViews;
 import org.openchs.reporting.ViewGenService;
 import org.openchs.service.MetaDataRepository;
-import org.openchs.service.ViewNameGenerator;
 import org.openchs.visitor.CreateReportingViewVisitor;
+import org.openchs.visitor.GetReportingViewSourceVisitor;
 import org.openchs.web.request.ViewConfig;
 import org.openchs.web.response.ReportingViewResponse;
 import org.slf4j.Logger;
@@ -26,7 +23,6 @@ import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 public class ViewGenController {
@@ -72,7 +68,10 @@ public class ViewGenController {
         Organisation organisation = userContext.getOrganisation();
         SubjectTypes subjectTypes = metaDataService.getSubjectTypes();
         subjectTypes.accept(createReportingViewVisitor);
-        return getAllReportingViews(organisation);
+
+        GetReportingViewSourceVisitor getReportingViewSourceVisitor = new GetReportingViewSourceVisitor(organisationRepository, organisation, formMappingRepository);
+        subjectTypes.accept(getReportingViewSourceVisitor);
+        return getReportingViewSourceVisitor.getReportingViewResponses();
     }
 
     @GetMapping(value = "/viewsInDb")
@@ -80,7 +79,10 @@ public class ViewGenController {
     public List<ReportingViewResponse> getAllViews() {
         UserContext userContext = UserContextHolder.getUserContext();
         Organisation organisation = userContext.getOrganisation();
-        return getAllReportingViews(organisation);
+        SubjectTypes subjectTypes = metaDataService.getSubjectTypes();
+        GetReportingViewSourceVisitor getReportingViewSourceVisitor = new GetReportingViewSourceVisitor(organisationRepository, organisation, formMappingRepository);
+        subjectTypes.accept(getReportingViewSourceVisitor);
+        return getReportingViewSourceVisitor.getReportingViewResponses();
     }
 
     @DeleteMapping(value = "/reportingView/{viewName}")
@@ -88,13 +90,5 @@ public class ViewGenController {
     public ResponseEntity deleteView(@PathVariable String viewName) {
         organisationRepository.dropView(viewName);
         return ResponseEntity.ok().build();
-    }
-
-    private List<ReportingViewResponse> getAllReportingViews(Organisation organisation) {
-        List<ReportingViewProjection> allViewsOwnedByUser = organisationRepository.getAllViewsWithDdlOwnedBy(organisation.getDbUser());
-        return allViewsOwnedByUser
-                .stream()
-                .map(rp -> new ReportingViewResponse(rp.getViewname(), ReportingViews.legacyViews.contains(rp.getViewname()), rp.getDefinition()))
-                .collect(Collectors.toList());
     }
 }

@@ -4,6 +4,7 @@ import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
+import org.openchs.domain.EncounterType;
 import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.springframework.data.domain.Page;
@@ -26,12 +27,6 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     List<FormMapping> findByFormIdAndIsVoidedFalse(Long formId);
 
-    List<FormMapping> findAllByProgramIdIsNotNull();
-
-    List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNotNull();
-
-    List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNull();
-
     FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType, Long subjectTypeId);
 
     List<FormMapping> findBySubjectTypeAndFormFormTypeAndIsVoidedFalse(SubjectType subjectType, FormType formType);
@@ -48,7 +43,50 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
         throw new UnsupportedOperationException("No field 'name' in FormMapping");
     }
 
-    List<FormMapping> findAllByProgramAndEncounterTypeNotNull(Program program);
+    //    Registration
+    FormMapping findBySubjectTypeAndProgramNullAndEncounterTypeNullAndIsVoidedFalse(SubjectType subjectType);
+    default FormMapping getRegistrationFormMapping(SubjectType subjectType) {
+        return findBySubjectTypeAndProgramNullAndEncounterTypeNullAndIsVoidedFalse(subjectType);
+    }
+
+    //    Program Enrolment
+    FormMapping findBySubjectTypeAndProgramAndEncounterTypeNullAndFormFormTypeAndIsVoidedFalse(SubjectType subjectType, Program program, FormType formType);
+    default FormMapping getProgramEnrolmentFormMapping(SubjectType subjectType, Program program) {
+        return findBySubjectTypeAndProgramAndEncounterTypeNullAndFormFormTypeAndIsVoidedFalse(subjectType, program, FormType.ProgramEnrolment);
+    }
+    default FormMapping getProgramExitFormMapping(SubjectType subjectType, Program program) {
+        return findBySubjectTypeAndProgramAndEncounterTypeNullAndFormFormTypeAndIsVoidedFalse(subjectType, program, FormType.ProgramExit);
+    }
+    List<FormMapping> findAllBySubjectTypeAndProgramNotNullAndEncounterTypeNullAndFormFormTypeAndIsVoidedFalse(SubjectType subjectType, FormType formType);
+    default List<FormMapping> getAllProgramEnrolmentFormMapping(SubjectType subjectType) {
+        return findAllBySubjectTypeAndProgramNotNullAndEncounterTypeNullAndFormFormTypeAndIsVoidedFalse(subjectType, FormType.ProgramEnrolment);
+    }
+
+    //    Program Encounter
+    FormMapping findBySubjectTypeAndProgramAndEncounterTypeAndIsVoidedFalseAndFormFormType(SubjectType subjectType, Program program, EncounterType encounterType, FormType formType);
+    default FormMapping getProgramEncounterFormMapping(SubjectType subjectType, Program program, EncounterType encounterType) {
+        return findBySubjectTypeAndProgramAndEncounterTypeAndIsVoidedFalseAndFormFormType(subjectType, program, encounterType, FormType.ProgramEncounter);
+    }
+    default FormMapping getProgramEncounterCancelFormMapping(SubjectType subjectType, Program program, EncounterType encounterType) {
+        return findBySubjectTypeAndProgramAndEncounterTypeAndIsVoidedFalseAndFormFormType(subjectType, program, encounterType, FormType.ProgramEncounterCancellation);
+    }
+    List<FormMapping> findAllBySubjectTypeAndProgramAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(SubjectType subjectType, Program program, FormType formType);
+    default List<FormMapping> getAllProgramEncounterFormMappings(SubjectType subjectType, Program program) {
+        return findAllBySubjectTypeAndProgramAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(subjectType, program, FormType.ProgramEncounter);
+    }
+
+    //    General Encounter
+    FormMapping findBySubjectTypeAndProgramNullAndEncounterTypeAndIsVoidedFalseAndFormFormType(SubjectType subjectType, EncounterType encounterType, FormType formType);
+    default FormMapping getGeneralEncounterFormMapping(SubjectType subjectType, EncounterType encounterType) {
+        return findBySubjectTypeAndProgramNullAndEncounterTypeAndIsVoidedFalseAndFormFormType(subjectType, encounterType, FormType.Encounter);
+    }
+    default FormMapping getGeneralEncounterCancelFormMapping(SubjectType subjectType, EncounterType encounterType) {
+        return findBySubjectTypeAndProgramNullAndEncounterTypeAndIsVoidedFalseAndFormFormType(subjectType, encounterType, FormType.IndividualEncounterCancellation);
+    }
+    List<FormMapping> findAllBySubjectTypeAndProgramNullAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(SubjectType subjectType, FormType formType);
+    default List<FormMapping> getAllGeneralEncounterFormMappings(SubjectType subjectType) {
+        return findAllBySubjectTypeAndProgramNullAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(subjectType, FormType.Encounter);
+    }
 
     //left join to fetch eagerly in first select
     @Query("select fm from FormMapping fm " +
@@ -84,17 +122,4 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
             "and (:formType is null or f.formType = :formType) " +
             "and fm.isVoided = false ")
     List<FormMapping> findRequiredFormMappings(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
-
-    @Query("select fm from FormMapping fm " +
-            "left join fetch fm.form f " +
-            "where fm.subjectType.uuid = :subjectTypeUUID and fm.program <> null " +
-            "and f.formType = 'ProgramEnrolment' and fm.isVoided = false")
-    List<FormMapping> getAllEnrolmentFormMappings(String subjectTypeUUID);
-
-    @Query("select fm from FormMapping fm " +
-            "left join fetch fm.form f " +
-            "where fm.subjectType.uuid = :subjectTypeUUID and fm.program = null and fm.encounterType <> null " +
-            "and f.formType = 'Encounter' and fm.isVoided = false")
-    List<FormMapping> getAllGeneralEncounterFormMappings(String subjectTypeUUID);
-
 }

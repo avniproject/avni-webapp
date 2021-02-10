@@ -24,18 +24,18 @@ public class MetaDataRepository {
         List<SubjectType> subjectTypeList = subjectTypeRepository.findAllByIsVoidedFalse();
         SubjectTypes subjectTypes = new SubjectTypes(subjectTypeList);
         subjectTypeList.forEach(subjectType -> {
-            List<FormMapping> allProgramFormMappings = formMappingRepository.getAllEnrolmentFormMappings(subjectType.getUuid());
-            allProgramFormMappings.forEach(formMapping -> {
+            List<FormMapping> allProgramEnrolmentFormMappings = formMappingRepository.getAllProgramEnrolmentFormMapping(subjectType);
+            allProgramEnrolmentFormMappings.forEach(formMapping -> {
                 Program program = formMapping.getProgram();
                 subjectTypes.addProgram(subjectType, program);
 
-                List<FormMapping> programEncounterFormMappings = formMappingRepository.findAllByProgramAndEncounterTypeNotNull(program);
+                List<FormMapping> programEncounterFormMappings = formMappingRepository.getAllProgramEncounterFormMappings(subjectType, program);
                 programEncounterFormMappings.forEach(peFM -> {
                     subjectTypes.addEncounterType(subjectType, peFM.getProgram(), peFM.getEncounterType());
                 });
             });
 
-            List<FormMapping> generalEncounterFormMappings = formMappingRepository.getAllGeneralEncounterFormMappings(subjectType.getUuid());
+            List<FormMapping> generalEncounterFormMappings = formMappingRepository.getAllGeneralEncounterFormMappings(subjectType);
             generalEncounterFormMappings.forEach(formMapping -> {
                 subjectTypes.addEncounterType(subjectType, formMapping.getEncounterType());
             });

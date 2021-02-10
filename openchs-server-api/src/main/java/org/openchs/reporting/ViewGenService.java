@@ -9,6 +9,7 @@ import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
+import org.openchs.service.ViewNameGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +116,7 @@ public class ViewGenService {
         enrolmentExitSql = replaceJoinsAndOtherCommonInformation(exitFormMapping, enrolmentExitSql);
         HashMap<String, String> map = new HashMap<>();
         map.put(operationalProgramName, enrolmentSql);
-        map.put(operationalProgramName.concat(" EXIT"), enrolmentExitSql);
+        map.put(ViewNameGenerator.getExitName(operationalProgramName), enrolmentExitSql);
         return map;
     }
 
@@ -153,7 +154,7 @@ public class ViewGenService {
                     String sqlForProgramEncounterCancel = getSqlForProgramEncounterCancel(programEncounterCancelQuery, type, spreadMultiSelectObs, getProgramEncounterCancelFormElements(operationalProgram, type, subjectTypeId), formMappingForProgramEncounterCancel);
 
                     programEncounterSqlMap.put(type.getName(), sqlForProgramEncounter);
-                    programEncounterSqlMap.put(type.getName().concat(" CANCEL"), sqlForProgramEncounterCancel);
+                    programEncounterSqlMap.put(ViewNameGenerator.getCancelName(type.getName()), sqlForProgramEncounterCancel);
                 });
         return programEncounterSqlMap;
     }

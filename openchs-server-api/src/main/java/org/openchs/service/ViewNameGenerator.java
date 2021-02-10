@@ -38,8 +38,16 @@ public class ViewNameGenerator {
         return getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), encounterType), "Encounter");
     }
 
+    public String getGeneralEncounterCancelViewName(SubjectType subjectType, String encounterType) {
+        return getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), getCancelName(encounterType)), "Encounter");
+    }
+
     public String getProgramEncounterViewName(SubjectType subjectType, Program program, String encounterType) {
         return this.getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName(), encounterType), "ProgramEncounter");
+    }
+
+    public String getProgramEncounterCancelViewName(SubjectType subjectType, Program program, String encounterType) {
+        return this.getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName(), getCancelName(encounterType)), "ProgramEncounter");
     }
 
     public String getSubjectRegistrationViewName(SubjectType subjectType) {
@@ -48,6 +56,10 @@ public class ViewNameGenerator {
 
     public String getProgramEnrolmentViewName(SubjectType subjectType, String program) {
         return getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), program), "ProgramEnrolment");
+    }
+
+    public String getProgramEnrolmentExitViewName(SubjectType subjectType, String program) {
+        return getViewName(Arrays.asList(getViewNamePrefix(organisation), subjectType.getOperationalSubjectTypeName(), getExitName(program)), "ProgramEnrolment");
     }
 
     private String getViewName(List<String> entities, String viewType) {
@@ -88,5 +100,13 @@ public class ViewNameGenerator {
 
     private String getViewNamePrefix(Organisation organisation) {
         return organisation.getUsernameSuffix() == null ? organisation.getName() : organisation.getUsernameSuffix();
+    }
+
+    public static String getExitName(String operationalProgramName) {
+        return operationalProgramName.concat(" EXIT");
+    }
+
+    public static String getCancelName(String name) {
+        return name.concat(" CANCEL");
     }
 }
