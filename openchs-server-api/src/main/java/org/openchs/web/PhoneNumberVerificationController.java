@@ -33,7 +33,7 @@ public class PhoneNumberVerificationController {
     public ResponseEntity<PhoneNumberVerificationResponse> sendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         logger.info("Request: " + phoneNumberVerificationRequest.getPhoneNumber());
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
-                = phoneNumberVerificationService.sendOTP(phoneNumberVerificationRequest.getPhoneNumber());
+                = phoneNumberVerificationService.sendOTP(phoneNumberVerificationRequest);
         return phoneNumberVerificationResponse.isSuccess() ?
                 ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse) :
                 ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse);
@@ -43,7 +43,7 @@ public class PhoneNumberVerificationController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<PhoneNumberVerificationResponse> resendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
-                = phoneNumberVerificationService.resendOTP(phoneNumberVerificationRequest.getPhoneNumber());
+                = phoneNumberVerificationService.resendOTP(phoneNumberVerificationRequest);
         return phoneNumberVerificationResponse.isSuccess() ?
                 ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse) :
                 ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse);
@@ -53,7 +53,7 @@ public class PhoneNumberVerificationController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<PhoneNumberVerificationResponse> verifyOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
-                = phoneNumberVerificationService.verifyOTP(phoneNumberVerificationRequest.getPhoneNumber(), phoneNumberVerificationRequest.getOtp());
+                = phoneNumberVerificationService.verifyOTP(phoneNumberVerificationRequest);
         return phoneNumberVerificationResponse.isSuccess() ?
                 ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse) :
                 ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(phoneNumberVerificationResponse);

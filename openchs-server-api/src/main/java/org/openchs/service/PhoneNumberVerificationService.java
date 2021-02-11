@@ -6,6 +6,7 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.external.Msg91RestClient;
 import org.openchs.web.request.Msg91Request;
+import org.openchs.web.request.PhoneNumberVerificationRequest;
 import org.openchs.web.response.Msg91Response;
 import org.openchs.web.response.PhoneNumberVerificationResponse;
 import org.openchs.web.validation.ValidationException;
@@ -47,13 +48,14 @@ public class PhoneNumberVerificationService {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public PhoneNumberVerificationResponse sendOTP(String phoneNumber) throws IOException, GeneralSecurityException {
+    public PhoneNumberVerificationResponse sendOTP(PhoneNumberVerificationRequest request) throws IOException, GeneralSecurityException {
         if (isDev && !msg91InDev) {
             return new PhoneNumberVerificationResponse(true, null);
         }
 
         Msg91Request msg91Request = createMsg91Request();
-        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
+        msg91Request.setOtpLength(request.getOtpLength());
+        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(request.getPhoneNumber()));
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.GET, sendOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
@@ -64,13 +66,14 @@ public class PhoneNumberVerificationService {
 
     }
 
-    public PhoneNumberVerificationResponse resendOTP(String phoneNumber) throws IOException, GeneralSecurityException {
+    public PhoneNumberVerificationResponse resendOTP(PhoneNumberVerificationRequest request) throws IOException, GeneralSecurityException {
         if (isDev && !msg91InDev) {
             return new PhoneNumberVerificationResponse(true, null);
         }
 
         Msg91Request msg91Request = createMsg91Request();
-        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
+        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(request.getPhoneNumber()));
+        msg91Request.setOtpLength(request.getOtpLength());
         msg91Request.setRetryType("text");      //Default Msg91 behaviour for retry is OTP via phone call. Setting to text forces resending OTP via SMS.
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, resendOTPEndpoint, msg91Request, true);
@@ -80,14 +83,15 @@ public class PhoneNumberVerificationService {
         return phoneNumberVerificationResponse;
     }
 
-    public PhoneNumberVerificationResponse verifyOTP(String phoneNumber, String otp) throws IOException, GeneralSecurityException {
+    public PhoneNumberVerificationResponse verifyOTP(PhoneNumberVerificationRequest request) throws IOException, GeneralSecurityException {
         if (isDev && !msg91InDev) {
-            return new PhoneNumberVerificationResponse(otp.equals("1234"), null);
+            return new PhoneNumberVerificationResponse(request.getOtp().equals("1234"), null);
         }
 
         Msg91Request msg91Request = createMsg91Request();
-        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(phoneNumber));
-        msg91Request.setOtp(otp);
+        msg91Request.setMobile(validateAndAddCountryCodeToPhoneNumber(request.getPhoneNumber()));
+        msg91Request.setOtp(request.getOtp());
+        msg91Request.setOtpLength(request.getOtpLength());
 
         PhoneNumberVerificationResponse phoneNumberVerificationResponse = processMsg91Request(HttpMethod.POST, verifyOTPEndpoint, msg91Request, true);
         if (!phoneNumberVerificationResponse.isSuccess()) {
@@ -182,7 +186,6 @@ public class PhoneNumberVerificationService {
         Msg91Request msg91Request = new Msg91Request();
         msg91Request.setAuthKey(msg91ConfigService.decryptAuthKey(msg91Config.getAuthKey()));
         msg91Request.setTemplateId(msg91Config.getOtpSmsTemplateId());
-        msg91Request.setOtpLength(msg91Config.getOtpLength() != null ? String.valueOf(msg91Config.getOtpLength()) : "4");
         msg91Request.setOtpExpiry("10");        // Default expiry value in minutes for all OTPs
         return msg91Request;
     }

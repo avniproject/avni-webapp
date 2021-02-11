@@ -4,6 +4,7 @@ import org.openchs.dao.Msg91ConfigRepository;
 import org.openchs.domain.Msg91Config;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.Msg91ConfigService;
+import org.openchs.service.OrganisationConfigService;
 import org.openchs.service.PhoneNumberVerificationService;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.Msg91ConfigContract;
@@ -29,12 +30,14 @@ public class Msg91ConfigController extends AbstractController<Msg91Config> imple
     private final Msg91ConfigRepository msg91ConfigRepository;
     private final PhoneNumberVerificationService phoneNumberVerificationService;
     private final Msg91ConfigService msg91ConfigService;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
-    public Msg91ConfigController(Msg91ConfigRepository msg91ConfigRepository, PhoneNumberVerificationService phoneNumberVerificationService, Msg91ConfigService msg91ConfigService) {
+    public Msg91ConfigController(Msg91ConfigRepository msg91ConfigRepository, PhoneNumberVerificationService phoneNumberVerificationService, Msg91ConfigService msg91ConfigService, OrganisationConfigService organisationConfigService) {
         this.msg91ConfigRepository = msg91ConfigRepository;
         this.phoneNumberVerificationService = phoneNumberVerificationService;
         this.msg91ConfigService = msg91ConfigService;
+        this.organisationConfigService = organisationConfigService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -56,7 +59,9 @@ public class Msg91ConfigController extends AbstractController<Msg91Config> imple
         msg91Config.setOtpSmsTemplateId(request.getOtpSmsTemplateId());
         msg91Config.setOtpLength(request.getOtpLength());
         msg91Config.setVoided(request.isVoided());
-        return ResponseEntity.ok().body(Msg91ConfigContract.fromMsg91Config(msg91ConfigRepository.save(msg91Config), null));
+        Msg91Config savedConfig = msg91ConfigRepository.save(msg91Config);
+        organisationConfigService.updateSettings("otpLength", request.getOtpLength());
+        return ResponseEntity.ok().body(Msg91ConfigContract.fromMsg91Config(savedConfig, null));
     }
 
     @RequestMapping(value = "/web/msg91Config", method = RequestMethod.GET)

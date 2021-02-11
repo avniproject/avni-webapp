@@ -9,7 +9,10 @@ import org.openchs.application.KeyType;
 import org.openchs.application.OrganisationConfigSettingKeys;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
-import org.openchs.domain.*;
+import org.openchs.domain.JsonObject;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.OrganisationConfig;
+import org.openchs.domain.SubjectType;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.util.ObjectMapperSingleton;
@@ -112,6 +115,17 @@ public class OrganisationConfigService {
             exception.printStackTrace();
         }
         return null;
+    }
+
+    @Transactional
+    public void updateSettings(String key, Object otpLength) {
+        OrganisationConfig organisationConfig = organisationConfigRepository.findAll()
+                .stream().findFirst()
+                .orElse(new OrganisationConfig());
+        JsonObject jsonObject = organisationConfig.getSettings();
+        jsonObject.with(key, otpLength);
+        organisationConfig.updateLastModifiedDateTime();
+        organisationConfigRepository.save(organisationConfig);
     }
 
     @Transactional
