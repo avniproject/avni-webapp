@@ -23,7 +23,6 @@ public class Card extends OrganisationAwareEntity {
 
     private String colour;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "standard_report_card_type_id")
     private StandardReportCardType standardReportCardType;

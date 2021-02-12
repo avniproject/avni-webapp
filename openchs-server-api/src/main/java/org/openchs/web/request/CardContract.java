@@ -20,8 +20,7 @@ public class CardContract extends CHSRequest {
         cardContract.setQuery(card.getQuery());
         cardContract.setDescription(card.getDescription());
         cardContract.setColor(card.getColour());
-        StandardReportCardType standardReportCardType = card.getStandardReportCardType();
-        cardContract.setStandardReportCardTypeUUID(standardReportCardType == null ? null : standardReportCardType.getUuid());
+        cardContract.setStandardReportCardTypeUUID(card.getStandardReportCardTypeUUID());
         return cardContract;
     }
 
