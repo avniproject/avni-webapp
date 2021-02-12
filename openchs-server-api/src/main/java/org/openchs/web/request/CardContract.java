@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import org.openchs.domain.Card;
+import org.openchs.domain.StandardReportCardType;
 
 public class CardContract extends CHSRequest {
     private String name;
@@ -19,7 +20,8 @@ public class CardContract extends CHSRequest {
         cardContract.setQuery(card.getQuery());
         cardContract.setDescription(card.getDescription());
         cardContract.setColor(card.getColour());
-        cardContract.setStandardReportCardTypeUUID(card.getStandardReportCardType().getUuid());
+        StandardReportCardType standardReportCardType = card.getStandardReportCardType();
+        cardContract.setStandardReportCardTypeUUID(standardReportCardType == null ? null : standardReportCardType.getUuid());
         return cardContract;
     }
 

@@ -69,6 +69,6 @@ public class Card extends OrganisationAwareEntity {
     }
 
     public String getStandardReportCardTypeUUID() {
-        return standardReportCardType.getUuid();
+        return standardReportCardType == null ? null : standardReportCardType.getUuid();
     }
 }
