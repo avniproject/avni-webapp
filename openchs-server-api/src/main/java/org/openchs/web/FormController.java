@@ -273,6 +273,13 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         formContract.setValidationRule(form.getValidationRule());
         formContract.setChecklistsRule(form.getChecklistsRule());
         formContract.setOrganisationId(form.getOrganisationId());
+
+        form.getDecisionConcepts().forEach(concept -> {
+            ConceptContract conceptContract = new ConceptContract();
+            BeanUtils.copyProperties(concept, conceptContract);
+            formContract.addDecisionConcept(conceptContract);
+        });
+
         if (form.getFormType().equals(FormType.IndividualProfile)) {
             //Assuming that we'll have single registration form per subject types
             List<FormMapping> formMappings = formMappingRepository.findByFormIdAndIsVoidedFalse(form.getId());
@@ -476,8 +483,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                     .filter(identifierAssignment -> identifierAssignment != null)
                     .map(identifierAssignment -> projectionFactory.createProjection(IdentifierAssignmentProjection.class, identifierAssignment))
                     .collect(Collectors.toList());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw e;
         }

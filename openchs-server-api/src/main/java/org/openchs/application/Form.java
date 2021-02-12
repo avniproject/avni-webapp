@@ -2,12 +2,14 @@ package org.openchs.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
+import org.openchs.domain.Concept;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.text.Normalizer;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +38,8 @@ public class Form extends OrganisationAwareEntity {
     @Column(name = "checklists_rule")
     private String checklistsRule;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
+    private Set<DecisionConcept> decisionConcepts = new HashSet<>();
 
     public Form() {
     }
@@ -132,4 +136,26 @@ public class Form extends OrganisationAwareEntity {
         this.checklistsRule = checklistsRule;
     }
 
+    public List<Concept> getDecisionConcepts() {
+        return this.decisionConcepts.stream().map(DecisionConcept::getConcept).collect(Collectors.toList());
+    }
+
+    public void addDecisionConcept(Concept concept) {
+        DecisionConcept decisionConcept = new DecisionConcept();
+        decisionConcept.setConcept(concept);
+        this.decisionConcepts.add(decisionConcept);
+    }
+
+    public boolean hasDecisionConcept(Long conceptId) {
+        return getDecisionConcept(conceptId) != null;
+    }
+
+    private DecisionConcept getDecisionConcept(Long conceptId) {
+        return this.decisionConcepts.stream().filter(decisionConcept -> decisionConcept.getConcept().getId().equals(conceptId)).findFirst().orElse(null);
+    }
+
+    public void removeDecisionConcept(Concept concept) {
+        DecisionConcept decisionConcept = getDecisionConcept(concept.getId());
+        this.decisionConcepts.remove(decisionConcept);
+    }
 }

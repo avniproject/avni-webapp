@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.Form;
 import org.openchs.domain.SubjectType;
+import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
 
 import java.io.InvalidObjectException;
@@ -34,6 +35,7 @@ public class FormContract extends ReferenceDataContract {
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private List<ConceptContract> decisionConcepts = new ArrayList<>();
 
     public FormContract() {
     }
@@ -210,5 +212,17 @@ public class FormContract extends ReferenceDataContract {
 
     public DateTime getModifiedDateTime(){
         return lastModifiedDateTime;
+    }
+
+    public void addDecisionConcept(ConceptContract conceptContract) {
+        decisionConcepts.add(conceptContract);
+    }
+
+    public List<ConceptContract> getDecisionConcepts() {
+        return decisionConcepts;
+    }
+
+    public void setDecisionConcepts(List<ConceptContract> decisionConcepts) {
+        this.decisionConcepts = decisionConcepts;
     }
 }

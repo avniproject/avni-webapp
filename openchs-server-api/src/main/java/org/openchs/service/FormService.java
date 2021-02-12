@@ -12,10 +12,13 @@ import org.openchs.domain.ConceptDataType;
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormElementGroupContract;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class FormService {
@@ -43,10 +46,25 @@ public class FormService {
                 .withChecklistRule(formRequest.getChecklistsRule())
                 .withVoided(formRequest.isVoided())
                 .build();
+
+        mapDecisionConcepts(formRequest, form);
         //Form audit values might not change for changes in form element groups or form elements.
         //This updateAudit forces audit updates
         form.updateAudit();
         formRepository.save(form);
+    }
+
+    private void mapDecisionConcepts(FormContract formRequest, Form form) {
+        formRequest.getDecisionConcepts().forEach(conceptContract -> {
+            if (!form.hasDecisionConcept(conceptContract.getId())) {
+                form.addDecisionConcept(conceptRepository.findOne(conceptContract.getId()));
+            }
+        });
+        form.getDecisionConcepts().forEach(concept -> {
+            if (formRequest.getDecisionConcepts().stream().filter(conceptContract -> conceptContract.getId().equals(concept.getId())).findFirst().orElse(null) == null) {
+                form.removeDecisionConcept(concept);
+            }
+        });
     }
 
     public Form getOrCreateForm(String formUuid, String formName, FormType formType) {

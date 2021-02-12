@@ -16,7 +16,6 @@ public class Catchment extends OrganisationAwareEntity {
     @ManyToMany(mappedBy = "catchments", fetch = FetchType.LAZY)
     private Set<AddressLevel> addressLevels = new HashSet<>();
 
-
     public String getName() {
         return name;
     }
