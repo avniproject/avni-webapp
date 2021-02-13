@@ -19,13 +19,25 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import ColorPicker from "material-ui-rc-color-picker";
 import { colorPickerCSS } from "../../../adminApp/Constant";
 import { sampleCardQuery } from "../../common/SampleRule";
+import _ from "lodash";
+import MenuItem from "@material-ui/core/MenuItem/MenuItem";
+import { AvniSelect } from "../../../common/components/AvniSelect";
+import { AvniSwitch } from "../../../common/components/AvniSwitch";
 
-const initialState = { name: "", description: "", color: "#ff0000", query: "" };
+const initialState = {
+  name: "",
+  description: "",
+  color: "#ff0000",
+  query: "",
+  standardReportCardType: {}
+};
 export const CreateEditReportCard = ({ edit, ...props }) => {
   const [card, dispatch] = React.useReducer(ReportCardReducer, initialState);
   const [error, setError] = React.useState([]);
   const [id, setId] = React.useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
+  const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
+  const [standardReportCardTypes, setStandardReportCardTypes] = React.useState([]);
 
   React.useEffect(() => {
     if (edit) {
@@ -38,29 +50,78 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     }
   }, []);
 
-  const validateRequest = () => {
-    const { name, color, query } = card;
-    if (isEmpty(name) && isEmpty(color) && isEmpty(query)) {
-      setError([
-        { key: "EMPTY_NAME", message: "Name cannot be empty" },
-        { key: "EMPTY_COLOR", message: "Colour cannot be empty" },
-        { key: "EMPTY_QUERY", message: "Query cannot be empty" }
-      ]);
-    } else if (isEmpty(name)) {
-      setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-    } else if (isEmpty(color)) {
-      setError([...error, { key: "EMPTY_COLOR", message: "Colour cannot be empty" }]);
-    } else if (isEmpty(query)) {
-      setError([...error, { key: "EMPTY_QUERY", message: "Query cannot be empty" }]);
+  React.useEffect(() => {
+    if (card.standardReportCardTypeId != null) {
+      http
+        .get(`/web/standardReportCardType/${card.standardReportCardTypeId}`)
+        .then(res => res.data)
+        .then(res => {
+          dispatch({ type: "setData", payload: { ...card } });
+          setIsStandardReportCard(true);
+        });
     }
+  }, [card.standardReportCardTypeId]);
+
+  React.useEffect(() => {
+    http
+      .get("/web/standardReportCardType")
+      .then(res => res.data)
+      .then(res => {
+        setStandardReportCardTypes(res.map(({ name, id }) => ({ name, id })));
+      });
+  }, []);
+
+  React.useEffect(() => {
+    if (!_.isEmpty(standardReportCardTypes) && card.standardReportCardTypeId != null) {
+      dispatch({
+        type: "standardReportCardType",
+        payload: standardReportCardTypes.find(x => x.id === card.standardReportCardTypeId)
+      });
+    }
+  }, [standardReportCardTypes, card.standardReportCardTypeId]);
+
+  React.useEffect(() => {
+    if (isStandardReportCard) {
+      dispatch({ type: "query", payload: null });
+    } else {
+      dispatch({ type: "standardReportCardType", payload: null });
+    }
+  }, [isStandardReportCard]);
+
+  const validateRequest = () => {
+    const { name, color, query, standardReportCardType } = card;
+    let isValid = true;
+    setError([]);
+    if (isEmpty(name)) {
+      setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
+      isValid = false;
+    }
+    if (isEmpty(color)) {
+      setError([...error, { key: "EMPTY_COLOR", message: "Colour cannot be empty" }]);
+      isValid = false;
+    }
+    if (isStandardReportCard && isEmpty(standardReportCardType)) {
+      setError([...error, { key: "EMPTY_TYPE", message: "Standard Report Type cannot be empty" }]);
+      isValid = false;
+    }
+    if (!isStandardReportCard && isEmpty(query)) {
+      setError([...error, { key: "EMPTY_QUERY", message: "Query cannot be empty" }]);
+      isValid = false;
+    }
+    return isValid;
   };
 
   const onSave = () => {
-    validateRequest();
-    if (!isEmpty(card.name) && !isEmpty(card.color) && !isEmpty(card.query)) {
+    if (validateRequest()) {
       const url = edit ? `/web/card/${props.match.params.id}` : "/web/card";
       const methodName = edit ? "put" : "post";
-      http[methodName](url, card)
+      http[methodName](url, {
+        name: card.name,
+        description: card.description,
+        color: card.color,
+        query: card.query,
+        standardReportCardTypeId: card.standardReportCardType && card.standardReportCardType.id
+      })
         .then(res => {
           if (res.status === 200) {
             setId(res.data.id);
@@ -148,20 +209,50 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         />
         <p />
         {getErrorByKey("EMPTY_COLOR")}
-        <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
-        <Editor
-          value={card.query || sampleCardQuery()}
-          onValueChange={event => dispatch({ type: "query", payload: event })}
-          highlight={code => highlight(code, languages.js)}
-          padding={10}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 15,
-            height: "auto",
-            borderStyle: "solid",
-            borderWidth: "1px"
-          }}
+        <AvniSwitch
+          checked={isStandardReportCard}
+          onChange={event => setIsStandardReportCard(!isStandardReportCard)}
+          name="Is Standard Report Card?"
+          toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
         />
+        <p />
+        {isStandardReportCard && (
+          <AvniSelect
+            label={`Select standard card type ${isStandardReportCard ? "*" : ""}`}
+            value={_.isEmpty(card.standardReportCardType) ? "" : card.standardReportCardType}
+            onChange={event => {
+              dispatch({ type: "standardReportCardType", payload: event.target.value });
+            }}
+            style={{ width: "200px" }}
+            required
+            options={standardReportCardTypes.map((type, index) => (
+              <MenuItem value={type} key={index}>
+                {type.name}
+              </MenuItem>
+            ))}
+            toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
+          />
+        )}
+        {!isStandardReportCard && (
+          <React.Fragment>
+            <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
+            <Editor
+              value={card.query || sampleCardQuery()}
+              onValueChange={event => dispatch({ type: "query", payload: event })}
+              highlight={code => highlight(code, languages.js)}
+              padding={10}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 15,
+                height: "auto",
+                borderStyle: "solid",
+                borderWidth: "1px"
+              }}
+            />
+          </React.Fragment>
+        )}
+        {getErrorByKey("EMPTY_TYPE")}
+        <p />
         {getErrorByKey("EMPTY_QUERY")}
         <p />
         {getErrorByKey("SERVER_ERROR")}

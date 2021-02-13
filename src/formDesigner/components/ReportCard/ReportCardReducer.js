@@ -8,13 +8,18 @@ export const ReportCardReducer = (reportCard, action) => {
       return { ...reportCard, color: action.payload };
     case "query":
       return { ...reportCard, query: action.payload };
+    case "standardReportCardType":
+      return { ...reportCard, standardReportCardType: action.payload };
+    case "standardReportCardTypeId":
+      return { ...reportCard, standardReportCardTypeId: action.payload };
     case "setData":
       return {
         ...reportCard,
         name: action.payload.name,
         description: action.payload.description,
         color: action.payload.color,
-        query: action.payload.query
+        query: action.payload.query,
+        standardReportCardTypeId: action.payload.standardReportCardTypeId
       };
     default:
       return reportCard;
