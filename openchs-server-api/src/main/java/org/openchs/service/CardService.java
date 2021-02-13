@@ -3,6 +3,7 @@ package org.openchs.service;
 import org.openchs.dao.CardRepository;
 import org.openchs.dao.StandardReportCardTypeRepository;
 import org.openchs.domain.Card;
+import org.openchs.domain.StandardReportCardType;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.CardContract;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class CardService {
 
     public void uploadCard(CardContract cardContract) {
         Card card = cardRepository.findByUuid(cardContract.getUuid());
-        if(card == null){
+        if (card == null) {
             card = new Card();
             card.setUuid(cardContract.getUuid());
         }
@@ -66,7 +67,16 @@ public class CardService {
         card.setDescription(cardContract.getDescription());
         card.setQuery(cardContract.getQuery());
         card.setVoided(cardContract.isVoided());
-        card.setStandardReportCardType(standardReportCardTypeRepository.findByUuid(cardContract.getStandardReportCardTypeUUID()));
+        Long standardReportCardTypeId = cardContract.getStandardReportCardTypeId();
+        if (standardReportCardTypeId != null) {
+            StandardReportCardType type = standardReportCardTypeRepository.findById(standardReportCardTypeId).orElse(null);
+            if (type == null) {
+                throw new BadRequestError(String.format("StandardReportCardType with id %d doesn't exist", standardReportCardTypeId));
+            }
+            card.setStandardReportCardType(type);
+        } else {
+            card.setStandardReportCardType(null);
+        }
     }
 
     private void assertNewNameIsUnique(String newName, String oldName) {

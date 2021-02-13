@@ -16,7 +16,6 @@ public class Card extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
-    @NotNull
     private String query;
 
     private String description;
@@ -67,7 +66,7 @@ public class Card extends OrganisationAwareEntity {
         this.standardReportCardType = standardReportCardType;
     }
 
-    public String getStandardReportCardTypeUUID() {
-        return standardReportCardType == null ? null : standardReportCardType.getUuid();
+    public Long getStandardReportCardTypeId() {
+        return standardReportCardType == null ? null : standardReportCardType.getId();
     }
 }
