@@ -5,38 +5,65 @@ import ColorValue from "../../common/ColorValue";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import ResourceShowView from "../../common/ResourceShowView";
+import http from "../../../common/utils/httpClient";
 
 export const ReportCardShow = props => {
-  const renderColumns = reportCard => {
+  const RenderCard = ({ card, ...props }) => {
+    const [standardReportCardType, setStandardReportCardType] = React.useState();
+    const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
+
+    React.useEffect(() => {
+      if (card.standardReportCardTypeId != null) {
+        http
+          .get(`/web/standardReportCardType/${card.standardReportCardTypeId}`)
+          .then(res => res.data)
+          .then(res => {
+            setStandardReportCardType({ name: res.name, id: res.id });
+            setIsStandardReportCard(true);
+          });
+      }
+    }, [card.standardReportCardTypeId]);
+
     return (
       <div>
-        <ShowLabelValue label={"Name"} value={reportCard.name} />
+        <ShowLabelValue label={"Name"} value={card.name} />
         <p />
-        <ShowLabelValue label={"Description"} value={reportCard.description} />
+        <ShowLabelValue label={"Description"} value={card.description} />
         <p />
         <div>
           <FormLabel style={{ fontSize: "13px" }}>{"Colour"}</FormLabel>
           <br />
-          <ColorValue colour={reportCard.color} />
+          <ColorValue colour={card.color} />
         </div>
         <p />
-        <div>
-          <FormLabel style={{ fontSize: "13px" }}>Query</FormLabel>
-          <br />
-          <Editor
-            readOnly
-            value={reportCard.query ? reportCard.query : ""}
-            highlight={code => highlight(code, languages.js)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 15,
-              height: "auto",
-              borderStyle: "solid",
-              borderWidth: "1px"
-            }}
-          />
-        </div>
+        {isStandardReportCard && (
+          <React.Fragment>
+            <ShowLabelValue
+              label={"Standard Report Card Type"}
+              value={standardReportCardType.name}
+            />
+            <p />
+          </React.Fragment>
+        )}
+        {!isStandardReportCard && (
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Query</FormLabel>
+            <br />
+            <Editor
+              readOnly
+              value={card.query ? card.query : ""}
+              highlight={code => highlight(code, languages.js)}
+              padding={10}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 15,
+                height: "auto",
+                borderStyle: "solid",
+                borderWidth: "1px"
+              }}
+            />
+          </div>
+        )}
       </div>
     );
   };
@@ -47,7 +74,7 @@ export const ReportCardShow = props => {
       resourceId={props.match.params.id}
       resourceName={"card"}
       resourceURLName={"reportCard"}
-      renderColumns={card => renderColumns(card)}
+      renderColumns={card => <RenderCard card={card} />}
     />
   );
 };
