@@ -9,6 +9,7 @@ public class CardContract extends CHSRequest {
     private String color;
     private Double displayOrder;
     private Long standardReportCardTypeId;
+    private String iconFileS3Key;
 
     public static CardContract fromEntity(Card card) {
         CardContract cardContract = new CardContract();
@@ -20,6 +21,7 @@ public class CardContract extends CHSRequest {
         cardContract.setDescription(card.getDescription());
         cardContract.setColor(card.getColour());
         cardContract.setStandardReportCardTypeId(card.getStandardReportCardTypeId());
+        cardContract.setIconFileS3Key(card.getIconFileS3Key());
         return cardContract;
     }
 
@@ -71,5 +73,11 @@ public class CardContract extends CHSRequest {
         this.color = color;
     }
 
+    public String getIconFileS3Key() {
+        return iconFileS3Key;
+    }
 
+    public void setIconFileS3Key(String iconFileS3Key) {
+        this.iconFileS3Key = iconFileS3Key;
+    }
 }

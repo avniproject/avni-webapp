@@ -22,6 +22,9 @@ public class Card extends OrganisationAwareEntity {
 
     private String colour;
 
+    @Column(name = "icon_file_s3_key")
+    private String iconFileS3Key;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "standard_report_card_type_id")
     private StandardReportCardType standardReportCardType;
@@ -68,5 +71,13 @@ public class Card extends OrganisationAwareEntity {
 
     public Long getStandardReportCardTypeId() {
         return standardReportCardType == null ? null : standardReportCardType.getId();
+    }
+
+    public String getIconFileS3Key() {
+        return iconFileS3Key;
+    }
+
+    public void setIconFileS3Key(String iconFileS3Key) {
+        this.iconFileS3Key = iconFileS3Key;
     }
 }

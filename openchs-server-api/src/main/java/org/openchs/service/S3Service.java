@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.AvniFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,11 +134,15 @@ public class S3Service {
     }
 
     public ObjectInfo uploadFile(MultipartFile source, String destFileName, String directory) throws IOException {
-        return uploadFile(convertMultiPartToFile(source), destFileName, directory);
+        return uploadFile(AvniFiles.convertMultiPartToFile(source, ".csv"), destFileName, directory);
     }
 
     public ObjectInfo uploadZipFile(MultipartFile source, String destFileName, String directory) throws IOException {
-        return uploadZip(convertMultiPartToZip(source), destFileName, directory);
+        return uploadZip(AvniFiles.convertMultiPartToZip(source), destFileName, directory);
+    }
+
+    public String uploadImageFile(File tempSourceFile, String targetFileName, String directory) {
+        return putObject(getS3Key(targetFileName, directory), tempSourceFile);
     }
 
     private ObjectInfo uploadZip(File tempSourceFile, String destFileName, String directory) throws IOException {
@@ -169,30 +173,6 @@ public class S3Service {
             throw new IllegalStateException("Information missing. Media Directory for Implementation absent");
         }
         return mediaDirectory;
-    }
-
-    private File convertMultiPartToZip(MultipartFile file) throws IOException {
-        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".zip");
-        return getFile(file, tempFile);
-    }
-
-    private File getFile(MultipartFile file, File tempFile) throws IOException {
-        try {
-            FileOutputStream fos;
-            fos = new FileOutputStream(tempFile);
-            fos.write(file.getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOException(
-                    format("Unable to create temp file %s. Error: %s", file.getOriginalFilename(), e.getMessage()));
-        }
-        return tempFile;
-    }
-
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".csv");
-        return getFile(file, tempFile);
     }
 
     private String putObject(String objectKey, File tempFile) {

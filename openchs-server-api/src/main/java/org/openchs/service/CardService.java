@@ -67,6 +67,7 @@ public class CardService {
         card.setDescription(cardContract.getDescription());
         card.setQuery(cardContract.getQuery());
         card.setVoided(cardContract.isVoided());
+        card.setIconFileS3Key(cardContract.getIconFileS3Key());
         Long standardReportCardTypeId = cardContract.getStandardReportCardTypeId();
         if (standardReportCardTypeId != null) {
             StandardReportCardType type = standardReportCardTypeRepository.findById(standardReportCardTypeId).orElse(null);
