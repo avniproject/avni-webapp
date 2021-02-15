@@ -107,16 +107,18 @@ public class ViewGenService {
         List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram, subjectTypeId);
         FormMapping enrolmentFormMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(operationalProgram.getProgram().getId(), null, FormType.ProgramEnrolment, subjectTypeId);
 
+        HashMap<String, String> map = new HashMap<>();
         String enrolmentSql = replaceSubjectAndEnrolmentObsInTemplate(PROGRAM_ENROLMENT_TEMPLATE, false, operationalSubjectType.getUuid(), enrolmentFormElements, operationalProgram.getUuid());
         enrolmentSql = replaceJoinsAndOtherCommonInformation(enrolmentFormMapping, enrolmentSql);
+        map.put(operationalProgramName, enrolmentSql);
 
         FormMapping exitFormMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(operationalProgram.getProgram().getId(), null, FormType.ProgramExit, subjectTypeId);
-        String enrolmentExitSql = replaceSubjectAndEnrolmentObsInTemplate(PROGRAM_ENROLMENT_EXIT_TEMPLATE, false, operationalSubjectType.getUuid(), enrolmentFormElements, operationalProgram.getUuid())
-                .replace("${programEnrolmentExit}", buildExitObservationSelection(getProgramEnrolmentExitFormElements(operationalProgram, subjectTypeId)));
-        enrolmentExitSql = replaceJoinsAndOtherCommonInformation(exitFormMapping, enrolmentExitSql);
-        HashMap<String, String> map = new HashMap<>();
-        map.put(operationalProgramName, enrolmentSql);
-        map.put(ViewNameGenerator.getExitName(operationalProgramName), enrolmentExitSql);
+        if (exitFormMapping != null) {
+            String enrolmentExitSql = replaceSubjectAndEnrolmentObsInTemplate(PROGRAM_ENROLMENT_EXIT_TEMPLATE, false, operationalSubjectType.getUuid(), enrolmentFormElements, operationalProgram.getUuid())
+                    .replace("${programEnrolmentExit}", buildExitObservationSelection(getProgramEnrolmentExitFormElements(operationalProgram, subjectTypeId)));
+            enrolmentExitSql = replaceJoinsAndOtherCommonInformation(exitFormMapping, enrolmentExitSql);
+            map.put(ViewNameGenerator.getExitName(operationalProgramName), enrolmentExitSql);
+        }
         return map;
     }
 
@@ -151,10 +153,12 @@ public class ViewGenService {
                     String sqlForProgramEncounter = getSqlForProgramEncounter(programEncounterQuery, type, spreadMultiSelectObs, getProgramEncounterFormElements(operationalProgram, type, subjectTypeId), formMappingForProgramEncounter);
 
                     FormMapping formMappingForProgramEncounterCancel = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(operationalProgram.getProgram().getId(), type.getEncounterType().getId(), FormType.ProgramEncounterCancellation, subjectTypeId);
-                    String sqlForProgramEncounterCancel = getSqlForProgramEncounterCancel(programEncounterCancelQuery, type, spreadMultiSelectObs, getProgramEncounterCancelFormElements(operationalProgram, type, subjectTypeId), formMappingForProgramEncounterCancel);
-
                     programEncounterSqlMap.put(type.getName(), sqlForProgramEncounter);
-                    programEncounterSqlMap.put(ViewNameGenerator.getCancelName(type.getName()), sqlForProgramEncounterCancel);
+
+                    if (formMappingForProgramEncounterCancel != null) {
+                        String sqlForProgramEncounterCancel = getSqlForProgramEncounterCancel(programEncounterCancelQuery, type, spreadMultiSelectObs, getProgramEncounterCancelFormElements(operationalProgram, type, subjectTypeId), formMappingForProgramEncounterCancel);
+                        programEncounterSqlMap.put(ViewNameGenerator.getCancelName(type.getName()), sqlForProgramEncounterCancel);
+                    }
                 });
         return programEncounterSqlMap;
     }
@@ -174,8 +178,9 @@ public class ViewGenService {
                     FormMapping cancelFormMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(null, type.getEncounterType().getId(), FormType.IndividualEncounterCancellation, subjectTypeId);
                     if (formMapping != null) {
                         generalEncounterSqlMap.put(type.getName(), getSqlForGeneralEncounter(generalEncounterQuery, type, spreadMultiSelectObs, getGeneralEncounterFormElements(subjectTypeId, type), formMapping));
-                        generalEncounterSqlMap.put(type.getName().concat(" CANCEL"), getSqlForGeneralEncounterCancel(generalEncounterCancelQuery, type, spreadMultiSelectObs, getGeneralEncounterCancelFormElements(subjectTypeId, type), cancelFormMapping));
                     }
+                    if (formMapping != null && cancelFormMapping != null)
+                        generalEncounterSqlMap.put(type.getName().concat(" CANCEL"), getSqlForGeneralEncounterCancel(generalEncounterCancelQuery, type, spreadMultiSelectObs, getGeneralEncounterCancelFormElements(subjectTypeId, type), cancelFormMapping));
                 });
         return generalEncounterSqlMap;
     }

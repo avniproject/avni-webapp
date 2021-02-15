@@ -53,10 +53,11 @@ public class GetReportingViewSourceVisitor implements MetaDataVisitor {
             addToResponse(reportingViewProjection, formMapping);
         }
 
+        FormMapping formMapping = formMappingRepository.getProgramExitFormMapping(subjectType, program);
+        if (formMapping == null) return;
         viewName = viewNameGenerator.getProgramEnrolmentExitViewName(subjectType, program.getOperationalProgramName());
         reportingViewProjection = getReportingViewProjection(viewName);
         if (reportingViewProjection != null) {
-            FormMapping formMapping = formMappingRepository.getProgramExitFormMapping(subjectType, program);
             addToResponse(reportingViewProjection, formMapping);
         }
     }
@@ -70,10 +71,12 @@ public class GetReportingViewSourceVisitor implements MetaDataVisitor {
             addToResponse(reportingViewProjection, formMapping);
         }
 
+        FormMapping formMapping = formMappingRepository.getProgramEncounterCancelFormMapping(subjectType, program, encounterType);
+        if (formMapping == null) return;
+
         viewName = viewNameGenerator.getProgramEncounterCancelViewName(subjectType, program, encounterType.getOperationalEncounterTypeName());
         reportingViewProjection = getReportingViewProjection(viewName);
         if (reportingViewProjection != null) {
-            FormMapping formMapping = formMappingRepository.getProgramEncounterCancelFormMapping(subjectType, program, encounterType);
             addToResponse(reportingViewProjection, formMapping);
         }
     }
@@ -87,10 +90,11 @@ public class GetReportingViewSourceVisitor implements MetaDataVisitor {
             addToResponse(reportingViewProjection, formMapping);
         }
 
+        FormMapping formMapping = formMappingRepository.getGeneralEncounterCancelFormMapping(subjectType, encounterType);
+        if (formMapping == null) return;
         viewName = viewNameGenerator.getGeneralEncounterCancelViewName(subjectType, encounterType.getOperationalEncounterTypeName());
         reportingViewProjection = getReportingViewProjection(viewName);
         if (reportingViewProjection != null) {
-            FormMapping formMapping = formMappingRepository.getGeneralEncounterCancelFormMapping(subjectType, encounterType);
             addToResponse(reportingViewProjection, formMapping);
         }
     }
