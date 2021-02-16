@@ -109,6 +109,7 @@
   "APP_DESIGNER_CARD_NAME": "Name of the card that will be shown in the Field App",
   "APP_DESIGNER_CARD_DESCRIPTION": "Description of the card",
   "APP_DESIGNER_CARD_COLOR": "Colour of the card",
+  "APP_DESIGNER_CARD_ICON": "Icon of the card",
   "APP_DESIGNER_CARD_QUERY": "Actual query function to fetch subjects",
   "APP_DESIGNER_CARD_IS_STANDARD_TYPE": "Do you want to use a standard report card?",
   "APP_DESIGNER_DASHBOARD_NAME": "Name of the dashboard",
