@@ -10,6 +10,11 @@ import {
   selectLegacyRules,
   selectLegacyRulesAllRules
 } from "dataEntryApp/reducers/metadataReducer";
+import { individualService } from "./IndividualService";
+
+const services = {
+  individualService
+};
 
 export const getFormElementsStatuses = (entity, formElementGroup) => {
   if ([entity, formElementGroup, formElementGroup.form].some(_.isEmpty)) return [];
@@ -34,7 +39,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
           /* eslint-disable-next-line no-eval */
           const ruleFunc = eval(formElement.rule);
           return ruleFunc({
-            params: { formElement, entity },
+            params: { formElement, entity, services },
             imports: { rulesConfig, lodash, moment, common }
           });
         } catch (e) {
@@ -74,7 +79,7 @@ const runFormElementGroupRule = (formElementGroup, entity) => {
     /* eslint-disable-next-line no-eval */
     const ruleFunc = eval(formElementGroup.rule);
     return ruleFunc({
-      params: { formElementGroup, entity },
+      params: { formElementGroup, entity, services },
       imports: { rulesConfig, lodash, moment, common }
     });
   } catch (e) {
