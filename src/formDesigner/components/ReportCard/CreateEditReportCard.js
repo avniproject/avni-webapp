@@ -23,6 +23,7 @@ import _ from "lodash";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { AvniSwitch } from "../../../common/components/AvniSwitch";
+import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 
 const initialState = {
   name: "",
@@ -38,6 +39,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
   const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
   const [standardReportCardTypes, setStandardReportCardTypes] = React.useState([]);
+  const [file, setFile] = React.useState();
 
   React.useEffect(() => {
     if (edit) {
@@ -111,16 +113,29 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     return isValid;
   };
 
-  const onSave = () => {
+  const uploadFile = async () => {
+    return http
+      .uploadFile(http.withParams("/media/saveIcon"), file)
+      .then(r => [r.data, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]);
+  };
+
+  const onSave = async () => {
     if (validateRequest()) {
+      const [s3FileKey, error] = await uploadFile();
+      if (error) {
+        alert(error);
+        return;
+      }
       const url = edit ? `/web/card/${props.match.params.id}` : "/web/card";
       const methodName = edit ? "put" : "post";
-      http[methodName](url, {
+      return http[methodName](url, {
         name: card.name,
         description: card.description,
         color: card.color,
         query: card.query,
-        standardReportCardTypeId: card.standardReportCardType && card.standardReportCardType.id
+        standardReportCardTypeId: card.standardReportCardType && card.standardReportCardType.id,
+        iconFileS3Key: s3FileKey
       })
         .then(res => {
           if (res.status === 200) {
@@ -206,6 +221,17 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           style={colorPickerCSS}
           color={card.color}
           onChange={color => dispatch({ type: "color", payload: color.color })}
+        />
+        <p />
+        <AvniImageUpload
+          canSelect={true}
+          canUpload={!isNil(file)}
+          onSelect={setFile}
+          onUpload={uploadFile}
+          label={"Icon"}
+          toolTipKey={"APP_DESIGNER_CARD_ICON"}
+          width={75}
+          height={75}
         />
         <p />
         {getErrorByKey("EMPTY_COLOR")}
