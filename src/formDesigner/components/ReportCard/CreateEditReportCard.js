@@ -30,6 +30,7 @@ const initialState = {
   description: "",
   color: "#ff0000",
   query: "",
+  iconFileS3Key: "",
   standardReportCardType: {}
 };
 export const CreateEditReportCard = ({ edit, ...props }) => {
@@ -232,6 +233,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           toolTipKey={"APP_DESIGNER_CARD_ICON"}
           width={75}
           height={75}
+          oldImgUrl={card.iconFileS3Key}
         />
         <p />
         {getErrorByKey("EMPTY_COLOR")}

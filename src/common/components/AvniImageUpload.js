@@ -5,6 +5,7 @@ import { Grid, Button } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import http from "../utils/httpClient";
 
 const useStyles = makeStyles(theme => ({
   item: {
@@ -12,7 +13,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const AvniImageUpload = ({ toolTipKey, label, onSelect, onUpload, width, height }) => {
+export const AvniImageUpload = ({
+  toolTipKey,
+  label,
+  onSelect,
+  onUpload,
+  width,
+  height,
+  oldImgUrl
+}) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState("");
@@ -32,6 +41,17 @@ export const AvniImageUpload = ({ toolTipKey, label, onSelect, onUpload, width, 
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
+  React.useEffect(() => {
+    if (!isEmpty(oldImgUrl)) {
+      http
+        .get(http.withParams(`/media/signedUrl`, { url: oldImgUrl }))
+        .then(res => res.data)
+        .then(res => {
+          setIconPreview(res);
+        });
+    }
+  }, [oldImgUrl]);
+
   const onSelectWrapper = event => {
     const fileReader = new FileReader();
     event.target.files[0] && fileReader.readAsText(event.target.files[0]);
@@ -42,11 +62,6 @@ export const AvniImageUpload = ({ toolTipKey, label, onSelect, onUpload, width, 
       const error = onSelect(file);
       error && alert(error);
     };
-  };
-
-  const onUploadWrapper = () => {
-    onUpload();
-    setValue("");
   };
 
   return (

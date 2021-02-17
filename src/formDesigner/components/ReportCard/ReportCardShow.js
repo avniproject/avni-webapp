@@ -11,6 +11,7 @@ export const ReportCardShow = props => {
   const RenderCard = ({ card, ...props }) => {
     const [standardReportCardType, setStandardReportCardType] = React.useState();
     const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
+    const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
 
     React.useEffect(() => {
       if (card.standardReportCardTypeId != null) {
@@ -24,6 +25,17 @@ export const ReportCardShow = props => {
       }
     }, [card.standardReportCardTypeId]);
 
+    React.useEffect(() => {
+      if (card.iconFileS3Key != null) {
+        http
+          .get(http.withParams(`/media/signedUrl`, { url: card.iconFileS3Key }))
+          .then(res => res.data)
+          .then(res => {
+            setIconPreviewUrl(res);
+          });
+      }
+    }, [card.iconFileS3Key]);
+
     return (
       <div>
         <ShowLabelValue label={"Name"} value={card.name} />
@@ -34,6 +46,12 @@ export const ReportCardShow = props => {
           <FormLabel style={{ fontSize: "13px" }}>{"Colour"}</FormLabel>
           <br />
           <ColorValue colour={card.color} />
+        </div>
+        <p />
+        <div>
+          <FormLabel style={{ fontSize: "13px" }}>{"Icon"}</FormLabel>
+          <br />
+          <img src={iconPreviewUrl} />
         </div>
         <p />
         {isStandardReportCard && (
