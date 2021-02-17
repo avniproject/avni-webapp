@@ -1,7 +1,10 @@
 package org.openchs.web;
 
+import org.openchs.dao.DashboardRepository;
 import org.openchs.dao.GroupDashboardRepository;
-import org.openchs.domain.GroupDashboard;
+import org.openchs.dao.GroupRepository;
+import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.GroupDashboardService;
 import org.openchs.web.request.GroupDashboardContract;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,12 +23,16 @@ public class GroupDashboardController {
 
     private final GroupDashboardRepository groupDashboardRepository;
     private final GroupDashboardService groupDashboardService;
+    private final DashboardRepository dashboardRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
     public GroupDashboardController(GroupDashboardRepository groupDashboardRepository,
-                                    GroupDashboardService groupDashboardService) {
+                                    GroupDashboardService groupDashboardService, DashboardRepository dashboardRepository, GroupRepository groupRepository) {
         this.groupDashboardRepository = groupDashboardRepository;
         this.groupDashboardService = groupDashboardService;
+        this.dashboardRepository = dashboardRepository;
+        this.groupRepository = groupRepository;
     }
 
     @GetMapping(value = "/web/groupDashboard")
@@ -49,9 +57,25 @@ public class GroupDashboardController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
     @Transactional
-    public ResponseEntity<GroupDashboardContract> newGroupDashboard(@RequestBody GroupDashboardContract groupDashboardContract) {
-        GroupDashboard groupDashboard = groupDashboardService.save(groupDashboardContract);
-        return ResponseEntity.ok(GroupDashboardContract.fromEntity(groupDashboard));
+    public ResponseEntity addUsersToGroup(@RequestBody List<GroupDashboardContract> request) {
+        List<GroupDashboard> groupDashboards = new ArrayList<>();
+
+        for (GroupDashboardContract contract : request) {
+            Dashboard dashboard = dashboardRepository.findOne(contract.getDashboardId());
+            Group group = groupRepository.findOne(contract.getGroupId());
+            if (dashboard == null || group == null) {
+                return ResponseEntity.badRequest().body(String.format("Invalid dashboard id %d or group id %d", contract.getDashboardId(), contract.getGroupId()));
+            }
+
+            GroupDashboard groupDashboard = new GroupDashboard();
+            groupDashboard.setDashboard(dashboard);
+            groupDashboard.setGroup(group);
+            groupDashboard.assignUUID();
+            groupDashboard.setOrganisationId(UserContextHolder.getUserContext().getOrganisationId());
+            groupDashboards.add(groupDashboard);
+        }
+
+        return ResponseEntity.ok(groupDashboardRepository.saveAll(groupDashboards));
     }
 
     @PutMapping(value = "/web/groupDashboard/{id}")
@@ -74,5 +98,13 @@ public class GroupDashboardController {
     public void deleteGroupDashboard(@PathVariable Long id) {
         Optional<GroupDashboard> groupDashboard = groupDashboardRepository.findById(id);
         groupDashboard.ifPresent(groupDashboardService::delete);
+    }
+
+    @RequestMapping(value = "/groups/{id}/dashboards", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public List<GroupDashboardContract> getDashboardsByGroupId(@PathVariable("id") Long id) {
+        return groupDashboardRepository.findByGroup_IdAndIsVoidedFalse(id).stream()
+                .map(GroupDashboardContract::fromEntity)
+                .collect(Collectors.toList());
     }
 }

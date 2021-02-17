@@ -7,8 +7,10 @@ import org.openchs.domain.GroupDashboard;
 public class GroupDashboardContract extends CHSRequest {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private boolean isPrimaryDashboard = false;
-    private String dashboardUUID;
-    private String groupUUID;
+    private Long dashboardId;
+    private Long groupId;
+    private String dashboardName;
+    private String dashboardDescription;
 
     public boolean isPrimaryDashboard() {
         return isPrimaryDashboard;
@@ -22,20 +24,36 @@ public class GroupDashboardContract extends CHSRequest {
         isPrimaryDashboard = primaryDashboard;
     }
 
-    public String getDashboardUUID() {
-        return dashboardUUID;
+    public Long getDashboardId() {
+        return dashboardId;
     }
 
-    public void setDashboardUUID(String dashboardUUID) {
-        this.dashboardUUID = dashboardUUID;
+    public void setDashboardId(Long dashboardId) {
+        this.dashboardId = dashboardId;
     }
 
-    public String getGroupUUID() {
-        return groupUUID;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setGroupUUID(String groupUUID) {
-        this.groupUUID = groupUUID;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setDashboardName(String dashboardName) {
+        this.dashboardName = dashboardName;
+    }
+
+    public String getDashboardName() {
+        return dashboardName;
+    }
+
+    public void setDashboardDescription(String dashboardDescription) {
+        this.dashboardDescription = dashboardDescription;
+    }
+
+    public String getDashboardDescription() {
+        return dashboardDescription;
     }
 
     public static GroupDashboardContract fromEntity(GroupDashboard groupDashboard) {
@@ -44,8 +62,10 @@ public class GroupDashboardContract extends CHSRequest {
         groupDashboardContract.setUuid(groupDashboard.getUuid());
         groupDashboardContract.setVoided(groupDashboard.isVoided());
         groupDashboardContract.setPrimaryDashboard(groupDashboard.isPrimaryDashboard());
-        groupDashboardContract.setGroupUUID(groupDashboard.getGroup().getUuid());
-        groupDashboardContract.setDashboardUUID(groupDashboard.getDashboard().getUuid());
+        groupDashboardContract.setGroupId(groupDashboard.getGroup().getId());
+        groupDashboardContract.setDashboardId(groupDashboard.getDashboard().getId());
+        groupDashboardContract.setDashboardName(groupDashboard.getDashboard().getName());
+        groupDashboardContract.setDashboardDescription(groupDashboard.getDashboard().getDescription());
         return groupDashboardContract;
     }
 }

@@ -28,30 +28,16 @@ public class GroupDashboardService {
         if (groupDashboard == null) {
             groupDashboard = new GroupDashboard();
         }
-        assertGroupUuidIsValid(contract);
-        assertDashboardUuidIsValid(contract);
         contract.setUuid(UUID.randomUUID().toString());
         return buildAndSave(contract, groupDashboard);
     }
 
     private GroupDashboard buildAndSave(GroupDashboardContract contract, GroupDashboard groupDashboard) {
         groupDashboard.setUuid(contract.getUuid());
-        groupDashboard.setDashboard(dashboardRepository.findByUuid(contract.getDashboardUUID()));
-        groupDashboard.setGroup(groupRepository.findByUuid(contract.getGroupUUID()));
+        groupDashboard.setDashboard(dashboardRepository.findOne(contract.getDashboardId()));
+        groupDashboard.setGroup(groupRepository.findOne(contract.getGroupId()));
         groupDashboard.setPrimaryDashboard(contract.isPrimaryDashboard());
         return groupDashboardRepository.save(groupDashboard);
-    }
-
-    private void assertGroupUuidIsValid(GroupDashboardContract contract) {
-        if (groupRepository.findByUuid(contract.getGroupUUID()) == null) {
-            throw new IllegalArgumentException(String.format("Invalid group uuid %s", contract.getGroupUUID()));
-        }
-    }
-
-    private void assertDashboardUuidIsValid(GroupDashboardContract contract) {
-        if (dashboardRepository.findByUuid(contract.getDashboardUUID()) == null) {
-            throw new IllegalArgumentException(String.format("Invalid dashboard uuid %s", contract.getDashboardUUID()));
-        }
     }
 
     public GroupDashboard edit(GroupDashboardContract updates, Long id) {

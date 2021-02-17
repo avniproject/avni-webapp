@@ -5,6 +5,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupDashboard", path = "groupDashboard")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
@@ -18,4 +20,5 @@ public interface GroupDashboardRepository extends ReferenceDataRepository<GroupD
         throw new UnsupportedOperationException("No field 'name' in GroupDashboard");
     }
 
+    List<GroupDashboard> findByGroup_IdAndIsVoidedFalse(Long groupId);
 }
