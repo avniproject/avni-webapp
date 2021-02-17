@@ -1,6 +1,14 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import api from "./api";
-import { setGroups, setGroupUsers, setAllUsers, setGroupPrivilegeList, types } from "./reducers";
+import {
+  setGroups,
+  setGroupUsers,
+  setAllUsers,
+  setGroupPrivilegeList,
+  types,
+  setGroupDashboards,
+  setAllDashboards
+} from "./reducers";
 
 export function* getGroupsWatcher() {
   yield takeLatest(types.GET_GROUPS, getGroupsWorker);
@@ -12,6 +20,14 @@ export function* getGroupUsersWatcher() {
 
 export function* getAllUsersWatcher() {
   yield takeLatest(types.GET_ALL_USERS, getAllUsersWorker);
+}
+
+export function* getGroupDashboardsWatcher() {
+  yield takeLatest(types.GET_GROUP_DASHBOARDS, getGroupDashboardsWorker);
+}
+
+export function* getAllDashboardsWatcher() {
+  yield takeLatest(types.GET_ALL_DASHBOARDS, getAllDashboardsWorker);
 }
 
 export function* getGroupPrivilegeListWatcher() {
@@ -33,6 +49,16 @@ export function* getAllUsersWorker() {
   yield put(setAllUsers(valueFromApi));
 }
 
+export function* getGroupDashboardsWorker(params) {
+  const valueFromApi = yield call(api.fetchGroupDashboards, params.groupId);
+  yield put(setGroupDashboards(valueFromApi));
+}
+
+export function* getAllDashboardsWorker() {
+  const valueFromApi = yield call(api.fetchAllDashboards);
+  yield put(setAllDashboards(valueFromApi));
+}
+
 export function* getGroupPrivilegeListWorker(params) {
   const valueFromApi = yield call(api.fetchGroupPrivileges, params.param);
   yield put(setGroupPrivilegeList(valueFromApi));
@@ -46,8 +72,13 @@ export function* createGroupWorker() {}
 
 export default function* main() {
   yield all(
-    [getGroupsWatcher, getGroupUsersWatcher, getAllUsersWatcher, getGroupPrivilegeListWatcher].map(
-      fork
-    )
+    [
+      getGroupsWatcher,
+      getGroupUsersWatcher,
+      getAllUsersWatcher,
+      getGroupDashboardsWatcher,
+      getAllDashboardsWatcher,
+      getGroupPrivilegeListWatcher
+    ].map(fork)
   );
 }

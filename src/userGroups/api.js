@@ -2,6 +2,19 @@ import http from "common/utils/httpClient";
 import { get } from "lodash";
 
 export default {
+  fetchAllDashboards: () => http.fetchJson("/web/dashboard").then(response => response.json),
+  fetchGroupDashboards: group_id =>
+    http.fetchJson(`/groups/${group_id}/dashboards`).then(response => response.json),
+  addDashboardsToGroup: body =>
+    http
+      .postJson("/web/groupDashboard", body)
+      .then(r => [r.data, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  removeDashboardFromGroup: id =>
+    http
+      .deleteEntity(`/web/groupDashboard/${id}`)
+      .then(r => [r.data, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchAllGroups: () => http.fetchJson("/web/groups").then(response => response.json),
   createGroups: name =>
     http

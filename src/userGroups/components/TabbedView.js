@@ -9,6 +9,7 @@ import GroupUsers from "./GroupUsers";
 import GroupPrivileges from "./GroupPrivileges";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import GroupDashboards from "./GroupDashboards";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,6 +47,7 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...pro
         <Tabs value={value} onChange={handleChange}>
           <Tab label="Users" />
           <Tab label="Permissions" />
+          <Tab label="Dashboards" />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -58,6 +60,9 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...pro
           hasAllPrivileges={hasAllPrivileges}
           {...props}
         />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <GroupDashboards groupId={groupId} {...props} />
       </TabPanel>
     </div>
   );
