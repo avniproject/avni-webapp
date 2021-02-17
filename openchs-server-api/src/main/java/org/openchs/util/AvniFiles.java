@@ -90,11 +90,18 @@ public class AvniFiles {
     }
 
     public enum ImageType {
-        Unknown,
-        JPEG,
-        PNG,
-        GIF,
-        BMP,
+        Unknown(""),
+        JPEG(".jpg"),
+        PNG(".png"),
+        GIF(".gif"),
+        BMP(".bmp");
+
+        public final String EXT;
+
+        ImageType(String ext) {
+            this.EXT = ext;
+        }
+
     }
 
     /**

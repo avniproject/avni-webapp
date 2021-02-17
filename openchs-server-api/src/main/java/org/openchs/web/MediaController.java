@@ -69,7 +69,6 @@ public class MediaController {
     public ResponseEntity<?> saveIcon(@RequestParam MultipartFile file) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
-        String targetFileName = format("%s-%s", uuid, file.getOriginalFilename());
         File tempSourceFile;
         try {
             tempSourceFile = AvniFiles.convertMultiPartToFile(file, "");
@@ -81,8 +80,9 @@ public class MediaController {
             if(dimension.getHeight() > 75 || dimension.getWidth() > 75) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 75 X 75 or smaller.");
             }
-            String s3Filekey = s3Service.uploadImageFile(tempSourceFile, targetFileName, "icons");
-            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3Filekey);
+            String targetFilePath = format("icons/%s%s", uuid, imageType.EXT);
+            URL s3FileUrl = s3Service.uploadImageFile(tempSourceFile, targetFilePath);
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3FileUrl.toString());
         } catch (Exception e) {
             logger.error(format("Icon upload failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();

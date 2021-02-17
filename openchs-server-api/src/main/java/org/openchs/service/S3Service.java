@@ -141,8 +141,10 @@ public class S3Service {
         return uploadZip(AvniFiles.convertMultiPartToZip(source), destFileName, directory);
     }
 
-    public String uploadImageFile(File tempSourceFile, String targetFileName, String directory) {
-        return putObject(getS3Key(targetFileName, directory), tempSourceFile);
+    public URL uploadImageFile(File tempSourceFile, String targetFilePath) {
+        String s3KeyForMediaUpload = getS3KeyForMediaUpload(targetFilePath);
+        putObject(s3KeyForMediaUpload, tempSourceFile);
+        return s3Client.getUrl(bucketName, s3KeyForMediaUpload);
     }
 
     private ObjectInfo uploadZip(File tempSourceFile, String destFileName, String directory) throws IOException {
