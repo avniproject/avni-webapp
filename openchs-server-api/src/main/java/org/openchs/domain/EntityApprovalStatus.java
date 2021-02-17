@@ -1,12 +1,15 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @BatchSize(size = 100)
+@JsonIgnoreProperties({"approvalStatus"})
 public class EntityApprovalStatus extends OrganisationAwareEntity {
 
     @Column
@@ -26,6 +29,10 @@ public class EntityApprovalStatus extends OrganisationAwareEntity {
 
     @Column
     private Boolean autoApproved;
+
+    @Column
+    @NotNull
+    private DateTime statusDateTime;
 
     public enum EntityType {
         Subject,
@@ -74,4 +81,13 @@ public class EntityApprovalStatus extends OrganisationAwareEntity {
     public void setAutoApproved(Boolean autoApproved) {
         this.autoApproved = autoApproved;
     }
+
+    public DateTime getStatusDateTime() {
+        return statusDateTime;
+    }
+
+    public void setStatusDateTime(DateTime statusDateTime) {
+        this.statusDateTime = statusDateTime;
+    }
+
 }

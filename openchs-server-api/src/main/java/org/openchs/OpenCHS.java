@@ -49,6 +49,23 @@ public class OpenCHS {
                 EntityApprovalStatus entityApprovalStatus = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(entityApprovalStatusService.getEntityUuid(entityApprovalStatus), "entityUUID"));
+                resource.add(new Link(entityApprovalStatus.getApprovalStatus().getUuid(), "approvalStatusUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<Card>> CardProcessor() {
+        return new ResourceProcessor<Resource<Card>>() {
+            @Override
+            public Resource<Card> process(Resource<Card> resource) {
+                Card card = resource.getContent();
+                StandardReportCardType standardReportCardType = card.getStandardReportCardType();
+                resource.removeLinks();
+                if (standardReportCardType != null) {
+                    resource.add(new Link(standardReportCardType.getUuid(), "standardReportCardUUID"));
+                }
                 return resource;
             }
         };
