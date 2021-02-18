@@ -7,6 +7,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getGroupDashboards, getAllDashboards } from "../reducers";
 import Grid from "@material-ui/core/Grid";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const GroupDashboards = ({
   getGroupDashboards,
@@ -84,9 +85,32 @@ const GroupDashboards = ({
     });
   };
 
+  const setPrimaryDashboard = ({ id, groupId, dashboardId }, primaryDashboard) => {
+    api.updateGroupDashboard(id, groupId, dashboardId, primaryDashboard).then(response => {
+      const [res, error] = response;
+      if (error) {
+        alert(error);
+      } else {
+        getGroupDashboards(groupId);
+      }
+    });
+  };
+
   const columns = [
     { title: "Name", field: "dashboardName", searchable: true },
-    { title: "Description", field: "dashboardDescription", searchable: true }
+    { title: "Description", field: "dashboardDescription", searchable: true },
+    {
+      title: "Is Primary",
+      field: "primaryDashboard",
+      searchable: false,
+      defaultSort: "desc",
+      render: rowData => (
+        <Checkbox
+          checked={!!rowData.primaryDashboard}
+          onChange={e => setPrimaryDashboard(rowData, e.target.checked)}
+        />
+      )
+    }
   ];
   return (
     <div style={{ width: "100%" }}>

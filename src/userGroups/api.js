@@ -15,6 +15,11 @@ export default {
       .deleteEntity(`/web/groupDashboard/${id}`)
       .then(r => [r.data, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  updateGroupDashboard: (id, groupId, dashboardId, primaryDashboard) =>
+    http
+      .putJson(`/web/groupDashboard/${id}`, { id, groupId, dashboardId, primaryDashboard })
+      .then(r => [r.data, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchAllGroups: () => http.fetchJson("/web/groups").then(response => response.json),
   createGroups: name =>
     http
