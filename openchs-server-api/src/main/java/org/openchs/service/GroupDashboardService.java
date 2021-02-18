@@ -8,6 +8,7 @@ import org.openchs.web.request.GroupDashboardContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,15 +30,23 @@ public class GroupDashboardService {
             groupDashboard = new GroupDashboard();
         }
         contract.setUuid(UUID.randomUUID().toString());
+        groupDashboard.setUuid(contract.getUuid());
         return buildAndSave(contract, groupDashboard);
     }
 
     private GroupDashboard buildAndSave(GroupDashboardContract contract, GroupDashboard groupDashboard) {
-        groupDashboard.setUuid(contract.getUuid());
         groupDashboard.setDashboard(dashboardRepository.findOne(contract.getDashboardId()));
         groupDashboard.setGroup(groupRepository.findOne(contract.getGroupId()));
         groupDashboard.setPrimaryDashboard(contract.isPrimaryDashboard());
-        return groupDashboardRepository.save(groupDashboard);
+        groupDashboard = groupDashboardRepository.save(groupDashboard);
+        if (contract.isPrimaryDashboard()) {
+            List<GroupDashboard> nonPrimaryDashboards = groupDashboardRepository.findByGroup_IdAndIdNotAndIsVoidedFalse(contract.getGroupId(), groupDashboard.getId());
+            for (GroupDashboard nonPrimaryDashboard : nonPrimaryDashboards) {
+                nonPrimaryDashboard.setPrimaryDashboard(false);
+            }
+            groupDashboardRepository.saveAll(nonPrimaryDashboards);
+        }
+        return groupDashboard;
     }
 
     public GroupDashboard edit(GroupDashboardContract updates, Long id) {

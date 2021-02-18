@@ -21,4 +21,6 @@ public interface GroupDashboardRepository extends ReferenceDataRepository<GroupD
     }
 
     List<GroupDashboard> findByGroup_IdAndIsVoidedFalse(Long groupId);
+
+    List<GroupDashboard> findByGroup_IdAndIdNotAndIsVoidedFalse(Long groupId, Long Id);
 }
