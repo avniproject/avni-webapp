@@ -59,6 +59,8 @@ const GroupPrivileges = ({
         case 16: // Add member
         case 17: // Edit member
         case 18: // Remove member
+        case 19: // Approve Subject
+        case 20: // Reject Subject
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -72,6 +74,8 @@ const GroupPrivileges = ({
         case 5: // Enrol subject
         case 7: // Edit enrolment details
         case 8: // Exit enrolment
+        case 21: // Approve Enrolment
+        case 22: // Reject Enrolment
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -89,6 +93,8 @@ const GroupPrivileges = ({
         case 11: // Perform visit
         case 12: // Edit visit
         case 13: // Cancel visit
+        case 23: // Approve Encounter
+        case 24: // Reject Encounter
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -105,6 +111,8 @@ const GroupPrivileges = ({
           });
           break;
         case 15: // Edit checklist
+        case 25: // Approve ChecklistItem
+        case 26: // Reject ChecklistItem
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
