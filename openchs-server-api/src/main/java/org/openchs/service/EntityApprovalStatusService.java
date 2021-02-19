@@ -42,6 +42,7 @@ public class EntityApprovalStatusService {
         entityApprovalStatus.setVoided(request.isVoided());
         entityApprovalStatus.setEntityType(entityType);
         entityApprovalStatus.setAutoApproved(request.getAutoApproved());
+        entityApprovalStatus.setStatusDateTime(request.getStatusDateTime());
         entityApprovalStatus.updateAudit();
         if (typeMap.get(entityType) == null) {
             throw new IllegalArgumentException(String.format("Incorrect entityType '%s' provided for updating EntityApprovalStatus", entityType));

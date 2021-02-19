@@ -1,5 +1,6 @@
 package org.openchs.web.request;
 
+import org.joda.time.DateTime;
 import org.openchs.domain.ApprovalStatus;
 import org.openchs.domain.EntityApprovalStatus;
 
@@ -23,6 +24,16 @@ public class EntityApprovalStatusRequest {
     private String uuid;
 
     private boolean isVoided;
+
+    private DateTime statusDateTime;
+
+    public DateTime getStatusDateTime() {
+        return statusDateTime;
+    }
+
+    public void setStatusDateTime(DateTime statusDateTime) {
+        this.statusDateTime = statusDateTime;
+    }
 
     public String getEntityType() {
         return entityType;
