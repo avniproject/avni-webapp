@@ -71,7 +71,7 @@ public class EncounterController extends AbstractController<Encounter> implement
 
     @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+    public ResponsePage getEncounters(@RequestParam(value = "lastModifiedDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                       @RequestParam(value = "encounterType", required = false) String encounterType,
                                       @RequestParam(value = "concepts", required = false) String concepts,

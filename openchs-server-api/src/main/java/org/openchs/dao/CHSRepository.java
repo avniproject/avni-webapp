@@ -40,8 +40,10 @@ public interface CHSRepository<T extends CHSEntity> {
                 predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), concept.getUuid(), cb), value));
             });
 
-            predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
-            query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
+            if (lastModifiedDateTime != null) {
+                predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
+                query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
+            }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
