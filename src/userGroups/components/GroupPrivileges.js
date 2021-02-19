@@ -59,8 +59,6 @@ const GroupPrivileges = ({
         case 16: // Add member
         case 17: // Edit member
         case 18: // Remove member
-        case 19: // Approve Subject
-        case 20: // Reject Subject
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -71,11 +69,23 @@ const GroupPrivileges = ({
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
+        case 19: // Approve Subject
+        case 20: // Reject Subject
+          dependencies.set(privilegeListItem.uuid, {
+            dependencies: groupPrivilegeList
+              .filter(
+                privilege =>
+                  (privilege.privilegeId === 1 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId) ||
+                  (privilege.privilegeId === 3 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
+              )
+              .map(filteredPrivileges => filteredPrivileges.uuid)
+          });
+          break;
         case 5: // Enrol subject
         case 7: // Edit enrolment details
         case 8: // Exit enrolment
-        case 21: // Approve Enrolment
-        case 22: // Reject Enrolment
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -89,10 +99,43 @@ const GroupPrivileges = ({
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
+        case 21: // Approve Enrolment
+        case 22: // Reject Enrolment
+          dependencies.set(privilegeListItem.uuid, {
+            dependencies: groupPrivilegeList
+              .filter(
+                privilege =>
+                  (privilege.privilegeId === 6 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
+                    privilege.programId === privilegeListItem.programId) ||
+                  (privilege.privilegeId === 7 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
+                    privilege.programId === privilegeListItem.programId) ||
+                  (privilege.privilegeId === 1 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
+              )
+              .map(filteredPrivileges => filteredPrivileges.uuid)
+          });
+          break;
         case 10: // Schedule visit
         case 11: // Perform visit
         case 12: // Edit visit
         case 13: // Cancel visit
+          dependencies.set(privilegeListItem.uuid, {
+            dependencies: groupPrivilegeList
+              .filter(
+                privilege =>
+                  (privilege.privilegeId === 9 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
+                    privilege.encounterTypeId === privilegeListItem.encounterTypeId &&
+                    privilege.programEncounterTypeId === privilegeListItem.programEncounterTypeId &&
+                    privilege.programId === privilegeListItem.programId) ||
+                  (privilege.privilegeId === 1 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
+              )
+              .map(filteredPrivileges => filteredPrivileges.uuid)
+          });
+          break;
         case 23: // Approve Encounter
         case 24: // Reject Encounter
           dependencies.set(privilegeListItem.uuid, {
@@ -111,6 +154,19 @@ const GroupPrivileges = ({
           });
           break;
         case 15: // Edit checklist
+          dependencies.set(privilegeListItem.uuid, {
+            dependencies: groupPrivilegeList
+              .filter(
+                privilege =>
+                  (privilege.privilegeId === 14 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
+                    privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
+                  (privilege.privilegeId === 1 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
+              )
+              .map(filteredPrivileges => filteredPrivileges.uuid)
+          });
+          break;
         case 25: // Approve ChecklistItem
         case 26: // Reject ChecklistItem
           dependencies.set(privilegeListItem.uuid, {
@@ -118,6 +174,9 @@ const GroupPrivileges = ({
               .filter(
                 privilege =>
                   (privilege.privilegeId === 14 &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
+                    privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
+                  (privilege.privilegeId === 15 &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
                     privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
                   (privilege.privilegeId === 1 &&

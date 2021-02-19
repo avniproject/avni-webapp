@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { getGroupDashboards, getAllDashboards } from "../reducers";
 import Grid from "@material-ui/core/Grid";
 import Checkbox from "@material-ui/core/Checkbox";
+import { RadioButtonUnchecked, RadioButtonChecked } from "@material-ui/icons";
 
 const GroupDashboards = ({
   getGroupDashboards,
@@ -103,9 +104,10 @@ const GroupDashboards = ({
       title: "Is Primary",
       field: "primaryDashboard",
       searchable: false,
-      defaultSort: "desc",
       render: rowData => (
         <Checkbox
+          icon={<RadioButtonUnchecked />}
+          checkedIcon={<RadioButtonChecked />}
           checked={!!rowData.primaryDashboard}
           onChange={e => setPrimaryDashboard(rowData, e.target.checked)}
         />

@@ -115,6 +115,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   };
 
   const uploadFile = async () => {
+    if (card.iconFileS3Key != null && file == null) {
+      return [card.iconFileS3Key];
+    }
     return http
       .uploadFile(http.withParams("/media/saveIcon"), file)
       .then(r => [r.data, null])
@@ -228,7 +231,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           canSelect={true}
           canUpload={!isNil(file)}
           onSelect={setFile}
-          onUpload={uploadFile}
           label={"Icon"}
           toolTipKey={"APP_DESIGNER_CARD_ICON"}
           width={75}

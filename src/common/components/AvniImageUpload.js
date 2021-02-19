@@ -2,10 +2,12 @@ import React from "react";
 import { isEmpty } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Button } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../utils/httpClient";
+import AddAPhoto from "@material-ui/icons/AddAPhoto";
 
 const useStyles = makeStyles(theme => ({
   item: {
@@ -13,15 +15,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const AvniImageUpload = ({
-  toolTipKey,
-  label,
-  onSelect,
-  onUpload,
-  width,
-  height,
-  oldImgUrl
-}) => {
+export const AvniImageUpload = ({ toolTipKey, label, onSelect, width, height, oldImgUrl }) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState("");
@@ -87,9 +81,9 @@ export const AvniImageUpload = ({
               onChange={onSelectWrapper}
               style={{ display: "none" }}
             />
-            <Button variant="contained" component="label" htmlFor="contained-button-file">
-              Select
-            </Button>
+            <IconButton variant="contained" component="label" htmlFor="contained-button-file">
+              <AddAPhoto color="primary" />
+            </IconButton>
           </Grid>
         </Grid>
       </FormControl>
