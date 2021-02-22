@@ -262,7 +262,7 @@ public class RuleService {
         HttpHeaders httpHeaders = new HttpHeaders();
         UserContext userContext = UserContextHolder.getUserContext();
         String userName = userContext.getUserName();
-        String organisationUUID = userContext.getOrganisationUUID();
+        String organisationUUID = userContext.getOrganisation().getUuid();
         String authToken = userContext.getAuthToken();
 
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
