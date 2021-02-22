@@ -25,6 +25,9 @@ public class RequestUtils {
             String conceptDataType = concept.getDataType();
             Object obsValue;
             Object entryValue = entry.getValue();
+
+            if (entryValue == null) continue; //Ignore null values as in Avni there is no difference between null value and non-existence of an observation
+
             switch (ConceptDataType.valueOf(conceptDataType)) {
                 case Coded: {
                     if (entryValue instanceof Collection<?>) {
