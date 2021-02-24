@@ -37,6 +37,19 @@ public class OpenCHS {
         app.run(args);
     }
 
+    @Bean
+    public ResourceProcessor<Resource<GroupDashboard>> GroupDashboardProcessor() {
+        return new ResourceProcessor<Resource<GroupDashboard>>() {
+            @Override
+            public Resource<GroupDashboard> process(Resource<GroupDashboard> resource) {
+                GroupDashboard groupDashboard = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(groupDashboard.getGroup().getUuid(), "groupUUID"));
+                resource.add(new Link(groupDashboard.getDashboard().getUuid(), "dashboardUUID"));
+                return resource;
+            }
+        };
+    }
 
     @Bean
     public ResourceProcessor<Resource<EntityApprovalStatus>> EntityApprovalStatusProcessor() {
