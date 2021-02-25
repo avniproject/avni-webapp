@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import org.openchs.domain.Card;
+import org.openchs.domain.DashboardSectionCardMapping;
 
 public class CardContract extends CHSRequest {
     private String name;
@@ -22,6 +23,12 @@ public class CardContract extends CHSRequest {
         cardContract.setColor(card.getColour());
         cardContract.setStandardReportCardTypeId(card.getStandardReportCardTypeId());
         cardContract.setIconFileS3Key(card.getIconFileS3Key());
+        return cardContract;
+    }
+
+    public static CardContract fromMapping(DashboardSectionCardMapping mapping) {
+        CardContract cardContract = CardContract.fromEntity(mapping.getCard());
+        cardContract.setDisplayOrder(mapping.getDisplayOrder());
         return cardContract;
     }
 

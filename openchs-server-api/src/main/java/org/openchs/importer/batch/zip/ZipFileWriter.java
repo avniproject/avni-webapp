@@ -297,11 +297,11 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                 }
                 break;
             case "dashboardCardMappings.json":
-                DashboardCardMappingContract[] dashboardCardMappingContracts = convertString(fileData, DashboardCardMappingContract[].class);
-                for (DashboardCardMappingContract dashboardCardMappingContract : dashboardCardMappingContracts) {
-                    dashboardService.uploadDashboardCardMapping(dashboardCardMappingContract);
-                }
-                break;
+//                DashboardSectionCardMappingContract[] contracts = convertString(fileData, DashboardSectionCardMappingContract[].class);
+//                for (DashboardSectionCardMappingContract contract : contracts) {
+//                    dashboardService.uploadDashboardCardMapping(contract);
+//                }
+//                break;
         }
     }
 

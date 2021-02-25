@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.CardContract;
+import org.openchs.web.request.DashboardContract;
+import org.openchs.web.request.DashboardSectionContract;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "dashboard")
 @BatchSize(size = 100)
-@JsonIgnoreProperties({"dashboardCardMappings"})
+@JsonIgnoreProperties({"dashboardSections"})
 public class Dashboard extends OrganisationAwareEntity {
 
     @NotNull
@@ -24,7 +26,7 @@ public class Dashboard extends OrganisationAwareEntity {
     private String description;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "dashboard")
-    private Set<DashboardCardMapping> dashboardCardMappings = new HashSet<>();
+    private Set<DashboardSection> dashboardSections = new HashSet<>();
 
     public String getName() {
         return name;
@@ -34,12 +36,8 @@ public class Dashboard extends OrganisationAwareEntity {
         this.name = name;
     }
 
-    public Set<DashboardCardMapping> getDashboardCardMappings() {
-        return dashboardCardMappings;
-    }
-
-    public void setDashboardCardMappings(Set<DashboardCardMapping> dashboardCardMappings) {
-        this.dashboardCardMappings.addAll(dashboardCardMappings);
+    public Set<DashboardSection> getDashboardSections() {
+        return dashboardSections;
     }
 
     public String getDescription() {
@@ -50,17 +48,7 @@ public class Dashboard extends OrganisationAwareEntity {
         this.description = description;
     }
 
-    public List<CardContract> getCards() {
-        Set<DashboardCardMapping> dashboardCardMappings = getDashboardCardMappings();
-        return dashboardCardMappings.stream()
-                .filter(c -> !c.isVoided())
-                .map(this::buildCardContract)
-                .collect(Collectors.toList());
-    }
-
-    private CardContract buildCardContract(DashboardCardMapping dashboardCardMapping) {
-        CardContract cardContract = CardContract.fromEntity(dashboardCardMapping.getCard());
-        cardContract.setDisplayOrder(dashboardCardMapping.getDisplayOrder());
-        return cardContract;
+    public void setDashboardSections(Set<DashboardSection> dashboardSections) {
+        this.dashboardSections = dashboardSections;
     }
 }
