@@ -1,21 +1,28 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.DashboardRepository;
 import org.openchs.domain.Dashboard;
 import org.openchs.service.DashboardService;
 import org.openchs.web.request.DashboardContract;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-public class DashboardController {
+public class DashboardController implements RestControllerResourceProcessor<Dashboard> {
 
     private final DashboardRepository dashboardRepository;
     private final DashboardService dashboardService;
@@ -74,5 +81,15 @@ public class DashboardController {
     public void deleteDashboard(@PathVariable Long id) {
         Optional<Dashboard> dashboard = dashboardRepository.findById(id);
         dashboard.ifPresent(dashboardService::deleteDashboard);
+    }
+
+    //This is here because dashboardCardMapping used to get synced earlier which is no longer required now
+    @Deprecated
+    @RequestMapping(value = "/dashboardCardMapping/search/lastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public PagedResources<?> getByIndividualsOfCatchmentAndLastModified(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(new PageImpl<>(Collections.emptyList()));
     }
 }
