@@ -77,10 +77,11 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "locationHierarchy",
             "card",
             "dashboard",
-            "dashboardCardMapping",
             "groupDashboard",
             "standardReportCardType",
-            "approvalStatus"
+            "approvalStatus",
+            "dashboardSectionCardMapping",
+            "dashboardSection"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired
