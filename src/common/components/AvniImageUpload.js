@@ -1,7 +1,7 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Button } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -87,7 +87,9 @@ export const AvniImageUpload = ({ toolTipKey, label, onSelect, width, height, ol
           </Grid>
         </Grid>
       </FormControl>
-      <Grid item>{iconPreview && <img src={iconPreview} width={width} height={height} />}</Grid>
+      <Grid item>
+        {iconPreview && <img src={iconPreview} alt={"Preview"} width={width} height={height} />}
+      </Grid>
     </ToolTipContainer>
   );
 };

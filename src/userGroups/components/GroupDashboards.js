@@ -77,7 +77,7 @@ const GroupDashboards = ({
 
   const removeDashboardFromGroupHandler = (event, rowData) => {
     api.removeDashboardFromGroup(rowData.id).then(response => {
-      const [response_data, error] = response;
+      const [, error] = response;
       if (error) {
         alert(error);
       } else {
@@ -88,7 +88,7 @@ const GroupDashboards = ({
 
   const setPrimaryDashboard = ({ id, groupId, dashboardId }, primaryDashboard) => {
     api.updateGroupDashboard(id, groupId, dashboardId, primaryDashboard).then(response => {
-      const [res, error] = response;
+      const [, error] = response;
       if (error) {
         alert(error);
       } else {
