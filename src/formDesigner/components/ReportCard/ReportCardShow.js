@@ -51,7 +51,7 @@ export const ReportCardShow = props => {
         <div>
           <FormLabel style={{ fontSize: "13px" }}>{"Icon"}</FormLabel>
           <br />
-          <img src={iconPreviewUrl} />
+          <img src={iconPreviewUrl} alt="Icon Preview" />
         </div>
         <p />
         {isStandardReportCard && (
