@@ -7,6 +7,7 @@ import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -151,6 +152,12 @@ public class OrganisationController implements RestControllerResourceProcessor<O
             return builder.and(accountPredicate, predicate);
         }, pageable);
         return organisations.map(OrganisationContract::fromEntity);
+    }
+
+    @RequestMapping(value = "organisation/search/findAllById", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public Page<Organisation> findAllById(@Param("ids") Long[] ids, Pageable pageable) {
+        return organisationRepository.findAllByIdInAndIsVoidedFalse(ids, pageable);
     }
 
     private void setAttributesOnOrganisation(@RequestBody OrganisationContract request, Organisation organisation) {
