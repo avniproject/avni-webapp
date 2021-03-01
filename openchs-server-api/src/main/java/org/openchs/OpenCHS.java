@@ -38,6 +38,20 @@ public class OpenCHS {
     }
 
     @Bean
+    public ResourceProcessor<Resource<DashboardSectionCardMapping>> DashboardSectionCardMappingProcessor() {
+        return new ResourceProcessor<Resource<DashboardSectionCardMapping>>() {
+            @Override
+            public Resource<DashboardSectionCardMapping> process(Resource<DashboardSectionCardMapping> resource) {
+                DashboardSectionCardMapping dashboardSectionCardMapping = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(dashboardSectionCardMapping.getCard().getUuid(), "cardUUID"));
+                resource.add(new Link(dashboardSectionCardMapping.getDashboardSection().getUuid(), "dashboardSectionUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
     public ResourceProcessor<Resource<GroupDashboard>> GroupDashboardProcessor() {
         return new ResourceProcessor<Resource<GroupDashboard>>() {
             @Override

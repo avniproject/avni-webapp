@@ -4,12 +4,13 @@ import org.openchs.domain.Dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DashboardContract extends CHSRequest {
 
     private String name;
     private String description;
-    private List<CardContract> cards = new ArrayList<>();
+    private List<DashboardSectionContract> sections = new ArrayList<>();
 
     public static DashboardContract fromEntity(Dashboard dashboard) {
         DashboardContract dashboardContract = new DashboardContract();
@@ -18,8 +19,17 @@ public class DashboardContract extends CHSRequest {
         dashboardContract.setVoided(dashboard.isVoided());
         dashboardContract.setName(dashboard.getName());
         dashboardContract.setDescription(dashboard.getDescription());
-        dashboardContract.setCards(dashboard.getCards());
+        setSections(dashboardContract, dashboard);
         return dashboardContract;
+    }
+
+    private static void setSections(DashboardContract dashboardContract, Dashboard dashboard) {
+        List<DashboardSectionContract> list = dashboard.getDashboardSections()
+                .stream()
+                .filter(it -> !it.isVoided())
+                .map(DashboardSectionContract::fromEntity)
+                .collect(Collectors.toList());
+        dashboardContract.setSections(list);
     }
 
     public String getName() {
@@ -38,11 +48,11 @@ public class DashboardContract extends CHSRequest {
         this.description = description;
     }
 
-    public List<CardContract> getCards() {
-        return cards;
+    public List<DashboardSectionContract> getSections() {
+        return sections;
     }
 
-    public void setCards(List<CardContract> cards) {
-        this.cards = cards;
+    public void setSections(List<DashboardSectionContract> sections) {
+        this.sections = sections;
     }
 }

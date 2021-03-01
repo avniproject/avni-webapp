@@ -68,7 +68,6 @@ public class ImplementationController implements RestControllerResourceProcessor
             organisationService.addVideoJson(zos);
             organisationService.addReportCards(zos);
             organisationService.addReportDashboard(zos);
-            organisationService.addDashboardCardMappings(zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();

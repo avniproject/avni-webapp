@@ -1,20 +1,21 @@
 package org.openchs.service;
 
 import org.openchs.dao.CardRepository;
-import org.openchs.dao.DashboardCardMappingRepository;
 import org.openchs.dao.DashboardRepository;
-import org.openchs.domain.CHSBaseEntity;
-import org.openchs.domain.Dashboard;
-import org.openchs.domain.DashboardCardMapping;
+import org.openchs.dao.DashboardSectionCardMappingRepository;
+import org.openchs.dao.DashboardSectionRepository;
+import org.openchs.domain.*;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.CardContract;
-import org.openchs.web.request.DashboardCardMappingContract;
 import org.openchs.web.request.DashboardContract;
+import org.openchs.web.request.DashboardSectionCardMappingContract;
+import org.openchs.web.request.DashboardSectionContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,15 +24,17 @@ public class DashboardService {
 
     private final DashboardRepository dashboardRepository;
     private final CardRepository cardRepository;
-    private final DashboardCardMappingRepository dashboardCardMappingRepository;
+    private final DashboardSectionRepository dashboardSectionRepository;
+    private final DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository;
 
     @Autowired
     public DashboardService(DashboardRepository dashboardRepository,
                             CardRepository cardRepository,
-                            DashboardCardMappingRepository dashboardCardMappingRepository) {
+                            DashboardSectionRepository dashboardSectionRepository, DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository) {
         this.dashboardRepository = dashboardRepository;
         this.cardRepository = cardRepository;
-        this.dashboardCardMappingRepository = dashboardCardMappingRepository;
+        this.dashboardSectionRepository = dashboardSectionRepository;
+        this.dashboardSectionCardMappingRepository = dashboardSectionCardMappingRepository;
     }
 
     public Dashboard saveDashboard(DashboardContract dashboardContract) {
@@ -50,24 +53,38 @@ public class DashboardService {
         dashboard.setName(dashboardContract.getName());
         dashboard.setDescription(dashboardContract.getDescription());
         dashboard.setVoided(dashboardContract.isVoided());
-        dashboardRepository.save(dashboard);
+        Dashboard savedDashboard = dashboardRepository.save(dashboard);;
+        uploadDashboardSections(dashboardContract, savedDashboard);
     }
 
-    public void uploadDashboardCardMapping(DashboardCardMappingContract dashboardCardMappingContract) {
-        DashboardCardMapping dashboardCardMapping = dashboardCardMappingRepository.findByUuid(dashboardCardMappingContract.getUuid());
-        if (dashboardCardMapping == null) {
-            dashboardCardMapping = new DashboardCardMapping();
-            dashboardCardMapping.setUuid(dashboardCardMappingContract.getUuid());
+    private void uploadDashboardSections(DashboardContract dashboardContract, Dashboard dashboard) {
+        for (DashboardSectionContract sectionContract : dashboardContract.getSections()) {
+            DashboardSection section = dashboardSectionRepository.findByUuid(sectionContract.getUuid());
+            if (section == null) {
+                section = new DashboardSection();
+                section.setUuid(sectionContract.getUuid());
+            }
+            section.setDashboard(dashboard);
+            section.setName(sectionContract.getName());
+            section.setDescription(sectionContract.getDescription());
+            section.setViewType(DashboardSection.ViewType.valueOf(sectionContract.getViewType()));
+            section.setDisplayOrder(sectionContract.getDisplayOrder());
+            section.setVoided(sectionContract.isVoided());
+            DashboardSection savedSection = dashboardSectionRepository.save(section);
+
+            for (DashboardSectionCardMappingContract cardMappingContract : sectionContract.getDashboardSectionCardMappings()) {
+                DashboardSectionCardMapping mapping = dashboardSectionCardMappingRepository.findByUuid(cardMappingContract.getUuid());
+                if (mapping == null) {
+                    mapping = new DashboardSectionCardMapping();
+                    mapping.setUuid(cardMappingContract.getUuid());
+                }
+                mapping.setDashboardSection(savedSection);
+                mapping.setCard(cardRepository.findByUuid(cardMappingContract.getReportCardUUID()));
+                mapping.setDisplayOrder(cardMappingContract.getDisplayOrder());
+                mapping.setVoided(cardMappingContract.isVoided());
+                dashboardSectionCardMappingRepository.save(mapping);
+            }
         }
-        dashboardCardMapping.setDashboard(dashboardRepository.findByUuid(dashboardCardMappingContract.getDashboardUUID()));
-        dashboardCardMapping.setCard(cardRepository.findByUuid(dashboardCardMappingContract.getReportCardUUID()));
-        dashboardCardMapping.setDisplayOrder(dashboardCardMappingContract.getDisplayOrder());
-        dashboardCardMappingRepository.save(dashboardCardMapping);
-    }
-
-    public List<DashboardCardMappingContract> getAllDashboardCardMappings() {
-        List<DashboardCardMapping> dashboardCardMappings = dashboardCardMappingRepository.findAll();
-        return dashboardCardMappings.stream().map(DashboardCardMappingContract::fromEntity).collect(Collectors.toList());
     }
 
     public Dashboard editDashboard(DashboardContract newDashboard, Long dashboardId) {
@@ -90,39 +107,58 @@ public class DashboardService {
         dashboard.setName(dashboardContract.getName());
         dashboard.setDescription(dashboardContract.getDescription());
         dashboard.setVoided(dashboardContract.isVoided());
-        Dashboard savedDashboard = dashboardRepository.save(dashboard);
-        setDashboardCardMappings(dashboardContract, dashboard);
-        return savedDashboard;
+        setDashboardSections(dashboardContract, dashboard);
+        return dashboardRepository.save(dashboard);
     }
 
-    private void setDashboardCardMappings(DashboardContract dashboardContract, Dashboard dashboard) {
-        Set<DashboardCardMapping> updatedMappings = new HashSet<>();
-        List<CardContract> cardContracts = dashboardContract.getCards();
-        for (CardContract cardContract : cardContracts) {
-            DashboardCardMapping dashboardCardMapping = dashboardCardMappingRepository.findByCardIdAndDashboardAndIsVoidedFalse(cardContract.getId(), dashboard);
-            if (dashboardCardMapping == null) {
-                dashboardCardMapping = new DashboardCardMapping();
-                dashboardCardMapping.assignUUID();
-                dashboardCardMapping.setDashboard(dashboard);
-                dashboardCardMapping.setCard(cardRepository.findOne(cardContract.getId()));
+    private void setDashboardSections(DashboardContract dashboardContract, Dashboard dashboard) {
+        Set<DashboardSection> dashboardSections = new HashSet<>();
+        List<DashboardSectionContract> sectionContracts = dashboardContract.getSections();
+        for (DashboardSectionContract sectionContract : sectionContracts) {
+            Long sectionId = sectionContract.getId();
+            DashboardSection section;
+            if (sectionId != null) {
+                section = dashboardSectionRepository.findOne(sectionContract.getId());
+            } else {
+                section = new DashboardSection();
+                section.assignUUID();
             }
-            dashboardCardMapping.setDisplayOrder(cardContract.getDisplayOrder());
-            updatedMappings.add(dashboardCardMapping);
+            section.setDashboard(dashboard);
+            section.setName(sectionContract.getName());
+            section.setDescription(sectionContract.getDescription());
+            section.setViewType(DashboardSection.ViewType.valueOf(sectionContract.getViewType()));
+            section.setDisplayOrder(sectionContract.getDisplayOrder());
+
+            List<CardContract> cardContracts = sectionContract.getCards();
+            Set<DashboardSectionCardMapping> updatedMappings = new HashSet<>();
+            for (CardContract cardContract : cardContracts) {
+                DashboardSectionCardMapping mapping = dashboardSectionCardMappingRepository.findByCardIdAndDashboardSectionAndIsVoidedFalse(cardContract.getId(), section);
+                if (mapping == null) {
+                    mapping = new DashboardSectionCardMapping();
+                    mapping.assignUUID();
+                    mapping.setDashboardSection(section);
+                    mapping.setCard(cardRepository.findOne(cardContract.getId()));
+                }
+                mapping.setDisplayOrder(cardContract.getDisplayOrder());
+                updatedMappings.add(mapping);
+            }
+            Set<DashboardSectionCardMapping> savedMappings = section.getDashboardSectionCardMappings();
+            voidOldMappings(updatedMappings, savedMappings);
+            section.setDashboardSectionCardMappings(updatedMappings);
+            dashboardSectionCardMappingRepository.saveAll(updatedMappings);
+            dashboardSections.add(section);
         }
-        Set<DashboardCardMapping> savedMappings = dashboard.getDashboardCardMappings();
-        voidOldMappings(updatedMappings, savedMappings);
-        dashboard.setDashboardCardMappings(updatedMappings);
-        dashboardCardMappingRepository.saveAll(updatedMappings);
+        dashboard.setDashboardSections(dashboardSections);
     }
 
-    private void voidOldMappings(Set<DashboardCardMapping> newMappings, Set<DashboardCardMapping> savedMappings) {
+    private void voidOldMappings(Set<DashboardSectionCardMapping> newMappings, Set<DashboardSectionCardMapping> savedMappings) {
         Set<Long> updatedMappingIds = newMappings.stream()
-                .filter(m -> m.getId() != null)
                 .map(CHSBaseEntity::getId)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        for (DashboardCardMapping savedMapping : savedMappings) {
+        for (DashboardSectionCardMapping savedMapping : savedMappings) {
             if (!updatedMappingIds.contains(savedMapping.getId())) {
-                DashboardCardMapping dashboardCardMapping = dashboardCardMappingRepository.findOne(savedMapping.getId());
+                DashboardSectionCardMapping dashboardCardMapping = dashboardSectionCardMappingRepository.findOne(savedMapping.getId());
                 dashboardCardMapping.setVoided(true);
             }
         }

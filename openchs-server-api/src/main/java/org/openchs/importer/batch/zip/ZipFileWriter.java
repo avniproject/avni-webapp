@@ -88,7 +88,6 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         add("video.json");
         add("reportCard.json");
         add("reportDashboard.json");
-        add("dashboardCardMappings.json");
     }};
 
 
@@ -294,12 +293,6 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                 DashboardContract[] dashboardContracts = convertString(fileData, DashboardContract[].class);
                 for (DashboardContract dashboardContract : dashboardContracts) {
                     dashboardService.uploadDashboard(dashboardContract);
-                }
-                break;
-            case "dashboardCardMappings.json":
-                DashboardCardMappingContract[] dashboardCardMappingContracts = convertString(fileData, DashboardCardMappingContract[].class);
-                for (DashboardCardMappingContract dashboardCardMappingContract : dashboardCardMappingContracts) {
-                    dashboardService.uploadDashboardCardMapping(dashboardCardMappingContract);
                 }
                 break;
         }
