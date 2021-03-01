@@ -4,19 +4,19 @@ import org.openchs.dao.CardRepository;
 import org.openchs.dao.DashboardRepository;
 import org.openchs.dao.DashboardSectionCardMappingRepository;
 import org.openchs.dao.DashboardSectionRepository;
-import org.openchs.domain.CHSBaseEntity;
-import org.openchs.domain.Dashboard;
-import org.openchs.domain.DashboardSectionCardMapping;
-import org.openchs.domain.DashboardSection;
+import org.openchs.domain.*;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.CardContract;
-import org.openchs.web.request.DashboardSectionCardMappingContract;
 import org.openchs.web.request.DashboardContract;
+import org.openchs.web.request.DashboardSectionCardMappingContract;
 import org.openchs.web.request.DashboardSectionContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,25 +53,39 @@ public class DashboardService {
         dashboard.setName(dashboardContract.getName());
         dashboard.setDescription(dashboardContract.getDescription());
         dashboard.setVoided(dashboardContract.isVoided());
-        dashboardRepository.save(dashboard);
+        Dashboard savedDashboard = dashboardRepository.save(dashboard);;
+        uploadDashboardSections(dashboardContract, savedDashboard);
     }
 
-//    public void uploadDashboardCardMapping(DashboardSectionCardMappingContract dashboardCardMappingContract) {
-//        DashboardCardMapping dashboardCardMapping = dashboardCardMappingRepository.findByUuid(dashboardCardMappingContract.getUuid());
-//        if (dashboardCardMapping == null) {
-//            dashboardCardMapping = new DashboardCardMapping();
-//            dashboardCardMapping.setUuid(dashboardCardMappingContract.getUuid());
-//        }
-//        dashboardCardMapping.setDashboard(dashboardRepository.findByUuid(dashboardCardMappingContract.getDashboardUUID()));
-//        dashboardCardMapping.setCard(cardRepository.findByUuid(dashboardCardMappingContract.getReportCardUUID()));
-//        dashboardCardMapping.setDisplayOrder(dashboardCardMappingContract.getDisplayOrder());
-//        dashboardCardMappingRepository.save(dashboardCardMapping);
-//    }
-//
-//    public List<DashboardSectionCardMappingContract> getAllDashboardCardMappings() {
-//        List<DashboardCardMapping> dashboardCardMappings = dashboardCardMappingRepository.findAll();
-//        return dashboardCardMappings.stream().map(DashboardSectionCardMappingContract::fromEntity).collect(Collectors.toList());
-//    }
+    private void uploadDashboardSections(DashboardContract dashboardContract, Dashboard dashboard) {
+        for (DashboardSectionContract sectionContract : dashboardContract.getSections()) {
+            DashboardSection section = dashboardSectionRepository.findByUuid(sectionContract.getUuid());
+            if (section == null) {
+                section = new DashboardSection();
+                section.setUuid(sectionContract.getUuid());
+            }
+            section.setDashboard(dashboard);
+            section.setName(sectionContract.getName());
+            section.setDescription(sectionContract.getDescription());
+            section.setViewType(DashboardSection.ViewType.valueOf(sectionContract.getViewType()));
+            section.setDisplayOrder(sectionContract.getDisplayOrder());
+            section.setVoided(sectionContract.isVoided());
+            DashboardSection savedSection = dashboardSectionRepository.save(section);
+
+            for (DashboardSectionCardMappingContract cardMappingContract : sectionContract.getDashboardSectionCardMappings()) {
+                DashboardSectionCardMapping mapping = dashboardSectionCardMappingRepository.findByUuid(cardMappingContract.getUuid());
+                if (mapping == null) {
+                    mapping = new DashboardSectionCardMapping();
+                    mapping.setUuid(cardMappingContract.getUuid());
+                }
+                mapping.setDashboardSection(savedSection);
+                mapping.setCard(cardRepository.findByUuid(cardMappingContract.getReportCardUUID()));
+                mapping.setDisplayOrder(cardMappingContract.getDisplayOrder());
+                mapping.setVoided(cardMappingContract.isVoided());
+                dashboardSectionCardMappingRepository.save(mapping);
+            }
+        }
+    }
 
     public Dashboard editDashboard(DashboardContract newDashboard, Long dashboardId) {
         Dashboard existingDashboard = dashboardRepository.findOne(dashboardId);

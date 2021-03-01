@@ -1,6 +1,5 @@
 package org.openchs.web.request;
 
-import org.openchs.domain.Dashboard;
 import org.openchs.domain.DashboardSection;
 
 import java.util.ArrayList;
@@ -13,7 +12,9 @@ public class DashboardSectionContract extends CHSRequest {
     private String description;
     private String viewType;
     private Double displayOrder;
+    private String dashboardUUID;
     private List<CardContract> cards = new ArrayList<>();
+    private List<DashboardSectionCardMappingContract> dashboardSectionCardMappings = new ArrayList<>();
 
     public static DashboardSectionContract fromEntity(DashboardSection ds) {
         DashboardSectionContract dashboardContract = new DashboardSectionContract();
@@ -22,8 +23,19 @@ public class DashboardSectionContract extends CHSRequest {
         dashboardContract.setVoided(ds.isVoided());
         dashboardContract.setName(ds.getName());
         dashboardContract.setDescription(ds.getDescription());
+        dashboardContract.setViewType(ds.getViewType().name());
+        dashboardContract.setDisplayOrder(ds.getDisplayOrder());
         setCards(dashboardContract, ds);
+        setDashboardSectionCardMappings(dashboardContract, ds);
+        dashboardContract.setDashboardUUID(ds.getDashboardUUID());
         return dashboardContract;
+    }
+
+    private static void setDashboardSectionCardMappings(DashboardSectionContract contract, DashboardSection ds) {
+        List<DashboardSectionCardMappingContract> mappingContracts = ds.getDashboardSectionCardMappings().stream()
+                .map(DashboardSectionCardMappingContract ::fromEntity)
+                .collect(Collectors.toList());
+        contract.setDashboardSectionCardMappings(mappingContracts);
     }
 
     private static void setCards(DashboardSectionContract contract, DashboardSection ds) {
@@ -73,4 +85,21 @@ public class DashboardSectionContract extends CHSRequest {
     public void setDisplayOrder(Double displayOrder) {
         this.displayOrder = displayOrder;
     }
+
+    public String getDashboardUUID() {
+        return dashboardUUID;
+    }
+
+    public void setDashboardUUID(String dashboardUUID) {
+        this.dashboardUUID = dashboardUUID;
+    }
+
+    public List<DashboardSectionCardMappingContract> getDashboardSectionCardMappings() {
+        return dashboardSectionCardMappings;
+    }
+
+    public void setDashboardSectionCardMappings(List<DashboardSectionCardMappingContract> dashboardSectionCardMappings) {
+        this.dashboardSectionCardMappings = dashboardSectionCardMappings;
+    }
+
 }

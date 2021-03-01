@@ -421,13 +421,6 @@ public class OrganisationService {
         }
     }
 
-    public void addDashboardCardMappings(ZipOutputStream zos) throws IOException {
-//        List<DashboardSectionCardMappingContract> dashboardCardMappings = dashboardService.getAllDashboardCardMappings();
-//        if (!dashboardCardMappings.isEmpty()) {
-//            addFileToZip(zos, "dashboardCardMappings.json", dashboardCardMappings);
-//        }
-    }
-
     private void addFileToZip(ZipOutputStream zos, String fileName, Object fileContent) throws IOException {
         ZipEntry entry = new ZipEntry(fileName);
         zos.putNextEntry(entry);
