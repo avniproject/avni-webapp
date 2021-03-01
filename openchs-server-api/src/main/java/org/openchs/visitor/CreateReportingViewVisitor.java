@@ -39,7 +39,7 @@ public class CreateReportingViewVisitor implements MetaDataVisitor {
         ViewNameGenerator viewNameGenerator = getViewNameGenerator(subjectType.getOperationalSubjectType().getOrganisationId());
         Map<String, String> registrationViewMap = viewGenService.registrationViews(subjectType.getOperationalSubjectTypeName(), false);
         String registrationViewName = viewNameGenerator.getSubjectRegistrationViewName(subjectType);
-        createView(registrationViewMap.get("Registration"), registrationViewName);
+        createView(viewNameGenerator.getOrganisation(), registrationViewMap.get("Registration"), registrationViewName);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CreateReportingViewVisitor implements MetaDataVisitor {
         Map<String, String> programEnrolmentSqlMap = viewGenService.enrolmentViews(subjectType.getOperationalSubjectTypeName(), program.getOperationalProgramName());
         programEnrolmentSqlMap.forEach((prg, programSql) -> {
             String programEnrolmentViewName = viewNameGenerator.getProgramEnrolmentViewName(subjectType, prg);
-            createView(programSql, programEnrolmentViewName);
+            createView(viewNameGenerator.getOrganisation(), programSql, programEnrolmentViewName);
         });
     }
 
@@ -58,7 +58,7 @@ public class CreateReportingViewVisitor implements MetaDataVisitor {
         Map<String, String> programEncounterViewMap = viewGenService.getSqlsFor(program.getOperationalProgramName(), null, false, subjectType.getOperationalSubjectTypeName());
         programEncounterViewMap.forEach((et, programEncounterSql) -> {
             String programEncounterViewName = viewNameGenerator.getProgramEncounterViewName(subjectType, program, et);
-            createView(programEncounterSql, programEncounterViewName);
+            createView(viewNameGenerator.getOrganisation(), programEncounterSql, programEncounterViewName);
         });
     }
 
@@ -68,13 +68,13 @@ public class CreateReportingViewVisitor implements MetaDataVisitor {
         Map<String, String> generalEncounterViewMap = viewGenService.getSqlsFor(null, encounterType.getOperationalEncounterTypeName(), false, subjectType.getOperationalSubjectTypeName());
         generalEncounterViewMap.forEach((et, etSql) -> {
             String generalEncounterViewName = viewNameGenerator.getGeneralEncounterViewName(subjectType, et);
-            createView(etSql, generalEncounterViewName);
+            createView(viewNameGenerator.getOrganisation(), etSql, generalEncounterViewName);
         });
     }
 
-    private void createView(String viewSql, String viewName) {
+    private void createView(Organisation organisation, String viewSql, String viewName) {
         try {
-            implementationRepository.createView(viewName, viewSql);
+            implementationRepository.createView(organisation.getSchemaName(), viewName, viewSql);
         } catch (Exception e) {
             logger.error("Error while creating view {}", viewName, e);
             logger.error(String.format("View SQL: %s", viewSql));

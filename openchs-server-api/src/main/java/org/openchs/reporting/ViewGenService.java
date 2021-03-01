@@ -281,7 +281,7 @@ public class ViewGenService {
                     if (spreadMultiSelectObs) {
                         return spreadMultiSelectSQL(obsColumn, concept);
                     }
-                    return String.format("get_coded_string_value(%s->'%s', concepts_%d.map)::TEXT as \"%s\"",
+                    return String.format("public.get_coded_string_value(%s->'%s', concepts_%d.map)::TEXT as \"%s\"",
                             obsColumn, conceptUUID, formElement.getFormElementGroup().getId(), columnName);
                 }
                 case Date:

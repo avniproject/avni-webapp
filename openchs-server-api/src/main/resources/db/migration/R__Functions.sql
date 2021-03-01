@@ -601,9 +601,9 @@ CREATE OR REPLACE FUNCTION create_view(schema_name text, view_name text, sql_que
     RETURNS BIGINT AS
 $BODY$
 BEGIN
-    EXECUTE 'set search_path = ' || schema_name;
-    EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
-    EXECUTE 'CREATE OR REPLACE VIEW ' || view_name || ' AS ' || sql_query;
+--     EXECUTE 'set search_path = ' || ;
+    EXECUTE 'DROP VIEW IF EXISTS ' || schema_name || '.' || view_name;
+    EXECUTE 'CREATE OR REPLACE VIEW ' || schema_name || '.' || view_name || ' AS ' || sql_query;
     RETURN 1;
 END
 $BODY$ LANGUAGE PLPGSQL;
