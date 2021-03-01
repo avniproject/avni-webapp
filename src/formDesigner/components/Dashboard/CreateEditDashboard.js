@@ -2,9 +2,9 @@ import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
 import { find, get, isEmpty, isNil } from "lodash";
-import FormLabel from "@material-ui/core/FormLabel";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
+import FormLabel from "@material-ui/core/FormLabel";
 import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -14,10 +14,9 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect } from "react-router-dom";
-import DraggableDashboardCards from "./DraggableDashboardCards";
-import { SelectCardsView } from "./SelectCardsView";
+import DraggableDashboardSections from "./DraggableDashboardSections";
 
-const initialState = { name: "", description: "", cards: [] };
+const initialState = { name: "", description: "", sections: [] };
 export const CreateEditDashboard = ({ edit, history, ...props }) => {
   const [dashboard, dispatch] = React.useReducer(DashboardReducer, initialState);
   const [error, setError] = React.useState([]);
@@ -35,22 +34,22 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
   }, []);
 
   const validateRequest = () => {
-    const { name, cards } = dashboard;
-    if (isEmpty(name) && isEmpty(cards)) {
+    const { name, sections } = dashboard;
+    if (isEmpty(name) && isEmpty(sections)) {
       setError([
         { key: "EMPTY_NAME", message: "Name cannot be empty" },
-        { key: "EMPTY_CARDS", message: "Cards cannot be empty" }
+        { key: "EMPTY_SECTIONS", message: "Sections cannot be empty" }
       ]);
     } else if (isEmpty(name)) {
       setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-    } else if (isEmpty(cards)) {
-      setError([...error, { key: "EMPTY_CARDS", message: "Cards cannot be empty" }]);
+    } else if (isEmpty(sections)) {
+      setError([...error, { key: "EMPTY_SECTIONS", message: "Sections cannot be empty" }]);
     }
   };
 
   const onSave = () => {
     validateRequest();
-    if (!isEmpty(dashboard.name) && !isEmpty(dashboard.cards)) {
+    if (!isEmpty(dashboard.name) && !isEmpty(dashboard.sections)) {
       const url = edit ? `/web/dashboard/${props.match.params.id}` : "/web/dashboard";
       const methodName = edit ? "put" : "post";
       http[methodName](url, dashboard)
@@ -70,6 +69,10 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
           ]);
         });
     }
+  };
+
+  const addSection = () => {
+    dispatch({ type: "addSection" });
   };
 
   const onDelete = () => {
@@ -130,17 +133,17 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
           onChange={event => dispatch({ type: "description", payload: event.target.value })}
           toolTipKey={"APP_DESIGNER_DASHBOARD_DESCRIPTION"}
         />
-        <p />
-        <AvniFormLabel label={"Cards"} toolTipKey={"APP_DESIGNER_DASHBOARD_CARDS"} />
-        <Grid container>
-          <Grid item xs={10}>
-            <SelectCardsView dashboardCards={dashboard.cards} dispatch={dispatch} />
-            <DraggableDashboardCards
-              cards={dashboard.cards}
-              dispatch={dispatch}
-              history={history}
-            />
-          </Grid>
+        <br />
+        <br />
+        <br />
+        <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
+        <Grid item>
+          <DraggableDashboardSections
+            sections={dashboard.sections}
+            dispatch={dispatch}
+            history={history}
+            addSection={addSection}
+          />
         </Grid>
         {getErrorByKey("EMPTY_CARDS")}
         <p />
