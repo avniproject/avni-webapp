@@ -421,3 +421,30 @@ from state
            left join zone on zone.parent_id = city.id
            left join taluka on taluka.parent_id = city.id
            left join ward on ward.parent_id = zone.id;
+
+
+-- DELETE VOIDED FORMS
+set role jsscp;
+delete from form_element where id in (
+     select fe.id from form_element fe
+   join form_element_group feg on feg.id = fe.form_element_group_id
+   join form f on feg.form_id = f.id
+where f.organisation_id = 22 and f.is_voided = true
+     );
+
+delete from form_element_group where id in (
+     select feg.id from form_element_group feg
+          join form f on feg.form_id = f.id
+     where f.organisation_id = 22 and f.is_voided = true
+     );
+
+delete from form_mapping where id in (
+ select fm.id from form_mapping fm
+       join form f on f.id = fm.form_id
+ where f.is_voided = true and f.organisation_id = 22
+ );
+
+delete from form where id in (
+     select id from form f
+     where f.is_voided = true and f.organisation_id = 22
+     );
