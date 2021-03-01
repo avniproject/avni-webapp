@@ -1,12 +1,12 @@
 import React from "react";
-import DraggableDashboardCards from "../components/Dashboard/DraggableDashboardCards";
+import CreateEditDashboardSectionCards from "../components/Dashboard/CreateEditDashboardSectionCards";
 
 export default {
-  component: DraggableDashboardCards,
-  title: "formDesigner/components/Dashboard/DraggableDashboardCards"
+  component: CreateEditDashboardSectionCards,
+  title: "formDesigner/components/Dashboard/CreateEditDashboardSectionCards"
 };
 
-const Template = args => <DraggableDashboardCards {...args} />;
+const Template = args => <CreateEditDashboardSectionCards {...args} />;
 
 export const dashboard = Template.bind({});
 dashboard.args = {
