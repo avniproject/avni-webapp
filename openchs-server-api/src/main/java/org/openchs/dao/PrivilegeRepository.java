@@ -12,6 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "privilege", path = "privilege")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
@@ -27,4 +29,7 @@ public interface PrivilegeRepository extends PagingAndSortingRepository<Privileg
             Pageable pageable);
 
     Privilege findByUuid(String uuid);
+
+    List<Privilege> findAllByIsVoidedFalse();
+
 }

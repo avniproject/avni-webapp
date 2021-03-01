@@ -62,7 +62,7 @@ public class GroupPrivilegeService {
         List<ChecklistDetail> checklistDetails = checklistDetailRepository.findAllByOrganisationId(UserContextHolder.getUserContext().getOrganisationId());
 
         Group currentGroup = groupRepository.findOne(groupId);
-        List<Privilege> privilegeList = IterableUtils.toList(privilegeRepository.findAll());
+        List<Privilege> privilegeList = IterableUtils.toList(privilegeRepository.findAllByIsVoidedFalse());
 
         List<FormMapping> operationalFormMappings = formMappings.stream()
                 .filter(formMapping -> (formMapping.getProgram() == null) || (formMapping.getProgram() != null && operationalProgramIds.contains(formMapping.getProgram().getId())))
