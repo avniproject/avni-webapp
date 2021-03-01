@@ -109,4 +109,8 @@ public class ViewNameGenerator {
     public static String getCancelName(String name) {
         return name.concat(" CANCEL");
     }
+
+    public Organisation getOrganisation() {
+        return organisation;
+    }
 }

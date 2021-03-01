@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ImplementationRepository extends CrudRepository<Organisation, Long> {
     @Procedure(value = "create_view")
-    void createView(String viewName, String sqlQuery);
+    void createView(String schemaName, String viewName, String sqlQuery);
 
     @Query(value = "select viewname, definition from pg_views where schemaname = :schemaName", nativeQuery = true)
     List<ReportingViewProjection> getAllViewsInSchema(String schemaName);
