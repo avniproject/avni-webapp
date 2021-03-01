@@ -21,16 +21,27 @@ public class SubjectTypes implements MetaData {
 
     @Override
     public void accept(MetaDataVisitor metaDataVisitor) {
-        this.subjectTypes.forEach(metaDataVisitor::visit);
-        this.programs.forEach(metaDataVisitor::visit);
+        //todo all operational type checks are not required but the database has such records
+        this.subjectTypes.forEach(subjectType -> {
+            if (subjectType.getOperationalSubjectType() != null)
+                metaDataVisitor.visit(subjectType);
+        });
+        this.programs.forEach((subjectType, program) -> {
+            if (program.getOperationalProgramName() != null)
+                metaDataVisitor.visit(subjectType, program);
+        });
         this.programEncounterTypes.forEach((subjectType, programEncounterTypeMap) -> {
             programEncounterTypeMap.forEach((program, encounterTypes) -> {
                 encounterTypes.forEach(encounterType -> {
-                    metaDataVisitor.visit(subjectType, program, encounterType);
+                    if (encounterType.getOperationalEncounterTypeName() != null)
+                        metaDataVisitor.visit(subjectType, program, encounterType);
                 });
             });
         });
-        this.generalEncounterTypes.forEach(metaDataVisitor::visit);
+        this.generalEncounterTypes.forEach((subjectType, encounterType) -> {
+            if (encounterType.getOperationalEncounterTypeName() != null)
+                metaDataVisitor.visit(subjectType, encounterType);
+        });
     }
 
     public void addProgram(SubjectType subjectType, Program program) {
