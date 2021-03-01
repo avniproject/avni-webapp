@@ -70,7 +70,6 @@ const GroupPrivileges = ({
           });
           break;
         case 19: // Approve Subject
-        case 20: // Reject Subject
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -100,7 +99,6 @@ const GroupPrivileges = ({
           });
           break;
         case 21: // Approve Enrolment
-        case 22: // Reject Enrolment
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -137,7 +135,6 @@ const GroupPrivileges = ({
           });
           break;
         case 23: // Approve Encounter
-        case 24: // Reject Encounter
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -168,7 +165,6 @@ const GroupPrivileges = ({
           });
           break;
         case 25: // Approve ChecklistItem
-        case 26: // Reject ChecklistItem
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
