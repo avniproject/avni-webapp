@@ -130,7 +130,7 @@ export const ExpansionPanelSummary = withStyles({
 
 const DraggableDashboardSections = props => {
   const classes = useStyles();
-  const [currentSectionId, setCurrentSectionId] = React.useState(undefined);
+  const [currentSectionUUID, setCurrentSectionUUID] = React.useState(undefined);
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
@@ -149,9 +149,8 @@ const DraggableDashboardSections = props => {
     props.dispatch({ type: "updateSectionName", payload: { section, name } });
   };
 
-  const handleDelete = (event, index) => {
-    // props.deleteGroup(props.index);
-    event.stopPropagation();
+  const handleDelete = section => {
+    props.dispatch({ type: "deleteSection", payload: section });
   };
 
   const onDragEnd = result => {
@@ -162,10 +161,10 @@ const DraggableDashboardSections = props => {
     props.dispatch({ type: "changeSectionDisplayOrder", payload: sections });
   };
 
-  const renderDragIcon = sectionId => {
+  const renderDragIcon = sectionUUID => {
     return (
       <div style={{ height: 5, align: "center" }}>
-        <div hidden={currentSectionId !== sectionId}>
+        <div hidden={currentSectionUUID !== sectionUUID}>
           <DragHandleIcon color={"disabled"} />
         </div>
       </div>
@@ -212,7 +211,7 @@ const DraggableDashboardSections = props => {
               <RootRef rootRef={provided.innerRef}>
                 <div style={getListStyle(snapshot.isDraggingOver)}>
                   {map(orderBy(props.sections, "displayOrder"), (section, index) => (
-                    <Draggable key={section.id} draggableId={index + 1} index={index}>
+                    <Draggable key={section.uuid} draggableId={section.uuid} index={index}>
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
@@ -224,6 +223,8 @@ const DraggableDashboardSections = props => {
                             key={index}
                             expanded={expanded === "panel" + index}
                             onChange={handleChange("panel" + index)}
+                            onMouseEnter={() => setCurrentSectionUUID(section.uuid)}
+                            onMouseLeave={() => setCurrentSectionUUID(undefined)}
                           >
                             <ExpansionPanelSummary
                               aria-controls={"panel" + index + "bh-content"}
@@ -232,7 +233,7 @@ const DraggableDashboardSections = props => {
                             >
                               <Grid container direction={"row"}>
                                 <Grid container item alignItems={"center"} justify={"center"}>
-                                  {renderDragIcon(section.id)}
+                                  {renderDragIcon(section.uuid)}
                                 </Grid>
                                 <Grid container item sm={12} alignItems={"center"}>
                                   <Grid item sm={1}>
@@ -248,35 +249,34 @@ const DraggableDashboardSections = props => {
                                   <Grid item sm={5}>
                                     <Typography className={classes.heading}>
                                       {section.error && (
-                                        <div style={{ color: "red" }}>
+                                        <span style={{ color: "red" }}>
                                           Please enter section name.
-                                        </div>
+                                        </span>
                                       )}
-                                      <FormControl fullWidth>
-                                        <Input
-                                          type="text"
-                                          placeholder="Section name"
-                                          name={"name" + index}
-                                          disableUnderline={true}
-                                          onClick={stopPropagation}
-                                          value={section.name}
-                                          onChange={event =>
-                                            changeSectionName(section, event.target.value)
-                                          }
-                                          autoComplete="off"
-                                        />
-                                      </FormControl>
+
+                                      <Input
+                                        type="text"
+                                        placeholder="Section name"
+                                        name={"name" + index}
+                                        disableUnderline={true}
+                                        onClick={stopPropagation}
+                                        value={section.name}
+                                        onChange={event =>
+                                          changeSectionName(section, event.target.value)
+                                        }
+                                        autoComplete="off"
+                                      />
                                     </Typography>
                                   </Grid>
                                   <Grid item sm={3}>
-                                    <Typography component={"div"} className={classes.questionCount}>
+                                    <Typography className={classes.questionCount}>
                                       {size(section.cards)} cards
                                     </Typography>
                                   </Grid>
                                   <Grid item sm={2}>
                                     <IconButton
                                       aria-label="delete"
-                                      onClick={event => handleDelete(event, index)}
+                                      onClick={() => handleDelete(section)}
                                     >
                                       <DeleteIcon />
                                     </IconButton>

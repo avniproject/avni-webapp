@@ -1,4 +1,5 @@
 import { map, reject, sortBy } from "lodash";
+import { ModelGeneral as General } from "openchs-models";
 
 export const DashboardReducer = (dashboard, action) => {
   var sections, section, name;
@@ -13,9 +14,13 @@ export const DashboardReducer = (dashboard, action) => {
         description: "",
         viewType: "Default",
         displayOrder: 100,
-        cards: []
+        cards: [],
+        uuid: General.randomUUID()
       };
-      const newSections = updateDisplayOrder([...dashboard.sections, newSection]);
+      const newSections = updateDisplayOrder([
+        ...sortBy(dashboard.sections, "displayOrder"),
+        newSection
+      ]);
       return { ...dashboard, sections: newSections };
     case "updateSectionName":
       var { name, section } = action.payload;
@@ -28,14 +33,32 @@ export const DashboardReducer = (dashboard, action) => {
       sections.push({ ...section, cards });
       return { ...dashboard, sections: sortBy(sections, "displayOrder") };
     case "deleteCard":
+      var { card, section } = action.payload;
+      var updatedSections = map(dashboard.sections, ds => {
+        if (section === ds) {
+          const updatedCards = reject(ds.cards, it => it === card);
+          ds.cards = updatedCards;
+          return ds;
+        } else return ds;
+      });
       return {
         ...dashboard,
         cards: reject(dashboard.cards, card => card.id === action.payload.id)
       };
     case "changeDisplayOrder":
-      return { ...dashboard, cards: updateDisplayOrder(action.payload) };
+      var { cards, section } = action.payload;
+      const cardsInOrder = updateDisplayOrder(cards);
+      var updatedSections = map(dashboard.sections, ds => {
+        if (section === ds) {
+          ds.cards = cardsInOrder;
+          return ds;
+        } else return ds;
+      });
+      return { ...dashboard, sections: updatedSections };
     case "changeSectionDisplayOrder":
       return { ...dashboard, sections: updateDisplayOrder(action.payload) };
+    case "deleteSection":
+      return { ...dashboard, sections: reject(dashboard.sections, it => it === action.payload) };
     case "setData":
       return {
         ...dashboard,
