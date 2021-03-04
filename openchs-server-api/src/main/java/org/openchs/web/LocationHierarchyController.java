@@ -53,7 +53,7 @@ public class LocationHierarchyController implements RestControllerResourceProces
         } catch (Exception exception) {
             exception.printStackTrace();
             logger.error(exception.getMessage());
-            return null;
+            return wrap(new PageImpl<>(Collections.emptyList()));
         }
         return wrap(new PageImpl<>(Collections.emptyList()));
     }

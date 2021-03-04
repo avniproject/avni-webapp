@@ -107,6 +107,7 @@ public class DashboardService {
         dashboard.setName(dashboardContract.getName());
         dashboard.setDescription(dashboardContract.getDescription());
         dashboard.setVoided(dashboardContract.isVoided());
+        dashboardRepository.save(dashboard);
         setDashboardSections(dashboardContract, dashboard);
         return dashboardRepository.save(dashboard);
     }
@@ -128,6 +129,7 @@ public class DashboardService {
             section.setDescription(sectionContract.getDescription());
             section.setViewType(DashboardSection.ViewType.valueOf(sectionContract.getViewType()));
             section.setDisplayOrder(sectionContract.getDisplayOrder());
+            section = dashboardSectionRepository.save(section);
 
             List<CardContract> cardContracts = sectionContract.getCards();
             Set<DashboardSectionCardMapping> updatedMappings = new HashSet<>();

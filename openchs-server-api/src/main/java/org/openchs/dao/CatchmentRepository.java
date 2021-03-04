@@ -18,5 +18,5 @@ public interface CatchmentRepository extends ReferenceDataRepository<Catchment>,
     @Query("select c.name from Catchment c where c.isVoided = false")
     List<String> getAllNames();
 
-    Page<Catchment> findByNameIgnoreCaseStartingWithOrderByNameAsc(String name, Pageable pageable);
+    Page<Catchment> findByIsVoidedFalseAndNameIgnoreCaseStartingWithOrderByNameAsc(String name, Pageable pageable);
 }

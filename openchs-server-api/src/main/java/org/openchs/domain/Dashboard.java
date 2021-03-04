@@ -49,6 +49,7 @@ public class Dashboard extends OrganisationAwareEntity {
     }
 
     public void setDashboardSections(Set<DashboardSection> dashboardSections) {
-        this.dashboardSections = dashboardSections;
+        this.dashboardSections.clear();
+        this.dashboardSections.addAll(dashboardSections);
     }
 }
