@@ -11,7 +11,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Box from "@material-ui/core/Box";
 import VisibilityIcon from "@material-ui/icons/Visibility";
-import { isEmpty, map, orderBy } from "lodash";
+import { isEmpty, map } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 
@@ -31,7 +31,7 @@ const getListStyle = isDraggingOver => ({
   background: "#FFFFFF"
 });
 
-class DraggableDashboardCards extends Component {
+class CreateEditDashboardSectionCards extends Component {
   constructor(props) {
     super(props);
     this.onDragEnd = this.onDragEnd.bind(this);
@@ -43,7 +43,7 @@ class DraggableDashboardCards extends Component {
       return;
     }
     const cards = reorder(this.props.cards, result.source.index, result.destination.index);
-    this.props.dispatch({ type: "changeDisplayOrder", payload: cards });
+    this.props.changeDisplayOrder(cards);
   }
 
   renderDragIcon(cardId) {
@@ -69,7 +69,7 @@ class DraggableDashboardCards extends Component {
           >
             <VisibilityIcon />
           </IconButton>
-          <IconButton onClick={() => this.props.dispatch({ type: "deleteCard", payload: card })}>
+          <IconButton onClick={() => this.props.deleteCard(card)}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
@@ -81,43 +81,41 @@ class DraggableDashboardCards extends Component {
     const cards = this.props.cards;
     return (
       !isEmpty(cards) && (
-        <Box border={2} mt={2} borderColor={"rgba(133,133,133,0.49)"}>
-          <DragDropContext onDragEnd={this.onDragEnd}>
-            <Droppable droppableId="drop_card">
-              {(provided, snapshot) => (
-                <RootRef rootRef={provided.innerRef}>
-                  <List style={getListStyle(snapshot.isDraggingOver)}>
-                    {map(orderBy(this.props.cards, "displayOrder"), (card, index) => (
-                      <Draggable key={card.id} draggableId={card.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                          >
-                            <Box border={2} m={3} borderColor={"rgba(133,133,133,0.49)"}>
-                              <Grid container direction={"column"}>
-                                <Grid item align="center">
-                                  {this.renderDragIcon(card.id)}
-                                </Grid>
-                                <Grid item>{this.renderCard(card)}</Grid>
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Droppable droppableId="drop_card">
+            {(provided, snapshot) => (
+              <RootRef rootRef={provided.innerRef}>
+                <List style={getListStyle(snapshot.isDraggingOver)}>
+                  {map(this.props.cards, (card, index) => (
+                    <Draggable key={card.id} draggableId={card.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                        >
+                          <Box border={2} my={0.5} borderColor={"rgba(133,133,133,0.49)"}>
+                            <Grid container direction={"column"}>
+                              <Grid item align="center">
+                                {this.renderDragIcon(card.id)}
                               </Grid>
-                            </Box>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </List>
-                </RootRef>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </Box>
+                              <Grid item>{this.renderCard(card)}</Grid>
+                            </Grid>
+                          </Box>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </List>
+              </RootRef>
+            )}
+          </Droppable>
+        </DragDropContext>
       )
     );
   }
 }
 
-export default DraggableDashboardCards;
+export default CreateEditDashboardSectionCards;

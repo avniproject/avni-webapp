@@ -2,9 +2,9 @@ import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
 import { find, get, isEmpty, isNil } from "lodash";
-import FormLabel from "@material-ui/core/FormLabel";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
+import FormLabel from "@material-ui/core/FormLabel";
 import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -14,10 +14,9 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect } from "react-router-dom";
-import DraggableDashboardCards from "./DraggableDashboardCards";
-import { SelectCardsView } from "./SelectCardsView";
+import CreateEditDashboardSections from "./CreateEditDashboardSections";
 
-const initialState = { name: "", description: "", cards: [] };
+const initialState = { name: "", description: "", sections: [] };
 export const CreateEditDashboard = ({ edit, history, ...props }) => {
   const [dashboard, dispatch] = React.useReducer(DashboardReducer, initialState);
   const [error, setError] = React.useState([]);
@@ -35,22 +34,18 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
   }, []);
 
   const validateRequest = () => {
-    const { name, cards } = dashboard;
-    if (isEmpty(name) && isEmpty(cards)) {
-      setError([
-        { key: "EMPTY_NAME", message: "Name cannot be empty" },
-        { key: "EMPTY_CARDS", message: "Cards cannot be empty" }
-      ]);
-    } else if (isEmpty(name)) {
+    const { name, sections } = dashboard;
+    if (isEmpty(name)) {
       setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-    } else if (isEmpty(cards)) {
-      setError([...error, { key: "EMPTY_CARDS", message: "Cards cannot be empty" }]);
+    }
+    if (isEmpty(sections)) {
+      setError([...error, { key: "EMPTY_SECTIONS", message: "Sections cannot be empty" }]);
     }
   };
 
   const onSave = () => {
     validateRequest();
-    if (!isEmpty(dashboard.name) && !isEmpty(dashboard.cards)) {
+    if (!isEmpty(dashboard.name) && !isEmpty(dashboard.sections)) {
       const url = edit ? `/web/dashboard/${props.match.params.id}` : "/web/dashboard";
       const methodName = edit ? "put" : "post";
       http[methodName](url, dashboard)
@@ -70,6 +65,11 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
           ]);
         });
     }
+  };
+
+  const addSection = event => {
+    dispatch({ type: "addSection" });
+    event.stopPropagation();
   };
 
   const onDelete = () => {
@@ -113,7 +113,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         <AvniTextField
           multiline
           id="name"
-          label="Name*"
+          label="Dashboard Name*"
           autoComplete="off"
           value={dashboard.name}
           onChange={event => onChange("name", event, "EMPTY_NAME")}
@@ -124,23 +124,32 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         <AvniTextField
           multiline
           id="description"
-          label="Description"
+          label="Dashboard Description"
           autoComplete="off"
           value={dashboard.description}
           onChange={event => dispatch({ type: "description", payload: event.target.value })}
           toolTipKey={"APP_DESIGNER_DASHBOARD_DESCRIPTION"}
         />
-        <p />
-        <AvniFormLabel label={"Cards"} toolTipKey={"APP_DESIGNER_DASHBOARD_CARDS"} />
+        <br />
+        <br />
+        <br />
         <Grid container>
-          <Grid item xs={10}>
-            <SelectCardsView dashboardCards={dashboard.cards} dispatch={dispatch} />
-            <DraggableDashboardCards
-              cards={dashboard.cards}
-              dispatch={dispatch}
-              history={history}
-            />
+          <Grid item container sm={6} justify={"flex-start"}>
+            <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
           </Grid>
+          <Grid item container sm={6} justify={"flex-end"}>
+            <Button color="primary" onClick={addSection}>
+              Add Section
+            </Button>
+          </Grid>
+        </Grid>
+        <Grid item>
+          <CreateEditDashboardSections
+            sections={dashboard.sections}
+            dispatch={dispatch}
+            history={history}
+            error={error}
+          />
         </Grid>
         {getErrorByKey("EMPTY_CARDS")}
         <p />

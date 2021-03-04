@@ -2,7 +2,7 @@ import React from "react";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import ResourceShowView from "../../common/ResourceShowView";
 import FormLabel from "@material-ui/core/FormLabel";
-import { map, orderBy } from "lodash";
+import ShowDashboardSections from "./ShowDashboardSections";
 
 export const DashboardShow = props => {
   const renderColumns = dashboard => {
@@ -12,16 +12,9 @@ export const DashboardShow = props => {
         <p />
         <ShowLabelValue label={"Description"} value={dashboard.description} />
         <p />
-        <FormLabel style={{ fontSize: "13px" }}>{"Cards"}</FormLabel>
+        <FormLabel style={{ fontSize: "13px" }}>{"Sections"}</FormLabel>
         <br />
-        {map(orderBy(dashboard.cards, "displayOrder"), (card, index) => {
-          return (
-            <li key={index}>
-              <a href={`#/appDesigner/reportCard/${card.id}/show`}>{card.name}</a>
-              <p />
-            </li>
-          );
-        })}
+        <ShowDashboardSections sections={dashboard.sections} />
       </div>
     );
   };

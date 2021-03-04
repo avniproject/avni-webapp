@@ -5,7 +5,7 @@ import http from "../../../common/utils/httpClient";
 import Select from "react-select";
 import { differenceBy, intersectionWith, map } from "lodash";
 
-export const SelectCardsView = ({ dashboardCards, dispatch }) => {
+export const SelectCardsView = ({ dashboardCards, addCards }) => {
   const [cards, setCards] = React.useState([]);
   const [cardsToBeAdded, setCardsToBeAdded] = React.useState([]);
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
@@ -26,10 +26,7 @@ export const SelectCardsView = ({ dashboardCards, dispatch }) => {
   const addCardsToDashboard = event => {
     event.preventDefault();
     cardSelectRef.current.select.clearValue();
-    dispatch({
-      type: "addCards",
-      payload: intersectionWith(cards, cardsToBeAdded, (c, s) => c.id === s.value)
-    });
+    addCards(intersectionWith(cards, cardsToBeAdded, (c, s) => c.id === s.value));
   };
 
   return (
@@ -56,7 +53,7 @@ export const SelectCardsView = ({ dashboardCards, dispatch }) => {
             disabled={buttonDisabled}
             fullWidth={true}
           >
-            Add card(s)
+            Add
           </Button>
         </Grid>
       </Grid>
