@@ -76,7 +76,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @GetMapping(value = "catchment/search/find")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public PagedResources<Resource<CatchmentContract>> find(@RequestParam(value = "name") String name, Pageable pageable) {
-        Page<Catchment> catchments = catchmentRepository.findByNameIgnoreCaseStartingWithOrderByNameAsc(name, pageable);
+        Page<Catchment> catchments = catchmentRepository.findByIsVoidedFalseAndNameIgnoreCaseStartingWithOrderByNameAsc(name, pageable);
         Page<CatchmentContract> catchmentContracts = catchments.map(CatchmentContract::fromEntity);
         return wrap(catchmentContracts);
     }
