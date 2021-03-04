@@ -1,11 +1,11 @@
-import { map, reject, sortBy } from "lodash";
+import { forEach, map, reject, sortBy } from "lodash";
 import { ModelGeneral as General } from "openchs-models";
 
 const addSection = dashboard => {
   const newSection = {
     name: "",
     description: "",
-    viewType: "Default",
+    viewType: "",
     displayOrder: 100,
     cards: [],
     uuid: General.randomUUID()
@@ -54,6 +54,18 @@ const deleteSection = (dashboard, section) => ({
   sections: reject(dashboard.sections, it => it === section)
 });
 
+const setData = (dashboard, data) => {
+  forEach(data.sections, section => {
+    section.cards = sortBy(section.cards, "displayOrder");
+  });
+  return {
+    ...dashboard,
+    name: data.name,
+    description: data.description,
+    sections: sortBy(data.sections, "displayOrder")
+  };
+};
+
 const updateDisplayOrder = items => {
   return map(items, (item, index) => {
     item.displayOrder = index + 1;
@@ -71,12 +83,7 @@ export const DashboardReducer = (dashboard, action) => {
     changeDisplayOrder: changeDisplayOrder,
     changeSectionDisplayOrder: changeSectionDisplayOrder,
     deleteSection: deleteSection,
-    setData: (dashboard, data) => ({
-      ...dashboard,
-      name: data.name,
-      description: data.description,
-      sections: data.sections
-    })
+    setData: setData
   };
   const actionFn = actionFns[action.type] || (() => dashboard);
   return actionFn(dashboard, action.payload);

@@ -11,7 +11,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Box from "@material-ui/core/Box";
 import VisibilityIcon from "@material-ui/icons/Visibility";
-import { isEmpty, map, orderBy } from "lodash";
+import { isEmpty, map } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 
@@ -86,7 +86,7 @@ class CreateEditDashboardSectionCards extends Component {
             {(provided, snapshot) => (
               <RootRef rootRef={provided.innerRef}>
                 <List style={getListStyle(snapshot.isDraggingOver)}>
-                  {map(orderBy(this.props.cards, "displayOrder"), (card, index) => (
+                  {map(this.props.cards, (card, index) => (
                     <Draggable key={card.id} draggableId={card.id} index={index}>
                       {(provided, snapshot) => (
                         <div

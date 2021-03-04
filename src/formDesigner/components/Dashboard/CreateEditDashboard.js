@@ -67,8 +67,9 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
     }
   };
 
-  const addSection = () => {
+  const addSection = event => {
     dispatch({ type: "addSection" });
+    event.stopPropagation();
   };
 
   const onDelete = () => {
@@ -112,7 +113,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         <AvniTextField
           multiline
           id="name"
-          label="Name*"
+          label="Dashboard Name*"
           autoComplete="off"
           value={dashboard.name}
           onChange={event => onChange("name", event, "EMPTY_NAME")}
@@ -123,7 +124,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         <AvniTextField
           multiline
           id="description"
-          label="Description"
+          label="Dashboard Description"
           autoComplete="off"
           value={dashboard.description}
           onChange={event => dispatch({ type: "description", payload: event.target.value })}
@@ -132,13 +133,21 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         <br />
         <br />
         <br />
-        <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
+        <Grid container>
+          <Grid item container sm={6} justify={"flex-start"}>
+            <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
+          </Grid>
+          <Grid item container sm={6} justify={"flex-end"}>
+            <Button color="primary" onClick={addSection}>
+              Add Section
+            </Button>
+          </Grid>
+        </Grid>
         <Grid item>
           <CreateEditDashboardSections
             sections={dashboard.sections}
             dispatch={dispatch}
             history={history}
-            addSection={addSection}
             error={error}
           />
         </Grid>

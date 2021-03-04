@@ -2,7 +2,6 @@ import React from "react";
 import {
   Input,
   IconButton,
-  Button,
   ExpansionPanel as MuiExpansionPanel,
   ExpansionPanelSummary as MuiExpansionPanelSummary,
   Typography,
@@ -35,7 +34,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 const getItemStyle = (isDragging, draggableStyle) => ({
   ...draggableStyle,
-  ...{ cursor: "pointer", background: "#FFFFFF" }
+  ...{ cursor: "pointer", background: "#FFFFFF", margin: "8px 1px" }
 });
 
 const getListStyle = isDraggingOver => ({
@@ -126,7 +125,6 @@ export const ExpansionPanelSummary = withStyles({
 
 const CreateEditDashboardSections = props => {
   const classes = useStyles();
-  const [currentSectionUUID, setCurrentSectionUUID] = React.useState(undefined);
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
@@ -134,11 +132,6 @@ const CreateEditDashboardSections = props => {
   };
 
   const stopPropagation = e => e.stopPropagation();
-
-  const addSection = event => {
-    props.addSection();
-    event.stopPropagation();
-  };
 
   const changeSectionName = (section, name) => {
     props.dispatch({ type: "updateSectionField", payload: { section, name } });
@@ -167,7 +160,7 @@ const CreateEditDashboardSections = props => {
   const renderDragIcon = sectionUUID => {
     return (
       <div style={{ height: 5, align: "center" }}>
-        <div hidden={currentSectionUUID !== sectionUUID}>
+        <div hidden={expanded !== false}>
           <DragHandleIcon color={"disabled"} />
         </div>
       </div>
@@ -180,13 +173,15 @@ const CreateEditDashboardSections = props => {
   };
 
   const renderSection = (section, index) => {
+    const viewTypes =
+      section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
     return (
       <Grid container>
         <Grid item xs={12}>
           <AvniTextField
             multiline
             id={"description" + index}
-            label="Description*"
+            label="Section Description*"
             autoComplete="off"
             value={section.description}
             onChange={event => changeSectionDescription(section, event.target.value)}
@@ -196,7 +191,7 @@ const CreateEditDashboardSections = props => {
           <AvniSelect
             style={{ width: "200px" }}
             onChange={event => changeSectionViewType(section, event.target.value)}
-            options={["Default", "Tile", "List"].map(viewType => (
+            options={viewTypes.map(viewType => (
               <MenuItem value={viewType} key={viewType}>
                 {viewType}
               </MenuItem>
@@ -240,7 +235,12 @@ const CreateEditDashboardSections = props => {
               <RootRef rootRef={provided.innerRef}>
                 <div style={getListStyle(snapshot.isDraggingOver)}>
                   {map(orderBy(props.sections, "displayOrder"), (section, index) => (
-                    <Draggable key={section.uuid} draggableId={section.uuid} index={index}>
+                    <Draggable
+                      isDragDisabled={expanded !== false}
+                      key={section.uuid}
+                      draggableId={section.uuid}
+                      index={index}
+                    >
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
@@ -252,8 +252,6 @@ const CreateEditDashboardSections = props => {
                             key={index}
                             expanded={expanded === "panel" + index}
                             onChange={handleChange("panel" + index)}
-                            onMouseEnter={() => setCurrentSectionUUID(section.uuid)}
-                            onMouseLeave={() => setCurrentSectionUUID(undefined)}
                           >
                             <ExpansionPanelSummary
                               aria-controls={"panel" + index + "bh-content"}
@@ -265,7 +263,7 @@ const CreateEditDashboardSections = props => {
                                   {renderDragIcon(section.uuid)}
                                 </Grid>
                                 <Grid container item sm={12} alignItems={"center"}>
-                                  <Grid item sm={1}>
+                                  <Grid item sm={2}>
                                     <Tooltip title={"Grouped Questions"}>
                                       <ListIcon style={{ marginLeft: 12, marginRight: 4 }} />
                                     </Tooltip>
@@ -277,12 +275,6 @@ const CreateEditDashboardSections = props => {
                                   </Grid>
                                   <Grid item sm={5}>
                                     <Typography className={classes.heading}>
-                                      {section.error && (
-                                        <span style={{ color: "red" }}>
-                                          Please enter section name.
-                                        </span>
-                                      )}
-
                                       <Input
                                         type="text"
                                         placeholder="Section name"
@@ -326,9 +318,6 @@ const CreateEditDashboardSections = props => {
           </Droppable>
         </DragDropContext>
       )}
-      <Button color="primary" onClick={addSection}>
-        Add Section
-      </Button>
     </React.Fragment>
   );
 };
