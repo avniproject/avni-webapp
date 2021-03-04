@@ -302,6 +302,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
               source="catchmentId"
               reference="catchment"
               label="Which catchment?"
+              filterToQuery={searchText => ({ name: searchText })}
               validate={!formData.orgAdmin && required("Please select a catchment")}
               onChange={(e, newVal) => {
                 if (edit) alert(catchmentChangeMessage);

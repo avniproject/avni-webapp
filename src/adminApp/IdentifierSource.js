@@ -112,6 +112,7 @@ const IdentifierSourceForm = props => (
               source="catchmentId"
               reference="catchment"
               label="Which catchment?"
+              filterToQuery={searchText => ({ name: searchText })}
               onChange={(e, newVal) => {
                 dispatch(
                   change(
