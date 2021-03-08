@@ -7,10 +7,12 @@ import Button from "@material-ui/core/Button";
 import { DeleteData } from "./components/DeleteData";
 import { makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+import { OrgSettings } from "./components/OrgSettings";
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {
-    backgroundColor: "red"
+    backgroundColor: "red",
+    marginTop: 150
   }
 }));
 
@@ -25,11 +27,12 @@ export const OrganisationDetail = ({ organisation: { name } }) => {
         <Grid container direction={"column"} spacing={5}>
           <Grid item container spacing={3}>
             <Grid item>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography variant="h6" gutterBottom>
                 Organisation Name : {name}
               </Typography>
             </Grid>
           </Grid>
+          <OrgSettings />
           <Grid item>
             <Button
               className={classes.deleteButton}

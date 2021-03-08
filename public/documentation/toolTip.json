@@ -122,5 +122,7 @@
   "APP_DESIGNER_DASHBOARD_SECTIONS": "Dashboard sections",
   "ADMIN_PHONE_VERIFICATION_MSG91AUTHKEY": "The API Auth key generated from the Msg91 console",
   "ADMIN_PHONE_VERIFICATION_MSG91TEMPLATEID": "The SMS Template ID created from the Msg91 console",
-  "ADMIN_PHONE_VERIFICATION_OTPLENGTH": "The length of the OTP to be sent"
+  "ADMIN_PHONE_VERIFICATION_OTPLENGTH": "The length of the OTP to be sent",
+  "ADMIN_APPROVAL_WORKFLOW": "Enable approval workflow",
+  "ADMIN_SAVE_DRAFT": "Enable subject draft save"
 }
