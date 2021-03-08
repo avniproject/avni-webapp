@@ -8,6 +8,29 @@ import MaterialTable from "material-table";
 import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 
+const VIEW_SUBJECT = "View subject";
+const REGISTER_SUBJECT = "Register subject";
+const EDIT_SUBJECT = "Edit subject";
+const VOID_SUBJECT = "Void subject";
+const ENROL_SUBJECT = "Enrol subject";
+const VIEW_ENROLMENT_DETAILS = "View enrolment details";
+const EDIT_ENROLMENT_DETAILS = "Edit enrolment details";
+const EXIT_ENROLMENT = "Exit enrolment";
+const VIEW_VISIT = "View visit";
+const SCHEDULE_VISIT = "Schedule visit";
+const PERFORM_VISIT = "Perform visit";
+const EDIT_VISIT = "Edit visit";
+const CANCEL_VISIT = "Cancel visit";
+const VIEW_CHECKLIST = "View checklist";
+const EDIT_CHECKLIST = "Edit checklist";
+const ADD_MEMBER = "Add member";
+const EDIT_MEMBER = "Edit member";
+const REMOVE_MEMBER = "Remove member";
+const APPROVE_SUBJECT = "Approve Subject";
+const APPROVE_ENROLMENT = "Approve Enrolment";
+const APPROVE_ENCOUNTER = "Approve Encounter";
+const APPROVE_CHECKLISTITEM = "Approve ChecklistItem";
+
 const GroupPrivileges = ({
   groupId,
   hasAllPrivileges,
@@ -44,138 +67,130 @@ const GroupPrivileges = ({
 
     groupPrivilegeList.forEach(privilegeListItem => {
       checkedState.set(privilegeListItem.uuid, { checkedState: privilegeListItem.allow });
-      switch (privilegeListItem.privilegeId) {
-        case 1: // View subject
+      switch (privilegeListItem.privilegeName) {
+        case VIEW_SUBJECT: // VIEW_subject
           dependencies.set(privilegeListItem.uuid, {
             dependencies: []
           });
           break;
-        case 2: // Register subject
-        case 3: // Edit subject
-        case 4: // Void subject
-        case 6: // View enrolment details
-        case 9: // View visit
-        case 14: // View checklist
-        case 16: // Add member
-        case 17: // Edit member
-        case 18: // Remove member
+        case REGISTER_SUBJECT:
+        case EDIT_SUBJECT:
+        case VOID_SUBJECT:
+        case VIEW_ENROLMENT_DETAILS:
+        case VIEW_VISIT:
+        case VIEW_CHECKLIST:
+        case ADD_MEMBER:
+        case EDIT_MEMBER:
+        case REMOVE_MEMBER:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  privilege.privilegeId === 1 &&
+                  privilege.privilegeName === VIEW_SUBJECT &&
                   privilege.subjectTypeId === privilegeListItem.subjectTypeId
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case 19: // Approve Subject
+        case APPROVE_SUBJECT: // APPROVE_Subject
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  (privilege.privilegeId === 1 &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId) ||
-                  (privilege.privilegeId === 3 &&
+                  privilege.privilegeName === VIEW_SUBJECT &&
+                  privilege.subjectTypeId === privilegeListItem.subjectTypeId
+              )
+              .map(filteredPrivileges => filteredPrivileges.uuid)
+          });
+          break;
+        case ENROL_SUBJECT:
+        case EDIT_ENROLMENT_DETAILS: // EDIT_enrolment details
+        case EXIT_ENROLMENT: // Exit enrolment
+          dependencies.set(privilegeListItem.uuid, {
+            dependencies: groupPrivilegeList
+              .filter(
+                privilege =>
+                  (privilege.privilegeName === VIEW_ENROLMENT_DETAILS &&
+                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
+                    privilege.programId === privilegeListItem.programId) ||
+                  (privilege.privilegeName === VIEW_SUBJECT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case 5: // Enrol subject
-        case 7: // Edit enrolment details
-        case 8: // Exit enrolment
+        case APPROVE_ENROLMENT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  (privilege.privilegeId === 6 &&
+                  (privilege.privilegeName === VIEW_ENROLMENT_DETAILS &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
                     privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeId === 1 &&
+                  (privilege.privilegeName === VIEW_SUBJECT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case 21: // Approve Enrolment
+        case SCHEDULE_VISIT:
+        case PERFORM_VISIT:
+        case EDIT_VISIT:
+        case CANCEL_VISIT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  (privilege.privilegeId === 6 &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeId === 7 &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeId === 1 &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
-          });
-          break;
-        case 10: // Schedule visit
-        case 11: // Perform visit
-        case 12: // Edit visit
-        case 13: // Cancel visit
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeId === 9 &&
+                  (privilege.privilegeName === VIEW_VISIT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
                     privilege.encounterTypeId === privilegeListItem.encounterTypeId &&
                     privilege.programEncounterTypeId === privilegeListItem.programEncounterTypeId &&
                     privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeId === 1 &&
+                  (privilege.privilegeName === VIEW_SUBJECT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case 23: // Approve Encounter
+        case APPROVE_ENCOUNTER:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  (privilege.privilegeId === 9 &&
+                  (privilege.privilegeName === VIEW_VISIT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
                     privilege.encounterTypeId === privilegeListItem.encounterTypeId &&
                     privilege.programEncounterTypeId === privilegeListItem.programEncounterTypeId &&
                     privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeId === 1 &&
+                  (privilege.privilegeName === VIEW_SUBJECT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case 15: // Edit checklist
+        case EDIT_CHECKLIST:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  (privilege.privilegeId === 14 &&
+                  (privilege.privilegeName === VIEW_CHECKLIST &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
                     privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
-                  (privilege.privilegeId === 1 &&
+                  (privilege.privilegeName === VIEW_SUBJECT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case 25: // Approve ChecklistItem
+        case APPROVE_CHECKLISTITEM:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
-                  (privilege.privilegeId === 14 &&
+                  (privilege.privilegeName === VIEW_CHECKLIST &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
                     privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
-                  (privilege.privilegeId === 15 &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
-                  (privilege.privilegeId === 1 &&
+                  (privilege.privilegeName === VIEW_SUBJECT &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
               .map(filteredPrivileges => filteredPrivileges.uuid)
