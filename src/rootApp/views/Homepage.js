@@ -60,6 +60,7 @@ const Homepage = ({ user }) => {
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin", "supervisor_account")}
         {renderCard("/#/appdesigner", "App Designer", "architecture")}
+        {renderCard("/#/news", "News broadcasts", "speaker")}
         {renderCard("/#/translations", "Translations", "translate")}
         {renderCard("/#/export", "Reports", "assessment")}
         {renderCard("/#/app", "Data Entry App", "keyboard")}
