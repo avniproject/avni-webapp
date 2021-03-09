@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ public class News extends OrganisationAwareEntity {
     private Date publishedDate;
     private String heroImage;
     private String content;
+    @Column(name = "contenthtml")
     private String contentHtml;
 
     public String getTitle() {
