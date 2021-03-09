@@ -11,8 +11,7 @@ import { OrgSettings } from "./components/OrgSettings";
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {
-    backgroundColor: "red",
-    marginTop: 150
+    backgroundColor: "red"
   }
 }));
 
@@ -24,25 +23,25 @@ export const OrganisationDetail = ({ organisation: { name } }) => {
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <DocumentationContainer filename={"OrganisationDetail.md"}>
         <Title title={"Organisation Details"} />
-        <Grid container direction={"column"} spacing={5}>
+        <Grid container direction={"row"} spacing={10}>
           <Grid item container spacing={3}>
             <Grid item>
               <Typography variant="h6" gutterBottom>
                 Organisation Name : {name}
               </Typography>
             </Grid>
+            <Grid item>
+              <Button
+                className={classes.deleteButton}
+                variant="contained"
+                color="secondary"
+                onClick={() => setOpenModal(true)}
+              >
+                Delete all data
+              </Button>
+            </Grid>
           </Grid>
           <OrgSettings />
-          <Grid item>
-            <Button
-              className={classes.deleteButton}
-              variant="contained"
-              color="secondary"
-              onClick={() => setOpenModal(true)}
-            >
-              Delete all data
-            </Button>
-          </Grid>
         </Grid>
         <DeleteData openModal={openModal} setOpenModal={setOpenModal} orgName={name} />
       </DocumentationContainer>

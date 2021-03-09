@@ -3,14 +3,21 @@ import Switch from "@material-ui/core/Switch";
 import React from "react";
 import { ToolTipContainer } from "./ToolTipContainer";
 
-export const AvniSwitch = ({ toolTipKey, ...props }) => {
+export const AvniSwitch = ({ toolTipKey, switchFirst, ...props }) => {
   return (
-    <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10, marginLeft: "10px" }}>
+    <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10, marginRight: "10px" }}>
       <Grid component="label" container alignItems="center" spacing={2}>
+        {switchFirst && (
+          <Grid>
+            <Switch {...props} />
+          </Grid>
+        )}
         <Grid>{props.name}</Grid>
-        <Grid>
-          <Switch {...props} />
-        </Grid>
+        {!switchFirst && (
+          <Grid>
+            <Switch {...props} />
+          </Grid>
+        )}
       </Grid>
     </ToolTipContainer>
   );
