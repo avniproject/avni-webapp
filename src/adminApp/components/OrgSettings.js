@@ -41,6 +41,7 @@ export const OrgSettings = () => {
       <Grid item container spacing={1} direction={"column"}>
         <Grid item>
           <AvniSwitch
+            switchFirst
             checked={orgSettings[organisationConfigSettingKeys.approvalWorkflow]}
             onChange={event =>
               onSettingsChange(organisationConfigSettingKeys.approvalWorkflow, event.target.checked)
@@ -49,8 +50,17 @@ export const OrgSettings = () => {
             toolTipKey={"ADMIN_APPROVAL_WORKFLOW"}
           />
         </Grid>
+        {orgSettings[organisationConfigSettingKeys.approvalWorkflow] && (
+          <Grid item>
+            <Typography variant="body2" gutterBottom>
+              Create custom dashboard with standard card types approve, reject and pending to track
+              the approval workflow.
+            </Typography>
+          </Grid>
+        )}
         <Grid item>
           <AvniSwitch
+            switchFirst
             checked={orgSettings[organisationConfigSettingKeys.draftSave]}
             onChange={event =>
               onSettingsChange(organisationConfigSettingKeys.draftSave, event.target.checked)
