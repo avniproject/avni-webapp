@@ -76,7 +76,6 @@ export const CreateNews = ({ handleClose, open, headerTitle, edit, id }) => {
       <DialogContent>
         <Grid container spacing={4} direction={"column"}>
           <Grid item>
-            EditorState{" "}
             <AvniImageUpload
               canSelect={true}
               canUpload={!isNil(file)}
