@@ -8,7 +8,6 @@ function News() {
     <Switch>
       <Route exact path={`${path}`} component={NewsList} />
       <Route exact path={`${path}/:id/details`} component={() => <div>details page</div>} />
-      <Route exact path={`${path}/create`} component={() => <div>create page</div>} />
     </Switch>
   );
 }

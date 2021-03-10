@@ -7,16 +7,18 @@ import { getFormattedDateTime } from "../adminApp/components/AuditUtil";
 import { isNil, orderBy } from "lodash";
 import { Paper } from "@material-ui/core";
 import { CustomToolbar } from "./components/CustomToolbar";
+import { CreateNews } from "./CreateNews";
 
 export default function NewsList({ history, ...props }) {
   const [news, setNews] = React.useState([]);
+  const [openCreate, setOpenCreate] = React.useState(false);
   const tableRef = React.createRef();
 
   React.useEffect(() => {
     API.getNews()
       .then(news => setNews(orderBy(news, "createdDateTime", "desc")))
       .catch(error => console.error(error));
-  }, []);
+  }, [openCreate]);
 
   const columns = [
     {
@@ -54,7 +56,7 @@ export default function NewsList({ history, ...props }) {
             components={{
               Container: props => <Fragment>{props.children}</Fragment>,
               Toolbar: props => (
-                <CustomToolbar history={history} totalNews={news.length} {...props} />
+                <CustomToolbar setOpenCreate={setOpenCreate} totalNews={news.length} {...props} />
               )
             }}
             tableRef={tableRef}
@@ -77,6 +79,12 @@ export default function NewsList({ history, ...props }) {
             }}
           />
         </Paper>
+        <CreateNews
+          open={openCreate}
+          headerTitle={"Add news broadcast"}
+          handleClose={() => setOpenCreate(false)}
+          edit={false}
+        />
       </DocumentationContainer>
     </ScreenWithAppBar>
   );

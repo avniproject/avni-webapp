@@ -2,7 +2,7 @@ import { Typography } from "@material-ui/core";
 import { ActionButton } from "./ActionButton";
 import React from "react";
 
-export const CustomToolbar = ({ totalNews, history, ...props }) => {
+export const CustomToolbar = ({ totalNews, setOpenCreate, ...props }) => {
   return (
     <div
       style={{
@@ -22,7 +22,7 @@ export const CustomToolbar = ({ totalNews, history, ...props }) => {
       </div>
       <div style={{ display: "flex" }}>
         <ActionButton
-          onClick={event => history.push("/news/create")}
+          onClick={() => setOpenCreate(true)}
           variant="contained"
           style={{ paddingHorizontal: 10 }}
           size="medium"
