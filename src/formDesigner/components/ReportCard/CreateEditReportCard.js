@@ -1,7 +1,7 @@
 import React from "react";
 import { ReportCardReducer } from "./ReportCardReducer";
 import http from "../../../common/utils/httpClient";
-import { find, get, isEmpty, isNil } from "lodash";
+import _, { find, get, isEmpty, isNil } from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
 import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
@@ -19,11 +19,11 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import ColorPicker from "material-ui-rc-color-picker";
 import { colorPickerCSS } from "../../../adminApp/Constant";
 import { sampleCardQuery } from "../../common/SampleRule";
-import _ from "lodash";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { AvniSwitch } from "../../../common/components/AvniSwitch";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
+import { bucketName, uploadImage } from "../../../common/utils/S3Client";
 
 const initialState = {
   name: "",
@@ -114,19 +114,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     return isValid;
   };
 
-  const uploadFile = async () => {
-    if (card.iconFileS3Key != null && file == null) {
-      return [card.iconFileS3Key];
-    }
-    return http
-      .uploadFile(http.withParams("/media/saveIcon"), file)
-      .then(r => [r.data, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]);
-  };
-
   const onSave = async () => {
     if (validateRequest()) {
-      const [s3FileKey, error] = await uploadFile();
+      const [s3FileKey, error] = await uploadImage(card.iconFileS3Key, file, bucketName.ICONS);
       if (error) {
         alert(error);
         return;
@@ -228,14 +218,13 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         />
         <p />
         <AvniImageUpload
-          canSelect={true}
-          canUpload={!isNil(file)}
           onSelect={setFile}
           label={"Icon"}
           toolTipKey={"APP_DESIGNER_CARD_ICON"}
           width={75}
           height={75}
           oldImgUrl={card.iconFileS3Key}
+          allowUpload={true}
         />
         <p />
         {getErrorByKey("EMPTY_COLOR")}

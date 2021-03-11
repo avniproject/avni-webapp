@@ -1,10 +1,8 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
-import { IconButton } from "@material-ui/core";
+import { Grid, IconButton, Typography } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
-import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../utils/httpClient";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
@@ -15,7 +13,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const AvniImageUpload = ({ toolTipKey, label, onSelect, width, height, oldImgUrl }) => {
+export const AvniImageUpload = ({
+  toolTipKey,
+  label,
+  onSelect,
+  width,
+  height,
+  oldImgUrl,
+  allowUpload,
+  renderButton
+}) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState("");
@@ -58,38 +65,42 @@ export const AvniImageUpload = ({ toolTipKey, label, onSelect, width, height, ol
     };
   };
 
-  return (
-    <ToolTipContainer toolTipKey={toolTipKey}>
-      <FormControl>
-        <Grid
-          container
-          direction="column"
-          justify="left"
-          alignItems="center"
-          style={{ paddingLeft: 40, paddingTop: 10, marginBottom: 5 }}
-        >
-          <Grid item>
-            <InputLabel id={label}>{label}</InputLabel>
+  function renderUploadImage() {
+    return (
+      <React.Fragment>
+        <FormControl>
+          <Grid container direction="row" alignItems="center">
+            <Grid item>
+              <Typography style={{ opacity: 0.5 }}>{label}</Typography>
+            </Grid>
+            {allowUpload && (
+              <Grid item>
+                <input
+                  accept="image/*"
+                  className={classes.input}
+                  id="contained-button-file"
+                  type="file"
+                  value={value}
+                  onChange={onSelectWrapper}
+                  style={{ display: "none" }}
+                />
+                <IconButton variant="contained" component="label" htmlFor="contained-button-file">
+                  <AddAPhoto color="primary" />
+                </IconButton>
+              </Grid>
+            )}
           </Grid>
-          <Grid item>
-            <input
-              accept="image/*"
-              className={classes.input}
-              id="contained-button-file"
-              type="file"
-              value={value}
-              onChange={onSelectWrapper}
-              style={{ display: "none" }}
-            />
-            <IconButton variant="contained" component="label" htmlFor="contained-button-file">
-              <AddAPhoto color="primary" />
-            </IconButton>
-          </Grid>
+        </FormControl>
+        <Grid item>
+          {iconPreview && <img src={iconPreview} alt={"Preview"} width={width} height={height} />}
         </Grid>
-      </FormControl>
-      <Grid item>
-        {iconPreview && <img src={iconPreview} alt={"Preview"} width={width} height={height} />}
-      </Grid>
-    </ToolTipContainer>
-  );
+      </React.Fragment>
+    );
+  }
+
+  function renderWithTooltip(toolTipKey) {
+    return <ToolTipContainer toolTipKey={toolTipKey}>{renderUploadImage()}</ToolTipContainer>;
+  }
+
+  return isEmpty(toolTipKey) ? renderUploadImage() : renderWithTooltip(toolTipKey);
 };

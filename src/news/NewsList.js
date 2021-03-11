@@ -7,7 +7,7 @@ import { getFormattedDateTime } from "../adminApp/components/AuditUtil";
 import { isNil, orderBy } from "lodash";
 import { Paper } from "@material-ui/core";
 import { CustomToolbar } from "./components/CustomToolbar";
-import { CreateNews } from "./CreateNews";
+import { CreateEditNews } from "./CreateEditNews";
 
 export default function NewsList({ history, ...props }) {
   const [news, setNews] = React.useState([]);
@@ -39,7 +39,7 @@ export default function NewsList({ history, ...props }) {
       title: "Published On",
       field: "publishedDate",
       render: rowData =>
-        isNil(rowData.publishedDate) ? "Not Published" : getFormattedDateTime(rowData.publishedDate)
+        isNil(rowData.publishedDate) ? "-" : getFormattedDateTime(rowData.publishedDate)
     },
     {
       title: "Action",
@@ -79,7 +79,7 @@ export default function NewsList({ history, ...props }) {
             }}
           />
         </Paper>
-        <CreateNews
+        <CreateEditNews
           open={openCreate}
           headerTitle={"Add news broadcast"}
           handleClose={() => setOpenCreate(false)}
