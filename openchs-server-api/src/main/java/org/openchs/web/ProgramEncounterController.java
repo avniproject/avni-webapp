@@ -38,17 +38,15 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
-    private ProgramEnrolmentRepository programEnrolmentRepository;
     private UserService userService;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
     private final ProgramEncounterService programEncounterService;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEncounterService programEncounterService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEncounterService programEncounterService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
-        this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
@@ -73,16 +71,6 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             programEncounterResponses.add(EncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService));
         });
         return new ResponsePage(programEncounterResponses, programEncounters.getNumberOfElements(), programEncounters.getTotalPages(), programEncounters.getSize());
-    }
-
-    @GetMapping(value = "/api/programEncounter/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @ResponseBody
-    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String uuid) {
-        ProgramEncounter programEncounter = programEncounterRepository.findByUuid(uuid);
-        if (programEncounter == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")
@@ -140,55 +128,6 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             if(encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
             return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
         }
-    }
-
-    @PostMapping(value = "/api/programEncounter")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @Transactional
-    @ResponseBody
-    public ResponseEntity<EncounterResponse> post(@RequestBody ApiProgramEncounterRequest request) {
-        ProgramEncounter encounter = new ProgramEncounter();
-        encounter.assignUUID();
-        updateEncounter(encounter, request);
-        return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/api/programEncounter/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @Transactional
-    @ResponseBody
-    public ResponseEntity<EncounterResponse> put(@PathVariable String id, @RequestBody ApiProgramEncounterRequest request) {
-        ProgramEncounter encounter = programEncounterRepository.findByUuid(id);
-        if (encounter == null) {
-            throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
-        }
-        updateEncounter(encounter, request);
-        return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
-    }
-
-    private ProgramEncounter updateEncounter(ProgramEncounter encounter, ApiProgramEncounterRequest request) {
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getEnrolmentId());
-        if (programEnrolment == null) {
-            throw new IllegalArgumentException(String.format("Program Enrolment not found with UUID '%s'", request.getEnrolmentId()));
-        }
-
-        EncounterType encounterType = encounterTypeRepository.findByName(request.getEncounterType());
-        if (encounterType == null) {
-            throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
-        }
-
-        encounter.setEncounterType(encounterType);
-        encounter.setEncounterLocation(request.getEncounterLocation());
-        encounter.setCancelLocation(request.getCancelLocation());
-        encounter.setEncounterDateTime(request.getEncounterDateTime());
-        encounter.setEarliestVisitDateTime(request.getEarliestScheduledDate());
-        encounter.setMaxVisitDateTime(request.getMaxScheduledDate());
-        encounter.setCancelDateTime(request.getCancelDateTime());
-        encounter.setProgramEnrolment(programEnrolment);
-        encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
-        encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
-
-        return programEncounterRepository.save(encounter);
     }
 
     @DeleteMapping("/web/programEncounter/{uuid}")

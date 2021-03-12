@@ -21,7 +21,7 @@ public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
         Response.putIfPresent(programEnrolmentResponse, "Exit location", programEnrolment.getExitLocation());
 
         Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, new LinkedHashMap<>(), programEnrolment.getObservations());
-        Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, new LinkedHashMap<>(), programEnrolment.getObservations(), "exitObservations");
+        Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, new LinkedHashMap<>(), programEnrolment.getProgramExitObservations(), "exitObservations");
 
         Response.putChildren(programEnrolmentResponse, "encounters", new HashSet<>(programEnrolment.getProgramEncounters()));
 

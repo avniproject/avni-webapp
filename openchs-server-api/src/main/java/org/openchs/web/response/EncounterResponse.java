@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 public class EncounterResponse extends LinkedHashMap<String, Object> {
     public static EncounterResponse fromProgramEncounter(ProgramEncounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
         EncounterResponse encounterResponse = new EncounterResponse();
+        encounterResponse.put("ID", encounter.getUuid());
         encounterResponse.put("Subject ID", encounter.getProgramEnrolment().getIndividual().getUuid());
         encounterResponse.put("Subject type", encounter.getProgramEnrolment().getIndividual().getSubjectType().getName());
         encounterResponse.put("Enrolment ID", encounter.getProgramEnrolment().getUuid());
@@ -19,9 +20,7 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
     }
 
     private static EncounterResponse fromBaseEncounter(EncounterResponse encounterResponse, AbstractEncounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
-        encounterResponse.put("ID", encounter.getUuid());
         encounterResponse.put("Encounter type", encounter.getEncounterType().getName());
-
         Response.putIfPresent(encounterResponse, "Encounter location", encounter.getEncounterLocation());
         encounterResponse.put("Encounter date time", encounter.getEncounterDateTime());
         encounterResponse.put("Earliest scheduled date", encounter.getEarliestVisitDateTime());
@@ -36,6 +35,7 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
 
     public static EncounterResponse fromEncounter(Encounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
         EncounterResponse encounterResponse = new EncounterResponse();
+        encounterResponse.put("ID", encounter.getUuid());
         encounterResponse.put("Subject ID", encounter.getIndividual().getUuid());
         encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
         return fromBaseEncounter(encounterResponse, encounter, conceptRepository, conceptService);

@@ -44,8 +44,6 @@ public class EncounterController extends AbstractController<Encounter> implement
     private final ObservationService observationService;
     private final UserService userService;
     private Bugsnag bugsnag;
-    private final ConceptRepository conceptRepository;
-    private final ConceptService conceptService;
     private final EncounterService encounterService;
 
     @Autowired
@@ -55,8 +53,6 @@ public class EncounterController extends AbstractController<Encounter> implement
                                ObservationService observationService,
                                UserService userService,
                                Bugsnag bugsnag,
-                               ConceptRepository conceptRepository,
-                               ConceptService conceptService,
                                EncounterService encounterService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
@@ -64,31 +60,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         this.observationService = observationService;
         this.userService = userService;
         this.bugsnag = bugsnag;
-        this.conceptRepository = conceptRepository;
-        this.conceptService = conceptService;
         this.encounterService = encounterService;
-    }
-
-    @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getEncounters(@RequestParam(value = "lastModifiedDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                      @RequestParam(value = "encounterType", required = false) String encounterType,
-                                      @RequestParam(value = "concepts", required = false) String concepts,
-                                      Pageable pageable) {
-        Page<Encounter> encounters;
-        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
-        if (S.isEmpty(encounterType)) {
-            encounters = encounterRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
-        } else {
-            encounters = encounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, conceptsMap, encounterType, pageable);
-        }
-
-        ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();
-        encounters.forEach(encounter -> {
-            encounterResponses.add(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService));
-        });
-        return new ResponsePage(encounterResponses, encounters.getNumberOfElements(), encounters.getTotalPages(), encounters.getSize());
     }
 
     @GetMapping(value = "/web/encounter/{uuid}")
@@ -99,65 +71,6 @@ public class EncounterController extends AbstractController<Encounter> implement
         if (encounterContract == null)
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(encounterContract);
-    }
-
-    @GetMapping(value = "/api/encounter/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @ResponseBody
-    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String uuid) {
-        Encounter encounter = encounterRepository.findByUuid(uuid);
-        if (encounter == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/api/encounter")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @Transactional
-    @ResponseBody
-    public ResponseEntity<EncounterResponse> post(@RequestBody ApiEncounterRequest request) {
-        Encounter encounter = new Encounter();
-        encounter.assignUUID();
-        updateEncounter(encounter, request);
-        return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/api/encounter/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @Transactional
-    @ResponseBody
-    public ResponseEntity<EncounterResponse> put(@PathVariable String id, @RequestBody ApiEncounterRequest request) {
-        Encounter encounter = encounterRepository.findByUuid(id);
-        if (encounter == null) {
-            throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
-        }
-        updateEncounter(encounter, request);
-        return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
-    }
-
-    private void updateEncounter(Encounter encounter, ApiEncounterRequest request) {
-        Individual individual = individualRepository.findByUuid(request.getSubjectId());
-        if (individual == null) {
-            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
-        }
-
-        EncounterType encounterType = encounterTypeRepository.findByName(request.getEncounterType());
-        if (encounterType == null) {
-            throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
-        }
-
-        encounter.setEncounterType(encounterType);
-        encounter.setEncounterLocation(request.getEncounterLocation());
-        encounter.setCancelLocation(request.getCancelLocation());
-        encounter.setEncounterDateTime(request.getEncounterDateTime());
-        encounter.setEarliestVisitDateTime(request.getEarliestScheduledDate());
-        encounter.setMaxVisitDateTime(request.getMaxScheduledDate());
-        encounter.setCancelDateTime(request.getCancelDateTime());
-        encounter.setIndividual(individual);
-        encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
-        encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
-
-        encounterRepository.save(encounter);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(EncounterRequest request) {

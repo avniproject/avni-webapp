@@ -37,51 +37,16 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final UserService userService;
     private final ProjectionFactory projectionFactory;
-    private final ConceptRepository conceptRepository;
-    private final ConceptService conceptService;
     private final ProgramEnrolmentService programEnrolmentService;
-    private final ProgramEncounterService programEncounterService;
     private final ProgramRepository programRepository;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEnrolmentService programEnrolmentService, ProgramEncounterService programEncounterService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
         this.projectionFactory = projectionFactory;
-        this.conceptRepository = conceptRepository;
-        this.conceptService = conceptService;
         this.programEnrolmentService = programEnrolmentService;
-        this.programEncounterService = programEncounterService;
         this.programRepository = programRepository;
-    }
-
-    @RequestMapping(value = "/api/enrolments", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getEnrolments(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                      @RequestParam(value = "program", required = false) String program,
-                                      Pageable pageable) {
-        Page<ProgramEnrolment> programEnrolments;
-        if (S.isEmpty(program)) {
-            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
-        } else {
-            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
-        }
-        ArrayList<ProgramEnrolmentResponse> programEnrolmentResponses = new ArrayList<>();
-        programEnrolments.forEach(programEnrolment -> {
-            programEnrolmentResponses.add(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService));
-        });
-        return new ResponsePage(programEnrolmentResponses, programEnrolments.getNumberOfElements(), programEnrolments.getTotalPages(), programEnrolments.getSize());
-    }
-
-    @GetMapping(value = "/api/enrolment/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @ResponseBody
-    public ResponseEntity<ProgramEnrolmentResponse> get(@PathVariable("id") String uuid) {
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
-        if (programEnrolment == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)

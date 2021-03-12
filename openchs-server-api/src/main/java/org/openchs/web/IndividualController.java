@@ -45,8 +45,6 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final SubjectTypeRepository subjectTypeRepository;
     private final ProjectionFactory projectionFactory;
     private final IndividualService individualService;
-    private ConceptRepository conceptRepository;
-    private ConceptService conceptService;
     private final EncounterService encounterService;
     private final IndividualSearchService individualSearchService;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
@@ -60,8 +58,6 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 SubjectTypeRepository subjectTypeRepository,
                                 ProjectionFactory projectionFactory,
                                 IndividualService individualService,
-                                ConceptRepository conceptRepository,
-                                ConceptService conceptService,
                                 EncounterService encounterService,
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository) {
@@ -73,42 +69,9 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.subjectTypeRepository = subjectTypeRepository;
         this.projectionFactory = projectionFactory;
         this.individualService = individualService;
-        this.conceptRepository = conceptRepository;
-        this.conceptService = conceptService;
         this.encounterService = encounterService;
         this.individualSearchService = individualSearchService;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
-    }
-
-    @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getSubjects(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-                                    @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                    @RequestParam(value = "subjectType", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String subjectType,
-                                    @RequestParam(value = "concepts", required = false) String concepts,
-                                    Pageable pageable) {
-        Page<Individual> subjects;
-        boolean subjectTypeRequested = S.isEmpty(subjectType);
-        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
-        if (subjectTypeRequested) {
-            subjects = individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
-        } else
-            subjects = individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, pageable);
-        ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
-        subjects.forEach(subject -> {
-            subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService));
-        });
-        return new ResponsePage(subjectResponses, subjects.getNumberOfElements(), subjects.getTotalPages(), subjects.getSize());
-    }
-
-    @GetMapping(value = "/api/subject/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @ResponseBody
-    public ResponseEntity<SubjectResponse> get(@PathVariable("id") String uuid) {
-        Individual subject = individualRepository.findByUuid(uuid);
-        if (subject == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
