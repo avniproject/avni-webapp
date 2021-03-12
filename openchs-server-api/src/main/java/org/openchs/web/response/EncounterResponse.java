@@ -1,6 +1,7 @@
 package org.openchs.web.response;
 
 import org.openchs.dao.ConceptRepository;
+import org.openchs.domain.AbstractEncounter;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.service.ConceptService;
@@ -8,13 +9,18 @@ import org.openchs.service.ConceptService;
 import java.util.LinkedHashMap;
 
 public class EncounterResponse extends LinkedHashMap<String, Object> {
-    public static EncounterResponse fromEncounter(Encounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public static EncounterResponse fromProgramEncounter(ProgramEncounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
         EncounterResponse encounterResponse = new EncounterResponse();
+        encounterResponse.put("Subject ID", encounter.getProgramEnrolment().getIndividual().getUuid());
+        encounterResponse.put("Subject type", encounter.getProgramEnrolment().getIndividual().getSubjectType().getName());
+        encounterResponse.put("Enrolment ID", encounter.getProgramEnrolment().getUuid());
+        encounterResponse.put("Program", encounter.getProgramEnrolment().getProgram().getName());
+        return fromBaseEncounter(encounterResponse, encounter, conceptRepository, conceptService);
+    }
+
+    private static EncounterResponse fromBaseEncounter(EncounterResponse encounterResponse, AbstractEncounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
         encounterResponse.put("ID", encounter.getUuid());
         encounterResponse.put("Encounter type", encounter.getEncounterType().getName());
-
-        encounterResponse.put("Subject ID", encounter.getIndividual().getUuid());
-        encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
 
         Response.putIfPresent(encounterResponse, "Encounter location", encounter.getEncounterLocation());
         encounterResponse.put("Encounter date time", encounter.getEncounterDateTime());
@@ -26,5 +32,12 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
         Response.putObservations(conceptRepository, conceptService, encounterResponse, new LinkedHashMap<>(), encounter.getCancelObservations(), "cancelObservations");
         Response.putAudit(encounter, encounterResponse);
         return encounterResponse;
+    }
+
+    public static EncounterResponse fromEncounter(Encounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
+        EncounterResponse encounterResponse = new EncounterResponse();
+        encounterResponse.put("Subject ID", encounter.getIndividual().getUuid());
+        encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
+        return fromBaseEncounter(encounterResponse, encounter, conceptRepository, conceptService);
     }
 }
