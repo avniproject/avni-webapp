@@ -17,6 +17,7 @@ export const DeleteBroadcast = ({ open, setOpen, setRedirect, news }) => {
   const actions = [];
   actions.push(
     <DialogActionButton
+      key={"cancel"}
       color={"#ffffff"}
       onClick={() => setOpen(false)}
       textColor={"rgba(0,0,0,0.55)"}
@@ -25,6 +26,7 @@ export const DeleteBroadcast = ({ open, setOpen, setRedirect, news }) => {
   );
   actions.push(
     <DialogActionButton
+      key={"delete"}
       color={"#bf360c"}
       onClick={deleteNews}
       textColor={"#ffffff"}
@@ -34,6 +36,7 @@ export const DeleteBroadcast = ({ open, setOpen, setRedirect, news }) => {
 
   return (
     <AvniAlertDialog
+      key={"delete"}
       open={open}
       setOpen={setOpen}
       title={" Delete broadcast news?"}

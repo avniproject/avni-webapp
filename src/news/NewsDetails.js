@@ -17,6 +17,7 @@ import { PublishBroadcast } from "./components/PublishBroadcast";
 import { DeleteBroadcast } from "./components/DeleteBroadcast";
 import { isNil } from "lodash";
 import API from "./api";
+import DOMPurify from "dompurify";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -107,12 +108,12 @@ export default function NewsDetails({ history, ...props }) {
           <Box mt={2} />
           <Divider />
           <Box mt={2} />
-          <Grid container spacing={5} direction="column" alignItems={"center"}>
+          <Grid container spacing={5} direction="column">
             <Grid item>
               <AvniImageUpload oldImgUrl={news.heroImage} height={"300"} width={"100%"} />
             </Grid>
             <Grid item container justify="flex-start">
-              <div dangerouslySetInnerHTML={{ __html: news.contentHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.contentHtml) }} />
             </Grid>
           </Grid>
         </Paper>

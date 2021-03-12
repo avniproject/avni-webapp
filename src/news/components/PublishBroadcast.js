@@ -17,6 +17,7 @@ export const PublishBroadcast = ({ open, setOpen, setRedirect, news }) => {
   const actions = [];
   actions.push(
     <DialogActionButton
+      key={"broadcast"}
       color={"#008b8a"}
       onClick={publishNews}
       textColor={"#ffffff"}
@@ -26,6 +27,7 @@ export const PublishBroadcast = ({ open, setOpen, setRedirect, news }) => {
 
   return (
     <AvniAlertDialog
+      key={"publish"}
       open={open}
       setOpen={setOpen}
       title={"Broadcast this news"}
