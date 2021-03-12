@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
 
@@ -64,9 +65,9 @@ public class MediaController {
         }
     }
 
-    @PostMapping("/media/saveIcon")
+    @PostMapping("/media/saveImage")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
-    public ResponseEntity<?> saveIcon(@RequestParam MultipartFile file) {
+    public ResponseEntity<?> saveImage(@RequestParam MultipartFile file, @RequestParam String bucketName) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         File tempSourceFile;
@@ -76,17 +77,21 @@ public class MediaController {
             if(AvniFiles.ImageType.Unknown.equals(imageType)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use .bmp, .jpg, .jpeg, .png, .gif file.");
             }
-            Dimension dimension = AvniFiles.getImageDimension(tempSourceFile, imageType);
-            if(dimension.getHeight() > 75 || dimension.getWidth() > 75) {
+            if (bucketName.equals("icons") && isInvalidDimension(tempSourceFile, imageType)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 75 X 75 or smaller.");
             }
-            String targetFilePath = format("icons/%s%s", uuid, imageType.EXT);
+            String targetFilePath = format("%s/%s%s", bucketName, uuid, imageType.EXT);
             URL s3FileUrl = s3Service.uploadImageFile(tempSourceFile, targetFilePath);
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3FileUrl.toString());
         } catch (Exception e) {
-            logger.error(format("Icon upload failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
+            logger.error(format("Image upload failed. bucketName: '%s' file:'%s', user:'%s'", bucketName, file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to save Icon. %s", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to save Image. %s", e.getMessage()));
         }
+    }
+
+    private boolean isInvalidDimension(File tempSourceFile, AvniFiles.ImageType imageType) throws IOException {
+        Dimension dimension = AvniFiles.getImageDimension(tempSourceFile, imageType);
+        return dimension.getHeight() > 75 || dimension.getWidth() > 75;
     }
 }
