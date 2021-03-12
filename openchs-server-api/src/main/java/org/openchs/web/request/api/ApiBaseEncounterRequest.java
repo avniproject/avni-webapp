@@ -1,5 +1,6 @@
 package org.openchs.web.request.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 import org.openchs.geo.Point;
 
@@ -42,24 +43,12 @@ public abstract class ApiBaseEncounterRequest {
         this.encounterType = encounterType;
     }
 
-    public void setSubjectId(String subjectId) {
-        this.subjectId = subjectId;
-    }
-
     public Point getEncounterLocation() {
         return encounterLocation;
     }
 
-    public void setEncounterLocation(Point encounterLocation) {
-        this.encounterLocation = encounterLocation;
-    }
-
     public Point getCancelLocation() {
         return cancelLocation;
-    }
-
-    public void setCancelLocation(Point cancelLocation) {
-        this.cancelLocation = cancelLocation;
     }
 
     public DateTime getEncounterDateTime() {
@@ -74,16 +63,8 @@ public abstract class ApiBaseEncounterRequest {
         return earliestScheduledDate;
     }
 
-    public void setEarliestScheduledDate(DateTime earliestScheduledDate) {
-        this.earliestScheduledDate = earliestScheduledDate;
-    }
-
     public DateTime getMaxScheduledDate() {
         return maxScheduledDate;
-    }
-
-    public void setMaxScheduledDate(DateTime maxScheduledDate) {
-        this.maxScheduledDate = maxScheduledDate;
     }
 
     public DateTime getCancelDateTime() {

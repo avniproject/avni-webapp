@@ -142,7 +142,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         }
     }
 
-    @PostMapping(value = "/api/encounter")
+    @PostMapping(value = "/api/programEncounter")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody

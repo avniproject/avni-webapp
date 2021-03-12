@@ -1,5 +1,7 @@
 package org.openchs.web.request.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ApiProgramEncounterRequest extends ApiBaseEncounterRequest {
     @JsonProperty("Enrolment ID")
     private String enrolmentId;
@@ -7,7 +9,6 @@ public class ApiProgramEncounterRequest extends ApiBaseEncounterRequest {
     @JsonProperty("Program")
     private String program;
 
-    @Override
     public String getProgram() {
         return program;
     }

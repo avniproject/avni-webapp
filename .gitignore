@@ -25,3 +25,7 @@ local.properties
 _1*
 segments_2
 write.lock
+
+# Lucene files
+**/_*.*
+**/segments_f
