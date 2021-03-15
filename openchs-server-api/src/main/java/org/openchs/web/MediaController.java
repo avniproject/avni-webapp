@@ -80,6 +80,9 @@ public class MediaController {
             if (bucketName.equals("icons") && isInvalidDimension(tempSourceFile, imageType)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 75 X 75 or smaller.");
             }
+            if (bucketName.equals("news") && isInvalidImageSize(file)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 500KB or smaller.");
+            }
             String targetFilePath = format("%s/%s%s", bucketName, uuid, imageType.EXT);
             URL s3FileUrl = s3Service.uploadImageFile(tempSourceFile, targetFilePath);
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3FileUrl.toString());
@@ -88,6 +91,10 @@ public class MediaController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to save Image. %s", e.getMessage()));
         }
+    }
+
+    private boolean isInvalidImageSize(MultipartFile file) {
+        return AvniFiles.getSizeInKB(file) > 500;
     }
 
     private boolean isInvalidDimension(File tempSourceFile, AvniFiles.ImageType imageType) throws IOException {

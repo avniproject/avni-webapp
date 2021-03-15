@@ -156,4 +156,7 @@ public class AvniFiles {
         return convertMultiPartToFile(file, ".zip");
     }
 
+    public static double getSizeInKB(MultipartFile file) {
+        return file.getSize() * 0.0009765625;
+    }
 }
