@@ -1,0 +1,802 @@
+openapi: 3.0.0
+info:
+  description: This is for API consumers of Avni
+  version: "1.0.0"
+  title: Avni API
+  contact:
+    email: avniproject@googlegroups.com
+  license:
+    name: AGPL 3.0
+    url: 'https://opensource.org/licenses/AGPL-3.0'
+tags:
+- name: Subject
+paths:
+  /api/subjects:
+    get:
+      tags:
+      - Subject
+      summary: Get paged list of subjects
+      operationId: subjects
+      description: |
+        By passing in the appropriate options, you can get the subjects in set of pages
+      parameters:
+      - in: query
+        name: lastModifiedDateTime
+        description: date-time in ISO datetime format. All the subjects which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: subjectType
+        description: subject type
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: concepts
+        description: Allows to search by concepts
+        example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
+        required: false
+        schema:
+          type: string
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful, a page of subjects
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ResponsePage'
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Subject'
+        '400':
+          description: bad input parameter
+  /api/subject/{ID}:
+    get:
+      tags:
+      - Subject
+      summary: Get a specific subject by ID
+      description: |
+        Provide the ID of the subject. The ID is in UUID format, the external id used by Avni
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+        '400':
+          description: bad input parameter
+  /api/programEnrolments:
+    get:
+      tags:
+      - Program Enrolment
+      summary: Get paged list of program enrolments
+      description: |
+        By passing in the appropriate options, you can get the program enrolments in set of pages
+      parameters:
+      - in: query
+        name: lastModifiedDateTime
+        description: date-time in ISO datetime format. All the program enrolments which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: program
+        description: program name
+        required: false
+        schema:
+          type: string
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful, a page of program enrolments
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ResponsePage'
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProgramEnrolment'
+        '400':
+          description: bad input parameter
+  /api/programEnrolment/{ID}:
+    get:
+      tags:
+      - Program Enrolment
+      summary: Get a specific program enrolment by ID
+      description: |
+        Provide the ID of the program enrolment. The ID is in UUID format, the external id used by Avni
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEnrolment'
+        '400':
+          description: bad input parameter
+    put:
+      tags:
+      - Program Enrolment
+      summary: Updates an existing program enrolment
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgramEnrolmentBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEnrolment'
+  /api/programEnrolment:
+    post:
+      tags:
+      - Program Enrolment
+      summary: Creates a new program enrolment
+      parameters:
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgramEnrolmentBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEnrolment'
+  /api/programEncounters:
+    get:
+      tags:
+      - Program Encounter
+      summary: Get paged list of program encounters
+      description: |
+        By passing in the appropriate options, you can get the program encounters in set of pages
+      parameters:
+      - in: query
+        name: lastModifiedDateTime
+        description: date-time in ISO datetime format. All the program encounters which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: encounter type
+        description: program encounter type name
+        required: false
+        schema:
+          type: string
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful, a page of program encounters
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ResponsePage'
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Encounter'
+        '400':
+          description: bad input parameter
+  /api/programEncounter/{ID}:
+    get:
+      tags:
+      - Program Encounter
+      summary: Get a specific program encounter by ID
+      description: |
+        Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEncounter'
+        '400':
+          description: bad input parameter
+    put:
+      tags:
+      - Program Encounter
+      summary: Updates an existing program encounter
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgramEncounterBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEncounter'
+  /api/programEncounter:
+    post:
+      tags:
+      - Program Encounter
+      summary: Creates a new program encounter
+      parameters:
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgramEncounterBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEncounter'
+  /api/encounters:
+    get:
+      tags:
+      - Subject Encounter
+      summary: Get paged list of subject encounters
+      description: |
+        By passing in the appropriate options, you can get the subject encounters in set of pages.
+      parameters:
+      - in: query
+        name: lastModifiedDateTime
+        description: date-time in ISO datetime format. All the subject encounters which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: encounter type
+        description: subject encounter type name
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: concepts
+        description: Allows to search by concepts
+        example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
+        required: false
+        schema:
+          type: string
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful, a page of subject encounters
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/ResponsePage'
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Encounter'
+        '400':
+          description: bad input parameter
+  /api/encounter/{ID}:
+    get:
+      tags:
+      - Subject Encounter
+      summary: Get a specific subject encounter by ID
+      description: |
+        Provide the ID of the subject encounter. The ID is in UUID format, the external id used by Avni
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Encounter'
+        '400':
+          description: bad input parameter
+    put:
+      tags:
+      - Subject Encounter
+      summary: Updates an existing encounter
+      parameters:
+      - in: path
+        name: ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: header
+        name: auth-token
+        schema:
+          type: string
+          description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncounterBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Encounter'
+  /api/encounter:
+      post:
+        tags:
+        - Subject Encounter
+        summary: Creates a new encounter
+        parameters:
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncounterBody'
+        responses:
+          '200':
+            description: successful
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Encounter'
+components:
+  schemas:
+    Subject:
+      type: object
+      properties:
+        ID:
+          type: string
+          format: uuid
+        Voided:
+          type: boolean
+        Subject type:
+          type: string
+          description: returned only when subject type is not provided in the request
+        Registration location:
+          $ref: '#/components/schemas/GeoLocation'
+        Registration date:
+          type: string
+          format: date
+          example: '2016-08-29'
+        location:
+          type: object
+          description: 'full hierarchy of location is provided, each one as key-value pair. Example {"Village": "Ganks", "Block": "Ynaos"}'
+          additionalProperties:
+            type: string
+        relatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubjectRelationship'
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+          example:
+            Phone number: 9801010101
+            Medical problems: ["Asthama", "Diabetes"]
+            Marriage date: '1994-08-29'
+        encounters:
+          type: array
+          items:
+            type: string
+            format: uuid
+        enrolments:
+          type: array
+          items:
+            type: string
+            format: uuid
+        audit:
+          $ref: '#/components/schemas/Audit'
+    SubjectRelationship:
+      type: object
+      properties:
+        Voided:
+          type: boolean
+        Relationship type:
+          type: string
+          example: Daughter
+        Relative ID:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        Enter date:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+        Exit date:
+          type: string
+          format: date-time
+          example: '2017-11-14T17:34:28Z'
+    ProgramEnrolment:
+      type: object
+      properties:
+        ID:
+          type: string
+          format: uuid
+        Voided:
+          type: boolean
+        Subject ID:
+          type: string
+          format: uuid
+        Subject type:
+          type: string
+        Program:
+          type: string
+          example: Pregnancy
+        Enrolment datetime:
+          type: string
+          format: date-time
+        Enrolment location:
+          $ref: '#/components/schemas/GeoLocation'
+        Exit datetime:
+          type: string
+          format: date-time
+        Exit location:
+          $ref: '#/components/schemas/GeoLocation'
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        exitObservations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        encounters:
+          type: array
+          items:
+            type: string
+            format: uuid
+        audit:
+          $ref: '#/components/schemas/Audit'
+    ProgramEncounter:
+      type: object
+      properties:
+        ID:
+          type: string
+          format: uuid
+        Voided:
+          type: boolean
+        Enrolment ID:
+          type: string
+          format: uuid
+          description: id of the program enrolment
+        Program:
+          type: string
+          description: name of the program of the enrolment to which this encounter belongs, same as program in the program enrolment resource
+        Encounter type:
+          type: string
+          example: Monthly Visit
+        Encounter location:
+          $ref: '#/components/schemas/GeoLocation'
+        Encounter datetime:
+          type: string
+          format: date-time
+        Earliest scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        Max scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Cancel location:
+          $ref: '#/components/schemas/GeoLocation'
+        Cancel datetime:
+          type: string
+          format: date-time
+          description: available only for cancelled encounters
+        cancelObservations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        audit:
+          $ref: '#/components/schemas/Audit'
+    ProgramEncounterBody:
+      type: object
+      properties:
+        Enrolment ID:
+          type: string
+          format: uuid
+          description: id of the program enrolment
+        Program:
+          type: string
+          description: name of the program of the enrolment to which this encounter belongs, same as program in the program enrolment resource
+        Encounter type:
+          type: string
+          example: Monthly Visit
+        Encounter location:
+          $ref: '#/components/schemas/GeoLocation'
+        Encounter datetime:
+          type: string
+          format: date-time
+        Earliest scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        Max scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Cancel location:
+          $ref: '#/components/schemas/GeoLocation'
+        Cancel datetime:
+          type: string
+          format: date-time
+          description: available only for cancelled encounters
+        cancelObservations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+    Encounter:
+      type: object
+      properties:
+        ID:
+          type: string
+          format: uuid
+        Voided:
+          type: boolean
+        Encounter type:
+          type: string
+          example: Monthly Visit
+        Subject ID:
+          type: string
+          format: uuid
+          description: id of the subject
+        Subject type:
+          type: string
+          description: name of the subject to which this encounter belongs, same as subject type in the subject resource
+        Encounter location:
+          $ref: '#/components/schemas/GeoLocation'
+        Encounter datetime:
+          type: string
+          format: date-time
+        Earliest scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        Max scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Cancel location:
+          $ref: '#/components/schemas/GeoLocation'
+        Cancel datetime:
+          type: string
+          format: date-time
+          description: available only for cancelled encounters
+        cancelObservations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        audit:
+          $ref: '#/components/schemas/Audit'
+    ProgramEnrolmentBody:
+      type: object
+      properties:
+        Program:
+          type: string
+          example: ANC program
+        Subject ID:
+          type: string
+          format: uuid
+          description: id of the subject
+        Enrolment location:
+          $ref: '#/components/schemas/GeoLocation'
+        Exit location:
+          $ref: '#/components/schemas/GeoLocation'
+        Enrolment date time:
+          type: string
+          format: date-time
+        Exit date time:
+          type: string
+          format: date-time
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        exitObservations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+    EncounterBody:
+      type: object
+      properties:
+        Encounter type:
+          type: string
+          example: Monthly Visit
+        Subject ID:
+          type: string
+          format: uuid
+          description: id of the subject
+        Encounter location:
+          $ref: '#/components/schemas/GeoLocation'
+        Encounter datetime:
+          type: string
+          format: date-time
+        Earliest scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        Max scheduled date:
+          type: string
+          format: date
+          description: available only for scheduled encounters
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Cancel location:
+          $ref: '#/components/schemas/GeoLocation'
+        Cancel datetime:
+          type: string
+          format: date-time
+          description: available only for cancelled encounters
+        cancelObservations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+    GeoLocation:
+      type: object
+      description: Available if the location is enabled by the user
+      properties:
+        X:
+          type: number
+          example: 19.1253108
+        Y:
+          type: number
+          example: 74.7364501
+    Audit:
+      type: object
+      properties:
+        Created at:
+          type: string
+          format: date-time
+          example: '2016-07-21T17:32:28Z'
+        Last modified at:
+          type: string
+          format: date-time
+          example: '2018-07-21T17:32:28Z'
+        Created by:
+          type: string
+          description: Username which the user uses for login
+          example: 'narayan@jnpct'
+        Last modified by:
+          type: string
+          description: Username which the user uses for login
+          example: 'sheela@jnpct'
+    ResponsePage:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          example: 1226
+          description: Number of entities (like subject) in all the pages put together
+        totalPages:
+          type: integer
+          example: 13
+          description: Total number of pages
+        pageSize:
+          type: integer
+          example: 100
+          description: Number of entities in each page
+# Added by API Auto Mocking Plugin
+servers:
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/samanvay/avni-external/1.0.0

@@ -89,15 +89,21 @@ public class ProgramEnrolmentApiController {
 
     @RequestMapping(value = "/api/programEnrolments", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getEnrolments(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                      @RequestParam(value = "program", required = false) String program,
-                                      Pageable pageable) {
+    public Object getEnrolments(@RequestParam(name = "lastModifiedDateTime", required = false)
+                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+                                @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                @RequestParam(value = "program", required = false) String program,
+                                @RequestParam(value = "subject", required = false) String subjectUuid,
+                                Pageable pageable) {
         Page<ProgramEnrolment> programEnrolments;
-        if (S.isEmpty(program)) {
+        if (S.isEmpty(program) && lastModifiedDateTime != null) {
             programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
-        } else {
+        } else if (S.isEmpty(subjectUuid) && lastModifiedDateTime != null) {
             programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
+        } else if (!S.isEmpty(subjectUuid) && !S.isEmpty(program)) {
+            programEnrolments = programEnrolmentRepository.findByProgramNameAndIndividualUuidOrderByAuditLastModifiedDateTimeAscIdAsc(program, subjectUuid, pageable);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ArrayList<ProgramEnrolmentResponse> programEnrolmentResponses = new ArrayList<>();
         programEnrolments.forEach(programEnrolment -> programEnrolmentResponses.add(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService)));

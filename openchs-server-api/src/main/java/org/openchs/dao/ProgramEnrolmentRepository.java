@@ -77,5 +77,10 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             String program,
             Pageable pageable);
 
+    Page<ProgramEnrolment> findByProgramNameAndIndividualUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
+            String program,
+            String individualUuid,
+            Pageable pageable);
+
     ProgramEnrolment findByLegacyId(String legacyId);
 }
