@@ -100,7 +100,7 @@ export default function NewsDetails({ history, ...props }) {
                   style={{ paddingHorizontal: 10 }}
                   size="medium"
                 >
-                  {"Broadcast this news"}
+                  {"Publish this news"}
                 </ActionButton>
               </Grid>
             </Grid>

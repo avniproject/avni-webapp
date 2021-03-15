@@ -22,11 +22,6 @@ export default function NewsList({ history, ...props }) {
 
   const columns = [
     {
-      title: "S.No.",
-      field: "id",
-      render: rowData => rowData.tableData.id + 1
-    },
-    {
       title: "Title",
       field: "title"
     },
@@ -48,7 +43,7 @@ export default function NewsList({ history, ...props }) {
   ];
 
   return (
-    <ScreenWithAppBar appbarTitle={"News broadcast"}>
+    <ScreenWithAppBar appbarTitle={"News Broadcast"}>
       <DocumentationContainer filename={"NewsBroadcast.md"}>
         <Paper style={{ marginBottom: "15px", marginTop: "15px" }}>
           <MaterialTable

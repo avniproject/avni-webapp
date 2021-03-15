@@ -21,7 +21,7 @@ export const PublishBroadcast = ({ open, setOpen, setRedirect, news }) => {
       color={"#008b8a"}
       onClick={publishNews}
       textColor={"#ffffff"}
-      text={"Broadcast news"}
+      text={"Publish news"}
     />
   );
 
@@ -30,8 +30,8 @@ export const PublishBroadcast = ({ open, setOpen, setRedirect, news }) => {
       key={"publish"}
       open={open}
       setOpen={setOpen}
-      title={"Broadcast this news"}
-      message={"After broadcast this news will be available to the field user after the sync."}
+      title={"Publish this news"}
+      message={"After publishing, this news will be available to the field user after the sync."}
       actions={actions}
     />
   );
