@@ -33,7 +33,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "identifierAssignmentPool",
             "api",
             "groupSubject",
-            "entityApprovalStatus"
+            "entityApprovalStatus",
+            "news"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     private final String[] metadataPathList = Stream.of("addressLevel",

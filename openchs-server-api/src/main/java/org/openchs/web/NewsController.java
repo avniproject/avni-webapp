@@ -1,10 +1,18 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.NewsRepository;
 import org.openchs.domain.News;
 import org.openchs.service.NewsService;
+import org.openchs.service.S3Service;
+import org.openchs.util.S;
 import org.openchs.web.request.NewsContract;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +27,13 @@ public class NewsController extends AbstractController<News> implements RestCont
 
     private final NewsService newsService;
     private final NewsRepository newsRepository;
+    private final S3Service s3Service;
 
     @Autowired
-    public NewsController(NewsService newsService, NewsRepository newsRepository) {
+    public NewsController(NewsService newsService, NewsRepository newsRepository, S3Service s3Service) {
         this.newsService = newsService;
         this.newsRepository = newsRepository;
+        this.s3Service = s3Service;
     }
 
     @GetMapping(value = "/web/news")
@@ -75,5 +85,24 @@ public class NewsController extends AbstractController<News> implements RestCont
     public void deleteNews(@PathVariable Long id) {
         Optional<News> news = newsRepository.findById(id);
         news.ifPresent(newsService::deleteNews);
+    }
+
+    @RequestMapping(value = "/news", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @Transactional
+    public PagedResources<Resource<News>> getNews(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(newsRepository.findByPublishedDateNotNullAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
+    }
+
+    @Override
+    public Resource<News> process(Resource<News> resource) {
+        News news = resource.getContent();
+        if (!S.isEmpty(news.getHeroImage())) {
+            resource.add(new Link(s3Service.generateMediaDownloadUrl(news.getHeroImage()).toString(), "heroImageSignedURL"));
+        }
+        return resource;
     }
 }

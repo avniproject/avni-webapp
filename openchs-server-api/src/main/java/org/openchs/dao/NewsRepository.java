@@ -1,6 +1,9 @@
 package org.openchs.dao;
 
+import org.joda.time.DateTime;
 import org.openchs.domain.News;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface NewsRepository extends TransactionalDataRepository<News>, FindByLastModifiedDateTime<News> {
 
     News findByTitleAndIsVoidedFalse(String title);
+
+    Page<News> findByPublishedDateNotNullAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 }
 

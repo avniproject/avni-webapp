@@ -1,17 +1,18 @@
 package org.openchs.domain;
 
+import org.joda.time.DateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 @Entity
 @Table(name = "news")
 public class News extends OrganisationAwareEntity {
     @NotNull
     private String title;
-    private Date publishedDate;
+    private DateTime publishedDate;
     private String heroImage;
     private String content;
     @Column(name = "contenthtml")
@@ -25,11 +26,11 @@ public class News extends OrganisationAwareEntity {
         this.title = title;
     }
 
-    public Date getPublishedDate() {
+    public DateTime getPublishedDate() {
         return publishedDate;
     }
 
-    public void setPublishedDate(Date publishedDate) {
+    public void setPublishedDate(DateTime publishedDate) {
         this.publishedDate = publishedDate;
     }
 

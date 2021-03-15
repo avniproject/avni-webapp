@@ -3,11 +3,9 @@ package org.openchs.web.request;
 import org.joda.time.DateTime;
 import org.openchs.domain.News;
 
-import java.util.Date;
-
 public class NewsContract extends CHSRequest {
     private String title;
-    private Date publishedDate;
+    private DateTime publishedDate;
     private DateTime createdDateTime;
     private String heroImage;
     private String content;
@@ -35,11 +33,11 @@ public class NewsContract extends CHSRequest {
         this.title = title;
     }
 
-    public Date getPublishedDate() {
+    public DateTime getPublishedDate() {
         return publishedDate;
     }
 
-    public void setPublishedDate(Date publishedDate) {
+    public void setPublishedDate(DateTime publishedDate) {
         this.publishedDate = publishedDate;
     }
 
