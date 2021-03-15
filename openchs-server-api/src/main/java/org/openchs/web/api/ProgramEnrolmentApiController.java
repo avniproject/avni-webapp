@@ -40,7 +40,7 @@ public class ProgramEnrolmentApiController {
         this.programRepository = programRepository;
     }
 
-    @PostMapping(value = "/api/ProgramEnrolment")
+    @PostMapping(value = "/api/programEnrolment")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
@@ -51,7 +51,7 @@ public class ProgramEnrolmentApiController {
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/api/ProgramEnrolment/{id}")
+    @PutMapping(value = "/api/programEnrolment/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
@@ -87,7 +87,7 @@ public class ProgramEnrolmentApiController {
         programEnrolmentRepository.save(enrolment);
     }
 
-    @RequestMapping(value = "/api/enrolments", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/programEnrolments", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponsePage getEnrolments(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -104,7 +104,7 @@ public class ProgramEnrolmentApiController {
         return new ResponsePage(programEnrolmentResponses, programEnrolments.getNumberOfElements(), programEnrolments.getTotalPages(), programEnrolments.getSize());
     }
 
-    @GetMapping(value = "/api/enrolment/{id}")
+    @GetMapping(value = "/api/programEnrolment/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<ProgramEnrolmentResponse> get(@PathVariable("id") String uuid) {

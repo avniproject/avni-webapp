@@ -39,38 +39,14 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private UserService userService;
-    private final ConceptRepository conceptRepository;
-    private final ConceptService conceptService;
     private final ProgramEncounterService programEncounterService;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEncounterService programEncounterService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.userService = userService;
-        this.conceptRepository = conceptRepository;
-        this.conceptService = conceptService;
         this.programEncounterService = programEncounterService;
-    }
-
-    @RequestMapping(value = "/api/programEncounters", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                      @RequestParam(value = "encounterType", required = false) String encounterType,
-                                      Pageable pageable) {
-        Page<ProgramEncounter> programEncounters;
-        if (S.isEmpty(encounterType)) {
-            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
-        } else {
-            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
-        }
-
-        ArrayList<EncounterResponse> programEncounterResponses = new ArrayList<>();
-        programEncounters.forEach(programEncounter -> {
-            programEncounterResponses.add(EncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService));
-        });
-        return new ResponsePage(programEncounterResponses, programEncounters.getNumberOfElements(), programEncounters.getTotalPages(), programEncounters.getSize());
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")

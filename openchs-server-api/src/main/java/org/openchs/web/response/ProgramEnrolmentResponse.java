@@ -11,6 +11,7 @@ public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
     public static ProgramEnrolmentResponse fromProgramEnrolment(ProgramEnrolment programEnrolment, ConceptRepository conceptRepository, ConceptService conceptService) {
         ProgramEnrolmentResponse programEnrolmentResponse = new ProgramEnrolmentResponse();
         programEnrolmentResponse.put("ID", programEnrolment.getUuid());
+        programEnrolmentResponse.put("Voided", programEnrolment.isVoided());
         programEnrolmentResponse.put("Subject type", programEnrolment.getIndividual().getSubjectType().getName());
         programEnrolmentResponse.put("Subject ID", programEnrolment.getIndividual().getUuid());
         programEnrolmentResponse.put("Program", programEnrolment.getProgram().getName());

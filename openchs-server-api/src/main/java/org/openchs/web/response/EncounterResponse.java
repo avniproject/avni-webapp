@@ -20,6 +20,7 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
     }
 
     private static EncounterResponse fromBaseEncounter(EncounterResponse encounterResponse, AbstractEncounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
+        encounterResponse.put("Voided", encounter.isVoided());
         encounterResponse.put("Encounter type", encounter.getEncounterType().getName());
         Response.putIfPresent(encounterResponse, "Encounter location", encounter.getEncounterLocation());
         encounterResponse.put("Encounter date time", encounter.getEncounterDateTime());
