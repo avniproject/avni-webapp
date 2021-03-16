@@ -6,7 +6,7 @@ import DraftEditor from "./components/DraftEditor";
 import { ActionButton } from "./components/ActionButton";
 import TextField from "@material-ui/core/TextField";
 import { AvniImageUpload } from "../common/components/AvniImageUpload";
-import { get, isEmpty, size } from "lodash";
+import { get, isEmpty } from "lodash";
 import { bucketName, uploadImage } from "../common/utils/S3Client";
 import { newsInitialState, NewsReducer } from "./reducers";
 import { dispatchActionAndClearError, displayErrorForKey } from "./utils";
@@ -36,7 +36,15 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
     }
   }, [open]);
 
-  const isValidRequest = contentHtml => {
+  const getWordCount = () => {
+    const plainText = news.editorState.getCurrentContent().getPlainText("");
+    const regex = /(?:\r\n|\r|\n)/g;
+    const cleanString = plainText.replace(regex, " ").trim();
+    const wordArray = cleanString.match(/\S+/g);
+    return wordArray ? wordArray.length : 0;
+  };
+
+  const isValidRequest = () => {
     const { title } = news;
     let isValid = true;
     setError([]);
@@ -44,8 +52,8 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
       setError([...error, { key: "EMPTY_TITLE", message: "title cannot be empty" }]);
       isValid = false;
     }
-    if (size(contentHtml) < 50) {
-      setError([...error, { key: "LESS_CONTENT", message: "Please type more content" }]);
+    if (getWordCount() < 10) {
+      setError([...error, { key: "LESS_CONTENT", message: "Please type at least 10 words" }]);
       isValid = false;
     }
     return isValid;
@@ -55,7 +63,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
     const rawContent = convertToRaw(news.editorState.getCurrentContent());
     const content = JSON.stringify(rawContent);
     const contentHtml = DOMPurify.sanitize(draftToHtml(rawContent));
-    if (isValidRequest(contentHtml)) {
+    if (isValidRequest()) {
       setSaving(true);
       const [s3FileKey, error] = await uploadImage(news.heroImage, file, bucketName.NEWS);
       if (error) {
@@ -153,8 +161,8 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             )}
             {displayErrorForKey(error, "LESS_CONTENT")}
           </Grid>
+          <Grid item>{displayErrorForKey(error, "SERVER_ERROR")}</Grid>
           <Grid item>
-            {displayErrorForKey(error, "SERVER_ERROR")}
             <ActionButton
               onClick={onSave}
               variant="contained"

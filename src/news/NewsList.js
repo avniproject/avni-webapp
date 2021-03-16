@@ -16,7 +16,7 @@ export default function NewsList({ history, ...props }) {
 
   React.useEffect(() => {
     API.getNews()
-      .then(news => setNews(orderBy(news, "createdDateTime", "desc")))
+      .then(news => setNews(orderBy(news, "lastModifiedDateTime", "desc")))
       .catch(error => console.error(error));
   }, [openCreate]);
 
@@ -29,6 +29,11 @@ export default function NewsList({ history, ...props }) {
       title: "Created On",
       field: "createdDateTime",
       render: rowData => getFormattedDateTime(rowData.createdDateTime)
+    },
+    {
+      title: "Modified On",
+      field: "lastModifiedDateTime",
+      render: rowData => getFormattedDateTime(rowData.lastModifiedDateTime)
     },
     {
       title: "Published On",
