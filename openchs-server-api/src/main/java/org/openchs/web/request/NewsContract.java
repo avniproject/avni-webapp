@@ -7,6 +7,7 @@ public class NewsContract extends CHSRequest {
     private String title;
     private DateTime publishedDate;
     private DateTime createdDateTime;
+    private DateTime lastModifiedDateTime;
     private String heroImage;
     private String content;
     private String contentHtml;
@@ -22,6 +23,7 @@ public class NewsContract extends CHSRequest {
         newsContract.setContent(news.getContent());
         newsContract.setContentHtml(news.getContentHtml());
         newsContract.setCreatedDateTime(news.getCreatedDateTime());
+        newsContract.setLastModifiedDateTime(news.getLastModifiedDateTime());
         return newsContract;
     }
 
@@ -71,5 +73,13 @@ public class NewsContract extends CHSRequest {
 
     public void setCreatedDateTime(DateTime createdDateTime) {
         this.createdDateTime = createdDateTime;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
     }
 }
