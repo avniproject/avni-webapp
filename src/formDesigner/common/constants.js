@@ -6,7 +6,8 @@ export const constFormType = {
   ProgramEnrolment: "Program enrolment",
   ProgramExit: "Program exit",
   ProgramEncounterCancellation: "Program encounter cancellation",
-  IndividualEncounterCancellation: "Individual Encounter Cancellation"
+  IndividualEncounterCancellation: "Individual Encounter Cancellation",
+  Location: "Location"
 };
 
 export const inlineConceptDataType = [

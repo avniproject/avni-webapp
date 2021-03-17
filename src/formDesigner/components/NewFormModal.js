@@ -125,18 +125,7 @@ class NewFormModal extends Component {
   }
 
   formTypeElement() {
-    const formTypes = [
-      "IndividualProfile",
-      "Encounter",
-      "ProgramEncounter",
-      "ProgramEnrolment",
-      "ProgramExit",
-      "ProgramEncounterCancellation",
-      "ChecklistItem",
-      "IndividualEncounterCancellation"
-    ];
-
-    return formTypes.map(formType => {
+    return _.map(_.keys(constFormType), formType => {
       return (
         <MenuItem key={formType} value={formType}>
           {constFormType[formType]}
