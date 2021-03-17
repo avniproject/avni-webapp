@@ -5,6 +5,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.openchs.application.projections.BaseProjection;
+import org.openchs.geo.Point;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -61,6 +62,14 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     @Column(table = "title_lineage_locations_view", name = "title_lineage")
     private String titleLineage;
+
+    @Column
+    @Type(type = "observations")
+    private ObservationCollection locationProperties;
+
+    @Type(type = "org.openchs.geo.PointType")
+    @Column
+    private Point gpsCoordinates;
 
     public String getTitle() {
         return title;
@@ -214,6 +223,22 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public Long getTypeId() {
         return this.type != null ? this.type.getId() : null;
+    }
+
+    public ObservationCollection getLocationProperties() {
+        return locationProperties;
+    }
+
+    public void setLocationProperties(ObservationCollection locationProperties) {
+        this.locationProperties = locationProperties;
+    }
+
+    public Point getGpsCoordinates() {
+        return gpsCoordinates;
+    }
+
+    public void setGpsCoordinates(Point gpsCoordinates) {
+        this.gpsCoordinates = gpsCoordinates;
     }
 
     @Projection(name = "AddressLevelProjection", types = {AddressLevel.class})

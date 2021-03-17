@@ -12,7 +12,8 @@ public enum FormType {
     ProgramExit,
     ProgramEncounterCancellation,
     ChecklistItem,
-    IndividualRelationship;
+    IndividualRelationship,
+    Location;
 
     static FormType[] linkedToEncounterType = {Encounter, ProgramEncounter, ProgramEncounterCancellation, IndividualEncounterCancellation};
     static FormType[] linkedToProgram = {ProgramEncounter, ProgramExit, ProgramEnrolment, ProgramEncounterCancellation};
