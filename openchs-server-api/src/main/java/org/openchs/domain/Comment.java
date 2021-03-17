@@ -2,6 +2,7 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
+import org.openchs.util.S;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -33,5 +34,14 @@ public class Comment extends OrganisationAwareEntity {
 
     public void setSubject(Individual subject) {
         this.subject = subject;
+    }
+
+    public String getSubjectUUID() {
+        return this.subject.getUuid();
+    }
+
+    public String getDisplayUsername() {
+        User createdByUser = this.getAudit().getCreatedBy();
+        return S.isEmpty(createdByUser.getName()) ? createdByUser.getUsername() : createdByUser.getName();
     }
 }
