@@ -1,34 +1,54 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.CommentRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.Comment;
 import org.openchs.domain.Individual;
+import org.openchs.domain.SubjectType;
 import org.openchs.service.CommentService;
+import org.openchs.service.UserService;
 import org.openchs.web.request.CommentContract;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-public class CommentController extends AbstractController<Comment> implements RestControllerResourceProcessor<Comment> {
+public class CommentController extends AbstractController<Comment> implements RestControllerResourceProcessor<Comment>, OperatingIndividualScopeAwareFilterController<Comment> {
 
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(CommentController.class);
     private final CommentRepository commentRepository;
     private final IndividualRepository individualRepository;
     private final CommentService commentService;
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final UserService userService;
 
     @Autowired
     public CommentController(CommentRepository commentRepository,
                              IndividualRepository individualRepository,
-                             CommentService commentService) {
+                             CommentService commentService,
+                             SubjectTypeRepository subjectTypeRepository,
+                             UserService userService) {
         this.commentRepository = commentRepository;
         this.individualRepository = individualRepository;
         this.commentService = commentService;
+        this.subjectTypeRepository = subjectTypeRepository;
+        this.userService = userService;
     }
 
     @GetMapping(value = "/web/comments")
@@ -69,5 +89,44 @@ public class CommentController extends AbstractController<Comment> implements Re
         comment.ifPresent(commentService::deleteComment);
     }
 
+    @RequestMapping(value = "/comments", method = RequestMethod.POST)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public void save(@RequestBody CommentContract commentContract) {
+        logger.info(String.format("Saving comment with UUID %s", commentContract.getUuid()));
+        Individual subject = individualRepository.findByUuid(commentContract.getSubjectUUID());
+        Comment comment = newOrExistingEntity(commentRepository, commentContract, new Comment());
+        comment.setText(commentContract.getText());
+        comment.setSubject(subject);
+        commentRepository.save(comment);
+        logger.info(String.format("Saved comment with UUID %s", commentContract.getUuid()));
+    }
+
+    @GetMapping(value = {"/comment"})
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public PagedResources<Resource<Comment>> getCommentsByOperatingIndividualScope(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @RequestParam(value = "subjectTypeUuid") String subjectTypeUuid,
+            Pageable pageable) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
+        if (subjectType == null) {
+            return wrap(new PageImpl<>(Collections.emptyList()));
+        }
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+    }
+
+    @Override
+    public Resource<Comment> process(Resource<Comment> resource) {
+        Comment comment = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(comment.getSubjectUUID(), "individualUUID"));
+        return resource;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<Comment> repository() {
+        return commentRepository;
+    }
 
 }

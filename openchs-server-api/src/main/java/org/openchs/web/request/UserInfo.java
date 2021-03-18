@@ -17,8 +17,9 @@ public class UserInfo {
     private JsonObject settings;
     private DateTime lastModifiedDateTime;
     private String[] roles;
+    private String name;
 
-    public UserInfo(String username, String orgName, Long orgId, String usernameSuffix, String[] roles, JsonObject settings) {
+    public UserInfo(String username, String orgName, Long orgId, String usernameSuffix, String[] roles, JsonObject settings, String name) {
         this.username = username;
         this.organisationName = orgName;
         this.organisationId = orgId;
@@ -26,6 +27,7 @@ public class UserInfo {
         this.settings = settings;
         this.lastModifiedDateTime = DateTime.now();
         this.usernameSuffix = usernameSuffix;
+        this.name = name;
     }
 
     public String getUsername() {
@@ -74,5 +76,13 @@ public class UserInfo {
 
     public void setUsernameSuffix(String usernameSuffix) {
         this.usernameSuffix = usernameSuffix;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

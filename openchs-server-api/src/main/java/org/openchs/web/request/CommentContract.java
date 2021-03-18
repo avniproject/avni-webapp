@@ -2,7 +2,7 @@ package org.openchs.web.request;
 
 public class CommentContract extends CHSRequest {
     private String text;
-    private String SubjectUUID;
+    private String subjectUUID;
 
     public String getText() {
         return text;
@@ -13,10 +13,10 @@ public class CommentContract extends CHSRequest {
     }
 
     public String getSubjectUUID() {
-        return SubjectUUID;
+        return subjectUUID;
     }
 
     public void setSubjectUUID(String subjectUUID) {
-        SubjectUUID = subjectUUID;
+        this.subjectUUID = subjectUUID;
     }
 }
