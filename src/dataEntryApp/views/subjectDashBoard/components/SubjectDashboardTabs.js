@@ -90,7 +90,8 @@ export default ({
     defaultTabIndex,
     registrationTabIndex,
     generalTabIndex,
-    showGroupMembers
+    showGroupMembers,
+    hideDOB
   } = tabsStatus;
 
   const [value, setValue] = React.useState(
@@ -166,6 +167,7 @@ export default ({
             showGroupMembers={showGroupMembers}
             getGroupMembers={getGroupMembers}
             groupMembers={groupMembers}
+            hideDOB={hideDOB}
           />
         </Paper>
       </TabContent>

@@ -16,7 +16,7 @@ import api from "../api";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
 import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
-import { filter, isEmpty, map, includes } from "lodash";
+import { filter, isEmpty, map, includes, get } from "lodash";
 import { setSubjectProgram } from "../reducers/programSubjectDashboardReducer";
 import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { setPrograms } from "../reducers/programReducer";
@@ -43,6 +43,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   yield put.resolve(setLoad(false));
   yield put.resolve(setRegistrationForm());
   yield put.resolve(setSubjectProfile());
+  const organisationConfigs = yield call(api.fetchOrganisationConfigs);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
   const subjectType = subjectProfile.subjectType;
@@ -70,6 +71,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
   const registrationTabIndex = showProgramTab ? 1 : 0;
   const generalTabIndex = showProgramTab ? 2 : 1;
+  const hideDOB = get(organisationConfigs, "organisationConfig.hideDateOfBirth", false);
   yield put(
     setTabsStatus({
       showProgramTab,
@@ -78,7 +80,8 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
       defaultTabIndex,
       registrationTabIndex,
       generalTabIndex,
-      showGroupMembers
+      showGroupMembers,
+      hideDOB
     })
   );
   yield put.resolve(getRegistrationForm(subjectProfile.subjectType.name));
