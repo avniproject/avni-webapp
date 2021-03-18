@@ -95,7 +95,8 @@ const SubjectDashboardProfileTab = ({
   getGroupMembers,
   groupMembers,
   voidError,
-  clearVoidServerError
+  clearVoidServerError,
+  hideDOB
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -146,7 +147,7 @@ const SubjectDashboardProfileTab = ({
               {t("registrationDate")}:{" "}
               {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
             </p>
-            {profile.dateOfBirth && (
+            {!hideDOB && profile.dateOfBirth && (
               <p className={classes.expansionSubHeading}>
                 {t("dateOfBirth")}: {moment(new Date(profile.dateOfBirth)).format("DD-MM-YYYY")}
               </p>
