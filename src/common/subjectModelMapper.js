@@ -13,7 +13,6 @@ import {
   EncounterType,
   Gender,
   AddressLevel,
-  SubjectType,
   ConceptAnswer,
   GroupRole,
   GroupSubject
