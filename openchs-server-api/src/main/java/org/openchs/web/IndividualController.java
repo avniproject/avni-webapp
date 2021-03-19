@@ -221,7 +221,9 @@ public class IndividualController extends AbstractController<Individual> impleme
     public Resource<Individual> process(Resource<Individual> resource) {
         Individual individual = resource.getContent();
         resource.removeLinks();
-        resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
+        if (individual.getAddressLevel() != null) {
+            resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
+        }
         if (individual.getGender() != null) {
             resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
         }

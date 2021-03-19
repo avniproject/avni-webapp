@@ -276,7 +276,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     }
 
     private void addAddressLevels(List<Object> row, AddressLevel addressLevel) {
-        Map<String, String> addressLevelMap = getAddressTypeAddressLevelMap(addressLevel, addressLevel.getParentLocationMapping());
+        Map<String, String> addressLevelMap = addressLevel != null ?
+                getAddressTypeAddressLevelMap(addressLevel, addressLevel.getParentLocationMapping()) : new HashMap<>();
         this.addressLevelTypes.forEach(level -> row.add(addressLevelMap.getOrDefault(level, "")));
     }
 

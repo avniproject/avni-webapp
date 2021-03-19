@@ -258,11 +258,14 @@ public class ObservationService {
             individualContract.setGender(individual.getGender().getName());
             individualContract.setGenderUUID(individual.getGender().getUuid());
         }
-        individualContract.setAddressLevelTypeName(individual.getAddressLevel().getType().getName());
-        individualContract.setAddressLevelTypeId(individual.getAddressLevel().getType().getId());
         individualContract.setRegistrationDate(individual.getRegistrationDate());
-        individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
-        individualContract.setAddressLevelUUID(individual.getAddressLevel().getUuid());
+        AddressLevel addressLevel = individual.getAddressLevel();
+        if (addressLevel != null) {
+            individualContract.setAddressLevelTypeName(addressLevel.getType().getName());
+            individualContract.setAddressLevelTypeId(addressLevel.getType().getId());
+            individualContract.setAddressLevel(addressLevel.getTitle());
+            individualContract.setAddressLevelUUID(addressLevel.getUuid());
+        }
         individualContract.setVoided(individual.isVoided());
         return individualContract;
     }
