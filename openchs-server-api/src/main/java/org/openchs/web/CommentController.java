@@ -98,6 +98,7 @@ public class CommentController extends AbstractController<Comment> implements Re
         Comment comment = newOrExistingEntity(commentRepository, commentContract, new Comment());
         comment.setText(commentContract.getText());
         comment.setSubject(subject);
+        comment.setVoided(commentContract.isVoided());
         commentRepository.save(comment);
         logger.info(String.format("Saved comment with UUID %s", commentContract.getUuid()));
     }
