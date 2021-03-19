@@ -200,7 +200,9 @@ const ProfileDetails = ({
                 {profileDetails.subjectType.isPerson() && (
                   <TableCell className={classes.tableCell}>{t("age")}</TableCell>
                 )}
-                <TableCell className={classes.tableCell}>{t("Address")}</TableCell>
+                {profileDetails.lowestAddressLevel.titleLineage && (
+                  <TableCell className={classes.tableCell}>{t("Address")}</TableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>

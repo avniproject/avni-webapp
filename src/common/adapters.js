@@ -102,10 +102,13 @@ export const mapProgram = json => {
 
 export const mapSubjectType = json => {
   const subjectType = new SubjectType();
-  subjectType.name = json.operationalSubjectTypeName;
+  subjectType.name = json.operationalSubjectTypeName || json.name;
   subjectType.uuid = json.uuid;
   subjectType.voided = !!json.voided;
   subjectType.type = json.type;
+  subjectType.allowEmptyLocation = json.allowEmptyLocation;
+  subjectType.group = json.group;
+  subjectType.household = json.household;
   return subjectType;
 };
 

@@ -5,6 +5,7 @@
   "APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM": "Registration form for this subject type. Select 'New Form' if you don't already have one",
   "APP_DESIGNER_SUBJECT_TYPE_ACTIVE": "Switch off subject type if you don't want to use it anymore.",
   "APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE": "Choose from the existing types. Read the documentation on right to get an idea of which type to use.",
+  "APP_DESIGNER_SUBJECT_TYPE_ALLOW_EMPTY_LOCATION": "If active then you can register a subject without specifying registration location",
   "APP_DESIGNER_SUBJECT_TYPE_GROUP_ROLES": "Member roles that you can choose from while adding members to this group",
   "APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE": "Person subject type that can be added as member to the household",
   "APP_DESIGNER_PROGRAM_NAME": "Name of the program.",

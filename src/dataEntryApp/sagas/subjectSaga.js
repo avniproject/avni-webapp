@@ -120,10 +120,9 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
 
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const subject = mapProfile(subjectProfileJson);
-  const selectedAddressLevelType = {
-    name: subjectProfileJson.addressLevelTypeName,
-    id: subjectProfileJson.addressLevelTypeId
-  };
+  const selectedAddressLevelType = subjectProfileJson.addressLevelTypeName
+    ? { name: subjectProfileJson.addressLevelTypeName, id: subjectProfileJson.addressLevelTypeId }
+    : { id: -1, name: "" };
   yield put(selectAddressLevelType(selectedAddressLevelType));
 
   const formMapping = yield select(

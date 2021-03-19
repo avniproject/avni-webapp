@@ -8294,18 +8294,6 @@ downshift@^6.0.6:
     prop-types "^15.7.2"
     react-is "^17.0.1"
 
-draft-js-export-html@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/draft-js-export-html/-/draft-js-export-html-1.4.1.tgz#7cdad970c6f7f2cdd19ce4c1f5073fdf0f313b4d"
-  integrity sha512-G4VGBSalPowktIE4wp3rFbhjs+Ln9IZ2FhXeHjsZDSw0a2+h+BjKu5Enq+mcsyVb51RW740GBK8Xbf7Iic51tw==
-  dependencies:
-    draft-js-utils "^1.4.0"
-
-draft-js-utils@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-1.4.0.tgz#c60af198108f69b0f1df3572555b23836819d1cf"
-  integrity sha512-8s9FFuKC+lOWGwJ0b3om2PF+uXrqQPaEQlPJI7UxdzxTYGMeKouMPA9+YlPn52zcAVElIZtd2tXj6eQmvlKelw==
-
 draft-js@^0.11.7:
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/draft-js/-/draft-js-0.11.7.tgz#be293aaa255c46d8a6647f3860aa4c178484a206"
@@ -14457,10 +14445,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@0.2.61:
-  version "0.2.61"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.61.tgz#828e7ce6e8d90e3c05ed92bdbb7fb25aa7f60622"
-  integrity sha512-5bEOZImRZEZnx4Zhuwyvu1jcenSI95FwcknIn+s+lA8rZJJooQJsOsqv0rGN2eyFf8D0uH3di/du2PiSCvyyCQ==
+openchs-models@0.2.83:
+  version "0.2.83"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.83.tgz#9d9b02dcd9b72c6d974c7ba74401cd0583a8c44e"
+  integrity sha512-GiEmrg2nV2v2bH14LvsBtFnx5zeJg+52X10f/bYOl4GE/9sPxXSilknwnxaZxhUKtS4tD4tRZ91S+PmXeR3DYg==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"

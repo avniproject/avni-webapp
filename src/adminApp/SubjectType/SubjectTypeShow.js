@@ -11,7 +11,7 @@ import _, { get, isEmpty } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings, useLocationType } from "./effects";
-import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
@@ -58,7 +58,11 @@ const SubjectTypeShow = props => {
               <span style={{ fontSize: "15px" }}>{subjectType.type}</span>
             </div>
             <p />
-            <ActiveStatusInShow status={subjectType.active} />
+            <BooleanStatusInShow status={subjectType.active} label={"Active"} />
+            <BooleanStatusInShow
+              status={subjectType.allowEmptyLocation}
+              label={"Allow Empty Location"}
+            />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Registration Form</FormLabel>
               <br />

@@ -15,7 +15,7 @@ import {
   findProgramEncounterCancellationForm,
   findProgramEncounterForm
 } from "../domain/formMapping";
-import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
 
 const EncounterTypeShow = props => {
@@ -84,7 +84,7 @@ const EncounterTypeShow = props => {
             />
           </div>
           <p />
-          <ActiveStatusInShow status={encounterType.active} />
+          <BooleanStatusInShow status={encounterType.active} label={"Active"} />
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Encounter Form</FormLabel>
             <br />

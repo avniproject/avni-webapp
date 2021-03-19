@@ -23,6 +23,7 @@ import Editor from "react-simple-code-editor";
 import { sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { AdvancedSettings } from "./AdvancedSettings";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 const SubjectTypeCreate = () => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -105,6 +106,15 @@ const SubjectTypeCreate = () => {
                   </MenuItem>
                 ))}
                 toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
+              />
+              <p />
+              <AvniSwitch
+                checked={!!subjectType.allowEmptyLocation}
+                onChange={event =>
+                  dispatch({ type: "allowEmptyLocation", payload: event.target.checked })
+                }
+                name="Allow Empty Location"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_EMPTY_LOCATION"}
               />
               <p />
               <AvniSelectForm

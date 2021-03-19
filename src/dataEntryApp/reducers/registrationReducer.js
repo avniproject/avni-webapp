@@ -190,7 +190,8 @@ export const fetchRegistrationRulesResponse = () => {
 
 export const selectRegistrationState = state => state.dataEntry.registration;
 export const selectRegistrationForm = state => selectRegistrationState(state).registrationForm;
-export const selectIdentifierAssignments = state => selectRegistrationState(state).identifierAssignments;
+export const selectIdentifierAssignments = state =>
+  selectRegistrationState(state).identifierAssignments;
 
 const initialState = {
   saved: false,
@@ -347,10 +348,12 @@ export default (state = initialState, action) => {
     case types.SET_ADDRESS: {
       const subject = state.subject.cloneForEdit();
       subject.lowestAddressLevel = action.lowestAddressLevel;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateAddress()],
-        state.validationResults
-      );
+      const validationResults = state.subject.subjectType.allowEmptyLocation
+        ? state.validationResults
+        : commonFormUtil.handleValidationResult(
+            [subject.validateAddress()],
+            state.validationResults
+          );
       return {
         ...state,
         subject,

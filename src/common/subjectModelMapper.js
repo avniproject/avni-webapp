@@ -22,6 +22,7 @@ import { map, isNil } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
 import { subjectService } from "../dataEntryApp/services/SubjectService";
 import { addressLevelService } from "../dataEntryApp/services/AddressLevelService";
+import { mapSubjectType } from "./adapters";
 
 export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
@@ -35,18 +36,7 @@ export const mapIndividual = individualDetails => {
   gender.uuid = individualDetails.genderUUID;
   individual.gender = gender;
 
-  const subjectType = new SubjectType();
-  if (individualDetails.subjectType) {
-    General.assignFields(individualDetails.subjectType, subjectType, [
-      "name",
-      "uuid",
-      "type",
-      "group",
-      "household",
-      "voided"
-    ]);
-  }
-  individual.subjectType = subjectType;
+  individual.subjectType = mapSubjectType(individualDetails.subjectType);
 
   const addressLevel = new AddressLevel();
   addressLevel.uuid = individualDetails.addressLevelUUID;

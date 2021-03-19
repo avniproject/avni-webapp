@@ -13,7 +13,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
 import { isEmpty, orderBy } from "lodash";
-import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "./Audit";
 
 function ConceptDetails(props) {
@@ -82,7 +82,7 @@ function ConceptDetails(props) {
             <br />
             <span style={{ fontSize: "15px" }}>{data.dataType}</span>
           </div>
-          <ActiveStatusInShow status={data.active} />
+          <BooleanStatusInShow status={data.active} label={"Active"} />
 
           {data.dataType === "Numeric" && (
             <>

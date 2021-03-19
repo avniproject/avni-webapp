@@ -87,7 +87,8 @@ const SubjectTypeEdit = props => {
             registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
             type: subjectType.type,
             subjectSummaryRule: subjectType.subjectSummaryRule,
-            locationTypeUUIDs: subjectType.locationTypeUUIDs
+            locationTypeUUIDs: subjectType.locationTypeUUIDs,
+            allowEmptyLocation: subjectType.allowEmptyLocation
           })
           .then(response => {
             if (response.status === 200) {
@@ -171,6 +172,15 @@ const SubjectTypeEdit = props => {
             onChange={event => dispatch({ type: "active", payload: event.target.checked })}
             name="Active"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ACTIVE"}
+          />
+          <p />
+          <AvniSwitch
+            checked={!!subjectType.allowEmptyLocation}
+            onChange={event =>
+              dispatch({ type: "allowEmptyLocation", payload: event.target.checked })
+            }
+            name="Allow Empty Location"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_EMPTY_LOCATION"}
           />
           <p />
           <AvniSelectForm

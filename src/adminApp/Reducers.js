@@ -107,6 +107,7 @@ export function subjectTypeReducer(subjectType, action) {
         groupRoles: action.payload.groupRoles,
         uuid: action.payload.uuid,
         active: action.payload.active,
+        allowEmptyLocation: action.payload.allowEmptyLocation,
         type: action.payload.type,
         memberSubjectType: Types.isHousehold(action.payload.type)
           ? _.map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
@@ -118,6 +119,8 @@ export function subjectTypeReducer(subjectType, action) {
       return { ...subjectType, subjectSummaryRule: action.payload };
     case "locationTypes":
       return { ...subjectType, locationTypeUUIDs: action.payload };
+    case "allowEmptyLocation":
+      return { ...subjectType, allowEmptyLocation: action.payload };
     default:
       return subjectType;
   }

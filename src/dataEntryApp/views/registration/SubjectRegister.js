@@ -187,11 +187,12 @@ const SubjectRegister = props => {
       props.validationResults,
       Individual.validationKeys.LOWEST_ADDRESS_LEVEL
     );
+    const showRequired = props.subject.subjectType.allowEmptyLocation ? "" : "*";
     return (
       <>
         <LineBreak num={1} />
         <RadioButtonsGroup
-          label={`${t("Address")}*`}
+          label={`${t("Address")}${showRequired}`}
           items={addressLevelTypesToRender.map(a => ({ id: a.id, name: a.name }))}
           value={props.selectedAddressLevelType.id}
           onChange={item => props.selectAddressLevelType(item)}
