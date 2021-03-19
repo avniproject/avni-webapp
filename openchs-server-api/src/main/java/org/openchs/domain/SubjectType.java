@@ -44,6 +44,8 @@ public class SubjectType extends OrganisationAwareEntity {
     @Column(name = "subject_summary_rule")
     private String subjectSummaryRule;
 
+    private boolean allowEmptyLocation;
+
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
     }
@@ -132,6 +134,14 @@ public class SubjectType extends OrganisationAwareEntity {
         this.active = Optional.ofNullable(active).orElse(true);
     }
 
+    public boolean isAllowEmptyLocation() {
+        return allowEmptyLocation;
+    }
+
+    public void setAllowEmptyLocation(boolean allowEmptyLocation) {
+        this.allowEmptyLocation = allowEmptyLocation;
+    }
+
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})
     public interface SubjectTypeProjection extends BaseProjection {
         String getName();
@@ -143,5 +153,7 @@ public class SubjectType extends OrganisationAwareEntity {
         String getMemberSubjectUUIDs();
 
         String getType();
+
+        boolean isAllowEmptyLocation();
     }
 }

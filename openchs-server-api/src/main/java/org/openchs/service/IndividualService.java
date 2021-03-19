@@ -100,13 +100,16 @@ public class IndividualService {
         if (groupRoles != null) {
             individualContract.setRoles(groupRoles.stream().map(GroupRoleContract::fromEntity).collect(Collectors.toList()));
         }
-        individualContract.setAddressLevelTypeName(individual.getAddressLevel().getType().getName());
-        individualContract.setAddressLevelTypeId(individual.getAddressLevel().getType().getId());
         individualContract.setRegistrationDate(individual.getRegistrationDate());
-        individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
-        individualContract.setAddressLevelLineage(individual.getAddressLevel().getTitleLineage());
-        individualContract.setAddressLevelUUID(individual.getAddressLevel().getUuid());
         individualContract.setVoided(individual.isVoided());
+        AddressLevel addressLevel = individual.getAddressLevel();
+        if (addressLevel != null) {
+            individualContract.setAddressLevel(addressLevel.getTitle());
+            individualContract.setAddressLevelLineage(addressLevel.getTitleLineage());
+            individualContract.setAddressLevelUUID(addressLevel.getUuid());
+            individualContract.setAddressLevelTypeName(addressLevel.getType().getName());
+            individualContract.setAddressLevelTypeId(addressLevel.getType().getId());
+        }
         return individualContract;
     }
 
@@ -118,6 +121,7 @@ public class IndividualService {
         subjectTypeContract.setType(subjectType.getType().toString());
         subjectTypeContract.setIsGroup(subjectType.isGroup());
         subjectTypeContract.setHousehold(subjectType.isHousehold());
+        subjectTypeContract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
         return subjectTypeContract;
     }
 

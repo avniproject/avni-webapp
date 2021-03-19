@@ -238,8 +238,6 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
         AddressLevel addressLevel = getAddressLevel(individualRequest);
-        Objects.requireNonNull(addressLevel, String.format("Individual{uuid='%s',addressLevel='%s'} addressLevel doesn't exist.",
-                individualRequest.getUuid(), individualRequest.getAddressLevel()));
         Gender gender = individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
         SubjectType subjectType = individualRequest.getSubjectTypeUUID() == null ? subjectTypeRepository.findByUuid("9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3") : subjectTypeRepository.findByUuid(individualRequest.getSubjectTypeUUID());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());

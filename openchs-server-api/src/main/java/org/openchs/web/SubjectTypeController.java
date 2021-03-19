@@ -119,6 +119,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.assignUUID();
         subjectType.setName(request.getName());
         subjectType.setActive(request.getActive());
+        subjectType.setAllowEmptyLocation(request.isAllowEmptyLocation());
         subjectType.setType(Subject.valueOf(request.getType()));
         subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
@@ -169,6 +170,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
 
         subjectType.setName(request.getName());
         subjectType.setActive(request.getActive());
+        subjectType.setAllowEmptyLocation(request.isAllowEmptyLocation());
         subjectType.setType(Subject.valueOf(request.getType()));
         subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);

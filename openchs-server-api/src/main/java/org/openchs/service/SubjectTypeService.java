@@ -31,25 +31,18 @@ public class SubjectTypeService {
         logger.info(String.format("Creating subjectType: %s", subjectTypeRequest.toString()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeRequest.getUuid());
         if (subjectType == null) {
-            subjectType = createSubjectType(subjectTypeRequest);
+            subjectType = new SubjectType();
         }
+        subjectType.setUuid(subjectTypeRequest.getUuid());
+        subjectType.setVoided(subjectTypeRequest.isVoided());
         subjectType.setName(subjectTypeRequest.getName());
         subjectType.setGroup(subjectTypeRequest.isGroup());
         subjectType.setHousehold(subjectTypeRequest.isHousehold());
         subjectType.setActive(subjectTypeRequest.getActive());
+        subjectType.setAllowEmptyLocation(subjectTypeRequest.isAllowEmptyLocation());
         subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
         subjectType.setSubjectSummaryRule(subjectTypeRequest.getSubjectSummaryRule());
         subjectTypeRepository.save(subjectType);
-    }
-
-    private SubjectType createSubjectType(SubjectTypeContract programRequest) {
-        SubjectType subjectType = new SubjectType();
-        subjectType.setUuid(programRequest.getUuid());
-        subjectType.setVoided(programRequest.isVoided());
-        subjectType.setGroup(programRequest.isGroup());
-        subjectType.setActive(programRequest.getActive());
-        subjectType.setType(Subject.valueOf(programRequest.getType()));
-        return subjectType;
     }
 
     public void createOperationalSubjectType(OperationalSubjectTypeContract operationalSubjectTypeContract, Organisation organisation) {

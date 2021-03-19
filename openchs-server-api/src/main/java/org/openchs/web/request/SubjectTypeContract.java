@@ -21,6 +21,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private String subjectSummaryRule;
 
+    private boolean allowEmptyLocation;
+
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -32,6 +34,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setActive(subjectType.getActive());
         contract.setType(subjectType.getType().name());
         contract.setSubjectSummaryRule(subjectType.getSubjectSummaryRule());
+        contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
         return contract;
     }
 
@@ -73,5 +76,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setSubjectSummaryRule(String subjectSummaryRule) {
         this.subjectSummaryRule = subjectSummaryRule;
+    }
+
+    public boolean isAllowEmptyLocation() {
+        return allowEmptyLocation;
+    }
+
+    public void setAllowEmptyLocation(boolean allowEmptyLocation) {
+        this.allowEmptyLocation = allowEmptyLocation;
     }
 }
