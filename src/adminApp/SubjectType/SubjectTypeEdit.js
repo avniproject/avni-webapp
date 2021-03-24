@@ -75,6 +75,7 @@ const SubjectTypeEdit = props => {
       let subjectTypeSavePromise = () =>
         http
           .put("/web/subjectType/" + props.match.params.id, {
+            ...subjectType,
             name: subjectType.name,
             id: props.match.params.id,
             organisationId: subjectTypeData.organisationId,
@@ -87,8 +88,7 @@ const SubjectTypeEdit = props => {
             registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
             type: subjectType.type,
             subjectSummaryRule: subjectType.subjectSummaryRule,
-            locationTypeUUIDs: subjectType.locationTypeUUIDs,
-            allowEmptyLocation: subjectType.allowEmptyLocation
+            locationTypeUUIDs: subjectType.locationTypeUUIDs
           })
           .then(response => {
             if (response.status === 200) {
@@ -174,15 +174,6 @@ const SubjectTypeEdit = props => {
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ACTIVE"}
           />
           <p />
-          <AvniSwitch
-            checked={!!subjectType.allowEmptyLocation}
-            onChange={event =>
-              dispatch({ type: "allowEmptyLocation", payload: event.target.checked })
-            }
-            name="Allow Empty Location"
-            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_EMPTY_LOCATION"}
-          />
-          <p />
           <AvniSelectForm
             label={"Registration Form"}
             value={_.get(subjectType, "registrationForm.formName")}
@@ -229,8 +220,8 @@ const SubjectTypeEdit = props => {
           />
           <p />
           <AdvancedSettings
-            levelUUIDs={subjectType.locationTypeUUIDs}
-            setLevelUUIDs={uuids => dispatch({ type: "locationTypes", payload: uuids })}
+            subjectType={subjectType}
+            dispatch={dispatch}
             locationTypes={locationTypes}
           />
           <div />

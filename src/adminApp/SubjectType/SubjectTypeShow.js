@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -7,7 +7,7 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
-import _, { get, isEmpty } from "lodash";
+import _, { get } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings, useLocationType } from "./effects";
@@ -59,10 +59,6 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             <BooleanStatusInShow status={subjectType.active} label={"Active"} />
-            <BooleanStatusInShow
-              status={subjectType.allowEmptyLocation}
-              label={"Allow Empty Location"}
-            />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Registration Form</FormLabel>
               <br />
@@ -103,12 +99,7 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
-            {!isEmpty(subjectType.locationTypeUUIDs) && (
-              <AdvancedSettingShow
-                locationTypes={locationTypes}
-                selectedUUIDs={subjectType.locationTypeUUIDs}
-              />
-            )}
+            <AdvancedSettingShow locationTypes={locationTypes} subjectType={subjectType} />
             <Audit {...subjectType} />
           </div>
           {editAlert && <Redirect to={"/appDesigner/subjectType/" + props.match.params.id} />}

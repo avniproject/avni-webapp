@@ -504,6 +504,8 @@ class FormDetails extends Component {
         const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
         if (propertyName === "IdSourceUUID") {
           formElement.keyValues[propertyName] = value;
+        } else if (propertyName === "unique") {
+          formElement.keyValues[propertyName] = value;
         } else if (propertyName === "editable") {
           value === "undefined"
             ? (formElement.keyValues[propertyName] = false)

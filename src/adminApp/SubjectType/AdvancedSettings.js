@@ -5,6 +5,7 @@ import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import { AddressLevelSetting } from "./AddressLevelSetting";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 const ExpansionPanel = withStyles({
   root: {
@@ -44,7 +45,7 @@ const ExpansionPanelDetails = withStyles(theme => ({
   }
 }))(MuiExpansionPanelDetails);
 
-export const AdvancedSettings = ({ levelUUIDs, setLevelUUIDs, locationTypes }) => {
+export const AdvancedSettings = ({ subjectType, dispatch, locationTypes }) => {
   const [expanded, setExpanded] = React.useState(false);
 
   return (
@@ -53,11 +54,29 @@ export const AdvancedSettings = ({ levelUUIDs, setLevelUUIDs, locationTypes }) =
         <Typography>Advanced settings</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <AddressLevelSetting
-          levelUUIDs={levelUUIDs}
-          setLevelUUIDs={setLevelUUIDs}
-          locationTypes={locationTypes}
-        />
+        <div style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <AddressLevelSetting
+            levelUUIDs={subjectType.locationTypeUUIDs}
+            setLevelUUIDs={uuids => dispatch({ type: "locationTypes", payload: uuids })}
+            locationTypes={locationTypes}
+          />
+          <AvniSwitch
+            switchFirst
+            checked={!!subjectType.allowEmptyLocation}
+            onChange={event =>
+              dispatch({ type: "allowEmptyLocation", payload: event.target.checked })
+            }
+            name="Allow Empty Location"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_EMPTY_LOCATION"}
+          />
+          <AvniSwitch
+            switchFirst
+            checked={!!subjectType.uniqueName}
+            onChange={event => dispatch({ type: "uniqueName", payload: event.target.checked })}
+            name="Unique Name"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_UNIQUE_NAME"}
+          />
+        </div>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );

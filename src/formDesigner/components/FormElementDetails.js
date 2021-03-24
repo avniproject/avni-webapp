@@ -1,23 +1,23 @@
 import React from "react";
 import {
-  Input,
-  InputLabel,
+  Button,
   Checkbox,
   FormControlLabel,
-  Select,
   FormGroup,
+  FormLabel,
+  Input,
+  InputLabel,
   Paper,
-  Button,
-  FormLabel
+  Select
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { isEqual, get, capitalize } from "lodash";
+import _, { capitalize, get, isEqual } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -696,7 +696,7 @@ function FormElementDetails(props) {
         </Grid>
       )}
       <Grid container item sm={12}>
-        <Grid item sm={6}>
+        <Grid item sm={4}>
           <AvniFormControl
             toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
             disabled={disableFormElement}
@@ -721,7 +721,7 @@ function FormElementDetails(props) {
             />
           </AvniFormControl>
         </Grid>
-        <Grid item sm={6}>
+        <Grid item sm={4}>
           {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(
             props.formElementData.concept.dataType
           ) && (
@@ -751,6 +751,32 @@ function FormElementDetails(props) {
             </AvniFormControl>
           )}
         </Grid>
+        {["Numeric", "Text", "PhoneNumber"].includes(props.formElementData.concept.dataType) && (
+          <Grid item sm={4}>
+            <AvniFormControl
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"}
+              disabled={disableFormElement}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id="unique"
+                    checked={!!props.formElementData.keyValues.unique}
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "unique",
+                        event.target.checked,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Unique"
+              />
+            </AvniFormControl>
+          </Grid>
+        )}
       </Grid>
       {props.formElementData.concept.dataType === "Id" && (
         <Grid item sm={6}>
