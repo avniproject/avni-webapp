@@ -117,21 +117,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         }
         SubjectType subjectType = new SubjectType();
         subjectType.assignUUID();
-        subjectType.setName(request.getName());
-        subjectType.setActive(request.getActive());
-        subjectType.setAllowEmptyLocation(request.isAllowEmptyLocation());
-        subjectType.setType(Subject.valueOf(request.getType()));
-        subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
-        SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
-        if (Subject.Household.toString().equals(request.getType())) {
-            subjectType.setGroup(true);
-            subjectType.setHousehold(true);
-            saveGroupRoles(savedSubjectType, request.getGroupRoles());
-        }
-        if (Subject.Group.toString().equals(request.getType())) {
-            subjectType.setGroup(true);
-            saveGroupRoles(savedSubjectType, request.getGroupRoles());
-        }
+        buildSubjectType(request, subjectType);
         OperationalSubjectType operationalSubjectType = new OperationalSubjectType();
         operationalSubjectType.assignUUID();
         operationalSubjectType.setName(request.getName());
@@ -151,6 +137,25 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         return ResponseEntity.ok(subjectTypeContractWeb);
     }
 
+    private void buildSubjectType(@RequestBody SubjectTypeContractWeb request, SubjectType subjectType) {
+        subjectType.setName(request.getName());
+        subjectType.setActive(request.getActive());
+        subjectType.setAllowEmptyLocation(request.isAllowEmptyLocation());
+        subjectType.setUniqueName(request.isUniqueName());
+        subjectType.setType(Subject.valueOf(request.getType()));
+        subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
+        SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
+        if (Subject.Household.toString().equals(request.getType())) {
+            subjectType.setGroup(true);
+            subjectType.setHousehold(true);
+            saveGroupRoles(savedSubjectType, request.getGroupRoles());
+        }
+        if (Subject.Group.toString().equals(request.getType())) {
+            subjectType.setGroup(true);
+            saveGroupRoles(savedSubjectType, request.getGroupRoles());
+        }
+    }
+
     @PutMapping(value = "/web/subjectType/{id}")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
@@ -168,21 +173,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
 
         SubjectType subjectType = operationalSubjectType.getSubjectType();
 
-        subjectType.setName(request.getName());
-        subjectType.setActive(request.getActive());
-        subjectType.setAllowEmptyLocation(request.isAllowEmptyLocation());
-        subjectType.setType(Subject.valueOf(request.getType()));
-        subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
-        SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
-        if (Subject.Household.toString().equals(request.getType())) {
-            subjectType.setGroup(true);
-            subjectType.setHousehold(true);
-            saveGroupRoles(savedSubjectType, request.getGroupRoles());
-        }
-        if (Subject.Group.toString().equals(request.getType())) {
-            subjectType.setGroup(true);
-            saveGroupRoles(savedSubjectType, request.getGroupRoles());
-        }
+        buildSubjectType(request, subjectType);
         operationalSubjectType.setName(request.getName());
         operationalSubjectTypeRepository.save(operationalSubjectType);
 

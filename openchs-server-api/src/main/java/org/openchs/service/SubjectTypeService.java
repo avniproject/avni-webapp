@@ -40,6 +40,7 @@ public class SubjectTypeService {
         subjectType.setHousehold(subjectTypeRequest.isHousehold());
         subjectType.setActive(subjectTypeRequest.getActive());
         subjectType.setAllowEmptyLocation(subjectTypeRequest.isAllowEmptyLocation());
+        subjectType.setUniqueName(subjectTypeRequest.isUniqueName());
         subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
         subjectType.setSubjectSummaryRule(subjectTypeRequest.getSubjectSummaryRule());
         subjectTypeRepository.save(subjectType);

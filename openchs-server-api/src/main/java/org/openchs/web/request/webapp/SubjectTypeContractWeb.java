@@ -31,6 +31,7 @@ public class SubjectTypeContractWeb {
     private String subjectSummaryRule;
     private List<String> locationTypeUUIDs;
     private boolean allowEmptyLocation;
+    private boolean uniqueName;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -49,6 +50,7 @@ public class SubjectTypeContractWeb {
         contract.setGroupRoles(operationalSubjectType.getSubjectType().getGroupRolesContract());
         contract.setActive(operationalSubjectType.getSubjectType().getActive());
         contract.setAllowEmptyLocation(operationalSubjectType.getSubjectType().isAllowEmptyLocation());
+        contract.setUniqueName(operationalSubjectType.getSubjectType().isUniqueName());
         contract.setType(operationalSubjectType.getType().name());
         contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
         return contract;
@@ -204,5 +206,13 @@ public class SubjectTypeContractWeb {
 
     public void setAllowEmptyLocation(boolean allowEmptyLocation) {
         this.allowEmptyLocation = allowEmptyLocation;
+    }
+
+    public boolean isUniqueName() {
+        return uniqueName;
+    }
+
+    public void setUniqueName(boolean uniqueName) {
+        this.uniqueName = uniqueName;
     }
 }

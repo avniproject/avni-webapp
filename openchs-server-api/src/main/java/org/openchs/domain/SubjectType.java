@@ -46,6 +46,8 @@ public class SubjectType extends OrganisationAwareEntity {
 
     private boolean allowEmptyLocation;
 
+    private boolean uniqueName;
+
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
     }
@@ -140,6 +142,14 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setAllowEmptyLocation(boolean allowEmptyLocation) {
         this.allowEmptyLocation = allowEmptyLocation;
+    }
+
+    public boolean isUniqueName() {
+        return uniqueName;
+    }
+
+    public void setUniqueName(boolean uniqueName) {
+        this.uniqueName = uniqueName;
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})

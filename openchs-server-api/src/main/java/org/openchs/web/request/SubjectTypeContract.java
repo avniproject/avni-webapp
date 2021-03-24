@@ -23,6 +23,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private boolean allowEmptyLocation;
 
+    private boolean uniqueName;
+
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -35,6 +37,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setType(subjectType.getType().name());
         contract.setSubjectSummaryRule(subjectType.getSubjectSummaryRule());
         contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
+        contract.setUniqueName(subjectType.isUniqueName());
         return contract;
     }
 
@@ -84,5 +87,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setAllowEmptyLocation(boolean allowEmptyLocation) {
         this.allowEmptyLocation = allowEmptyLocation;
+    }
+
+    public boolean isUniqueName() {
+        return uniqueName;
+    }
+
+    public void setUniqueName(boolean uniqueName) {
+        this.uniqueName = uniqueName;
     }
 }
