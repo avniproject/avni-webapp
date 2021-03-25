@@ -122,7 +122,7 @@ test_server: rebuild_testdb ## Run tests
 	GRADLE_OPTS="-Xmx256m" ./gradlew clean test
 
 start_server_wo_gradle:
-	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.clientid=$(client) --cognito.poolid=$(pool)
+	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 # I have setup the environment variables in my bash_profile so that I can just run it whenever I want in live mode. You could do that too (Vivek).
 start_server_staging: build_server

@@ -7,10 +7,7 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.service.ConceptService;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Response {
@@ -19,7 +16,7 @@ public class Response {
     }
 
     static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap, LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations, String observationsResponseKeyName) {
-        observations.forEach((key, value) -> {
+        Optional.ofNullable(observations).orElse(new ObservationCollection()).forEach((key, value) -> {
             Concept concept = conceptRepository.findByUuid(key);
             observationsResponse.put(concept.getName(), conceptService.getObservationValue(concept, value));
         });
