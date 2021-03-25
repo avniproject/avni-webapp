@@ -1,6 +1,6 @@
 import Types from "./SubjectType/Types";
 import { default as UUID } from "uuid";
-import _, { map } from "lodash";
+import { map, isEmpty } from "lodash";
 
 export function programReducer(program, action) {
   switch (action.type) {
@@ -85,7 +85,7 @@ export function subjectTypeReducer(subjectType, action) {
       }
       const groupRoles = Types.isHousehold(type) ? _getHouseholdRoles() : [];
       const memberSubjectType = Types.isHousehold(type)
-        ? _.map(groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
+        ? map(groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
         : "";
       return { ...subjectType, type, groupRoles, memberSubjectType };
     case "householdMemberSubject":
@@ -111,10 +111,12 @@ export function subjectTypeReducer(subjectType, action) {
         uniqueName: action.payload.uniqueName,
         type: action.payload.type,
         memberSubjectType: Types.isHousehold(action.payload.type)
-          ? _.map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
+          ? map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
           : "",
         subjectSummaryRule: action.payload.subjectSummaryRule,
-        locationTypeUUIDs: action.payload.locationTypeUUIDs
+        locationTypeUUIDs: action.payload.locationTypeUUIDs,
+        validFirstNameFormat: action.payload.validFirstNameFormat,
+        validLastNameFormat: action.payload.validLastNameFormat
       };
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };
@@ -124,6 +126,38 @@ export function subjectTypeReducer(subjectType, action) {
       return { ...subjectType, allowEmptyLocation: action.payload };
     case "uniqueName":
       return { ...subjectType, uniqueName: action.payload };
+    case "validFirstNameRegex":
+      return {
+        ...subjectType,
+        validFirstNameFormat: {
+          ...subjectType.validFirstNameFormat,
+          regex: _getNullOrValue(action.payload)
+        }
+      };
+    case "validFirstNameDescriptionKey":
+      return {
+        ...subjectType,
+        validFirstNameFormat: {
+          ...subjectType.validFirstNameFormat,
+          descriptionKey: _getNullOrValue(action.payload)
+        }
+      };
+    case "validLastNameRegex":
+      return {
+        ...subjectType,
+        validLastNameFormat: {
+          ...subjectType.validLastNameFormat,
+          regex: _getNullOrValue(action.payload)
+        }
+      };
+    case "validLastNameDescriptionKey":
+      return {
+        ...subjectType,
+        validLastNameFormat: {
+          ...subjectType.validLastNameFormat,
+          descriptionKey: _getNullOrValue(action.payload)
+        }
+      };
     default:
       return subjectType;
   }
@@ -142,3 +176,5 @@ const _getRole = (role, minimumNumberOfMembers, maximumNumberOfMembers) => ({
   minimumNumberOfMembers,
   maximumNumberOfMembers
 });
+
+const _getNullOrValue = value => (isEmpty(value) ? null : value);

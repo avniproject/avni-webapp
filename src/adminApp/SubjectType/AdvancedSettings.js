@@ -6,6 +6,7 @@ import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
+import { ValidFormat } from "./ValidFormat";
 
 const ExpansionPanel = withStyles({
   root: {
@@ -76,6 +77,35 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes }) => {
             name="Unique Name"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_UNIQUE_NAME"}
           />
+          <p />
+          <ValidFormat
+            subjectType={subjectType}
+            dispatch={dispatch}
+            regexLabel={subjectType.type === "Person" ? "First Name Regex" : "Name Regex"}
+            regexToolTipKey={"APP_DESIGNER_FIRST_NAME_REGEX"}
+            regexID={"validFirstNameRegex"}
+            descKeyLabel={
+              subjectType.type === "Person"
+                ? "First Name Validation Description Key"
+                : "Name Validation Description Key"
+            }
+            descToolTipKey={"APP_DESIGNER_FIRST_NAME_DESCRIPTION_KEY"}
+            descID={"validFirstNameDescriptionKey"}
+            propertyName={"validFirstNameFormat"}
+          />
+          {subjectType.type === "Person" && (
+            <ValidFormat
+              subjectType={subjectType}
+              dispatch={dispatch}
+              regexLabel={"Last Name Regex"}
+              regexToolTipKey={"APP_DESIGNER_LAST_NAME_REGEX"}
+              regexID={"validLastNameRegex"}
+              descKeyLabel={"Last Name Validation Description Key"}
+              descToolTipKey={"APP_DESIGNER_LAST_NAME_DESCRIPTION_KEY"}
+              descID={"validLastNameDescriptionKey"}
+              propertyName={"validLastNameFormat"}
+            />
+          )}
         </div>
       </ExpansionPanelDetails>
     </ExpansionPanel>
