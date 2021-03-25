@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import org.joda.time.DateTime;
+import org.openchs.application.Format;
 import org.openchs.application.Subject;
 
 import javax.persistence.*;
@@ -67,6 +68,14 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
 
     public boolean isUniqueName() {
         return subjectType.isUniqueName();
+    }
+
+    public Format getValidFirstNameFormat() {
+        return subjectType.getValidFirstNameFormat();
+    }
+
+    public Format getValidLastNameFormat(){
+        return subjectType.getValidLastNameFormat();
     }
 
     public DateTime getLastModifiedDateTime() {

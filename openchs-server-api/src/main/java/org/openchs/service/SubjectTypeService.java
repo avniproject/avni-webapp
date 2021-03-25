@@ -41,6 +41,8 @@ public class SubjectTypeService {
         subjectType.setActive(subjectTypeRequest.getActive());
         subjectType.setAllowEmptyLocation(subjectTypeRequest.isAllowEmptyLocation());
         subjectType.setUniqueName(subjectTypeRequest.isUniqueName());
+        subjectType.setValidFirstNameFormat(subjectTypeRequest.getValidFirstNameFormat());
+        subjectType.setValidLastNameFormat(subjectTypeRequest.getValidLastNameFormat());
         subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
         subjectType.setSubjectSummaryRule(subjectTypeRequest.getSubjectSummaryRule());
         subjectTypeRepository.save(subjectType);

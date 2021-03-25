@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.Format;
 import org.openchs.domain.SubjectType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,6 +26,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private boolean uniqueName;
 
+    private FormatContract validFirstNameFormat;
+    private FormatContract validLastNameFormat;
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -38,6 +41,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setSubjectSummaryRule(subjectType.getSubjectSummaryRule());
         contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
         contract.setUniqueName(subjectType.isUniqueName());
+        contract.setValidFirstNameFormat(FormatContract.fromFormat(subjectType.getValidFirstNameFormat()));
+        contract.setValidLastNameFormat(FormatContract.fromFormat(subjectType.getValidLastNameFormat()));
         return contract;
     }
 
@@ -95,5 +100,21 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setUniqueName(boolean uniqueName) {
         this.uniqueName = uniqueName;
+    }
+
+    public Format getValidFirstNameFormat() {
+        return validFirstNameFormat == null ? null : validFirstNameFormat.toFormat();
+    }
+
+    public void setValidFirstNameFormat(FormatContract validFirstNameFormat) {
+        this.validFirstNameFormat = validFirstNameFormat;
+    }
+
+    public Format getValidLastNameFormat() {
+        return validLastNameFormat == null ? null : validLastNameFormat.toFormat();
+    }
+
+    public void setValidLastNameFormat(FormatContract validLastNameFormat) {
+        this.validLastNameFormat = validLastNameFormat;
     }
 }

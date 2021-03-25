@@ -144,6 +144,8 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setUniqueName(request.isUniqueName());
         subjectType.setType(Subject.valueOf(request.getType()));
         subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
+        subjectType.setValidFirstNameFormat(request.getValidFirstNameFormat());
+        subjectType.setValidLastNameFormat(request.getValidLastNameFormat());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
         if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);

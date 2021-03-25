@@ -1,7 +1,9 @@
 package org.openchs.web.request.webapp;
 
 import org.joda.time.DateTime;
+import org.openchs.application.Format;
 import org.openchs.domain.OperationalSubjectType;
+import org.openchs.web.request.FormatContract;
 import org.springframework.hateoas.core.Relation;
 import org.openchs.web.request.GroupRoleContract;
 
@@ -32,6 +34,8 @@ public class SubjectTypeContractWeb {
     private List<String> locationTypeUUIDs;
     private boolean allowEmptyLocation;
     private boolean uniqueName;
+    private FormatContract validFirstNameFormat;
+    private FormatContract validLastNameFormat;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -53,6 +57,8 @@ public class SubjectTypeContractWeb {
         contract.setUniqueName(operationalSubjectType.getSubjectType().isUniqueName());
         contract.setType(operationalSubjectType.getType().name());
         contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
+        contract.setValidFirstNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidFirstNameFormat()));
+        contract.setValidLastNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidLastNameFormat()));
         return contract;
     }
 
@@ -214,5 +220,21 @@ public class SubjectTypeContractWeb {
 
     public void setUniqueName(boolean uniqueName) {
         this.uniqueName = uniqueName;
+    }
+
+    public Format getValidFirstNameFormat() {
+        return validFirstNameFormat == null ? null : validFirstNameFormat.toFormat();
+    }
+
+    public void setValidFirstNameFormat(FormatContract validFirstNameFormat) {
+        this.validFirstNameFormat = validFirstNameFormat;
+    }
+
+    public Format getValidLastNameFormat() {
+        return validLastNameFormat == null ? null : validLastNameFormat.toFormat();
+    }
+
+    public void setValidLastNameFormat(FormatContract validLastNameFormat) {
+        this.validLastNameFormat = validLastNameFormat;
     }
 }

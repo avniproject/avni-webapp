@@ -2,8 +2,8 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.openchs.application.Format;
 import org.openchs.application.Subject;
 import org.openchs.application.projections.BaseProjection;
 import org.openchs.web.request.GroupRoleContract;
@@ -47,6 +47,24 @@ public class SubjectType extends OrganisationAwareEntity {
     private boolean allowEmptyLocation;
 
     private boolean uniqueName;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "regex",
+                    column = @Column(name = "valid_first_name_regex")),
+            @AttributeOverride(name = "descriptionKey",
+                    column = @Column(name = "valid_first_name_description_key"))
+    })
+    private Format validFirstNameFormat;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "regex",
+                    column = @Column(name = "valid_last_name_regex")),
+            @AttributeOverride(name = "descriptionKey",
+                    column = @Column(name = "valid_last_name_description_key"))
+    })
+    private Format validLastNameFormat;
 
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
@@ -150,6 +168,22 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setUniqueName(boolean uniqueName) {
         this.uniqueName = uniqueName;
+    }
+
+    public Format getValidFirstNameFormat() {
+        return validFirstNameFormat;
+    }
+
+    public void setValidFirstNameFormat(Format validFirstNameFormat) {
+        this.validFirstNameFormat = validFirstNameFormat;
+    }
+
+    public Format getValidLastNameFormat() {
+        return validLastNameFormat;
+    }
+
+    public void setValidLastNameFormat(Format validLastNameFormat) {
+        this.validLastNameFormat = validLastNameFormat;
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})
