@@ -1,8 +1,10 @@
 package org.openchs.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import org.openchs.domain.Concept;
+import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
@@ -101,6 +103,11 @@ public class Form extends OrganisationAwareEntity {
     @JsonIgnore
     public List<FormElement> getAllCodedFormElements() {
         return getApplicableFormElements().stream().filter(fe -> fe.getConcept().isCoded()).collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public Stream<FormElement> getAllGroupAffiliationFormElements() {
+        return this.getApplicableFormElements().stream().filter(fe -> ConceptDataType.GroupAffiliation.equals(ConceptDataType.valueOf(fe.getConcept().getDataType())));
     }
 
     public String getDecisionRule() {
