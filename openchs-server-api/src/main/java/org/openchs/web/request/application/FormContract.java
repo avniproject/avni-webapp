@@ -3,6 +3,8 @@ package org.openchs.web.request.application;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.Form;
+import org.openchs.application.FormType;
+import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.SubjectType;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
@@ -88,6 +90,7 @@ public class FormContract extends ReferenceDataContract {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 String conceptUuid = formElement.getConcept().getUuid();
                 String conceptName = formElement.getConcept().getName();
+                String dataType = formElement.getConcept().getDataType();
                 if (!formElement.isVoided() &&
                         !PLACEHOLDER_CONCEPT_NAME.matcher(conceptName == null ? "" : conceptName).matches() &&
                         !conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) &&
@@ -96,6 +99,11 @@ public class FormContract extends ReferenceDataContract {
                             "Cannot use same concept twice. Form{uuid='%s',..} uses Concept{uuid='%s',..} twice",
                             getUuid(),
                             conceptUuid));
+                } else if(ConceptDataType.GroupAffiliation.equals(ConceptDataType.valueOf(dataType)) &&
+                        !FormType.IndividualProfile.equals(FormType.valueOf(formType))) {
+                    throw new InvalidObjectException(String.format(
+                            "Cannot use GroupAffiliation concept{name='%s'} in the forms other than registration",
+                            conceptName));
                 }
             }
         }
