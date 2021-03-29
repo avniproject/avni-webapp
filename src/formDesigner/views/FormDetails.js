@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, isEmpty } from "lodash";
+import _, { cloneDeep, isEmpty, includes } from "lodash";
 import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -55,6 +55,7 @@ class FormDetails extends Component {
     this.state = {
       form: [],
       identifierSources: [],
+      groupSubjectTypes: [],
       name: "",
       errorMsg: "",
       saveCall: false,
@@ -115,6 +116,13 @@ class FormDetails extends Component {
         identifierSources: transformIdentifierSources(responseData)
       });
     });
+
+    http.get(`/web/subjectType`).then(response => {
+      let subjectTypes = _.get(response, "data._embedded.subjectType", []);
+      const groupSubjectTypes = _.filter(subjectTypes, st => !!st.group);
+      this.setState({ groupSubjectTypes });
+    });
+
     return this.getForm();
   }
 
@@ -420,6 +428,7 @@ class FormDetails extends Component {
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
           identifierSources: this.state.identifierSources,
+          groupSubjectTypes: this.state.groupSubjectTypes,
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
@@ -502,9 +511,12 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
-        if (propertyName === "IdSourceUUID") {
-          formElement.keyValues[propertyName] = value;
-        } else if (propertyName === "unique") {
+        if (
+          includes(
+            ["IdSourceUUID", "unique", "groupSubjectTypeUUID", "groupSubjectRoleUUID"],
+            propertyName
+          )
+        ) {
           formElement.keyValues[propertyName] = value;
         } else if (propertyName === "editable") {
           value === "undefined"

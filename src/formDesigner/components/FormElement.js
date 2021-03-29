@@ -136,6 +136,7 @@ export const dataTypeIcons = {
   Location: <PinDropIcon />,
   Subject: <b>ST</b>,
   PhoneNumber: <PhoneIcon />,
+  GroupAffiliation: <b>GA</b>,
   "": <b />
 };
 
@@ -201,7 +202,8 @@ function FormElement(props) {
                   "Id",
                   "Location",
                   "Subject",
-                  "PhoneNumber"
+                  "PhoneNumber",
+                  "GroupAffiliation"
                 ].includes(props.formElementData.concept.dataType) && (
                   <div className={classes.iconDataType}>
                     <Tooltip title={props.formElementData.concept.dataType}>

@@ -131,6 +131,22 @@ function FormElementDetails(props) {
     return identifierSourceArr;
   }
 
+  function groupSubjectTypeList() {
+    return _.map(props.groupSubjectTypes, ({ name, uuid }) => (
+      <MenuItem value={uuid}>{name}</MenuItem>
+    ));
+  }
+
+  function groupRoleList() {
+    const selectedGroup = _.find(
+      props.groupSubjectTypes,
+      ({ uuid }) => uuid === props.formElementData.keyValues.groupSubjectTypeUUID
+    );
+    return _.map(selectedGroup.groupRoles, ({ role, uuid }) => (
+      <MenuItem value={uuid}>{role}</MenuItem>
+    ));
+  }
+
   const renderDurationOptions = () => {
     const durations = ["years", "months", "weeks", "days", "hours", "minutes"];
 
@@ -801,6 +817,58 @@ function FormElementDetails(props) {
               {identifierSourceList()}
             </Select>
           </FormControl>
+        </Grid>
+      )}
+      {props.formElementData.concept.dataType === "GroupAffiliation" && (
+        <Grid item container spacing={5}>
+          <Grid item sm={6}>
+            <FormControl fullWidth disabled={disableFormElement}>
+              <AvniFormLabel
+                label={"Group Subject Type"}
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"}
+              />
+              <Select
+                name="groupSubjectType"
+                value={props.formElementData.keyValues.groupSubjectTypeUUID}
+                onChange={event =>
+                  props.handleGroupElementKeyValueChange(
+                    props.groupIndex,
+                    "groupSubjectTypeUUID",
+                    event.target.value,
+                    props.index
+                  )
+                }
+                required
+              >
+                {groupSubjectTypeList()}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item sm={6}>
+            {props.formElementData.keyValues.groupSubjectTypeUUID && (
+              <FormControl fullWidth disabled={disableFormElement}>
+                <AvniFormLabel
+                  label={"Group Role"}
+                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"}
+                />
+                <Select
+                  name="groupSubjectRole"
+                  value={props.formElementData.keyValues.groupSubjectRoleUUID}
+                  onChange={event =>
+                    props.handleGroupElementKeyValueChange(
+                      props.groupIndex,
+                      "groupSubjectRoleUUID",
+                      event.target.value,
+                      props.index
+                    )
+                  }
+                  required
+                >
+                  {groupRoleList()}
+                </Select>
+              </FormControl>
+            )}
+          </Grid>
         </Grid>
       )}
     </Grid>
