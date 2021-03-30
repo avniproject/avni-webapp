@@ -199,6 +199,7 @@ textArray  text;
 _key   text;
 _value text;
 whereClause text;
+voidedWhereClause text;
 minDate text;
 maxDate  text;
 valueTxt text;
@@ -222,6 +223,7 @@ IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = dbUser) THEN
     EXECUTE sqlRoleQuery || quote_ident(trim(dbUser));
 END IF;
 whereClause:=' where true=true ';
+voidedWhereClause := ' and ind.is_voided = false';
 fetchLatestEncounter := false;
 fetchLatestProgramEncounter := false;
 latestVisitCondition := ' where true=true ';
@@ -349,7 +351,7 @@ select _value::json->>'maxValue' into maxDate;
 -- is voided start
 WHEN (_key ='includeVoided') THEN
 if _value then
-whereClause:=whereClause || '  and ind.is_voided in( false,' || _value || ') ';
+voidedWhereClause := '  and ind.is_voided in( false,' || _value || ') ';
 END IF;
 -- iss voided end
 
@@ -586,7 +588,7 @@ IF fetchLatestProgramEncounter THEN
     latestVisitCondition = latestVisitCondition || ' AND program_encounter_visit_number = 1 ';
 END IF;
 select get_outer_query(searchtext, latestVisitCondition)into sqlOuterQuery;
-sqlQuery:=sqlQueryBase || sqlQueryJoins || whereClause ;
+sqlQuery:=sqlQueryBase || sqlQueryJoins || whereClause || voidedWhereClause;
 sqlQuery:= ' WITH ' || partitionedEncounterCTE || ',' || partitionedProgramEncounterCTE || ',' || ' cte AS ( ' ||
            sqlQuery || ' ) ' || sqlOuterQuery;
 --RAISE NOTICE '%', sqlQuery;
