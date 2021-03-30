@@ -45,18 +45,11 @@ public class FormService {
                 .withVoided(formRequest.isVoided())
                 .build();
 
-        validateForm(form);
         mapDecisionConcepts(formRequest, form);
         //Form audit values might not change for changes in form element groups or form elements.
         //This updateAudit forces audit updates
         form.updateAudit();
         formRepository.save(form);
-    }
-
-    private void validateForm(Form form) {
-        if (!FormType.IndividualProfile.equals(form.getFormType()) && form.getAllGroupAffiliationFormElements().count() > 0) {
-            throw new ValidationException("Cannot use GroupAffiliation concept in the forms other than registration");
-        }
     }
 
     private void mapDecisionConcepts(FormContract formRequest, Form form) {
