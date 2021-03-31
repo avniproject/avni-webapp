@@ -1,11 +1,9 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.CommentRepository;
-import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
-import org.openchs.dao.SubjectTypeRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.Comment;
+import org.openchs.domain.CommentThread;
 import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
 import org.openchs.service.CommentService;
@@ -37,18 +35,21 @@ public class CommentController extends AbstractController<Comment> implements Re
     private final CommentService commentService;
     private final SubjectTypeRepository subjectTypeRepository;
     private final UserService userService;
+    private final CommentThreadRepository commentThreadRepository;
 
     @Autowired
     public CommentController(CommentRepository commentRepository,
                              IndividualRepository individualRepository,
                              CommentService commentService,
                              SubjectTypeRepository subjectTypeRepository,
-                             UserService userService) {
+                             UserService userService,
+                             CommentThreadRepository commentThreadRepository) {
         this.commentRepository = commentRepository;
         this.individualRepository = individualRepository;
         this.commentService = commentService;
         this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
+        this.commentThreadRepository = commentThreadRepository;
     }
 
     @GetMapping(value = "/web/comments")
@@ -95,9 +96,11 @@ public class CommentController extends AbstractController<Comment> implements Re
     public void save(@RequestBody CommentContract commentContract) {
         logger.info(String.format("Saving comment with UUID %s", commentContract.getUuid()));
         Individual subject = individualRepository.findByUuid(commentContract.getSubjectUUID());
+        CommentThread commentThread = commentThreadRepository.findByUuid(commentContract.getCommentThreadUUID());
         Comment comment = newOrExistingEntity(commentRepository, commentContract, new Comment());
         comment.setText(commentContract.getText());
         comment.setSubject(subject);
+        comment.setCommentThread(commentThread);
         comment.setVoided(commentContract.isVoided());
         commentRepository.save(comment);
         logger.info(String.format("Saved comment with UUID %s", commentContract.getUuid()));
@@ -120,8 +123,12 @@ public class CommentController extends AbstractController<Comment> implements Re
     @Override
     public Resource<Comment> process(Resource<Comment> resource) {
         Comment comment = resource.getContent();
+        CommentThread commentThread = comment.getCommentThread();
         resource.removeLinks();
         resource.add(new Link(comment.getSubjectUUID(), "individualUUID"));
+        if (commentThread != null) {
+            resource.add(new Link(commentThread.getUuid(), "commentThreadUUID"));
+        }
         return resource;
     }
 

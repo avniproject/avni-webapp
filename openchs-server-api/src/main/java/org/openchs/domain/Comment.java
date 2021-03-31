@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "comment")
 @BatchSize(size = 100)
-@JsonIgnoreProperties({"subject"})
+@JsonIgnoreProperties({"subject", "commentThread"})
 public class Comment extends OrganisationAwareEntity {
 
     @NotNull
@@ -19,6 +19,11 @@ public class Comment extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
     private Individual subject;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "comment_thread_id")
+    private CommentThread commentThread;
 
     public String getText() {
         return text;
@@ -38,6 +43,14 @@ public class Comment extends OrganisationAwareEntity {
 
     public String getSubjectUUID() {
         return this.subject.getUuid();
+    }
+
+    public CommentThread getCommentThread() {
+        return commentThread;
+    }
+
+    public void setCommentThread(CommentThread commentThread) {
+        this.commentThread = commentThread;
     }
 
     public String getDisplayUsername() {
