@@ -34,6 +34,8 @@ public abstract class ApiBaseEncounterRequest {
     @JsonProperty("cancelObservations")
     private LinkedHashMap<String, Object> cancelObservations;
 
+    @JsonProperty("cancelObservations")
+    private boolean voided;
 
     public String getEncounterType() {
         return encounterType;
@@ -89,5 +91,9 @@ public abstract class ApiBaseEncounterRequest {
 
     public void setCancelObservations(LinkedHashMap<String, Object> cancelObservations) {
         this.cancelObservations = cancelObservations;
+    }
+
+    public boolean isVoided() {
+        return voided;
     }
 }

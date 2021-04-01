@@ -25,11 +25,11 @@ import java.util.ArrayList;
 
 @RestController
 public class ProgramEnrolmentApiController {
-    private ProgramEnrolmentRepository programEnrolmentRepository;
-    private ConceptRepository conceptRepository;
-    private ConceptService conceptService;
-    private IndividualRepository individualRepository;
-    private ProgramRepository programRepository;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
+    private final IndividualRepository individualRepository;
+    private final ProgramRepository programRepository;
 
     @Autowired
     public ProgramEnrolmentApiController(ProgramEnrolmentRepository programEnrolmentRepository, ConceptRepository conceptRepository, ConceptService conceptService, IndividualRepository individualRepository, ProgramRepository programRepository) {

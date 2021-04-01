@@ -25,11 +25,11 @@ import java.util.ArrayList;
 
 @RestController
 public class ProgramEncounterApiController {
-    private ProgramEncounterRepository programEncounterRepository;
-    private ConceptRepository conceptRepository;
-    private ConceptService conceptService;
-    private ProgramEnrolmentRepository programEnrolmentRepository;
-    private EncounterTypeRepository encounterTypeRepository;
+    private final ProgramEncounterRepository programEncounterRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private final EncounterTypeRepository encounterTypeRepository;
 
     @Autowired
     public ProgramEncounterApiController(ProgramEncounterRepository programEncounterRepository, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEnrolmentRepository programEnrolmentRepository, EncounterTypeRepository encounterTypeRepository) {
@@ -115,6 +115,7 @@ public class ProgramEncounterApiController {
         encounter.setProgramEnrolment(programEnrolment);
         encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
+        encounter.setVoided(request.isVoided());
 
         return programEncounterRepository.save(encounter);
     }

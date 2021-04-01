@@ -22,9 +22,9 @@ import java.util.Map;
 
 @RestController
 public class SubjectApiController {
-    private ConceptService conceptService;
-    private IndividualRepository individualRepository;
-    private ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
+    private final IndividualRepository individualRepository;
+    private final ConceptRepository conceptRepository;
 
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository, ConceptRepository conceptRepository) {
         this.conceptService = conceptService;

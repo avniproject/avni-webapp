@@ -27,11 +27,11 @@ import java.util.Map;
 
 @RestController
 public class GeneralEncounterApiController {
-    private ConceptService conceptService;
-    private EncounterRepository encounterRepository;
-    private ConceptRepository conceptRepository;
-    private IndividualRepository individualRepository;
-    private EncounterTypeRepository encounterTypeRepository;
+    private final ConceptService conceptService;
+    private final EncounterRepository encounterRepository;
+    private final ConceptRepository conceptRepository;
+    private final IndividualRepository individualRepository;
+    private final EncounterTypeRepository encounterTypeRepository;
 
     @Autowired
     public GeneralEncounterApiController(ConceptService conceptService, EncounterRepository encounterRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository) {
@@ -119,6 +119,7 @@ public class GeneralEncounterApiController {
         encounter.setIndividual(individual);
         encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
+        encounter.setVoided(request.isVoided());
 
         encounterRepository.save(encounter);
     }
