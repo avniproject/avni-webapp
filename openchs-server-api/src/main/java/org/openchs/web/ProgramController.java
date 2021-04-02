@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -192,6 +193,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
             operationalPrograms.addAll(p.getOperationalPrograms());
         }
         return operationalPrograms.stream()
+                .sorted(Comparator.comparing(OperationalProgram::getName))
                 .map(operationalProgram -> ProgramContractWeb.fromOperationalProgram(operationalProgram))
                 .collect(Collectors.toList());
     }
