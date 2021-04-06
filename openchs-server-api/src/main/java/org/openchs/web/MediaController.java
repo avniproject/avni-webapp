@@ -37,8 +37,12 @@ public class MediaController {
     @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
+        logger.info("getting media upload url");
+        return getFileUploadUrlResponse(fileName);
+    }
+
+    private ResponseEntity<String> getFileUploadUrlResponse(String fileName) {
         try {
-            logger.info("getting media upload url");
             URL url = s3Service.generateMediaUploadUrl(fileName);
             logger.debug(format("Generating pre-signed url: %s", url.toString()));
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(url.toString());
@@ -49,6 +53,14 @@ public class MediaController {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/media/mobileDatabaseBackupUrl", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public ResponseEntity<String> generateMobileDatabaseBackupUrl() {
+        logger.info("getting mobile database backup url");
+        String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
+        return getFileUploadUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid));
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
