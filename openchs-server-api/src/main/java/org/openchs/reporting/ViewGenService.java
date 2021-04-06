@@ -291,6 +291,15 @@ public class ViewGenService {
                 case Numeric: {
                     return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
                 }
+                case Subject:
+                case Location: {
+                    return String.format("(%s->>'%s') as \"%s\"", obsColumn, conceptUUID, columnName);
+                }
+                case PhoneNumber: {
+                    String phoneNumber = String.format("jsonb_extract_path_text(%s->'%s', 'phoneNumber') as \"%s\"", obsColumn, conceptUUID, columnName);
+                    String verified = String.format("jsonb_extract_path_text(%s->'%s', 'verified') as \"%s\"", obsColumn, conceptUUID, columnName.concat(" Verified"));
+                    return phoneNumber.concat(",\n").concat(verified);
+                }
                 default: {
                     return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
                 }

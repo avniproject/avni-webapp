@@ -11,9 +11,9 @@ import java.util.Map;
 
 public class SubjectTypes implements MetaData {
     private List<SubjectType> subjectTypes;
-    private Map<SubjectType, Program> programs = new HashMap<>();
+    private Map<SubjectType, List<Program>> programs = new HashMap<>();
     private Map<SubjectType, Map<Program, List<EncounterType>>> programEncounterTypes = new HashMap<>();
-    private Map<SubjectType, EncounterType> generalEncounterTypes = new HashMap<>();
+    private Map<SubjectType, List<EncounterType>> generalEncounterTypes = new HashMap<>();
 
     public SubjectTypes(List<SubjectType> subjectTypes) {
         this.subjectTypes = subjectTypes;
@@ -26,26 +26,32 @@ public class SubjectTypes implements MetaData {
             if (subjectType.getOperationalSubjectType() != null)
                 metaDataVisitor.visit(subjectType);
         });
-        this.programs.forEach((subjectType, program) -> {
-            if (program.getOperationalProgramName() != null)
-                metaDataVisitor.visit(subjectType, program);
-        });
-        this.programEncounterTypes.forEach((subjectType, programEncounterTypeMap) -> {
-            programEncounterTypeMap.forEach((program, encounterTypes) -> {
+        this.programs.forEach((subjectType, programs) ->
+                programs.forEach(program -> {
+                    if (program.getOperationalProgramName() != null)
+                        metaDataVisitor.visit(subjectType, program);
+                }));
+        this.programEncounterTypes.forEach((subjectType, programEncounterTypeMap) ->
+                programEncounterTypeMap.forEach((program, encounterTypes) -> {
+                    encounterTypes.forEach(encounterType -> {
+                        if (encounterType.getOperationalEncounterTypeName() != null)
+                            metaDataVisitor.visit(subjectType, program, encounterType);
+                    });
+                }));
+        this.generalEncounterTypes.forEach((subjectType, encounterTypes) ->
                 encounterTypes.forEach(encounterType -> {
                     if (encounterType.getOperationalEncounterTypeName() != null)
-                        metaDataVisitor.visit(subjectType, program, encounterType);
-                });
-            });
-        });
-        this.generalEncounterTypes.forEach((subjectType, encounterType) -> {
-            if (encounterType.getOperationalEncounterTypeName() != null)
-                metaDataVisitor.visit(subjectType, encounterType);
-        });
+                        metaDataVisitor.visit(subjectType, encounterType);
+                }));
     }
 
     public void addProgram(SubjectType subjectType, Program program) {
-        programs.put(subjectType, program);
+        List<Program> addedPrograms = this.programs.get(subjectType);
+        if (addedPrograms == null) {
+            addedPrograms = new ArrayList<>();
+        }
+        addedPrograms.add(program);
+        this.programs.put(subjectType, addedPrograms);
     }
 
     public void addEncounterType(SubjectType subjectType, Program program, EncounterType encounterType) {
@@ -64,7 +70,12 @@ public class SubjectTypes implements MetaData {
     }
 
     public void addEncounterType(SubjectType subjectType, EncounterType encounterType) {
-        generalEncounterTypes.put(subjectType, encounterType);
+        List<EncounterType> addedEncounterTypes = this.generalEncounterTypes.get(subjectType);
+        if (addedEncounterTypes == null) {
+            addedEncounterTypes = new ArrayList<>();
+        }
+        addedEncounterTypes.add(encounterType);
+        this.generalEncounterTypes.put(subjectType, addedEncounterTypes);
     }
 
     public Map<SubjectType, Map<Program, List<EncounterType>>> getProgramEncounterTypes() {
