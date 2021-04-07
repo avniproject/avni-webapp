@@ -12,6 +12,7 @@ import programSaga from "./programSaga";
 import viewVisitSaga from "./viewVisitSaga";
 import completedVisitSaga from "./completedVisitSaga";
 import relationshipSaga from "./relationshipSaga";
+import NewsSaga from "./NewsSaga";
 
 export default function* rootSaga() {
   yield all(
@@ -28,7 +29,8 @@ export default function* rootSaga() {
       completedVisitSaga,
       programEncounterSaga,
       relationshipSaga,
-      encounterSaga
+      encounterSaga,
+      NewsSaga
     ].map(fork)
   );
 }

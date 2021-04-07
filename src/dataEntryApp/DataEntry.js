@@ -31,6 +31,8 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
+import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";
+import NewsDetails from "./views/subjectDashBoard/components/news/NewsDetails";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -114,6 +116,8 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
             <Route path={`${path}/subject/editEncounter`} component={Encounter} />
             <Route path={`${path}/subject/cancelEncounter`} component={CancelEncounter} />
             <Route path={`${path}/subject/editCancelEncounter`} component={CancelEncounter} />
+            <Route exact path={`${path}/news`} component={NewsList} />
+            <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
           </Grid>
         </Grid>
       </div>

@@ -13,6 +13,7 @@ import programEncounterReducer from "./programEncounterReducer";
 import relations from "./relationshipReducer";
 import encounterReducer from "./encounterReducer";
 import loadReducer from "./loadReducer";
+import news from "./NewsReducer";
 import searchFilterReducer from "./searchFilterReducer";
 import serverSideRulesReducer from "./serverSideRulesReducer";
 
@@ -32,5 +33,6 @@ export default combineReducers({
   encounterReducer,
   loadReducer,
   searchFilterReducer,
-  serverSideRulesReducer
+  serverSideRulesReducer,
+  news
 });

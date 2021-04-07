@@ -16,7 +16,7 @@ import Popper from "@material-ui/core/Popper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import { withRouter, Link } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
 import HomeIcon from "@material-ui/icons/Home";
+import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -106,6 +107,7 @@ const useStyles = makeStyles(theme => ({
 
 const PrimarySearchAppBar = ({ user, history }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -126,6 +128,12 @@ const PrimarySearchAppBar = ({ user, history }) => {
 
     prevOpen.current = open;
   }, [open]);
+
+  useEffect(() => {
+    dispatch(getNews());
+  }, []);
+
+  const isNewsAvailable = useSelector(selectIsNewsAvailable);
 
   const handleProfileMenuOpen = event => {
     userOption ? setUserOption(false) : setUserOption(true);
@@ -180,6 +188,27 @@ const PrimarySearchAppBar = ({ user, history }) => {
     </Menu>
   );
 
+  const LinkButton = ({ link, label }) => (
+    <Button
+      variant="contained"
+      className={classes.button}
+      component={Link}
+      to={link}
+      style={{
+        marginRight: "10px",
+        marginLeft: "2px",
+        color: "white",
+        background: "blue",
+        padding: "2px",
+        paddingLeft: "10px",
+        paddingRight: "10px",
+        borderRadius: "3px"
+      }}
+    >
+      {t(label)}
+    </Button>
+  );
+
   return (
     <div className={classes.grow}>
       <AppBar position="static" style={{ background: "white" }}>
@@ -229,24 +258,8 @@ const PrimarySearchAppBar = ({ user, history }) => {
             </ClickAwayListener>
           }
 
-          <Button
-            variant="contained"
-            className={classes.button}
-            component={Link}
-            to="/app/searchFilter"
-            style={{
-              marginRight: "2%",
-              marginLeft: "2%",
-              color: "white",
-              background: "blue",
-              padding: "2px",
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              borderRadius: "3px"
-            }}
-          >
-            {t("search")}
-          </Button>
+          <LinkButton label={"search"} link={"/app/searchFilter"} />
+          {isNewsAvailable && <LinkButton label={"news"} link={"/app/news"} />}
           <div className={classes.users}>
             <Typography component={"div"} color="inherit">
               <p className={classes.userName}>{user.username}</p>

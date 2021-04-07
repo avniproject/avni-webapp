@@ -2,22 +2,13 @@ import React from "react";
 import { newsInitialState, NewsReducer } from "./reducers";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import Paper from "@material-ui/core/Paper";
-import { Box, Grid, Typography } from "@material-ui/core";
-import { getFormattedDateTime } from "../adminApp/components/AuditUtil";
 import { makeStyles } from "@material-ui/core/styles";
-import { ActionButton } from "./components/ActionButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import Button from "@material-ui/core/Button";
-import Divider from "@material-ui/core/Divider";
-import { AvniImageUpload } from "../common/components/AvniImageUpload";
 import { CreateEditNews } from "./CreateEditNews";
 import { Redirect } from "react-router-dom";
 import { PublishBroadcast } from "./components/PublishBroadcast";
 import { DeleteBroadcast } from "./components/DeleteBroadcast";
-import { isNil } from "lodash";
 import API from "./api";
-import DOMPurify from "dompurify";
+import { NewsDetailsCard } from "./components/NewsDetailsCard";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,62 +51,14 @@ export default function NewsDetails({ history, ...props }) {
     <ScreenWithAppBar appbarTitle={"News broadcast"}>
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <Grid container direction="row" alignItems={"center"}>
-            <Grid item container xs={6} direction={"column"}>
-              <Grid item>
-                <a href={`#/news`}>
-                  <Typography variant="h6" gutterBottom>
-                    {"< Back"}
-                  </Typography>
-                </a>
-              </Grid>
-              <Grid item>
-                <Typography variant="h6" gutterBottom>
-                  {news.title}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Typography style={{ opacity: 0.7 }} variant="body2">
-                  {getFormattedDateTime(news.createdDateTime)}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item container justify={"flex-end"} spacing={2} xs={6}>
-              <Grid item>
-                <Button style={{ color: "red" }} onClick={() => setDeleteAlert(true)}>
-                  <DeleteIcon /> Delete
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button color="primary" type="button" onClick={() => setOpenEdit(true)}>
-                  <EditIcon />
-                  Edit
-                </Button>
-              </Grid>
-              <Grid item>
-                <ActionButton
-                  disabled={!isNil(news.publishedDate)}
-                  onClick={() => setPublishAlert(true)}
-                  variant="contained"
-                  style={{ paddingHorizontal: 10 }}
-                  size="medium"
-                >
-                  {"Publish this news"}
-                </ActionButton>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Box mt={2} />
-          <Divider />
-          <Box mt={2} />
-          <Grid container spacing={5} direction="column">
-            <Grid item>
-              <AvniImageUpload oldImgUrl={news.heroImage} height={"300"} width={"100%"} />
-            </Grid>
-            <Grid item container justify="flex-start">
-              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.contentHtml) }} />
-            </Grid>
-          </Grid>
+          <NewsDetailsCard
+            news={news}
+            history={history}
+            displayActions={true}
+            setDeleteAlert={setDeleteAlert}
+            setOpenEdit={setOpenEdit}
+            setPublishAlert={setPublishAlert}
+          />
         </Paper>
         <CreateEditNews
           open={openEdit}
