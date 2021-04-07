@@ -46,6 +46,20 @@ public class NewsController extends AbstractController<News> implements RestCont
                 .collect(Collectors.toList());
     }
 
+    @GetMapping(value = "/web/publishedNews")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
+    @ResponseBody
+    @Transactional
+    public List<NewsContract> getAllPublishedNews() {
+        return newsRepository.findByPublishedDateNotNullAndIsVoidedFalse()
+                .stream().map(NewsContract::fromEntity)
+                .peek(newsContract -> {
+                    String signedURL = S.isEmpty(newsContract.getHeroImage()) ? null : s3Service.generateMediaDownloadUrl(newsContract.getHeroImage()).toString();
+                    newsContract.setSignedHeroImage(signedURL);
+                })
+                .collect(Collectors.toList());
+    }
+
     @GetMapping(value = "/web/news/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody

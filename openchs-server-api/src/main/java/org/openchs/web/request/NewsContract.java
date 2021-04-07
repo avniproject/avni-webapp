@@ -11,6 +11,7 @@ public class NewsContract extends CHSRequest {
     private String heroImage;
     private String content;
     private String contentHtml;
+    private String signedHeroImage;
 
     public static NewsContract fromEntity(News news) {
         NewsContract newsContract = new NewsContract();
@@ -81,5 +82,13 @@ public class NewsContract extends CHSRequest {
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public String getSignedHeroImage() {
+        return signedHeroImage;
+    }
+
+    public void setSignedHeroImage(String signedHeroImage) {
+        this.signedHeroImage = signedHeroImage;
     }
 }
