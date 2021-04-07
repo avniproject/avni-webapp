@@ -55,12 +55,20 @@ public class MediaController {
         }
     }
 
-    @RequestMapping(value = "/media/mobileDatabaseBackupUrl", method = RequestMethod.GET)
+    @RequestMapping(value = "/media/mobileDatabaseBackupUrl/upload", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateMobileDatabaseBackupUrl() {
-        logger.info("getting mobile database backup url");
+        logger.info("getting mobile database backup upload url");
         String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
         return getFileUploadUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid));
+    }
+
+    @RequestMapping(value = "/media/mobileDatabaseBackupUrl/download", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public ResponseEntity<String> generateMobileDatabaseBackupDownloadUrl() {
+        logger.info("getting mobile database backup download url");
+        String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
+        return generateDownloadUrl(String.format("MobileDbBackup-%s", catchmentUuid));
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
