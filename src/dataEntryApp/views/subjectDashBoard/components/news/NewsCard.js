@@ -8,7 +8,7 @@ import Card from "@material-ui/core/Card";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: theme.spacing(20),
+    minHeight: theme.spacing(20),
     width: "100%",
     disableRipple: true
   },
@@ -26,7 +26,7 @@ export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
     signedHeroImage ? (
       <img src={signedHeroImage} alt={title} width={"204px"} height={"120px"} />
     ) : (
-      <div />
+      <div style={{ width: "204px", height: "120px" }} />
     );
 
   return (
@@ -40,11 +40,9 @@ export const NewsCard = ({ signedHeroImage, title, publishedDate, id }) => {
         }}
       >
         <CardContent>
-          <Grid container direction={"row"} spacing={3} alignItems={"center"}>
-            <Grid item xs={2}>
-              {renderImage()}
-            </Grid>
-            <Grid item container direction={"column"} xs={10}>
+          <Grid container direction={"row"} spacing={2} alignItems={"center"}>
+            <Grid item>{renderImage()}</Grid>
+            <Grid item container direction={"column"} xs={8}>
               <Grid item>
                 <Typography variant="h5" gutterBottom>
                   {title}

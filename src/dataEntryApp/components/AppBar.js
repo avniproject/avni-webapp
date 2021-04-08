@@ -214,7 +214,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
       <AppBar position="static" style={{ background: "white" }}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            <InternalLink to={"/"}>
+            <InternalLink to={"/app"}>
               <img src={logo} alt="logo" />
             </InternalLink>
           </Typography>
