@@ -75,8 +75,8 @@ export const NewsDetailsCard = ({
       <Divider />
       <Box mt={2} />
       <Grid container spacing={5} direction="column">
-        <Grid item>
-          <AvniImageUpload oldImgUrl={news.heroImage} height={"300"} width={"100%"} />
+        <Grid item align={"center"}>
+          <AvniImageUpload oldImgUrl={news.heroImage} height={"400"} width={"80%"} />
         </Grid>
         <Grid item container justify="flex-start">
           <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news.contentHtml) }} />
