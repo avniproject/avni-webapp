@@ -146,5 +146,9 @@ export default {
     httpClient
       .delete(`/web/programEncounter/${uuid}`)
       .then(response => [response, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  fetchCommentThreads: subjectUUID =>
+    httpClient
+      .fetchJson(`/web/commentThreads?subjectUUID=${subjectUUID}`)
+      .then(response => response.json)
 };
