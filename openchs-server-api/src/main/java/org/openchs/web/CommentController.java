@@ -52,14 +52,14 @@ public class CommentController extends AbstractController<Comment> implements Re
         this.commentThreadRepository = commentThreadRepository;
     }
 
-    @GetMapping(value = "/web/comments")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
-    @ResponseBody
-    @Transactional
-    public List<Comment> getCommentsForSubject(@RequestParam(value = "subjectUUID") String subjectUUID) {
-        Individual individual = individualRepository.findByUuid(subjectUUID);
-        return commentRepository.findByIsVoidedFalseAndSubjectOrderByAuditLastModifiedDateTimeAscIdAsc(individual);
-    }
+//    @GetMapping(value = "/web/comments")
+//    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
+//    @ResponseBody
+//    @Transactional
+//    public List<Comment> getCommentsForSubject(@RequestParam(value = "subjectUUID") String subjectUUID) {
+//        Individual individual = individualRepository.findByUuid(subjectUUID);
+//        return commentRepository.findByIsVoidedFalseAndSubjectOrderByAuditLastModifiedDateTimeAscIdAsc(individual);
+//    }
 
     @PostMapping(value = "/web/comment")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
