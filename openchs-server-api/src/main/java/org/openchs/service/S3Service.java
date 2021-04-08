@@ -48,7 +48,7 @@ public class S3Service {
     private String secretAccessKey;
 
     private Regions REGION = Regions.AP_SOUTH_1;
-    private long UPLOAD_EXPIRY_DURATION = Duration.ofHours(1).toMillis();
+    private long EXPIRY_DURATION = Duration.ofHours(1).toMillis();
     private long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
     private AmazonS3 s3Client;
     private Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
@@ -77,15 +77,15 @@ public class S3Service {
         return URLConnection.guessContentTypeFromName(fileName);
     }
 
-    public URL generateMediaUploadUrl(String fileName) {
+    public URL generateMediaUploadUrl(String fileName, HttpMethod method) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, objectKey)
-                        .withMethod(HttpMethod.PUT)
+                        .withMethod(method)
                         .withContentType(getContentType(fileName))
-                        .withExpiration(getExpireDate(UPLOAD_EXPIRY_DURATION));
+                        .withExpiration(getExpireDate(EXPIRY_DURATION));
 
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }

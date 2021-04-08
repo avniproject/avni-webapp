@@ -170,4 +170,7 @@ exec-sql: ## Usage: make exec-sql sqlfile=</path/to/sql>
 
 # remote
 tail-prod:
-	ssh openchs-server-prod "tail -f /var/log/openchs/openchs.log"
+	ssh avni-server-prod "tail -f /var/log/openchs/openchs.log"
+
+tail-staging:
+	ssh avni-server-staging "tail -f /var/log/openchs/openchs.log"

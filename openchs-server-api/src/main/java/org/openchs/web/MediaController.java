@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import com.amazonaws.HttpMethod;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.S3Service;
@@ -38,12 +39,12 @@ public class MediaController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
         logger.info("getting media upload url");
-        return getFileUploadUrlResponse(fileName);
+        return getFileUrlResponse(fileName, HttpMethod.PUT);
     }
 
-    private ResponseEntity<String> getFileUploadUrlResponse(String fileName) {
+    private ResponseEntity<String> getFileUrlResponse(String fileName, HttpMethod method) {
         try {
-            URL url = s3Service.generateMediaUploadUrl(fileName);
+            URL url = s3Service.generateMediaUploadUrl(fileName, method);
             logger.debug(format("Generating pre-signed url: %s", url.toString()));
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(url.toString());
         } catch (AccessDeniedException e) {
@@ -60,7 +61,7 @@ public class MediaController {
     public ResponseEntity<String> generateMobileDatabaseBackupUrl() {
         logger.info("getting mobile database backup upload url");
         String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
-        return getFileUploadUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid));
+        return getFileUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid), HttpMethod.PUT);
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/download", method = RequestMethod.GET)
@@ -68,7 +69,7 @@ public class MediaController {
     public ResponseEntity<String> generateMobileDatabaseBackupDownloadUrl() {
         logger.info("getting mobile database backup download url");
         String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
-        return generateDownloadUrl(String.format("MobileDbBackup-%s", catchmentUuid));
+        return getFileUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid), HttpMethod.GET);
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
