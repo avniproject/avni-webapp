@@ -32,6 +32,8 @@ public class FormMapping extends OrganisationAwareEntity {
     @JoinColumn(name = "subject_type_id")
     private SubjectType subjectType;
 
+    private boolean enableApproval;
+
     public Form getForm() {
         return form;
     }
@@ -86,6 +88,14 @@ public class FormMapping extends OrganisationAwareEntity {
 
     public void setSubjectType(SubjectType subjectType) {
         this.subjectType = subjectType;
+    }
+
+    public boolean isEnableApproval() {
+        return enableApproval;
+    }
+
+    public void setEnableApproval(boolean enableApproval) {
+        this.enableApproval = enableApproval;
     }
 
     @Override

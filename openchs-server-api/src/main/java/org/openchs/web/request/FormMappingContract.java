@@ -16,6 +16,7 @@ public class FormMappingContract extends ReferenceDataContract {
     private FormType formType;
     private Boolean isVoided;
     private String formName;
+    private Boolean enableApproval;
 
     public String getFormUUID() {
         return formUUID;
@@ -67,6 +68,14 @@ public class FormMappingContract extends ReferenceDataContract {
 
     public Boolean getIsVoided() { return isVoided; }
 
+    public Boolean getEnableApproval() {
+        return enableApproval;
+    }
+
+    public void setEnableApproval(Boolean enableApproval) {
+        this.enableApproval = enableApproval;
+    }
+
     public static FormMappingContract fromFormMapping(FormMapping formMapping) {
         FormMappingContract contract = new FormMappingContract();
         contract.setUuid(formMapping.getUuid());
@@ -78,6 +87,7 @@ public class FormMappingContract extends ReferenceDataContract {
         contract.setFormUUID(formMapping.getFormUuid());
         contract.setEncounterTypeUUID(formMapping.getEncounterTypeUuid());
         contract.setVoided(formMapping.isVoided());
+        contract.setEnableApproval(formMapping.isEnableApproval());
         return contract;
     }
 
