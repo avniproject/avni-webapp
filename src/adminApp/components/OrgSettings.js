@@ -65,7 +65,8 @@ export const OrgSettings = () => {
   const organisationConfigSettingKeys = {
     approvalWorkflow: "enableApprovalWorkflow",
     draftSave: "saveDrafts",
-    hideDateOfBirth: "hideDateOfBirth"
+    hideDateOfBirth: "hideDateOfBirth",
+    enableComments: "enableComments"
   };
 
   return orgSettings ? (
@@ -124,6 +125,17 @@ export const OrgSettings = () => {
             }
             name="Hide Date of Birth on DEA"
             toolTipKey={"ADMIN_HIDE_DOB"}
+          />
+        </Grid>
+        <Grid item>
+          <AvniSwitch
+            switchFirst
+            checked={orgSettings[organisationConfigSettingKeys.enableComments]}
+            onChange={event =>
+              onSettingsChange(organisationConfigSettingKeys.enableComments, event.target.checked)
+            }
+            name="Enable comments"
+            toolTipKey={"ADMIN_ENABLE_COMMENTS"}
           />
         </Grid>
       </Grid>
