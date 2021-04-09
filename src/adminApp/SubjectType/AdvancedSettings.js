@@ -1,12 +1,12 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
-import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ValidFormat } from "./ValidFormat";
+import { CustomisedExpansionPanelSummary } from "../components/CustomisedExpansionPanelSummary";
 
 const ExpansionPanel = withStyles({
   root: {
@@ -17,26 +17,6 @@ const ExpansionPanel = withStyles({
     margin: "auto"
   }
 })(MuiExpansionPanel);
-
-const ExpansionPanelSummary = withStyles({
-  root: {
-    backgroundColor: "rgba(0,0,0,0.07)",
-    borderBottom: "1px solid rgba(0,0,0,.125)",
-    marginBottom: -1,
-    minHeight: 40,
-    "&$expanded": {
-      minHeight: 40
-    }
-  },
-  content: {
-    "&$expanded": {
-      margin: "12px 0"
-    }
-  },
-  expanded: {}
-})(props => <MuiExpansionPanelSummary {...props} />);
-
-ExpansionPanelSummary.muiName = "ExpansionPanelSummary";
 
 const ExpansionPanelDetails = withStyles(theme => ({
   root: {
@@ -51,9 +31,9 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes }) => {
 
   return (
     <ExpansionPanel square expanded={expanded} onChange={() => setExpanded(!expanded)}>
-      <ExpansionPanelSummary>
+      <CustomisedExpansionPanelSummary>
         <Typography>Advanced settings</Typography>
-      </ExpansionPanelSummary>
+      </CustomisedExpansionPanelSummary>
       <ExpansionPanelDetails>
         <div style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <AddressLevelSetting

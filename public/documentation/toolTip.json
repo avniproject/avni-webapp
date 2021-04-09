@@ -134,5 +134,6 @@
   "ADMIN_PHONE_VERIFICATION_OTPLENGTH": "The length of the OTP to be sent",
   "ADMIN_APPROVAL_WORKFLOW": "Enable approval workflow",
   "ADMIN_SAVE_DRAFT": "Enable subject draft save",
-  "ADMIN_HIDE_DOB": "Hides the DOB on subject dashboard on Data Entry App"
+  "ADMIN_HIDE_DOB": "Hides the DOB on subject dashboard on Data Entry App",
+  "ADMIN_ENABLE_COMMENTS": "Enable the comments feature."
 }

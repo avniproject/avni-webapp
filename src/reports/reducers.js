@@ -37,7 +37,7 @@ export const setActivityReport = activityReport => ({
   activityReport
 });
 
-const initialState = {};
+const initialState = { operationalModules: {} };
 
 // reducer
 export default function(state = initialState, action) {
@@ -64,3 +64,5 @@ export default function(state = initialState, action) {
       return state;
   }
 }
+
+export const selectOperationalModules = state => state.reports.operationalModules;
