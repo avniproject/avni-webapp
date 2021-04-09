@@ -61,7 +61,7 @@ public class NewsController extends AbstractController<News> implements RestCont
     }
 
     @GetMapping(value = "/web/news/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<NewsContract> getById(@PathVariable Long id) {
