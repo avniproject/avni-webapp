@@ -5,7 +5,7 @@ import React from "react";
 import http from "common/utils/httpClient";
 import { getOperationalModules, selectOperationalModules } from "../../reports/reducers";
 import { useDispatch, useSelector } from "react-redux";
-import { isNil, map, set } from "lodash";
+import { isNil, map, set, sortBy } from "lodash";
 import { FormMappingEnableApproval } from "./FormMappingEnableApproval";
 
 export const OrgSettings = () => {
@@ -16,8 +16,13 @@ export const OrgSettings = () => {
     selectOperationalModules
   );
   const createFormMappingState = enableApproval =>
-    map(formMappings, fm =>
-      set(fm, "enableApproval", isNil(enableApproval) ? fm.enableApproval : enableApproval)
+    sortBy(
+      map(formMappings, fm =>
+        set(fm, "enableApproval", isNil(enableApproval) ? fm.enableApproval : enableApproval)
+      ),
+      "subjectTypeUUID",
+      "programUUID",
+      "encounterTypeUUID"
     );
 
   React.useEffect(() => {
