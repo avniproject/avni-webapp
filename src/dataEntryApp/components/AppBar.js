@@ -15,16 +15,17 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
-import { withRouter, Link } from "react-router-dom";
-import { connect, useSelector, useDispatch } from "react-redux";
-import { withParams } from "common/components/utils";
+import { Link, withRouter } from "react-router-dom";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { InternalLink, withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { getUserInfo } from "rootApp/ducks";
-import { InternalLink } from "common/components/utils";
 import HomeIcon from "@material-ui/icons/Home";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
+import { ROLES } from "../../common/constants";
+import { intersection, isEmpty } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -209,6 +210,8 @@ const PrimarySearchAppBar = ({ user, history }) => {
     </Button>
   );
 
+  const displayHomeButton = !isEmpty(intersection([ROLES.ADMIN, ROLES.ORG_ADMIN], user.roles));
+
   return (
     <div className={classes.grow}>
       <AppBar position="static" style={{ background: "white" }}>
@@ -266,9 +269,11 @@ const PrimarySearchAppBar = ({ user, history }) => {
               {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>
           </div>
-          <IconButton onClick={() => history.push("/home")} aria-label="Home">
-            <HomeIcon />
-          </IconButton>
+          {displayHomeButton && (
+            <IconButton onClick={() => history.push("/home")} aria-label="Home">
+              <HomeIcon />
+            </IconButton>
+          )}
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"
