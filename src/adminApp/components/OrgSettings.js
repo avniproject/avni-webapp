@@ -3,16 +3,45 @@ import Typography from "@material-ui/core/Typography";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import React from "react";
 import http from "common/utils/httpClient";
+import { getOperationalModules, selectOperationalModules } from "../../reports/reducers";
+import { useDispatch, useSelector } from "react-redux";
+import { isNil, map, set } from "lodash";
+import { FormMappingEnableApproval } from "./FormMappingEnableApproval";
 
 export const OrgSettings = () => {
   const [orgSettings, setOrgSettings] = React.useState();
+  const [formMappingState, setFormMappingState] = React.useState();
+  const dispatch = useDispatch();
+  const { formMappings, encounterTypes, programs, subjectTypes } = useSelector(
+    selectOperationalModules
+  );
+  const createFormMappingState = enableApproval =>
+    map(formMappings, fm =>
+      set(fm, "enableApproval", isNil(enableApproval) ? fm.enableApproval : enableApproval)
+    );
 
   React.useEffect(() => {
+    setFormMappingState(createFormMappingState());
+  }, [formMappings]);
+
+  React.useEffect(() => {
+    dispatch(getOperationalModules());
     http
       .fetchJson("/web/organisationConfig")
       .then(response => response.json)
       .then(({ organisationConfig }) => setOrgSettings(organisationConfig));
   }, []);
+
+  const postUpdatedFormMappings = (payload, onSuccessCB) => {
+    http
+      .post("/formMappings", payload)
+      .then(res => {
+        if (res.status === 200 || res.status === 201) {
+          onSuccessCB();
+        }
+      })
+      .catch(error => console.error(error));
+  };
 
   const onSettingsChange = (settingsName, value) => {
     const payload = { settings: { [settingsName]: value } };
@@ -21,6 +50,13 @@ export const OrgSettings = () => {
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           setOrgSettings(response.data.settings);
+        }
+        return response;
+      })
+      .then(() => {
+        if (settingsName === organisationConfigSettingKeys.approvalWorkflow) {
+          const newFormMappings = createFormMappingState(value);
+          postUpdatedFormMappings(newFormMappings, () => setFormMappingState(newFormMappings));
         }
       })
       .catch(error => console.error(error));
@@ -57,6 +93,15 @@ export const OrgSettings = () => {
               Create custom dashboard with standard card types approve, reject and pending to track
               the approval workflow.
             </Typography>
+            <FormMappingEnableApproval
+              disableCheckbox={!orgSettings[organisationConfigSettingKeys.approvalWorkflow]}
+              encounterTypes={encounterTypes}
+              formMappingState={formMappingState}
+              postUpdatedFormMappings={postUpdatedFormMappings}
+              programs={programs}
+              setFormMappingState={setFormMappingState}
+              subjectTypes={subjectTypes}
+            />
           </Grid>
         )}
         <Grid item>
