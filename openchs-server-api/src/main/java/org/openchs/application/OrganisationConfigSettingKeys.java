@@ -1,5 +1,5 @@
 package org.openchs.application;
 
 public enum OrganisationConfigSettingKeys {
-    languages, searchFilters, myDashboardFilters, lowestAddressLevelType
+    languages, searchFilters, myDashboardFilters, lowestAddressLevelType, enableApprovalWorkflow, saveDrafts, enableComments
 }

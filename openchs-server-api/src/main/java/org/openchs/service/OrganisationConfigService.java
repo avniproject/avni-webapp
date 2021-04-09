@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.openchs.application.FormMapping;
 import org.openchs.application.KeyType;
 import org.openchs.application.OrganisationConfigSettingKeys;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
+import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.JsonObject;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationConfig;
@@ -37,6 +39,7 @@ public class OrganisationConfigService {
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
     private final LocationHierarchyService locationHierarchyService;
+    private final FormMappingRepository formMappingRepository;
     private ObjectMapper objectMapper;
     private final Logger logger;
 
@@ -45,11 +48,13 @@ public class OrganisationConfigService {
     public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository,
                                      ProjectionFactory projectionFactory,
                                      ConceptRepository conceptRepository,
+                                     FormMappingRepository formMappingRepository,
                                      @Lazy LocationHierarchyService locationHierarchyService) {
         this.organisationConfigRepository = organisationConfigRepository;
         this.projectionFactory = projectionFactory;
         this.conceptRepository = conceptRepository;
         this.locationHierarchyService = locationHierarchyService;
+        this.formMappingRepository = formMappingRepository;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -145,8 +150,25 @@ public class OrganisationConfigService {
     }
 
     public JsonObject updateOrganisationConfigSettings(JsonObject newSettings, JsonObject currentSettings) {
-        newSettings.keySet().forEach(key -> currentSettings.put(key, newSettings.get(key)));
+        newSettings.keySet().forEach(key -> {
+            currentSettings.put(key, newSettings.get(key));
+            if (key.equals(OrganisationConfigSettingKeys.enableApprovalWorkflow.toString())) {
+                boolean enableApprovalWorkflow = (boolean) newSettings.get(key);
+                updateEnableApprovalForAllForms(enableApprovalWorkflow);
+            }
+        });
         return currentSettings;
+    }
+
+    private void updateEnableApprovalForAllForms(boolean enableApprovalWorkflow) {
+        List<FormMapping> updatedFormMappings = formMappingRepository.findAll()
+                .stream()
+                .peek(m -> {
+                    m.setEnableApproval(enableApprovalWorkflow);
+                    m.updateAudit();
+                })
+                .collect(Collectors.toList());
+        formMappingRepository.saveAll(updatedFormMappings);
     }
 
     @Transactional
