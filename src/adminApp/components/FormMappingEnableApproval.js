@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import { CustomisedExpansionPanelSummary } from "./CustomisedExpansionPanelSummary";
+import http from "common/utils/httpClient";
 
 export const FormMappingEnableApproval = ({
   formMappingState,
@@ -13,10 +14,20 @@ export const FormMappingEnableApproval = ({
   encounterTypes,
   programs,
   subjectTypes,
-  postUpdatedFormMappings,
   disableCheckbox
 }) => {
   const [expanded, setExpanded] = React.useState(false);
+
+  const postUpdatedFormMappings = (payload, onSuccessCB) => {
+    http
+      .post("/formMappings", payload)
+      .then(res => {
+        if (res.status === 200 || res.status === 201) {
+          onSuccessCB();
+        }
+      })
+      .catch(error => console.error(error));
+  };
 
   const getPropertyFromRowData = (row, rowUUIDProperty, entityArray) =>
     get(find(entityArray, st => st.uuid === row[rowUUIDProperty]), "name");
