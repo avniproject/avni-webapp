@@ -37,17 +37,6 @@ export const OrgSettings = () => {
       .then(({ organisationConfig }) => setOrgSettings(organisationConfig));
   }, []);
 
-  const postUpdatedFormMappings = (payload, onSuccessCB) => {
-    http
-      .post("/formMappings", payload)
-      .then(res => {
-        if (res.status === 200 || res.status === 201) {
-          onSuccessCB();
-        }
-      })
-      .catch(error => console.error(error));
-  };
-
   const onSettingsChange = (settingsName, value) => {
     const payload = { settings: { [settingsName]: value } };
     http
@@ -55,14 +44,9 @@ export const OrgSettings = () => {
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           setOrgSettings(response.data.settings);
+          setFormMappingState(createFormMappingState(value));
         }
         return response;
-      })
-      .then(() => {
-        if (settingsName === organisationConfigSettingKeys.approvalWorkflow) {
-          const newFormMappings = createFormMappingState(value);
-          postUpdatedFormMappings(newFormMappings, () => setFormMappingState(newFormMappings));
-        }
       })
       .catch(error => console.error(error));
   };
@@ -103,7 +87,6 @@ export const OrgSettings = () => {
               disableCheckbox={!orgSettings[organisationConfigSettingKeys.approvalWorkflow]}
               encounterTypes={encounterTypes}
               formMappingState={formMappingState}
-              postUpdatedFormMappings={postUpdatedFormMappings}
               programs={programs}
               setFormMappingState={setFormMappingState}
               subjectTypes={subjectTypes}
