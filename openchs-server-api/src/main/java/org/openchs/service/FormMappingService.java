@@ -31,18 +31,21 @@ public class FormMappingService {
     private FormMappingRepository formMappingRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private FormRepository formRepository;
+    private OrganisationConfigService organisationConfigService;
 
     @Autowired
     public FormMappingService(FormMappingRepository formMappingRepository,
                               EncounterTypeRepository encounterTypeRepository,
                               ProgramRepository programRepository,
                               SubjectTypeRepository subjectTypeRepository,
-                              FormRepository formRepository) {
+                              FormRepository formRepository,
+                              OrganisationConfigService organisationConfigService) {
         this.formMappingRepository = formMappingRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.programRepository = programRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.formRepository = formRepository;
+        this.organisationConfigService = organisationConfigService;
     }
 
     public void saveFormMapping(FormMappingParameterObject parametersForNewMapping,
@@ -76,6 +79,7 @@ public class FormMappingService {
             formMapping = new FormMapping();
             formMapping.assignUUID();
             formMapping.setVoided(false);
+            formMapping.setEnableApproval(organisationConfigService.isApprovalWorkflowEnabled());
         }
 
         setSubjectTypeIfRequired(formMapping, parametersForNewMapping.subjectTypeUuid);
@@ -119,6 +123,7 @@ public class FormMappingService {
         }
 
         formMapping.setVoided(formMappingRequest.isVoided());
+        setEnableApproval(formMappingRequest, formMapping);
         formMappingRepository.save(formMapping);
     }
 
@@ -158,7 +163,14 @@ public class FormMappingService {
         }
 
         formMapping.setVoided(formMappingRequest.getIsVoided());
+        setEnableApproval(formMappingRequest, formMapping);
         formMappingRepository.save(formMapping);
+    }
+
+    private void setEnableApproval(FormMappingContract formMappingRequest, FormMapping formMapping) {
+        boolean enableApproval = formMappingRequest.getEnableApproval() != null ?
+                formMappingRequest.getEnableApproval() : organisationConfigService.isApprovalWorkflowEnabled();
+        formMapping.setEnableApproval(enableApproval);
     }
 
     private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String encounterTypeUuid) {

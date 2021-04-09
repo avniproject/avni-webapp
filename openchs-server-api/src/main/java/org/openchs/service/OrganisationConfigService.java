@@ -193,4 +193,13 @@ public class OrganisationConfigService {
                 .collect(Collectors.toList());
     }
 
+    public Boolean isApprovalWorkflowEnabled() {
+        Long organisationId = UserContextHolder.getUserContext().getOrganisationId();
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
+        if (organisationConfig == null) {
+            return false;
+        }
+        return (Boolean) organisationConfig.getSettings().getOrDefault("enableApprovalWorkflow", false);
+    }
+
 }
