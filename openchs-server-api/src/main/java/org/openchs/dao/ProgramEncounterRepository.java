@@ -1,6 +1,8 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.Concept;
+import org.openchs.domain.EncounterType;
 import org.openchs.domain.ProgramEncounter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,12 +12,11 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
@@ -104,5 +105,24 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     default Specification<ProgramEncounter> withProgramEncounterTypeIdUuids(List<String> encounterTypeUuids) {
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
+    }
+
+    default Specification<ProgramEncounter> findByEncounterTypeSpec(String encounterType) {
+        Specification<ProgramEncounter> spec = (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<ProgramEncounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
+            return cb.and(cb.equal(encounterTypeJoin.get("name"), encounterType));
+        };
+        return spec;
+    }
+
+    default Page<ProgramEncounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
+        return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
+    }
+
+    default Page<ProgramEncounter> findByConceptsAndEncounterType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
+        return findAll(
+                findByConceptsSpec(lastModifiedDateTime, now, concepts)
+                        .and(findByEncounterTypeSpec(encounterType)),
+                pageable);
     }
 }

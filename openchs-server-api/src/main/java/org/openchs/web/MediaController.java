@@ -58,18 +58,28 @@ public class MediaController {
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/upload", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<String> generateMobileDatabaseBackupUrl() {
+    public ResponseEntity<String> generateMobileDatabaseBackupUploadUrl() {
         logger.info("getting mobile database backup upload url");
+        return getFileUrlResponse(mobileDatabaseBackupFile(), HttpMethod.PUT);
+    }
+
+    private String mobileDatabaseBackupFile() {
         String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
-        return getFileUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid), HttpMethod.PUT);
+        return String.format("MobileDbBackup-%s", catchmentUuid);
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/download", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateMobileDatabaseBackupDownloadUrl() {
         logger.info("getting mobile database backup download url");
-        String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
-        return getFileUrlResponse(String.format("MobileDbBackup-%s", catchmentUuid), HttpMethod.GET);
+        return getFileUrlResponse(mobileDatabaseBackupFile(), HttpMethod.GET);
+    }
+
+    @RequestMapping(value = "/media/mobileDatabaseBackupUrl/exists", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public boolean mobileDatabaseBackupExists() {
+        logger.info("checking whether mobile database backup url exists");
+        return s3Service.fileExists(mobileDatabaseBackupFile());
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)

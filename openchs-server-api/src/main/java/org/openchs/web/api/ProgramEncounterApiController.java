@@ -2,6 +2,7 @@ package org.openchs.web.api;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
+import org.openchs.domain.Concept;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.domain.ProgramEnrolment;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 public class ProgramEncounterApiController {
@@ -42,15 +44,17 @@ public class ProgramEncounterApiController {
 
     @RequestMapping(value = "/api/programEncounters", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+    public ResponsePage getEncounters(@RequestParam(name = "lastModifiedDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                       @RequestParam(value = "encounterType", required = false) String encounterType,
+                                      @RequestParam(value = "concepts", required = false) String concepts,
                                       Pageable pageable) {
         Page<ProgramEncounter> programEncounters;
+        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         if (S.isEmpty(encounterType)) {
-            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+            programEncounters = programEncounterRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
         } else {
-            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
+            programEncounters = programEncounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, conceptsMap, encounterType, pageable);
         }
 
         ArrayList<EncounterResponse> programEncounterResponses = new ArrayList<>();

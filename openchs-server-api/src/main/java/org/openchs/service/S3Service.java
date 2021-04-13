@@ -95,6 +95,12 @@ public class S3Service {
         return format("%s/%s", mediaDirectory, fileName);
     }
 
+    public boolean fileExists(String fileName) {
+        authorizeUser();
+        String objectKey = getS3KeyForMediaUpload(fileName);
+        return s3Client.doesObjectExist(bucketName, objectKey);
+    }
+
     public URL generateMediaDownloadUrl(String url) {
         UserContext userContext = authorizeUser();
         String mediaDirectory = getOrgDirectoryName();
