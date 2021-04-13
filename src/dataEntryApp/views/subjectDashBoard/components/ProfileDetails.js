@@ -14,11 +14,16 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Modal from "./CommonModal";
 import { getPrograms } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import Button from "@material-ui/core/Button";
+import { CommentDrawer } from "./comments/CommentDrawer";
+import CommentIcon from "@material-ui/icons/Comment";
+import { selectOrganisationConfig } from "../../../sagas/selectors";
+import { get } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -109,6 +114,9 @@ const useStyles = makeStyles(theme => ({
     fontSize: "50px",
     color: "#676173",
     marginTop: "10px"
+  },
+  commentButton: {
+    margin: theme.spacing(1)
   }
 }));
 
@@ -123,8 +131,10 @@ const ProfileDetails = ({
 }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
+  const [openComment, setOpenComment] = React.useState(false);
   const [errorStatus, setError] = React.useState(false);
-
+  const orgConfig = useSelector(selectOrganisationConfig);
+  const enableComment = get(orgConfig, "settings.enableComments", false);
   const handleChange = event => {
     setSelectedProgram(event.target.value);
     setError(!event.target.value);
@@ -182,6 +192,7 @@ const ProfileDetails = ({
 
   return (
     <div className={classes.tableView}>
+      <CommentDrawer open={openComment} setOpen={setOpenComment} subjectUUID={subjectUuid} />
       <CustomizedBackdrop load={load} />
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.nameString}`}
@@ -229,41 +240,57 @@ const ProfileDetails = ({
             </TableBody>
           </Table>
         </Grid>
-        <Grid item xs={7} align="right">
-          {tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided ? (
-            <div>
-              <Modal
-                content={content}
-                handleError={handleError}
-                buttonsSet={[
-                  {
-                    buttonType: "openButton",
-                    label: t("enrolInProgram"),
-                    classes: classes.enrollButtonStyle
-                  },
-                  {
-                    buttonType: "saveButton",
-                    label: t("Enrol"),
-                    classes: classes.btnCustom,
-                    redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
-                      profileDetails.subjectType.name
-                    }`,
-                    requiredField: selectedProgram,
-                    handleError: handleError
-                  },
-                  {
-                    buttonType: "cancelButton",
-                    label: t("Cancel"),
-                    classes: classes.cancelBtnCustom
-                  }
-                ]}
-                title={t("Enrol in program")}
-                btnHandleClose={close}
-              />
-            </div>
-          ) : (
-            ""
-          )}
+        <Grid container item xs={7} align="right" direction={"column"}>
+          <Grid item>
+            {enableComment && (
+              <Button
+                onClick={() => setOpenComment(true)}
+                variant="contained"
+                color="default"
+                className={classes.commentButton}
+                style={{ textTransform: "none" }}
+              >
+                <CommentIcon style={{ marginRight: 4 }} />
+                {t("comments")}
+              </Button>
+            )}
+          </Grid>
+          <Grid item>
+            {tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided ? (
+              <div>
+                <Modal
+                  content={content}
+                  handleError={handleError}
+                  buttonsSet={[
+                    {
+                      buttonType: "openButton",
+                      label: t("enrolInProgram"),
+                      classes: classes.enrollButtonStyle
+                    },
+                    {
+                      buttonType: "saveButton",
+                      label: t("Enrol"),
+                      classes: classes.btnCustom,
+                      redirectTo: `/app/subject/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment&subjectTypeName=${
+                        profileDetails.subjectType.name
+                      }`,
+                      requiredField: selectedProgram,
+                      handleError: handleError
+                    },
+                    {
+                      buttonType: "cancelButton",
+                      label: t("Cancel"),
+                      classes: classes.cancelBtnCustom
+                    }
+                  ]}
+                  title={t("Enrol in program")}
+                  btnHandleClose={close}
+                />
+              </div>
+            ) : (
+              ""
+            )}
+          </Grid>
         </Grid>
       </Grid>
     </div>

@@ -146,5 +146,17 @@ export default {
     httpClient
       .delete(`/web/programEncounter/${uuid}`)
       .then(response => [response, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  fetchCommentThreads: subjectUUID =>
+    httpClient
+      .fetchJson(`/web/commentThreads?subjectUUID=${subjectUUID}`)
+      .then(response => response.json),
+  newCommentThread: payload => httpClient.post("/web/commentThread", payload).then(r => r.data),
+  resolveThread: threadId =>
+    httpClient.put(`/web/commentThread/${threadId}/resolve`).then(r => r.data),
+  newComment: payload => httpClient.post("/web/comment", payload).then(r => r.data),
+  deleteComment: id => httpClient.delete(`/web/comment/${id}`).then(r => r.data),
+  fetchCommentsForThread: threadId =>
+    httpClient.fetchJson(`/web/comment?commentThreadId=${threadId}`).then(r => r.json),
+  editComment: comment => httpClient.put(`/web/comment/${comment.id}`, comment).then(r => r.json)
 };

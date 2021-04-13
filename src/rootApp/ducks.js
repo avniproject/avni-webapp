@@ -98,7 +98,8 @@ export default function(state = initialState, action) {
         user: {
           ...state.user,
           username: state.user.username || action.payload.username,
-          roles: action.payload.roles
+          roles: action.payload.roles,
+          name: action.payload.name
         },
         organisation: {
           id: action.payload.organisationId,

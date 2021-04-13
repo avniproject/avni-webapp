@@ -5,8 +5,10 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import { useTranslation } from "react-i18next";
 
 const ConfirmDialog = ({ title, message, open, setOpen, onConfirm }) => {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle id="title">{title}</DialogTitle>
@@ -15,7 +17,7 @@ const ConfirmDialog = ({ title, message, open, setOpen, onConfirm }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpen(false)} color="primary">
-          No
+          {t("no")}
         </Button>
         <Button
           onClick={() => {
@@ -25,7 +27,7 @@ const ConfirmDialog = ({ title, message, open, setOpen, onConfirm }) => {
           color="primary"
           autoFocus
         >
-          Yes
+          {t("yes")}
         </Button>
       </DialogActions>
     </Dialog>
