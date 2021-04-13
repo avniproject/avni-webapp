@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "comment_thread")
@@ -59,6 +61,11 @@ public class CommentThread extends OrganisationAwareEntity {
 
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
+    }
+
+    @JsonIgnore
+    public Set<Comment> getNonVoidedComments() {
+        return comments.stream().filter(c -> !c.isVoided()).collect(Collectors.toSet());
     }
 
     public enum CommentThreadStatus {

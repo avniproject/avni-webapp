@@ -2,11 +2,14 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.CommentThread;
+import org.openchs.domain.Individual;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "commentThread", path = "commentThread", exported = false)
@@ -36,4 +39,6 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
     default Page<CommentThread> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
+
+    List<CommentThread> findDistinctByIsVoidedFalseAndCommentsIsVoidedFalseAndComments_SubjectOrderByOpenDateTimeDescIdDesc(Individual subject);
 }

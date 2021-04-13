@@ -57,4 +57,8 @@ public class Comment extends OrganisationAwareEntity {
         User createdByUser = this.getAudit().getCreatedBy();
         return S.isEmpty(createdByUser.getName()) ? createdByUser.getUsername() : createdByUser.getName();
     }
+
+    public String getCommentThreadUUID() {
+        return this.commentThread.getUuid();
+    }
 }

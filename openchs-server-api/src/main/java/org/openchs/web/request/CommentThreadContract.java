@@ -2,11 +2,15 @@ package org.openchs.web.request;
 
 import org.joda.time.DateTime;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class CommentThreadContract extends CHSRequest {
 
     private String status;
     private DateTime openDateTime;
     private DateTime resolvedDateTime;
+    private Set<CommentContract> comments = new HashSet<>();
 
     public String getStatus() {
         return status;
@@ -30,5 +34,13 @@ public class CommentThreadContract extends CHSRequest {
 
     public void setResolvedDateTime(DateTime resolvedDateTime) {
         this.resolvedDateTime = resolvedDateTime;
+    }
+
+    public Set<CommentContract> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<CommentContract> comments) {
+        this.comments = comments;
     }
 }
