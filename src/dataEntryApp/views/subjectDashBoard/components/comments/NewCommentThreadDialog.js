@@ -7,6 +7,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import { onNewThread } from "../../../../reducers/CommentReducer";
 
 const useStyles = makeStyles(theme => ({
   dialogPosition: {
@@ -16,13 +17,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function NewCommentThreadDialog({ open, setOpen, comment, onCommentChange }) {
+export default function NewCommentThreadDialog({
+  open,
+  setOpen,
+  newCommentText,
+  onCommentChange,
+  dispatch,
+  subjectUUID
+}) {
   const theme = useTheme();
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const onSave = () => {
-    //TODO: Call API to create a comment thread.
+    dispatch(onNewThread(newCommentText, subjectUUID));
     setOpen(false);
   };
 
@@ -39,11 +47,11 @@ export default function NewCommentThreadDialog({ open, setOpen, comment, onComme
           <TextField
             fullWidth
             id="new-thread"
-            label="New thread"
-            placeholder="New thread"
+            label="Type message for new thread"
+            placeholder="Type message for new thread"
             multiline
             variant="outlined"
-            value={comment}
+            value={newCommentText}
             onChange={onCommentChange}
           />
         </DialogContent>

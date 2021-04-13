@@ -150,5 +150,9 @@ export default {
   fetchCommentThreads: subjectUUID =>
     httpClient
       .fetchJson(`/web/commentThreads?subjectUUID=${subjectUUID}`)
-      .then(response => response.json)
+      .then(response => response.json),
+  newCommentThread: payload => httpClient.post("/web/commentThread", payload).then(r => r.data),
+  resolveThread: threadId =>
+    httpClient.put(`/web/commentThread/${threadId}/resolve`).then(r => r.data),
+  newComment: payload => httpClient.post("/web/comment", payload).then(r => r.data)
 };
