@@ -9,7 +9,7 @@ import {
   setNewCommentText
 } from "../../../../reducers/CommentReducer";
 import { ThreadListing } from "./ThreadListing";
-import { CommentListing } from "./CommetListing";
+import { CommentListing } from "./CommentListing";
 
 const drawerWidth = 508;
 

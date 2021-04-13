@@ -80,14 +80,15 @@ export const onThreadResolve = () => ({
   type: types.ON_RESOLVE
 });
 
-export const onCommentDelete = comment => ({
+export const onCommentDelete = commentId => ({
   type: types.ON_DELETE,
-  comment
+  commentId
 });
 
-export const onCommentEdit = comment => ({
+export const onCommentEdit = (comment, newCommentText) => ({
   type: types.ON_EDIT,
-  comment
+  comment,
+  newCommentText
 });
 
 export default function(state = initialState, action) {

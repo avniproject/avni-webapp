@@ -88,7 +88,7 @@ export const ThreadListing = ({
                 <Card>
                   <CardActionArea onClick={() => dispatch(onThreadReply(id))}>
                     <CardContent>
-                      <CommentCard comment={topComment} status={status} />
+                      <CommentCard comment={topComment} status={status} dispatch={dispatch} />
                     </CardContent>
                   </CardActionArea>
                 </Card>

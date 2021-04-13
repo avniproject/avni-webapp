@@ -19,7 +19,9 @@ export default function*() {
       newCommentThreadWatcher,
       resolveThreadWatcher,
       threadReplyWatcher,
-      newCommentWatcher
+      newCommentWatcher,
+      commentDeleteWatcher,
+      commentEditWatcher
     ].map(fork)
   );
 }
@@ -42,6 +44,14 @@ function* threadReplyWatcher() {
 
 function* newCommentWatcher() {
   yield takeLatest(types.ON_NEW_COMMENT, newCommentWorker);
+}
+
+function* commentDeleteWatcher() {
+  yield takeLatest(types.ON_DELETE, commentDeleteWorker);
+}
+
+function* commentEditWatcher() {
+  yield takeLatest(types.ON_EDIT, commentEditWorker);
 }
 
 export function* fetchCommentWorker({ subjectUUID }) {
@@ -84,6 +94,22 @@ export function* newCommentWorker({ subjectUUID }) {
   const payload = { text: newCommentText, subjectUUID, commentThreadUUID: activeThread.uuid };
   const newComment = yield call(API.newComment, payload);
   const newComments = [...comments, newComment];
+  yield put.resolve(setNewCommentText(""));
+  yield put(setComments(newComments));
+}
+
+export function* commentDeleteWorker({ commentId }) {
+  const { activeThread } = yield select(selectCommentState);
+  yield call(API.deleteComment, commentId);
+  const newComments = yield call(API.fetchCommentsForThread, activeThread.id);
+  yield put(setComments(newComments));
+}
+
+export function* commentEditWorker({ comment, newCommentText }) {
+  const { activeThread } = yield select(selectCommentState);
+  const payload = { ...comment, text: newCommentText };
+  yield call(API.editComment, payload);
+  const newComments = yield call(API.fetchCommentsForThread, activeThread.id);
   yield put.resolve(setNewCommentText(""));
   yield put(setComments(newComments));
 }

@@ -4,10 +4,11 @@ import TextField from "@material-ui/core/TextField";
 import {
   addNewComment,
   getCommentThreads,
+  onCommentEdit,
   onThreadResolve,
   selectCommentState
 } from "../../../../reducers/CommentReducer";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -75,6 +76,14 @@ export const CommentListing = ({
   const classes = useStyles();
   const { activeThread } = useSelector(selectCommentState);
   const disableResolve = get(activeThread, "status", "Open") === "Resolved";
+  const [commentToEdit, setCommentToEdit] = useState(undefined);
+
+  const onEditComment = () => {
+    setCommentToEdit(undefined);
+    dispatch(onCommentEdit(commentToEdit, newCommentText));
+  };
+
+  const onNewComment = () => dispatch(addNewComment(subjectUUID));
 
   return (
     <React.Fragment>
@@ -114,7 +123,12 @@ export const CommentListing = ({
               mb={2}
             >
               <Paper elevation={0} className={index === 0 ? classes.firstComment : classes.comment}>
-                <CommentCard displayMenu comment={comment} />
+                <CommentCard
+                  displayMenu
+                  comment={comment}
+                  dispatch={dispatch}
+                  setCommentToEdit={setCommentToEdit}
+                />
               </Paper>
             </Box>
           );
@@ -139,9 +153,9 @@ export const CommentListing = ({
             variant="contained"
             color="primary"
             disabled={isEmpty(newCommentText)}
-            onClick={() => dispatch(addNewComment(subjectUUID))}
+            onClick={() => (isEmpty(commentToEdit) ? onNewComment() : onEditComment())}
           >
-            {"Post comment"}
+            {isEmpty(commentToEdit) ? "Post comment" : "Edit comment"}
           </Button>
         </Box>
         <Box pt={10} />
