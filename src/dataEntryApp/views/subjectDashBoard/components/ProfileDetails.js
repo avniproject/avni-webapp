@@ -247,7 +247,7 @@ const ProfileDetails = ({
               style={{ textTransform: "none" }}
             >
               <CommentIcon style={{ marginRight: 4 }} />
-              {t("Comments")}
+              {t("comments")}
             </Button>
           </Grid>
           <Grid item>

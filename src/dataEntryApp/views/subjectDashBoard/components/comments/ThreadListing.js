@@ -11,6 +11,7 @@ import CommentIcon from "@material-ui/icons/Comment";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import NewCommentThreadDialog from "./NewCommentThreadDialog";
 import { CommentCard } from "./CommentCard";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   drawerHeader: {
@@ -56,13 +57,14 @@ export const ThreadListing = ({
   subjectUUID
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [openCommentThread, setOpenCommentThread] = useState(false);
   return (
     <React.Fragment>
       <div className={classes.drawerHeader}>
         <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
           <CommentIcon style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
-          <Typography style={{ color: "#fff" }}>{"Comment threads"}</Typography>
+          <Typography style={{ color: "#fff" }}>{t("commentThreads")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Button
@@ -70,7 +72,7 @@ export const ThreadListing = ({
             style={{ textTransform: "none" }}
             onClick={() => setOpenCommentThread(true)}
           >
-            {"Add comment"}
+            {t("addComment")}
           </Button>
           <div className={classes.iconContainer}>
             <IconButton onClick={() => setOpen(false)}>

@@ -8,7 +8,7 @@ import {
   onThreadResolve,
   selectCommentState
 } from "../../../../reducers/CommentReducer";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -16,6 +16,8 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import { CommentCard } from "./CommentCard";
 import { useSelector } from "react-redux";
+import ConfirmDialog from "../../../../components/ConfirmDialog";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   drawerHeader: {
@@ -74,9 +76,11 @@ export const CommentListing = ({
   setOpen
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const { activeThread } = useSelector(selectCommentState);
   const disableResolve = get(activeThread, "status", "Open") === "Resolved";
   const [commentToEdit, setCommentToEdit] = useState(undefined);
+  const [openResolve, setOpenResolve] = useState(false);
 
   const onEditComment = () => {
     setCommentToEdit(undefined);
@@ -95,16 +99,16 @@ export const CommentListing = ({
             </IconButton>
           </div>
           <CommentIcon style={{ color: "#fff", marginRight: 5, marginLeft: 5 }} />
-          <Typography style={{ color: "#fff" }}>{"Comments"}</Typography>
+          <Typography style={{ color: "#fff" }}>{t("Comments")}</Typography>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Button
             disabled={disableResolve}
             className={classes.commentButton}
             style={{ textTransform: "none" }}
-            onClick={() => dispatch(onThreadResolve())}
+            onClick={() => setOpenResolve(true)}
           >
-            {"Resolve thread"}
+            {t("resolveThread")}
           </Button>
           <div className={classes.iconContainer}>
             <IconButton onClick={() => setOpen(false)}>
@@ -139,8 +143,8 @@ export const CommentListing = ({
             <TextField
               fullWidth
               id="new-comment"
-              label="What's your response?"
-              placeholder="What's your response?"
+              label={t("newCommentLabel")}
+              placeholder={t("newCommentLabel")}
               multiline
               variant="outlined"
               value={newCommentText}
@@ -155,11 +159,18 @@ export const CommentListing = ({
             disabled={isEmpty(newCommentText)}
             onClick={() => (isEmpty(commentToEdit) ? onNewComment() : onEditComment())}
           >
-            {isEmpty(commentToEdit) ? "Post comment" : "Edit comment"}
+            {isEmpty(commentToEdit) ? t("postComment") : t("editComment")}
           </Button>
         </Box>
         <Box pt={10} />
       </Paper>
+      <ConfirmDialog
+        setOpen={setOpenResolve}
+        open={openResolve}
+        title={t("threadResolveTitle")}
+        message={t("threadResolveMessage")}
+        onConfirm={() => dispatch(onThreadResolve())}
+      />
     </React.Fragment>
   );
 };

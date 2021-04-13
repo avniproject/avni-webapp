@@ -8,6 +8,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { onNewThread } from "../../../../reducers/CommentReducer";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   dialogPosition: {
@@ -25,6 +26,7 @@ export default function NewCommentThreadDialog({
   dispatch,
   subjectUUID
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -42,13 +44,13 @@ export default function NewCommentThreadDialog({
         open={open}
         onClose={() => setOpen(false)}
       >
-        <DialogTitle id="new-comment-thread">{"Create a new comment thread"}</DialogTitle>
+        <DialogTitle id="new-comment-thread">{t("createNewCommentThread")}</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
             id="new-thread"
-            label="Type message for new thread"
-            placeholder="Type message for new thread"
+            label={t("newThreadLabel")}
+            placeholder={t("newThreadLabel")}
             multiline
             variant="outlined"
             value={newCommentText}
@@ -57,10 +59,10 @@ export default function NewCommentThreadDialog({
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => setOpen(false)} color="primary">
-            Cancel
+            {t("cancel")}
           </Button>
           <Button onClick={onSave} color="primary" autoFocus>
-            Save
+            {t("save")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -15,13 +15,17 @@ import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Fade from "@material-ui/core/Fade";
+import ConfirmDialog from "../../../../components/ConfirmDialog";
+import { useTranslation } from "react-i18next";
 
 export const CommentCard = ({ comment, displayMenu, status, dispatch, setCommentToEdit }) => {
+  const { t } = useTranslation();
   const myUsername = useSelector(selectDisplayUsername);
   const displayUsername = comment.displayUsername === myUsername ? "You" : comment.displayUsername;
   const textBreakPoint = displayMenu ? 10 : 9;
   const optionBreakPoint = displayMenu ? 1 : 2;
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openDelete, setOpenDelete] = React.useState(false);
   const open = Boolean(anchorEl);
 
   const options = [
@@ -37,7 +41,7 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
       label: "Delete",
       onPress: () => {
         setAnchorEl(null);
-        dispatch(onCommentDelete(comment.id));
+        setOpenDelete(true);
       }
     }
   ];
@@ -98,6 +102,13 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
       <Grid item xs={optionBreakPoint}>
         {displayMenu ? renderOptions() : renderStatus()}
       </Grid>
+      <ConfirmDialog
+        open={openDelete}
+        setOpen={setOpenDelete}
+        title={t("deleteCommentTitle")}
+        message={t("deleteCommentMessage")}
+        onConfirm={() => dispatch(onCommentDelete(comment.id))}
+      />
     </Grid>
   );
 };
