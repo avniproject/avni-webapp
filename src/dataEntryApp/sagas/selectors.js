@@ -1,4 +1,4 @@
-import { filter, find, get, isNil, some } from "lodash";
+import { filter, find, get, isNil, some, head } from "lodash";
 
 export const selectSubjectTypeFromName = subjectTypeName => state =>
   find(
@@ -58,3 +58,8 @@ export const selectGeneralEncounterTypes = subjectTypeUuid => state => {
 
 export const selectOperationalModules = state =>
   get(state, "dataEntry.metadata.operationalModules");
+
+export const selectOrganisationConfig = state => {
+  const orgConfigs = get(state, "translationsReducer.orgConfig._embedded.organisationConfig");
+  return head(orgConfigs);
+};

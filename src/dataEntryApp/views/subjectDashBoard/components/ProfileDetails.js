@@ -14,7 +14,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Modal from "./CommonModal";
 import { getPrograms } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -22,6 +22,8 @@ import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import Button from "@material-ui/core/Button";
 import { CommentDrawer } from "./comments/CommentDrawer";
 import CommentIcon from "@material-ui/icons/Comment";
+import { selectOrganisationConfig } from "../../../sagas/selectors";
+import { get } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -131,7 +133,8 @@ const ProfileDetails = ({
   const [selectedProgram, setSelectedProgram] = React.useState("");
   const [openComment, setOpenComment] = React.useState(false);
   const [errorStatus, setError] = React.useState(false);
-
+  const orgConfig = useSelector(selectOrganisationConfig);
+  const enableComment = get(orgConfig, "settings.enableComments", false);
   const handleChange = event => {
     setSelectedProgram(event.target.value);
     setError(!event.target.value);
@@ -239,16 +242,18 @@ const ProfileDetails = ({
         </Grid>
         <Grid container item xs={7} align="right" direction={"column"}>
           <Grid item>
-            <Button
-              onClick={() => setOpenComment(true)}
-              variant="contained"
-              color="default"
-              className={classes.commentButton}
-              style={{ textTransform: "none" }}
-            >
-              <CommentIcon style={{ marginRight: 4 }} />
-              {t("comments")}
-            </Button>
+            {enableComment && (
+              <Button
+                onClick={() => setOpenComment(true)}
+                variant="contained"
+                color="default"
+                className={classes.commentButton}
+                style={{ textTransform: "none" }}
+              >
+                <CommentIcon style={{ marginRight: 4 }} />
+                {t("comments")}
+              </Button>
+            )}
           </Grid>
           <Grid item>
             {tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided ? (
