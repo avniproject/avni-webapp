@@ -16,7 +16,7 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface CommentRepository extends TransactionalDataRepository<Comment>, FindByLastModifiedDateTime<Comment>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Comment> {
 
-    List<Comment> findByIsVoidedFalseAndSubjectOrderByAuditLastModifiedDateTimeAscIdAsc(Individual subject);
+    List<Comment> findByIsVoidedFalseAndCommentThreadIdOrderByAuditLastModifiedDateTimeAscIdAsc(Long threadId);
 
     Page<Comment> findBySubjectAddressLevelVirtualCatchmentsIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,

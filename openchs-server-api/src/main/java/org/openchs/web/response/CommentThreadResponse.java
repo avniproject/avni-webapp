@@ -22,7 +22,7 @@ public class CommentThreadResponse extends CHSRequest {
         commentThreadResponse.setStatus(commentThread.getStatus().toString());
         commentThreadResponse.setOpenDateTime(commentThread.getOpenDateTime());
         commentThreadResponse.setResolvedDateTime(commentThread.getResolvedDateTime());
-        commentThreadResponse.setComments(commentThread.getComments());
+        commentThreadResponse.setComments(commentThread.getNonVoidedComments());
         return commentThreadResponse;
     }
 

@@ -8,6 +8,7 @@ import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.CommentThread;
 import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
+import org.openchs.service.CommentThreadService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.CommentThreadContract;
 import org.openchs.web.response.CommentThreadResponse;
@@ -18,12 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,16 +37,19 @@ public class CommentThreadController extends AbstractController<CommentThread> i
     private final SubjectTypeRepository subjectTypeRepository;
     private final UserService userService;
     private final IndividualRepository individualRepository;
+    private final CommentThreadService commentThreadService;
 
     @Autowired
     public CommentThreadController(CommentThreadRepository commentThreadRepository,
                                    SubjectTypeRepository subjectTypeRepository,
                                    UserService userService,
-                                   IndividualRepository individualRepository) {
+                                   IndividualRepository individualRepository,
+                                   CommentThreadService commentThreadService) {
         this.commentThreadRepository = commentThreadRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
         this.individualRepository = individualRepository;
+        this.commentThreadService = commentThreadService;
     }
 
     @Override
@@ -87,6 +93,24 @@ public class CommentThreadController extends AbstractController<CommentThread> i
                 .stream()
                 .map(CommentThreadResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/web/commentThread", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
+    public ResponseEntity<CommentThreadResponse> saveThread(@RequestBody CommentThreadContract threadContract) {
+        CommentThread savedThread = commentThreadService.createNewThread(threadContract);
+        return ResponseEntity.ok(CommentThreadResponse.fromEntity(savedThread));
+    }
+
+    @RequestMapping(value = "/web/commentThread/{id}/resolve", method = RequestMethod.PUT)
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
+    public ResponseEntity<CommentThreadResponse> editThread(@PathVariable Long id) {
+        Optional<CommentThread> commentThread = commentThreadRepository.findById(id);
+        if (!commentThread.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        CommentThread resolvedCommentThread = commentThreadService.resolveThread(commentThread.get());
+        return ResponseEntity.ok(CommentThreadResponse.fromEntity(resolvedCommentThread));
     }
 
 }

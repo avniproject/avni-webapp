@@ -4,6 +4,7 @@ import org.openchs.dao.CommentRepository;
 import org.openchs.dao.CommentThreadRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Comment;
+import org.openchs.domain.CommentThread;
 import org.openchs.web.request.CommentContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,11 +39,15 @@ public class CommentService {
         comment.assignUUIDIfRequired();
         comment.setText(commentContract.getText());
         comment.setSubject(individualRepository.findByUuid(commentContract.getSubjectUUID()));
-        comment.setCommentThread(commentThreadRepository.findByUuid(commentContract.getCommentThreadUUID()));
+        CommentThread commentThread = commentThreadRepository.findByUuid(commentContract.getCommentThreadUUID());
+        commentThread.setStatus(CommentThread.CommentThreadStatus.Open);
+        commentThread.setResolvedDateTime(null);
+        commentThread.updateAudit();
+        comment.setCommentThread(commentThread);
     }
 
-    public void deleteComment(Comment comment) {
+    public Comment deleteComment(Comment comment) {
         comment.setVoided(true);
-        commentRepository.save(comment);
+        return commentRepository.save(comment);
     }
 }
