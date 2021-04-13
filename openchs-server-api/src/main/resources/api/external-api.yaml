@@ -251,7 +251,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Encounter'
+                      $ref: '#/components/schemas/ProgramEncounter'
         '400':
           description: bad input parameter
   /api/programEncounter/{ID}:
@@ -577,6 +577,13 @@ components:
           format: uuid
         Voided:
           type: boolean
+        Subject ID:
+          type: string
+          format: uuid
+          description: id of the subject
+        Subject type:
+          type: string
+          description: name of the subject type to which this encounter belongs, same as subject type in the subject resource
         Enrolment ID:
           type: string
           format: uuid
@@ -669,7 +676,7 @@ components:
           description: id of the subject
         Subject type:
           type: string
-          description: name of the subject to which this encounter belongs, same as subject type in the subject resource
+          description: name of the subject type to which this encounter belongs, same as subject type in the subject resource
         Encounter location:
           $ref: '#/components/schemas/GeoLocation'
         Encounter datetime:
