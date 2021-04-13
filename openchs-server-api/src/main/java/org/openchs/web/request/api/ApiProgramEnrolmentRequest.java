@@ -3,32 +3,35 @@ package org.openchs.web.request.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 import org.openchs.geo.Point;
+import org.openchs.web.api.ProgramEnrolmentFieldNames;
 
 import java.util.LinkedHashMap;
+
+import static org.openchs.web.api.ProgramEnrolmentFieldNames.*;
 
 public class ApiProgramEnrolmentRequest {
     @JsonProperty("Program")
     private String program;
 
-    @JsonProperty("Subject ID")
+    @JsonProperty(SUBJECT_ID)
     private String subjectUuid;
 
-    @JsonProperty("Enrolment location")
+    @JsonProperty(ENROLMENT_LOCATION)
     private Point enrolmentLocation;
 
-    @JsonProperty("Exit location")
+    @JsonProperty(EXIT_LOCATION)
     private Point exitLocation;
 
-    @JsonProperty("Enrolment date time")
+    @JsonProperty(ENROLMENT_DATETIME)
     private DateTime enrolmentDateTime;
 
-    @JsonProperty("Exit date time")
+    @JsonProperty(EXIT_DATETIME)
     private DateTime exitDateTime;
 
     @JsonProperty("observations")
     private LinkedHashMap<String, Object> observations;
 
-    @JsonProperty("exitObservations")
+    @JsonProperty(EXIT_OBS)
     private LinkedHashMap<String, Object> exitObservations;
 
     public String getProgram() {
