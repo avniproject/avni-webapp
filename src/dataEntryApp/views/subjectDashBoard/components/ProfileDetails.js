@@ -19,7 +19,6 @@ import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import Button from "@material-ui/core/Button";
 import { CommentDrawer } from "./comments/CommentDrawer";
 import CommentIcon from "@material-ui/icons/Comment";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
