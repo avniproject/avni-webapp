@@ -24,6 +24,7 @@ import { CommentDrawer } from "./comments/CommentDrawer";
 import CommentIcon from "@material-ui/icons/Comment";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
 import { get } from "lodash";
+import Fab from "@material-ui/core/Fab";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -116,7 +117,12 @@ const useStyles = makeStyles(theme => ({
     marginTop: "10px"
   },
   commentButton: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    backgroundColor: "#f27510",
+    height: "38px",
+    zIndex: 1,
+    boxShadow: "none",
+    whiteSpace: "nowrap"
   }
 }));
 
@@ -243,16 +249,17 @@ const ProfileDetails = ({
         <Grid container item xs={7} align="right" direction={"column"}>
           <Grid item>
             {enableComment && (
-              <Button
-                onClick={() => setOpenComment(true)}
-                variant="contained"
-                color="default"
+              <Fab
+                id={"comments"}
                 className={classes.commentButton}
-                style={{ textTransform: "none" }}
+                variant="extended"
+                color="primary"
+                aria-label="add"
+                onClick={() => setOpenComment(true)}
               >
                 <CommentIcon style={{ marginRight: 4 }} />
                 {t("comments")}
-              </Button>
+              </Fab>
             )}
           </Grid>
           <Grid item>
