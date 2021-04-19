@@ -154,6 +154,12 @@ debug_server_staging: build_server
 	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY) \
 	OPENCHS_BUCKET_NAME=staging-user-media \
 		java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+
+tail-staging-log:
+	ssh avni-server-staging "tail -f -n1000 /var/log/openchs/openchs.log"
+
+tail-local-log:
+	tail -f -n1000 /var/log/openchs/openchs.log
 # /STAGING
 
 debug_server_live: build_server
@@ -186,6 +192,3 @@ exec-sql: ## Usage: make exec-sql sqlfile=</path/to/sql>
 # remote
 tail-prod:
 	ssh avni-server-prod "tail -f /var/log/openchs/openchs.log"
-
-tail-staging:
-	ssh avni-server-staging "tail -f /var/log/openchs/openchs.log"
