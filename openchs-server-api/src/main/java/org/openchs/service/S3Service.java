@@ -36,8 +36,6 @@ import static java.lang.String.format;
 
 @Service
 public class S3Service {
-    private final String bulkuploadDir = "bulkuploadfiles";
-
     @Value("${openchs.bucketName}")
     private String bucketName;
 
@@ -47,18 +45,18 @@ public class S3Service {
     @Value("${aws.secretAccessKey}")
     private String secretAccessKey;
 
-    private Regions REGION = Regions.AP_SOUTH_1;
-    private long EXPIRY_DURATION = Duration.ofHours(1).toMillis();
-    private long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
+    private final Regions REGION = Regions.AP_SOUTH_1;
+    private final long EXPIRY_DURATION = Duration.ofHours(1).toMillis();
+    private final long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
     private AmazonS3 s3Client;
-    private Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
-    private Logger logger;
-    private Boolean isDev;
+    private final Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
+    private final Logger logger;
+    private final Boolean isDev;
 
     @Autowired
     public S3Service(Boolean isDev) {
         this.isDev = isDev;
-        logger = LoggerFactory.getLogger(getClass());
+        logger = LoggerFactory.getLogger(S3Service.class);
     }
 
     @PostConstruct
@@ -98,7 +96,9 @@ public class S3Service {
     public boolean fileExists(String fileName) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
-        return s3Client.doesObjectExist(bucketName, objectKey);
+        boolean exists = s3Client.doesObjectExist(bucketName, objectKey);
+        logger.info(String.format("Checking for file: %s resulted in %b", objectKey, exists));
+        return exists;
     }
 
     public URL generateMediaDownloadUrl(String url) {

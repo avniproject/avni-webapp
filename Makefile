@@ -124,6 +124,12 @@ test_server: rebuild_testdb ## Run tests
 start_server_wo_gradle:
 	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
+# LIVE
+log_live:
+	tail -f /var/log/openchs/openchs.log
+# /LIVE
+
+# STAGING
 # I have setup the environment variables in my bash_profile so that I can just run it whenever I want in live mode. You could do that too (Vivek).
 start_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
@@ -133,13 +139,22 @@ start_server_staging: build_server
 	OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) \
 	OPENCHS_IAM_USER=$(OPENCHS_STAGING_IAM_USER) \
 	OPENCHS_IAM_USER_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_ACCESS_KEY) \
-	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY) \
+	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY)
 	OPENCHS_BUCKET_NAME=staging-user-media \
 		java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 debug_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
-	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_MODE=live \
+	OPENCHS_COGNITO_IN_DEV=false \
+	OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) \
+	OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) \
+	OPENCHS_IAM_USER=$(OPENCHS_STAGING_IAM_USER) \
+	OPENCHS_IAM_USER_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_ACCESS_KEY) \
+	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY) \
+	OPENCHS_BUCKET_NAME=staging-user-media \
+		java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+# /STAGING
 
 debug_server_live: build_server
 	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(STAGING_USER_POOL_ID) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar

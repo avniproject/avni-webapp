@@ -9,41 +9,41 @@ info:
     name: AGPL 3.0
     url: 'https://opensource.org/licenses/AGPL-3.0'
 tags:
-- name: Subject
+  - name: Subject
 paths:
   /api/subjects:
     get:
       tags:
-      - Subject
+        - Subject
       summary: Get paged list of subjects
       operationId: subjects
       description: |
         By passing in the appropriate options, you can get the subjects in set of pages
       parameters:
-      - in: query
-        name: lastModifiedDateTime
-        description: date-time in ISO datetime format. All the subjects which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
-        required: true
-        schema:
-          type: string
-      - in: query
-        name: subjectType
-        description: subject type
-        required: false
-        schema:
-          type: string
-      - in: query
-        name: concepts
-        description: Allows to search by concepts
-        example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
-        required: false
-        schema:
-          type: string
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: query
+          name: lastModifiedDateTime
+          description: date-time in ISO datetime format. All the subjects which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: subjectType
+          description: subject type
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: concepts
+          description: Allows to search by concepts
+          example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful, a page of subjects
@@ -51,7 +51,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                - $ref: '#/components/schemas/ResponsePage'
+                  - $ref: '#/components/schemas/ResponsePage'
                 properties:
                   content:
                     type: array
@@ -62,22 +62,22 @@ paths:
   /api/subject/{ID}:
     get:
       tags:
-      - Subject
+        - Subject
       summary: Get a specific subject by ID
       description: |
         Provide the ID of the subject. The ID is in UUID format, the external id used by Avni
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful
@@ -90,34 +90,34 @@ paths:
   /api/programEnrolments:
     get:
       tags:
-      - Program Enrolment
+        - Program Enrolment
       summary: Get paged list of program enrolments
       description: |
         By passing in the appropriate options, you can get the program enrolments in set of pages. There are three use cases supported, get a list of all enrolments, get a list of all enrolments within a program, and get a list of enrolments for a subject and program.
       parameters:
-      - in: query
-        name: lastModifiedDateTime
-        description: date-time in ISO datetime format. All the program enrolments which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z". It is mandatory unless subject and programs are are specified
-        required: false
-        schema:
-          type: string
-      - in: query
-        name: program
-        description: program name. mandatory if subject is specified.
-        required: false
-        schema:
-          type: string
-      - in: query
-        name: subject
-        description: external id of the subject
-        required: false
-        schema:
-          type: string
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: query
+          name: lastModifiedDateTime
+          description: date-time in ISO datetime format. All the program enrolments which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z". It is mandatory unless subject and programs are are specified
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: program
+          description: program name. mandatory if subject is specified.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: subject
+          description: external id of the subject
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful, a page of program enrolments
@@ -125,7 +125,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                - $ref: '#/components/schemas/ResponsePage'
+                  - $ref: '#/components/schemas/ResponsePage'
                 properties:
                   content:
                     type: array
@@ -136,22 +136,22 @@ paths:
   /api/programEnrolment/{ID}:
     get:
       tags:
-      - Program Enrolment
+        - Program Enrolment
       summary: Get a specific program enrolment by ID
       description: |
         Provide the ID of the program enrolment. The ID is in UUID format, the external id used by Avni
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful
@@ -163,20 +163,20 @@ paths:
           description: bad input parameter
     put:
       tags:
-      - Program Enrolment
+        - Program Enrolment
       summary: Updates an existing program enrolment
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       requestBody:
         required: true
         content:
@@ -193,14 +193,14 @@ paths:
   /api/programEnrolment:
     post:
       tags:
-      - Program Enrolment
+        - Program Enrolment
       summary: Creates a new program enrolment
       parameters:
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       requestBody:
         required: true
         content:
@@ -217,28 +217,28 @@ paths:
   /api/programEncounters:
     get:
       tags:
-      - Program Encounter
+        - Program Encounter
       summary: Get paged list of program encounters
       description: |
         By passing in the appropriate options, you can get the program encounters in set of pages
       parameters:
-      - in: query
-        name: lastModifiedDateTime
-        description: date-time in ISO datetime format. All the program encounters which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
-        required: true
-        schema:
-          type: string
-      - in: query
-        name: encounter type
-        description: program encounter type name
-        required: false
-        schema:
-          type: string
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: query
+          name: lastModifiedDateTime
+          description: date-time in ISO datetime format. All the program encounters which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: encounter type
+          description: program encounter type name
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful, a page of program encounters
@@ -246,7 +246,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                - $ref: '#/components/schemas/ResponsePage'
+                  - $ref: '#/components/schemas/ResponsePage'
                 properties:
                   content:
                     type: array
@@ -257,22 +257,22 @@ paths:
   /api/programEncounter/{ID}:
     get:
       tags:
-      - Program Encounter
+        - Program Encounter
       summary: Get a specific program encounter by ID
       description: |
         Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful
@@ -284,20 +284,20 @@ paths:
           description: bad input parameter
     put:
       tags:
-      - Program Encounter
+        - Program Encounter
       summary: Updates an existing program encounter
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       requestBody:
         required: true
         content:
@@ -314,14 +314,14 @@ paths:
   /api/programEncounter:
     post:
       tags:
-      - Program Encounter
+        - Program Encounter
       summary: Creates a new program encounter
       parameters:
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       requestBody:
         required: true
         content:
@@ -338,35 +338,35 @@ paths:
   /api/encounters:
     get:
       tags:
-      - Subject Encounter
+        - Subject Encounter
       summary: Get paged list of subject encounters
       description: |
         By passing in the appropriate options, you can get the subject encounters in set of pages.
       parameters:
-      - in: query
-        name: lastModifiedDateTime
-        description: date-time in ISO datetime format. All the subject encounters which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
-        required: false
-        schema:
-          type: string
-      - in: query
-        name: encounter type
-        description: subject encounter type name
-        required: false
-        schema:
-          type: string
-      - in: query
-        name: concepts
-        description: Allows to search by concepts
-        example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
-        required: false
-        schema:
-          type: string
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: query
+          name: lastModifiedDateTime
+          description: date-time in ISO datetime format. All the subject encounters which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: encounter type
+          description: subject encounter type name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: concepts
+          description: Allows to search by concepts
+          example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful, a page of subject encounters
@@ -374,7 +374,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                - $ref: '#/components/schemas/ResponsePage'
+                  - $ref: '#/components/schemas/ResponsePage'
                 properties:
                   content:
                     type: array
@@ -385,22 +385,22 @@ paths:
   /api/encounter/{ID}:
     get:
       tags:
-      - Subject Encounter
+        - Subject Encounter
       summary: Get a specific subject encounter by ID
       description: |
         Provide the ID of the subject encounter. The ID is in UUID format, the external id used by Avni
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       responses:
         '200':
           description: successful
@@ -412,20 +412,20 @@ paths:
           description: bad input parameter
     put:
       tags:
-      - Subject Encounter
+        - Subject Encounter
       summary: Updates an existing encounter
       parameters:
-      - in: path
-        name: ID
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - in: header
-        name: auth-token
-        schema:
-          type: string
-          description: token provided by cognito
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
       requestBody:
         required: true
         content:
@@ -440,29 +440,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Encounter'
   /api/encounter:
-      post:
-        tags:
+    post:
+      tags:
         - Subject Encounter
-        summary: Creates a new encounter
-        parameters:
+      summary: Creates a new encounter
+      parameters:
         - in: header
           name: auth-token
           schema:
             type: string
             description: token provided by cognito
-        requestBody:
-          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncounterBody'
+      responses:
+        '200':
+          description: successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EncounterBody'
-        responses:
-          '200':
-            description: successful
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Encounter'
+                $ref: '#/components/schemas/Encounter'
 components:
   schemas:
     Subject:
@@ -718,10 +718,10 @@ components:
           $ref: '#/components/schemas/GeoLocation'
         Exit location:
           $ref: '#/components/schemas/GeoLocation'
-        Enrolment date time:
+        Enrolment datetime:
           type: string
           format: date-time
-        Exit date time:
+        Exit datetime:
           type: string
           format: date-time
         observations:
@@ -811,5 +811,5 @@ components:
           description: Number of entities in each page
 # Added by API Auto Mocking Plugin
 servers:
-- description: SwaggerHub API Auto Mocking
-  url: https://virtserver.swaggerhub.com/samanvay/avni-external/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/samanvay/avni-external/1.0.0
