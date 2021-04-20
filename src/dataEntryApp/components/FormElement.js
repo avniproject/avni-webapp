@@ -10,6 +10,7 @@ import TimeFormElement from "./TimeFormElement";
 import DurationFormElement from "./DurationFormElement";
 import SubjectFormElement from "./SubjectFormElement";
 import { Concept, KeyValue } from "avni-models";
+import MediaFormElement from "./MediaFormElement";
 // import LocationFormElement from "./LocationFormElement";
 
 const div = () => <div />;
@@ -26,8 +27,8 @@ const elements = {
   Text: TextFormElement,
   Notes: NotesFormElement,
   NA: div,
-  Image: div,
-  Video: div,
+  Image: MediaFormElement,
+  Video: MediaFormElement,
   Id: TextFormElement,
   Subject: SubjectFormElement
   // Location: LocationFormElement
