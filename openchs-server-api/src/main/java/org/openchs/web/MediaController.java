@@ -2,6 +2,7 @@ package org.openchs.web;
 
 import com.amazonaws.HttpMethod;
 import org.openchs.domain.Catchment;
+import org.apache.commons.io.FilenameUtils;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.S3Service;
@@ -21,6 +22,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -94,6 +96,30 @@ public class MediaController {
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/web/uploadMedia")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin', 'user')")
+    public ResponseEntity<?> uploadMedia(@RequestParam MultipartFile file, @RequestParam String mediaType) {
+        String uuid = UUID.randomUUID().toString();
+        User user = UserContextHolder.getUserContext().getUser();
+        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String targetFilePath = format("%s.%s", uuid, fileExtension);
+        try {
+            File tempSourceFile = AvniFiles.convertMultiPartToFile(file, "");
+            String mimeType = Files.probeContentType(tempSourceFile.toPath());
+            if (mimeType == null || !mimeType.toLowerCase().contains(mediaType)) {
+                String errorMessage = format("File not supported for upload. Please choose correct %s file.", mediaType);
+                logger.error(errorMessage);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            }
+            URL s3FileUrl = s3Service.uploadImageFile(tempSourceFile, targetFilePath);
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3FileUrl.toString());
+        } catch (Exception e) {
+            logger.error(format("Media upload failed.  file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to upload media. %s", e.getMessage()));
         }
     }
 
