@@ -45,6 +45,9 @@ public class S3Service {
     @Value("${aws.secretAccessKey}")
     private String secretAccessKey;
 
+    @Value("${openchs.connectToS3InDev}")
+    private boolean s3InDev;
+
     private final Regions REGION = Regions.AP_SOUTH_1;
     private final long EXPIRY_DURATION = Duration.ofHours(1).toMillis();
     private final long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
@@ -184,7 +187,7 @@ public class S3Service {
     }
 
     private String putObject(String objectKey, File tempFile) {
-        if (isDev) {
+        if (isDev && !s3InDev) {
             logger.info(format("[dev] Save file locally. '%s'", objectKey));
             return tempFile.getAbsolutePath();
         }
