@@ -102,6 +102,9 @@ export const mapProgram = json => {
 
 export const mapSubjectType = json => {
   const subjectType = new SubjectType();
+  if (isNil(json)) {
+    return subjectType;
+  }
   subjectType.name = json.operationalSubjectTypeName || json.name;
   subjectType.uuid = json.uuid;
   subjectType.voided = !!json.voided;
