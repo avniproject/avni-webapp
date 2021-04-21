@@ -2,10 +2,7 @@ package org.openchs.web.api;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.Concept;
-import org.openchs.domain.EncounterType;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.domain.*;
 import org.openchs.service.ConceptService;
 import org.openchs.util.S;
 import org.openchs.web.request.api.ApiProgramEncounterRequest;
@@ -78,10 +75,14 @@ public class ProgramEncounterApiController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
-    public ResponseEntity<EncounterResponse> post(@RequestBody ApiProgramEncounterRequest request) {
+    public ResponseEntity post(@RequestBody ApiProgramEncounterRequest request) {
         ProgramEncounter encounter = new ProgramEncounter();
         encounter.assignUUID();
-        updateEncounter(encounter, request);
+        try {
+            updateEncounter(encounter, request);
+        } catch (ValidationException ve) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
+        }
         return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
@@ -89,16 +90,20 @@ public class ProgramEncounterApiController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
-    public ResponseEntity<EncounterResponse> put(@PathVariable String id, @RequestBody ApiProgramEncounterRequest request) {
+    public ResponseEntity put(@PathVariable String id, @RequestBody ApiProgramEncounterRequest request) {
         ProgramEncounter encounter = programEncounterRepository.findByUuid(id);
         if (encounter == null) {
             throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
         }
-        updateEncounter(encounter, request);
+        try {
+            updateEncounter(encounter, request);
+        } catch (ValidationException ve) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
+        }
         return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
-    private ProgramEncounter updateEncounter(ProgramEncounter encounter, ApiProgramEncounterRequest request) {
+    private ProgramEncounter updateEncounter(ProgramEncounter encounter, ApiProgramEncounterRequest request) throws ValidationException {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getEnrolmentId());
         if (programEnrolment == null) {
             throw new IllegalArgumentException(String.format("Program Enrolment not found with UUID '%s'", request.getEnrolmentId()));
@@ -120,6 +125,8 @@ public class ProgramEncounterApiController {
         encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
         encounter.setVoided(request.isVoided());
+
+        encounter.validate();
 
         return programEncounterRepository.save(encounter);
     }

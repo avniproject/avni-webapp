@@ -2,10 +2,7 @@ package org.openchs.web.api;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.Concept;
-import org.openchs.domain.Encounter;
-import org.openchs.domain.EncounterType;
-import org.openchs.domain.Individual;
+import org.openchs.domain.*;
 import org.openchs.service.ConceptService;
 import org.openchs.util.S;
 import org.openchs.web.request.api.ApiEncounterRequest;
@@ -78,10 +75,14 @@ public class GeneralEncounterApiController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
-    public ResponseEntity<EncounterResponse> post(@RequestBody ApiEncounterRequest request) {
+    public ResponseEntity post(@RequestBody ApiEncounterRequest request) {
         Encounter encounter = new Encounter();
         encounter.assignUUID();
-        updateEncounter(encounter, request);
+        try {
+            updateEncounter(encounter, request);
+        } catch (ValidationException ve) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
+        }
         return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
@@ -89,16 +90,20 @@ public class GeneralEncounterApiController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
-    public ResponseEntity<EncounterResponse> put(@PathVariable String id, @RequestBody ApiEncounterRequest request) {
+    public ResponseEntity put(@PathVariable String id, @RequestBody ApiEncounterRequest request) {
         Encounter encounter = encounterRepository.findByUuid(id);
         if (encounter == null) {
             throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
         }
-        updateEncounter(encounter, request);
+        try {
+            updateEncounter(encounter, request);
+        } catch (ValidationException ve) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
+        }
         return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
-    private void updateEncounter(Encounter encounter, ApiEncounterRequest request) {
+    private void updateEncounter(Encounter encounter, ApiEncounterRequest request) throws ValidationException {
         Individual individual = individualRepository.findByUuid(request.getSubjectId());
         if (individual == null) {
             throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
@@ -120,6 +125,8 @@ public class GeneralEncounterApiController {
         encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
         encounter.setVoided(request.isVoided());
+
+        encounter.validate();
 
         encounterRepository.save(encounter);
     }

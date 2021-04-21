@@ -143,4 +143,10 @@ public class AbstractEncounter extends OrganisationAwareEntity {
     public void setLegacyId(String legacyId) {
         this.legacyId = legacyId;
     }
+
+    public void validate() throws ValidationException {
+        if (encounterDateTime == null && earliestVisitDateTime == null) {
+            throw new ValidationException("Both encounter datetime and earliest visit datetime cannot be null");
+        }
+    }
 }
