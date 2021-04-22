@@ -34,6 +34,7 @@ import static java.lang.String.format;
 public class ObservationCreator {
 
     private static Logger logger = LoggerFactory.getLogger(ObservationCreator.class);
+    private static final String PHONE_NUMBER_PATTERN = "^[0-9]{10}";
     private AddressLevelTypeRepository addressLevelTypeRepository;
     private ConceptRepository conceptRepository;
     private FormRepository formRepository;
@@ -172,9 +173,22 @@ public class ObservationCreator {
                 } else {
                     return locationRepository.findByTitleIgnoreCaseAndTypeIn(answerValue, lowestLevels).getUuid();
                 }
+            case PhoneNumber:
+                    return (answerValue.trim().equals("")) ? null : toPhoneNumberFormat(answerValue.trim(), errorMsgs, concept.getName());
             default:
                 return answerValue;
         }
+    }
+
+    private Map<String, Object> toPhoneNumberFormat(String phoneNumber, List<String> errorMsgs, String conceptName) {
+        Map<String, Object> phoneNumberObs = new HashMap<>();
+        if (!phoneNumber.matches(PHONE_NUMBER_PATTERN)) {
+            errorMsgs.add(format("Invalid %s provided %s. Please provide 10 digit number.", conceptName, phoneNumber));
+            return null;
+        }
+        phoneNumberObs.put("phoneNumber", phoneNumber);
+        phoneNumberObs.put("verified", false);
+        return phoneNumberObs;
     }
 
     private String toISODateFormat(String dateStr) {
