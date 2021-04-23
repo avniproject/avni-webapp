@@ -1,21 +1,21 @@
 package org.openchs.importer.batch.csv.writer;
 
 import org.joda.time.LocalDate;
+import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.application.Subject;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.LocationRepository;
-import org.openchs.domain.AddressLevel;
-import org.openchs.domain.AddressLevelType;
-import org.openchs.domain.Gender;
-import org.openchs.domain.Individual;
-import org.openchs.importer.batch.csv.writer.header.SubjectHeaders;
+import org.openchs.dao.application.FormMappingRepository;
+import org.openchs.domain.*;
 import org.openchs.importer.batch.csv.creator.LocationCreator;
 import org.openchs.importer.batch.csv.creator.ObservationCreator;
 import org.openchs.importer.batch.csv.creator.SubjectTypeCreator;
+import org.openchs.importer.batch.csv.writer.header.SubjectHeaders;
 import org.openchs.importer.batch.model.Row;
+import org.openchs.service.EntityApprovalStatusService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,17 +39,26 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private SubjectTypeCreator subjectTypeCreator;
     private ObservationCreator observationCreator;
     private LocationCreator locationCreator;
+    private EntityApprovalStatusService entityApprovalStatusService;
+    private FormMappingRepository formMappingRepository;
 
     @Autowired
     public SubjectWriter(AddressLevelTypeRepository addressLevelTypeRepository,
                          LocationRepository locationRepository,
-                         IndividualRepository individualRepository, GenderRepository genderRepository, SubjectTypeCreator subjectTypeCreator, ObservationCreator observationCreator) {
+                         IndividualRepository individualRepository,
+                         GenderRepository genderRepository,
+                         SubjectTypeCreator subjectTypeCreator,
+                         ObservationCreator observationCreator,
+                         EntityApprovalStatusService entityApprovalStatusService,
+                         FormMappingRepository formMappingRepository) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
         this.genderRepository = genderRepository;
         this.subjectTypeCreator = subjectTypeCreator;
         this.observationCreator = observationCreator;
+        this.entityApprovalStatusService = entityApprovalStatusService;
+        this.formMappingRepository = formMappingRepository;
         this.locationCreator = new LocationCreator();
     }
 
@@ -85,7 +94,11 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setVoided(false);
         individual.assignUUIDIfRequired();
 
-        individualRepository.save(individual);
+        Individual savedIndividual = individualRepository.save(individual);
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(savedIndividual.getSubjectType().getUuid(), null, null, FormType.IndividualProfile);
+        if (formMapping.isEnableApproval()) {
+            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Subject, savedIndividual.getId());
+        }
     }
 
     private Individual getOrCreateIndividual(Row row) {

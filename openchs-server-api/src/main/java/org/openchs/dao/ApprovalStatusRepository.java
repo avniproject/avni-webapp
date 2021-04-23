@@ -25,4 +25,6 @@ public interface ApprovalStatusRepository extends JpaRepository<ApprovalStatus, 
             Pageable pageable);
 
     ApprovalStatus findByUuid(String uuid);
+
+    ApprovalStatus findByStatus(ApprovalStatus.Status status);
 }

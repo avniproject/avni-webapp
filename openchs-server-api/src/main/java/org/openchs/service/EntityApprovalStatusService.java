@@ -1,6 +1,8 @@
 package org.openchs.service;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.*;
+import org.openchs.domain.ApprovalStatus;
 import org.openchs.domain.CHSEntity;
 import org.openchs.domain.EntityApprovalStatus;
 import org.openchs.web.request.EntityApprovalStatusRequest;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.openchs.domain.EntityApprovalStatus.EntityType.*;
@@ -65,6 +68,22 @@ public class EntityApprovalStatusService {
             throw new IllegalArgumentException(String.format("Incorrect entityId '%s' found in database while fetching EntityApprovalStatus", eaStatus.getEntityId()));
         }
         return entity.getUuid();
+    }
+
+    public void createDefaultStatus(EntityApprovalStatus.EntityType entityType, Long entityId) {
+        ApprovalStatus pendingStatus = approvalStatusRepository.findByStatus(ApprovalStatus.Status.Pending);
+        List<EntityApprovalStatus> entityApprovalStatuses = entityApprovalStatusRepository.findByEntityIdAndEntityTypeAndApprovalStatusAndIsVoidedFalse(entityId, entityType, pendingStatus);
+        if (!entityApprovalStatuses.isEmpty()) {
+            return;
+        }
+        EntityApprovalStatus entityApprovalStatus = new EntityApprovalStatus();
+        entityApprovalStatus.assignUUID();
+        entityApprovalStatus.setEntityType(entityType);
+        entityApprovalStatus.setEntityId(entityId);
+        entityApprovalStatus.setApprovalStatus(pendingStatus);
+        entityApprovalStatus.setStatusDateTime(new DateTime());
+        entityApprovalStatus.setAutoApproved(false);
+        entityApprovalStatusRepository.save(entityApprovalStatus);
     }
 
 }
