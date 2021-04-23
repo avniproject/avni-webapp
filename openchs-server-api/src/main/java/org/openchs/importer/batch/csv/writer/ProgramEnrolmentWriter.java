@@ -1,12 +1,17 @@
 package org.openchs.importer.batch.csv.writer;
 
 import org.joda.time.LocalDate;
+import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.ProgramEnrolmentRepository;
+import org.openchs.dao.application.FormMappingRepository;
+import org.openchs.domain.EntityApprovalStatus;
+import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.importer.batch.csv.creator.*;
 import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.openchs.importer.batch.model.Row;
+import org.openchs.service.EntityApprovalStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
@@ -28,17 +33,23 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private SubjectCreator subjectCreator;
     private DateCreator dateCreator;
     private ProgramCreator programCreator;
+    private EntityApprovalStatusService entityApprovalStatusService;
+    private FormMappingRepository formMappingRepository;
     private static Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
 
     @Autowired
     public ProgramEnrolmentWriter(ProgramEnrolmentRepository programEnrolmentRepository,
                                   ObservationCreator observationCreator,
                                   SubjectCreator subjectCreator,
-                                  ProgramCreator programCreator) {
+                                  ProgramCreator programCreator,
+                                  EntityApprovalStatusService entityApprovalStatusService,
+                                  FormMappingRepository formMappingRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationCreator = observationCreator;
         this.subjectCreator = subjectCreator;
         this.programCreator = programCreator;
+        this.entityApprovalStatusService = entityApprovalStatusService;
+        this.formMappingRepository = formMappingRepository;
         this.locationCreator = new LocationCreator();
         this.dateCreator = new DateCreator();
     }
@@ -52,8 +63,8 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         ProgramEnrolment programEnrolment = getOrCreateProgramEnrolment(row);
 
         List<String> allErrorMsgs = new ArrayList<>();
-
-        programEnrolment.setIndividual(subjectCreator.getSubject(row.get(headers.subjectId), allErrorMsgs, headers.subjectId));
+        Individual individual = subjectCreator.getSubject(row.get(headers.subjectId), allErrorMsgs, headers.subjectId);
+        programEnrolment.setIndividual(individual);
         LocalDate enrolmentDate = dateCreator.getDate(
                 row,
                 headers.enrolmentDate,
@@ -76,7 +87,11 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
             throw new Exception(String.join(", ", allErrorMsgs));
         }
 
-        programEnrolmentRepository.save(programEnrolment);
+        ProgramEnrolment savedEnrolment = programEnrolmentRepository.save(programEnrolment);
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(individual.getSubjectType().getUuid(), savedEnrolment.getProgram().getUuid(), null, FormType.ProgramEnrolment);
+        if (formMapping.isEnableApproval()) {
+            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEnrolment, savedEnrolment.getId());
+        }
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {

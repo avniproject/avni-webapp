@@ -1,13 +1,17 @@
 package org.openchs.importer.batch.csv.writer;
 
+import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.Encounter;
+import org.openchs.domain.EntityApprovalStatus;
 import org.openchs.domain.Individual;
-import org.openchs.importer.batch.csv.writer.header.EncounterHeaders;
 import org.openchs.importer.batch.csv.creator.BasicEncounterCreator;
+import org.openchs.importer.batch.csv.writer.header.EncounterHeaders;
 import org.openchs.importer.batch.model.Row;
+import org.openchs.service.EntityApprovalStatusService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,15 +28,21 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     private IndividualRepository individualRepository;
     private static EncounterHeaders headers = new EncounterHeaders();
     private BasicEncounterCreator basicEncounterCreator;
+    private EntityApprovalStatusService entityApprovalStatusService;
+    private FormMappingRepository formMappingRepository;
 
 
     @Autowired
     public EncounterWriter(EncounterRepository encounterRepository,
                            IndividualRepository individualRepository,
-                           BasicEncounterCreator basicEncounterCreator) {
+                           BasicEncounterCreator basicEncounterCreator,
+                           EntityApprovalStatusService entityApprovalStatusService,
+                           FormMappingRepository formMappingRepository) {
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
         this.basicEncounterCreator = basicEncounterCreator;
+        this.entityApprovalStatusService = entityApprovalStatusService;
+        this.formMappingRepository = formMappingRepository;
     }
 
     @Override
@@ -55,7 +65,11 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         encounter.setVoided(false);
         encounter.assignUUIDIfRequired();
 
-        encounterRepository.save(encounter);
+        Encounter savedEncounter = encounterRepository.save(encounter);
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(savedEncounter.getIndividual().getSubjectType().getUuid(), null, savedEncounter.getEncounterType().getUuid(), FormType.Encounter);
+        if (formMapping.isEnableApproval()) {
+            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Encounter, savedEncounter.getId());
+        }
     }
 
     private Individual getSubject(Row row, List<String> errorMsgs) {

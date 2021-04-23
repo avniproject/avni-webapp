@@ -1,12 +1,17 @@
 package org.openchs.importer.batch.csv.writer;
 
+import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
-import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
+import org.openchs.dao.application.FormMappingRepository;
+import org.openchs.domain.EntityApprovalStatus;
 import org.openchs.domain.ProgramEncounter;
+import org.openchs.domain.ProgramEnrolment;
+import org.openchs.importer.batch.csv.creator.BasicEncounterCreator;
+import org.openchs.importer.batch.csv.creator.ProgramEnrolmentCreator;
 import org.openchs.importer.batch.csv.writer.header.ProgramEncounterHeaders;
-import org.openchs.importer.batch.csv.creator.*;
 import org.openchs.importer.batch.model.Row;
+import org.openchs.service.EntityApprovalStatusService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,13 +28,21 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private static ProgramEncounterHeaders headers = new ProgramEncounterHeaders();
     private ProgramEnrolmentCreator programEnrolmentCreator;
     private BasicEncounterCreator basicEncounterCreator;
+    private EntityApprovalStatusService entityApprovalStatusService;
+    private FormMappingRepository formMappingRepository;
 
 
     @Autowired
-    public ProgramEncounterWriter(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, ProgramEnrolmentCreator programEnrolmentCreator, ObservationCreator observationCreator, EncounterTypeCreator encounterTypeCreator, BasicEncounterCreator basicEncounterCreator) {
+    public ProgramEncounterWriter(ProgramEncounterRepository programEncounterRepository,
+                                  ProgramEnrolmentCreator programEnrolmentCreator,
+                                  BasicEncounterCreator basicEncounterCreator,
+                                  EntityApprovalStatusService entityApprovalStatusService,
+                                  FormMappingRepository formMappingRepository) {
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentCreator = programEnrolmentCreator;
         this.basicEncounterCreator = basicEncounterCreator;
+        this.entityApprovalStatusService = entityApprovalStatusService;
+        this.formMappingRepository = formMappingRepository;
     }
 
     @Override
@@ -41,14 +54,18 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         ProgramEncounter programEncounter = getOrCreateProgramEncounter(row);
         List<String> allErrorMsgs = new ArrayList<>();
         basicEncounterCreator.updateEncounter(row, programEncounter, allErrorMsgs, FormType.ProgramEncounter);
-
-        programEncounter.setProgramEnrolment(programEnrolmentCreator.getProgramEnrolment(row.get(headers.enrolmentId), allErrorMsgs, headers.enrolmentId));
+        ProgramEnrolment programEnrolment = programEnrolmentCreator.getProgramEnrolment(row.get(headers.enrolmentId), allErrorMsgs, headers.enrolmentId);
+        programEncounter.setProgramEnrolment(programEnrolment);
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));
         }
 
-        programEncounterRepository.save(programEncounter);
+        ProgramEncounter savedEncounter = programEncounterRepository.save(programEncounter);
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(programEnrolment.getIndividual().getSubjectType().getUuid(), programEnrolment.getProgram().getUuid(), savedEncounter.getEncounterType().getUuid(), FormType.ProgramEncounter);
+        if (formMapping.isEnableApproval()) {
+            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEncounter, savedEncounter.getId());
+        }
     }
 
     private ProgramEncounter getOrCreateProgramEncounter(Row row) {
