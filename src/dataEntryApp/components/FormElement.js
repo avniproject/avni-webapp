@@ -29,6 +29,7 @@ const elements = {
   NA: div,
   Image: MediaFormElement,
   Video: MediaFormElement,
+  Audio: MediaFormElement,
   Id: TextFormElement,
   Subject: SubjectFormElement
   // Location: LocationFormElement
