@@ -80,9 +80,9 @@ public class MediaController {
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/exists", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public boolean mobileDatabaseBackupExists() {
+    public ResponseEntity<String> mobileDatabaseBackupExists() {
         logger.info("checking whether mobile database backup url exists");
-        return s3Service.fileExists(mobileDatabaseBackupFile());
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(Boolean.toString(s3Service.fileExists(mobileDatabaseBackupFile())));
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
