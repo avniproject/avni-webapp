@@ -5,7 +5,7 @@ import FormControl from "@material-ui/core/FormControl";
 import http from "../../common/utils/httpClient";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
 import VideoCall from "@material-ui/icons/VideoCall";
-//import Audiotrack from "@material-ui/icons/Audiotrack";
+import Audiotrack from "@material-ui/icons/Audiotrack";
 import CustomizedBackdrop from "./CustomizedBackdrop";
 import CloseIcon from "@material-ui/icons/Close";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
@@ -27,8 +27,8 @@ const useStyles = makeStyles(theme => ({
 
 const iconMap = {
   image: AddAPhoto,
-  video: VideoCall
-  //'audio': Audiotrack,
+  video: VideoCall,
+  audio: Audiotrack
 };
 
 export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
@@ -104,12 +104,12 @@ export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
       <img src={preview} alt={label} width={200} height={200} onClick={() => setOpenImage(true)} />
     ),
     video: (
-      <video controls width={200} height={200} controlsList="nodownload">
+      <video preload="auto" controls width={200} height={200} controlsList="nodownload">
         <source src={preview} type="video/mp4" />
         Sorry, your browser doesn't support embedded videos.
       </video>
-    )
-    //'audio': <audio controls src={preview} controlsList="nodownload"/>
+    ),
+    audio: <audio preload="auto" controls src={preview} controlsList="nodownload" />
   };
 
   const renderMedia = () => {

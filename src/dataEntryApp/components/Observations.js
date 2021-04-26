@@ -11,12 +11,13 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import _, { isEmpty, isNil } from "lodash";
+import _, { isEmpty, isNil, includes } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
+import { AudioPlayer } from "./AudioPlayer";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -72,7 +73,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         return renderSubject(subject, index < displayable.length - 1);
       });
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
-      return renderMedia(displayable.displayValue);
+      return renderMedia(displayable.displayValue, observation.concept.datatype);
     } else {
       return renderText(displayable.displayValue, observation.isAbnormal());
     }
@@ -94,10 +95,13 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     window.open(mediaSignedUrls.find(media => media.url.startsWith(mediaUrl)).url);
   };
 
-  const renderMedia = mediaUrl => {
-    return (
+  const renderMedia = (mediaUrl, dataType) => {
+    return dataType === Concept.dataType.Audio ? (
+      <AudioPlayer url={mediaUrl} />
+    ) : (
       <div>
         <Link
+          to={"#"}
           onClick={event => {
             event.preventDefault();
             showMediaOverlay(mediaUrl);
@@ -107,6 +111,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         </Link>{" "}
         |{" "}
         <Link
+          to={"#"}
           onClick={event => {
             event.preventDefault();
             openMediaInNewTab(mediaUrl);
@@ -145,7 +150,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const orderedObs = isNil(form) ? observations : form.orderObservations(observations);
 
   const mediaObservations = orderedObs.filter(obs =>
-    Concept.dataType.Media.includes(obs.concept.datatype)
+    includes([Concept.dataType.Image, Concept.dataType.Video], obs.concept.datatype)
   );
 
   React.useEffect(() => {
