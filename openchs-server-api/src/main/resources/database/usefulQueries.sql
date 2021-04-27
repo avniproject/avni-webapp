@@ -448,3 +448,27 @@ delete from form where id in (
      select id from form f
      where f.is_voided = true and f.organisation_id = 22
      );
+
+-- Finding Duplicate Audits -- Finding
+select audit.last_modified_date_time, entity.organisation_id, count(1)
+from program_enrolment entity
+         join audit on entity.audit_id = audit.id
+where entity.organisation_id = ?
+group by audit.last_modified_date_time, entity.organisation_id
+having count(1) > 1;
+
+-- Finding Duplicate Audits -- Dry Run Fixing Duplicate Audits
+select last_modified_date_time + a.id * ('1 millisecond' :: interval)
+from audit a join program_enrolment entity on a.id = entity.audit_id
+where 1 = 1
+  and a.last_modified_date_time = ?
+  and entity.organisation_id = ?
+order by 1 desc;
+
+-- Finding Duplicate Audits -- Fixing Duplicate Audits
+update audit a
+set last_modified_date_time = last_modified_date_time + a.id * ('1 millisecond' :: interval)
+from program_enrolment entity
+where entity.audit_id = a.id
+  and entity.organisation_id = ?
+  and a.last_modified_date_time = ?;
