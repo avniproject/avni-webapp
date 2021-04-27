@@ -56,10 +56,6 @@ export const AudioPlayer = ({ url }) => {
     event.preventDefault();
     setOpenModal(true);
   };
-  const onOpenInTab = event => {
-    event.preventDefault();
-    window.open(signedURL);
-  };
 
   return (
     <div>
@@ -67,7 +63,7 @@ export const AudioPlayer = ({ url }) => {
         {t("View Media")}
       </Link>{" "}
       |{" "}
-      <Link to={"#"} onClick={onOpenInTab}>
+      <Link to={`/app/audio?url=${signedURL}`} target="_blank">
         {t("Open in New Tab")}
       </Link>
       <Dialog onClose={() => setOpenModal(false)} open={openModal}>

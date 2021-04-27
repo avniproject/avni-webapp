@@ -33,6 +33,7 @@ import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";
 import NewsDetails from "./views/subjectDashBoard/components/news/NewsDetails";
+import Player from "./views/audio/Player";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -121,6 +122,7 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
           </Grid>
         </Grid>
       </div>
+      <Route path={`${path}/audio`} component={Player} />
     </I18nextProvider>
   ) : (
     <Loading />
