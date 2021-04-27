@@ -160,9 +160,9 @@ export const sampleWorkListUpdationRule = () => {
 };
 
 export const sampleCardQuery = () => {
-  return `'use strict';
+  return `// Documentation - https://docs.mongodb.com/realm-legacy/docs/javascript/latest/index.html#queries
+'use strict';
 ({params, imports}) => {
-    //return params.db.objects('Individual')
-        //.filter(individual => individual.voided === false)
+    // return params.db.objects('Individual').filtered("individual.voided == false");
 };`;
 };
