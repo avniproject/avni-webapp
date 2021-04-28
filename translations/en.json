@@ -426,6 +426,9 @@
     "commentThreads": "Comment threads",
     "createNewCommentThread": "Create a new comment thread",
     "newThreadLabel": "Type message for new thread",
-    "newCommentLabel": "What's your response?"
+    "newCommentLabel": "What's your response?",
+    "verified": "Verified",
+    "phoneNumberUnverified": "Phone number not verified",
+    "invalidPhoneNumber": "Invalid phone number"
   }
 }

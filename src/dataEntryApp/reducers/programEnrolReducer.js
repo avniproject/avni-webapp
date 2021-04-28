@@ -163,7 +163,7 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_INITIAL_STATE: {
-      return initialState;
+      return { ...initialState, validationResults: [] };
     }
     case types.SAVE_PROGRAM_COMPLETE: {
       return {

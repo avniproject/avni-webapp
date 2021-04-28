@@ -254,7 +254,7 @@ export default (state = initialState, action) => {
       };
     }
     case types.SET_INITIAL_SUBJECT_STATE: {
-      return initialState;
+      return { ...initialState, validationResults: [] };
     }
     case types.ON_LOAD_SUCCESS: {
       return {

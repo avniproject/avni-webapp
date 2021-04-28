@@ -11,13 +11,15 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import _, { isEmpty, isNil, includes } from "lodash";
+import { includes, isEmpty, isNil } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
 import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
+import ReportProblemIcon from "@material-ui/icons/ReportProblem";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -33,6 +35,16 @@ const useStyles = makeStyles(theme => ({
   tableContainer: {
     borderRadius: "3px",
     boxShadow: "0px 0px 1px"
+  },
+  verifiedIconStyle: {
+    color: Colors.SuccessColor,
+    fontSize: 20,
+    marginLeft: theme.spacing(1)
+  },
+  unverifiedIconStyle: {
+    color: Colors.ValidationError,
+    fontSize: 20,
+    marginLeft: theme.spacing(1)
   }
 }));
 
@@ -74,9 +86,22 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       });
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
       return renderMedia(displayable.displayValue, observation.concept.datatype);
+    } else if (observation.concept.isPhoneNumberConcept()) {
+      return renderPhoneNumber(observation.getValueWrapper());
     } else {
       return renderText(displayable.displayValue, observation.isAbnormal());
     }
+  };
+
+  const renderPhoneNumber = phoneNumber => {
+    const isVerified = phoneNumber.isVerified();
+    const Icon = isVerified ? VerifiedUserIcon : ReportProblemIcon;
+    const className = isVerified ? classes.verifiedIconStyle : classes.unverifiedIconStyle;
+    return (
+      <span>
+        {phoneNumber.getValue()} <Icon className={className} />
+      </span>
+    );
   };
 
   const renderSubject = (subject, addLineBreak) => {
@@ -128,7 +153,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   };
 
   const refreshSignedUrlsForMedia = async () => {
-    if (!_.isEmpty(mediaObservations)) {
+    if (!isEmpty(mediaObservations)) {
       return await Promise.all(
         mediaObservations.map(async obs => {
           const signedUrl = await getSignedUrl(obs.valueJSON.answer);

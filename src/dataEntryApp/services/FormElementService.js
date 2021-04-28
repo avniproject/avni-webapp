@@ -1,4 +1,4 @@
-import { Concept, ValidationResult, FormElementGroup } from "avni-models";
+import { Concept, FormElementGroup, ValidationResult } from "avni-models";
 import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
@@ -33,6 +33,10 @@ export default {
     ) {
       observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
       return value;
+    } else if (formElement.concept.datatype === Concept.dataType.PhoneNumber) {
+      const { phoneNumber, isVerified } = value;
+      observationsHolder.updatePhoneNumberValue(formElement.concept, phoneNumber, isVerified);
+      return phoneNumber;
     } else {
       observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
       return value;
