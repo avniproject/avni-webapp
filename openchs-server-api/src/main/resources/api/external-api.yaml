@@ -659,6 +659,8 @@ components:
         cancelObservations:
           type: object
           description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Voided:
+          type: boolean
     Encounter:
       type: object
       properties:
@@ -730,6 +732,8 @@ components:
         exitObservations:
           type: object
           description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Voided:
+          type: boolean
     EncounterBody:
       type: object
       properties:
@@ -765,6 +769,8 @@ components:
         cancelObservations:
           type: object
           description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Voided:
+          type: boolean
     GeoLocation:
       type: object
       description: Available if the location is enabled by the user
