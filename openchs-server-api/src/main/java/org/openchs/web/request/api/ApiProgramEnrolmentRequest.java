@@ -7,6 +7,7 @@ import org.openchs.web.api.ProgramEnrolmentFieldNames;
 
 import java.util.LinkedHashMap;
 
+import static org.openchs.web.api.CommonFieldNames.VOIDED;
 import static org.openchs.web.api.ProgramEnrolmentFieldNames.*;
 
 public class ApiProgramEnrolmentRequest {
@@ -33,6 +34,9 @@ public class ApiProgramEnrolmentRequest {
 
     @JsonProperty(EXIT_OBS)
     private LinkedHashMap<String, Object> exitObservations;
+
+    @JsonProperty(VOIDED)
+    private boolean isVoided;
 
     public String getProgram() {
         return program;
@@ -64,5 +68,9 @@ public class ApiProgramEnrolmentRequest {
 
     public LinkedHashMap<String, Object> getExitObservations() {
         return exitObservations;
+    }
+
+    public boolean isVoided() {
+        return isVoided;
     }
 }

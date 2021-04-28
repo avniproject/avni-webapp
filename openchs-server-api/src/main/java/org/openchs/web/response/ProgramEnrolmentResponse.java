@@ -3,18 +3,18 @@ package org.openchs.web.response;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.service.ConceptService;
-import org.openchs.web.api.ProgramEnrolmentFieldNames;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import static org.openchs.web.api.CommonFieldNames.*;
 import static org.openchs.web.api.ProgramEnrolmentFieldNames.*;
 
 public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
     public static ProgramEnrolmentResponse fromProgramEnrolment(ProgramEnrolment programEnrolment, ConceptRepository conceptRepository, ConceptService conceptService) {
         ProgramEnrolmentResponse programEnrolmentResponse = new ProgramEnrolmentResponse();
-        programEnrolmentResponse.put("ID", programEnrolment.getUuid());
-        programEnrolmentResponse.put("Voided", programEnrolment.isVoided());
+        programEnrolmentResponse.put(ID, programEnrolment.getUuid());
+        programEnrolmentResponse.put(VOIDED, programEnrolment.isVoided());
         programEnrolmentResponse.put(SUBJECT_TYPE, programEnrolment.getIndividual().getSubjectType().getName());
         programEnrolmentResponse.put(SUBJECT_ID, programEnrolment.getIndividual().getUuid());
         programEnrolmentResponse.put(PROGRAM, programEnrolment.getProgram().getName());

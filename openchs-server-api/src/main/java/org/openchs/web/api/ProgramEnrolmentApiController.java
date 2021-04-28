@@ -83,6 +83,7 @@ public class ProgramEnrolmentApiController {
         enrolment.setIndividual(subject);
         enrolment.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         enrolment.setProgramExitObservations(RequestUtils.createObservations(request.getExitObservations(), conceptRepository));
+        enrolment.setVoided(request.isVoided());
 
         programEnrolmentRepository.save(enrolment);
     }

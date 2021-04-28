@@ -6,6 +6,8 @@ import org.openchs.geo.Point;
 
 import java.util.LinkedHashMap;
 
+import static org.openchs.web.api.CommonFieldNames.VOIDED;
+
 public abstract class ApiBaseEncounterRequest {
     @JsonProperty("Encounter type")
     private String encounterType;
@@ -34,7 +36,7 @@ public abstract class ApiBaseEncounterRequest {
     @JsonProperty("cancelObservations")
     private LinkedHashMap<String, Object> cancelObservations;
 
-    @JsonProperty("cancelObservations")
+    @JsonProperty(VOIDED)
     private boolean voided;
 
     public String getEncounterType() {
