@@ -2,9 +2,8 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.Checklist;
-import org.openchs.domain.ChecklistDetail;
-import org.openchs.domain.ChecklistItem;
+import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.application.ChecklistItemRequest;
@@ -57,6 +56,14 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
         checklistItem.setObservations(this.observationService.createObservations(checklistItemRequest.getObservations()));
         if (checklistItem.isNew()) {
             Checklist checklist = checklistRepository.findByUuid(checklistItemRequest.getChecklistUUID());
+            // TODO: this hot fix is done for the user jyotsna@sncu who did not sync the entire data and started editing the
+            // old enrolments. This generated duplicate checklist on the client, so now she's not able to sync her data.
+            // This should be removed once she has synced her data to server
+            User user = UserContextHolder.getUser();
+            if (checklist == null && user != null && user.getUsername().equals("jyotsna@sncu")) {
+                // We skip all the checklist items generated for duplicate checklist
+                return;
+            }
             checklistItem.setChecklist(checklist);
             checklistItem.setChecklistItemDetail(checklistItemDetailRepository.findByUuid(checklistItemRequest.getChecklistItemDetailUUID()));
         }
