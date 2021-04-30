@@ -60,7 +60,7 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/upload", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateMobileDatabaseBackupUploadUrl() {
         logger.info("getting mobile database backup upload url");
         return getFileUrlResponse(mobileDatabaseBackupFile(), HttpMethod.PUT);
@@ -72,14 +72,14 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/download", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateMobileDatabaseBackupDownloadUrl() {
         logger.info("getting mobile database backup download url");
         return getFileUrlResponse(mobileDatabaseBackupFile(), HttpMethod.GET);
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/exists", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> mobileDatabaseBackupExists() {
         logger.info("checking whether mobile database backup url exists");
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(Boolean.toString(s3Service.fileExists(mobileDatabaseBackupFile())));
