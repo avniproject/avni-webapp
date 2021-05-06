@@ -4,13 +4,8 @@ import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistDetail;
-import org.openchs.domain.ProgramEnrolment;
-import org.openchs.domain.User;
-import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.UserService;
 import org.openchs.web.request.ChecklistRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +20,12 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.String.format;
-
 @RestController
 public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist>, OperatingIndividualScopeAwareController<Checklist>, OperatingIndividualScopeAwareFilterController<Checklist> {
     private final ChecklistDetailRepository checklistDetailRepository;
     private final ChecklistRepository checklistRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final UserService userService;
-    private final Logger logger;
 
     @Autowired
     public ChecklistController(ChecklistRepository checklistRepository,
@@ -43,7 +35,6 @@ public class ChecklistController extends AbstractController<Checklist> implement
         this.checklistRepository = checklistRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
-        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Transactional
@@ -51,19 +42,8 @@ public class ChecklistController extends AbstractController<Checklist> implement
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID());
-        // TODO: this hot fix is done for the user jyotsna@sncu who did not sync the entire data and started editing the
-        // old enrolments. This generated duplicate checklist on the client, so now she's not able to sync her data.
-        // This should be removed once she has synced her data to server
-        User user = UserContextHolder.getUser();
-        Checklist oldChecklist = checklistRepository.findByProgramEnrolmentId(programEnrolment.getId());
-        if (user != null && user.getUsername().equals("jyotsna@sncu") && oldChecklist != null && !oldChecklist.getUuid().equals(checklist.getUuid())) {
-            logger.info(format("Skipping checklist save for enrolment uuid %s", programEnrolment.getUuid()));
-            // We skip all the duplicate checklists for an enrolment
-            return;
-        }
         checklist.setChecklistDetail(this.checklistDetailRepository.findByUuid(checklistRequest.getChecklistDetailUUID()));
-        checklist.setProgramEnrolment(programEnrolment);
+        checklist.setProgramEnrolment(programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID()));
         checklist.setBaseDate(checklistRequest.getBaseDate());
         checklistRepository.save(checklist);
     }
