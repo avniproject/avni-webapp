@@ -5,13 +5,11 @@ import org.openchs.dao.ChecklistDetailRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
+import org.openchs.service.EntityApprovalStatusService;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistDetailRequest;
-import org.openchs.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
-import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
-import org.openchs.web.request.rules.RulesContractWrapper.LowestAddressLevelContract;
-import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
+import org.openchs.web.request.rules.RulesContractWrapper.*;
 import org.openchs.web.request.rules.request.ProgramEnrolmentRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ public class ProgramEnrolmentConstructionService {
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final ObservationService observationService;
     private final ChecklistDetailRepository checklistDetailRepository;
+    private final EntityApprovalStatusService entityApprovalStatusService;
 
     @Autowired
     public ProgramEnrolmentConstructionService(
@@ -34,12 +33,14 @@ public class ProgramEnrolmentConstructionService {
             IndividualRepository individualRepository,
             ProgramEnrolmentRepository programEnrolmentRepository,
             ObservationService observationService,
-            ChecklistDetailRepository checklistDetailRepository) {
+            ChecklistDetailRepository checklistDetailRepository,
+            EntityApprovalStatusService entityApprovalStatusService) {
         this.observationConstructionService = observationConstructionService;
         this.individualRepository = individualRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationService = observationService;
         this.checklistDetailRepository = checklistDetailRepository;
+        this.entityApprovalStatusService = entityApprovalStatusService;
     }
 
 
@@ -106,16 +107,18 @@ public class ProgramEnrolmentConstructionService {
         individualContractWrapper.setRegistrationDate(individual.getRegistrationDate());
         individualContractWrapper.setVoided(individual.isVoided());
         individualContractWrapper.setSubjectType(constructSubjectType(individual.getSubjectType()));
+        EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(individual.getId(), EntityApprovalStatus.EntityType.Subject, individual.getUuid());
+        individualContractWrapper.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
         individualContractWrapper.setEncounters(individual
                 .getEncounters()
                 .stream()
-                .map(enc -> EncounterContractWrapper.fromEncounter(enc, observationService))
+                .map(enc -> EncounterContractWrapper.fromEncounter(enc, observationService, entityApprovalStatusService))
                 .collect(Collectors.toList())
         );
         individualContractWrapper.setEnrolments(individual
                 .getProgramEnrolments()
                 .stream()
-                .map(enl -> ProgramEnrolmentContractWrapper.fromEnrolment(enl, observationService))
+                .map(enl -> ProgramEnrolmentContractWrapper.fromEnrolment(enl, observationService, entityApprovalStatusService))
                 .collect(Collectors.toList())
         );
         return individualContractWrapper;

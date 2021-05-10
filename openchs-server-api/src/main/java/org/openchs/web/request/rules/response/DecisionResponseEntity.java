@@ -5,30 +5,30 @@ import org.openchs.web.request.ObservationContract;
 import java.util.ArrayList;
 import java.util.List;
 public class DecisionResponseEntity {
-    private List<DecisionResponse> enrolmentDecisions = new ArrayList<>();
-    private List<DecisionResponse> encounterDecisions = new ArrayList<>();
-    private List<DecisionResponse> registrationDecisions = new ArrayList<>();
+    private List<KeyValueResponse> enrolmentDecisions = new ArrayList<>();
+    private List<KeyValueResponse> encounterDecisions = new ArrayList<>();
+    private List<KeyValueResponse> registrationDecisions = new ArrayList<>();
 
     private List<ObservationContract> enrolmentObservations = new ArrayList<>();
     private List<ObservationContract> encounterObservations = new ArrayList<>();
     private List<ObservationContract> registrationObservations = new ArrayList<>();
 
-    public void setEnrolmentDecisions(List<DecisionResponse> enrolmentDecisions){
+    public void setEnrolmentDecisions(List<KeyValueResponse> enrolmentDecisions){
         this.enrolmentDecisions = enrolmentDecisions;
     }
-    public List<DecisionResponse> getEnrolmentDecisions(){
+    public List<KeyValueResponse> getEnrolmentDecisions(){
         return this.enrolmentDecisions;
     }
-    public void setEncounterDecisions(List<DecisionResponse> encounterDecisions){
+    public void setEncounterDecisions(List<KeyValueResponse> encounterDecisions){
         this.encounterDecisions = encounterDecisions;
     }
-    public List<DecisionResponse> getEncounterDecisions(){
+    public List<KeyValueResponse> getEncounterDecisions(){
         return this.encounterDecisions;
     }
-    public void setRegistrationDecisions(List<DecisionResponse> registrationDecisions){
+    public void setRegistrationDecisions(List<KeyValueResponse> registrationDecisions){
         this.registrationDecisions = registrationDecisions;
     }
-    public List<DecisionResponse> getRegistrationDecisions(){
+    public List<KeyValueResponse> getRegistrationDecisions(){
         return this.registrationDecisions;
     }
 

@@ -6,7 +6,8 @@ public enum WorkFlowTypeEnum {
     PROGRAM_ENCOUNTER("programencounter"),
     ENCOUNTER("encounter"),
     PROGRAM_ENROLMENT("programenrolment"),
-    INDIVIDUAL("individual");
+    INDIVIDUAL("individual"),
+    PROGRAM_SUMMARY("ProgramSummary");
     private String workFlowTypeName;
 
     public String getWorkFlowTypeName() {
@@ -18,6 +19,10 @@ public enum WorkFlowTypeEnum {
     }
 
     public static WorkFlowTypeEnum findByValue(String workFlowValue){
-        return Arrays.stream(values()).filter(value -> workFlowValue.equals(value.getWorkFlowTypeName())).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(value -> workFlowValue.equals(value.getWorkFlowTypeName().toLowerCase())).findFirst().orElse(null);
+    }
+
+    public boolean isSummaryWorkflow() {
+        return PROGRAM_SUMMARY.workFlowTypeName.equals(this.workFlowTypeName);
     }
 }

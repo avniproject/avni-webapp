@@ -6,6 +6,7 @@ import org.openchs.domain.ApprovalStatus;
 import org.openchs.domain.CHSEntity;
 import org.openchs.domain.EntityApprovalStatus;
 import org.openchs.web.request.EntityApprovalStatusRequest;
+import org.openchs.web.request.rules.RulesContractWrapper.EntityApprovalStatusWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,6 +85,11 @@ public class EntityApprovalStatusService {
         entityApprovalStatus.setStatusDateTime(new DateTime());
         entityApprovalStatus.setAutoApproved(false);
         entityApprovalStatusRepository.save(entityApprovalStatus);
+    }
+
+    public EntityApprovalStatusWrapper getLatestEntityApprovalStatus(Long entityId, EntityApprovalStatus.EntityType entityType, String entityUUID) {
+        EntityApprovalStatus entityApprovalStatus = entityApprovalStatusRepository.findFirstByEntityIdAndEntityTypeAndIsVoidedFalseOrderByStatusDateTimeDesc(entityId, entityType);
+        return EntityApprovalStatusWrapper.fromEntity(entityApprovalStatus, entityUUID);
     }
 
 }

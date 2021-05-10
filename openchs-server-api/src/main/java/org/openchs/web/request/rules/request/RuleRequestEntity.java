@@ -4,10 +4,18 @@ public class RuleRequestEntity {
     private String formUuid;
     private String ruleType;
     private String workFlowType;
-    private String code;
     private String decisionCode;
     private String visitScheduleCode;
     private String checklistCode;
+    private String programSummaryCode;
+
+    public String getProgramSummaryCode() {
+        return programSummaryCode;
+    }
+
+    public void setProgramSummaryCode(String programSummaryCode) {
+        this.programSummaryCode = programSummaryCode;
+    }
 
     public String getChecklistCode() {
         return checklistCode;
@@ -39,14 +47,6 @@ public class RuleRequestEntity {
 
     public void setWorkFlowType(String workFlowType) {
         this.workFlowType = workFlowType;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getDecisionCode() {

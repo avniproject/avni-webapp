@@ -1,7 +1,9 @@
 package org.openchs.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.EntityApprovalStatus;
 import org.openchs.domain.ProgramEnrolment;
+import org.openchs.service.EntityApprovalStatusService;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.ObservationModelContract;
 import org.openchs.web.request.ProgramEncountersContract;
@@ -26,6 +28,15 @@ public class ProgramEnrolmentContractWrapper {
     private List<ObservationModelContract> exitObservations = new ArrayList<>();
     private String operationalProgramName;
     private List<ChecklistDetailRequest> checklistDetails = new ArrayList<>();
+    private EntityApprovalStatusWrapper latestEntityApprovalStatus;
+
+    public EntityApprovalStatusWrapper getLatestEntityApprovalStatus() {
+        return latestEntityApprovalStatus;
+    }
+
+    public void setLatestEntityApprovalStatus(EntityApprovalStatusWrapper latestEntityApprovalStatus) {
+        this.latestEntityApprovalStatus = latestEntityApprovalStatus;
+    }
 
     public List<ChecklistDetailRequest> getChecklistDetails() {
         return checklistDetails;
@@ -123,7 +134,7 @@ public class ProgramEnrolmentContractWrapper {
         this.visitSchedules = visitSchedules;
     }
 
-    public static ProgramEnrolmentContractWrapper fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService) {
+    public static ProgramEnrolmentContractWrapper fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
         ProgramEnrolmentContractWrapper contract = new ProgramEnrolmentContractWrapper();
         contract.setUuid(enrolment.getUuid());
         contract.setEnrolmentDateTime(enrolment.getEnrolmentDateTime());
@@ -131,6 +142,8 @@ public class ProgramEnrolmentContractWrapper {
         contract.setOperationalProgramName(enrolment.getProgram().getOperationalProgramName());
         contract.setObservations(observationService.constructObservationModelContracts(enrolment.getObservations()));
         contract.setExitObservations(observationService.constructObservationModelContracts(enrolment.getProgramExitObservations()));
+        EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(enrolment.getId(), EntityApprovalStatus.EntityType.ProgramEnrolment, enrolment.getUuid());
+        contract.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
         return contract;
     }
 }

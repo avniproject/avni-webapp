@@ -7,7 +7,8 @@ import org.openchs.domain.*;
 import org.openchs.util.BadRequestError;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.Decision;
-import org.openchs.web.request.rules.response.DecisionResponse;
+import org.openchs.web.request.rules.constant.WorkFlowTypeEnum;
+import org.openchs.web.request.rules.response.KeyValueResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,6 @@ import javax.validation.constraints.NotNull;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
 
 @Service
 public class ObservationService {
@@ -98,32 +97,32 @@ public class ObservationService {
         return new ObservationCollection(observations);
     }
 
-    public List<ObservationContract> createObservationContractsFromDecisions(List<DecisionResponse> decisions) {
+    public List<ObservationContract> createObservationContractsFromKeyValueResponse(List<KeyValueResponse> keyValueResponses, WorkFlowTypeEnum workflow) {
         List<ObservationContract> observationContracts = new ArrayList<>();
-        for (DecisionResponse decision : decisions) {
+        for (KeyValueResponse keyValueResponse : keyValueResponses) {
             ObservationContract observationContract = new ObservationContract();
-            String conceptName = decision.getName();
+            String conceptName = keyValueResponse.getName();
             Concept concept = conceptRepository.findByName(conceptName);
             if (concept == null) {
                 throw new BadRequestError(String.format("Concept with name=%s not found", conceptName));
             }
             String dataType = concept.getDataType();
             Object value;
-            Object decisionValue = decision.getValue();
+            Object keyValueResponseValue = keyValueResponse.getValue();
             switch (ConceptDataType.valueOf(dataType)) {
                 case Coded: {
                     //TODO: validate that value is part of the concept answers set.
-                    if (decisionValue instanceof Collection<?>) {
-                        List<String> array = (List) decisionValue;
+                    if (keyValueResponseValue instanceof Collection<?>) {
+                        List<String> array = (List) keyValueResponseValue;
                         value = array.stream().map(answerConceptName -> {
-                            Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                            Concept answerConcept = getConceptForValue(answerConceptName, workflow);
                             if (answerConcept == null)
                                 throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
                             return answerConcept.getUuid();
                         }).toArray();
                     } else {
-                        String answerConceptName = (String) decisionValue;
-                        Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                        String answerConceptName = (String) keyValueResponseValue;
+                        Concept answerConcept = getConceptForValue(answerConceptName, workflow);
                         if (answerConcept == null)
                             throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
                         value = answerConcept.getUuid();
@@ -131,7 +130,7 @@ public class ObservationService {
                     break;
                 }
                 default: {
-                    value = decisionValue;
+                    value = keyValueResponseValue;
                     break;
                 }
             }
@@ -140,6 +139,14 @@ public class ObservationService {
             observationContracts.add(observationContract);
         }
         return observationContracts;
+    }
+
+    private Concept getConceptForValue(String conceptValue, WorkFlowTypeEnum workflow) {
+        if(workflow.isSummaryWorkflow()){
+            return conceptRepository.findByUuid(conceptValue);
+        } else {
+            return conceptRepository.findByName(conceptValue);
+        }
     }
 
     public Object getObservationValue(String conceptName, ProgramEncounter programEncounter) {

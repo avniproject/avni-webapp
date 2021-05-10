@@ -15,6 +15,25 @@ public class RuleResponseEntity {
     private List<VisitSchedule> visitSchedules = new ArrayList<>();
     private RuleError error;
     private List<ChecklistContract> checklists = new ArrayList<>();
+    private List<KeyValueResponse> summaries = new ArrayList<>();
+    private List<ObservationContract> summaryObservations = new ArrayList<>();
+
+    public List<ObservationContract> getSummaryObservations() {
+        return summaryObservations;
+    }
+
+    public void setSummaryObservations(List<ObservationContract> summaryObservations) {
+        this.summaryObservations = summaryObservations;
+    }
+
+    public List<KeyValueResponse> getSummaries() {
+        return summaries;
+    }
+
+    public void setSummaries(List<KeyValueResponse> summaries) {
+        this.summaries = summaries;
+    }
+
 
     public List<ChecklistContract> getChecklists() {
         return checklists;

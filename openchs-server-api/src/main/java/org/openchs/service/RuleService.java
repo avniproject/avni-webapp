@@ -23,8 +23,8 @@ import org.openchs.web.request.rules.constructWrappers.IndividualConstructionSer
 import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstructionService;
 import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.openchs.web.request.rules.request.*;
-import org.openchs.web.request.rules.response.DecisionResponse;
 import org.openchs.web.request.rules.response.DecisionResponseEntity;
+import org.openchs.web.request.rules.response.KeyValueResponse;
 import org.openchs.web.request.rules.response.RuleError;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.request.rules.validateRules.RuleValidationService;
@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -59,6 +60,7 @@ public class RuleService {
     private final FormRepository formRepository;
     private final RuleFailureLogRepository ruleFailureLogRepository;
     private final ObservationService observationService;
+    private final EntityApprovalStatusService entityApprovalStatusService;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -71,9 +73,12 @@ public class RuleService {
                        RuleValidationService ruleValidationService,
                        ProgramEncounterConstructionService programEncounterConstructionService,
                        ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                       RuleFailureLogRepository ruleFailureLogRepository, ObservationService observationService) {
+                       RuleFailureLogRepository ruleFailureLogRepository,
+                       ObservationService observationService,
+                       EntityApprovalStatusService entityApprovalStatusService) {
         this.ruleFailureLogRepository = ruleFailureLogRepository;
         this.observationService = observationService;
+        this.entityApprovalStatusService = entityApprovalStatusService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
@@ -159,6 +164,27 @@ public class RuleService {
         deletedRules.peek(vr -> vr.setVoided(true)).forEach(ruleRepository::save);
     }
 
+    public RuleResponseEntity executeProgramSummaryRule(ProgramEnrolment programEnrolment) {
+        RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
+        if (programEnrolment == null) {
+            ruleResponseEntity.setStatus(HttpStatus.NOT_FOUND.toString());
+            return ruleResponseEntity;
+        }
+        RuleRequestEntity rule = new RuleRequestEntity();
+        Program program = programEnrolment.getProgram();
+        rule.setProgramSummaryCode(program.getEnrolmentSummaryRule());
+        String workFlowType = WorkFlowTypeEnum.PROGRAM_SUMMARY.getWorkFlowTypeName();
+        rule.setWorkFlowType(workFlowType);
+        rule.setFormUuid(program.getUuid());
+        ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = ProgramEnrolmentContractWrapper.fromEnrolment(programEnrolment, observationService, entityApprovalStatusService);
+        programEnrolmentContractWrapper.setRule(rule);
+        programEnrolmentContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, programEnrolment.getUuid());
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/programSummaryRule", programEnrolmentContractWrapper, ruleFailureLog);
+        setObservationsOnResponse(workFlowType, ruleResponseEntity);
+        return ruleResponseEntity;
+    }
+
     public RuleResponseEntity executeServerSideRules(RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleRequestEntity rule = requestEntityWrapper.getRule();
         Form form = formRepository.findByUuid(rule.getFormUuid());
@@ -205,7 +231,7 @@ public class RuleService {
                 break;
         }
 
-        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(requestEntityWrapper, "Web", "Rules : " + workFlowType, entityUuid);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, entityUuid);
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/rules", entity, ruleFailureLog);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
         return ruleResponseEntity;
@@ -213,23 +239,28 @@ public class RuleService {
 
     private void setObservationsOnResponse(String workFlowType, RuleResponseEntity ruleResponseEntity) {
         DecisionResponseEntity decisions = ruleResponseEntity.getDecisions();
+        List<KeyValueResponse> summaries = ruleResponseEntity.getSummaries();
+        WorkFlowTypeEnum workFlowTypeEnum = WorkFlowTypeEnum.findByValue(workFlowType.toLowerCase());
 
-        switch (WorkFlowTypeEnum.findByValue(workFlowType.toLowerCase())) {
+        switch (workFlowTypeEnum) {
             case PROGRAM_ENROLMENT:
-                decisions.setEnrolmentObservations(observationService.createObservationContractsFromDecisions(decisions.getEnrolmentDecisions()));
-                decisions.setRegistrationObservations(observationService.createObservationContractsFromDecisions(decisions.getRegistrationDecisions()));
+                decisions.setEnrolmentObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getEnrolmentDecisions(), workFlowTypeEnum));
+                decisions.setRegistrationObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getRegistrationDecisions(), workFlowTypeEnum));
                 break;
             case PROGRAM_ENCOUNTER:
-                decisions.setEncounterObservations(observationService.createObservationContractsFromDecisions(decisions.getEncounterDecisions()));
-                decisions.setEnrolmentObservations(observationService.createObservationContractsFromDecisions(decisions.getEnrolmentDecisions()));
-                decisions.setRegistrationObservations(observationService.createObservationContractsFromDecisions(decisions.getRegistrationDecisions()));
+                decisions.setEncounterObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getEncounterDecisions(), workFlowTypeEnum));
+                decisions.setEnrolmentObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getEnrolmentDecisions(), workFlowTypeEnum));
+                decisions.setRegistrationObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getRegistrationDecisions(), workFlowTypeEnum));
                 break;
             case ENCOUNTER:
-                decisions.setEncounterObservations(observationService.createObservationContractsFromDecisions(decisions.getEncounterDecisions()));
-                decisions.setRegistrationObservations(observationService.createObservationContractsFromDecisions(decisions.getRegistrationDecisions()));
+                decisions.setEncounterObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getEncounterDecisions(), workFlowTypeEnum));
+                decisions.setRegistrationObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getRegistrationDecisions(), workFlowTypeEnum));
                 break;
             case INDIVIDUAL:
-                decisions.setRegistrationObservations(observationService.createObservationContractsFromDecisions(decisions.getRegistrationDecisions()));
+                decisions.setRegistrationObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getRegistrationDecisions(), workFlowTypeEnum));
+                break;
+            case PROGRAM_SUMMARY:
+                ruleResponseEntity.setSummaryObservations(observationService.createObservationContractsFromKeyValueResponse(summaries, workFlowTypeEnum));
                 break;
         }
     }

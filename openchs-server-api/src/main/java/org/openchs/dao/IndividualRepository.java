@@ -176,4 +176,6 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
                 pageable);
     }
 
+    List<Individual> findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(AddressLevel addressLevel, SubjectType subjectType);
+
 }

@@ -2,6 +2,8 @@ package org.openchs.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.Encounter;
+import org.openchs.domain.EntityApprovalStatus;
+import org.openchs.service.EntityApprovalStatusService;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.ObservationModelContract;
@@ -23,7 +25,15 @@ public class EncounterContractWrapper {
     private List<ObservationModelContract> cancelObservations;
     private Boolean voided;
     private List<VisitSchedule> visitSchedules;
+    private EntityApprovalStatusWrapper latestEntityApprovalStatus;
 
+    public EntityApprovalStatusWrapper getLatestEntityApprovalStatus() {
+        return latestEntityApprovalStatus;
+    }
+
+    public void setLatestEntityApprovalStatus(EntityApprovalStatusWrapper latestEntityApprovalStatus) {
+        this.latestEntityApprovalStatus = latestEntityApprovalStatus;
+    }
 
     public Boolean getVoided() {
         return voided;
@@ -121,7 +131,7 @@ public class EncounterContractWrapper {
         this.subject = subject;
     }
 
-    public static EncounterContractWrapper fromEncounter(Encounter encounter, ObservationService observationService) {
+    public static EncounterContractWrapper fromEncounter(Encounter encounter, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
         EncounterContractWrapper contract = new EncounterContractWrapper();
         contract.setUuid(encounter.getUuid());
         contract.setName(encounter.getName());
@@ -130,6 +140,8 @@ public class EncounterContractWrapper {
         contract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
         contract.setCancelDateTime(encounter.getCancelDateTime());
         contract.setObservations(observationService.constructObservationModelContracts(encounter.getObservations()));
+        EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(encounter.getId(), EntityApprovalStatus.EntityType.Encounter, encounter.getUuid());
+        contract.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
         return contract;
     }
 

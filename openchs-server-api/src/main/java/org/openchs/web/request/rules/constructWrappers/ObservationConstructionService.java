@@ -5,7 +5,7 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.request.ObservationRequestEntity;
-import org.openchs.web.request.rules.response.DecisionResponse;
+import org.openchs.web.request.rules.response.KeyValueResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +43,14 @@ public class ObservationConstructionService {
         return ConceptContract.create(concept);
     }
 
-    public List<ObservationContract> responseObservation(List<DecisionResponse> decisionConceptValue) {
+    public List<ObservationContract> responseObservation(List<KeyValueResponse> decisionConceptValue) {
         return decisionConceptValue.stream()
                 .map(decision -> decision.getValue() != null ? getObservationContract(decision) : null)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private ObservationContract getObservationContract(DecisionResponse decision) {
+    private ObservationContract getObservationContract(KeyValueResponse decision) {
         ObservationContract observationContract = new ObservationContract();
         Concept concept = conceptRepository.findByName(decision.getName());
         observationContract.setConcept(ConceptContract.create(concept));

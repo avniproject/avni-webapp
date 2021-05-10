@@ -6,8 +6,8 @@ import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.RuleFailureLog;
-import org.openchs.web.request.rules.request.RequestEntityWrapper;
-import org.openchs.web.request.rules.response.DecisionResponse;
+import org.openchs.web.request.rules.request.RuleRequestEntity;
+import org.openchs.web.request.rules.response.KeyValueResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +33,19 @@ public class RuleValidationService {
     }
 
 
-    public RuleFailureLog generateRuleFailureLog(RequestEntityWrapper requestEntityWrapper, String source, String entityType, String entityUuid) {
+    public RuleFailureLog generateRuleFailureLog(RuleRequestEntity rule, String source, String entityType, String entityUuid) {
         RuleFailureLog ruleFailureLog = new RuleFailureLog();
         ruleFailureLog.assignUUIDIfRequired();
-        ruleFailureLog.setFormId(requestEntityWrapper.getRule().getFormUuid());
-        ruleFailureLog.setRuleType(requestEntityWrapper.getRule().getRuleType());
+        ruleFailureLog.setFormId(rule.getFormUuid());
+        ruleFailureLog.setRuleType(rule.getRuleType());
         ruleFailureLog.setEntityId(entityUuid);
         ruleFailureLog.setEntityType(entityType);
         ruleFailureLog.setSource(source);
         return ruleFailureLog;
     }
 
-    public List<DecisionResponse> validateDecision(List<DecisionResponse> decisionResponse, RuleFailureLog ruleFailureLog) {
-        return decisionResponse
+    public List<KeyValueResponse> validateDecision(List<KeyValueResponse> keyValueResponse, RuleFailureLog ruleFailureLog) {
+        return keyValueResponse
                 .stream()
                 .filter(decision -> checkConceptForRule(decision.getName(), ruleFailureLog))
                 .map(decision -> filterDecisionValuesForCodedConcept(decision, ruleFailureLog))
@@ -53,7 +53,7 @@ public class RuleValidationService {
                 .collect(Collectors.toList());
     }
 
-    private DecisionResponse filterDecisionValuesForCodedConcept(DecisionResponse decision, RuleFailureLog ruleFailureLog) {
+    private KeyValueResponse filterDecisionValuesForCodedConcept(KeyValueResponse decision, RuleFailureLog ruleFailureLog) {
         Concept concept = conceptRepository.findByName(decision.getName());
         if (concept.getDataType().equals(ConceptDataType.Coded.name())) {
             List<Object> values = (List<Object>) decision.getValue();

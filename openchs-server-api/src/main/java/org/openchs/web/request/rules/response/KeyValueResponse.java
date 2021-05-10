@@ -1,6 +1,6 @@
 package org.openchs.web.request.rules.response;
 
-public class DecisionResponse {
+public class KeyValueResponse {
     private String name;
     private Object value;
 

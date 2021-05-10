@@ -1,11 +1,12 @@
 package org.openchs.web;
 
 import org.codehaus.jettison.json.JSONException;
+import org.openchs.dao.ProgramEnrolmentRepository;
+import org.openchs.domain.ProgramEnrolment;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
 import org.openchs.web.request.RuleDependencyRequest;
 import org.openchs.web.request.RuleRequest;
-import org.openchs.web.request.rules.constant.WorkFlowTypeEnum;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.validation.ValidationException;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,9 +25,11 @@ import java.util.List;
 public class RuleController {
     private final Logger logger;
     private final RuleService ruleService;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
 
     @Autowired
-    public RuleController(RuleService ruleService) {
+    public RuleController(RuleService ruleService, ProgramEnrolmentRepository programEnrolmentRepository) {
+        this.programEnrolmentRepository = programEnrolmentRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleService = ruleService;
     }
@@ -67,6 +67,20 @@ public class RuleController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> executeServerSideRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = ruleService.executeServerSideRules(requestEntityWrapper);
+        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+            return ResponseEntity.ok().body(ruleResponseEntity);
+        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
+            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.badRequest().body(ruleResponseEntity);
+        }
+    }
+
+    @RequestMapping(value = "/web/programSummaryRule", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
+    ResponseEntity<?> programSummaryRule(@RequestParam String programEnrolmentUUID) {
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
+        RuleResponseEntity ruleResponseEntity = ruleService.executeProgramSummaryRule(programEnrolment);
         if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);
         } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {

@@ -20,7 +20,15 @@ public class ProgramEncounterContractWrapper {
     private List<ObservationModelContract> cancelObservations = new ArrayList<>();
     private EncounterTypeContract encounterType;
     private DateTime encounterDateTime;
+    private EntityApprovalStatusWrapper latestEntityApprovalStatus;
 
+    public EntityApprovalStatusWrapper getLatestEntityApprovalStatus() {
+        return latestEntityApprovalStatus;
+    }
+
+    public void setLatestEntityApprovalStatus(EntityApprovalStatusWrapper latestEntityApprovalStatus) {
+        this.latestEntityApprovalStatus = latestEntityApprovalStatus;
+    }
     public DateTime getEncounterDateTime() {
         return encounterDateTime;
     }

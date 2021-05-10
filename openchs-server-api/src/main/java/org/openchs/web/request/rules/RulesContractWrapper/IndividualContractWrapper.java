@@ -43,6 +43,16 @@ public class IndividualContractWrapper {
 
     private List<VisitSchedule> visitSchedules;
 
+    private EntityApprovalStatusWrapper latestEntityApprovalStatus;
+
+    public EntityApprovalStatusWrapper getLatestEntityApprovalStatus() {
+        return latestEntityApprovalStatus;
+    }
+
+    public void setLatestEntityApprovalStatus(EntityApprovalStatusWrapper latestEntityApprovalStatus) {
+        this.latestEntityApprovalStatus = latestEntityApprovalStatus;
+    }
+
     public List<ProgramEnrolmentContractWrapper> getEnrolments() {
         return enrolments;
     }
