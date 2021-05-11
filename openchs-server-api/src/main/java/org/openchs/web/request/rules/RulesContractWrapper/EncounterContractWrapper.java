@@ -140,6 +140,7 @@ public class EncounterContractWrapper {
         contract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
         contract.setCancelDateTime(encounter.getCancelDateTime());
         contract.setObservations(observationService.constructObservationModelContracts(encounter.getObservations()));
+        contract.setEncounterType(EncounterTypeContract.fromEncounterType(encounter.getEncounterType()));
         EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(encounter.getId(), EntityApprovalStatus.EntityType.Encounter, encounter.getUuid());
         contract.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
         return contract;

@@ -1,7 +1,9 @@
 package org.openchs.web;
 
 import org.codehaus.jettison.json.JSONException;
+import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
+import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
@@ -26,10 +28,14 @@ public class RuleController {
     private final Logger logger;
     private final RuleService ruleService;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private final IndividualRepository individualRepository;
 
     @Autowired
-    public RuleController(RuleService ruleService, ProgramEnrolmentRepository programEnrolmentRepository) {
+    public RuleController(RuleService ruleService,
+                          ProgramEnrolmentRepository programEnrolmentRepository,
+                          IndividualRepository individualRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.individualRepository = individualRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleService = ruleService;
     }
@@ -81,6 +87,20 @@ public class RuleController {
     ResponseEntity<?> programSummaryRule(@RequestParam String programEnrolmentUUID) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
         RuleResponseEntity ruleResponseEntity = ruleService.executeProgramSummaryRule(programEnrolment);
+        if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+            return ResponseEntity.ok().body(ruleResponseEntity);
+        } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {
+            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.badRequest().body(ruleResponseEntity);
+        }
+    }
+
+    @RequestMapping(value = "/web/subjectSummaryRule", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
+    ResponseEntity<?> subjectSummaryRule(@RequestParam String subjectUUID) {
+        Individual individual = individualRepository.findByUuid(subjectUUID);
+        RuleResponseEntity ruleResponseEntity = ruleService.executeSubjectSummaryRule(individual);
         if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);
         } else if (HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())) {

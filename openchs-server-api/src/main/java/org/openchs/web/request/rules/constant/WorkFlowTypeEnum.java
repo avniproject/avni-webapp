@@ -7,7 +7,8 @@ public enum WorkFlowTypeEnum {
     ENCOUNTER("encounter"),
     PROGRAM_ENROLMENT("programenrolment"),
     INDIVIDUAL("individual"),
-    PROGRAM_SUMMARY("ProgramSummary");
+    PROGRAM_SUMMARY("ProgramSummary"),
+    SUBJECT_SUMMARY("SubjectSummary");
     private String workFlowTypeName;
 
     public String getWorkFlowTypeName() {
@@ -23,6 +24,7 @@ public enum WorkFlowTypeEnum {
     }
 
     public boolean isSummaryWorkflow() {
-        return PROGRAM_SUMMARY.workFlowTypeName.equals(this.workFlowTypeName);
+        return Arrays.asList(PROGRAM_SUMMARY.workFlowTypeName, SUBJECT_SUMMARY.workFlowTypeName)
+                .contains(this.workFlowTypeName);
     }
 }

@@ -8,6 +8,15 @@ public class RuleRequestEntity {
     private String visitScheduleCode;
     private String checklistCode;
     private String programSummaryCode;
+    private String subjectSummaryCode;
+
+    public String getSubjectSummaryCode() {
+        return subjectSummaryCode;
+    }
+
+    public void setSubjectSummaryCode(String subjectSummaryCode) {
+        this.subjectSummaryCode = subjectSummaryCode;
+    }
 
     public String getProgramSummaryCode() {
         return programSummaryCode;

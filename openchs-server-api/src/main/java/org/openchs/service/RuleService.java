@@ -180,7 +180,27 @@ public class RuleService {
         programEnrolmentContractWrapper.setRule(rule);
         programEnrolmentContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, programEnrolment.getUuid());
-        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/programSummaryRule", programEnrolmentContractWrapper, ruleFailureLog);
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", programEnrolmentContractWrapper, ruleFailureLog);
+        setObservationsOnResponse(workFlowType, ruleResponseEntity);
+        return ruleResponseEntity;
+    }
+
+    public RuleResponseEntity executeSubjectSummaryRule(Individual individual) {
+        RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
+        if (individual == null) {
+            ruleResponseEntity.setStatus(HttpStatus.NOT_FOUND.toString());
+            return ruleResponseEntity;
+        }
+        RuleRequestEntity rule = new RuleRequestEntity();
+        SubjectType subjectType = individual.getSubjectType();
+        rule.setSubjectSummaryCode(subjectType.getSubjectSummaryRule());
+        String workFlowType = WorkFlowTypeEnum.SUBJECT_SUMMARY.getWorkFlowTypeName();
+        rule.setWorkFlowType(workFlowType);
+        rule.setFormUuid(subjectType.getUuid());
+        IndividualContractWrapper individualContractWrapper = programEnrolmentConstructionService.getSubjectInfo(individual);
+        individualContractWrapper.setRule(rule);
+        RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, individual.getUuid());
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", individualContractWrapper, ruleFailureLog);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
         return ruleResponseEntity;
     }
@@ -260,6 +280,7 @@ public class RuleService {
                 decisions.setRegistrationObservations(observationService.createObservationContractsFromKeyValueResponse(decisions.getRegistrationDecisions(), workFlowTypeEnum));
                 break;
             case PROGRAM_SUMMARY:
+            case SUBJECT_SUMMARY:
                 ruleResponseEntity.setSummaryObservations(observationService.createObservationContractsFromKeyValueResponse(summaries, workFlowTypeEnum));
                 break;
         }
