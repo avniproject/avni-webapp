@@ -158,5 +158,13 @@ export default {
   deleteComment: id => httpClient.delete(`/web/comment/${id}`).then(r => r.data),
   fetchCommentsForThread: threadId =>
     httpClient.fetchJson(`/web/comment?commentThreadId=${threadId}`).then(r => r.json),
-  editComment: comment => httpClient.put(`/web/comment/${comment.id}`, comment).then(r => r.json)
+  editComment: comment => httpClient.put(`/web/comment/${comment.id}`, comment).then(r => r.json),
+  getProgramSummary: enrolmentUUID =>
+    httpClient
+      .get(`/web/programSummaryRule?programEnrolmentUUID=${enrolmentUUID}`)
+      .then(response => response.data),
+  getSubjectSummary: subjectUUID =>
+    httpClient
+      .get(`/web/subjectSummaryRule?subjectUUID=${subjectUUID}`)
+      .then(response => response.data)
 };

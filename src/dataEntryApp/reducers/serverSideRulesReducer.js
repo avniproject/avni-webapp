@@ -7,8 +7,20 @@ const prefix = "app/dataEntry/reducer/serverSideRules/";
 export const types = {
   SET_RULES_RESPONSE: `${prefix}SET_RULES_RESPONSE`,
   SET_ERROR: `${prefix}SET_ERROR`,
-  REQUEST_RULES_RESPONSE: `${prefix}REQUEST_RULES_RESPONSE`
+  REQUEST_RULES_RESPONSE: `${prefix}REQUEST_RULES_RESPONSE`,
+  SET_SUBJECT_SUMMARY: `${prefix}SET_SUBJECT_SUMMARY`,
+  SET_PROGRAM_SUMMARY: `${prefix}SET_PROGRAM_SUMMARY`
 };
+
+export const setSubjectSummary = subjectSummary => ({
+  type: types.SET_SUBJECT_SUMMARY,
+  subjectSummary
+});
+
+export const setProgramSummary = programSummary => ({
+  type: types.SET_PROGRAM_SUMMARY,
+  programSummary
+});
 
 export const setRulesResponse = rulesResponse => ({
   type: types.SET_RULES_RESPONSE,
@@ -48,6 +60,40 @@ export const fetchRulesResponse = requestBody => {
   };
 };
 
+export const fetchSubjectSummary = subjectUUID => {
+  return dispatch => {
+    dispatch(requestRulesResponse());
+    return api
+      .getSubjectSummary(subjectUUID)
+      .then(({ summaryObservations }) => {
+        const summary = mapObservations(summaryObservations);
+        dispatch(setSubjectSummary(summary));
+      })
+      .catch(err => {
+        const errorData = err.response.data.error ? err.response.data.error : err.response.data;
+        console.log("Error in executing subject summary rule", JSON.stringify(errorData));
+        dispatch(setSubjectSummary([]));
+      });
+  };
+};
+
+export const fetchProgramSummary = enrolmentUUID => {
+  return dispatch => {
+    dispatch(requestRulesResponse());
+    return api
+      .getProgramSummary(enrolmentUUID)
+      .then(({ summaryObservations }) => {
+        const summary = mapObservations(summaryObservations);
+        dispatch(setProgramSummary(summary));
+      })
+      .catch(err => {
+        const errorData = err.response.data.error ? err.response.data.error : err.response.data;
+        console.log("Error in executing program summary rule", JSON.stringify(errorData));
+        dispatch(setProgramSummary([]));
+      });
+  };
+};
+
 export const selectRulesResponse = state => state.dataEntry.serverSideRulesReducer.rulesResponse;
 export const selectVisitSchedules = state =>
   state.dataEntry.serverSideRulesReducer.rulesResponse.visitSchedules;
@@ -58,15 +104,18 @@ export const selectChecklists = state =>
 export const selectFetchingRulesResponse = state =>
   state.dataEntry.serverSideRulesReducer.isFetching;
 export const selectError = state => state.dataEntry.serverSideRulesReducer.error;
+export const selectSubjectSummary = state => state.dataEntry.serverSideRulesReducer.subjectSummary;
+export const selectProgramSummary = state => state.dataEntry.serverSideRulesReducer.programSummary;
 
-export default function(
-  state = {
-    rulesResponse: {},
-    isFetching: false,
-    error: null
-  },
-  action
-) {
+const initialState = {
+  rulesResponse: {},
+  isFetching: false,
+  error: null,
+  subjectSummary: [],
+  programSummary: []
+};
+
+export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_RULES_RESPONSE: {
       return {
@@ -90,6 +139,20 @@ export default function(
         rulesResponse: {},
         isFetching: false,
         error: action.error
+      };
+    }
+    case types.SET_SUBJECT_SUMMARY: {
+      return {
+        ...state,
+        subjectSummary: action.subjectSummary,
+        isFetching: false
+      };
+    }
+    case types.SET_PROGRAM_SUMMARY: {
+      return {
+        ...state,
+        programSummary: action.programSummary,
+        isFetching: false
       };
     }
     default:

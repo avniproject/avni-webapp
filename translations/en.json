@@ -429,6 +429,9 @@
     "newCommentLabel": "What's your response?",
     "verified": "Verified",
     "phoneNumberUnverified": "Phone number not verified",
-    "invalidPhoneNumber": "Invalid phone number"
+    "invalidPhoneNumber": "Invalid phone number",
+    "summaryNotFound": "No summary found",
+    "subjectSummary": "Summary",
+    "programSummary": "Program summary"
   }
 }

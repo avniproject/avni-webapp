@@ -22,6 +22,13 @@ import GridCardView from "../../../components/GridCardView";
 import { sortBy, isEmpty } from "lodash";
 import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
 import MessageDialog from "../../../components/MessageDialog";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchSubjectSummary,
+  selectFetchingRulesResponse,
+  selectSubjectSummary
+} from "../../../reducers/serverSideRulesReducer";
+import { RuleSummary } from "./RuleSummary";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -100,10 +107,17 @@ const SubjectDashboardProfileTab = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
+  const dispatch = useDispatch();
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   const [unVoidConfirmation, setUnVoidConfirmation] = React.useState(false);
   const [membersChanged, setMembersChanged] = React.useState(false);
+  const subjectSummary = useSelector(selectSubjectSummary);
+  const isFetchingSummary = useSelector(selectFetchingRulesResponse);
+
+  useEffect(() => {
+    dispatch(fetchSubjectSummary(profile.uuid));
+  }, [dispatch]);
+
   React.useEffect(() => {
     if (membersChanged) {
       getGroupMembers(profile.uuid);
@@ -327,6 +341,11 @@ const SubjectDashboardProfileTab = ({
         </Paper>
       ) : (
         <Paper className={classes.root}>
+          <RuleSummary
+            title={"subjectSummary"}
+            isFetching={isFetchingSummary}
+            summaryObservations={subjectSummary}
+          />
           {renderSubjectProfile()}
           {showRelatives && profile.isPerson() && renderRelatives()}
           {showGroupMembers && renderGroupMembers()}

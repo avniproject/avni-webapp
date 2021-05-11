@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
@@ -23,7 +23,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
 
 import { Link, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { InternalLink, withParams } from "../../../../common/components/utils";
 import moment from "moment";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
@@ -35,6 +35,12 @@ import {
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import MessageDialog from "../../../components/MessageDialog";
 import { DeleteButton } from "../../../components/DeleteButton";
+import {
+  fetchProgramSummary,
+  selectFetchingRulesResponse,
+  selectProgramSummary
+} from "../../../reducers/serverSideRulesReducer";
+import { RuleSummary } from "./RuleSummary";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -165,6 +171,14 @@ const ProgramView = ({
 
   const [open, setOpen] = React.useState(false);
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
+  const dispatch = useDispatch();
+
+  const programSummary = useSelector(selectProgramSummary);
+  const isFetchingSummary = useSelector(selectFetchingRulesResponse);
+
+  useEffect(() => {
+    dispatch(fetchProgramSummary(programData.uuid));
+  }, [dispatch, programData]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -235,6 +249,11 @@ const ProgramView = ({
         </Grid>
       </Grid>
       <Paper className={classes.root}>
+        <RuleSummary
+          title={"programSummary"}
+          isFetching={isFetchingSummary}
+          summaryObservations={programSummary}
+        />
         <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
