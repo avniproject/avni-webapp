@@ -176,6 +176,7 @@ public class RuleService {
         String workFlowType = WorkFlowTypeEnum.PROGRAM_SUMMARY.getWorkFlowTypeName();
         rule.setWorkFlowType(workFlowType);
         rule.setFormUuid(program.getUuid());
+        rule.setRuleType("Program Summary");
         ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = ProgramEnrolmentContractWrapper.fromEnrolment(programEnrolment, observationService, entityApprovalStatusService);
         programEnrolmentContractWrapper.setRule(rule);
         programEnrolmentContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
@@ -197,6 +198,7 @@ public class RuleService {
         String workFlowType = WorkFlowTypeEnum.SUBJECT_SUMMARY.getWorkFlowTypeName();
         rule.setWorkFlowType(workFlowType);
         rule.setFormUuid(subjectType.getUuid());
+        rule.setRuleType("Subject Summary");
         IndividualContractWrapper individualContractWrapper = programEnrolmentConstructionService.getSubjectInfo(individual);
         individualContractWrapper.setRule(rule);
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, individual.getUuid());
