@@ -23,7 +23,7 @@ public class ProgramEnrolmentContractWrapper {
     private DateTime programExitDateTime;
     private String uuid;
     private Boolean voided;
-    private Set<ProgramEncountersContract> programEncounters = new HashSet<>();
+    private Set<ProgramEncounterContractWrapper> programEncounters = new HashSet<>();
     private List<ObservationModelContract> observations = new ArrayList<>();
     private List<ObservationModelContract> exitObservations = new ArrayList<>();
     private String operationalProgramName;
@@ -86,11 +86,11 @@ public class ProgramEnrolmentContractWrapper {
         this.voided = voided;
     }
 
-    public Set<ProgramEncountersContract> getProgramEncounters() {
+    public Set<ProgramEncounterContractWrapper> getProgramEncounters() {
         return programEncounters;
     }
 
-    public void setProgramEncounters(Set<ProgramEncountersContract> programEncounters) {
+    public void setProgramEncounters(Set<ProgramEncounterContractWrapper> programEncounters) {
         this.programEncounters = programEncounters;
     }
 

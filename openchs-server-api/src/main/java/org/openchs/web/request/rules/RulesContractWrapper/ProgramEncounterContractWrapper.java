@@ -21,6 +21,15 @@ public class ProgramEncounterContractWrapper {
     private EncounterTypeContract encounterType;
     private DateTime encounterDateTime;
     private EntityApprovalStatusWrapper latestEntityApprovalStatus;
+    private boolean voided;
+
+    public boolean isVoided() {
+        return voided;
+    }
+
+    public void setVoided(boolean voided) {
+        this.voided = voided;
+    }
 
     public EntityApprovalStatusWrapper getLatestEntityApprovalStatus() {
         return latestEntityApprovalStatus;

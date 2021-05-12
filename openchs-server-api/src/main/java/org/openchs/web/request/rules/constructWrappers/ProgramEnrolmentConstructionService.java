@@ -65,22 +65,6 @@ public class ProgramEnrolmentConstructionService {
         return programEnrolmentContractWrapper;
     }
 
-    public Set<ProgramEncountersContract> constructEncounters(Set<ProgramEncounter> encounters) {
-        return encounters.stream().map(encounter -> {
-            ProgramEncountersContract encountersContract = new ProgramEncountersContract();
-            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-            encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
-            encountersContract.setUuid(encounter.getUuid());
-            encountersContract.setName(encounter.getName());
-            encountersContract.setEncounterType(encounterTypeContract);
-            encountersContract.setEncounterDateTime(encounter.getEncounterDateTime());
-            encountersContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
-            encountersContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
-            encountersContract.setVoided(encounter.isVoided());
-            return encountersContract;
-        }).collect(Collectors.toSet());
-    }
-
     public List<ChecklistDetailRequest> constructChecklistDetailRequest() {
         List<ChecklistDetail> checklistDetails = checklistDetailRepository.findAllByIsVoidedFalse();
         return checklistDetails
@@ -143,6 +127,7 @@ public class ProgramEnrolmentConstructionService {
         SubjectTypeContract subjectTypeContract = new SubjectTypeContract();
         subjectTypeContract.setName(subjectType.getName());
         subjectTypeContract.setUuid(subjectType.getUuid());
+        subjectTypeContract.setType(subjectType.getType().toString());
         return subjectTypeContract;
     }
 

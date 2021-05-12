@@ -3,6 +3,15 @@ package org.openchs.web.request.rules.response;
 public class KeyValueResponse {
     private String name;
     private Object value;
+    private boolean abnormal;
+
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
+    }
 
     public String getName() {
         return this.name;
