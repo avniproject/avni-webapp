@@ -123,12 +123,12 @@ public class OrganisationConfigService {
     }
 
     @Transactional
-    public void updateSettings(String key, Object otpLength) {
+    public void updateSettings(String key, Object settingObject) {
         OrganisationConfig organisationConfig = organisationConfigRepository.findAll()
                 .stream().findFirst()
                 .orElse(new OrganisationConfig());
         JsonObject jsonObject = organisationConfig.getSettings();
-        jsonObject.with(key, otpLength);
+        jsonObject.with(key, settingObject);
         organisationConfig.updateLastModifiedDateTime();
         organisationConfigRepository.save(organisationConfig);
     }

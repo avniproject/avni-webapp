@@ -1,12 +1,13 @@
 package org.openchs.web;
 
 import com.amazonaws.HttpMethod;
-import org.openchs.domain.Catchment;
 import org.apache.commons.io.FilenameUtils;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.OrganisationConfigService;
 import org.openchs.service.S3Service;
 import org.openchs.util.AvniFiles;
+import org.openchs.web.request.CustomPrintRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,23 +19,30 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
 
 @RestController
 public class MediaController {
+    private final String CUSTOM_PRINT_DIR = "prints";
     private final Logger logger;
     private final S3Service s3Service;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
-    public MediaController(S3Service s3Service) {
+    public MediaController(S3Service s3Service, OrganisationConfigService organisationConfigService) {
         this.s3Service = s3Service;
+        this.organisationConfigService = organisationConfigService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -85,6 +93,33 @@ public class MediaController {
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(Boolean.toString(s3Service.fileExists(mobileDatabaseBackupFile())));
     }
 
+    @PostMapping("/media/customPrint/upload")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    @Transactional
+    public ResponseEntity<?> uploadCustomPrint(@RequestPart(value = "file") MultipartFile file,
+                                               @RequestPart(value = "printSettings") @Valid CustomPrintRequest printSettings) {
+        organisationConfigService.updateSettings(CUSTOM_PRINT_DIR, printSettings.getCustomPrintProperties());
+        try {
+            Path tempPath = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().toPath();
+            AvniFiles.extractFileToPath(file, tempPath);
+            s3Service.uploadCustomPrintFile(tempPath.toFile(), CUSTOM_PRINT_DIR);
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            logger.error(format("Error while uploading the files %s", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error(format("Error while uploading the files %s", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/media/customPrint/download", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    public ResponseEntity<String> downloadCustomPrintFile(@RequestParam String file) {
+        logger.info("getting custom print file download url");
+        return getFileUrlResponse(format("%s/%s", CUSTOM_PRINT_DIR, file), HttpMethod.GET);
+    }
+
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateDownloadUrl(@RequestParam String url) {
@@ -132,7 +167,7 @@ public class MediaController {
         try {
             tempSourceFile = AvniFiles.convertMultiPartToFile(file, "");
             AvniFiles.ImageType imageType = AvniFiles.guessImageTypeFromStream(tempSourceFile);
-            if(AvniFiles.ImageType.Unknown.equals(imageType)) {
+            if (AvniFiles.ImageType.Unknown.equals(imageType)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use .bmp, .jpg, .jpeg, .png, .gif file.");
             }
             if (bucketName.equals("icons") && isInvalidDimension(tempSourceFile, imageType)) {

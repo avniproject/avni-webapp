@@ -7,9 +7,11 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import org.apache.commons.io.FileUtils;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.AvniFiles;
@@ -29,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -156,6 +159,35 @@ public class S3Service {
         return s3Client.getUrl(bucketName, s3KeyForMediaUpload);
     }
 
+    public void uploadCustomPrintFile(File tempDirectory, String targetFilePath) throws IOException, InterruptedException {
+        if (isDev && !s3InDev) {
+            return;
+        }
+        String s3KeyForMediaUpload = getS3KeyForMediaUpload(targetFilePath);
+        deleteDirectory(s3KeyForMediaUpload);
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();
+        MultipleFileUpload multipleFileUpload = transferManager.uploadDirectory(bucketName, s3KeyForMediaUpload, tempDirectory, true);
+        multipleFileUpload.waitForCompletion();
+        FileUtils.forceDelete(tempDirectory);
+    }
+
+    /**
+     * @param prefix : prefix for which all the files will get deleted
+     */
+    private void deleteDirectory(String prefix) {
+        ListObjectsV2Result objectList = this.s3Client.listObjectsV2(bucketName, prefix);
+        if (objectList.getKeyCount() > 0) {
+            List<S3ObjectSummary> objectSummeryList = objectList.getObjectSummaries();
+            String[] keysList = new String[objectSummeryList.size()];
+            int count = 0;
+            for (S3ObjectSummary summery : objectSummeryList) {
+                keysList[count++] = summery.getKey();
+            }
+            DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keysList);
+            s3Client.deleteObjects(deleteObjectsRequest);
+        }
+    }
+
     private ObjectInfo uploadZip(File tempSourceFile, String destFileName, String directory) throws IOException {
         String suggestedS3Key = getS3Key(destFileName, directory);
         String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
@@ -241,7 +273,7 @@ public class S3Service {
     }
 
     public void deleteObject(String objectName) {
-        if (isDev) {
+        if (isDev && !s3InDev) {
             return;
         }
         String s3Key = getS3KeyForMediaUpload(objectName);
