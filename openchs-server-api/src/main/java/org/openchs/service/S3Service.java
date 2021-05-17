@@ -102,8 +102,14 @@ public class S3Service {
     public boolean fileExists(String fileName) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
-        boolean exists = s3Client.doesObjectExist(bucketName, objectKey);
-        logger.info(String.format("Checking for file: %s resulted in %b", objectKey, exists));
+        boolean exists = false;
+        try {
+            exists = s3Client.doesObjectExist(bucketName, objectKey);
+            logger.info(String.format("Checking for file: %s resulted in %b", objectKey, exists));
+        } catch (Exception e) {
+            logger.error(String.format("Error while accessing file %s", objectKey));
+            e.printStackTrace();
+        }
         return exists;
     }
 
