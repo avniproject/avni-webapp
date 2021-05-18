@@ -82,15 +82,22 @@ public class S3Service {
     }
 
     public URL generateMediaUploadUrl(String fileName, HttpMethod method) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(fileName, method);
+        generatePresignedUrlRequest.withContentType(getContentType(fileName));
+        return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+    }
+
+    private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName, HttpMethod method) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
+        return new GeneratePresignedUrlRequest(bucketName, objectKey)
+                .withMethod(method)
+                .withExpiration(getExpireDate(EXPIRY_DURATION));
+    }
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, objectKey)
-                        .withMethod(method)
-                        .withContentType(getContentType(fileName))
-                        .withExpiration(getExpireDate(EXPIRY_DURATION));
-
+    //setting content type gives signature mismatch error on the client. Browsers can guess the content type automatically.
+    public URL getDownloadURL(String fileName, HttpMethod method) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(fileName, method);
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 

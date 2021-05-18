@@ -117,7 +117,17 @@ public class MediaController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> downloadCustomPrintFile(@RequestParam String file) {
         logger.info("getting custom print file download url");
-        return getFileUrlResponse(format("%s/%s", CUSTOM_PRINT_DIR, file), HttpMethod.GET);
+        try {
+            URL url = s3Service.getDownloadURL(format("%s/%s", CUSTOM_PRINT_DIR, file), HttpMethod.GET);
+            logger.debug(format("Generating download url: %s", url.toString()));
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(url.toString());
+        } catch (AccessDeniedException e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
