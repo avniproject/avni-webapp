@@ -300,8 +300,7 @@ public class UserController {
     @ResponseBody
     public List<UserWebProjection> getAll() {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        return userRepository.findAllByOrganisationIdAndIsVoidedFalse(organisation.getId())
-                .stream().map(t -> projectionFactory.createProjection(UserWebProjection.class, t)).collect(Collectors.toList());
+        return userRepository.findAllByOrganisationIdAndIsVoidedFalse(organisation.getId());
     }
 
     private List<Long> getOwnedAccountIds(User user) {

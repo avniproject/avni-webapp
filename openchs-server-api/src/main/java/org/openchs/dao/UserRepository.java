@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.openchs.domain.Catchment;
 import org.openchs.domain.User;
+import org.openchs.projection.UserWebProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -54,7 +55,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<User> findByIdIn(@Param("ids") Long[] ids);
 
-    List<User> findAllByOrganisationIdAndIsVoidedFalse(Long organisationId);
+    List<UserWebProjection> findAllByOrganisationIdAndIsVoidedFalse(Long organisationId);
 
     @Query(value = "SELECT u FROM User u left join u.accountAdmin as aa " +
             "where u.isVoided = false and " +
