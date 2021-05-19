@@ -34,7 +34,7 @@ paths:
             type: string
         - in: query
           name: concepts
-          description: Allows to search by concepts
+          description: Allows to search by concepts. Remember that '{' and '}' are not valid in a url, and need to be escaped with %7B and %7D respectively.
           example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
           required: false
           schema:
@@ -363,7 +363,7 @@ paths:
             type: string
         - in: query
           name: concepts
-          description: Allows to search by concepts
+          description: Allows to search by concepts. Remember that '{' and '}' are not valid in a url, and need to be escaped with %7B and %7D respectively.
           example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
           required: false
           schema:
