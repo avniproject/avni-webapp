@@ -1,10 +1,9 @@
 import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
-import { find, get, isEmpty, isNil } from "lodash";
+import { get, isEmpty, isNil } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
-import FormLabel from "@material-ui/core/FormLabel";
 import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { AvniTextField } from "../../../common/components/AvniTextField";
@@ -15,6 +14,7 @@ import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect } from "react-router-dom";
 import CreateEditDashboardSections from "./CreateEditDashboardSections";
+import { getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = { name: "", description: "", sections: [] };
 export const CreateEditDashboard = ({ edit, history, ...props }) => {
@@ -90,15 +90,6 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
     dispatch({ type: type, payload: event.target.value });
   };
 
-  const getErrorByKey = errorKey => {
-    const errorByKey = find(error, ({ key }) => key === errorKey);
-    return isEmpty(errorByKey) ? null : (
-      <FormLabel error style={{ fontSize: "12px" }}>
-        {errorByKey.message}
-      </FormLabel>
-    );
-  };
-
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={"Create Offline Dashboard"} />
@@ -119,7 +110,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
           onChange={event => onChange("name", event, "EMPTY_NAME")}
           toolTipKey={"APP_DESIGNER_DASHBOARD_NAME"}
         />
-        {getErrorByKey("EMPTY_NAME")}
+        {getErrorByKey(error, "EMPTY_NAME")}
         <p />
         <AvniTextField
           multiline
@@ -151,9 +142,9 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
             error={error}
           />
         </Grid>
-        {getErrorByKey("EMPTY_CARDS")}
+        {getErrorByKey(error, "EMPTY_CARDS")}
         <p />
-        {getErrorByKey("SERVER_ERROR")}
+        {getErrorByKey(error, "SERVER_ERROR")}
         <Grid container direction={"row"}>
           <Grid item xs={1}>
             <SaveComponent name="save" onSubmit={onSave} />

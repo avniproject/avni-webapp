@@ -1,8 +1,7 @@
 import React from "react";
 import { ReportCardReducer } from "./ReportCardReducer";
 import http from "../../../common/utils/httpClient";
-import _, { find, get, isEmpty, isNil } from "lodash";
-import FormLabel from "@material-ui/core/FormLabel";
+import _, { get, isEmpty, isNil } from "lodash";
 import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
@@ -24,6 +23,7 @@ import { AvniSelect } from "../../../common/components/AvniSelect";
 import { AvniSwitch } from "../../../common/components/AvniSwitch";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 import { bucketName, uploadImage } from "../../../common/utils/S3Client";
+import { getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = {
   name: "",
@@ -167,15 +167,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     dispatch({ type: type, payload: event.target.value });
   };
 
-  const getErrorByKey = errorKey => {
-    const errorByKey = find(error, ({ key }) => key === errorKey);
-    return isEmpty(errorByKey) ? null : (
-      <FormLabel error style={{ fontSize: "12px" }}>
-        {errorByKey.message}
-      </FormLabel>
-    );
-  };
-
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={"Create offline Card"} />
@@ -196,7 +187,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           onChange={event => onChange("name", event, "EMPTY_NAME")}
           toolTipKey={"APP_DESIGNER_CARD_NAME"}
         />
-        {getErrorByKey("EMPTY_NAME")}
+        {getErrorByKey(error, "EMPTY_NAME")}
         <p />
         <AvniTextField
           multiline
@@ -227,7 +218,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           allowUpload={true}
         />
         <p />
-        {getErrorByKey("EMPTY_COLOR")}
+        {getErrorByKey(error, "EMPTY_COLOR")}
         <AvniSwitch
           checked={isStandardReportCard}
           onChange={event => setIsStandardReportCard(!isStandardReportCard)}
@@ -270,11 +261,11 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             />
           </React.Fragment>
         )}
-        {getErrorByKey("EMPTY_TYPE")}
+        {getErrorByKey(error, "EMPTY_TYPE")}
         <p />
-        {getErrorByKey("EMPTY_QUERY")}
+        {getErrorByKey(error, "EMPTY_QUERY")}
         <p />
-        {getErrorByKey("SERVER_ERROR")}
+        {getErrorByKey(error, "SERVER_ERROR")}
         <Grid container direction={"row"}>
           <Grid item xs={1}>
             <SaveComponent name="save" onSubmit={onSave} />

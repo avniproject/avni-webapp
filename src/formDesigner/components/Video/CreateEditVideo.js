@@ -3,16 +3,16 @@ import { DocumentationContainer } from "../../../common/components/Documentation
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import { find, get, isEmpty, isNil } from "lodash";
+import { get, isEmpty, isNil } from "lodash";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { VideoReducer } from "./VideoReducer";
 import { Redirect } from "react-router-dom";
-import FormLabel from "@material-ui/core/FormLabel";
 import http from "../../../common/utils/httpClient";
 import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = { title: "", fileName: "", duration: "", description: "" };
 export const CreateEditVideo = ({ edit, ...props }) => {
@@ -88,15 +88,6 @@ export const CreateEditVideo = ({ edit, ...props }) => {
     dispatch({ type: type, payload: event.target.value });
   };
 
-  const getErrorByKey = errorKey => {
-    const errorByKey = find(error, ({ key }) => key === errorKey);
-    return isEmpty(errorByKey) ? null : (
-      <FormLabel error style={{ fontSize: "12px" }}>
-        {errorByKey.message}
-      </FormLabel>
-    );
-  };
-
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={"Create Video"} />
@@ -116,7 +107,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           onChange={event => onChange("name", event, "EMPTY_TITLE")}
           toolTipKey={"APP_DESIGNER_VIDEO_NAME"}
         />
-        {getErrorByKey("EMPTY_TITLE")}
+        {getErrorByKey(error, "EMPTY_TITLE")}
         <p />
         <AvniTextField
           multiline
@@ -136,7 +127,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           onChange={event => onChange("fileName", event, "EMPTY_FILE_NAME")}
           toolTipKey={"APP_DESIGNER_VIDEO_FILE_NAME"}
         />
-        {getErrorByKey("EMPTY_FILE_NAME")}
+        {getErrorByKey(error, "EMPTY_FILE_NAME")}
         <p />
         <AvniTextField
           id="duration"
@@ -147,7 +138,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           toolTipKey={"APP_DESIGNER_VIDEO_DURATION"}
         />
         <p />
-        {getErrorByKey("SERVER_ERROR")}
+        {getErrorByKey(error, "SERVER_ERROR")}
         <Grid container direction={"row"}>
           <Grid item xs={1}>
             <SaveComponent name="save" onSubmit={onSave} />
