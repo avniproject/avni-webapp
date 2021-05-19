@@ -30,6 +30,34 @@ public interface CHSRepository<T extends CHSEntity> {
         );
     }
 
+    default Specification lastModifiedBetween(DateTime lastModifiedDateTime, DateTime now) {
+        Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<T, Audit> audit = root.join("audit", JoinType.LEFT);
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (lastModifiedDateTime != null) {
+                predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
+                query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return spec;
+    }
+
+    default Specification withConceptValues(Map<Concept, String> concepts) {
+        Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            concepts.forEach((concept, value) -> {
+                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), concept.getUuid(), cb), value));
+            });
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+        return spec;
+    }
+
     default Specification<T> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts) {
 
         Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
@@ -39,11 +67,6 @@ public interface CHSRepository<T extends CHSEntity> {
             concepts.forEach((concept, value) -> {
                 predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), concept.getUuid(), cb), value));
             });
-
-            if (lastModifiedDateTime != null) {
-                predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
-                query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
-            }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };

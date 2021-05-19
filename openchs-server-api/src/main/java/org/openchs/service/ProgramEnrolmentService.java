@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
+import static org.springframework.data.jpa.domain.Specification.where;
+
 
 @Service
 public class ProgramEnrolmentService {
@@ -112,7 +113,7 @@ public class ProgramEnrolmentService {
             encounterTypeIdList = Arrays.asList(encounterTypeUuids.split(","));
         }
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
-        Specification<ProgramEncounter> completedEncounterSpecification = Specification.where(programEncounterRepository.withNotNullEncounterDateTime())
+        Specification<ProgramEncounter> completedEncounterSpecification = where(programEncounterRepository.withNotNullEncounterDateTime())
                 .or(programEncounterRepository.withNotNullCancelDateTime())
                 .and(programEncounterRepository.withVoidedFalse());
         programEncountersContract = programEncounterRepository.findAll(

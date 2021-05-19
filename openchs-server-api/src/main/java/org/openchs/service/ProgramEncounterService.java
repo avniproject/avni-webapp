@@ -37,16 +37,14 @@ public class ProgramEncounterService {
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private ObservationService observationService;
     private ProgramEnrolmentRepository programEnrolmentRepository;
-    private RuleFailureLogRepository ruleFailureLogRepository;
 
     @Autowired
-    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository, RuleFailureLogRepository ruleFailureLogRepository) {
+    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository) {
         this.programEncounterRepository = programEncounterRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.observationService = observationService;
         this.programEnrolmentRepository = programEnrolmentRepository;
-        this.ruleFailureLogRepository = ruleFailureLogRepository;
     }
 
     public ProgramEncountersContract getProgramEncounterByUuid(String uuid) {
@@ -187,7 +185,6 @@ public class ProgramEncounterService {
             //violating constraint so notify bugsnag
             bugsnag.notify(new Exception(String.format("ProgramEncounter violating scheduling constraint uuid %s earliest %s max %s", request.getUuid(), request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
         }
-
     }
 
 }

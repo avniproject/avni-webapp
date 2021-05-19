@@ -45,20 +45,32 @@ public class ProgramEncounterApiController {
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                       @RequestParam(value = "encounterType", required = false) String encounterType,
                                       @RequestParam(value = "concepts", required = false) String concepts,
+                                      @RequestParam(value = "programEnrolmentId", required = false) String programEnrolmentUuid,
                                       Pageable pageable) {
-        Page<ProgramEncounter> programEncounters;
-        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
-        if (S.isEmpty(encounterType)) {
-            programEncounters = programEncounterRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
-        } else {
-            programEncounters = programEncounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, conceptsMap, encounterType, pageable);
-        }
+        Page<ProgramEncounter> programEncounters = programEncounterRepository.search(createSearchParams(lastModifiedDateTime, now, encounterType, concepts, programEnrolmentUuid), pageable);
 
         ArrayList<EncounterResponse> programEncounterResponses = new ArrayList<>();
         programEncounters.forEach(programEncounter -> {
             programEncounterResponses.add(EncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService));
         });
         return new ResponsePage(programEncounterResponses, programEncounters.getNumberOfElements(), programEncounters.getTotalPages(), programEncounters.getSize());
+    }
+
+    public ProgramEncounterRepository.SearchParams createSearchParams(DateTime lastModifiedDateTime,
+                                                                      DateTime now,
+                                                                      String encounterTypeStr,
+                                                                      String concepts, String programEnrolmentUuid) {
+        EncounterType encounterType = null;
+        if (!S.isEmpty(encounterTypeStr)) {
+            encounterType = encounterTypeRepository.findByName(encounterTypeStr);
+        }
+        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
+        ProgramEnrolment programEnrolment = null;
+        if (!S.isEmpty(programEnrolmentUuid)) {
+            programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUuid);
+        }
+
+        return new ProgramEncounterRepository.SearchParams(lastModifiedDateTime, now, conceptsMap, encounterType, programEnrolment);
     }
 
     @GetMapping(value = "/api/programEncounter/{id}")

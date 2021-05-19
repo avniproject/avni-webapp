@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.openchs.domain.Concept;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.ProgramEncounter;
+import org.openchs.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +18,8 @@ import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
@@ -107,22 +110,40 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
     }
 
-    default Specification<ProgramEncounter> findByEncounterTypeSpec(String encounterType) {
-        Specification<ProgramEncounter> spec = (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            Join<ProgramEncounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
-            return cb.and(cb.equal(encounterTypeJoin.get("name"), encounterType));
-        };
-        return spec;
+    default Specification<ProgramEncounter> withEncounterType(EncounterType encounterType) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                encounterType == null ? null :
+                        cb.and(cb.equal(root.<ProgramEncounter, EncounterType>join("encounterType"), encounterType));
     }
 
-    default Page<ProgramEncounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
-        return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
+    default Specification<ProgramEncounter> withProgramEnrolment(ProgramEnrolment programEnrolment) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                programEnrolment == null ? null : cb.and(cb.equal(root.<ProgramEncounter, ProgramEnrolment>join("programEnrolment"), programEnrolment));
     }
 
-    default Page<ProgramEncounter> findByConceptsAndEncounterType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
-        return findAll(
-                findByConceptsSpec(lastModifiedDateTime, now, concepts)
-                        .and(findByEncounterTypeSpec(encounterType)),
-                pageable);
+    default Page<ProgramEncounter> search(SearchParams searchParams, Pageable pageable) {
+        return findAll(where(lastModifiedBetween(searchParams.lastModifiedDateTime, searchParams.now))
+                .and(withConceptValues(searchParams.concepts))
+                .and(withEncounterType(searchParams.encounterType))
+                .and(withProgramEnrolment(searchParams.programEnrolment)), pageable);
+    }
+
+    class SearchParams {
+        public DateTime lastModifiedDateTime;
+        public DateTime now;
+        public Map<Concept, String> concepts;
+        public EncounterType encounterType;
+        public ProgramEnrolment programEnrolment;
+
+        public SearchParams(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> conceptsMatchingValue, EncounterType encounterType, ProgramEnrolment programEnrolment) {
+            this.lastModifiedDateTime = lastModifiedDateTime;
+            if (lastModifiedDateTime == null) {
+                this.lastModifiedDateTime = DateTime.parse("2000-01-01");
+            }
+            this.now = now;
+            this.concepts = conceptsMatchingValue;
+            this.encounterType = encounterType;
+            this.programEnrolment = programEnrolment;
+        }
     }
 }

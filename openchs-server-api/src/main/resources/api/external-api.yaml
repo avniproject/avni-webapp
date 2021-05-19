@@ -234,6 +234,12 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+          name: programEnrolmentId
+          description: ID of program enrolment
+          required: false
+          schema:
+            type: uuid
         - in: header
           name: auth-token
           schema:
