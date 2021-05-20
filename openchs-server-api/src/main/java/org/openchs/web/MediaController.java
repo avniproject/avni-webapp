@@ -16,9 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.HandlerMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.awt.*;
@@ -27,7 +30,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -113,14 +115,18 @@ public class MediaController {
         }
     }
 
-    @RequestMapping(value = "/media/customPrint/download", method = RequestMethod.GET)
+    @RequestMapping(value = "/customPrint/{basePath}/**", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<String> downloadCustomPrintFile(@RequestParam String file) {
-        logger.info("getting custom print file download url");
+    public ResponseEntity<?> serveCustomPrintFile(@PathVariable String basePath, HttpServletRequest request) {
+        final String path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
+        final String bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
+        String arguments = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, path);
+        String filePath = null != arguments && !arguments.isEmpty() ? basePath + "/" + arguments : basePath;
+        logger.info(format("Generating url for custom print file %s", filePath));
         try {
-            URL url = s3Service.getDownloadURL(format("%s/%s", CUSTOM_PRINT_DIR, file), HttpMethod.GET);
-            logger.debug(format("Generating download url: %s", url.toString()));
-            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(url.toString());
+            URL url = s3Service.getDownloadURL(format("%s/%s", CUSTOM_PRINT_DIR, filePath), HttpMethod.GET);
+            logger.debug(format("S3 signed URL: %s", url.toString()));
+            return ResponseEntity.status(HttpStatus.FOUND).location(url.toURI()).build();
         } catch (AccessDeniedException e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
