@@ -24,10 +24,6 @@ public interface OperationalSubjectTypeRepository extends ImplReferenceDataRepos
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
 
-    OperationalSubjectType findBySubjectTypeAndOrganisationId(SubjectType subjectType, long organisationId);
-
-    OperationalSubjectType findBySubjectTypeIdAndOrganisationId(long subjectTypeId, long organisationId);
-
     @Query("select s.name from OperationalSubjectType s where s.isVoided = false")
     List<String> getAllNames();
 

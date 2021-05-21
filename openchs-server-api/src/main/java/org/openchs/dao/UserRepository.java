@@ -34,24 +34,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     Page<User> findByOrganisationIdAndIsVoidedFalse(@Param("organisationId") Long organisationId,
                                                     Pageable pageable);
 
-    Page<User> findByOrganisationIdAndIsVoidedFalseAndUsernameIgnoreCaseContaining(Long organisationId,
-                                                               String username,
-                                                               Pageable pageable);
-
-    Page<User> findByOrganisationIdAndIsVoidedFalseAndNameIgnoreCaseContaining(Long organisationId,
-                                                                               String name,
-                                                                               Pageable pageable);
-
-    Page<User> findByOrganisationIdAndIsVoidedFalseAndEmailIgnoreCaseContaining(Long organisationId,
-                                                            String email,
-                                                            Pageable pageable);
-
-    Page<User> findByOrganisationIdAndIsVoidedFalseAndPhoneNumberContaining(Long organisationId,
-                                                                            String phoneNumber,
-                                                                            Pageable pageable);
-
-    Page<User> findPageByIsVoidedFalse(Pageable pageable);
-
     @RestResource(path = "findAllById", rel = "findAllById")
     List<User> findByIdIn(@Param("ids") Long[] ids);
 

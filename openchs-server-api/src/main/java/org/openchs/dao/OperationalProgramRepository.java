@@ -23,8 +23,6 @@ public interface OperationalProgramRepository extends ImplReferenceDataRepositor
 
     OperationalProgram findByProgramAndOrganisationId(Program program, long organisationId);
 
-    OperationalProgram findByProgramIdAndOrganisationId(long programId, long organisationId);
-
     @Query("select o.name from OperationalProgram o where o.isVoided = false")
     List<String> getAllNames();
 

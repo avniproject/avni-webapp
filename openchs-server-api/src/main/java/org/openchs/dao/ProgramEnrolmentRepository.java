@@ -16,17 +16,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "programEnrolment", path = "programEnrolment", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<ProgramEnrolment> {
-    Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
-
-    Page<ProgramEnrolment> findByIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long facilityId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
 
     Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
@@ -41,8 +30,6 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
-
-    List<ProgramEnrolment> findByProgram(Program program);
 
     @Override
     default Page<ProgramEnrolment> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {

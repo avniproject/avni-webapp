@@ -22,32 +22,6 @@ import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Individual> {
-    Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
-
-    Page<Individual> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime,
-                                                                                                      DateTime now,
-                                                                                                      Pageable pageable);
-
-    Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndSubjectTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime,
-                                                                                                                        DateTime now,
-                                                                                                                        String subjectType,
-                                                                                                                        Pageable pageable);
-
-    Page<Individual> findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
-
-    Page<Individual> findByFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long facilityId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
-
     Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
             Long subjectTypeId,
