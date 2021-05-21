@@ -21,7 +21,7 @@ import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Individual> {
+public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Individual> {
     Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -61,16 +61,6 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
-
-    @Override
-    default Page<Individual> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
-        return findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
-    }
-
-    @Override
-    default Page<Individual> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
-        return findByFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
-    }
 
     @Override
     default Page<Individual> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
@@ -127,22 +117,6 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 locationName == null ? cb.and() :
                         cb.like(cb.upper(root.get("addressLevel").get("titleLineage")), "%" + locationName.toUpperCase() + "%");
-    }
-
-    @Override
-    default Specification<Individual> getFilterSpecForOperatingSubjectScope(User user) {
-        OperatingIndividualScope scope = user.getOperatingIndividualScope();
-        Facility facility = user.getFacility();
-        Catchment catchment = user.getCatchment();
-        if (ByCatchment.equals(scope)) {
-            return (root, query, cb) ->
-                    root.join("addressLevel")
-                            .joinSet("virtualCatchments").get("id").in(catchment.getId());
-        }
-        if (ByFacility.equals(scope)) {
-            return (root, query, cb) -> root.join("facility").get("id").in(facility.getId());
-        }
-        return (r, q, cb) -> cb.and();
     }
 
     @Query("select ind from Individual ind " +

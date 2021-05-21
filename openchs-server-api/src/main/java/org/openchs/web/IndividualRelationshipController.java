@@ -2,7 +2,6 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;

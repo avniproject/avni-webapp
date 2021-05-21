@@ -2,7 +2,6 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.LocationMappingRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
 import org.openchs.domain.ParentLocationMapping;
 import org.openchs.service.UserService;
