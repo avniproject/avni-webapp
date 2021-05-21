@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class GroupSubjectController extends AbstractController<GroupSubject> implements RestControllerResourceProcessor<GroupSubject>, OperatingIndividualScopeAwareFilterController<GroupSubject> {
+public class GroupSubjectController extends AbstractController<GroupSubject> implements RestControllerResourceProcessor<GroupSubject>, OperatingIndividualScopeAwareController<GroupSubject> {
 
     private final GroupSubjectRepository groupSubjectRepository;
     private final UserService userService;
@@ -139,7 +139,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<GroupSubject> repository() {
+    public OperatingIndividualScopeAwareRepository<GroupSubject> repository() {
         return groupSubjectRepository;
     }
 }

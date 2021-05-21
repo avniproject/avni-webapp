@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface GroupSubjectRepository extends TransactionalDataRepository<GroupSubject>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<GroupSubject> {
+public interface GroupSubjectRepository extends TransactionalDataRepository<GroupSubject>, OperatingIndividualScopeAwareRepository<GroupSubject> {
     default GroupSubject findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in GroupSubject");
     }

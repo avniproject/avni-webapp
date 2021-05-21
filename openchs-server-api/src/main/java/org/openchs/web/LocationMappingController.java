@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.LocationMappingRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.domain.ParentLocationMapping;
 import org.openchs.service.UserService;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LocationMappingController implements OperatingIndividualScopeAwareFilterController<ParentLocationMapping>, RestControllerResourceProcessor<ParentLocationMapping> {
+public class LocationMappingController implements OperatingIndividualScopeAwareController<ParentLocationMapping>, RestControllerResourceProcessor<ParentLocationMapping> {
 
     private LocationMappingRepository locationMappingRepository;
     private Logger logger;
@@ -52,7 +52,7 @@ public class LocationMappingController implements OperatingIndividualScopeAwareF
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ParentLocationMapping> repository() {
+    public OperatingIndividualScopeAwareRepository<ParentLocationMapping> repository() {
         return locationMappingRepository;
     }
 }

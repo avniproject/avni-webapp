@@ -3,7 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.CommentThreadRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.CommentThread;
 import org.openchs.domain.Individual;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-public class CommentThreadController extends AbstractController<CommentThread> implements RestControllerResourceProcessor<CommentThread>, OperatingIndividualScopeAwareFilterController<CommentThread> {
+public class CommentThreadController extends AbstractController<CommentThread> implements RestControllerResourceProcessor<CommentThread>, OperatingIndividualScopeAwareController<CommentThread> {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(CommentThreadController.class);
     private final CommentThreadRepository commentThreadRepository;
@@ -53,7 +53,7 @@ public class CommentThreadController extends AbstractController<CommentThread> i
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<CommentThread> repository() {
+    public OperatingIndividualScopeAwareRepository<CommentThread> repository() {
         return commentThreadRepository;
     }
 

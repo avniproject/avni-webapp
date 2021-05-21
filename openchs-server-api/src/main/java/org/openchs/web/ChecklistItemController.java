@@ -22,7 +22,7 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 
 @RestController
-public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareFilterController<ChecklistItem> {
+public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareController<ChecklistItem> {
     private final ObservationService observationService;
     private final ChecklistItemDetailRepository checklistItemDetailRepository;
     private final ChecklistRepository checklistRepository;
@@ -99,7 +99,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ChecklistItem> repository() {
+    public OperatingIndividualScopeAwareRepository<ChecklistItem> repository() {
         return checklistItemRepository;
     }
 }

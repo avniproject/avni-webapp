@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.EncounterTypeRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.ProgramEncounter;
@@ -26,7 +26,7 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 
 @RestController
-public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
+public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
@@ -118,7 +118,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ProgramEncounter> repository() {
+    public OperatingIndividualScopeAwareRepository<ProgramEncounter> repository() {
         return programEncounterRepository;
     }
 }

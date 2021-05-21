@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-public class CommentController extends AbstractController<Comment> implements RestControllerResourceProcessor<Comment>, OperatingIndividualScopeAwareFilterController<Comment> {
+public class CommentController extends AbstractController<Comment> implements RestControllerResourceProcessor<Comment>, OperatingIndividualScopeAwareController<Comment> {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(CommentController.class);
     private final CommentRepository commentRepository;
@@ -135,7 +135,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<Comment> repository() {
+    public OperatingIndividualScopeAwareRepository<Comment> repository() {
         return commentRepository;
     }
 

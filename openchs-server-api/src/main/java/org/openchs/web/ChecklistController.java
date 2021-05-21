@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
-public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist>, OperatingIndividualScopeAwareFilterController<Checklist> {
+public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist>, OperatingIndividualScopeAwareController<Checklist> {
     private final ChecklistDetailRepository checklistDetailRepository;
     private final ChecklistRepository checklistRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
@@ -91,7 +90,7 @@ public class ChecklistController extends AbstractController<Checklist> implement
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<Checklist> repository() {
+    public OperatingIndividualScopeAwareRepository<Checklist> repository() {
         return checklistRepository;
     }
 }

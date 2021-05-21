@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @RestController
-public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareFilterController<IndividualRelationship> {
+public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareController<IndividualRelationship> {
     private final IndividualRepository individualRepository;
     private final IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
     private final IndividualRelationshipRepository individualRelationshipRepository;
@@ -106,7 +106,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<IndividualRelationship> repository() {
+    public OperatingIndividualScopeAwareRepository<IndividualRelationship> repository() {
         return individualRelationshipRepository;
     }
 

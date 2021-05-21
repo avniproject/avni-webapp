@@ -5,7 +5,6 @@ import org.joda.time.DateTime;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Catchment;
-import org.openchs.domain.ProgramEncounter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +20,7 @@ import java.util.Optional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
-public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<AddressLevel> {
+public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepository<AddressLevel> {
 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);

@@ -2,7 +2,6 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.Comment;
-import org.openchs.domain.Individual;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -14,7 +13,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "comment", path = "comment", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface CommentRepository extends TransactionalDataRepository<Comment>, FindByLastModifiedDateTime<Comment>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Comment> {
+public interface CommentRepository extends TransactionalDataRepository<Comment>, FindByLastModifiedDateTime<Comment>, OperatingIndividualScopeAwareRepository<Comment> {
 
     List<Comment> findByIsVoidedFalseAndCommentThreadIdOrderByAuditLastModifiedDateTimeAscIdAsc(Long threadId);
 

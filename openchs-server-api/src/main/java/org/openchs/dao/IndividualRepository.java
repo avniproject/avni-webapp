@@ -15,13 +15,10 @@ import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Map;
 
-import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
-import static org.openchs.domain.OperatingIndividualScope.ByFacility;
-
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Individual> {
+public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
     Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
             Long subjectTypeId,

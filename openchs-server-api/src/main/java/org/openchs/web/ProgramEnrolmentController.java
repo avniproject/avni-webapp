@@ -6,12 +6,9 @@ import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.*;
-import org.openchs.util.S;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.ProgramEnrolmentRequest;
-import org.openchs.web.response.ProgramEnrolmentResponse;
-import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,17 +19,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collections;
 
 @RestController
-public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareFilterController<ProgramEnrolment> {
+public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareController<ProgramEnrolment> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final UserService userService;
@@ -127,7 +122,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ProgramEnrolment> repository() {
+    public OperatingIndividualScopeAwareRepository<ProgramEnrolment> repository() {
         return programEnrolmentRepository;
     }
 }

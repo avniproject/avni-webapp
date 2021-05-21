@@ -1,7 +1,6 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
-import org.openchs.domain.Audit;
 import org.openchs.domain.Concept;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +21,7 @@ import java.util.Map;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface EncounterRepository extends TransactionalDataRepository<Encounter>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Encounter> {
+public interface EncounterRepository extends TransactionalDataRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter> {
     Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 

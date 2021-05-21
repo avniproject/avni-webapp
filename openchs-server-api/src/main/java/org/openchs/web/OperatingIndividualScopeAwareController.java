@@ -1,7 +1,7 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
 import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 
-public interface OperatingIndividualScopeAwareFilterController<T extends CHSEntity> {
+public interface OperatingIndividualScopeAwareController<T extends CHSEntity> {
 
     default Page<T> getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(User user, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         OperatingIndividualScope scope = user.getOperatingIndividualScope();
@@ -27,5 +27,5 @@ public interface OperatingIndividualScopeAwareFilterController<T extends CHSEnti
         return new PageImpl<>(Collections.emptyList());
     }
 
-    OperatingIndividualScopeAwareRepositoryWithTypeFilter<T> repository();
+    OperatingIndividualScopeAwareRepository<T> repository();
 }

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 @RestController
-public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareFilterController<Individual> {
+public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareController<Individual> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
@@ -271,7 +271,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<Individual> repository() {
+    public OperatingIndividualScopeAwareRepository<Individual> repository() {
         return individualRepository;
     }
 }

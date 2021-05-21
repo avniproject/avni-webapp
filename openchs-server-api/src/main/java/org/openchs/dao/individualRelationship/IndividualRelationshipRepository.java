@@ -2,7 +2,7 @@ package org.openchs.dao.individualRelationship;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.FindByLastModifiedDateTime;
-import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.TransactionalDataRepository;
 import org.openchs.domain.Individual;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individualRelationship", path = "individualRelationship", exported = false)
-public interface IndividualRelationshipRepository extends TransactionalDataRepository<IndividualRelationship>, FindByLastModifiedDateTime<IndividualRelationship>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<IndividualRelationship> {
+public interface IndividualRelationshipRepository extends TransactionalDataRepository<IndividualRelationship>, FindByLastModifiedDateTime<IndividualRelationship>, OperatingIndividualScopeAwareRepository<IndividualRelationship> {
     Page<IndividualRelationship> findByIndividualaAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
