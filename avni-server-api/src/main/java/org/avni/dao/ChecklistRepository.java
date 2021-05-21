@@ -1,9 +1,9 @@
 package org.avni.dao;
 
-import org.avni.domain.Individual;
-import org.avni.domain.ProgramEnrolment;
-import org.joda.time.DateTime;
+import org.avni.domain.AddressLevel;
 import org.avni.domain.Checklist;
+import org.avni.domain.Individual;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -19,8 +19,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevels, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
@@ -38,13 +38,13 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     Checklist findByProgramEnrolmentUuidAndChecklistDetailName(String enrolmentUUID, String name);
 
     @Override
-    default Page<Checklist> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
+    default Page<Checklist> syncByCatchment(SyncParameters syncParameters) {
+        return findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<Checklist> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    default Page<Checklist> syncByFacility(SyncParameters syncParameters) {
+        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override

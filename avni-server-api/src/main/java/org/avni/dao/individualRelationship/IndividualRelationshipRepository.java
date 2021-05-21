@@ -1,12 +1,13 @@
 package org.avni.dao.individualRelationship;
 
-import org.aspectj.asm.IRelationship;
-import org.joda.time.DateTime;
 import org.avni.dao.FindByLastModifiedDateTime;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
+import org.avni.dao.SyncParameters;
 import org.avni.dao.TransactionalDataRepository;
+import org.avni.domain.AddressLevel;
 import org.avni.domain.Individual;
 import org.avni.domain.individualRelationship.IndividualRelationship;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -22,11 +23,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     Page<IndividualRelationship> findByIndividualaAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<IndividualRelationship> findByIndividualaFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
-
-    Page<IndividualRelationship> findByIndividualaAddressLevelVirtualCatchmentsIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, Long subjectTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<IndividualRelationship> findByIndividualaAddressLevelInAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevels, Long subjectTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     Page<IndividualRelationship> findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, Long subjectTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
@@ -41,13 +39,13 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     Set<IndividualRelationship> findByIndividual(Individual individual);
 
     @Override
-    default Page<IndividualRelationship> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByIndividualaAddressLevelVirtualCatchmentsIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
+    default Page<IndividualRelationship> syncByCatchment(SyncParameters syncParameters) {
+        return findByIndividualaAddressLevelInAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<IndividualRelationship> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    default Page<IndividualRelationship> syncByFacility(SyncParameters syncParameters) {
+        return findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override

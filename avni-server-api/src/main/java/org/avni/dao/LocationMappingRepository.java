@@ -12,15 +12,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locationMapping", path = "locationMapping", exported = false)
 public interface LocationMappingRepository extends ReferenceDataRepository<ParentLocationMapping>, FindByLastModifiedDateTime<ParentLocationMapping>, OperatingIndividualScopeAwareRepository<ParentLocationMapping> {
-    @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
-    Page<ParentLocationMapping> findByParentLocationVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            @Param("catchmentId") long catchmentId,
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+    Page<ParentLocationMapping> findByParentLocationInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevelIds,
+            DateTime lastModifiedDateTime,
+            DateTime now,
             Pageable pageable);
 
     boolean existsByAuditLastModifiedDateTimeGreaterThanAndParentLocationIdIn(
@@ -28,13 +28,13 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
             @Param("addressIds") List<Long> addressIds);
 
     @Override
-    default Page<ParentLocationMapping> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByParentLocationVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
+    default Page<ParentLocationMapping> syncByCatchment(SyncParameters syncParameters) {
+        return findByParentLocationInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<ParentLocationMapping> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+    default Page<ParentLocationMapping> syncByFacility(SyncParameters syncParameters) {
+        return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override

@@ -27,21 +27,23 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 
 @RestController
-public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareController<ProgramEnrolment> {
+public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final UserService userService;
     private final ProjectionFactory projectionFactory;
     private final ProgramEnrolmentService programEnrolmentService;
     private final ProgramRepository programRepository;
+    private ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
         this.projectionFactory = projectionFactory;
         this.programEnrolmentService = programEnrolmentService;
         this.programRepository = programRepository;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
@@ -62,7 +64,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         else {
             Program program = programRepository.findByUuid(programUuid);
             if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
+            return wrap(scopeBasedSyncService.getSyncResult(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
         }
     }
 
@@ -121,8 +123,4 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         return resource;
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<ProgramEnrolment> repository() {
-        return programEnrolmentRepository;
-    }
 }

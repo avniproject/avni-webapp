@@ -1,15 +1,15 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
 import org.avni.dao.EncounterTypeRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.ProgramEncounterRepository;
 import org.avni.domain.EncounterType;
 import org.avni.domain.ProgramEncounter;
 import org.avni.service.ProgramEncounterService;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.ProgramEncounterRequest;
 import org.avni.web.request.ProgramEncountersContract;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -26,19 +26,21 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 
 @RestController
-public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter> {
+public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private UserService userService;
     private final ProgramEncounterService programEncounterService;
+    private ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService, ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.userService = userService;
         this.programEncounterService = programEncounterService;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")
@@ -91,7 +93,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
     }
 
     @DeleteMapping("/web/programEncounter/{uuid}")
@@ -117,8 +119,4 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         return resource;
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<ProgramEncounter> repository() {
-        return programEncounterRepository;
-    }
 }

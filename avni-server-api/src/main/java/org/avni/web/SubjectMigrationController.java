@@ -5,6 +5,7 @@ import org.avni.dao.SubjectMigrationRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.SubjectMigration;
 import org.avni.domain.SubjectType;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -25,23 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
 
 @RestController
-public class SubjectMigrationController extends AbstractController<SubjectMigration> implements RestControllerResourceProcessor<SubjectMigration>, OperatingIndividualScopeAwareController<SubjectMigration> {
+public class SubjectMigrationController extends AbstractController<SubjectMigration> implements RestControllerResourceProcessor<SubjectMigration>{
     private SubjectMigrationRepository subjectMigrationRepository;
     private SubjectTypeRepository subjectTypeRepository;
     private UserService userService;
     private final Logger logger;
+    private ScopeBasedSyncService<SubjectMigration> scopeBasedSyncService;
 
     @Autowired
-    public SubjectMigrationController(SubjectMigrationRepository subjectMigrationRepository, SubjectTypeRepository subjectTypeRepository, UserService userService) {
+    public SubjectMigrationController(SubjectMigrationRepository subjectMigrationRepository, SubjectTypeRepository subjectTypeRepository, UserService userService, ScopeBasedSyncService<SubjectMigration> scopeBasedSyncService) {
+        this.scopeBasedSyncService = scopeBasedSyncService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.subjectMigrationRepository = subjectMigrationRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<SubjectMigration> repository() {
-        return subjectMigrationRepository;
     }
 
     @RequestMapping(value = "/subjectMigrations", method = RequestMethod.GET)
@@ -55,7 +53,7 @@ public class SubjectMigrationController extends AbstractController<SubjectMigrat
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
 
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(subjectMigrationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @Override

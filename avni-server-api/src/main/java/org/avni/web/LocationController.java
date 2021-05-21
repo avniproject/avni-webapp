@@ -1,17 +1,17 @@
 package org.avni.web;
 
 
-import org.joda.time.DateTime;
 import org.avni.builder.BuilderException;
 import org.avni.dao.LocationRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.domain.AddressLevel;
 import org.avni.service.LocationService;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.AddressLevelContractWeb;
 import org.avni.web.request.LocationContract;
 import org.avni.web.request.LocationEditContract;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +30,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RepositoryRestController
-public class LocationController implements OperatingIndividualScopeAwareController<AddressLevel>, RestControllerResourceProcessor<AddressLevel> {
+public class LocationController implements RestControllerResourceProcessor<AddressLevel> {
 
     private LocationRepository locationRepository;
     private Logger logger;
     private UserService userService;
     private LocationService locationService;
+    private ScopeBasedSyncService<AddressLevel> scopeBasedSyncService;
 
     @Autowired
-    public LocationController(LocationRepository locationRepository, UserService userService, LocationService locationService) {
+    public LocationController(LocationRepository locationRepository, UserService userService, LocationService locationService, ScopeBasedSyncService<AddressLevel> scopeBasedSyncService) {
         this.locationRepository = locationRepository;
         this.userService = userService;
         this.locationService = locationService;
+        this.scopeBasedSyncService = scopeBasedSyncService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -84,7 +86,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(locationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
     }
 
     @PutMapping(value = "/locations/{id}")
@@ -151,10 +153,5 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<>(AddressLevelContractWeb.fromEntity(addressLevel), HttpStatus.OK);
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<AddressLevel> repository() {
-        return locationRepository;
     }
 }

@@ -1,17 +1,17 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
 import org.avni.dao.CommentThreadRepository;
 import org.avni.dao.IndividualRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.CommentThread;
 import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
 import org.avni.service.CommentThreadService;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.CommentThreadContract;
 import org.avni.web.response.CommentThreadResponse;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-public class CommentThreadController extends AbstractController<CommentThread> implements RestControllerResourceProcessor<CommentThread>, OperatingIndividualScopeAwareController<CommentThread> {
+public class CommentThreadController extends AbstractController<CommentThread> implements RestControllerResourceProcessor<CommentThread> {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(CommentThreadController.class);
     private final CommentThreadRepository commentThreadRepository;
@@ -38,23 +38,20 @@ public class CommentThreadController extends AbstractController<CommentThread> i
     private final UserService userService;
     private final IndividualRepository individualRepository;
     private final CommentThreadService commentThreadService;
+    private ScopeBasedSyncService<CommentThread> scopeBasedSyncService;
 
     @Autowired
     public CommentThreadController(CommentThreadRepository commentThreadRepository,
                                    SubjectTypeRepository subjectTypeRepository,
                                    UserService userService,
                                    IndividualRepository individualRepository,
-                                   CommentThreadService commentThreadService) {
+                                   CommentThreadService commentThreadService, ScopeBasedSyncService<CommentThread> scopeBasedSyncService) {
         this.commentThreadRepository = commentThreadRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
         this.individualRepository = individualRepository;
         this.commentThreadService = commentThreadService;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<CommentThread> repository() {
-        return commentThreadRepository;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @GetMapping(value = {"/commentThread"})
@@ -68,7 +65,7 @@ public class CommentThreadController extends AbstractController<CommentThread> i
         if (subjectType == null) {
             return wrap(new PageImpl<>(Collections.emptyList()));
         }
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(commentThreadRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @RequestMapping(value = "/commentThreads", method = RequestMethod.POST)

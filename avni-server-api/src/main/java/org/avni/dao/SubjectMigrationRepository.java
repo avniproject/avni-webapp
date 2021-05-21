@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface SubjectMigrationRepository extends TransactionalDataRepository<SubjectMigration>, OperatingIndividualScopeAwareRepository<SubjectMigration> {
 
-    @Override
     @Query("select sm from SubjectMigration sm " +
             "  inner join sm.oldAddressLevel.virtualCatchments ovc  " +
             "  inner join sm.newAddressLevel.virtualCatchments nvc " +
@@ -20,7 +19,6 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
             "order by sm.audit.lastModifiedDateTime, sm.id desc")
     Page<SubjectMigration> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable);
 
-    @Override
     default Page<SubjectMigration> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         //Changes in facility not yet implemented for subject migration
         throw new UnsupportedOperationException();
@@ -37,5 +35,15 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default Page<SubjectMigration> syncByCatchment(SyncParameters syncParameters) {
+        return findByCatchmentIndividualOperatingScopeAndFilterByType(syncParameters.getCatchmentId(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getFilter(), syncParameters.getPageable());
+    }
+
+    @Override
+    default Page<SubjectMigration> syncByFacility(SyncParameters syncParameters) {
+        return findByFacilityIndividualOperatingScopeAndFilterByType(syncParameters.getFacilityId(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getFilter(), syncParameters.getPageable());
     }
 }

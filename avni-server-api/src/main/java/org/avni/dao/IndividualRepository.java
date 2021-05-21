@@ -24,8 +24,9 @@ import java.util.Map;
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
-    Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
+
+    Page<Individual> findByAddressLevelInAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevels,
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -49,13 +50,13 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             DateTime lastModifiedDateTime);
 
     @Override
-    default Page<Individual> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
+    default Page<Individual> syncByCatchment(SyncParameters syncParameters) {
+        return findByAddressLevelInAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<Individual> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    default Page<Individual> syncByFacility(SyncParameters syncParameters) {
+        return findByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override

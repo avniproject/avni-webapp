@@ -1,8 +1,9 @@
 package org.avni.dao;
 
-import org.joda.time.DateTime;
+import org.avni.domain.AddressLevel;
 import org.avni.domain.CommentThread;
 import org.avni.domain.Individual;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -16,8 +17,8 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface CommentThreadRepository extends TransactionalDataRepository<CommentThread>, FindByLastModifiedDateTime<CommentThread>, OperatingIndividualScopeAwareRepository<CommentThread> {
 
-    Page<CommentThread> findByComments_SubjectAddressLevelVirtualCatchmentsIdAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
+    Page<CommentThread> findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevels,
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -42,13 +43,13 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
 
 
     @Override
-    default Page<CommentThread> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByComments_SubjectAddressLevelVirtualCatchmentsIdAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
+    default Page<CommentThread> syncByCatchment(SyncParameters syncParameters) {
+        return findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<CommentThread> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    default Page<CommentThread> syncByFacility(SyncParameters syncParameters) {
+        return findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override

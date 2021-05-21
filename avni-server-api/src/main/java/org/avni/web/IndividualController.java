@@ -1,16 +1,19 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.geo.Point;
 import org.avni.projection.IndividualWebProjection;
 import org.avni.service.*;
-import org.avni.web.request.*;
+import org.avni.web.request.EncounterContract;
+import org.avni.web.request.IndividualContract;
+import org.avni.web.request.IndividualRequest;
+import org.avni.web.request.PointRequest;
 import org.avni.web.request.rules.RulesContractWrapper.Decisions;
 import org.avni.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.avni.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,13 +30,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 @RestController
-public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareController<Individual> {
+public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
@@ -48,6 +53,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private SubjectMigrationRepository subjectMigrationRepository;
+    private ScopeBasedSyncService<Individual> scopeBasedSyncService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -62,7 +68,8 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                                SubjectMigrationRepository subjectMigrationRepository) {
+                                SubjectMigrationRepository subjectMigrationRepository,
+                                ScopeBasedSyncService<Individual> scopeBasedSyncService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -76,6 +83,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
         this.subjectMigrationRepository = subjectMigrationRepository;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -150,7 +158,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @GetMapping(value = "/individual/search")
@@ -295,8 +303,4 @@ public class IndividualController extends AbstractController<Individual> impleme
         }
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<Individual> repository() {
-        return individualRepository;
-    }
 }

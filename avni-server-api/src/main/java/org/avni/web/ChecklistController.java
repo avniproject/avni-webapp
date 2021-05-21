@@ -1,11 +1,14 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
-import org.avni.dao.*;
+import org.avni.dao.ChecklistDetailRepository;
+import org.avni.dao.ChecklistRepository;
+import org.avni.dao.ProgramEnrolmentRepository;
 import org.avni.domain.Checklist;
 import org.avni.domain.ChecklistDetail;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.ChecklistRequest;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,20 +23,22 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 
 @RestController
-public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist>, OperatingIndividualScopeAwareController<Checklist> {
+public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist> {
     private final ChecklistDetailRepository checklistDetailRepository;
     private final ChecklistRepository checklistRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final UserService userService;
+    private ScopeBasedSyncService<Checklist> scopeBasedSyncService;
 
     @Autowired
     public ChecklistController(ChecklistRepository checklistRepository,
                                ProgramEnrolmentRepository programEnrolmentRepository,
-                               ChecklistDetailRepository checklistDetailRepository, UserService userService) {
+                               ChecklistDetailRepository checklistDetailRepository, UserService userService, ScopeBasedSyncService<Checklist> scopeBasedSyncService) {
         this.checklistDetailRepository = checklistDetailRepository;
         this.checklistRepository = checklistRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @Transactional
@@ -75,7 +80,7 @@ public class ChecklistController extends AbstractController<Checklist> implement
         if (checklistDetailUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
         if (checklistDetail == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(checklistRepository, userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
     }
 
     @Override
@@ -89,8 +94,4 @@ public class ChecklistController extends AbstractController<Checklist> implement
         return resource;
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<Checklist> repository() {
-        return checklistRepository;
-    }
 }

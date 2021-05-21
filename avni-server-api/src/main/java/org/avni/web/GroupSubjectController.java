@@ -1,17 +1,21 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
-import org.avni.dao.*;
+import org.avni.dao.GroupRoleRepository;
+import org.avni.dao.GroupSubjectRepository;
+import org.avni.dao.IndividualRepository;
+import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.GroupRole;
 import org.avni.domain.GroupSubject;
 import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
 import org.avni.service.IndividualService;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.GroupRoleContract;
 import org.avni.web.request.GroupSubjectContract;
 import org.avni.web.request.GroupSubjectContractWeb;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class GroupSubjectController extends AbstractController<GroupSubject> implements RestControllerResourceProcessor<GroupSubject>, OperatingIndividualScopeAwareController<GroupSubject> {
+public class GroupSubjectController extends AbstractController<GroupSubject> implements RestControllerResourceProcessor<GroupSubject> {
 
     private final GroupSubjectRepository groupSubjectRepository;
     private final UserService userService;
@@ -39,15 +43,17 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
     private final SubjectTypeRepository subjectTypeRepository;
     private final IndividualService individualService;
     private final Logger logger;
+    private ScopeBasedSyncService<GroupSubject> scopeBasedSyncService;
 
     @Autowired
-    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, IndividualService individualService) {
+    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, IndividualService individualService, ScopeBasedSyncService<GroupSubject> scopeBasedSyncService) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.userService = userService;
         this.individualRepository = individualRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.individualService = individualService;
+        this.scopeBasedSyncService = scopeBasedSyncService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -62,7 +68,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
             return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
         if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @RequestMapping(value = "/groupSubjects", method = RequestMethod.POST)
@@ -138,8 +144,4 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         return resource;
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<GroupSubject> repository() {
-        return groupSubjectRepository;
-    }
 }

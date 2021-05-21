@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import org.avni.domain.AddressLevel;
 import org.avni.domain.GroupRole;
 import org.avni.domain.GroupSubject;
 import org.avni.domain.Individual;
@@ -26,9 +27,9 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
         throw new UnsupportedOperationException("No field 'name' in GroupSubject");
     }
 
-    Page<GroupSubject> findByGroupSubjectAddressLevelVirtualCatchmentsIdAndMemberSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long groupSubjectCatchmentId,
-            long memberSubjectCatchmentId,
+    Page<GroupSubject> findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInInVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> groupSubjectAddressLevels,
+            List<AddressLevel> memberSubjectAddressLevels,
             Long groupSubjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -53,21 +54,6 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             long facilityId,
             Long groupSubjectTypeId,
             DateTime lastModifiedDateTime);
-
-    @Override
-    default Page<GroupSubject> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByGroupSubjectAddressLevelVirtualCatchmentsIdAndMemberSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, catchmentId, filter, lastModifiedDateTime, now, pageable);
-    }
-
-    @Override
-    default Page<GroupSubject> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, facilityId, filter, lastModifiedDateTime, now, pageable);
-    }
-
-    @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsByGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
@@ -105,4 +91,32 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             "and g.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
     Page<GroupSubject> findGroupSubjects(String subjectTypeUUID, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+
+    Page<GroupSubject> findByGroupSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevels,
+            Long groupSubjectTypeId,
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            Pageable pageable
+    );
+
+    Page<GroupSubject> findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId,
+            Long groupSubjectTypeId,
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            Pageable pageable
+    );
+
+    @Override
+    default Page<GroupSubject> syncByCatchment(SyncParameters syncParameters) {
+        return findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInInVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+    }
+
+    @Override
+    default Page<GroupSubject> syncByFacility(SyncParameters syncParameters) {
+        return findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getFacilityId(), syncParameters.getFacilityId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+    }
+
+    List<GroupSubject> findAllByMemberSubject(Individual memberSubject);
 }

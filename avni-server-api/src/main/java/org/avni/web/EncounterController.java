@@ -1,17 +1,23 @@
 package org.avni.web;
 
 import com.bugsnag.Bugsnag;
-import org.joda.time.DateTime;
-import org.avni.dao.*;
-import org.avni.domain.*;
+import org.avni.dao.EncounterRepository;
+import org.avni.dao.EncounterTypeRepository;
+import org.avni.dao.IndividualRepository;
+import org.avni.domain.Encounter;
+import org.avni.domain.EncounterType;
+import org.avni.domain.Individual;
+import org.avni.domain.ObservationCollection;
 import org.avni.geo.Point;
 import org.avni.service.EncounterService;
 import org.avni.service.ObservationService;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.EncounterContract;
 import org.avni.web.request.EncounterRequest;
 import org.avni.web.request.PointRequest;
 import org.avni.web.request.rules.RulesContractWrapper.Decisions;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -25,10 +31,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collections;
 
 @RestController
-public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter> {
+public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final EncounterTypeRepository encounterTypeRepository;
@@ -37,6 +43,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     private final UserService userService;
     private Bugsnag bugsnag;
     private final EncounterService encounterService;
+    private ScopeBasedSyncService<Encounter> scopeBasedSyncService;
 
     @Autowired
     public EncounterController(IndividualRepository individualRepository,
@@ -45,7 +52,7 @@ public class EncounterController extends AbstractController<Encounter> implement
                                ObservationService observationService,
                                UserService userService,
                                Bugsnag bugsnag,
-                               EncounterService encounterService) {
+                               EncounterService encounterService, ScopeBasedSyncService<Encounter> scopeBasedSyncService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
@@ -53,6 +60,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         this.userService = userService;
         this.bugsnag = bugsnag;
         this.encounterService = encounterService;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @GetMapping(value = "/web/encounter/{uuid}")
@@ -157,7 +165,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(encounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
     }
 
     @DeleteMapping("/web/encounter/{uuid}")
@@ -183,8 +191,4 @@ public class EncounterController extends AbstractController<Encounter> implement
         return resource;
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<Encounter> repository() {
-        return encounterRepository;
-    }
 }

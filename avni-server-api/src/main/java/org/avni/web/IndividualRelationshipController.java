@@ -1,8 +1,6 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
 import org.avni.dao.IndividualRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipTypeRepository;
@@ -10,8 +8,10 @@ import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.avni.domain.individualRelationship.IndividualRelationshipType;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.IndividualRelationshipRequest;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,20 +27,22 @@ import java.util.Collections;
 import java.util.Optional;
 
 @RestController
-public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareController<IndividualRelationship> {
+public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship> {
     private final IndividualRepository individualRepository;
     private final IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
     private final IndividualRelationshipRepository individualRelationshipRepository;
     private final SubjectTypeRepository subjectTypeRepository;
     private final UserService userService;
+    private ScopeBasedSyncService<IndividualRelationship> scopeBasedSyncService;
 
     @Autowired
-    public IndividualRelationshipController(IndividualRelationshipRepository individualRelationshipRepository, IndividualRepository individualRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, SubjectTypeRepository subjectTypeRepository, UserService userService) {
+    public IndividualRelationshipController(IndividualRelationshipRepository individualRelationshipRepository, IndividualRepository individualRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, SubjectTypeRepository subjectTypeRepository, UserService userService, ScopeBasedSyncService<IndividualRelationship> scopeBasedSyncService) {
         this.individualRelationshipRepository = individualRelationshipRepository;
         this.individualRepository = individualRepository;
         this.individualRelationshipTypeRepository = individualRelationshipTypeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
+        this.scopeBasedSyncService = scopeBasedSyncService;
     }
 
     @RequestMapping(value = "/individualRelationships", method = RequestMethod.POST)
@@ -92,7 +94,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
         if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(individualRelationshipRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @Override
@@ -103,11 +105,6 @@ public class IndividualRelationshipController extends AbstractController<Individ
         resource.add(new Link(individualRelationship.getIndividuala().getUuid(), "individualAUUID"));
         resource.add(new Link(individualRelationship.getIndividualB().getUuid(), "individualBUUID"));
         return resource;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<IndividualRelationship> repository() {
-        return individualRelationshipRepository;
     }
 
 
@@ -123,6 +120,4 @@ public class IndividualRelationshipController extends AbstractController<Individ
             individualRelationshipRepository.save(individualRelationShip);
         }
     }
-
-
 }

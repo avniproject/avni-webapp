@@ -1,10 +1,10 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
 import org.avni.dao.LocationMappingRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.domain.ParentLocationMapping;
+import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +20,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LocationMappingController implements OperatingIndividualScopeAwareController<ParentLocationMapping>, RestControllerResourceProcessor<ParentLocationMapping> {
+public class LocationMappingController implements RestControllerResourceProcessor<ParentLocationMapping> {
 
     private LocationMappingRepository locationMappingRepository;
     private Logger logger;
     private UserService userService;
+    private ScopeBasedSyncService<ParentLocationMapping> scopeBasedSyncService;
 
     @Autowired
-    public LocationMappingController(UserService userService, LocationMappingRepository locationMappingRepository) {
+    public LocationMappingController(UserService userService, LocationMappingRepository locationMappingRepository, ScopeBasedSyncService<ParentLocationMapping> scopeBasedSyncService) {
         this.userService = userService;
         this.locationMappingRepository = locationMappingRepository;
+        this.scopeBasedSyncService = scopeBasedSyncService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -39,7 +41,7 @@ public class LocationMappingController implements OperatingIndividualScopeAwareC
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(locationMappingRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
     }
 
     @Override
@@ -51,8 +53,4 @@ public class LocationMappingController implements OperatingIndividualScopeAwareC
         return resource;
     }
 
-    @Override
-    public OperatingIndividualScopeAwareRepository<ParentLocationMapping> repository() {
-        return locationMappingRepository;
-    }
 }

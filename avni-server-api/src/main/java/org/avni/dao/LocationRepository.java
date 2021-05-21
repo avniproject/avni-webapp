@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
@@ -35,6 +36,12 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     boolean existsByAuditLastModifiedDateTimeIsGreaterThanAndIdIn(
             DateTime lastModifiedDateTime,
             List<Long> addressIds);
+
+    Page<AddressLevel> findByIdInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevelIds,
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            Pageable pageable);
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
@@ -56,13 +63,14 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     boolean existsByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
 
     @Override
-    default Page<AddressLevel> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
+    default Page<AddressLevel> syncByCatchment(SyncParameters syncParameters) {
+        List<Long> addressLevelIds = syncParameters.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList());
+        return findByIdInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(addressLevelIds, syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<AddressLevel> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+    default Page<AddressLevel> syncByFacility(SyncParameters syncParameters) {
+        return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override

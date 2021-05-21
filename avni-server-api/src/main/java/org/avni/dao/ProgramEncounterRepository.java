@@ -1,10 +1,7 @@
 package org.avni.dao;
 
+import org.avni.domain.*;
 import org.joda.time.DateTime;
-import org.avni.domain.Concept;
-import org.avni.domain.EncounterType;
-import org.avni.domain.ProgramEncounter;
-import org.avni.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,10 +10,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.sql.Date;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -28,9 +28,6 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
-
     Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
@@ -40,14 +37,16 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     boolean existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime);
 
+    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(List<AddressLevel> addressLevels, long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+
     @Override
-    default Page<ProgramEncounter> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
+    default Page<ProgramEncounter> syncByCatchment(SyncParameters syncParameters) {
+        return findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
-    default Page<ProgramEncounter> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    default Page<ProgramEncounter> syncByFacility(SyncParameters syncParameters) {
+        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
