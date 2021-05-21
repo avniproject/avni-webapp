@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Catchment;
+import org.openchs.domain.ProgramEncounter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -20,8 +21,7 @@ import java.util.Optional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
-public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepository<AddressLevel> {
-
+public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<AddressLevel> {
 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);
@@ -50,12 +50,12 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
 
     @Override
-    default Page<AddressLevel> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+    default Page<AddressLevel> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
     }
 
     @Override
-    default Page<AddressLevel> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+    default Page<AddressLevel> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
     }
 

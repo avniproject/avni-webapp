@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @RestController
-public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareController<IndividualRelationship>, OperatingIndividualScopeAwareFilterController<IndividualRelationship> {
+public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareFilterController<IndividualRelationship> {
     private final IndividualRepository individualRepository;
     private final IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
     private final IndividualRelationshipRepository individualRelationshipRepository;
@@ -90,14 +90,10 @@ public class IndividualRelationshipController extends AbstractController<Individ
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "subjectTypeUuid", required = false) String subjectTypeUuid,
             Pageable pageable) {
-        if (subjectTypeUuid == null) {
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-        } else {
-            if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-            SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
-            if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
-        }
+        if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
+        if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @Override
@@ -111,15 +107,9 @@ public class IndividualRelationshipController extends AbstractController<Individ
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepository<IndividualRelationship> resourceRepository() {
-        return individualRelationshipRepository;
-    }
-
-    @Override
     public OperatingIndividualScopeAwareRepositoryWithTypeFilter<IndividualRelationship> repository() {
         return individualRelationshipRepository;
     }
-
 
 
     @DeleteMapping(value = "/web/relationShip/{id}")

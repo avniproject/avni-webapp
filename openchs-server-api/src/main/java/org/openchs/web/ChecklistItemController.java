@@ -22,7 +22,7 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 
 @RestController
-public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareController<ChecklistItem>, OperatingIndividualScopeAwareFilterController<ChecklistItem> {
+public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareFilterController<ChecklistItem> {
     private final ObservationService observationService;
     private final ChecklistItemDetailRepository checklistItemDetailRepository;
     private final ChecklistRepository checklistRepository;
@@ -81,14 +81,10 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "checklistDetailUuid", required = false) String checklistDetailUuid,
             Pageable pageable) {
-        if (checklistDetailUuid == null) {
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-        } else {
-            if (checklistDetailUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-            ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
-            if(checklistDetail == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
-        }
+        if (checklistDetailUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+        ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
+        if (checklistDetail == null) return wrap(new PageImpl<>(Collections.emptyList()));
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
     }
 
     @Override
@@ -100,11 +96,6 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
             resource.add(new Link(checklistItem.getChecklistItemDetail().getUuid(), "checklistItemDetailUUID"));
         }
         return resource;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<ChecklistItem> resourceRepository() {
-        return checklistItemRepository;
     }
 
     @Override

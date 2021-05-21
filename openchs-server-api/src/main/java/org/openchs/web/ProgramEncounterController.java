@@ -1,40 +1,32 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.*;
+import org.openchs.dao.EncounterTypeRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
+import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
-import org.openchs.service.ConceptService;
 import org.openchs.service.ProgramEncounterService;
 import org.openchs.service.UserService;
-import org.openchs.util.S;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEncountersContract;
-import org.openchs.web.request.api.ApiProgramEncounterRequest;
-import org.openchs.web.request.api.RequestUtils;
-import org.openchs.web.response.EncounterResponse;
-import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collections;
 
 @RestController
-public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
+public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
@@ -64,8 +56,8 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         programEncounterService.saveProgramEncounter(request);
-        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
-            programEncounterService.saveVisitSchedules(request.getProgramEnrolmentUUID(),request.getVisitSchedules(), request.getUuid());
+        if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+            programEncounterService.saveVisitSchedules(request.getProgramEnrolmentUUID(), request.getVisitSchedules(), request.getUuid());
         }
     }
 
@@ -96,14 +88,10 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "programEncounterTypeUuid", required = false) String encounterTypeUuid,
             Pageable pageable) {
-        if (encounterTypeUuid == null) {
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-        } else {
-            if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-            EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
-            if(encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
-        }
+        if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+        if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
     }
 
     @DeleteMapping("/web/programEncounter/{uuid}")
@@ -127,11 +115,6 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         resource.add(new Link(programEncounter.getEncounterType().getUuid(), "encounterTypeUUID"));
         resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
         return resource;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<ProgramEncounter> resourceRepository() {
-        return programEncounterRepository;
     }
 
     @Override

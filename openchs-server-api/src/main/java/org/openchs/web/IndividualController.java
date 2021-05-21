@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 @RestController
-public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareController<Individual>, OperatingIndividualScopeAwareFilterController<Individual> {
+public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareFilterController<Individual> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
@@ -122,14 +122,10 @@ public class IndividualController extends AbstractController<Individual> impleme
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "subjectTypeUuid", required = false) String subjectTypeUuid,
             Pageable pageable) {
-        if (subjectTypeUuid == null) {
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-        } else {
-            if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-            SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
-            if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
-        }
+        if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
+        if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
     }
 
     @GetMapping(value = "/individual/search")
@@ -242,11 +238,6 @@ public class IndividualController extends AbstractController<Individual> impleme
             resource.add(new Link(individual.getSubjectType().getUuid(), "subjectTypeUUID"));
         }
         return resource;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<Individual> resourceRepository() {
-        return individualRepository;
     }
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {

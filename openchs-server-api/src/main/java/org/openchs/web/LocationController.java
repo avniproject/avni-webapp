@@ -4,7 +4,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.builder.BuilderException;
 import org.openchs.dao.LocationRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
 import org.openchs.domain.AddressLevel;
 import org.openchs.service.LocationService;
 import org.openchs.service.UserService;
@@ -27,11 +27,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RepositoryRestController
-public class LocationController implements OperatingIndividualScopeAwareController<AddressLevel>, RestControllerResourceProcessor<AddressLevel> {
+public class LocationController implements OperatingIndividualScopeAwareFilterController<AddressLevel>, RestControllerResourceProcessor<AddressLevel> {
 
     private LocationRepository locationRepository;
     private Logger logger;
@@ -85,7 +84,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
     }
 
     @PutMapping(value = "/locations/{id}")
@@ -144,8 +143,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
     @Override
-    public OperatingIndividualScopeAwareRepository<AddressLevel> resourceRepository() {
+    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<AddressLevel> repository() {
         return locationRepository;
     }
-
 }

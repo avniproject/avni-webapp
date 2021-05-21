@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.LocationMappingRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
 import org.openchs.domain.ParentLocationMapping;
 import org.openchs.service.UserService;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class LocationMappingController implements OperatingIndividualScopeAwareController<ParentLocationMapping>, RestControllerResourceProcessor<ParentLocationMapping> {
+public class LocationMappingController implements OperatingIndividualScopeAwareFilterController<ParentLocationMapping>, RestControllerResourceProcessor<ParentLocationMapping> {
 
     private LocationMappingRepository locationMappingRepository;
     private Logger logger;
@@ -39,12 +40,7 @@ public class LocationMappingController implements OperatingIndividualScopeAwareC
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<ParentLocationMapping> resourceRepository() {
-        return locationMappingRepository;
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
     }
 
     @Override
@@ -54,5 +50,10 @@ public class LocationMappingController implements OperatingIndividualScopeAwareC
         resource.add(new Link(content.getLocation().getUuid(), "locationUUID"));
         resource.add(new Link(content.getParentLocation().getUuid(), "parentLocationUUID"));
         return resource;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ParentLocationMapping> repository() {
+        return locationMappingRepository;
     }
 }

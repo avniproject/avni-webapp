@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 @RestController
-public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareController<ProgramEnrolment>, OperatingIndividualScopeAwareFilterController<ProgramEnrolment> {
+public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareFilterController<ProgramEnrolment> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final UserService userService;
@@ -63,15 +63,11 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "programUuid", required = false) String programUuid,
             Pageable pageable) {
-        if (programUuid == null) {
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-        } else {
-            if (programUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-            else {
-                Program program = programRepository.findByUuid(programUuid);
-                if(program == null) return wrap(new PageImpl<>(Collections.emptyList()));
-                return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
-            }
+        if (programUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+        else {
+            Program program = programRepository.findByUuid(programUuid);
+            if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
         }
     }
 
@@ -128,11 +124,6 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             resource.add(new Link(programEnrolment.getProgramOutcome().getUuid(), "programOutcomeUUID"));
         }
         return resource;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<ProgramEnrolment> resourceRepository() {
-        return programEnrolmentRepository;
     }
 
     @Override

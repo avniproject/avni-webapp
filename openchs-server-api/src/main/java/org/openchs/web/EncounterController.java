@@ -36,7 +36,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 @RestController
-public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter>, OperatingIndividualScopeAwareFilterController<Encounter> {
+public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareFilterController<Encounter> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final EncounterTypeRepository encounterTypeRepository;
@@ -119,10 +119,10 @@ public class EncounterController extends AbstractController<Encounter> implement
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         Decisions decisions = request.getDecisions();
-        if(decisions != null) {
+        if (decisions != null) {
             ObservationCollection observationsFromDecisions = observationService
                     .createObservationsFromDecisions(decisions.getEncounterDecisions());
-            if(decisions.isCancel()) {
+            if (decisions.isCancel()) {
                 encounter.getCancelObservations().putAll(observationsFromDecisions);
             } else {
                 encounter.getObservations().putAll(observationsFromDecisions);
@@ -130,7 +130,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         }
 
         encounterRepository.save(encounter);
-        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+        if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
             encounterService.saveVisitSchedules(individual.getUuid(), request.getVisitSchedules(), request.getUuid());
         }
         logger.info(String.format("Saved encounter with uuid %s", request.getUuid()));
@@ -162,14 +162,10 @@ public class EncounterController extends AbstractController<Encounter> implement
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "encounterTypeUuid", required = false) String encounterTypeUuid,
             Pageable pageable) {
-        if (encounterTypeUuid == null) {
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
-        } else {
-            if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-            EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
-            if(encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
-        }
+        if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
+        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+        if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
     }
 
     @DeleteMapping("/web/encounter/{uuid}")
@@ -193,11 +189,6 @@ public class EncounterController extends AbstractController<Encounter> implement
         resource.add(new Link(encounter.getEncounterType().getUuid(), "encounterTypeUUID"));
         resource.add(new Link(encounter.getIndividual().getUuid(), "individualUUID"));
         return resource;
-    }
-
-    @Override
-    public OperatingIndividualScopeAwareRepository<Encounter> resourceRepository() {
-        return encounterRepository;
     }
 
     @Override
