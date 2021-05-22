@@ -32,7 +32,6 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
             UserContext userContext = UserContextHolder.getUserContext();
             User user = userContext.getUser();
             logger.info(String.format("Username is %s", user.getUsername()));
-            logger.info(String.format("Updating organisation interceptor for id %s", audit.getId()));
             if (audit.getCreatedBy() == null) {
                 audit.setCreatedBy(user);
             }

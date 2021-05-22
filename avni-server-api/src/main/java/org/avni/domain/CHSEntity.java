@@ -12,8 +12,7 @@ import javax.persistence.*;
 public class CHSEntity extends CHSBaseEntity {
 
     @JsonIgnore
-    @JoinColumn(name = "audit_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Embedded
     private Audit audit = new Audit();
 
     @Column(name = "version")
@@ -72,9 +71,9 @@ public class CHSEntity extends CHSBaseEntity {
         return getAudit().getLastModifiedBy().getUsername();
     }
 
-    public Long getAuditId() {
-        return getAudit().getId();
-    }
+//    public Long getAuditId() {
+//        return getAudit().getId();
+//    }
 
 
     @JsonIgnore

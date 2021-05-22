@@ -112,7 +112,7 @@ public class ProgramEnrolmentConstructionService {
         LowestAddressLevelContract lowestAddressLevelContract = new LowestAddressLevelContract();
         if (addressLevel != null) {
             lowestAddressLevelContract.setName(addressLevel.getTitle());
-            lowestAddressLevelContract.setAuditId(addressLevel.getAuditId());
+//            lowestAddressLevelContract.setAuditId(addressLevel.getAuditId());
             lowestAddressLevelContract.setUuid(addressLevel.getUuid());
             lowestAddressLevelContract.setVersion(addressLevel.getVersion());
             lowestAddressLevelContract.setOrganisationId(addressLevel.getOrganisationId());

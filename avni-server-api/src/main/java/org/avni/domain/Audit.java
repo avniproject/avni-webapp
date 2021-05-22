@@ -13,16 +13,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
-@Entity
+@Embeddable
 @EntityListeners({AuditingEntityListener.class})
-@Table(name = "audit")
 @BatchSize(size = 100)
 public class Audit {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, nullable = false)
-    @Id
-    private Long id;
 
     @JsonIgnore
     @JoinColumn(name = "created_by_id")
@@ -74,9 +68,5 @@ public class Audit {
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
-    }
-
-    public Long getId() {
-        return id;
     }
 }
