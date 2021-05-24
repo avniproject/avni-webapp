@@ -40,14 +40,14 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             String requestURI = request.getRequestURI();
             String queryString = request.getQueryString();
 
-            logger.info(String.format("Processing %s %s?%s Header: %s", method, requestURI, queryString, username));
             UserContext userContext = isDev
                     ? authService.authenticateByUserName(StringUtils.isEmpty(username) ? defaultUserName : username, organisationUUID)
                     : authService.authenticateByToken(authToken, organisationUUID);
 
-            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", method, requestURI, queryString, userContext.getUserName(), userContext.getOrganisationName()));
+            long start = System.currentTimeMillis();
             chain.doFilter(request, response);
-            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", method, requestURI, queryString, userContext.getUserName(), userContext.getOrganisationName()));
+            long end = System.currentTimeMillis();
+            logger.info(String.format("%s %s?%s User: %s Organisation: %s Time: %s ms", method, requestURI, queryString, userContext.getUserName(), userContext.getOrganisationName(), (end - start)));
         } catch (Exception exception) {
             this.logException(request, exception);
             throw exception;
