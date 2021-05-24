@@ -3,17 +3,26 @@
 -- Repeatable migrations are run only when the checksum of the current file is changed.
 --
 
-CREATE OR REPLACE VIEW virtual_catchment_address_mapping_table AS (
-    select row_number() OVER ()  AS id,
-           cam.catchment_id::int AS catchment_id,
-           al.id                 AS addresslevel_id
-    from address_level al
-             left outer join regexp_split_to_table((al.lineage)::text, '[.]'::text) WITH ORDINALITY lineage(point_id, level)
-                             ON (true)
-             left outer join catchment_address_mapping cam on cam.addresslevel_id = point_id::int
-    where catchment_id notnull
-    group by 2, 3
-);
+CREATE OR REPLACE FUNCTION virtual_catchment_address_mapping_function()
+    RETURNS TABLE
+            (
+                id              bigint,
+                catchment_id    int,
+                addresslevel_id int
+            )
+    LANGUAGE sql
+    SECURITY INVOKER
+AS
+$$
+select row_number() over (), c.id, al.id
+from catchment c
+         inner join catchment_address_mapping cam on c.id = cam.catchment_id
+         inner join address_level al on cam.addresslevel_id = al.id
+         inner join address_level al1 on al.lineage @> al1.lineage
+$$;
+
+CREATE or replace VIEW virtual_catchment_address_mapping_table AS SELECT * FROM virtual_catchment_address_mapping_function();
+
 
 DROP VIEW if exists address_level_type_view;
 
