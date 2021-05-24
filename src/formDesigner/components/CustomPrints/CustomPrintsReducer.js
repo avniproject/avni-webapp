@@ -13,7 +13,8 @@ export const CustomPrintsReducer = (customPrint, action) => {
     case "removeSetting":
       const settings = customPrint.labelFileNames;
       settings.splice(action.payload.index, 1);
-      return { ...customPrint, labelFileNames: settings };
+      const updatedErrors = filter(customPrint.errors, ({ key }) => key !== "EMPTY_SETTING");
+      return { ...customPrint, labelFileNames: settings, errors: updatedErrors };
     case "setErrors":
       return { ...customPrint, errors: action.payload };
     case "setFile":
