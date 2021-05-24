@@ -258,6 +258,7 @@ public class Concept extends OrganisationAwareEntity {
         return ConceptDataType.matches(conceptDataType, this.getDataType());
     }
 
+    @JsonIgnore
     public Stream<ConceptAnswer> getSortedAnswers() {
         return this.getConceptAnswers().stream().sorted(Comparator.comparing(ConceptAnswer::getOrder));
     }
