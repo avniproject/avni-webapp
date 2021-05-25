@@ -116,6 +116,7 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/customPrint/{basePath}/**", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<?> serveCustomPrintFile(@PathVariable String basePath, HttpServletRequest request) {
         final String path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
         final String bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
