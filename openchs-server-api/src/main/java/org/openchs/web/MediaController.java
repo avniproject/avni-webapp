@@ -2,6 +2,8 @@ package org.openchs.web;
 
 import com.amazonaws.HttpMethod;
 import org.apache.commons.io.FilenameUtils;
+import org.openchs.dao.OrganisationRepository;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.OrganisationConfigService;
@@ -40,11 +42,13 @@ public class MediaController {
     private final Logger logger;
     private final S3Service s3Service;
     private final OrganisationConfigService organisationConfigService;
+    private final OrganisationRepository organisationRepository;
 
     @Autowired
-    public MediaController(S3Service s3Service, OrganisationConfigService organisationConfigService) {
+    public MediaController(S3Service s3Service, OrganisationConfigService organisationConfigService, OrganisationRepository organisationRepository) {
         this.s3Service = s3Service;
         this.organisationConfigService = organisationConfigService;
+        this.organisationRepository = organisationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -116,15 +120,18 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/customPrint/{basePath}/**", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public ResponseEntity<?> serveCustomPrintFile(@PathVariable String basePath, HttpServletRequest request) {
+    public ResponseEntity<?> serveCustomPrintFile(@CookieValue(name = "IMPLEMENTATION-NAME") String implementationName, @PathVariable String basePath, HttpServletRequest request) {
+        Organisation organisation = organisationRepository.findByName(implementationName);
+        if (organisation == null) {
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         final String path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
         final String bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
         String arguments = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, path);
         String filePath = null != arguments && !arguments.isEmpty() ? basePath + "/" + arguments : basePath;
         logger.info(format("Generating url for custom print file %s", filePath));
         try {
-            URL url = s3Service.getDownloadURL(format("%s/%s", CUSTOM_PRINT_DIR, filePath), HttpMethod.GET);
+            URL url = s3Service.getURLForCustomPrint(format("%s/%s", CUSTOM_PRINT_DIR, filePath), organisation);
             logger.debug(format("S3 signed URL: %s", url.toString()));
             return ResponseEntity.status(HttpStatus.FOUND).location(url.toURI()).build();
         } catch (AccessDeniedException e) {

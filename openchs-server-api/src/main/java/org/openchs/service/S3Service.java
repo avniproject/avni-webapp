@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.apache.commons.io.FileUtils;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.AvniFiles;
@@ -95,9 +96,11 @@ public class S3Service {
                 .withExpiration(getExpireDate(EXPIRY_DURATION));
     }
 
-    //setting content type gives signature mismatch error on the client. Browsers can guess the content type automatically.
-    public URL getDownloadURL(String fileName, HttpMethod method) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(fileName, method);
+    public URL getURLForCustomPrint(String fileName, Organisation organisation) {
+        String objectKey = format("%s/%s", organisation.getMediaDirectory(), fileName);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, objectKey)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(getExpireDate(EXPIRY_DURATION));
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
