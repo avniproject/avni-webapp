@@ -56,7 +56,7 @@ public class AuthServiceTest {
     @Test
     public void shouldReturnEmptyUserContextIfUserCannotBeFoundInToken() {
         when(cognitoAuthService.getUserFromToken("some token")).thenReturn(null);
-        UserContext userContext = authService.authenticateByToken("some token", null);
+        UserContext userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getUser(), is(equalTo(null)));
         assertThat(userContext.getOrganisation(), is(equalTo(null)));
         assertThat(userContext.getRoles().size(), is(equalTo(0)));
@@ -70,7 +70,7 @@ public class AuthServiceTest {
         when(cognitoAuthService.getUserFromToken("some token")).thenReturn(user);
 //        Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
 //        String token = createForBaseToken(user.getUuid()).sign(algorithm);
-        UserContext userContext = authService.authenticateByToken("some token", null);
+        UserContext userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
     }
 
@@ -87,35 +87,35 @@ public class AuthServiceTest {
         when(userRepository.findByUuid(user.getUuid())).thenReturn(user);
         when(cognitoAuthService.getUserFromToken("some token")).thenReturn(user);
 
-        UserContext userContext = authService.authenticateByToken("some token", null);
+        UserContext userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getRoles(), contains(User.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
         user.setAccountAdmin(null);
         user.setOrgAdmin(true);
 
-        userContext = authService.authenticateByToken("some token", null);
+        userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
         assertThat(userContext.getRoles(), contains(User.ORGANISATION_ADMIN));
 
         user.setAccountAdmin(accountAdmin);
         when(accountAdminRepository.findByUser_Id(user.getId())).thenReturn(adminUser);
         user.setOrgAdmin(false);
-        userContext = authService.authenticateByToken("some token", null);
+        userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
         assertThat(userContext.getRoles(), contains(User.ADMIN));
 
         user.setAccountAdmin(null);
         when(accountAdminRepository.findByUser_Id(user.getId())).thenReturn(new ArrayList<>());
         user.setOrgAdmin(false);
-        userContext = authService.authenticateByToken("some token", null);
+        userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
         assertThat(userContext.getRoles(), contains(User.USER));
 
         user.setAccountAdmin(accountAdmin);
         when(accountAdminRepository.findByUser_Id(user.getId())).thenReturn(adminUser);
         user.setOrgAdmin(true);
-        userContext = authService.authenticateByToken("some token", null);
+        userContext = authService.authenticateByToken("some token", null, null);
         assertThat(userContext.getRoles().size(), is(equalTo(2)));
         assertThat(userContext.getRoles(), containsInAnyOrder(User.ADMIN, User.ORGANISATION_ADMIN));
     }
@@ -128,6 +128,17 @@ public class AuthServiceTest {
         when(cognitoAuthService.getUserFromToken("some token")).thenReturn(user);
         UserContext userContext = authService.authenticateByUserId(100L, null);
         assertThat(userContext.getUser(), is(equalTo(user)));
+        assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
+    }
+
+    @Test
+    public void shouldSetOrganisationFromCookie() {
+        Organisation organisation = new Organisation();
+        when(organisationRepository.findOne(1L)).thenReturn(organisation);
+        when(userRepository.findById(100L)).thenReturn(Optional.of(user));
+        when(organisationRepository.findByName("some name")).thenReturn(organisation);
+        UserContext userContext = authService.authenticateByToken("some token", null, "some name");
+        assertThat(userContext.getUser(), is(equalTo(null)));
         assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
     }
 }

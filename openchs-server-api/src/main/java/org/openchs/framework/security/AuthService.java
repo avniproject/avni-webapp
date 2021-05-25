@@ -40,16 +40,25 @@ public class AuthService {
         this.accountAdminRepository = accountAdminRepository;
     }
 
-    public UserContext authenticateByUserName(String username, String organisationUUID) {
+    public UserContext authenticateByUserName(String username, String organisationUUID, String implementationName) {
         becomeSuperUser();
-        return changeUser(userRepository.findByUsername(username), organisationUUID);
+        UserContext userContext = changeUser(userRepository.findByUsername(username), organisationUUID);
+        setOrganisationFromCookieIfRequired(implementationName, userContext);
+        return userContext;
     }
 
-    public UserContext authenticateByToken(String authToken, String organisationUUID) {
+    public UserContext authenticateByToken(String authToken, String organisationUUID, String implementationName) {
         becomeSuperUser();
         UserContext userContext = changeUser(cognitoAuthService.getUserFromToken(authToken), organisationUUID);
+        setOrganisationFromCookieIfRequired(implementationName, userContext);
         userContext.setAuthToken(authToken);
         return userContext;
+    }
+
+    private void setOrganisationFromCookieIfRequired(String implementationName, UserContext userContext) {
+        if (userContext.getOrganisation() == null && implementationName != null) {
+            userContext.setOrganisation(organisationRepository.findByName(implementationName));
+        }
     }
 
     public UserContext authenticateByUserId(Long userId, String organisationUUID) {

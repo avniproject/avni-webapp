@@ -82,13 +82,13 @@ public class S3Service {
     }
 
     public URL generateMediaUploadUrl(String fileName, HttpMethod method) {
+        authorizeUser();
         GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(fileName, method);
         generatePresignedUrlRequest.withContentType(getContentType(fileName));
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
     private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName, HttpMethod method) {
-        authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
         return new GeneratePresignedUrlRequest(bucketName, objectKey)
                 .withMethod(method)
