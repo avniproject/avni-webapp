@@ -19,7 +19,7 @@ import { configureAuth } from "./utils";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-import { intersection, isEmpty } from "lodash";
+import { get, intersection, isEmpty } from "lodash";
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
@@ -75,6 +75,8 @@ function* setUserDetails() {
     yield put(setAdminOrgs(organisations));
   }
   yield put(setUserInfo(userDetails));
+  const organisationName = get(userDetails, "organisationName", "");
+  document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(organisationName)}; path=/`;
   const i18nInstance = i18n.use(initReactI18next).use(LanguageDetector);
   const i18nParams = {
     resources: translationData,

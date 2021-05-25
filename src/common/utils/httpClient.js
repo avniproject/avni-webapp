@@ -71,6 +71,7 @@ class HttpClient {
     } else {
       options.headers.delete("ORGANISATION-UUID");
     }
+    options.credentials = "include";
   }
 
   async fetchJson(url, options = {}, skipOrgUUIDHeader) {
@@ -106,6 +107,7 @@ class HttpClient {
         options.headers.set("AUTH-TOKEN", currentSession.idToken.jwtToken);
       } else {
         axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
+        axios.defaults.withCredentials = true;
       }
     }
     this.setOrgUuidHeader();
