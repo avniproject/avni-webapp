@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import com.amazonaws.HttpMethod;
 import org.apache.commons.io.FilenameUtils;
-import org.openchs.dao.OrganisationRepository;
+import org.openchs.dao.ImplementationRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
@@ -42,13 +42,14 @@ public class MediaController {
     private final Logger logger;
     private final S3Service s3Service;
     private final OrganisationConfigService organisationConfigService;
-    private final OrganisationRepository organisationRepository;
+    private final ImplementationRepository implementationRepository;
 
     @Autowired
-    public MediaController(S3Service s3Service, OrganisationConfigService organisationConfigService, OrganisationRepository organisationRepository) {
+    public MediaController(S3Service s3Service, OrganisationConfigService organisationConfigService,
+                           ImplementationRepository implementationRepository) {
         this.s3Service = s3Service;
         this.organisationConfigService = organisationConfigService;
-        this.organisationRepository = organisationRepository;
+        this.implementationRepository = implementationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -121,7 +122,7 @@ public class MediaController {
 
     @RequestMapping(value = "/customPrint/{basePath}/**", method = RequestMethod.GET)
     public ResponseEntity<?> serveCustomPrintFile(@CookieValue(name = "IMPLEMENTATION-NAME") String implementationName, @PathVariable String basePath, HttpServletRequest request) {
-        Organisation organisation = organisationRepository.findByName(implementationName);
+        Organisation organisation = implementationRepository.findByName(implementationName);
         if (organisation == null) {
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

@@ -25,4 +25,10 @@ public interface ImplementationRepository extends CrudRepository<Organisation, L
 
     @Procedure(value = "create_implementation_schema")
     void createImplementationSchema(String schemaName, String dbUser);
+
+    /**
+     * This is kept here because OrganisationRepository has uer role level @PreAuthorize,
+     * and findByName is required by customPrint API where org name is passed by the cookie
+     */
+    Organisation findByName(String name);
 }
