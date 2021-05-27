@@ -4,7 +4,8 @@ import {
   setSubjectProfile,
   setTabsStatus,
   setGroupMembers,
-  setVoidServerError
+  setVoidServerError,
+  setPrintSettings
 } from "../reducers/subjectDashboardReducer";
 import {
   mapProfile,
@@ -84,6 +85,8 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
       hideDOB
     })
   );
+  const prints = get(organisationConfigs, "organisationConfig.prints", []);
+  yield put.resolve(setPrintSettings(prints));
   yield put.resolve(getRegistrationForm(subjectProfile.subjectType.name));
   yield put(setSubjectProfile(subjectProfile));
   yield put.resolve(setLoad(true));

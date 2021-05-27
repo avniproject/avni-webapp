@@ -24,6 +24,7 @@ import CommentIcon from "@material-ui/icons/Comment";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
 import { get } from "lodash";
 import Fab from "@material-ui/core/Fab";
+import { CustomPrintOption } from "./customPrint/CustomPrintOption";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -246,6 +247,7 @@ const ProfileDetails = ({
           </Table>
         </Grid>
         <Grid container item xs={7} align="right" direction={"column"}>
+          <CustomPrintOption subjectUUID={profileDetails.uuid} />
           <Grid item>
             {enableComment && (
               <Fab

@@ -48,13 +48,13 @@ const CustomPrints = () => {
     if (isEmpty(errors)) {
       setLoad(true);
       let formData = new FormData();
-      const printSettings = new Blob([JSON.stringify({ customPrintProperties: labelFileNames })], {
+      const printSettings = new Blob([JSON.stringify(labelFileNames)], {
         type: "application/json"
       });
       formData.append("printSettings", printSettings);
       formData.append("file", file);
       http
-        .post("/media/customPrint/upload", formData)
+        .post("/customPrint/upload", formData)
         .then(res => {
           if (res.status === 200) {
             setLoad(false);

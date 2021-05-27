@@ -13,8 +13,14 @@ export const types = {
   VOID_SERVER_ERROR: `${prefix}VOID_SERVER_ERROR`,
   VOID_PROGRAM_ENROLMENT: `${prefix}VOID_PROGRAM_ENROLMENT`,
   VOID_PROGRAM_ENCOUNTER: `${prefix}VOID_PROGRAM_ENCOUNTER`,
-  VOID_GENERAL_ENCOUNTER: `${prefix}VOID_GENERAL_ENCOUNTER`
+  VOID_GENERAL_ENCOUNTER: `${prefix}VOID_GENERAL_ENCOUNTER`,
+  SET_PRINT_SETTINGS: `${prefix}SET_PRINT_SETTINGS`
 };
+
+export const setPrintSettings = prints => ({
+  type: types.SET_PRINT_SETTINGS,
+  prints
+});
 
 export const getSubjectProfile = subjectUUID => ({
   type: types.GET_SUBJECT_PROFILE,
@@ -117,7 +123,15 @@ export default function(state = {}, action) {
         voidError: action.voidError
       };
     }
+    case types.SET_PRINT_SETTINGS: {
+      return {
+        ...state,
+        prints: action.prints
+      };
+    }
     default:
       return state;
   }
 }
+
+export const selectPrintState = state => state.dataEntry.subjectProfile.prints;
