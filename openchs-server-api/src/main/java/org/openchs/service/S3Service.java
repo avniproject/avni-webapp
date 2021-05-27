@@ -96,14 +96,6 @@ public class S3Service {
                 .withExpiration(getExpireDate(EXPIRY_DURATION));
     }
 
-    public URL getURLForCustomPrint(String fileName, Organisation organisation) {
-        String objectKey = format("%s/%s", organisation.getMediaDirectory(), fileName);
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, objectKey)
-                .withMethod(HttpMethod.GET)
-                .withExpiration(getExpireDate(EXPIRY_DURATION));
-        return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
-    }
-
     private String getS3KeyForMediaUpload(String fileName) {
         String mediaDirectory = getOrgDirectoryName();
         return format("%s/%s", mediaDirectory, fileName);
@@ -245,7 +237,7 @@ public class S3Service {
     }
 
     public InputStream getObjectContent(String s3Key) {
-        if (isDev) {
+        if (isDev && !s3InDev) {
             try {
                 logger.info(format("[dev] Get file locally. '%s'", s3Key));
                 return new FileInputStream(s3Key);
@@ -256,6 +248,11 @@ public class S3Service {
             }
         }
         return s3Client.getObject(bucketName, s3Key).getObjectContent();
+    }
+
+    public InputStream getCustomPrintContent(String fileName, Organisation organisation) {
+        String objectKey = format("%s/%s", organisation.getMediaDirectory(), fileName);
+        return getObjectContent(objectKey);
     }
 
     public InputStream downloadFile(String directory, String fileName) {
