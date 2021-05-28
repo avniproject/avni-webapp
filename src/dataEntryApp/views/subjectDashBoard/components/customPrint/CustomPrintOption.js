@@ -2,20 +2,21 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { selectPrintState } from "../../../../reducers/subjectDashboardReducer";
 import { map } from "lodash";
-import Fab from "@material-ui/core/Fab";
-import { makeStyles } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { cognitoInDev, devEnvUserName, isDevEnv } from "../../../../../common/constants";
 import Auth from "@aws-amplify/auth";
 
 const useStyles = makeStyles(theme => ({
-  commentButton: {
-    margin: theme.spacing(1),
-    backgroundColor: "#f27510",
-    height: "38px",
-    zIndex: 1,
-    boxShadow: "none",
-    whiteSpace: "nowrap"
+  buttonStyle: {
+    textTransform: "none",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    color: "#FFFFFF",
+    backgroundColor: "#0000ff",
+    "&:hover": {
+      backgroundColor: "#0000A2"
+    }
   }
 }));
 
@@ -37,22 +38,19 @@ export const CustomPrintOption = ({ subjectUUID }) => {
   };
 
   return (
-    <Grid item container xs={12} direction={"row-reverse"}>
+    <Grid item container xs={12} direction={"row-reverse"} spacing={2}>
       {map(printSettings, ({ label, fileName }, index) => {
         return (
           <Grid item key={label + index}>
-            <Fab
+            <Button
               id={label}
-              className={classes.commentButton}
-              variant="extended"
-              color="primary"
-              aria-label="add"
+              className={classes.buttonStyle}
               onClick={() => {
                 clickHandler(fileName);
               }}
             >
               {label}
-            </Fab>
+            </Button>
           </Grid>
         );
       })}
