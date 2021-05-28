@@ -6,6 +6,7 @@ import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.S3Service;
 import org.openchs.util.AvniFiles;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,11 @@ public class MediaController {
     }
 
     private String mobileDatabaseBackupFile() {
-        String catchmentUuid = UserContextHolder.getUser().getCatchment().getUuid();
+        User user = UserContextHolder.getUserContext().getUser();
+        if (user.getCatchment() == null) {
+            throw new ValidationException("NoCatchmentFound");
+        }
+        String catchmentUuid = user.getCatchment().getUuid();
         return String.format("MobileDbBackup-%s", catchmentUuid);
     }
 
