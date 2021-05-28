@@ -74,6 +74,12 @@ public class OrganisationService {
     private final VideoService videoService;
     private final CardService cardService;
     private final DashboardService dashboardService;
+    private final CardRepository cardRepository;
+    private final DashboardRepository dashboardRepository;
+    private final DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository;
+    private final DashboardSectionRepository dashboardSectionRepository;
+    private final GroupDashboardRepository groupDashboardRepository;
+    private final Msg91ConfigRepository msg91ConfigRepository;
 
     //Tx repositories
     private final RuleFailureTelemetryRepository ruleFailureTelemetryRepository;
@@ -88,6 +94,11 @@ public class OrganisationService {
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final EncounterRepository encounterRepository;
     private final IndividualRepository individualRepository;
+    private final EntityApprovalStatusRepository entityApprovalStatusRepository;
+    private final CommentRepository commentRepository;
+    private final CommentThreadRepository commentThreadRepository;
+    private final NewsRepository newsRepository;
+
 
     @Autowired
     public OrganisationService(FormRepository formRepository,
@@ -125,6 +136,12 @@ public class OrganisationService {
                                VideoService videoService,
                                CardService cardService,
                                DashboardService dashboardService,
+                               CardRepository cardRepository,
+                               DashboardRepository dashboardRepository,
+                               DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository,
+                               DashboardSectionRepository dashboardSectionRepository,
+                               GroupDashboardRepository groupDashboardRepository,
+                               Msg91ConfigRepository msg91ConfigRepository,
                                RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
                                IdentifierAssignmentRepository identifierAssignmentRepository,
                                SyncTelemetryRepository syncTelemetryRepository,
@@ -136,7 +153,11 @@ public class OrganisationService {
                                ProgramEncounterRepository programEncounterRepository,
                                ProgramEnrolmentRepository programEnrolmentRepository,
                                EncounterRepository encounterRepository,
-                               IndividualRepository individualRepository) {
+                               IndividualRepository individualRepository,
+                               EntityApprovalStatusRepository entityApprovalStatusRepository,
+                               CommentRepository commentRepository,
+                               CommentThreadRepository commentThreadRepository,
+                               NewsRepository newsRepository) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -172,6 +193,12 @@ public class OrganisationService {
         this.videoService = videoService;
         this.cardService = cardService;
         this.dashboardService = dashboardService;
+        this.cardRepository = cardRepository;
+        this.dashboardRepository = dashboardRepository;
+        this.dashboardSectionCardMappingRepository = dashboardSectionCardMappingRepository;
+        this.dashboardSectionRepository = dashboardSectionRepository;
+        this.groupDashboardRepository = groupDashboardRepository;
+        this.msg91ConfigRepository = msg91ConfigRepository;
         this.ruleFailureTelemetryRepository = ruleFailureTelemetryRepository;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.syncTelemetryRepository = syncTelemetryRepository;
@@ -184,6 +211,10 @@ public class OrganisationService {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
+        this.entityApprovalStatusRepository = entityApprovalStatusRepository;
+        this.commentRepository = commentRepository;
+        this.commentThreadRepository = commentThreadRepository;
+        this.newsRepository = newsRepository;
     }
 
 
@@ -440,6 +471,10 @@ public class OrganisationService {
 
     public void deleteTransactionalData() {
         JpaRepository[] transactionalRepositories = {
+                newsRepository,
+                commentRepository,
+                commentThreadRepository,
+                entityApprovalStatusRepository,
                 ruleFailureTelemetryRepository,
                 identifierAssignmentRepository,
                 syncTelemetryRepository,
@@ -482,7 +517,13 @@ public class OrganisationService {
                 subjectTypeRepository,
                 organisationConfigRepository,
                 translationRepository,
-                videoRepository
+                videoRepository,
+                dashboardSectionCardMappingRepository,
+                cardRepository,
+                dashboardSectionRepository,
+                groupDashboardRepository,
+                dashboardRepository,
+                msg91ConfigRepository
         };
 
         Arrays.asList(metadataRepositories).forEach(this::deleteAll);
