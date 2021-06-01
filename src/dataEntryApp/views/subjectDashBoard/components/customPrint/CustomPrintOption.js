@@ -16,7 +16,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#0000ff",
     "&:hover": {
       backgroundColor: "#0000A2"
-    }
+    },
+    marginBottom: theme.spacing(2)
   }
 }));
 
