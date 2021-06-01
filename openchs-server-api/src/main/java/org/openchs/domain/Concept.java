@@ -1,16 +1,12 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
-import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
-import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Parameter;
-import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 import org.openchs.application.KeyValues;
 import org.openchs.web.request.ConceptContract;
 
@@ -23,27 +19,6 @@ import java.util.stream.Stream;
 @Entity
 @Indexed
 @Table(name = "concept")
-@AnalyzerDefs({
-        @AnalyzerDef(name = "edgeNgram",
-                tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
-                filters = {
-                        @TokenFilterDef(factory = ASCIIFoldingFilterFactory.class), // Replace accented characeters by their simpler counterpart (è => e, etc.)
-                        @TokenFilterDef(factory = LowerCaseFilterFactory.class), // Lowercase all characters
-                        @TokenFilterDef(
-                                factory = EdgeNGramFilterFactory.class, // Generate prefix tokens
-                                params = {
-                                        @Parameter(name = "minGramSize", value = "1"),
-                                        @Parameter(name = "maxGramSize", value = "10")
-                                }
-                        )
-                }),
-        @AnalyzerDef(name = "edgeNGram_query",
-                tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-                filters = {
-                        @TokenFilterDef(factory = ASCIIFoldingFilterFactory.class), // Replace accented characeters by their simpler counterpart (è => e, etc.)
-                        @TokenFilterDef(factory = LowerCaseFilterFactory.class), // Lowercase all characters
-                })
-})
 @BatchSize(size = 100)
 @DynamicInsert
 public class Concept extends OrganisationAwareEntity {
@@ -51,7 +26,6 @@ public class Concept extends OrganisationAwareEntity {
     private static final int NUMBER_OF_CHARACTERS_TO_ACCOMMODATE_HASHCODE = 14;
 
     @Field
-    @Analyzer(definition = "edgeNgram")
     @NotNull
     private String name;
 
