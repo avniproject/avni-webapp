@@ -1,13 +1,10 @@
 package org.openchs.service;
 
 import org.joda.time.LocalDate;
-import org.openchs.application.projections.WebSearchResultProjection;
-import org.openchs.dao.IndividualRepository;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.UserContext;
-import org.openchs.framework.security.UserContextHolder;
+import org.openchs.dao.SubjectSearchRepository;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
+import org.openchs.web.request.webapp.search.SubjectSearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,54 +17,42 @@ import java.util.stream.Collectors;
 
 @Service
 public class IndividualSearchService {
-    private final IndividualRepository individualRepository;
+    private final SubjectSearchRepository subjectSearchRepository;
 
     @Autowired
-    public IndividualSearchService(IndividualRepository individualRepository) {
-        this.individualRepository = individualRepository;
+    public IndividualSearchService( SubjectSearchRepository subjectSearchRepository) {
+        this.subjectSearchRepository = subjectSearchRepository;
     }
 
     @Transactional
-    public LinkedHashMap<String, Object> getSearchResult(String jsonSearch) {
-        UserContext userContext = UserContextHolder.getUserContext();
-        Organisation organisation = userContext.getOrganisation();
-        String dbUser = organisation.getDbUser();
-        List<WebSearchResultProjection> webSearchResults = individualRepository.getWebSearchResults(jsonSearch, dbUser);
-        return constructIndividual(webSearchResults);
+    public LinkedHashMap<String, Object> search(SubjectSearchRequest subjectSearchRequest) {
+        List<Object[]> searchResults = subjectSearchRepository.search(subjectSearchRequest);
+        BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest);
+        return constructIndividual(searchResults, totalCount);
     }
 
-
-    private LinkedHashMap<String, Object> constructIndividual(List<WebSearchResultProjection> individualList) {
-        BigInteger totalElements = new BigInteger("0");
-        LinkedHashMap<String, Object> recordsMap = new LinkedHashMap<String, Object>();
-        List<IndividualContract> individualRecordList = individualList.stream()
+    private LinkedHashMap<String, Object> constructIndividual(List<Object[]> individualList, BigInteger totalCount) {
+        LinkedHashMap<String, Object> recordsMap=new LinkedHashMap<String, Object>();
+        List<IndividualContract> individualRecordList= individualList.stream()
                 .map(individualRecord -> {
                     IndividualContract individualContract = new IndividualContract();
-                    individualContract.setFirstName(individualRecord.getFirstname());
-                    individualContract.setLastName(individualRecord.getLastname());
-                    individualContract.setFullName(individualRecord.getFullname());
-                    String id = individualRecord.getId();
-                    if (null != id && !"".equals(id.trim()))
-                        individualContract.setId(new Long(id));
-                    individualContract.setUuid(individualRecord.getUuid());
-                    individualContract.setAddressLevel(individualRecord.getTitle_lineage());
-                    individualContract.setSubjectTypeName(individualRecord.getSubject_type_name());
-                    individualContract.setGender(individualRecord.getGender_name());
-                    String date_of_birth = individualRecord.getDate_of_birth();
-                    if (null != date_of_birth && !"".equals(date_of_birth.trim()))
-                        individualContract.setDateOfBirth(new LocalDate(date_of_birth));
-                    individualContract.setEnrolments(constructEnrolments(individualRecord.getEnrolments()));
+                    individualContract.setFirstName((String) individualRecord[1]);
+                    individualContract.setLastName((String) individualRecord[2]);
+                    individualContract.setFullName((String) individualRecord[3]);
+                    if(null!=individualRecord[0] && !"".equals(individualRecord[0].toString().trim()))
+                        individualContract.setId(new Long(individualRecord[0].toString()));
+                    individualContract.setUuid((String) individualRecord[4]);
+                    individualContract.setAddressLevel((String) individualRecord[5]);
+                    individualContract.setSubjectTypeName((String) individualRecord[6]);
+                    individualContract.setGender((String) individualRecord[7]);
+                    if(null!=individualRecord[8] && !"".equals(individualRecord[8].toString().trim()))
+                        individualContract.setDateOfBirth(new LocalDate(individualRecord[8].toString()));
+                    individualContract.setEnrolments(constructEnrolments((String) individualRecord[9]));
 
                     return individualContract;
                 }).collect(Collectors.toList());
-        if (null != individualList && individualList.size() > 0) {
-            WebSearchResultProjection firstRecord = individualList.get(0);
-            String total_elements = firstRecord.getTotal_elements();
-            if (null != total_elements && !"".equals(total_elements.trim()))
-                totalElements = new BigInteger(total_elements);
-        }
-        recordsMap.put("totalElements", totalElements);
-        recordsMap.put("listOfRecords", individualRecordList);
+        recordsMap.put("totalElements",totalCount);
+        recordsMap.put("listOfRecords",individualRecordList);
         return recordsMap;
     }
 

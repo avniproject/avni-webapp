@@ -10,6 +10,7 @@ import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.Decisions;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
+import org.openchs.web.request.webapp.search.SubjectSearchRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -147,8 +148,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PostMapping(value = "/web/searchAPI/v2")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
-    public ResponseEntity<LinkedHashMap<String, Object>> getSearch(@RequestBody String searchQuery) {
-        return new ResponseEntity<>(individualSearchService.getSearchResult(searchQuery), HttpStatus.OK);
+    public ResponseEntity<LinkedHashMap<String, Object>> searchSubjects(@RequestBody SubjectSearchRequest subjectSearchRequest) {
+        return new ResponseEntity<>(individualSearchService.search(subjectSearchRequest), HttpStatus.OK);
     }
 
     @GetMapping(value = "/web/individual/{uuid}")

@@ -2,7 +2,10 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.application.projections.WebSearchResultProjection;
-import org.openchs.domain.*;
+import org.openchs.domain.AddressLevel;
+import org.openchs.domain.Concept;
+import org.openchs.domain.Individual;
+import org.openchs.domain.SubjectType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -122,5 +125,4 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     List<Individual> findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(AddressLevel addressLevel, SubjectType subjectType);
-
 }
