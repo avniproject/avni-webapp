@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface GroupSubjectRepository extends TransactionalDataRepository<GroupSubject>, OperatingIndividualScopeAwareRepository<GroupSubject> {
+public interface GroupSubjectRepository extends TransactionalDataRepository<GroupSubject>, FindByLastModifiedDateTime<GroupSubject>, OperatingIndividualScopeAwareRepository<GroupSubject> {
     default GroupSubject findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in GroupSubject");
     }
@@ -57,4 +57,14 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     List<GroupSubject> findAllByGroupSubjectAndIsVoidedFalse(Individual groupSubject);
 
     List<GroupSubject> findAllByMemberSubject(Individual memberSubject);
+
+    Page<GroupSubject> findByGroupSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
+            String groupSubjectUUID,
+            Pageable pageable
+    );
+
+    Page<GroupSubject> findByMemberSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
+            String memberSubjectUUID,
+            Pageable pageable
+    );
 }
