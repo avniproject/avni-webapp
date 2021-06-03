@@ -256,7 +256,7 @@ public class S3Service {
     }
 
     public InputStream downloadFile(String directory, String fileName) {
-        if (isDev) {
+        if (isDev && !s3InDev) {
             String localFilePath = format("%s/%s/%s", System.getProperty("java.io.tmpdir"), directory, fileName);
             try {
                 return new FileInputStream(localFilePath);
