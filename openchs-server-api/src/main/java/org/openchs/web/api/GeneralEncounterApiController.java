@@ -1,7 +1,10 @@
 package org.openchs.web.api;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.*;
+import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.EncounterRepository;
+import org.openchs.dao.EncounterTypeRepository;
+import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.*;
 import org.openchs.service.ConceptService;
 import org.openchs.util.S;
@@ -44,14 +47,17 @@ public class GeneralEncounterApiController {
     public ResponsePage getEncounters(@RequestParam(value = "lastModifiedDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                       @RequestParam(value = "encounterType", required = false) String encounterType,
+                                      @RequestParam(value = "subjectId", required = false) String subjectUUID,
                                       @RequestParam(value = "concepts", required = false) String concepts,
                                       Pageable pageable) {
         Page<Encounter> encounters;
         Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         if (S.isEmpty(encounterType)) {
             encounters = encounterRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
-        } else {
+        } else if (S.isEmpty(subjectUUID)) {
             encounters = encounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, conceptsMap, encounterType, pageable);
+        } else {
+            encounters = encounterRepository.findByConceptsAndEncounterTypeAndSubject(lastModifiedDateTime, now, conceptsMap, encounterType, subjectUUID, pageable);
         }
 
         ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.openchs.domain.Concept;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
+import org.openchs.domain.Individual;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -98,6 +99,13 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         return spec;
     }
 
+    default Specification<Encounter> findBySubjectUUIDSpec(String subjectUUID) {
+        return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Encounter, Individual> individualJoin = root.join("individual", JoinType.LEFT);
+            return cb.and(cb.equal(individualJoin.get("uuid"), subjectUUID));
+        };
+    }
+
     default Page<Encounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
         return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
     }
@@ -106,6 +114,14 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         return findAll(
                 findByConceptsSpec(lastModifiedDateTime, now, concepts)
                         .and(findByEncounterTypeSpec(encounterType)),
+                pageable);
+    }
+
+    default Page<Encounter> findByConceptsAndEncounterTypeAndSubject(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String encounterType, String subjectUUID, Pageable pageable){
+        return findAll(
+                findByConceptsSpec(lastModifiedDateTime, now, concepts)
+                        .and(findByEncounterTypeSpec(encounterType))
+                        .and(findBySubjectUUIDSpec(subjectUUID)),
                 pageable);
     }
 }

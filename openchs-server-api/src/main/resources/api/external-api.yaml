@@ -362,6 +362,12 @@ paths:
           schema:
             type: string
         - in: query
+            name: subjectId
+            description: ID of the subject
+            required: false
+            schema:
+              type: uuid
+        - in: query
           name: concepts
           description: Allows to search by concepts. Remember that '{' and '}' are not valid in a url, and need to be escaped with %7B and %7D respectively.
           example: '{"Diagnosis": "Diabetes", "Blood Group": "B+"}'
@@ -469,6 +475,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Encounter'
+  /api/groupSubjects:
+    get:
+      tags:
+        - Group Subject
+      summary: Get paged list of group subject
+      description: |
+        By passing in the appropriate options, you can get the group subjects in set of pages.
+      parameters:
+        - in: query
+          name: lastModifiedDateTime
+          description: date-time in ISO datetime format. All the group subject which have been updated since this time will be returned. The value should be specified in the following format - yyyy-MM-dd'T'HH:mm:ss.SSSZ, e.g. "2000-10-31T01:30:00.000Z".
+          required: false
+          schema:
+            type: string
+        - in: query
+            name: groupSubjectId
+            description: ID of the group subject
+            required: false
+            schema:
+              type: uuid
+        - in: query
+            name: memberSubjectId
+            description: ID of the member subject
+            required: false
+            schema:
+              type: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      responses:
+        '200':
+          description: successful, a page of group subject
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponsePage'
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Encounter'
+        '400':
+          description: bad input parameter
 components:
   schemas:
     Subject:

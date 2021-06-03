@@ -156,7 +156,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private <T extends AbstractEncounter> void addEncounter(List<Object> row, T encounter, LinkedHashMap<String, FormElement> map, LinkedHashMap<String, FormElement> cancelMap) {
         row.add(encounter.getId());
         row.add(encounter.getUuid());
-        row.add(encounter.getName());
+        row.add(massageStringValue(encounter.getName()));
         row.add(encounter.getEarliestVisitDateTime());
         row.add(encounter.getMaxVisitDateTime());
         row.add(encounter.getEncounterDateTime());
@@ -215,13 +215,13 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             Concept concept = fe.getConcept();
             if (concept.getDataType().equals(ConceptDataType.Coded.toString()) && fe.getType().equals(FormElementType.MultiSelect.toString())) {
                 concept.getSortedAnswers().map(ca -> ca.getAnswerConcept().getName()).forEach(can ->
-                        sb.append(",")
+                        sb.append(",\"")
                                 .append(prefix)
                                 .append("_")
-                                .append(massageStringValue(concept.getName()))
-                                .append("_").append(massageStringValue(can)));
+                                .append(concept.getName())
+                                .append("_").append(can).append("\""));
             } else {
-                sb.append(",").append(prefix).append("_").append(massageStringValue(concept.getName()));
+                sb.append(",\"").append(prefix).append("_").append(concept.getName()).append("\"");
             }
         });
     }
@@ -229,7 +229,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private String massageStringValue(String text) {
         if (StringUtils.isEmpty(text))
             return text;
-        return text.replaceAll("\n", " ").replaceAll("\t", " ").replaceAll(",", " ");
+        return "\"".concat(text).concat("\"");
     }
 
     private List<Object> getObs(ObservationCollection observations, LinkedHashMap<String, FormElement> obsMap) {
@@ -278,7 +278,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private void addAddressLevels(List<Object> row, AddressLevel addressLevel) {
         Map<String, String> addressLevelMap = addressLevel != null ?
                 getAddressTypeAddressLevelMap(addressLevel, addressLevel.getParentLocationMapping()) : new HashMap<>();
-        this.addressLevelTypes.forEach(level -> row.add(addressLevelMap.getOrDefault(level, "")));
+        this.addressLevelTypes.forEach(level -> row.add(massageStringValue(addressLevelMap.getOrDefault(level, ""))));
     }
 
     private Map<String, String> getAddressTypeAddressLevelMap(AddressLevel addressLevel, ParentLocationMapping parentLocationMapping) {
