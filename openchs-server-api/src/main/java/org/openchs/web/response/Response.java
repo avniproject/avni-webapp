@@ -1,11 +1,12 @@
 package org.openchs.web.response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.CHSBaseEntity;
 import org.openchs.domain.CHSEntity;
-import org.openchs.domain.Concept;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.service.ConceptService;
+import org.openchs.util.ObjectMapperSingleton;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,10 +17,16 @@ public class Response {
     }
 
     static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap, LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations, String observationsResponseKeyName) {
-        Optional.ofNullable(observations).orElse(new ObservationCollection()).forEach((key, value) -> {
-            Concept concept = conceptRepository.findByUuid(key);
-            observationsResponse.put(concept.getName(), conceptService.getObservationValue(concept, value));
-        });
+        ObservationCollection obs = Optional.ofNullable(observations).orElse(new ObservationCollection());
+        String stringObservations;
+        try {
+            stringObservations = ObjectMapperSingleton.getObjectMapper().writeValueAsString(obs);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(String.format("Error while processing observation %s", obs.toString()));
+        }
+        List<Map<String, String>> conceptMaps = conceptRepository.getConceptUuidToNameMapList(stringObservations);
+        Map<String, String> conceptMap = conceptMaps.stream().collect(Collectors.toMap(s -> s.get("uuid"), s -> s.get("name")));
+        obs.forEach((key, value) -> observationsResponse.put(conceptMap.get(key), conceptService.getObservationValue(conceptMap, value)));
         parentMap.put(observationsResponseKeyName, observationsResponse);
     }
 

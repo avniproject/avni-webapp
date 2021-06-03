@@ -5,13 +5,16 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
+import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.service.ConceptService;
 
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -61,16 +64,33 @@ public class ResponseUnitTest {
         observationsResponse.put("First Name", "Test");
         ObservationCollection observations = new ObservationCollection();
         String questionConceptUuid = "55f3e0cc-a9bc-45d6-a42c-a4fd3d90465f";
+        String answerConceptUuid = "a33da2f8-7329-4e2a-8c27-046ee4082524";
         Concept questionConcept = new Concept();
         questionConcept.setName(questionConceptName);
-        observations.put(questionConceptUuid, answerValue);
-        when(conceptRepository.findByUuid(questionConceptUuid)).thenReturn(questionConcept);
-        when(conceptService.getObservationValue(questionConcept, answerValue)).thenReturn(answerValue);
-
+        Concept answerConcept = new Concept();
+        answerConcept.setUuid(answerConceptUuid);
+        answerConcept.setName(answerValue);
+        ConceptAnswer conceptAnswer = new ConceptAnswer();
+        conceptAnswer.setConcept(answerConcept);
+        Set<ConceptAnswer> answers = new HashSet<>();
+        answers.add(conceptAnswer);
+        questionConcept.setConceptAnswers(answers);
+        observations.put(questionConceptUuid, answerConceptUuid);
+        List<Map<String, String>> conceptMapList = new ArrayList<>();
+        Map<String, String> conceptMap1 = new HashMap<>();
+        conceptMap1.put("name",questionConceptName);
+        conceptMap1.put("uuid",questionConceptUuid);
+        Map<String, String> conceptMap2 = new HashMap<>();
+        conceptMap2.put("name",answerValue);
+        conceptMap2.put("uuid",answerConceptUuid);
+        conceptMapList.add(conceptMap1);
+        conceptMapList.add(conceptMap2);
+        when(conceptRepository.getConceptUuidToNameMapList(anyString())).thenReturn(conceptMapList);
+        when(conceptService.getObservationValue(anyMap(), anyString())).thenReturn(answerValue);
         Response.putObservations(conceptRepository, conceptService, parentMap, observationsResponse, observations);
         LinkedHashMap<String, Object> result = (LinkedHashMap<String, Object>) parentMap.get("observations");
 
         assertThat(result.get("First Name"), is("Test"));
-        assertThat(result.get(questionConceptName), is("XYZ"));
+        assertThat(result.get(questionConceptName), is(answerValue));
     }
 }

@@ -3,7 +3,6 @@ package org.openchs.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.FormElement;
-import org.openchs.application.KeyType;
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
@@ -212,20 +211,13 @@ public class ConceptService {
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
     }
 
-    public Object getObservationValue(Concept concept, Object value) {
-        if (ConceptDataType.isPrimitiveType(concept.getDataType()) || ConceptDataType.matches(concept.getDataType(), ConceptDataType.Id, ConceptDataType.Video, ConceptDataType.Image)) {
-            return value;
-        } else if (ConceptDataType.matches(ConceptDataType.Coded, concept.getDataType())) {
-            if (value instanceof String) {
-                return conceptRepository.findByUuid((String) value).getName();
-            } else {
-                List<String> answerUUIDs = (List<String>) value;
-                return answerUUIDs.stream().map(answerUUID -> conceptRepository.findByUuid(answerUUID).getName()).toArray();
-            }
-        } else if (ConceptDataType.matches(ConceptDataType.Coded, concept.getDataType())) {
-            return value;
+    public Object getObservationValue(Map<String, String> conceptMap, Object value) {
+        if (value instanceof ArrayList) {
+            List<String> answerUUIDs = (List<String>) value;
+            return answerUUIDs.stream().map(conceptMap::get).toArray();
         } else {
-            return value;
+            String conceptName = conceptMap.get(value);
+            return conceptName == null ? value : conceptName;
         }
     }
 
