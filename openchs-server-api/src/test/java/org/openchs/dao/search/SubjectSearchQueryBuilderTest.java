@@ -1,6 +1,5 @@
 package org.openchs.dao.search;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openchs.web.request.webapp.search.Concept;
 import org.openchs.web.request.webapp.search.DateRange;
@@ -55,20 +54,9 @@ public class SubjectSearchQueryBuilderTest {
     @Test
     public void shouldAddAgeFilter() {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
-                .withAgeFilter(new IntegerRange(1, 2))
-                .build();
-        assertThat(query.getParameters().size()).isEqualTo(2);
-        System.out.println(query.getSql());
-
-        query = new SubjectSearchQueryBuilder()
                 .withAgeFilter(new IntegerRange(1, null))
                 .build();
-        assertThat(query.getParameters().size()).isEqualTo(1);
-
-        query = new SubjectSearchQueryBuilder()
-                .withAgeFilter(new IntegerRange(null, 2))
-                .build();
-        assertThat(query.getParameters().size()).isEqualTo(1);
+        assertThat(query.getParameters().size()).isEqualTo(3);
     }
 
     @Test
@@ -76,15 +64,14 @@ public class SubjectSearchQueryBuilderTest {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
                 .withGenderFilter(null)
                 .build();
-        assertThat(query.getParameters().size()).isEqualTo(0);
+        assertThat(query.getParameters().size()).isEqualTo(2);
 
         ArrayList<String> genders = new ArrayList<>();
         genders.add("firstGenderUuid");
         query = new SubjectSearchQueryBuilder()
                 .withGenderFilter(genders)
                 .build();
-        assertThat(query.getParameters().size()).isEqualTo(1);
-        System.out.println(query.getSql());
+        assertThat(query.getParameters().size()).isEqualTo(3);
     }
 
     @Test
@@ -92,8 +79,7 @@ public class SubjectSearchQueryBuilderTest {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
                 .withEncounterDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .build();
-        System.out.println(query.getSql()); //Verify that join has been added
-        assertThat(query.getParameters().size()).isEqualTo(2);
+        assertThat(query.getParameters().size()).isEqualTo(4);
     }
 
     @Test
@@ -102,8 +88,7 @@ public class SubjectSearchQueryBuilderTest {
                 .withProgramEncounterDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .withProgramEnrolmentDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .build();
-        System.out.println(query.getSql());
-        assertThat(query.getParameters().size()).isEqualTo(4);
+        assertThat(query.getParameters().size()).isEqualTo(6);
     }
 
     @Test
@@ -112,14 +97,12 @@ public class SubjectSearchQueryBuilderTest {
                 .withConceptsFilter(Arrays.asList(
                         new Concept[]{new Concept("uuid", "registration", "CODED", Arrays.asList(new String[]{"asdf", "qwer"}), null)}))
                 .build();
-        System.out.println(query.getSql());
     }
 
     @Test
     public void shouldMakeQueryForCount() {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder().forCount()
                 .build();
-        System.out.println(query.getSql());
     }
 
 }
