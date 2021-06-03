@@ -86,27 +86,3 @@ SELECT name
 FROM concept
 WHERE uuid = $1;
 $$;
-
-create or replace function get_concept_uuid_to_name_map(observations text)
-    RETURNS TABLE
-            (
-                uuid varchar,
-                name varchar
-            )
-    stable
-    language plpgsql
-as
-$$
-
-BEGIN
-    BEGIN
-        RETURN QUERY
-            SELECT distinct c.uuid, c.name
-            FROM concept c
-                     INNER JOIN (
-                SELECT unnest(ARRAY [to_jsonb(key), value]) conecpt_uuid
-                FROM jsonb_each(observations::jsonb)
-            ) obs ON obs.conecpt_uuid @> to_jsonb(c.uuid);
-    END;
-END
-$$;
