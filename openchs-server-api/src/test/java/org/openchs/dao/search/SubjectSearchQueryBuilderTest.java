@@ -90,7 +90,7 @@ public class SubjectSearchQueryBuilderTest {
     @Test
     public void shouldAddEncounterJoinWhtnAddingEncounterDateFilter() {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
-                .withEncounterDateFilter(new DateRange(DateTime.now(), DateTime.parse("2022-01-01")))
+                .withEncounterDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .build();
         System.out.println(query.getSql()); //Verify that join has been added
         assertThat(query.getParameters().size()).isEqualTo(2);
@@ -99,8 +99,8 @@ public class SubjectSearchQueryBuilderTest {
     @Test
     public void shouldNotAddTheSameJoinsMultipleTimes() {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
-                .withProgramEncounterDateFilter(new DateRange(DateTime.now(), DateTime.parse("2022-01-01")))
-                .withProgramEnrolmentDateFilter(new DateRange(DateTime.now(), DateTime.parse("2022-01-01")))
+                .withProgramEncounterDateFilter(new DateRange("2021-01-01", "2022-01-01"))
+                .withProgramEnrolmentDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .build();
         System.out.println(query.getSql());
         assertThat(query.getParameters().size()).isEqualTo(4);
@@ -110,7 +110,7 @@ public class SubjectSearchQueryBuilderTest {
     public void shouldAddConditionsForConcepts() {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
                 .withConceptsFilter(Arrays.asList(
-                        new Concept[]{new Concept("uuid", "registration", "CODED", Arrays.asList(new String[]{"asdf", "qwer"}), value)}))
+                        new Concept[]{new Concept("uuid", "registration", "CODED", Arrays.asList(new String[]{"asdf", "qwer"}), null)}))
                 .build();
         System.out.println(query.getSql());
     }
