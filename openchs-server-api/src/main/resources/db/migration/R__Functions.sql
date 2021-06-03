@@ -47,7 +47,7 @@ END $$
 CREATE OR REPLACE FUNCTION create_audit()
   RETURNS INTEGER AS 'select create_audit(1)' language sql;
 
--- These were failing tests, removing them for now. 
+-- These were failing tests, removing them for now.
 -- DROP function if exists get_observation_pattern;
 -- DROP function if exists get_outer_query(text, text);
 -- DROP function if exists get_outer_query(text);

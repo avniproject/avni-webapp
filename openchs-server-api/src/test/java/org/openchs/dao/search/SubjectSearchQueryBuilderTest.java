@@ -45,10 +45,10 @@ public class SubjectSearchQueryBuilderTest {
         SubjectSearchQuery query = new SubjectSearchQueryBuilder()
                 .withNameFilter("two tokens  andAnother")
                 .build();
-        assertThat(query.getSql().contains("i.last_name ilike '%two%'")).isTrue();
-        assertThat(query.getSql().contains("i.last_name ilike '%tokens%'")).isTrue();
-        assertThat(query.getSql().contains("i.last_name ilike '%andAnother%'")).isTrue();
-        assertThat(query.getParameters().size()).isEqualTo(3);
+        assertThat(query.getParameters().values().contains("%two%")).isTrue();
+        assertThat(query.getParameters().values().contains("%tokens%")).isTrue();
+        assertThat(query.getParameters().values().contains("%andAnother%")).isTrue();
+        assertThat(query.getParameters().size()).isEqualTo(5);
     }
 
     @Test
