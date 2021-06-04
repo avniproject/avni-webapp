@@ -214,7 +214,7 @@ public class ConceptService {
     public Object getObservationValue(Map<String, String> conceptMap, Object value) {
         if (value instanceof ArrayList) {
             List<String> answerUUIDs = (List<String>) value;
-            return answerUUIDs.stream().map(conceptMap::get).toArray();
+            return answerUUIDs.stream().map(answerUUID -> conceptMap.getOrDefault(answerUUID, answerUUID)).toArray();
         } else {
             String conceptName = conceptMap.get(value);
             return conceptName == null ? value : conceptName;
