@@ -118,6 +118,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
                 throw new Exception(String.format("Location id %d not found", locationId));
             addressLevel.addCatchment(catchment);
         }
+        catchment.updateAudit();
         catchmentRepository.save(catchment);
         return new ResponseEntity<>(catchment, HttpStatus.OK);
     }
