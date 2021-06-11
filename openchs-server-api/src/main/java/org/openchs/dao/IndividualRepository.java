@@ -115,13 +115,14 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     default Page<Individual> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
-        return findAll(findByConceptsSpec(lastModifiedDateTime, now, concepts), pageable);
+        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
+                .and(withConceptValues(concepts)), pageable);
     }
 
     default Page<Individual> findByConceptsAndSubjectType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String subjectType, Pageable pageable) {
-        return findAll(
-                findByConceptsSpec(lastModifiedDateTime, now, concepts).and(findBySubjectTypeSpec(subjectType)),
-                pageable);
+        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
+                .and(withConceptValues(concepts))
+                .and(findBySubjectTypeSpec(subjectType)), pageable);
     }
 
     List<Individual> findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(AddressLevel addressLevel, SubjectType subjectType);

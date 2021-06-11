@@ -57,19 +57,4 @@ public interface CHSRepository<T extends CHSEntity> {
         };
         return spec;
     }
-
-    default Specification<T> findByConceptsSpec(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts) {
-
-        Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            Join<T, Audit> audit = root.join("audit", JoinType.LEFT);
-
-            List<Predicate> predicates = new ArrayList<>();
-            concepts.forEach((concept, value) -> {
-                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), concept.getUuid(), cb), value));
-            });
-
-            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-        };
-        return spec;
-    }
 }
