@@ -18,6 +18,7 @@ import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { AbstractEncounter } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
+import { LineBreak } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -54,6 +55,7 @@ const CancelEncounter = ({ match, encounter, ...props }) => {
                   formElement={new StaticFormElement("Cancel Date", true, false)}
                   value={encounter.cancelDateTime}
                 />
+                <LineBreak num={3} />
               </CancelEncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />

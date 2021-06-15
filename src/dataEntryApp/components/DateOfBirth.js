@@ -6,6 +6,7 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/picker
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import { dateFormat } from "dataEntryApp/constants";
+import { LineBreak } from "../../common/components/utils";
 
 export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
@@ -68,10 +69,11 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             }}
           />
         </MuiPickersUtilsProvider>
+        <LineBreak num={1} />
         <Typography
           variant="body1"
           gutterBottom
-          style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}
+          style={{ width: "50%", color: "rgba(0, 0, 0, 0.54)" }}
         >
           {t("age")}
         </Typography>

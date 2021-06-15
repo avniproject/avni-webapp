@@ -23,6 +23,7 @@ import {
 import { AbstractEncounter } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
+import { LineBreak } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,6 +74,7 @@ const ProgramEncounter = ({
                   validationResults={validationResults}
                   update={setEncounterDate}
                 />
+                <LineBreak num={3} />
               </ProgramEncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />

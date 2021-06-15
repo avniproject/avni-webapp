@@ -231,7 +231,7 @@ const SubjectRegister = props => {
           <Typography variant="h6" gutterBottom>
             {t("register")} {t(props.subject.subjectType.name)}
           </Typography>
-          <LineBreak num={1} />
+          <LineBreak num={2} />
           <div>
             {props.subject && (
               <RegistrationForm fetchRulesResponse={fetchRegistrationRulesResponse}>
@@ -243,7 +243,7 @@ const SubjectRegister = props => {
                   update={props.setRegistrationDate}
                 />
 
-                <LineBreak num={1} />
+                <LineBreak num={3} />
                 {props.subject.subjectType.isPerson() && (
                   <>
                     <TextFormElement
@@ -253,7 +253,7 @@ const SubjectRegister = props => {
                       validationResults={props.validationResults}
                       update={props.setFirstName}
                     />
-                    <LineBreak num={1} />
+                    <LineBreak num={2} />
                     <TextFormElement
                       uuid={Individual.validationKeys.LAST_NAME}
                       formElement={new StaticFormElement("lastName", true, true)}
@@ -261,7 +261,7 @@ const SubjectRegister = props => {
                       validationResults={props.validationResults}
                       update={props.setLastName}
                     />
-                    <LineBreak num={1} />
+                    <LineBreak num={2} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || null}
                       dobErrorMsg={dobError ? dobError.messageKey : ""}
@@ -270,7 +270,7 @@ const SubjectRegister = props => {
                         props.setDateOfBirth(dateOfBirth);
                       }}
                     />
-                    <LineBreak num={1} />
+                    <LineBreak num={2} />
                     <CodedFormElement
                       name={t("gender")}
                       items={sortBy(props.genders, "name")}
@@ -281,7 +281,7 @@ const SubjectRegister = props => {
                         props.setGender(selected);
                       }}
                     />
-                    <LineBreak num={1} />
+                    <LineBreak num={2} />
                     {renderAddress()}
                   </>
                 )}
@@ -295,10 +295,11 @@ const SubjectRegister = props => {
                       validationResults={props.validationResults}
                       update={props.setFirstName}
                     />
+                    <LineBreak num={1} />
                     {renderAddress()}
                   </>
                 )}
-                <LineBreak num={1} />
+                <LineBreak num={2} />
               </RegistrationForm>
             )}
           </div>

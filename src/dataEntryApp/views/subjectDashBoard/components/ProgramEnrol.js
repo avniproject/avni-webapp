@@ -22,6 +22,7 @@ import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import { ProgramEnrolment } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { useTranslation } from "react-i18next";
+import { LineBreak } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -101,6 +102,7 @@ const ProgramEnrol = ({
                     validationResults={validationResults}
                     update={setEnrolmentDate}
                   />
+                  <LineBreak num={3} />
                 </ProgramEnrolmentForm>
               ) : enrolForm && programEnrolment && formType === "ProgramExit" ? (
                 <ProgramExitEnrolmentForm
@@ -114,6 +116,7 @@ const ProgramEnrol = ({
                     validationResults={validationResults}
                     update={setExitDate}
                   />
+                  <LineBreak num={3} />
                 </ProgramExitEnrolmentForm>
               ) : (
                 <div>Loading</div>

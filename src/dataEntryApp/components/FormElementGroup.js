@@ -17,7 +17,7 @@ export const FormElementGroup = ({
       <LineBreak num={1} />
       {children && renderChildren ? children : ""}
 
-      {filteredFormElements.map(fe => {
+      {filteredFormElements.map((fe, index) => {
         const observation = obsHolder.findObservation(fe.concept);
         const observationValue = observation
           ? observation.concept.isDurationConcept()
@@ -35,6 +35,7 @@ export const FormElementGroup = ({
             update={value => {
               updateObs(fe, value);
             }}
+            feIndex={index}
           >
             {fe}
           </FormElement>

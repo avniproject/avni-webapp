@@ -43,7 +43,8 @@ export const FormElement = ({
   update,
   obsHolder,
   validationResults,
-  uuid
+  uuid,
+  feIndex
 }) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
@@ -54,7 +55,7 @@ export const FormElement = ({
   const Element = elements[type];
   return (
     <div>
-      <LineBreak num={1} />
+      <LineBreak num={feIndex === 0 ? 0 : 2} />
       {/*this check can be removed later when DEA supports all the data types (Location is not supported yet)*/}
       {Element && <Element {...props} />}
       {/* <LineBreak num={1} /> */}
