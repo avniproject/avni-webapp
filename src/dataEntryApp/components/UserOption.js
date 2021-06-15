@@ -115,7 +115,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
 
   const handleChange = event => {
     if (event.target.value) {
-      userInfo.settings.locale = event.target.value;
+      userInfo.settings = { ...userInfo.settings, locale: event.target.value };
       saveUserInfo(userInfo);
       i18n.changeLanguage(userInfo.settings.locale);
     }
