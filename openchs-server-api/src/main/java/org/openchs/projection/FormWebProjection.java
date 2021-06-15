@@ -13,4 +13,5 @@ public interface FormWebProjection {
     String getName();
     Set<FormElementGroupWebProjection> getFormElementGroups();
     FormType getFormType();
+    Set<ConceptWebProjection> getDecisionConcepts();
 }

@@ -1,5 +1,6 @@
 package org.openchs.reporting;
 
+import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
@@ -9,6 +10,8 @@ import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
+import org.openchs.domain.reporting.Names;
+import org.openchs.domain.reporting.ViewGenConcept;
 import org.openchs.service.ViewNameGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +22,9 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
@@ -95,6 +96,21 @@ public class ViewGenService {
         return new HashMap<String, String>() {{
             put("Registration", replaceJoinsAndOtherCommonInformation(formMapping, sql));
         }};
+    }
+
+    private List<ViewGenConcept> viewGenConcepts(List<FormElement> formElements) {
+        if (formElements.isEmpty())
+            return new ArrayList<>();
+        List<ViewGenConcept> formElementConcepts = formElements.stream()
+                .map(formElement -> new ViewGenConcept(
+                        formElement.getConcept(), String.format("concepts_%d", formElement.getFormElementGroup().getId()), false))
+                .collect(Collectors.toList());
+        Form form = formElements.get(0).getFormElementGroup().getForm();
+        List<ViewGenConcept> decisionConcepts = form.getDecisionConcepts().stream()
+                .map(concept -> new ViewGenConcept(
+                        concept, Names.DecisionConceptMapName, true))
+                .collect(Collectors.toList());
+        return Stream.concat(formElementConcepts.stream(), decisionConcepts.stream()).collect(Collectors.toList());
     }
 
     public Map<String, String> enrolmentViews(String subjectTypeName, String operationalProgramName) {
@@ -271,18 +287,21 @@ public class ViewGenService {
     }
 
     private String buildObservationSelection(String entity, List<FormElement> elements, Boolean spreadMultiSelectObs, String obsColumnName) {
+        List<ViewGenConcept> viewGenConcepts = viewGenConcepts(elements);
         String obsColumn = entity + "." + obsColumnName;
-        return elements.parallelStream().map(formElement -> {
-            Concept concept = formElement.getConcept();
+        return viewGenConcepts.parallelStream().map(viewGenConcept -> {
+            Concept concept = viewGenConcept.getConcept();
             String conceptUUID = concept.getUuid();
             String columnName = concept.getViewColumnName();
+            if (viewGenConcept.isDecisionConcept() && elements.stream().anyMatch(formElement -> formElement.getConcept().getName().equals(viewGenConcept.getConcept().getName())))
+                columnName = String.format("decisions.%s", columnName);
             switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
                     if (spreadMultiSelectObs) {
                         return spreadMultiSelectSQL(obsColumn, concept);
                     }
-                    return String.format("public.get_coded_string_value(%s->'%s', concepts_%d.map)::TEXT as \"%s\"",
-                            obsColumn, conceptUUID, formElement.getFormElementGroup().getId(), columnName);
+                    return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
+                            obsColumn, conceptUUID, viewGenConcept.getConceptMapName(), columnName);
                 }
                 case Date:
                 case DateTime: {

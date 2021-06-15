@@ -132,8 +132,8 @@ public class Form extends OrganisationAwareEntity {
         this.checklistsRule = checklistsRule;
     }
 
-    public List<Concept> getDecisionConcepts() {
-        return this.decisionConcepts.stream().map(DecisionConcept::getConcept).collect(Collectors.toList());
+    public Set<Concept> getDecisionConcepts() {
+        return this.decisionConcepts.stream().map(DecisionConcept::getConcept).collect(Collectors.toSet());
     }
 
     public void addDecisionConcept(Concept concept) {
