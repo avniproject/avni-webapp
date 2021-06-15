@@ -36,8 +36,6 @@ const Breadcrumbs = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const parts = path.split(/\/+/g).filter(Boolean);
-  const clickableParts = parts.slice(0, parts.length - 1);
-  const currentpage = parts[parts.length - 1];
   const subjectName = subjectProfile && subjectProfile.nameString;
   const subjectUuid = subjectProfile && subjectProfile.uuid;
   const viewVisitName = viewVisit && defaultTo(viewVisit.name, viewVisit.encounterType.name);
@@ -67,6 +65,9 @@ const Breadcrumbs = ({
     REGISTER: "register",
     EDIT_GROUP_MEMBERSHIP: "editGroupMembership"
   };
+  const currentPage = parts[parts.length - 1];
+  const isSubjectEdit = currentPage === urlPartLabels.EDIT_SUBJECT;
+  const clickableParts = isSubjectEdit ? parts : parts.slice(0, parts.length - 1);
   const urlMapper = part => {
     switch (part) {
       case urlPartLabels.APP: {
@@ -187,7 +188,7 @@ const Breadcrumbs = ({
         </Link>
       ))}
       <Typography className={classes.Typography} component={"span"} color="textPrimary">
-        {urlMapper(currentpage).breadcrumb}
+        {isSubjectEdit ? t("editSubject") : urlMapper(currentPage).breadcrumb}
       </Typography>
     </MUIBreadcrumb>
   );

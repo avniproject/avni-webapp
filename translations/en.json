@@ -432,6 +432,7 @@
     "invalidPhoneNumber": "Invalid phone number",
     "summaryNotFound": "No summary found",
     "subjectSummary": "Summary",
-    "programSummary": "Program summary"
+    "programSummary": "Program summary",
+    "editSubject": "Edit subject"
   }
 }
