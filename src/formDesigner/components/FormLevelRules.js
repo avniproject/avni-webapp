@@ -15,8 +15,10 @@ import {
   sampleValidationRule,
   sampleVisitScheduleRule
 } from "../common/SampleRule";
+import { ConceptSelect } from "common/components/ConceptSelect";
+import Box from "@material-ui/core/Box";
 
-const FormRule = ({ title, value, onValueChange, disabled }) => {
+const FormRule = ({ title, value, onValueChange, disabled, children }) => {
   const [expanded, setExpanded] = useState(false);
   const onToggleExpand = () => setExpanded(!expanded);
 
@@ -32,7 +34,7 @@ const FormRule = ({ title, value, onValueChange, disabled }) => {
           <Typography>{title}</Typography>
         </Grid>
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
+      <ExpansionPanelDetails style={{ display: "block" }}>
         <Editor
           value={value}
           onValueChange={onValueChange}
@@ -48,6 +50,7 @@ const FormRule = ({ title, value, onValueChange, disabled }) => {
           }}
           disabled={disabled}
         />
+        <div>{children}</div>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
@@ -61,7 +64,25 @@ const FormLevelRules = ({ disabled, ...props }) => {
         value={props.form.decisionRule || sampleDecisionRule(props.entityName)}
         onValueChange={event => props.onRuleUpdate("decisionRule", event)}
         disabled={disabled}
-      />
+      >
+        <Box mt={5}>
+          <Typography gutterBottom variant="body1" component="div">
+            Select decision concepts that you want as columns in the reporting views. You will have
+            to refresh the{" "}
+            <a href={"#/appdesigner/reportingViews"} target="_blank" rel="noopener noreferrer">
+              reporting views
+            </a>{" "}
+            for this to reflect.
+          </Typography>
+          <ConceptSelect
+            concepts={props.form.decisionConcepts}
+            setConcepts={concepts => {
+              console.log("setConcepts => ", concepts);
+              props.onDecisionConceptsUpdate(concepts);
+            }}
+          />
+        </Box>
+      </FormRule>
       <FormRule
         title={"Visit Schedule Rule"}
         value={props.form.visitScheduleRule || sampleVisitScheduleRule(props.entityName)}

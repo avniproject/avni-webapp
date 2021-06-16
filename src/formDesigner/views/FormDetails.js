@@ -984,6 +984,15 @@ class FormDetails extends Component {
     );
   };
 
+  onDecisionConceptsUpdate = decisionConcepts => {
+    this.setState(
+      produce(draft => {
+        draft.form.decisionConcepts = decisionConcepts;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
   onSubmitInlineConcept = (inlineConceptObject, clonedForm, formElement) => {
     inlineConceptObject.answers.forEach((answer, index) => {
       answer.order = index;
@@ -1367,6 +1376,7 @@ class FormDetails extends Component {
             <FormLevelRules
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
+              onDecisionConceptsUpdate={this.onDecisionConceptsUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
               entityName={this.getEntityNameForRules()}
               disabled={this.state.disableForm}
