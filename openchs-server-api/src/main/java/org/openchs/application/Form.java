@@ -139,6 +139,7 @@ public class Form extends OrganisationAwareEntity {
     public void addDecisionConcept(Concept concept) {
         DecisionConcept decisionConcept = new DecisionConcept();
         decisionConcept.setConcept(concept);
+        decisionConcept.setForm(this);
         this.decisionConcepts.add(decisionConcept);
     }
 

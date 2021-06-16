@@ -38,4 +38,12 @@ public class DecisionConcept {
     public void setConcept(Concept concept) {
         this.concept = concept;
     }
+
+    public Form getForm() {
+        return form;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
+    }
 }

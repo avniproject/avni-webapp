@@ -200,6 +200,7 @@ public class Concept extends OrganisationAwareEntity {
     @JsonIgnore
     public ConceptContract toConceptContract() {
         ConceptContract conceptContract = new ConceptContract();
+        conceptContract.setId(this.getId());
         conceptContract.setName(this.getName());
         conceptContract.setUuid(this.getUuid());
         conceptContract.setDataType(this.getDataType());
