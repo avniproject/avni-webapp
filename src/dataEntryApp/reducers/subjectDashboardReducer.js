@@ -14,7 +14,9 @@ export const types = {
   VOID_PROGRAM_ENROLMENT: `${prefix}VOID_PROGRAM_ENROLMENT`,
   VOID_PROGRAM_ENCOUNTER: `${prefix}VOID_PROGRAM_ENCOUNTER`,
   VOID_GENERAL_ENCOUNTER: `${prefix}VOID_GENERAL_ENCOUNTER`,
-  SET_PRINT_SETTINGS: `${prefix}SET_PRINT_SETTINGS`
+  SET_PRINT_SETTINGS: `${prefix}SET_PRINT_SETTINGS`,
+  LOAD_SUBJECT_DASHBOARD: `${prefix}LOAD_SUBJECT_DASHBOARD`,
+  SET_SUBJECT_DASHBOARD_LOADED: `${prefix}SET_SUBJECT_DASHBOARD_LOADED`
 };
 
 export const setPrintSettings = prints => ({
@@ -91,6 +93,16 @@ export const voidGeneralEncounter = encounterUUID => ({
   uuid: encounterUUID
 });
 
+export const loadSubjectDashboard = subjectUUID => ({
+  type: types.LOAD_SUBJECT_DASHBOARD,
+  subjectUUID
+});
+
+export const setSubjectDashboardLoaded = loaded => ({
+  type: types.SET_SUBJECT_DASHBOARD_LOADED,
+  loaded
+});
+
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_SUBJECT_PROFILE: {
@@ -127,6 +139,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         prints: action.prints
+      };
+    }
+    case types.SET_SUBJECT_DASHBOARD_LOADED: {
+      return {
+        ...state,
+        dashboardLoaded: action.loaded
       };
     }
     default:

@@ -4,13 +4,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import {
-  getSubjectProfile,
   unVoidSubject,
   voidSubject,
   getGroupMembers,
-  clearVoidServerError
+  clearVoidServerError,
+  loadSubjectDashboard
 } from "../../reducers/subjectDashboardReducer";
-import { getSubjectGeneral } from "../../reducers/generalSubjectDashboardReducer";
 import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -28,9 +27,8 @@ const useStyles = makeStyles(theme => ({
 
 const SubjectDashboard = ({
   match,
-  getSubjectProfile,
+  loadSubjectDashboard,
   subjectProfile,
-  getSubjectGeneral,
   subjectGeneral,
   getSubjectProgram,
   subjectProgram,
@@ -80,9 +78,7 @@ const SubjectDashboard = ({
   }
 
   useEffect(() => {
-    getSubjectProfile(match.queryParams.uuid);
-    getSubjectGeneral(match.queryParams.uuid);
-    getSubjectProgram(match.queryParams.uuid);
+    loadSubjectDashboard(match.queryParams.uuid);
   }, []);
 
   return (
@@ -98,7 +94,7 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
-  load: state.dataEntry.loadReducer.load,
+  load: state.dataEntry.subjectProfile.dashboardLoaded,
   registrationForm: state.dataEntry.registration.registrationForm,
   tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
   groupMembers: state.dataEntry.subjectProfile.groupMembers,
@@ -106,13 +102,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  getSubjectProfile,
-  getSubjectGeneral,
   getSubjectProgram,
   getGroupMembers,
   voidSubject,
   unVoidSubject,
-  clearVoidServerError
+  clearVoidServerError,
+  loadSubjectDashboard
 };
 
 export default withRouter(

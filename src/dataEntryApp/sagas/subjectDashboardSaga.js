@@ -5,7 +5,8 @@ import {
   setTabsStatus,
   setGroupMembers,
   setVoidServerError,
-  setPrintSettings
+  setPrintSettings,
+  setSubjectDashboardLoaded
 } from "../reducers/subjectDashboardReducer";
 import {
   mapProfile,
@@ -21,6 +22,8 @@ import { filter, isEmpty, map, includes, get } from "lodash";
 import { setSubjectProgram } from "../reducers/programSubjectDashboardReducer";
 import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { setPrograms } from "../reducers/programReducer";
+import { subjectGeneralFetchWorker } from "./generalSubjectDashboardSaga";
+import { subjectProgramFetchWorker } from "./programSubjectDashboardSaga";
 
 export default function*() {
   yield all(
@@ -31,9 +34,22 @@ export default function*() {
       fetchGroupMembersWatcher,
       voidProgramEnrolmentWatcher,
       voidProgramEncounterWatcher,
-      voidGeneralEncounterWatcher
+      voidGeneralEncounterWatcher,
+      loadSubjectDashboardWatcher
     ].map(fork)
   );
+}
+
+export function* loadSubjectDashboardWatcher() {
+  yield takeLatest(types.LOAD_SUBJECT_DASHBOARD, loadSubjectDashboardWorker);
+}
+
+export function* loadSubjectDashboardWorker({ subjectUUID }) {
+  yield put.resolve(setSubjectDashboardLoaded(false));
+  yield call(subjectProfileFetchWorker, { subjectUUID });
+  yield call(subjectGeneralFetchWorker, { subjectGeneralUUID: subjectUUID });
+  yield call(subjectProgramFetchWorker, { subjectProgramUUID: subjectUUID });
+  yield put.resolve(setSubjectDashboardLoaded(true));
 }
 
 export function* subjectProfileFetchWatcher() {
