@@ -81,6 +81,7 @@ public class SubjectSearchQueryBuilder {
         return this
                 .withNameFilter(request.getName())
                 .withGenderFilter(request.getGender())
+                .withSubjectTypeFilter(request.getSubjectType())
                 .withAgeFilter(request.getAge())
                 .withRegistrationDateFilter(request.getRegistrationDate())
                 .withEncounterDateFilter(request.getEncounterDate())
@@ -174,6 +175,13 @@ public class SubjectSearchQueryBuilder {
         String parameter = "genders";
         addParameter(parameter, genders);
         whereClauses.add("gender.uuid in :genders");
+        return this;
+    }
+
+    public SubjectSearchQueryBuilder withSubjectTypeFilter(String subjectType) {
+        if (subjectType == null) return this;
+        addParameter("subjectTypeUuid", subjectType);
+        whereClauses.add("st.uuid = :subjectTypeUuid");
         return this;
     }
 
