@@ -289,12 +289,10 @@ public class ViewGenService {
     private String buildObservationSelection(String entity, List<FormElement> elements, Boolean spreadMultiSelectObs, String obsColumnName) {
         List<ViewGenConcept> viewGenConcepts = viewGenConcepts(elements);
         String obsColumn = entity + "." + obsColumnName;
-        return viewGenConcepts.parallelStream().map(viewGenConcept -> {
+        return viewGenConcepts.parallelStream().filter(viewGenConcept -> !skipConcept(elements, viewGenConcept)).map(viewGenConcept -> {
             Concept concept = viewGenConcept.getConcept();
             String conceptUUID = concept.getUuid();
             String columnName = concept.getViewColumnName();
-            if (viewGenConcept.isDecisionConcept() && elements.stream().anyMatch(formElement -> formElement.getConcept().getName().equals(viewGenConcept.getConcept().getName())))
-                columnName = String.format("decisions.%s", columnName);
             switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
                     if (spreadMultiSelectObs) {
@@ -324,6 +322,10 @@ public class ViewGenService {
                 }
             }
         }).collect(Collectors.joining(",\n"));
+    }
+
+    private boolean skipConcept(List<FormElement> elements, ViewGenConcept viewGenConcept) {
+        return viewGenConcept.isDecisionConcept() && elements.stream().anyMatch(formElement -> formElement.getConcept().getName().equals(viewGenConcept.getConcept().getName()));
     }
 
     private String spreadMultiSelectSQL(String obsColumn, Concept concept) {
