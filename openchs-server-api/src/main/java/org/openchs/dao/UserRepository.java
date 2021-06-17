@@ -27,7 +27,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
         return findById(id).orElse(null);
     }
 
-    @PreAuthorize("hasAnyAuthority('admin','organisation_admin', 'user')")
+    @PreAuthorize("hasAnyAuthority('admin', 'user')")
     User save(User user);
 
     @RestResource(path = "findByOrganisation", rel = "findByOrganisation")

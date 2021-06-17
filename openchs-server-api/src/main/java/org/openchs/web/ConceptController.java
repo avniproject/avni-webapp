@@ -61,14 +61,14 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     }
 
     @GetMapping(value = "/web/concept/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @ResponseBody
     public ConceptProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
 
     @GetMapping(value = "/web/concept")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @ResponseBody
     public ResponseEntity<ConceptProjection> getOneForWebByName(@RequestParam String name) {
         Concept concept = conceptRepository.findByName(name);

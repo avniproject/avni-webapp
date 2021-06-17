@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "myGroups", path = "myGroups")
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> {
 
     Page<UserGroup> findByUserIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(

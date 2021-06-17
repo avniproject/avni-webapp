@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
     Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,

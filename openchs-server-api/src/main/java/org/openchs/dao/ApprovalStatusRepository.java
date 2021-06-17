@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "approvalStatus", path = "approvalStatus")
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ApprovalStatusRepository extends JpaRepository<ApprovalStatus, Long> {
 
     @RestResource(path = "lastModified", rel = "lastModified")

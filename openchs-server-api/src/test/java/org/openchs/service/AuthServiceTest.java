@@ -95,8 +95,8 @@ public class AuthServiceTest {
         user.setOrgAdmin(true);
 
         userContext = authService.authenticateByToken("some token", null);
-        assertThat(userContext.getRoles().size(), is(equalTo(1)));
-        assertThat(userContext.getRoles(), contains(User.ORGANISATION_ADMIN));
+        assertThat(userContext.getRoles().size(), is(equalTo(2)));
+        assertThat(userContext.getRoles(), containsInAnyOrder(User.ORGANISATION_ADMIN, User.USER));
 
         user.setAccountAdmin(accountAdmin);
         when(accountAdminRepository.findByUser_Id(user.getId())).thenReturn(adminUser);
@@ -116,8 +116,8 @@ public class AuthServiceTest {
         when(accountAdminRepository.findByUser_Id(user.getId())).thenReturn(adminUser);
         user.setOrgAdmin(true);
         userContext = authService.authenticateByToken("some token", null);
-        assertThat(userContext.getRoles().size(), is(equalTo(2)));
-        assertThat(userContext.getRoles(), containsInAnyOrder(User.ADMIN, User.ORGANISATION_ADMIN));
+        assertThat(userContext.getRoles().size(), is(equalTo(3)));
+        assertThat(userContext.getRoles(), containsInAnyOrder(User.ADMIN, User.ORGANISATION_ADMIN, User.USER));
     }
 
     @Test

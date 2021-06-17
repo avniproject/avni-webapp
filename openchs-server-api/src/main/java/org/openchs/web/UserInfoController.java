@@ -52,7 +52,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
     }
 
     @RequestMapping(value = "/userInfo", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public ResponseEntity<UserInfo> getUserInfo() {
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
@@ -85,13 +85,13 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
      */
     @Deprecated
     @RequestMapping(value = "/me", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public ResponseEntity<UserInfo> getMyProfileOld() {
         return getUserInfo();
     }
 
     @RequestMapping(value = "/v2/me", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public PagedResources<Resource<UserInfo>> getMyProfile() {
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
@@ -110,7 +110,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
 
     @RequestMapping(value = "/me", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void saveMyProfile(@RequestBody UserInfo userInfo) {
         User user = userService.getCurrentUser();
         user.setSettings(userInfo.getSettings());

@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "dashboard", path = "dashboard")
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface DashboardRepository extends ReferenceDataRepository<Dashboard>, FindByLastModifiedDateTime<Dashboard>, JpaSpecificationExecutor<Dashboard> {
 
     @Query("select d.name from Dashboard d where d.isVoided = false")

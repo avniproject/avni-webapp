@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupDashboard", path = "groupDashboard")
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
 public interface GroupDashboardRepository extends ReferenceDataRepository<GroupDashboard>, FindByLastModifiedDateTime<GroupDashboard> {
 
     default GroupDashboard findByName(String name) {

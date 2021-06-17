@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounterType", path = "encounterType")
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface EncounterTypeRepository extends ReferenceDataRepository<EncounterType>, FindByLastModifiedDateTime<EncounterType> {
 
     @Query("select o from EncounterType o where o.operationalEncounterTypes is not empty and o.isVoided = false")

@@ -52,7 +52,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
     }
 
     @RequestMapping(value = "/groupSubject", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<GroupSubject>> getGroupSubjectsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -67,7 +67,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
 
     @RequestMapping(value = "/groupSubjects", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody GroupSubjectContract request) {
         Individual groupSubject = individualRepository.findByUuid(request.getGroupSubjectUUID());
         Individual memberSubject = individualRepository.findByUuid(request.getMemberSubjectUUID());
@@ -86,7 +86,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
 
     @RequestMapping(value = "/groupSubjects/{groupSubjectUuid}", method = RequestMethod.DELETE)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void delete(@PathVariable String groupSubjectUuid) {
         GroupSubject groupSubject = groupSubjectRepository.findByUuid(groupSubjectUuid);
         if (groupSubject != null) {
@@ -99,7 +99,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
 
     @RequestMapping(value = "/web/groupSubjects/{groupUuid}/members", method = RequestMethod.GET)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public List<GroupSubjectContractWeb> getGroupMembers(@PathVariable String groupUuid) {
         Individual group = individualRepository.findByUuid(groupUuid);
         if (group != null) {
@@ -116,7 +116,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
 
     @RequestMapping(value = "/web/groupSubjects/{groupUuid}/roles", method = RequestMethod.GET)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public List<GroupRoleContract> getGroupRoles(@PathVariable String groupUuid) {
         Individual group = individualRepository.findByUuid(groupUuid);
         if (group != null) {

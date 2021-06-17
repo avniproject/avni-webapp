@@ -30,7 +30,7 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
     }
 
     @RequestMapping(value = "ruleFailureTelemetry", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<RuleFailureTelemetry>> getEmpty(Pageable pageable) {
         return empty(pageable);
     }
@@ -59,7 +59,7 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
 
     @RequestMapping(value = "/ruleFailureTelemetry", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody RuleFailureTelemetryRequest request) {
         User user = UserContextHolder.getUserContext().getUser();
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();

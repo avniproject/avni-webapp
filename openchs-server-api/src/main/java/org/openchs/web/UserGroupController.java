@@ -41,7 +41,7 @@ public class UserGroupController extends AbstractController<UserGroup> implement
 
 
     @RequestMapping(value = "/myGroups/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<UserGroup>> get(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                                    @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                                    Pageable pageable) {

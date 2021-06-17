@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEnrolment", path = "programEnrolment", exported = false)
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepository<ProgramEnrolment> {
 
     Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(

@@ -37,13 +37,13 @@ public class VideoTelemetricController implements RestControllerResourceProcesso
 
     @RequestMapping(value = "/videotelemetrics", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize("hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize("hasAnyAuthority('user')")
     public void save(@RequestBody VideoTelemetricContract videoTelemetricContract) {
         videoTelemetricRepository.save(createVideoTelemetric(videoTelemetricContract));
     }
 
     @RequestMapping(value = "/videotelemetric", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<VideoTelemetric>> getEmpty(Pageable pageable) {
         return empty(pageable);
     }
