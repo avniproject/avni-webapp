@@ -75,7 +75,7 @@ export default ({
   unVoidSubject,
   registrationForm,
   tab,
-  tabsStatus,
+  tabsStatus = {},
   getGroupMembers,
   groupMembers,
   voidError,
