@@ -132,6 +132,17 @@ public class AddressLevel extends OrganisationAwareEntity {
                         .orElse(null);
     }
 
+    public boolean containsSubLocationExcept(String title, AddressLevelType type, AddressLevel exclude) {
+        return null !=
+                subLocations
+                        .stream()
+                        .filter(location -> !location.getId().equals(exclude.getId()))
+                        .filter(location -> location.getTitle().equals(title) &&
+                                location.getType().equals(type)
+                        ).findFirst()
+                        .orElse(null);
+    }
+
     public Set<Catchment> getCatchments() {
         return catchments;
     }

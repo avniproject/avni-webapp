@@ -151,6 +151,19 @@ public class LocationService {
             throw new RuntimeException("Empty 'title' received");
         }
 
+        if (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(locationEditContract.getTitle().trim(), location.getType()) != null) {
+            throw new RuntimeException("Location with same name '%s' and type '%s' already exists");
+        } else {
+            AddressLevel parent = locationRepository.findOne(locationEditContract.getParentId());
+            if (!titleIsValid(location, parent, locationEditContract.getTitle().trim(), location.getType())) {
+                String message = String.format("Location with same name '%s' and type '%s' and parent '%s' already exists",
+                        locationEditContract.getTitle(),
+                        location.getType().getName(),
+                        parent.getTitle());
+                throw new RuntimeException(message);
+            }
+        }
+
         if (locationEditContract.getParentId() != null && !locationEditContract.getParentId().equals(location.getParentId())) {
             Long oldParentId = location.getParentId();
             Long newParentId = locationEditContract.getParentId();
@@ -160,12 +173,7 @@ public class LocationService {
             location.setLineage(updateLineage(lineage, oldParentId, newParentId));
             location.setParent(locationRepository.findOne(newParentId));
         }
-        if (!titleIsValid(location, locationEditContract.getTitle().trim(), location.getType())) {
-            String message = String.format("Location with same name '%s' and type '%s' exists at this level",
-                    locationEditContract.getTitle(),
-                    location.getType().getName());
-            throw new RuntimeException(message);
-        }
+
         location.setTitle(locationEditContract.getTitle());
         locationRepository.save(location);
         return location;
@@ -203,6 +211,11 @@ public class LocationService {
     private boolean titleIsValid(AddressLevel location, String title, AddressLevelType type) {
         return (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(title, type) == null)
                 || (!location.isTopLevel() && !location.getParent().containsSubLocation(title, type));
+    }
+
+    private boolean titleIsValid(AddressLevel location, AddressLevel parent, String title, AddressLevelType type) {
+        return (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(title, type) == null)
+                || (!location.isTopLevel() && !parent.containsSubLocationExcept(title, type, location));
     }
 
     public AddressLevelType createAddressLevelType(AddressLevelTypeContract contract) {
