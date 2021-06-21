@@ -1,5 +1,6 @@
 package org.openchs.importer.batch.csv;
 
+import org.openchs.framework.security.AuthService;
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.S3Service;
 import org.openchs.service.S3Service.ObjectInfo;
@@ -32,14 +33,20 @@ public class ErrorFileCreatorListener implements JobExecutionListener {
     private String type;
     @Value("#{jobParameters['fileName']}")
     private String originalFileName;
+    @Value("#{jobParameters['userId']}")
+    private Long userId;
+    @Value("#{jobParameters['organisationUUID']}")
+    private String organisationUUID;
     private File errorFile;
     private String jobInfo;
     private BulkUploadS3Service bulkUploadS3Service;
+    private AuthService authService;
 
     @Autowired
-    public ErrorFileCreatorListener(S3Service s3Service, BulkUploadS3Service bulkUploadS3Service) {
+    public ErrorFileCreatorListener(S3Service s3Service, BulkUploadS3Service bulkUploadS3Service, AuthService authService) {
         this.s3Service = s3Service;
         this.bulkUploadS3Service = bulkUploadS3Service;
+        this.authService = authService;
     }
 
     @PostConstruct
@@ -50,6 +57,7 @@ public class ErrorFileCreatorListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
+        authService.authenticateByUserId(userId, organisationUUID);
         try {
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(s3Service.getObjectContent(s3Key)));
             String headerRow = csvReader.readLine();
@@ -75,7 +83,7 @@ public class ErrorFileCreatorListener implements JobExecutionListener {
             logger.info(format("Bulkupload '%s'! Check for errors at '%s'", jobExecution.getStatus(), metadata.getKey()));
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("Unable to create error files in S3", e.getMessage());
+            logger.error("Unable to create error files in S3 {}", e.getMessage());
         }
     }
 }
