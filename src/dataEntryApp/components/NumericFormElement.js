@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { TextField, Typography } from "@material-ui/core";
-import { isNaN, isEmpty, find, isNil } from "lodash";
+import { isEmpty, find, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
@@ -53,18 +53,17 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         {rangeText(fe.concept.lowNormal, fe.concept.hiNormal)}
       </Typography>
       <TextField
-        type={"numeric"}
         autoComplete="off"
         required={fe.mandatory}
         name={fe.name}
-        value={isNaN(parseInt(value)) ? "" : value}
+        value={value}
         style={{ width: "30%" }}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={error()}
         inputProps={{ style: { color: textColor } }}
         onChange={e => {
           const v = e.target.value;
-          isEmpty(v) ? update(null) : update(parseInt(v));
+          isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));
         }}
         disabled={!fe.editable}
       />
