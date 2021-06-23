@@ -21,7 +21,6 @@ import { InternalLink, withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
-import { getUserInfo } from "rootApp/ducks";
 import HomeIcon from "@material-ui/icons/Home";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
 import { ROLES } from "../../common/constants";
@@ -307,11 +306,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      { getUserInfo }
-    )(PrimarySearchAppBar)
-  )
-);
+export default withRouter(withParams(connect(mapStateToProps)(PrimarySearchAppBar)));

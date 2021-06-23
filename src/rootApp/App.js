@@ -5,10 +5,6 @@ import { getUserInfo } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
 
 class App extends Component {
-  UNSAFE_componentWillMount() {
-    this.props.getUserInfo();
-  }
-
   componentDidMount() {
     if (isDevEnv && !cognitoInDev) {
       this.props.getUserInfo();
