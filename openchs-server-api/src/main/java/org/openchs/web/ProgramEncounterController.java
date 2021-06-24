@@ -42,7 +42,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<ProgramEncountersContract> getProgramEncounterByUuid(@PathVariable("uuid") String uuid) {
         ProgramEncountersContract programEncountersContract = programEncounterService.getProgramEncounterByUuid(uuid);
@@ -53,7 +53,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         programEncounterService.saveProgramEncounter(request);
         if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
@@ -62,7 +62,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @Deprecated()
     public PagedResources<Resource<ProgramEncounter>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
@@ -73,7 +73,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @RequestMapping(value = "/programEncounter/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public PagedResources<Resource<ProgramEncounter>> getByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -82,7 +82,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @RequestMapping(value = "/programEncounter", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public PagedResources<Resource<ProgramEncounter>> getProgramEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -95,7 +95,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @DeleteMapping("/web/programEncounter/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     @Transactional
     public ResponseEntity<?> voidSubject(@PathVariable String uuid) {

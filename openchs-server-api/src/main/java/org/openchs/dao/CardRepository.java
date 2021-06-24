@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "card", path = "card")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface CardRepository extends ReferenceDataRepository<Card>, FindByLastModifiedDateTime<Card>, JpaSpecificationExecutor<Card> {
 
     @Query("select c.name from Card c where c.isVoided = false")

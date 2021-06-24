@@ -58,7 +58,7 @@ public class CommentThreadController extends AbstractController<CommentThread> i
     }
 
     @GetMapping(value = {"/commentThread"})
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public PagedResources<Resource<CommentThread>> getCommentThreadsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -73,7 +73,7 @@ public class CommentThreadController extends AbstractController<CommentThread> i
 
     @RequestMapping(value = "/commentThreads", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody CommentThreadContract commentThreadContract) {
         logger.info(String.format("Saving comment thread with UUID %s", commentThreadContract.getUuid()));
         CommentThread commentThread = newOrExistingEntity(commentThreadRepository, commentThreadContract, new CommentThread());
@@ -86,7 +86,7 @@ public class CommentThreadController extends AbstractController<CommentThread> i
     }
 
     @RequestMapping(value = "/web/commentThreads", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user','admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     public List<CommentThreadResponse> getAllThreads(@RequestParam(value = "subjectUUID") String subjectUUID) {
         Individual subject = individualRepository.findByUuid(subjectUUID);
         return commentThreadRepository.findDistinctByIsVoidedFalseAndCommentsIsVoidedFalseAndComments_SubjectOrderByOpenDateTimeDescIdDesc(subject)
@@ -96,14 +96,14 @@ public class CommentThreadController extends AbstractController<CommentThread> i
     }
 
     @RequestMapping(value = "/web/commentThread", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user','admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     public ResponseEntity<CommentThreadResponse> saveThread(@RequestBody CommentThreadContract threadContract) {
         CommentThread savedThread = commentThreadService.createNewThread(threadContract);
         return ResponseEntity.ok(CommentThreadResponse.fromEntity(savedThread));
     }
 
     @RequestMapping(value = "/web/commentThread/{id}/resolve", method = RequestMethod.PUT)
-    @PreAuthorize(value = "hasAnyAuthority('user','admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     public ResponseEntity<CommentThreadResponse> editThread(@PathVariable Long id) {
         Optional<CommentThread> commentThread = commentThreadRepository.findById(id);
         if (!commentThread.isPresent()) {

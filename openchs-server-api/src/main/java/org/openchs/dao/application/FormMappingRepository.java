@@ -18,7 +18,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface FormMappingRepository extends ReferenceDataRepository<FormMapping>, FindByLastModifiedDateTime<FormMapping> {
 
     Page<FormMapping> findByProgramId(Long programId, Pageable pageable);

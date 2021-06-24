@@ -69,7 +69,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
     @GetMapping(value = "locations/search/find")
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin', 'user')")
     @ResponseBody
     public PagedResources<Resource<AddressLevel>> find(
             @RequestParam(value = "title") String title,
@@ -78,7 +78,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
     @RequestMapping(value = {"/locations/search/lastModified", "/locations/search/byCatchmentAndLastModified"}, method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user','admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<AddressLevel>> getAddressLevelsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -134,7 +134,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
     @GetMapping(value = "/locations/search/typeId/{typeId}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin','organisation_admin')")
     @ResponseBody
     public List<AddressLevelContractWeb> getLocationsByTypeId(@PathVariable("typeId") Long typeId) {
         return locationRepository.findByType_IdAndIsVoidedFalseOrderByTitleAsc(typeId).stream()

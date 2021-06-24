@@ -53,7 +53,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     }
 
     @GetMapping(value = "/web/comment")
-    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
     @ResponseBody
     @Transactional
     public List<Comment> getCommentsForSubject(@RequestParam(value = "commentThreadId") Long threadId) {
@@ -61,7 +61,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     }
 
     @PostMapping(value = "/web/comment")
-    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<Comment> createComment(@RequestBody CommentContract commentContract) {
@@ -69,7 +69,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     }
 
     @PutMapping(value = "/web/comment/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<Comment> editComment(@PathVariable Long id, @RequestBody CommentContract commentContract) {
@@ -81,7 +81,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     }
 
     @DeleteMapping(value = "/web/comment/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<Comment> deleteComment(@PathVariable Long id) {
@@ -94,7 +94,7 @@ public class CommentController extends AbstractController<Comment> implements Re
 
     @RequestMapping(value = "/comments", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody CommentContract commentContract) {
         logger.info(String.format("Saving comment with UUID %s", commentContract.getUuid()));
         Individual subject = individualRepository.findByUuid(commentContract.getSubjectUUID());
@@ -109,7 +109,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     }
 
     @GetMapping(value = {"/comment"})
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public PagedResources<Resource<Comment>> getCommentsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

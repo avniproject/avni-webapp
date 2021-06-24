@@ -24,7 +24,7 @@ public class EntityApprovalStatusController {
 
     @RequestMapping(value = "/entityApprovalStatuses", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody EntityApprovalStatusRequest request) {
         entityApprovalStatusService.save(request);
     }

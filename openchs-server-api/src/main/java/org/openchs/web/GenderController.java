@@ -30,7 +30,7 @@ public class GenderController {
     }
 
     @GetMapping("/web/gender")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public Page<GenderProjection> getAll(Pageable pageable) {
         return genderRepository.findAll(pageable).map(g -> projectionFactory.createProjection(GenderProjection.class, g));

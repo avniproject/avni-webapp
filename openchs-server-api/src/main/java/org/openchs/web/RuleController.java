@@ -70,7 +70,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/web/rules", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> executeServerSideRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = ruleService.executeServerSideRules(requestEntityWrapper);
         if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
@@ -83,7 +83,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/web/programSummaryRule", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> programSummaryRule(@RequestParam String programEnrolmentUUID) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
         RuleResponseEntity ruleResponseEntity = ruleService.executeProgramSummaryRule(programEnrolment);
@@ -97,7 +97,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/web/subjectSummaryRule", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'user')")
     ResponseEntity<?> subjectSummaryRule(@RequestParam String subjectUUID) {
         Individual individual = individualRepository.findByUuid(subjectUUID);
         RuleResponseEntity ruleResponseEntity = ruleService.executeSubjectSummaryRule(individual);

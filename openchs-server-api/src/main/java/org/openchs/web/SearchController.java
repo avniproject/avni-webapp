@@ -29,7 +29,7 @@ public class SearchController {
     }
 
     @RequestMapping(value = "/search/concept", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<ConceptContract> searchConcept(@RequestParam String name,
                                                @RequestParam(required = false) String dataType) {
         if (dataType == null) {

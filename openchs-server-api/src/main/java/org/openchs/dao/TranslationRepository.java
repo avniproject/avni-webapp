@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "translation", path = "translation")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface TranslationRepository extends ReferenceDataRepository<Translation>, FindByLastModifiedDateTime<Translation> {
 
     Translation findByLanguage(Locale language);

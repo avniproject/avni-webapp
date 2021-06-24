@@ -5,7 +5,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @NoRepositoryBean
-@PreAuthorize(value = "hasAnyAuthority('user')")
+@PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
 public interface ImplReferenceDataRepository<T extends CHSEntity> extends ReferenceDataRepository<T> {
 
     @PreAuthorize("hasAnyAuthority('organisation_admin')")

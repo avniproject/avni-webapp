@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "videotelemetric", path = "videotelemetric", exported = false)
-@PreAuthorize(value = "hasAnyAuthority('user')")
+@PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
 public interface VideoTelemetricRepository extends JpaRepository<VideoTelemetric, Long> {
 
     VideoTelemetric findByUuid(String uuid);

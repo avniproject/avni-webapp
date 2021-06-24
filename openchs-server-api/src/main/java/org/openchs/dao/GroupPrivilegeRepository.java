@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupPrivilege", path = "groupPrivilege")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface GroupPrivilegeRepository extends ReferenceDataRepository<GroupPrivilege>, FindByLastModifiedDateTime<GroupPrivilege> {
     default GroupPrivilege findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in GroupPrivilege.");

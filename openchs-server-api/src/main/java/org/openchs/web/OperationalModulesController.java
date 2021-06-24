@@ -64,7 +64,7 @@ public class OperationalModulesController {
     }
 
     @GetMapping("/web/operationalModules")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     @ResponseBody
     public JsonObject getModules() {
         List<Form> forms = formRepository.findAllByIsVoidedFalse();

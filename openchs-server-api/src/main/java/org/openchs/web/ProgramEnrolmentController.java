@@ -45,14 +45,14 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         programEnrolmentService.programEnrolmentSave(request);
     }
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public PagedResources<Resource<ProgramEnrolment>> getProgramEnrolmentsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -67,14 +67,14 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @GetMapping("/web/programEnrolment/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ProgramEnrolmentProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ProgramEnrolmentProjection.class, programEnrolmentRepository.findByUuid(uuid));
     }
 
     @GetMapping("/web/programEnrolments/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<EnrolmentContract> getProgramEnrolmentByUuid(@PathVariable String uuid) {
         EnrolmentContract enrolmentContract = programEnrolmentService.constructEnrolments(uuid);
@@ -85,7 +85,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @GetMapping("/web/programEnrolment/{uuid}/completed")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public Page<ProgramEncountersContract> getAllCompletedEncounters(
             @PathVariable String uuid,
@@ -97,7 +97,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @DeleteMapping("/web/programEnrolment/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     @Transactional
     public ResponseEntity<?> voidSubject(@PathVariable String uuid) {

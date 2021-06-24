@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "dashboardSectionCardMapping", path = "dashboardSectionCardMapping")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface DashboardSectionCardMappingRepository extends ReferenceDataRepository<DashboardSectionCardMapping>, FindByLastModifiedDateTime<DashboardSectionCardMapping> {
 
     default DashboardSectionCardMapping findByName(String name) {

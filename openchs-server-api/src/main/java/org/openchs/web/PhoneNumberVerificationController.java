@@ -29,7 +29,7 @@ public class PhoneNumberVerificationController {
     }
 
     @RequestMapping(value = "/phoneNumberVerification/otp/send", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<PhoneNumberVerificationResponse> sendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         logger.info("Request: " + phoneNumberVerificationRequest.getPhoneNumber());
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
@@ -40,7 +40,7 @@ public class PhoneNumberVerificationController {
     }
 
     @RequestMapping(value = "/phoneNumberVerification/otp/resend", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<PhoneNumberVerificationResponse> resendOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
                 = phoneNumberVerificationService.resendOTP(phoneNumberVerificationRequest);
@@ -50,7 +50,7 @@ public class PhoneNumberVerificationController {
     }
 
     @RequestMapping(value = "/phoneNumberVerification/otp/verify", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<PhoneNumberVerificationResponse> verifyOTP(@RequestBody PhoneNumberVerificationRequest phoneNumberVerificationRequest) throws IOException, GeneralSecurityException {
         PhoneNumberVerificationResponse phoneNumberVerificationResponse
                 = phoneNumberVerificationService.verifyOTP(phoneNumberVerificationRequest);

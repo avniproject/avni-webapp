@@ -51,7 +51,7 @@ public class PlatformTranslationController implements RestControllerResourceProc
     }
 
     @RequestMapping(value = "/platformTranslation/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     public PagedResources<Resource<PlatformTranslation>> get(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

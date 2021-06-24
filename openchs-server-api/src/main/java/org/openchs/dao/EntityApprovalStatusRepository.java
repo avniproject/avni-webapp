@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "entityApprovalStatus", path = "entityApprovalStatus")
-@PreAuthorize("hasAnyAuthority('user')")
+@PreAuthorize("hasAnyAuthority('user','organisation_admin')")
 public interface EntityApprovalStatusRepository extends TransactionalDataRepository<EntityApprovalStatus>, FindByLastModifiedDateTime<EntityApprovalStatus> {
     List<EntityApprovalStatus> findByEntityIdAndEntityTypeAndApprovalStatusAndIsVoidedFalse(Long entityId, EntityApprovalStatus.EntityType entityType, ApprovalStatus approvalStatus);
 

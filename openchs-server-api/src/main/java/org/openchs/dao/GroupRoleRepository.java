@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupRole", path = "groupRole")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface GroupRoleRepository extends ReferenceDataRepository<GroupRole>, FindByLastModifiedDateTime<GroupRole> {
 
     default GroupRole findByNameIgnoreCase(String name) {

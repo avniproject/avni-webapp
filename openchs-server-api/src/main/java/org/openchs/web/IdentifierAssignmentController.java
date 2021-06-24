@@ -54,7 +54,7 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
      * @return
      */
     @RequestMapping(value = "/identifierAssignment", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @Transactional
     public PagedResources<Resource<IdentifierAssignment>> get(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -67,7 +67,7 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
 
     @RequestMapping(value = "/identifierAssignments", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody IdentifierAssignmentRequest identifierAssignmentRequest) {
         logger.info(String.format("Saving identifierAssignment with UUID %s", identifierAssignmentRequest.getUuid()));
 

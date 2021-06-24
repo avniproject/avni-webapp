@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation", exported = false)
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface PlatformTranslationRepository extends PagingAndSortingRepository<PlatformTranslation, Long> {
 
     @PreAuthorize("hasAnyAuthority('admin')")

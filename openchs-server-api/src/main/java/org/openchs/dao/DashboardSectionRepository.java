@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "dashboardSection", path = "dashboardSection")
-@PreAuthorize("hasAnyAuthority('user','admin')")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface DashboardSectionRepository extends ReferenceDataRepository<DashboardSection>, FindByLastModifiedDateTime<DashboardSection>, JpaSpecificationExecutor<DashboardSection> {
 
 }
