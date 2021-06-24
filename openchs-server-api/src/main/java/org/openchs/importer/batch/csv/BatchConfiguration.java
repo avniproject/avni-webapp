@@ -1,5 +1,6 @@
 package org.openchs.importer.batch.csv;
 
+import org.apache.commons.io.IOUtils;
 import org.openchs.importer.batch.csv.writer.CsvFileItemWriter;
 import org.openchs.importer.batch.model.Row;
 import org.openchs.service.S3Service;
@@ -23,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -51,15 +52,15 @@ public class BatchConfiguration {
     @Bean
     @StepScope
     public FlatFileItemReader<Row> csvFileItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
-        String[] headers = this.getHeaders(new InputStreamReader(s3Service.getObjectContent(s3Key)));
-
+        byte[] bytes = IOUtils.toByteArray(s3Service.getObjectContent(s3Key));
+        String[] headers = this.getHeaders(new StringReader(new String(bytes)));
         DefaultLineMapper<Row> lineMapper = new DefaultLineMapper<>();
         lineMapper.setLineTokenizer(new DelimitedLineTokenizer());
         lineMapper.setFieldSetMapper(fieldSet -> new Row(headers, fieldSet.getValues()));
 
         return new FlatFileItemReaderBuilder<Row>()
                 .name("csvFileItemReader")
-                .resource(new InputStreamResource(s3Service.getObjectContent(s3Key)))
+                .resource(new ByteArrayResource(bytes))
                 .linesToSkip(1)
                 .lineMapper(lineMapper)
                 .build();

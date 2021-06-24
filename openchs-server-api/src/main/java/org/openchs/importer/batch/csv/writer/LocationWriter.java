@@ -13,13 +13,18 @@ import org.openchs.importer.batch.model.Row;
 import org.openchs.service.LocationService;
 import org.openchs.util.S;
 import org.openchs.web.request.LocationContract;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
+@StepScope
 @Component
 public class LocationWriter implements ItemWriter<Row> {
 
@@ -29,6 +34,7 @@ public class LocationWriter implements ItemWriter<Row> {
     private AddressLevelTypeRepository addressLevelTypeRepository;
     private LocationCreator locationCreator;
     private ObservationCreator observationCreator;
+    private List<String> locationTypeNames;
 
     @Autowired
     public LocationWriter(LocationService locationService,
@@ -42,6 +48,13 @@ public class LocationWriter implements ItemWriter<Row> {
         this.locationCreator = new LocationCreator();
     }
 
+    @PostConstruct
+    public void init() {
+        List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAllByIsVoidedFalse();
+        locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
+        this.locationTypeNames = locationTypes.stream().map(AddressLevelType::getName).collect(Collectors.toList());
+    }
+
     @Override
     public void write(List<? extends Row> rows) throws Exception {
         for (Row row : rows) write(row);
@@ -49,17 +62,15 @@ public class LocationWriter implements ItemWriter<Row> {
 
     private void write(Row row) throws Exception {
         List<String> allErrorMsgs = new ArrayList<>();
-        List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAll();
-        locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
-        List<String> locationTypeNames = locationTypes.stream().map(AddressLevelType::getName).collect(Collectors.toList());
-        checkIfHeaderHasLocationTypes(locationTypeNames, row.getHeaders(), allErrorMsgs);
+        checkIfHeaderHasLocationTypes(this.locationTypeNames, row.getHeaders(), allErrorMsgs);
         AddressLevel parent = null;
         AddressLevel location = null;
         for (String header : row.getHeaders()) {
-            if (isValidLocation(header, row, locationTypeNames)) {
+            if (isValidLocation(header, row, this.locationTypeNames)) {
                 location = createAddressLevel(row, parent, header);
                 parent = location;
-            } else if (location != null && !locationTypeNames.contains(row.get(header))) {
+            } //This will get called only when location have extra properties
+            else if (location != null && !this.locationTypeNames.contains(row.get(header))) {
                 location.setGpsCoordinates(locationCreator.getLocation(row, headers.gpsCoordinates, allErrorMsgs));
                 location.setLocationProperties(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Location, location.getLocationProperties()));
                 locationRepository.save(location);
@@ -70,9 +81,12 @@ public class LocationWriter implements ItemWriter<Row> {
         }
     }
 
-    private void checkIfHeaderHasLocationTypes(List<String> locationTypeNames, String[] headers, List<String> allErrorMsgs) {
-        if (Collections.disjoint(locationTypeNames, Arrays.asList(headers))) {
-            allErrorMsgs.add("No location type found in the header, either create location types or specify it correctly in the file header");
+    private void checkIfHeaderHasLocationTypes(List<String> locationTypeNames, String[] headers, List<String> allErrorMsgs) throws Exception {
+        for (String header : headers) {
+            if (!locationTypeNames.contains(header)) {
+                allErrorMsgs.add(format("Location type %s not found", header));
+                throw new Exception(String.join(", ", allErrorMsgs));
+            }
         }
     }
 
