@@ -9,7 +9,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { getStatuses } from "./reducers";
-import { capitalize, get, isNil, map } from "lodash";
+import { capitalize, get, isNil, map, includes } from "lodash";
 import Types from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
@@ -102,7 +102,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
                   <FileDownloadButton
                     url={`/import/errorfile/?jobUuid=${jobStatus.uuid}`}
                     filename={`errors-${jobStatus.fileName.replace(".zip", ".csv")}`}
-                    iconProps={{ color: "error" }}
+                    disabled={includes(["STARTING", "STARTED"], jobStatus.status)}
                   />
                 ) : (
                   <div />
