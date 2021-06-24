@@ -347,7 +347,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
      * </ol>
      */
     @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
         Program program = programRepository.findOne(programId);
         if (program == null) {
@@ -391,7 +391,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
      * @return list of program/forms
      */
     @RequestMapping(value = "/forms", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public List<Map<String, Object>> getForms(Pageable pageable) {
 
         Iterable<OperationalProgram> programItr = operationalProgramRepository.findAllByIsVoidedFalse();
@@ -412,14 +412,14 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     }
 
     @GetMapping(value = "/web/form/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public FormWebProjection getFormForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(FormWebProjection.class, formRepository.findByUuid(uuid));
     }
 
     @GetMapping(value = "/web/form/{uuid}/identifierAssignments")
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     @ResponseBody
     public List<IdentifierAssignmentProjection> getFormIdentifiers(@PathVariable String uuid) {
         try {

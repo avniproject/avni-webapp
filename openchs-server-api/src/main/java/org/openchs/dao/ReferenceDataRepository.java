@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @NoRepositoryBean
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ReferenceDataRepository<T extends CHSEntity> extends CHSRepository<T>, JpaRepository<T, Long> {
     T findByName(String name);
     T findByNameIgnoreCase(String name);

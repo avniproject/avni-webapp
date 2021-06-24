@@ -47,7 +47,7 @@ public class NewsController extends AbstractController<News> implements RestCont
     }
 
     @GetMapping(value = "/web/publishedNews")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
     @ResponseBody
     @Transactional
     public List<NewsContract> getAllPublishedNews() {
@@ -61,7 +61,7 @@ public class NewsController extends AbstractController<News> implements RestCont
     }
 
     @GetMapping(value = "/web/news/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin','user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<NewsContract> getById(@PathVariable Long id) {
@@ -102,7 +102,7 @@ public class NewsController extends AbstractController<News> implements RestCont
     }
 
     @RequestMapping(value = "/news", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public PagedResources<Resource<News>> getNews(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,

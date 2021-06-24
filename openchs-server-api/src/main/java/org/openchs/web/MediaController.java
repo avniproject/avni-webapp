@@ -39,7 +39,7 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
         logger.info("getting media upload url");
         return getFileUrlResponse(fileName, HttpMethod.PUT);
@@ -60,7 +60,7 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/upload", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateMobileDatabaseBackupUploadUrl() {
         logger.info("getting mobile database backup upload url");
         return getFileUrlResponse(mobileDatabaseBackupFile(), HttpMethod.PUT);
@@ -76,21 +76,21 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/download", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateMobileDatabaseBackupDownloadUrl() {
         logger.info("getting mobile database backup download url");
         return getFileUrlResponse(mobileDatabaseBackupFile(), HttpMethod.GET);
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/exists", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> mobileDatabaseBackupExists() {
         logger.info("checking whether mobile database backup url exists");
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(Boolean.toString(s3Service.fileExists(mobileDatabaseBackupFile())));
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateDownloadUrl(@RequestParam String url) {
         try {
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3Service.generateMediaDownloadUrl(url).toString());
@@ -104,7 +104,7 @@ public class MediaController {
     }
 
     @PostMapping("/web/uploadMedia")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public ResponseEntity<?> uploadMedia(@RequestParam MultipartFile file, @RequestParam String mediaType) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();

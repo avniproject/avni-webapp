@@ -56,7 +56,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     }
 
     @GetMapping(value = "/web/encounter/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<EncounterContract> getEncounterByUuid(@PathVariable("uuid") String uuid) {
         EncounterContract encounterContract = encounterService.getEncounterByUuid(uuid);
@@ -76,7 +76,7 @@ public class EncounterController extends AbstractController<Encounter> implement
 
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody EncounterRequest request) {
         logger.info("Saving encounter with uuid %s", request.getUuid());
 
@@ -129,7 +129,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     }
 
     @RequestMapping(value = "/encounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Encounter>> getEncountersByCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -139,7 +139,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     }
 
     @RequestMapping(value = "/encounter/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Encounter>> getEncountersByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -148,7 +148,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     }
 
     @RequestMapping(value = "/encounter", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Encounter>> getEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -161,7 +161,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     }
 
     @DeleteMapping("/web/encounter/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<?> voidSubject(@PathVariable String uuid) {

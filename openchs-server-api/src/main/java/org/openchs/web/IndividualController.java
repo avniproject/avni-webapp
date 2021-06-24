@@ -77,7 +77,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
 
@@ -117,7 +117,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
 
     @GetMapping(value = {"/individual", /*-->Both are Deprecated */ "/individual/search/byCatchmentAndLastModified", "/individual/search/lastModified"})
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Individual>> getIndividualsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -130,7 +130,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/individual/search")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public Page<IndividualWebProjection> search(
             @RequestParam(value = "name", required = false) String name,
@@ -146,21 +146,21 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @PostMapping(value = "/web/searchAPI/v2")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> searchSubjects(@RequestBody SubjectSearchRequest subjectSearchRequest) {
         return new ResponseEntity<>(individualSearchService.search(subjectSearchRequest), HttpStatus.OK);
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public IndividualWebProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(IndividualWebProjection.class, individualRepository.findByUuid(uuid));
     }
 
     @GetMapping(value = "/web/subjectProfile")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
         IndividualContract individualContract = individualService.getSubjectInfo(uuid);
@@ -168,7 +168,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/web/subject/{subjectUuid}/programs")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
         IndividualContract individualEnrolmentContract = individualService.getSubjectProgramEnrollment(uuid);
@@ -179,7 +179,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/web/subject/{uuid}/encounters")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
         IndividualContract individualEncounterContract = individualService.getSubjectEncounters(uuid);
@@ -190,7 +190,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping("/web/subject/{uuid}/completed")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public Page<EncounterContract> getAllCompletedEncounters(
             @PathVariable String uuid,
@@ -202,7 +202,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @DeleteMapping("/web/subject/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     @Transactional
     public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
@@ -215,7 +215,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping("/subject/search")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public List<IndividualContractWrapper> getAllSubjects(@RequestParam String addressLevelUUID,
                                                           @RequestParam String subjectTypeName) {

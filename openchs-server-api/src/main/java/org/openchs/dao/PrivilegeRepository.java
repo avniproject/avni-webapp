@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "privilege", path = "privilege")
-@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
+@PreAuthorize("hasAnyAuthority('user','admin')")
 public interface PrivilegeRepository extends PagingAndSortingRepository<Privilege, Long> {
 
     @PreAuthorize("hasAnyAuthority('admin' ,'organisation_admin')")
