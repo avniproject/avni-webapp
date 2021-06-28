@@ -82,11 +82,10 @@ public class LocationWriter implements ItemWriter<Row> {
     }
 
     private void checkIfHeaderHasLocationTypes(List<String> locationTypeNames, String[] headers, List<String> allErrorMsgs) throws Exception {
-        for (String header : headers) {
-            if (!locationTypeNames.contains(header)) {
-                allErrorMsgs.add(format("Location type %s not found", header));
-                throw new Exception(String.join(", ", allErrorMsgs));
-            }
+        // There can be location properties in the header, so we save other values as locationProperties
+        if (Collections.disjoint(locationTypeNames, Arrays.asList(headers))) {
+            allErrorMsgs.add("No location type found in the header, either create location types or specify it correctly in the file header");
+            throw new Exception(String.join(", ", allErrorMsgs));
         }
     }
 
