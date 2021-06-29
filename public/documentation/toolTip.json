@@ -57,6 +57,7 @@
   "APP_DESIGNER_VIDEO_DURATION": "Total duration of the video (optional)",
   "APP_DESIGNER_PRINT_LABEL": "Text label for the print",
   "APP_DESIGNER_PRINT_FILE_NAME": "HTML file name for the print",
+  "APP_DESIGNER_PRINT_SCOPE": "Place where print label will get displayed",
   "ADMIN_USER_USER_NAME": "Name by which you can login",
   "ADMIN_USER_NAME": "Actual name of the user",
   "ADMIN_USER_EMAIL": "This email address will be used to send OTP and temporary passwords",

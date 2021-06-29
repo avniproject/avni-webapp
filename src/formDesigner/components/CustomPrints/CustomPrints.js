@@ -3,7 +3,7 @@ import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
-import { checkForErrors, CustomPrintsReducer } from "./CustomPrintsReducer";
+import { checkForErrors, CustomPrintsReducer, printScopeTypes } from "./CustomPrintsReducer";
 import { get, isEmpty, map } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -21,7 +21,7 @@ const CustomPrints = () => {
   const [print, dispatch] = React.useReducer(CustomPrintsReducer, initialState);
   const [value, setValue] = React.useState("");
   const [load, setLoad] = React.useState(false);
-  const { errors, file, labelFileNames } = print;
+  const { errors, file, labelFileNames, scopeOptions } = print;
 
   React.useEffect(() => {
     http
@@ -30,6 +30,13 @@ const CustomPrints = () => {
       .then(res => {
         dispatch({ type: "setData", payload: get(res, "organisationConfig.prints", []) });
       });
+  }, []);
+
+  React.useEffect(() => {
+    http
+      .fetchJson("/web/operationalModules")
+      .then(response => response.json)
+      .then(om => dispatch({ type: "setScopeOptions", payload: om }));
   }, []);
 
   const onFileSelect = event => {
@@ -74,8 +81,22 @@ const CustomPrints = () => {
   };
 
   const renderSettings = () => {
-    return map(labelFileNames, ({ label, fileName }, index) => (
-      <LabelFileName dispatch={dispatch} label={label} fileName={fileName} index={index} />
+    const getScopeDisplayValue = ({ scopeType, name }) =>
+      scopeType === printScopeTypes.subjectDashboard
+        ? `${name} Dashboard`
+        : `${name} Program Enrolment`;
+    const getOption = scope => ({ label: getScopeDisplayValue(scope), value: scope });
+    const options = map(scopeOptions, scope => getOption(scope));
+    return map(labelFileNames, ({ label, fileName, printScope }, index) => (
+      <LabelFileName
+        key={index}
+        dispatch={dispatch}
+        label={label}
+        fileName={fileName}
+        index={index}
+        scope={isEmpty(printScope) ? "" : getOption(printScope)}
+        options={options}
+      />
     ));
   };
 
@@ -94,7 +115,7 @@ const CustomPrints = () => {
                 Add more print Settings
               </Button>
             </Grid>
-            <Grid contaner item direction={"column"}>
+            <Grid container item direction={"column"}>
               <Grid item>
                 <input type="file" value={value} onChange={onFileSelect} />
               </Grid>

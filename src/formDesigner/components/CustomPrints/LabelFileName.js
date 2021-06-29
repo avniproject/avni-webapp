@@ -4,8 +4,9 @@ import { Input } from "@material-ui/core";
 import React from "react";
 import IconButton from "@material-ui/core/IconButton";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import Select from "react-select";
 
-export const LabelFileName = ({ label, fileName, index, dispatch }) => {
+export const LabelFileName = ({ label, fileName, scope, index, dispatch, options }) => {
   return (
     <Grid container direction={"row"} spacing={5} alignItems={"center"}>
       <Grid item>
@@ -27,6 +28,21 @@ export const LabelFileName = ({ label, fileName, index, dispatch }) => {
             dispatch({ type: "setFileName", payload: { index, value: event.target.value } })
           }
         />
+      </Grid>
+      <Grid item>
+        <div style={{ width: "300px" }}>
+          <AvniFormLabel
+            label={"Select Print Scope *"}
+            toolTipKey={"APP_DESIGNER_PRINT_SCOPE"}
+            position={"top"}
+          />
+          <Select
+            placeholder={"Print scope"}
+            value={scope}
+            options={options}
+            onChange={({ value }) => dispatch({ type: "setScope", payload: { index, value } })}
+          />
+        </div>
       </Grid>
       <Grid item>
         {index !== 0 && (

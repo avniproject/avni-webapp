@@ -1,4 +1,9 @@
-import { filter, forEach, isEmpty, isNil, some } from "lodash";
+import { filter, forEach, isEmpty, isNil, some, map } from "lodash";
+
+export const printScopeTypes = Object.freeze({
+  subjectDashboard: "Subject Dashboard",
+  programEnrolment: "Program Enrolment"
+});
 
 export const CustomPrintsReducer = (customPrint, action) => {
   switch (action.type) {
@@ -6,6 +11,11 @@ export const CustomPrintsReducer = (customPrint, action) => {
       return { ...customPrint, ...updatePropertyAtIndex(customPrint, "label", action.payload) };
     case "setFileName":
       return { ...customPrint, ...updatePropertyAtIndex(customPrint, "fileName", action.payload) };
+    case "setScope":
+      return {
+        ...customPrint,
+        ...updatePropertyAtIndex(customPrint, "printScope", action.payload)
+      };
     case "newSetting":
       const { labelFileNames } = customPrint;
       labelFileNames.push({ label: "", fileName: "" });
@@ -25,6 +35,19 @@ export const CustomPrintsReducer = (customPrint, action) => {
         ? [{ label: "", fileName: "" }]
         : action.payload;
       return { ...customPrint, labelFileNames: printSettings };
+    case "setScopeOptions":
+      const { subjectTypes, programs } = action.payload;
+      const dashboardOptions = map(subjectTypes, ({ name, uuid }) => ({
+        scopeType: printScopeTypes.subjectDashboard,
+        name,
+        uuid
+      }));
+      const programOptions = map(programs, ({ name, uuid }) => ({
+        scopeType: printScopeTypes.programEnrolment,
+        name,
+        uuid
+      }));
+      return { ...customPrint, scopeOptions: [...dashboardOptions, ...programOptions] };
     default:
       return customPrint;
   }
