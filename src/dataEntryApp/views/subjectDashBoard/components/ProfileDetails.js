@@ -205,49 +205,51 @@ const ProfileDetails = ({
         {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
-        <Grid item>
-          <AccountCircle className={classes.iconStyle} />
-        </Grid>
-        <Grid item xs={4}>
-          <Table aria-label="caption table" className={classes.tableContainer}>
-            <TableHead>
-              <TableRow className={classes.tableHeader}>
-                {profileDetails.subjectType.isPerson() && (
-                  <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
-                )}
-                {profileDetails.subjectType.isPerson() && (
-                  <TableCell className={classes.tableCell}>{t("age")}</TableCell>
-                )}
-                {profileDetails.lowestAddressLevel.titleLineage && (
-                  <TableCell className={classes.tableCell}>{t("Address")}</TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                {profileDetails.subjectType.isPerson() && (
+        <Grid item container xs={4}>
+          <Grid item>
+            <AccountCircle className={classes.iconStyle} />
+          </Grid>
+          <Grid item>
+            <Table aria-label="caption table" className={classes.tableContainer}>
+              <TableHead>
+                <TableRow className={classes.tableHeader}>
+                  {profileDetails.subjectType.isPerson() && (
+                    <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
+                  )}
+                  {profileDetails.subjectType.isPerson() && (
+                    <TableCell className={classes.tableCell}>{t("age")}</TableCell>
+                  )}
+                  {profileDetails.lowestAddressLevel.titleLineage && (
+                    <TableCell className={classes.tableCell}>{t("Address")}</TableCell>
+                  )}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  {profileDetails.subjectType.isPerson() && (
+                    <TableCell className={classes.tableCellDetails}>
+                      {t(profileDetails.gender.name)}
+                    </TableCell>
+                  )}
+                  {profileDetails.subjectType.isPerson() && (
+                    <TableCell className={classes.tableCellDetails}>
+                      {profileDetails.dateOfBirth
+                        ? new Date().getFullYear() -
+                          new Date(profileDetails.dateOfBirth).getFullYear() +
+                          " " +
+                          `${t("years")}`
+                        : "-"}
+                    </TableCell>
+                  )}
                   <TableCell className={classes.tableCellDetails}>
-                    {t(profileDetails.gender.name)}
+                    {profileDetails.lowestAddressLevel.titleLineage}
                   </TableCell>
-                )}
-                {profileDetails.subjectType.isPerson() && (
-                  <TableCell className={classes.tableCellDetails}>
-                    {profileDetails.dateOfBirth
-                      ? new Date().getFullYear() -
-                        new Date(profileDetails.dateOfBirth).getFullYear() +
-                        " " +
-                        `${t("years")}`
-                      : "-"}
-                  </TableCell>
-                )}
-                <TableCell className={classes.tableCellDetails}>
-                  {profileDetails.lowestAddressLevel.titleLineage}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Grid>
         </Grid>
-        <Grid container item xs={7} align="right" direction={"column"}>
+        <Grid container item xs={8} align="right" direction={"column"}>
           <CustomPrintOption
             subjectUUID={profileDetails.uuid}
             typeUUID={profileDetails.subjectType.uuid}

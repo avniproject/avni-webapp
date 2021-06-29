@@ -46,7 +46,7 @@ export const CustomPrintOption = ({ subjectUUID, typeUUID, typeName, scopeType }
   };
 
   return (
-    <Grid item container xs={12} direction={"row-reverse"} spacing={2}>
+    <Grid item container xs={12} direction={"row-reverse"} spacing={1}>
       {map(filteredSettings, ({ label, fileName }, index) => {
         return (
           <Grid item key={label + index}>
