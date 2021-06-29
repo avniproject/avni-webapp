@@ -37,14 +37,14 @@ export const CustomPrintsReducer = (customPrint, action) => {
       return { ...customPrint, labelFileNames: printSettings };
     case "setScopeOptions":
       const { subjectTypes, programs } = action.payload;
-      const dashboardOptions = map(subjectTypes, ({ name, uuid }) => ({
+      const dashboardOptions = map(subjectTypes, ({ operationalSubjectTypeName, uuid }) => ({
         scopeType: printScopeTypes.subjectDashboard,
-        name,
+        name: operationalSubjectTypeName,
         uuid
       }));
-      const programOptions = map(programs, ({ name, uuid }) => ({
+      const programOptions = map(programs, ({ operationalProgramName, uuid }) => ({
         scopeType: printScopeTypes.programEnrolment,
-        name,
+        name: operationalProgramName,
         uuid
       }));
       return { ...customPrint, scopeOptions: [...dashboardOptions, ...programOptions] };

@@ -25,6 +25,7 @@ import { selectOrganisationConfig } from "../../../sagas/selectors";
 import { get } from "lodash";
 import Fab from "@material-ui/core/Fab";
 import { CustomPrintOption } from "./customPrint/CustomPrintOption";
+import { printScopeTypes } from "../../../../formDesigner/components/CustomPrints/CustomPrintsReducer";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -247,7 +248,12 @@ const ProfileDetails = ({
           </Table>
         </Grid>
         <Grid container item xs={7} align="right" direction={"column"}>
-          <CustomPrintOption subjectUUID={profileDetails.uuid} />
+          <CustomPrintOption
+            subjectUUID={profileDetails.uuid}
+            typeUUID={profileDetails.subjectType.uuid}
+            typeName={profileDetails.subjectType.name}
+            scopeType={printScopeTypes.subjectDashboard}
+          />
           <Grid item>
             {enableComment && (
               <Fab

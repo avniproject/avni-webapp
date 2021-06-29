@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { selectPrintState } from "../../../../reducers/subjectDashboardReducer";
-import { map } from "lodash";
+import { map, filter } from "lodash";
 import { Button, makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { cognitoInDev, devEnvUserName, isDevEnv } from "../../../../../common/constants";
@@ -21,9 +21,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const CustomPrintOption = ({ subjectUUID }) => {
+export const CustomPrintOption = ({ subjectUUID, typeUUID, typeName, scopeType }) => {
   const classes = useStyles();
   const printSettings = useSelector(selectPrintState);
+  const filteredSettings = filter(
+    printSettings,
+    ({ printScope }) =>
+      typeUUID === printScope.uuid &&
+      typeName === printScope.name &&
+      scopeType === printScope.scopeType
+  );
   const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
 
   const clickHandler = async fileName => {
@@ -40,7 +47,7 @@ export const CustomPrintOption = ({ subjectUUID }) => {
 
   return (
     <Grid item container xs={12} direction={"row-reverse"} spacing={2}>
-      {map(printSettings, ({ label, fileName }, index) => {
+      {map(filteredSettings, ({ label, fileName }, index) => {
         return (
           <Grid item key={label + index}>
             <Button
