@@ -62,10 +62,13 @@ export const checkForErrors = customPrint => {
   }
   const isLabelFileEmpty = some(
     customPrint.labelFileNames,
-    ({ label, fileName }) => isEmpty(label) || isNil(fileName)
+    ({ label, fileName, printScope }) => isEmpty(label) || isNil(fileName) || isEmpty(printScope)
   );
   if (isLabelFileEmpty) {
-    errors.push({ key: "EMPTY_SETTING", message: "Label and File name cannot be empty" });
+    errors.push({
+      key: "EMPTY_SETTING",
+      message: "Label, File name or Print scope cannot be empty"
+    });
   }
   return errors;
 };
