@@ -106,6 +106,7 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
         translation.setTranslationJson(request.getTranslations());
         translation.setLanguage(language);
         translation.assignUUIDIfRequired();
+        translation.updateAudit();
         translationRepository.save(translation);
         logger.info(String.format("Saved Translation with UUID: %s", translation.getUuid()));
         return new ResponseEntity<>(true, HttpStatus.OK);
