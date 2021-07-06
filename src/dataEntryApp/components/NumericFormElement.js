@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { TextField, Typography } from "@material-ui/core";
-import { isEmpty, find, isNil } from "lodash";
+import { isEmpty, find, isNil, toNumber } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
@@ -66,6 +66,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
           isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));
         }}
         disabled={!fe.editable}
+        onBlur={() => (isNil(value) ? update(null) : update(toNumber(value)))}
       />
     </Fragment>
   );
