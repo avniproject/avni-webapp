@@ -54,11 +54,11 @@ const RemoveRelative = props => {
 
   const removeClick = () => {
     const RelationData = {
-      exitDateTime: new Date(),
       individualAUUID: props.relationAuuid,
       individualBUUID: props.relationBuuid,
       relationshipTypeUUID: props.relationBTypeuuid,
-      uuid: props.relationuuid
+      uuid: props.relationuuid,
+      voided: true
     };
     props.saveRelationShip(RelationData);
     (async function fetchData() {

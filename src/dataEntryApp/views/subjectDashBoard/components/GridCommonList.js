@@ -42,7 +42,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
         ? gridListDetails.map((relative, index) => {
-            if (relative !== undefined && relative.exitDateTime === undefined) {
+            if (relative !== undefined && !relative.voided) {
               return (
                 <Grid key={index} item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
