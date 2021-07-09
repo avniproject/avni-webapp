@@ -1,20 +1,20 @@
 const prefix = "app/dataEntry/reducer/relationships/";
 
 export const types = {
-  GET_RELATION: `${prefix}GET_RELATION`,
-  SET_RELATION: `${prefix}SET_RELATION`,
+  GET_RELATIONSHIP_TYPES: `${prefix}GET_RELATIONSHIP_TYPES`,
+  SET_RELATIONSHIP_TYPES: `${prefix}SET_RELATIONSHIP_TYPES`,
   SAVE_RELATION: `${prefix}SAVE_RELATION`,
   REMOVE_RELATION: `${prefix}REMOVE_RELATION`,
   SET_LISTOFRELATIVES: `${prefix}SET_LISTOFRELATIVES`
 };
 
-export const getRelations = () => ({
-  type: types.GET_RELATION
+export const getRelationshipTypes = () => ({
+  type: types.GET_RELATIONSHIP_TYPES
 });
 
-export const setRelations = relationships => ({
-  type: types.SET_RELATION,
-  relationships
+export const setRelationshipTypes = relationshipTypes => ({
+  type: types.SET_RELATIONSHIP_TYPES,
+  relationshipTypes
 });
 
 export const saveRelationShip = relationData => ({
@@ -27,12 +27,16 @@ export const removeRelationShip = relationId => ({
   relationId
 });
 
-export default function(state = {}, action) {
+const initialState = {
+  relationshipTypes: []
+};
+
+export default function(state = { initialState }, action) {
   switch (action.type) {
-    case types.SET_RELATION: {
+    case types.SET_RELATIONSHIP_TYPES: {
       return {
         ...state,
-        relationships: action.relationships
+        relationshipTypes: action.relationshipTypes
       };
     }
     case types.SET_LISTOFRELATIVES: {

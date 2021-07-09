@@ -1,14 +1,14 @@
 import { httpClient } from "common/utils/httpClient";
 
 export default {
-  search({ name, subjectTypeUUID, ...params }) {
-    const _params = {
-      page: 0,
-      size: 10,
-      ...params
-    };
+  search(searchRequest) {
+    let apiUrl = "/web/searchAPI/v2";
+    const pageElement = {};
+    pageElement.numberOfRecordPerPage = 20;
+    searchRequest.pageElement = pageElement;
     return httpClient
-      .fetchJson(httpClient.withParams("/individual/search", { name, subjectTypeUUID, ..._params }))
-      .then(res => res.json);
+      .post(apiUrl, searchRequest)
+      .then(response => response.data)
+      .then(result => result);
   }
 };

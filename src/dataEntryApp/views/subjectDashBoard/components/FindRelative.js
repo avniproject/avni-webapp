@@ -1,16 +1,14 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { LineBreak } from "common/components/utils";
-import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import Modal from "./CommonModal";
-import DialogContent from "@material-ui/core/DialogContent";
-import { FormControl, FormGroup, TextField, Typography } from "@material-ui/core";
 import { noop } from "lodash";
 import { searchSubjects, setSubjects } from "../../../reducers/searchReducer";
 import FindRelativeTable from "./FindRelativeTable";
+import { SearchForm } from "../../GlobalSearch/SearchFilterForm";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -81,126 +79,94 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FindRelative = ({ subjectType, subjectProfile, ...props }) => {
+const FindRelative = ({
+  subjectType,
+  subjectProfile,
+  operationalModules,
+  allLocations,
+  genders,
+  organisationConfigs,
+  searchRequest,
+  load,
+  setError,
+  ...props
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [value, setValue] = React.useState("");
-
-  const handleChange = event => {
-    setValue(event.target.value);
-  };
 
   const close = () => {
     props.setSubjects();
-    setValue("");
     sessionStorage.removeItem("selectedRelative");
   };
 
-  const applyClick = e => {
-    props.search({ name: value, subjectTypeUUID: subjectType.uuid });
-  };
   const modifySearch = () => {
     props.setSubjects();
-    setValue("");
     sessionStorage.removeItem("selectedRelative");
   };
-  const okClick = () => {
+
+  const applyHandler = () => {
     props.setSubjects();
-    setValue("");
     let localSavedRelativeData = [];
     let localsSelctedRelative = JSON.parse(sessionStorage.getItem("selectedRelative"));
     localSavedRelativeData.push(localsSelctedRelative);
-    // store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localsSelctedRelative });
     if (localsSelctedRelative !== null) {
       sessionStorage.setItem("selectedRelativeslist", JSON.stringify(localSavedRelativeData));
     }
-
     sessionStorage.removeItem("selectedRelative");
+    setError("");
   };
 
   const searchContent = (
-    <DialogContent style={{ width: "80%", height: "auto" }}>
-      <Grid container direction="row" justify="flex-end" alignItems="flex-start" />
-      <form className={classes.form}>
-        {props.subjects && props.subjects.content ? (
-          ""
-        ) : (
-          <Grid container direction="row" justify="space-between" alignItems="center">
-            <Grid item xs={12}>
-              <FormControl>
-                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
-
-                <Typography variant="subtitle2" gutterBottom>
-                  {t("name")}
-                </Typography>
-                <TextField id="standard-multiline-flexible" value={value} onChange={handleChange} />
-              </FormControl>
-            </Grid>
-          </Grid>
-        )}
-        <LineBreak num={1} />
-        <FormGroup row>
-          {props.subjects && props.subjects.content ? (
-            <FindRelativeTable
-              subjectData={props.subjects.content.filter(
-                subject => subjectProfile.uuid !== subject.uuid
-              )}
-            />
-          ) : (
-            ""
+    <div style={{ margin: "30px" }}>
+      {props.subjects && props.subjects.listOfRecords ? (
+        <FindRelativeTable
+          subjectData={props.subjects.listOfRecords.filter(
+            subject => subjectProfile.uuid !== subject.uuid
           )}
-        </FormGroup>
-      </form>
-    </DialogContent>
+        />
+      ) : (
+        <SearchForm
+          operationalModules={operationalModules}
+          allLocations={allLocations}
+          genders={genders}
+          organisationConfigs={organisationConfigs}
+          searchRequest={searchRequest}
+          onSearch={filterRequest => props.search(filterRequest)}
+        />
+      )}
+      <CustomizedBackdrop load={load} />
+    </div>
   );
 
   return (
     <Modal
+      fullScreen
       content={searchContent}
       handleError={noop}
       buttonsSet={[
         {
           buttonType: "openButton",
-          label: t("filterRelative"),
+          label: t("searchRelative"),
           classes: classes.filterButtonStyle
         },
-        props.subjects && props.subjects.content
+        props.subjects && props.subjects.listOfRecords
           ? {
               buttonType: "applyButton",
               label: "OK",
               classes: classes.btnCustom,
-              // redirectTo: return <FindRelativeTable subjectData={props.subjects} />,
-              click: okClick
+              click: applyHandler
             }
           : "",
-        props.subjects && props.subjects.content
-          ? ""
-          : {
-              buttonType: "findButton",
-              label: "Find",
-              classes: classes.btnCustom,
-              click: applyClick
-              // disabled:
-              //   !isEmpty(filterErrors["RELATIVE_NAME"]) || !isEmpty(filterErrors["SCHEDULED_DATE"])
-            },
-        props.subjects && props.subjects.content
+        props.subjects && props.subjects.listOfRecords
           ? {
               buttonType: "modifysearch",
               label: "Modify search",
               classes: classes.btnCustom,
               click: modifySearch
             }
-          : "",
-
-        props.subjects && props.subjects.content
-          ? ""
-          : {
-              buttonType: "cancelButton",
-              label: t("cancel"),
-              classes: classes.cancelBtnCustom
-            }
+          : ""
       ]}
-      title="Find Relative"
+      title={t("searchRelative")}
       btnHandleClose={close}
     />
   );
@@ -210,7 +176,8 @@ const mapStateToProps = state => ({
   Relations: state.dataEntry.relations,
   subjects: state.dataEntry.search.subjects,
   searchParams: state.dataEntry.search.subjectSearchParams,
-  subjectType: state.dataEntry.subjectProfile.subjectProfile.subjectType
+  subjectType: state.dataEntry.subjectProfile.subjectProfile.subjectType,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

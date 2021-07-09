@@ -114,6 +114,41 @@ function SearchFilterForm({
 }) {
   const classes = useStyles();
   const { t } = useTranslation();
+  return (
+    <Fragment>
+      <Breadcrumbs path={match.path} />
+      <Paper className={classes.root}>
+        <Typography component={"span"} className={classes.mainHeading}>
+          {t("search")}
+        </Typography>
+        <LineBreak num={1} />
+        <SearchForm
+          operationalModules={operationalModules}
+          allLocations={allLocations}
+          genders={genders}
+          organisationConfigs={organisationConfigs}
+          searchRequest={searchRequest}
+          searchTo={"/app/search"}
+          cancelTo={"/app/"}
+        />
+      </Paper>
+    </Fragment>
+  );
+}
+
+export const SearchForm = ({
+  operationalModules,
+  allLocations,
+  genders,
+  organisationConfigs,
+  searchRequest,
+  searchTo,
+  cancelTo,
+  onSearch
+}) => {
+  const classes = useStyles();
+  const { t } = useTranslation();
+  const searchProps = _.isFunction(onSearch) ? {} : { to: searchTo, component: Link };
   const {
     subjectType,
     name,
@@ -416,112 +451,110 @@ function SearchFilterForm({
       searchAll: enterValue.searchAll
     };
 
-    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: searchRequest });
+    if (_.isFunction(onSearch)) {
+      onSearch(searchRequest);
+    } else {
+      store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: searchRequest });
+    }
   };
 
   return (
-    <Fragment>
-      <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <Typography component={"span"} className={classes.mainHeading}>
-          {t("search")}
-        </Typography>
-        <LineBreak num={1} />
-        <FormControl component="fieldset">
-          <FormLabel
-            component="legend"
-            classes={{
-              root: classes.formLabelRoot,
-              focused: classes.formLabelFocused
-            }}
-          >
-            {t("subjectType")}
-          </FormLabel>
-          <RadioGroup
-            row
-            aria-label="subjectType"
-            name="subjectType"
-            onChange={onSubjectTypeChange}
-            defaultValue={selectedSubjectTypeUUID}
-          >
-            {operationalModules.subjectTypes
-              ? operationalModules.subjectTypes.map((subjectType, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={subjectType.uuid}
-                    control={<Radio color="primary" />}
-                    label={t(subjectType.name)}
-                  />
-                ))
-              : ""}
-          </RadioGroup>
-          {selectedSearchFilter ? (
-            <div>
-              <Grid container>
-                <Grid item xs={12}>
-                  <BasicForm
-                    searchFilterForms={selectedSearchFilter}
-                    onChange={searchFilterValue}
-                    enterValue={enterValue}
-                    operationalModules={operationalModules}
-                    genders={genders}
-                    allLocation={allLocations}
-                    onGenderChange={onGenderChange}
-                    selectedGender={selectedGender}
-                    onAddressSelect={onAddressSelect}
-                    selectedAddress={selectedAddress}
-                    addressLevelType={previousSelectedType}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <NonCodedConceptForm
-                    searchFilterForms={selectedSearchFilter}
-                    onChange={searchFilterConcept}
-                    selectedConcepts={selectedConcepts}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <NonConceptForm
-                    searchFilterForms={selectedSearchFilter}
-                    selectedDate={selectedDate}
-                    onDateChange={searchFilterDates}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <CodedConceptForm
-                    searchFilterForms={selectedSearchFilter}
-                    conceptList={organisationConfigs.conceptList}
-                    onChange={searchFilterConcept}
-                    selectedConcepts={selectedConcepts}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <IncludeVoidedForm
-                    includeVoided={includeVoied}
-                    includeVoidedChange={includeVoidedChange}
-                  />
-                </Grid>
+    <React.Fragment>
+      <FormControl component="fieldset">
+        <FormLabel
+          component="legend"
+          classes={{
+            root: classes.formLabelRoot,
+            focused: classes.formLabelFocused
+          }}
+        >
+          {t("subjectType")}
+        </FormLabel>
+        <RadioGroup
+          row
+          aria-label="subjectType"
+          name="subjectType"
+          onChange={onSubjectTypeChange}
+          defaultValue={selectedSubjectTypeUUID}
+        >
+          {operationalModules.subjectTypes
+            ? operationalModules.subjectTypes.map((subjectType, index) => (
+                <FormControlLabel
+                  key={index}
+                  value={subjectType.uuid}
+                  control={<Radio color="primary" />}
+                  label={t(subjectType.name)}
+                />
+              ))
+            : ""}
+        </RadioGroup>
+        {selectedSearchFilter ? (
+          <div>
+            <Grid container>
+              <Grid item xs={12}>
+                <BasicForm
+                  searchFilterForms={selectedSearchFilter}
+                  onChange={searchFilterValue}
+                  enterValue={enterValue}
+                  operationalModules={operationalModules}
+                  genders={genders}
+                  allLocation={allLocations}
+                  onGenderChange={onGenderChange}
+                  selectedGender={selectedGender}
+                  onAddressSelect={onAddressSelect}
+                  selectedAddress={selectedAddress}
+                  addressLevelType={previousSelectedType}
+                />
               </Grid>
-            </div>
-          ) : (
-            ""
-          )}
-          <div className={classes.buttons}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => searchResult()}
-              component={Link}
-              to="/app/search"
-            >
-              {t("search")}
-            </Button>
-            <Button variant="contained" component={Link} to="/app/">
+              <Grid item xs={12}>
+                <NonCodedConceptForm
+                  searchFilterForms={selectedSearchFilter}
+                  onChange={searchFilterConcept}
+                  selectedConcepts={selectedConcepts}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <NonConceptForm
+                  searchFilterForms={selectedSearchFilter}
+                  selectedDate={selectedDate}
+                  onDateChange={searchFilterDates}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CodedConceptForm
+                  searchFilterForms={selectedSearchFilter}
+                  conceptList={organisationConfigs.conceptList}
+                  onChange={searchFilterConcept}
+                  selectedConcepts={selectedConcepts}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <IncludeVoidedForm
+                  includeVoided={includeVoied}
+                  includeVoidedChange={includeVoidedChange}
+                />
+              </Grid>
+            </Grid>
+          </div>
+        ) : (
+          ""
+        )}
+        <div className={classes.buttons}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => searchResult()}
+            {...searchProps}
+          >
+            {t("search")}
+          </Button>
+          {cancelTo && (
+            <Button variant="contained" component={Link} to={cancelTo}>
               {t("cancel")}
             </Button>
-          </div>
-        </FormControl>
-      </Paper>
-    </Fragment>
+          )}
+        </div>
+      </FormControl>
+    </React.Fragment>
   );
-}
+};

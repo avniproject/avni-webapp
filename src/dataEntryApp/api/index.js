@@ -10,7 +10,7 @@ export default {
   fetchOrganisationConfigs: () =>
     httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
 
-  fetchRelations: () =>
+  fetchRelationshipTypes: () =>
     httpClient.fetchJson("/web/relationshipType").then(response => response.json),
   saveSubject: subject =>
     httpClient.fetchJson("/individuals", {

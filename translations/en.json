@@ -388,7 +388,7 @@
     "noRelativesAdded": "No Relatives Added",
     "registrationDetails": "Registration details",
     "filterResults": "Filter results",
-    "filterRelative": "Filter Relative",
+    "searchRelative": "Search Relative",
     "invalidDateFormat": "Is not a valid date",
     "resetFilter": "Reset Filter",
     "visitCanceldate": "Visit Cancel Date",
@@ -433,6 +433,9 @@
     "summaryNotFound": "No summary found",
     "subjectSummary": "Summary",
     "programSummary": "Program summary",
-    "editSubject": "Edit subject"
+    "editSubject": "Edit subject",
+    "dob": "Date of Birth",
+    "address": "Address",
+    "relativeAlreadyAdded": "Relative is already added"
   }
 }

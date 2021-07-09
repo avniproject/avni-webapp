@@ -122,7 +122,7 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
-const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }) => {
+const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, ...props }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
@@ -182,7 +182,12 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
         ""
       )}
 
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+      <Dialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+        {...props}
+      >
         <DialogTitle
           id="customized-dialog-title"
           onClose={handleClose}
@@ -191,7 +196,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
           {title}
         </DialogTitle>
         {content}
-        <DialogActions className={classes.borderBottom}>
+        <DialogActions className={classes.borderBottom} style={{ backgroundColor: "#FFF" }}>
           {cancelButton ? (
             <SubjectButton
               btnLabel={cancelButton.label}

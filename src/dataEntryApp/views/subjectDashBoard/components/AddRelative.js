@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getRelations, saveRelationShip } from "../../../reducers/relationshipReducer";
+import { getRelationshipTypes, saveRelationShip } from "../../../reducers/relationshipReducer";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import { useHistory, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -25,8 +25,18 @@ import {
 import FindRelative from "../components/FindRelative";
 import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
-import { isEmpty } from "lodash";
+import { find, get, head, includes, isEmpty } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import {
+  getAllLocations,
+  getGenders,
+  getOrganisationConfig
+} from "../../../reducers/metadataReducer";
+import {
+  findApplicableRelations,
+  getRelationshipType,
+  validateRelative
+} from "../../../utils/RelationshipUtil";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -122,27 +132,33 @@ const useStyles = makeStyles(theme => ({
 
 const AddRelative = ({
   match,
-  subjectTypes,
-  Relations,
-  getRelations,
-  load,
-  subjects,
+  getRelationshipTypes,
+  relationshipTypes,
   saveRelationShip,
-  RelationsData,
   getSubjectProfile,
-  subjectProfile
+  subjectProfile,
+  operationalModules,
+  getAllLocations,
+  allLocations,
+  getGenders,
+  genders,
+  getOrganisationConfig,
+  organisationConfigs,
+  searchRequest
 }) => {
   useEffect(() => {
     getSubjectProfile(match.queryParams.uuid);
+    getRelationshipTypes();
+    getOrganisationConfig();
+    getAllLocations();
+    getGenders();
   }, []);
 
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  //  console.log("RelationsDatafrom store------->", Relations);
-  let relativeLists = JSON.parse(sessionStorage.getItem("selectedRelativeslist"));
-  // console.log("relativeLists-------->", relativeLists);
-  const profileDetails = relativeLists;
+  const selectedRelative = head(JSON.parse(sessionStorage.getItem("selectedRelativeslist")));
+  const [error, setError] = React.useState();
   const [state, setState] = React.useState({
     age: "",
     name: ""
@@ -150,21 +166,48 @@ const AddRelative = ({
   const [relationData, setRelationData] = React.useState({
     uuid: General.randomUUID(),
     relationshipTypeUUID: "",
-    individualAUUID: match.queryParams.uuid,
+    individualAUUID: "",
     individualBUUID: "",
     enterDateTime: new Date()
   });
 
+  const existingRelatives = get(subjectProfile, "relationships", []);
+  const applicableRelations = findApplicableRelations(relationshipTypes, selectedRelative);
+
   const handleChange = event => {
+    const selectedRelationUUID = event.target.value;
+    const relationshipType = getRelationshipType(
+      subjectProfile,
+      selectedRelationUUID,
+      relationshipTypes
+    );
     const name = event.target.name;
     setState({
       ...state,
-      [name]: event.target.value
+      [name]: selectedRelationUUID
     });
+    const selectedRelation = find(applicableRelations, ar => ar.uuid === selectedRelationUUID);
+    const validationError = validateRelative(
+      selectedRelative,
+      subjectProfile,
+      selectedRelation,
+      existingRelatives
+    );
+    if (validationError) {
+      setError(validationError);
+      return;
+    } else {
+      setError("");
+    }
+    const isReverseRelation = includes(
+      get(relationshipType, "individualAIsToBRelation.uuid", []),
+      selectedRelationUUID
+    );
     setRelationData({
       ...relationData,
-      relationshipTypeUUID: event.target.value,
-      individualBUUID: profileDetails[0].uuid
+      relationshipTypeUUID: relationshipType.uuid,
+      individualAUUID: isReverseRelation ? selectedRelative.uuid : match.queryParams.uuid,
+      individualBUUID: isReverseRelation ? match.queryParams.uuid : selectedRelative.uuid
     });
   };
 
@@ -181,9 +224,6 @@ const AddRelative = ({
     history.push(`/app/subject/subjectProfile?uuid=${match.queryParams.uuid}`);
   };
 
-  useEffect(() => {
-    getRelations();
-  }, []);
   return subjectProfile ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -194,146 +234,131 @@ const AddRelative = ({
               {t("addRelative")}
             </Typography>
           </Grid>
-
-          {profileDetails !== null
-            ? profileDetails.map((row, index) => (
-                <div key={index}>
-                  <div className={classes.scheduleddateStyle}>
-                    <Typography component={"span"} className={classes.subHeading}>
-                      {/* {t("Completed")} */}
-                      Give relationship
-                    </Typography>
-                  </div>
-                  <div className={classes.scheduleddateStyle}>
-                    <div className={classes.tableView}>
-                      <Grid alignItems="center" container spacing={1}>
-                        <Grid item xs={6}>
-                          <Table aria-label="caption table" className={classes.tableContainer}>
-                            <TableHead>
-                              <TableRow className={classes.tableHeader}>
-                                <TableCell className={classes.tableCell} style={{ width: "25%" }}>
-                                  {t("name")}
-                                </TableCell>
-                                <TableCell className={classes.tableCell} style={{ width: "20%" }}>
-                                  {t("gender")}
-                                </TableCell>
-                                <TableCell className={classes.tableCell} style={{ width: "20%" }}>
-                                  {t("age")}
-                                </TableCell>
-                                <TableCell className={classes.tableCell} style={{ width: "35%" }}>
-                                  {t("Village")}
-                                  {/* {t(profileDetails.addressLevelTypeName)} */}
-                                </TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              <TableRow>
-                                <TableCell key={row.fullName} className={classes.tableCellDetails}>
-                                  {t(row.fullName)}
-                                </TableCell>
-
-                                <TableCell
-                                  key={row.gender.name}
-                                  className={classes.tableCellDetails}
-                                >
-                                  {t(row.gender.name)}
-                                </TableCell>
-
-                                <TableCell
-                                  key={row.dateOfBirth}
-                                  className={classes.tableCellDetails}
-                                >
-                                  {row.dateOfBirth
-                                    ? new Date().getFullYear() -
-                                      new Date(row.dateOfBirth).getFullYear() +
-                                      " " +
-                                      `${t("years")}`
-                                    : "-"}
-                                </TableCell>
-
-                                <TableCell
-                                  key={row.addressLevel.title}
-                                  className={classes.tableCellDetails}
-                                >
-                                  {t(row.addressLevel.title)}
-                                </TableCell>
-                              </TableRow>
-                            </TableBody>
-                          </Table>
-                          <div style={{ marginLeft: 10 }}>
-                            <LineBreak num={1} />
-
-                            <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                              Relationship
-                            </Typography>
-                            <div>
-                              <div>
-                                <FormControl
-                                  className={classes.formControl}
-                                  style={{ width: "50%" }}
-                                >
-                                  <InputLabel htmlFor="age-native-helper" />
-                                  <NativeSelect
-                                    value={state.age}
-                                    onChange={handleChange}
-                                    inputProps={{
-                                      name: "age",
-                                      id: "age-native-simple"
-                                    }}
-                                  >
-                                    <option value="" disabled>
-                                      Select relation
-                                    </option>
-                                    {Relations.relationships
-                                      ? Relations.relationships.map((relationship, index) =>
-                                          subjectProfile.gender.name ===
-                                            relationship.individualAIsToBRelation.gender &&
-                                          row.gender.name ===
-                                            relationship.individualBIsToARelation.gender ? (
-                                            <option key={index} value={relationship.uuid}>
-                                              {t(relationship.individualBIsToARelation.name)}
-                                            </option>
-                                          ) : (
-                                            ""
-                                          )
-                                        )
-                                      : ""}
-                                  </NativeSelect>
-                                </FormControl>
-                              </div>
-                            </div>
-                          </div>
-                        </Grid>
-                      </Grid>
-                    </div>
-                  </div>
-                  {/* <hr className={classes.horizontalLine} /> */}
-                </div>
-              ))
-            : ""}
-
-          {profileDetails === null ? (
+          {(isEmpty(selectedRelative) || error) && (
             <div>
-              <div className={classes.scheduleddateStyle}>
-                <Typography component={"span"} className={classes.subHeading}>
-                  {/* {t("Completed")} */}
-                  Find Relative
-                </Typography>
-              </div>
+              <div className={classes.scheduleddateStyle} />
               <div className={classes.scheduleddateStyle} style={{ marginLeft: 10 }}>
-                {/* <Button variant="contained" className={classes.findButton} color="primary">
-              Find Relative
-            </Button> */}
-                <FindRelative subjectProfile={subjectProfile} />
-                {/* {subjects.content ? (
-                <FindRelative subjectTypes={subjectTypes} />
-              ) : ( */}
-                {/* <FindRelativeTable /> */}
-                {/* // )} */}
+                <FindRelative
+                  setError={setError}
+                  subjectProfile={subjectProfile}
+                  operationalModules={operationalModules}
+                  allLocations={allLocations}
+                  genders={genders}
+                  organisationConfigs={organisationConfigs}
+                  searchRequest={searchRequest}
+                />
               </div>
             </div>
-          ) : (
-            ""
+          )}
+          {!isEmpty(selectedRelative) && (
+            <div key={selectedRelative.fullName}>
+              <div className={classes.scheduleddateStyle}>
+                <Typography component={"span"} className={classes.subHeading}>
+                  Give relationship
+                </Typography>
+              </div>
+              <div className={classes.scheduleddateStyle}>
+                <div className={classes.tableView}>
+                  <Grid alignItems="center" container spacing={1}>
+                    <Grid item xs={6}>
+                      <Table aria-label="caption table" className={classes.tableContainer}>
+                        <TableHead>
+                          <TableRow className={classes.tableHeader}>
+                            <TableCell className={classes.tableCell} style={{ width: "25%" }}>
+                              {t("name")}
+                            </TableCell>
+                            <TableCell className={classes.tableCell} style={{ width: "20%" }}>
+                              {t("gender")}
+                            </TableCell>
+                            <TableCell className={classes.tableCell} style={{ width: "20%" }}>
+                              {t("age")}
+                            </TableCell>
+                            <TableCell className={classes.tableCell} style={{ width: "35%" }}>
+                              {t("Village")}
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell
+                              key={selectedRelative.fullName}
+                              className={classes.tableCellDetails}
+                            >
+                              {t(selectedRelative.fullName)}
+                            </TableCell>
+
+                            <TableCell
+                              key={selectedRelative.gender}
+                              className={classes.tableCellDetails}
+                            >
+                              {t(selectedRelative.gender)}
+                            </TableCell>
+
+                            <TableCell
+                              key={selectedRelative.dateOfBirth}
+                              className={classes.tableCellDetails}
+                            >
+                              {selectedRelative.dateOfBirth
+                                ? new Date().getFullYear() -
+                                  new Date(selectedRelative.dateOfBirth).getFullYear() +
+                                  " " +
+                                  `${t("years")}`
+                                : "-"}
+                            </TableCell>
+
+                            <TableCell
+                              key={selectedRelative.addressLevel}
+                              className={classes.tableCellDetails}
+                            >
+                              {t(selectedRelative.addressLevel)}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                      <div style={{ marginLeft: 10 }}>
+                        <LineBreak num={1} />
+
+                        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                          Relationship
+                        </Typography>
+                        <div>
+                          <div>
+                            <FormControl className={classes.formControl} style={{ width: "50%" }}>
+                              <InputLabel htmlFor="age-native-helper" />
+                              <NativeSelect
+                                value={state.age}
+                                onChange={handleChange}
+                                inputProps={{
+                                  name: "age",
+                                  id: "age-native-simple"
+                                }}
+                              >
+                                <option value="" disabled>
+                                  Select relation
+                                </option>
+                                {applicableRelations.map((relation, index) => (
+                                  <option key={index} value={relation.uuid}>
+                                    {t(relation.name)}
+                                  </option>
+                                ))}
+                              </NativeSelect>
+                            </FormControl>
+                            {
+                              <Typography
+                                style={{ color: "red", marginTop: "10px" }}
+                                variant="subtitle1"
+                              >
+                                {t(error)}
+                              </Typography>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </Grid>
+                  </Grid>
+                </div>
+              </div>
+            </div>
           )}
         </div>
         <Box
@@ -352,7 +377,7 @@ const AddRelative = ({
               className={classes.addBtn}
               color="primary"
               onClick={addRelatives}
-              disabled={isEmpty(relationData.relationshipTypeUUID)}
+              disabled={isEmpty(relationData.relationshipTypeUUID) || !isEmpty(error)}
             >
               ADD
             </Button>
@@ -367,16 +392,24 @@ const AddRelative = ({
 
 const mapStateToProps = state => ({
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
-  Relations: state.dataEntry.relations,
+  relationshipTypes: state.dataEntry.relations.relationshipTypes,
   RelationsData: state.dataEntry.relations.relationData,
   subjects: state.dataEntry.search.subjects,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
+  searchRequest: state.dataEntry.searchFilterReducer.request,
+  operationalModules: state.dataEntry.metadata.operationalModules,
+  allLocations: state.dataEntry.metadata.allLocations,
+  genders: state.dataEntry.metadata.genders,
+  organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
 
 const mapDispatchToProps = {
-  getRelations,
+  getRelationshipTypes,
   saveRelationShip,
-  getSubjectProfile
+  getSubjectProfile,
+  getAllLocations,
+  getGenders,
+  getOrganisationConfig
 };
 
 export default withRouter(

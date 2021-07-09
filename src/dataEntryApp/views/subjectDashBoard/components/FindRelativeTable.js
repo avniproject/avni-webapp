@@ -43,8 +43,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
 
   const handleChange = (event, uuid, row) => {
     setSelectedValue(event.target.value);
-    let sub = row;
-    sessionStorage.setItem("selectedRelative", JSON.stringify(sub));
+    sessionStorage.setItem("selectedRelative", JSON.stringify(row));
   };
 
   // const isSelected = uuid => selected.indexOf(uuid) !== -1;
@@ -69,8 +68,9 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
             <TableRow>
               <TableCell />
               <TableCell align="left">{t("name")}</TableCell>
-              <TableCell align="left">{t("age")}</TableCell>
-              <TableCell align="left">{t("Village")}</TableCell>
+              <TableCell align="left">{t("dob")}</TableCell>
+              <TableCell align="left">{t("gender")}</TableCell>
+              <TableCell align="left">{t("address")}</TableCell>
               <TableCell align="left">{t("subjectType")}</TableCell>
             </TableRow>
           </TableHead>
@@ -95,8 +95,9 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
                       {t(row.fullName)}
                     </TableCell>
                     <TableCell align="left">{row.dateOfBirth}</TableCell>
-                    <TableCell align="left">{t(row.addressLevel.title)}</TableCell>
-                    <TableCell align="left">{t(row.subjectType.name)}</TableCell>
+                    <TableCell align="left">{row.gender}</TableCell>
+                    <TableCell align="left">{t(row.addressLevel)}</TableCell>
+                    <TableCell align="left">{t(row.subjectTypeName)}</TableCell>
                   </TableRow>
                 );
               })}

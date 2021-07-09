@@ -30,6 +30,7 @@ export const mapIndividual = individualDetails => {
     ["uuid", "firstName", "lastName", "voided"],
     ["dateOfBirth", "registrationDate"]
   );
+  individual.name = `${individualDetails.firstName} ${individualDetails.lastName}`;
   const gender = new Gender();
   gender.name = individualDetails.gender;
   gender.uuid = individualDetails.genderUUID;

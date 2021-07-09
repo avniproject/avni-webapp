@@ -1,14 +1,13 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { types, setRelations } from "../reducers/relationshipReducer";
+import { types, setRelationshipTypes } from "../reducers/relationshipReducer";
 import api from "../api";
-import { setLoad } from "../reducers/loadReducer";
 
 export default function*() {
-  yield all([relationshipFetchWatcher, saveRelatioshipWatcher, removeRelatioshipWatcher].map(fork));
+  yield all([relationshipTypeWatcher, saveRelatioshipWatcher, removeRelatioshipWatcher].map(fork));
 }
 
-export function* relationshipFetchWatcher() {
-  yield takeLatest(types.GET_RELATION, relationshipFetchWorker);
+export function* relationshipTypeWatcher() {
+  yield takeLatest(types.GET_RELATIONSHIP_TYPES, relationshipTypeWorker);
 }
 
 export function* saveRelatioshipWorker({ relationData }) {
@@ -27,9 +26,7 @@ export function* removeRelatioshipWatcher() {
   yield takeLatest(types.REMOVE_RELATION, removeRelatioshipWorker);
 }
 
-export function* relationshipFetchWorker() {
-  const relations = yield call(api.fetchRelations);
-  yield put.resolve(setLoad(false));
-  yield put(setRelations(relations));
-  yield put.resolve(setLoad(true));
+export function* relationshipTypeWorker() {
+  const relationshipTypes = yield call(api.fetchRelationshipTypes);
+  yield put(setRelationshipTypes(relationshipTypes));
 }
