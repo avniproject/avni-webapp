@@ -1,31 +1,33 @@
 package org.openchs.web.request.webapp;
 
 import org.openchs.domain.individualRelationship.IndividualRelation;
-import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.openchs.web.request.ReferenceDataContract;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class IndividualRelationContract extends ReferenceDataContract {
 
-    private String gender;
+    private List<String> genders;
 
     public static IndividualRelationContract fromEntity(IndividualRelation relation) {
         IndividualRelationContract individualRelationContract = new IndividualRelationContract();
         individualRelationContract.setId(relation.getId());
         individualRelationContract.setUuid(relation.getUuid());
         individualRelationContract.setName(relation.getName());
-        Optional<IndividualRelationGenderMapping> genderMapping = relation.getGenderMappings().stream().findFirst();
-        if(genderMapping.isPresent()) {
-            individualRelationContract.setGender(genderMapping.get().getGender().getName());
-        }
+        List<String> genders = relation.getGenderMappings().stream()
+                .filter(gm -> gm.getGender() != null)
+                .map(gm -> gm.getGender().getName())
+                .collect(Collectors.toList());
+        individualRelationContract.setGenders(genders);
         return individualRelationContract;
     }
 
-    public String getGender() {
-        return gender;
+    public List<String> getGenders() {
+        return genders;
     }
-    public void setGender(String gender) {
-        this.gender = gender;
+
+    public void setGenders(List<String> genders) {
+        this.genders = genders;
     }
 }

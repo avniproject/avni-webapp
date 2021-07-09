@@ -27,7 +27,7 @@ public class IndividualRelationshipTypeService {
     }
 
     public List<IndividualRelationshipTypeContract> getAllRelationshipTypes() {
-        List<IndividualRelationshipType> relationshipTypes = individualRelationshipTypeRepository.findAll();
+        List<IndividualRelationshipType> relationshipTypes = individualRelationshipTypeRepository.findAllByIsVoidedFalse();
         return relationshipTypes
                 .stream()
                 .map(IndividualRelationshipTypeContract::fromEntity)
