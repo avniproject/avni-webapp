@@ -37,8 +37,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
     const { name, sections } = dashboard;
     if (isEmpty(name)) {
       setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-    }
-    if (isEmpty(sections)) {
+    } else if (isEmpty(sections)) {
       setError([...error, { key: "EMPTY_SECTIONS", message: "Sections cannot be empty" }]);
     }
   };
@@ -68,6 +67,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
   };
 
   const addSection = event => {
+    setError(error.filter(({ key }) => key !== "EMPTY_SECTIONS"));
     dispatch({ type: "addSection" });
     event.stopPropagation();
   };
@@ -133,6 +133,7 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
               Add Section
             </Button>
           </Grid>
+          {getErrorByKey(error, "EMPTY_SECTIONS")}
         </Grid>
         <Grid item>
           <CreateEditDashboardSections
