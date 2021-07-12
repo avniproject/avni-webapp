@@ -165,9 +165,8 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             Supplier<Stream<AddressLevel>> addressMatches = () ->
                     locations.stream()
                             .filter(location ->
-                                    location.getTitle()
-                                            .toLowerCase()
-                                            .equals(lowestInputAddressLevel.toLowerCase()));
+                                    location.getTitle().toLowerCase().equals(lowestInputAddressLevel.toLowerCase()) &&
+                                    location.getType().getName().equals(lowestAddressLevelType.getName()));
 
             if (addressMatches.get().count() > 1) {
                 // filter by lineage if more than one location with same name present
