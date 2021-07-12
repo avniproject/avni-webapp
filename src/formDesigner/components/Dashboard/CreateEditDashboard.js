@@ -1,7 +1,7 @@
 import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
-import { get, isEmpty, isNil } from "lodash";
+import { get, isEmpty, isNil, find } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -33,18 +33,39 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
     }
   }, []);
 
-  const validateRequest = () => {
+  const isValidRequest = () => {
     const { name, sections } = dashboard;
+    const errors = [];
     if (isEmpty(name)) {
-      setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-    } else if (isEmpty(sections)) {
-      setError([...error, { key: "EMPTY_SECTIONS", message: "Sections cannot be empty" }]);
+      errors.push({ key: "EMPTY_NAME", message: "Name cannot be empty" });
     }
+    if (isEmpty(sections)) {
+      errors.push({ key: "EMPTY_SECTIONS", message: "Sections cannot be empty" });
+    }
+    if (!!find(sections, ({ name }) => isEmpty(name))) {
+      errors.push({
+        key: "EMPTY_SECTIONS",
+        message: "Section name cannot be left blank. Please specify it for all sections."
+      });
+    }
+    if (!!find(sections, ({ viewType }) => isEmpty(viewType))) {
+      errors.push({
+        key: "EMPTY_SECTIONS",
+        message: "Section view type cannot be blank. Please select a view type"
+      });
+    }
+    if (!!find(sections, ({ cards }) => isEmpty(cards))) {
+      errors.push({ key: "EMPTY_SECTIONS", message: "Please add cards to the section." });
+    }
+    if (errors.length > 0) {
+      setError(errors);
+      return false;
+    }
+    return true;
   };
 
   const onSave = () => {
-    validateRequest();
-    if (!isEmpty(dashboard.name) && !isEmpty(dashboard.sections)) {
+    if (isValidRequest()) {
       const url = edit ? `/web/dashboard/${props.match.params.id}` : "/web/dashboard";
       const methodName = edit ? "put" : "post";
       http[methodName](url, dashboard)
