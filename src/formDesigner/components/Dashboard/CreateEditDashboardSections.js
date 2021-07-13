@@ -181,7 +181,7 @@ const CreateEditDashboardSections = props => {
           <AvniTextField
             multiline
             id={"description" + index}
-            label="Section Description*"
+            label="Section Description"
             autoComplete="off"
             value={section.description}
             onChange={event => changeSectionDescription(section, event.target.value)}
