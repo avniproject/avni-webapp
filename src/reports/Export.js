@@ -10,18 +10,19 @@ import { getOperationalModules, getUploadStatuses } from "./reducers";
 import JobStatus from "./JobStatus";
 import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 import Box from "@material-ui/core/Box";
-import { DateSelector } from "./DateSelector";
-import { ExportOptions } from "./ExportOptions";
-import ReportTypes from "./ReportTypes";
+import ReportTypes, { reportTypes } from "./ReportTypes";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "../dataEntryApp/components/Radio";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import AddressLevelsByType from "../common/components/AddressLevelsByType";
 import { reportSideBarOptions } from "./Common";
+import { applicableOptions, ExportReducer, initialState } from "./ExportReducer";
+import { RegistrationType } from "./components/export/RegistrationType";
+import { EnrolmentType } from "./components/export/EnrolmentType";
+import { EncounterType } from "./components/export/EncounterType";
+import { GroupSubjectType } from "./components/export/GroupSubjectType";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -42,35 +43,34 @@ const Export = ({
     getOperationalModules();
   }, []);
 
-  const currentDate = new Date();
-  const [reportType, setReportType] = React.useState({});
-  const [selectedSubjectType, setSelectedSubjectType] = React.useState({});
-  const [selectedProgram, setSelectedProgram] = React.useState({});
-  const [selectedEncounterType, setSelectedEncounterType] = React.useState({});
-  const [startDate, setStartDate] = React.useState(currentDate);
-  const [endDate, setEndDate] = React.useState(currentDate);
-  const [addressLevelsIds, setAddressLevelsIds] = React.useState([]);
-  const [addressLevelError, setAddressLevelError] = React.useState();
-
-  const resetAllParams = () => {
-    setSelectedSubjectType({});
-    setSelectedProgram({});
-    setSelectedEncounterType({});
-    setStartDate(currentDate);
-    setEndDate(currentDate);
-  };
-
-  const dateParamsRequired = () => reportType.name === ReportTypes.getName("All");
+  const [exportRequest, dispatchFun] = React.useReducer(ExportReducer, initialState);
+  const [enableExport, setEnableExport] = React.useState(false);
+  const {
+    reportType,
+    subjectType,
+    program,
+    encounterType,
+    startDate,
+    endDate,
+    addressLevelIds,
+    addressLevelError
+  } = exportRequest;
+  const dispatch = (type, payload) => dispatchFun({ type, payload });
+  const subjectTypes = _.get(operationalModules, "subjectTypes");
+  const { programOptions, encounterTypeOptions } = applicableOptions(
+    operationalModules,
+    exportRequest
+  );
 
   const onStartExportHandler = async () => {
     const request = {
-      subjectTypeUUID: selectedSubjectType.uuid,
-      programUUID: selectedProgram.uuid,
-      encounterTypeUUID: selectedEncounterType.uuid,
-      startDate: dateParamsRequired() ? startDate.setHours(0, 0, 0, 0) : null,
-      endDate: dateParamsRequired() ? endDate.setHours(23, 59, 59, 999) : null,
+      subjectTypeUUID: subjectType.uuid,
+      programUUID: program.uuid,
+      encounterTypeUUID: encounterType.uuid,
+      startDate: startDate.setHours(0, 0, 0, 0),
+      endDate: endDate.setHours(23, 59, 59, 999),
       reportType: ReportTypes.getCode(reportType.name),
-      addressLevelIds: addressLevelsIds
+      addressLevelIds: addressLevelIds
     };
     const [ok, error] = await api.startExportJob(request);
     if (!ok && error) {
@@ -79,81 +79,14 @@ const Export = ({
     setTimeout(() => getUploadStatuses(0), 1000);
   };
 
-  const onReportTypeChangeHandler = type => {
-    setReportType(type);
-    resetAllParams();
-  };
-
-  const renderProgramsAndEncounters = (programs, encounters) => {
-    return (
-      <>
-        <ExportOptions
-          options={programs}
-          label={"Program"}
-          selectedOption={selectedProgram}
-          onChange={setSelectedProgram}
-        />
-        <ExportOptions
-          options={encounters}
-          label={"Encounter Type"}
-          selectedOption={selectedEncounterType}
-          onChange={setSelectedEncounterType}
-        />
-      </>
-    );
-  };
-
-  const renderProgramOrEncounters = () => {
-    const { programs, formMappings, encounterTypes } = operationalModules;
-    const validFormMappingsForSelectedSubject = formMappings.filter(
-      fm => fm.subjectTypeUUID === selectedSubjectType.uuid
-    );
-    const validPrograms = _.intersectionWith(
-      programs,
-      validFormMappingsForSelectedSubject,
-      (a, b) => a.uuid === b.programUUID
-    );
-    if (_.isEmpty(validPrograms)) {
-      const validEncounters = _.intersectionWith(
-        encounterTypes,
-        validFormMappingsForSelectedSubject,
-        (a, b) => a.uuid === b.encounterTypeUUID
-      );
-      return (
-        <ExportOptions
-          options={validEncounters}
-          label={"Encounter Types"}
-          selectedOption={selectedEncounterType}
-          onChange={setSelectedEncounterType}
-        />
-      );
-    } else {
-      const validFormMappingsForSelectedProgram = formMappings.filter(
-        fm => fm.programUUID === selectedProgram.uuid
-      );
-      const validEncounters = _.intersectionWith(
-        encounterTypes,
-        validFormMappingsForSelectedProgram,
-        (a, b) => a.uuid === b.encounterTypeUUID
-      );
-      return renderProgramsAndEncounters(validPrograms, validEncounters);
-    }
-  };
-
-  const onSubjectTypeChange = option => {
-    setSelectedProgram({});
-    setSelectedEncounterType({});
-    setSelectedSubjectType(option);
-  };
-
   const renderAddressLevel = () => {
     return (
       <Grid container direction={"row"}>
         <Grid item xs={12}>
           <AddressLevelsByType
-            addressLevelsIds={addressLevelsIds}
-            setAddressLevelsIds={setAddressLevelsIds}
-            setError={setAddressLevelError}
+            addressLevelsIds={addressLevelIds}
+            setAddressLevelsIds={ids => dispatch("addressLevelIds", ids)}
+            setError={error => dispatch("AddressLevelError", error)}
           />
         </Grid>
         <Grid item xs={12}>
@@ -163,35 +96,12 @@ const Export = ({
     );
   };
 
-  const subjectTypes = () => {
-    return (
-      <ExportOptions
-        options={operationalModules.subjectTypes}
-        label={"Subject Type"}
-        selectedOption={selectedSubjectType}
-        onChange={onSubjectTypeChange}
-      />
-    );
+  const onReportTypeChange = type => {
+    dispatch("reportType", type);
+    setEnableExport(false);
   };
 
-  const renderAllTypes = () => {
-    return (
-      <Grid>
-        {subjectTypes()}
-        {renderProgramOrEncounters()}
-        {!_.isEmpty(selectedEncounterType) && (
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container direction="row" justify="flex-start">
-              <DateSelector label={"Visit start date"} value={startDate} onChange={setStartDate} />
-              <DateSelector label={"Visit end date"} value={endDate} onChange={setEndDate} />
-            </Grid>
-          </MuiPickersUtilsProvider>
-        )}
-      </Grid>
-    );
-  };
-
-  const ReportOptions = () => {
+  const RenderReportTypes = () => {
     return (
       <FormControl component="fieldset">
         <FormLabel component="legend">Report Type</FormLabel>
@@ -202,7 +112,7 @@ const Export = ({
               control={
                 <Radio
                   checked={type.name === reportType.name}
-                  onChange={() => onReportTypeChangeHandler(type)}
+                  onChange={() => onReportTypeChange(type)}
                   value={type.name}
                 />
               }
@@ -214,15 +124,26 @@ const Export = ({
     );
   };
 
-  const enableReportGeneration = () => {
-    switch (reportType.name) {
-      case ReportTypes.getName("Registration"):
-        return !_.isEmpty(selectedSubjectType);
-      case ReportTypes.getName("All"):
-        return !_.isEmpty(selectedEncounterType);
-      default:
-        return false;
-    }
+  const commonProps = { dispatch, startDate, endDate, subjectType, subjectTypes, setEnableExport };
+  const reportTypeMap = {
+    [reportTypes.Registration]: <RegistrationType {...commonProps} />,
+    [reportTypes.Enrolment]: (
+      <EnrolmentType {...commonProps} programOptions={programOptions} program={program} />
+    ),
+    [reportTypes.Encounter]: (
+      <EncounterType
+        {...commonProps}
+        programOptions={programOptions}
+        program={program}
+        encounterTypeOptions={encounterTypeOptions}
+        encounterType={encounterType}
+      />
+    ),
+    [reportTypes.GroupSubject]: <GroupSubjectType {...commonProps} />
+  };
+
+  const renderReportTypeOptions = () => {
+    return reportType.name ? reportTypeMap[reportType.name] : <React.Fragment />;
   };
 
   return (
@@ -236,9 +157,8 @@ const Export = ({
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
             <DocumentationContainer filename={"Report.md"}>
               <Grid>
-                <ReportOptions />
-                {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
-                {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
+                {RenderReportTypes()}
+                {renderReportTypeOptions()}
                 {!_.isEmpty(reportType.name) && renderAddressLevel()}
               </Grid>
               <Grid container direction="row" justify="flex-start">
@@ -247,7 +167,7 @@ const Export = ({
                   color="primary"
                   aria-haspopup="false"
                   onClick={onStartExportHandler}
-                  disabled={!enableReportGeneration()}
+                  disabled={!enableExport}
                   className={classes.item}
                 >
                   Generate Export

@@ -1,8 +1,10 @@
 import { findKey, map } from "lodash";
 
-const reportTypes = Object.freeze({
-  Registration: "Registration only",
-  All: "All"
+export const reportTypes = Object.freeze({
+  Registration: "Registration",
+  Enrolment: "Enrolment",
+  Encounter: "Encounter",
+  GroupSubject: "Group Subject"
 });
 
 export default class {
