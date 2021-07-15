@@ -23,35 +23,30 @@ import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 @Component
 @StepScope
 public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, FlatFileHeaderCallback {
 
     private static final String selectedAnswerFieldValue = "1";
     private static final String unSelectedAnswerFieldValue = "0";
-
+    private StringBuilder headers = new StringBuilder();
     @Value("#{jobParameters['encounterTypeUUID']}")
     private String encounterTypeUUID;
-
     @Value("#{jobParameters['subjectTypeUUID']}")
     private String subjectTypeUUID;
-
     @Value("#{jobParameters['programUUID']}")
     private String programUUID;
-
     @Value("#{jobParameters['reportType']}")
     private String reportType;
-
     @Value("#{jobParameters['startDate']}")
     private Date startDate;
-
     @Value("#{jobParameters['endDate']}")
     private Date endDate;
-
     private EncounterTypeRepository encounterTypeRepository;
     private EncounterRepository encounterRepository;
     private ProgramEncounterRepository programEncounterRepository;
-
     private LinkedHashMap<String, FormElement> registrationMap;
     private LinkedHashMap<String, FormElement> enrolmentMap = new LinkedHashMap<>();
     private LinkedHashMap<String, FormElement> exitEnrolmentMap = new LinkedHashMap<>();
@@ -61,7 +56,6 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private LinkedHashMap<String, FormElement> encounterCancelMap = new LinkedHashMap<>();
     private List<String> addressLevelTypes = new ArrayList<>();
     private String encounterTypeName;
-    private Long maxVisitCount = 0L;
     private FormMappingService formMappingService;
     private AddressLevelService addressLevelService;
 
@@ -81,20 +75,107 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     public void init() {
         this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
         this.addressLevelTypes = addressLevelService.getAllAddressLevelTypeNames();
-        if (reportType.equals(ReportType.All.name())) {
-            if (programUUID == null) {
-                this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
-                this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
-            } else {
-                this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
-                this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
-                this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
-                this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
+        switch (ReportType.valueOf(reportType)) {
+            case Registration: {
+                addRegistrationHeaders(this.headers);
+                break;
             }
-            this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
-            Long maxVisitCount = getMaxVisitCount();
-            this.maxVisitCount = maxVisitCount == null ? 0 : maxVisitCount;
+            case GroupSubject: {
+                addGroupSubjectHeaders(this.headers);
+                break;
+            }
+            case Enrolment: {
+                setEnrolmentMappings();
+                addRegistrationHeaders(this.headers);
+                addEnrolmentHeaders(this.headers);
+                break;
+            }
+            case Encounter: {
+                if (programUUID == null) {
+                    this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
+                    this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
+                    addRegistrationHeaders(this.headers);
+                } else {
+                    setEnrolmentMappings();
+                    this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
+                    this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
+                    addRegistrationHeaders(this.headers);
+                    addEnrolmentHeaders(this.headers);
+                }
+                this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
+                Long maxVisitCount = getMaxVisitCount();
+                Long maxVisits = maxVisitCount == null ? 0 : maxVisitCount;
+                addEncounterHeaders(maxVisits, this.headers);
+                break;
+            }
         }
+    }
+
+    private void addGroupSubjectHeaders(StringBuilder headers) {
+        headers.append("group.id");
+        headers.append(",").append("group.uuid");
+        headers.append(",").append("group.first_name");
+        headers.append(",").append("member.id");
+        headers.append(",").append("member.uuid");
+        headers.append(",").append("member.first_name");
+        headers.append(",").append("member.last_name");
+        headers.append(",").append("member.role");
+        headers.append(",").append("member.membership_start_date");
+        headers.append(",").append("member.membership_end_date");
+        addAuditColumns(headers, "member");
+    }
+
+    private void addEncounterHeaders(Long maxVisitCount, StringBuilder headers) {
+        int visit = 0;
+        while (visit < maxVisitCount) {
+            visit++;
+            String prefix = encounterTypeName + "_" + visit;
+            headers.append(",").append(prefix).append(".id");
+            headers.append(",").append(prefix).append(".uuid");
+            headers.append(",").append(prefix).append(".name");
+            headers.append(",").append(prefix).append(".earliest_visit_date_time");
+            headers.append(",").append(prefix).append(".max_visit_date_time");
+            headers.append(",").append(prefix).append(".encounter_date_time");
+            appendObsColumns(headers, prefix, programUUID != null ? programEncounterMap : encounterMap);
+            headers.append(",").append(prefix).append(".cancel_date_time");
+            appendObsColumns(headers, prefix, programUUID != null ? programEncounterCancelMap : encounterCancelMap);
+            addAuditColumns(headers, prefix);
+        }
+    }
+
+    private void addEnrolmentHeaders(StringBuilder headers) {
+        headers.append(",").append("enl.id");
+        headers.append(",").append("enl.uuid");
+        headers.append(",").append("enl.enrolment_date_time");
+        appendObsColumns(headers, "enl", enrolmentMap);
+        headers.append(",").append("enl.program_exit_date_time");
+        appendObsColumns(headers, "enl_exit", exitEnrolmentMap);
+        addAuditColumns(headers, "enl");
+    }
+
+    private void addRegistrationHeaders(StringBuilder headers) {
+        headers.append("ind.id");
+        headers.append(",").append("ind.uuid");
+        headers.append(",").append("ind.first_name");
+        headers.append(",").append("ind.last_name");
+        headers.append(",").append("ind.date_of_birth");
+        headers.append(",").append("ind.registration_date");
+        headers.append(",").append("ind.gender");
+        addAddressLevelColumns(headers);
+        appendObsColumns(headers, "ind", registrationMap);
+        addAuditColumns(headers, "ind");
+    }
+
+    private void addAuditColumns(StringBuilder headers, String prefix) {
+        headers.append(",").append(format("%s_created_by", prefix));
+        headers.append(",").append(format("%s_created_date_time", prefix));
+        headers.append(",").append(format("%s_modified_by", prefix));
+        headers.append(",").append(format("%s_modified_date_time", prefix));
+    }
+
+    private void setEnrolmentMappings() {
+        this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
+        this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
     }
 
     private Long getMaxVisitCount() {
@@ -111,36 +192,70 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     @Override
     public Object[] extract(ExportItemRow exportItemRow) {
         List<Object> row = new ArrayList<>();
-        AddressLevel addressLevel = exportItemRow.getIndividual().getAddressLevel();
-        //Registration
-        Gender gender = exportItemRow.getIndividual().getGender();
-        row.add(exportItemRow.getIndividual().getId());
-        row.add(exportItemRow.getIndividual().getUuid());
-        row.add(massageStringValue(exportItemRow.getIndividual().getFirstName()));
-        row.add(massageStringValue(exportItemRow.getIndividual().getLastName()));
-        row.add(exportItemRow.getIndividual().getDateOfBirth());
-        row.add(exportItemRow.getIndividual().getRegistrationDate());
-        row.add(gender == null ? "" : gender.getName());
-        addAddressLevels(row, addressLevel);
-        row.addAll(getObs(exportItemRow.getIndividual().getObservations(), registrationMap));
-        if (programUUID == null) {
-            addGeneralEncounterRelatedFields(exportItemRow, row);
+        if (reportType.equals(ReportType.GroupSubject.toString())) {
+            addGroupSubjectFields(exportItemRow, row);
         } else {
-            addProgramEnrolmentFields(exportItemRow, row);
-            addProgramEncounterRelatedFields(exportItemRow, row);
+            Individual individual = exportItemRow.getIndividual();
+            AddressLevel addressLevel = individual.getAddressLevel();
+            //Registration
+            Gender gender = individual.getGender();
+            row.add(individual.getId());
+            row.add(individual.getUuid());
+            row.add(massageStringValue(individual.getFirstName()));
+            row.add(massageStringValue(individual.getLastName()));
+            row.add(individual.getDateOfBirth());
+            row.add(individual.getRegistrationDate());
+            row.add(gender == null ? "" : gender.getName());
+            addAddressLevels(row, addressLevel);
+            row.addAll(getObs(individual.getObservations(), registrationMap));
+            addAuditFields(individual.getAudit(), row);
+            if (programUUID == null && reportType.equals(ReportType.Encounter.toString())) {
+                addGeneralEncounterRelatedFields(exportItemRow, row);
+            } else if (reportType.equals(ReportType.Enrolment.toString())) {
+                addProgramEnrolmentFields(exportItemRow, row);
+            } else if (programUUID != null && reportType.equals(ReportType.Encounter.toString())) {
+                addProgramEnrolmentFields(exportItemRow, row);
+                addProgramEncounterRelatedFields(exportItemRow, row);
+            }
         }
         return row.toArray();
     }
 
+    private void addGroupSubjectFields(ExportItemRow exportItemRow, List<Object> row) {
+        GroupSubject group = exportItemRow.getGroupSubject();
+        Individual groupSubject = group.getGroupSubject();
+        Individual memberSubject = group.getMemberSubject();
+        row.add(groupSubject.getId());
+        row.add(groupSubject.getUuid());
+        row.add(groupSubject.getFirstName());
+        row.add(memberSubject.getId());
+        row.add(memberSubject.getUuid());
+        row.add(memberSubject.getFirstName());
+        row.add(memberSubject.getLastName());
+        row.add(group.getGroupRole().getRole());
+        row.add(group.getMembershipStartDate());
+        row.add(group.getMembershipEndDate());
+        addAuditFields(group.getAudit(), row);
+    }
+
+    private void addAuditFields(Audit audit, List<Object> row) {
+        row.add(audit.getCreatedBy().getUsername());
+        row.add(audit.getCreatedDateTime());
+        row.add(audit.getLastModifiedBy().getUsername());
+        row.add(audit.getLastModifiedDateTime());
+    }
+
     private void addProgramEnrolmentFields(ExportItemRow exportItemRow, List<Object> row) {
+        ProgramEnrolment programEnrolment = exportItemRow.getProgramEnrolment();
         //ProgramEnrolment
-        row.add(exportItemRow.getProgramEnrolment().getId());
-        row.add(exportItemRow.getProgramEnrolment().getUuid());
-        row.add(exportItemRow.getProgramEnrolment().getEnrolmentDateTime());
-        row.addAll(getObs(exportItemRow.getProgramEnrolment().getObservations(), enrolmentMap));
+        row.add(programEnrolment.getId());
+        row.add(programEnrolment.getUuid());
+        row.add(programEnrolment.getEnrolmentDateTime());
+        row.addAll(getObs(programEnrolment.getObservations(), enrolmentMap));
         //Program Exit
-        row.add(exportItemRow.getProgramEnrolment().getProgramExitDateTime());
-        row.addAll(getObs(exportItemRow.getProgramEnrolment().getProgramExitObservations(), exitEnrolmentMap));
+        row.add(programEnrolment.getProgramExitDateTime());
+        row.addAll(getObs(programEnrolment.getProgramExitObservations(), exitEnrolmentMap));
+        addAuditFields(programEnrolment.getAudit(), row);
     }
 
     private void addGeneralEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
@@ -163,51 +278,12 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.addAll(getObs(encounter.getObservations(), map));
         row.add(encounter.getCancelDateTime());
         row.addAll(getObs(encounter.getCancelObservations(), cancelMap));
+        addAuditFields(encounter.getAudit(), row);
     }
 
     @Override
     public void writeHeader(Writer writer) throws IOException {
-        writer.write(getHeader());
-    }
-
-    private String getHeader() {
-        StringBuilder sb = new StringBuilder();
-        //Registration
-        sb.append("ind.id");
-        sb.append(",").append("ind.uuid");
-        sb.append(",").append("ind.first_name");
-        sb.append(",").append("ind.last_name");
-        sb.append(",").append("ind.date_of_birth");
-        sb.append(",").append("ind.registration_date");
-        sb.append(",").append("ind.gender");
-        addAddressLevelColumns(sb);
-        appendObsColumns(sb, "ind", registrationMap);
-
-        if (programUUID != null) {
-            //ProgramEnrolment
-            sb.append(",").append("enl.id");
-            sb.append(",").append("enl.uuid");
-            sb.append(",").append("enl.enrolment_date_time");
-            appendObsColumns(sb, "enl", enrolmentMap);
-            sb.append(",").append("enl.program_exit_date_time");
-            appendObsColumns(sb, "enl_exit", exitEnrolmentMap);
-        }
-
-        //Encounter
-        int visit = 0;
-        while (visit < maxVisitCount) {
-            visit++;
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".id");
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".uuid");
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".name");
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".earliest_visit_date_time");
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".max_visit_date_time");
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".encounter_date_time");
-            appendObsColumns(sb, encounterTypeName + "_" + visit, programUUID != null ? programEncounterMap : encounterMap);
-            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".cancel_date_time");
-            appendObsColumns(sb, encounterTypeName + "_" + visit, programUUID != null ? programEncounterCancelMap : encounterCancelMap);
-        }
-        return sb.toString();
+        writer.write(this.headers.toString());
     }
 
     private void appendObsColumns(StringBuilder sb, String prefix, LinkedHashMap<String, FormElement> map) {

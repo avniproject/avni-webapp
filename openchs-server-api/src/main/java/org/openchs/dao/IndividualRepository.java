@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.openchs.application.projections.WebSearchResultProjection;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Concept;
@@ -96,8 +97,21 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     @Query("select ind from Individual ind " +
             "where ind.isVoided = false " +
             "and ind.subjectType.uuid = :subjectTypeUUID " +
+            "and ind.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds,NULL) is null OR ind.addressLevel.id in :locationIds)")
-    Page<Individual> findIndividuals(String subjectTypeUUID, List<Long> locationIds, Pageable pageable);
+    Page<Individual> findIndividuals(String subjectTypeUUID, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+
+    //group by is added for distinct ind records
+    @Query("select i from Individual i " +
+            "join i.encounters enc " +
+            "where enc.encounterType.uuid = :encounterTypeUUID " +
+            "and enc.isVoided = false " +
+            "and i.isVoided = false " +
+            "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)" +
+            "group by i.id")
+    Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID,  Pageable pageable);
+
 
     Individual findByLegacyId(String legacyId);
 

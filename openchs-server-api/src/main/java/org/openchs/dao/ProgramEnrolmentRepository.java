@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.openchs.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,10 +43,27 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
 
     @Query("select enl from ProgramEnrolment enl " +
             "join enl.individual i " +
-            "where enl.program.uuid = :programUUID and enl.isVoided = false and " +
-            "i.isVoided = false " +
+            "where enl.program.uuid = :programUUID " +
+            "and enl.isVoided = false " +
+            "and i.isVoided = false " +
+            "and coalesce(enl.enrolmentDateTime, enl.programExitDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)")
-    Page<ProgramEnrolment> findEnrolments(String programUUID, List<Long> locationIds, Pageable pageable);
+    Page<ProgramEnrolment> findEnrolments(String programUUID, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Pageable pageable);
+
+    //group by is added for distinct enl records
+    @Query("select enl from ProgramEnrolment enl " +
+            "join enl.programEncounters enc " +
+            "join enl.individual i " +
+            "where enc.encounterType.uuid = :encounterTypeUUID " +
+            "and enl.program.uuid = :programUUID " +
+            "and enc.isVoided = false " +
+            "and enl.isVoided = false " +
+            "and i.isVoided = false " +
+            "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds) " +
+            "group by enl.id")
+    Page<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID, String programUUID, Pageable pageable);
+
 
     Page<ProgramEnrolment> findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,

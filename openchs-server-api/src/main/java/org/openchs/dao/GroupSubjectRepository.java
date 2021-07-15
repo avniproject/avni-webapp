@@ -1,11 +1,13 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.openchs.domain.GroupRole;
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
@@ -67,4 +69,14 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             String memberSubjectUUID,
             Pageable pageable
     );
+
+    @Query("select gs from GroupSubject gs " +
+            "join gs.groupSubject g " +
+            "join gs.memberSubject m " +
+            "where g.subjectType.uuid = :subjectTypeUUID " +
+            "and g.isVoided = false " +
+            "and m.isVoided = false " +
+            "and g.registrationDate between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
+    Page<GroupSubject> findGroupSubjects(String subjectTypeUUID, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
 }

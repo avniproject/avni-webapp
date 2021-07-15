@@ -10,7 +10,15 @@ public class ExportItemRow {
     private ProgramEnrolment programEnrolment;
     private Stream<ProgramEncounter> programEncounters;
     private Stream<Encounter> encounters;
+    private GroupSubject groupSubject;
 
+    public GroupSubject getGroupSubject() {
+        return groupSubject;
+    }
+
+    public void setGroupSubject(GroupSubject groupSubject) {
+        this.groupSubject = groupSubject;
+    }
 
     public Stream<Encounter> getEncounters() {
         return encounters;
