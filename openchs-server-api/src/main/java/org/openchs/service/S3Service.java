@@ -167,7 +167,7 @@ public class S3Service {
         return s3Client.getUrl(bucketName, s3KeyForMediaUpload);
     }
 
-    public void uploadCustomPrintFile(File tempDirectory, String targetFilePath) throws IOException, InterruptedException {
+    public void uploadExtensionFile(File tempDirectory, String targetFilePath) throws IOException, InterruptedException {
         if (isDev && !s3InDev) {
             return;
         }
@@ -250,7 +250,7 @@ public class S3Service {
         return s3Client.getObject(bucketName, s3Key).getObjectContent();
     }
 
-    public InputStream getCustomPrintContent(String fileName, Organisation organisation) {
+    public InputStream getExtensionContent(String fileName, Organisation organisation) {
         String objectKey = format("%s/%s", organisation.getMediaDirectory(), fileName);
         return getObjectContent(objectKey);
     }

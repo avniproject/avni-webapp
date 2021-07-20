@@ -4,17 +4,17 @@ import org.openchs.domain.JsonObject;
 
 import java.io.Serializable;
 
-public class CustomPrintRequest implements Serializable {
+public class ExtensionRequest implements Serializable {
     private String label;
     private String fileName;
-    private JsonObject printScope;
+    private JsonObject extensionScope;
 
-    public JsonObject getPrintScope() {
-        return printScope;
+    public JsonObject getExtensionScope() {
+        return extensionScope;
     }
 
-    public void setPrintScope(JsonObject printScope) {
-        this.printScope = printScope;
+    public void setExtensionScope(JsonObject extensionScope) {
+        this.extensionScope = extensionScope;
     }
 
     public String getLabel() {
