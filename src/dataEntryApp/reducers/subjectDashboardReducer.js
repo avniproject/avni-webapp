@@ -14,15 +14,9 @@ export const types = {
   VOID_PROGRAM_ENROLMENT: `${prefix}VOID_PROGRAM_ENROLMENT`,
   VOID_PROGRAM_ENCOUNTER: `${prefix}VOID_PROGRAM_ENCOUNTER`,
   VOID_GENERAL_ENCOUNTER: `${prefix}VOID_GENERAL_ENCOUNTER`,
-  SET_PRINT_SETTINGS: `${prefix}SET_PRINT_SETTINGS`,
   LOAD_SUBJECT_DASHBOARD: `${prefix}LOAD_SUBJECT_DASHBOARD`,
   SET_SUBJECT_DASHBOARD_LOADED: `${prefix}SET_SUBJECT_DASHBOARD_LOADED`
 };
-
-export const setPrintSettings = prints => ({
-  type: types.SET_PRINT_SETTINGS,
-  prints
-});
 
 export const getSubjectProfile = subjectUUID => ({
   type: types.GET_SUBJECT_PROFILE,
@@ -135,12 +129,6 @@ export default function(state = {}, action) {
         voidError: action.voidError
       };
     }
-    case types.SET_PRINT_SETTINGS: {
-      return {
-        ...state,
-        prints: action.prints
-      };
-    }
     case types.SET_SUBJECT_DASHBOARD_LOADED: {
       return {
         ...state,
@@ -151,5 +139,3 @@ export default function(state = {}, action) {
       return state;
   }
 }
-
-export const selectPrintState = state => state.dataEntry.subjectProfile.prints;

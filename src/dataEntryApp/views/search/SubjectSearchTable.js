@@ -1,12 +1,14 @@
-import React, { Fragment } from "react";
+import React from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
+import { map, join } from "lodash";
+import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
+import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 
 const SubjectSearchTable = ({ searchRequest }) => {
   const { t } = useTranslation();
-
   const columns = [
     {
       title: t("name"),
@@ -84,9 +86,6 @@ const SubjectSearchTable = ({ searchRequest }) => {
     <div>
       <MaterialTable
         title=""
-        components={{
-          Toolbar: props => <Fragment>{props.children}</Fragment>
-        }}
         tableRef={tableRef}
         columns={columns}
         data={fetchData}
@@ -97,6 +96,16 @@ const SubjectSearchTable = ({ searchRequest }) => {
           sorting: true,
           debounceInterval: 500,
           search: false
+        }}
+        components={{
+          Toolbar: props => (
+            <div style={{ marginRight: "10px" }}>
+              <ExtensionOption
+                subjectUUIDs={join(map(props.data, "uuid"), ",")}
+                scopeType={extensionScopeTypes.searchResults}
+              />
+            </div>
+          )
         }}
       />
     </div>

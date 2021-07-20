@@ -24,8 +24,8 @@ import CommentIcon from "@material-ui/icons/Comment";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
 import { get } from "lodash";
 import Fab from "@material-ui/core/Fab";
-import { CustomPrintOption } from "./customPrint/CustomPrintOption";
-import { printScopeTypes } from "../../../../formDesigner/components/CustomPrints/CustomPrintsReducer";
+import { ExtensionOption } from "./extension/ExtensionOption";
+import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -250,11 +250,11 @@ const ProfileDetails = ({
           </Grid>
         </Grid>
         <Grid container item xs={8} align="right" direction={"column"}>
-          <CustomPrintOption
-            subjectUUID={profileDetails.uuid}
+          <ExtensionOption
+            subjectUUIDs={profileDetails.uuid}
             typeUUID={profileDetails.subjectType.uuid}
             typeName={profileDetails.subjectType.name}
-            scopeType={printScopeTypes.subjectDashboard}
+            scopeType={extensionScopeTypes.subjectDashboard}
           />
           <Grid item>
             {enableComment && (

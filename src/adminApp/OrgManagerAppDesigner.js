@@ -25,7 +25,7 @@ import { VideoList } from "../formDesigner/components/Video/VideoList";
 import ReportingViews from "../formDesigner/components/ReportingViews/ReportingViews";
 import ReportCardList from "../formDesigner/components/ReportCard/ReportCardList";
 import DashboardList from "../formDesigner/components/Dashboard/DashboardList";
-import CustomPrints from "../formDesigner/components/CustomPrints/CustomPrints";
+import Extensions from "../formDesigner/components/Extensions/Extensions";
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -100,7 +100,7 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Offline Dashboard" }}
             list={DashboardList}
           />
-          <Resource name="customPrints" options={{ label: "Custom Prints" }} list={CustomPrints} />
+          <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
         </Admin>
       </React.Fragment>
     );

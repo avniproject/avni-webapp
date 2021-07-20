@@ -3,7 +3,7 @@ import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";
 import { LabelFileName } from "./LabelFileName";
-import { checkForErrors, CustomPrintsReducer, printScopeTypes } from "./CustomPrintsReducer";
+import { checkForErrors, ExtensionReducer, extensionScopeTypes } from "./ExtensionReducer";
 import { get, isEmpty, map } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -17,8 +17,8 @@ const initialState = {
   errors: []
 };
 
-const CustomPrints = () => {
-  const [print, dispatch] = React.useReducer(CustomPrintsReducer, initialState);
+const Extensions = () => {
+  const [print, dispatch] = React.useReducer(ExtensionReducer, initialState);
   const [value, setValue] = React.useState("");
   const [load, setLoad] = React.useState(false);
   const { errors, file, labelFileNames, scopeOptions } = print;
@@ -28,7 +28,7 @@ const CustomPrints = () => {
       .fetchJson("/web/organisationConfig")
       .then(response => response.json)
       .then(res => {
-        dispatch({ type: "setData", payload: get(res, "organisationConfig.prints", []) });
+        dispatch({ type: "setData", payload: get(res, "organisationConfig.extensions", []) });
       });
   }, []);
 
@@ -55,13 +55,13 @@ const CustomPrints = () => {
     if (isEmpty(errors)) {
       setLoad(true);
       let formData = new FormData();
-      const printSettings = new Blob([JSON.stringify(labelFileNames)], {
+      const extensionSettings = new Blob([JSON.stringify(labelFileNames)], {
         type: "application/json"
       });
-      formData.append("printSettings", printSettings);
+      formData.append("extensionSettings", extensionSettings);
       formData.append("file", file);
       http
-        .post("/customPrint/upload", formData)
+        .post("/extension/upload", formData)
         .then(res => {
           if (res.status === 200) {
             setLoad(false);
@@ -82,19 +82,21 @@ const CustomPrints = () => {
 
   const renderSettings = () => {
     const getScopeDisplayValue = ({ scopeType, name }) =>
-      scopeType === printScopeTypes.subjectDashboard
+      scopeType === extensionScopeTypes.subjectDashboard
         ? `${name} Dashboard`
-        : `${name} Program Enrolment`;
+        : scopeType === extensionScopeTypes.programEnrolment
+        ? `${name} Program Enrolment`
+        : name;
     const getOption = scope => ({ label: getScopeDisplayValue(scope), value: scope });
     const options = map(scopeOptions, scope => getOption(scope));
-    return map(labelFileNames, ({ label, fileName, printScope }, index) => (
+    return map(labelFileNames, ({ label, fileName, extensionScope }, index) => (
       <LabelFileName
         key={index}
         dispatch={dispatch}
         label={label}
         fileName={fileName}
         index={index}
-        scope={isEmpty(printScope) ? "" : getOption(printScope)}
+        scope={isEmpty(extensionScope) ? "" : getOption(extensionScope)}
         options={options}
       />
     ));
@@ -102,7 +104,7 @@ const CustomPrints = () => {
 
   return (
     <Box boxShadow={2} p={5} bgcolor="background.paper">
-      <Title title="Custom Prints" />
+      <Title title="Extensions" />
       <DocumentationContainer filename={"Prints.md"}>
         <div className="container">
           <Grid container direction={"column"} spacing={5}>
@@ -112,7 +114,7 @@ const CustomPrints = () => {
             </Grid>
             <Grid item>
               <Button color={"primary"} onClick={() => dispatch({ type: "newSetting" })}>
-                Add more print Settings
+                Add more extensions
               </Button>
             </Grid>
             <Grid container item direction={"column"}>
@@ -134,4 +136,4 @@ const CustomPrints = () => {
   );
 };
 
-export default CustomPrints;
+export default Extensions;

@@ -4,4 +4,4 @@ Custom web pages for the prints can be uploaded from here. All the required stat
 
 `File Name: HTML file name that will be served when above label button is pressed`
 
-Multiple `Label/FileName` can be added by clicking on `Add more print settings`
+Multiple `Label/FileName` can be added by clicking on `Add more extensions`

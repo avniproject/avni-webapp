@@ -32,12 +32,12 @@ export const LabelFileName = ({ label, fileName, scope, index, dispatch, options
       <Grid item>
         <div style={{ width: "300px" }}>
           <AvniFormLabel
-            label={"Select Print Scope *"}
+            label={"Select Extension Scope *"}
             toolTipKey={"APP_DESIGNER_PRINT_SCOPE"}
             position={"top"}
           />
           <Select
-            placeholder={"Print scope"}
+            placeholder={"Extension scope"}
             value={scope}
             options={options}
             onChange={({ value }) => dispatch({ type: "setScope", payload: { index, value } })}

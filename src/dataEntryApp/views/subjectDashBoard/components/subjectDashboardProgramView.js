@@ -41,8 +41,8 @@ import {
   selectProgramSummary
 } from "../../../reducers/serverSideRulesReducer";
 import { RuleSummary } from "./RuleSummary";
-import { printScopeTypes } from "../../../../formDesigner/components/CustomPrints/CustomPrintsReducer";
-import { CustomPrintOption } from "./customPrint/CustomPrintOption";
+import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
+import { ExtensionOption } from "./extension/ExtensionOption";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -230,11 +230,11 @@ const ProgramView = ({
   return (
     <div>
       <Grid container>
-        <CustomPrintOption
-          subjectUUID={subjectProfile.uuid}
+        <ExtensionOption
+          subjectUUIDs={subjectProfile.uuid}
           typeUUID={programData.program.uuid}
           typeName={programData.program.operationalProgramName}
-          scopeType={printScopeTypes.programEnrolment}
+          scopeType={extensionScopeTypes.programEnrolment}
         />
         <Grid item xs={4} container direction="row" justify="flex-start" alignItems="flex-start">
           <label className={classes.programLabel}>

@@ -1,11 +1,11 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { selectPrintState } from "../../../../reducers/subjectDashboardReducer";
-import { map, filter } from "lodash";
+import { map, filter, get } from "lodash";
 import { Button, makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { cognitoInDev, devEnvUserName, isDevEnv } from "../../../../../common/constants";
 import Auth from "@aws-amplify/auth";
+import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
+import api from "../../../../api";
 
 const useStyles = makeStyles(theme => ({
   buttonStyle: {
@@ -21,15 +21,26 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const CustomPrintOption = ({ subjectUUID, typeUUID, typeName, scopeType }) => {
+export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType }) => {
   const classes = useStyles();
-  const printSettings = useSelector(selectPrintState);
+  const [extensions, setExtensions] = React.useState([]);
+
+  React.useEffect(() => {
+    api.fetchOrganisationConfigs().then(config => {
+      const extensions = get(config, "organisationConfig.extensions", []);
+      setExtensions(extensions);
+    });
+  }, []);
+  const isSearchScope = (scopeType, extensionScope) =>
+    scopeType === extensionScopeTypes.searchResults &&
+    extensionScope === extensionScopeTypes.searchResults;
   const filteredSettings = filter(
-    printSettings,
-    ({ printScope }) =>
-      typeUUID === printScope.uuid &&
-      typeName === printScope.name &&
-      scopeType === printScope.scopeType
+    extensions,
+    ({ extensionScope }) =>
+      isSearchScope(scopeType, extensionScope.scopeType) ||
+      (typeUUID === extensionScope.uuid &&
+        typeName === extensionScope.name &&
+        scopeType === extensionScope.scopeType)
   );
   const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
 
@@ -41,8 +52,8 @@ export const CustomPrintOption = ({ subjectUUID, typeUUID, typeName, scopeType }
     } else {
       token = `user-name=${devEnvUserName}`;
     }
-    const params = `subjectUUID=${subjectUUID}&${token}`;
-    window.open(`${serverURL}/customPrint/${fileName}?${params}`, "_blank");
+    const params = `subjectUUIDs=${subjectUUIDs}&${token}`;
+    window.open(`${serverURL}/extension/${fileName}?${params}`, "_blank");
   };
 
   return (
