@@ -12,6 +12,7 @@ import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { isEmpty } from "lodash";
+import { getOrganisationConfig } from "../../reducers/metadataReducer";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -53,8 +54,15 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectSearch = ({ searchRequest }) => {
+const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfigs }) => {
   const classes = useStyle();
+
+  React.useEffect(() => {
+    if (!organisationConfigs) {
+      getOrganisationConfig();
+    }
+  }, []);
+
   const { t } = useTranslation();
   const resetClick = () => {
     store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: {} });
@@ -86,18 +94,21 @@ const SubjectSearch = ({ searchRequest }) => {
         </Button>
       </Grid>
 
-      <SubjectSearchTable searchRequest={searchRequest} />
+      <SubjectSearchTable searchRequest={searchRequest} organisationConfigs={organisationConfigs} />
     </Paper>
   );
 };
 
 const mapStateToProps = state => {
   return {
-    searchRequest: state.dataEntry.searchFilterReducer.request
+    searchRequest: state.dataEntry.searchFilterReducer.request,
+    organisationConfigs: state.dataEntry.metadata.organisationConfigs
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getOrganisationConfig
+};
 
 export default withRouter(
   connect(

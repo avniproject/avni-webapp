@@ -21,15 +21,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const ExtensionOption = ({ subjectUUIDs, typeUUID, typeName, scopeType }) => {
+export const ExtensionOption = ({
+  subjectUUIDs,
+  typeUUID,
+  typeName,
+  scopeType,
+  configExtensions
+}) => {
   const classes = useStyles();
   const [extensions, setExtensions] = React.useState([]);
 
   React.useEffect(() => {
-    api.fetchOrganisationConfigs().then(config => {
-      const extensions = get(config, "organisationConfig.extensions", []);
-      setExtensions(extensions);
-    });
+    if (!configExtensions) {
+      api.fetchOrganisationConfigs().then(config => {
+        const extensions = get(config, "organisationConfig.extensions", []);
+        setExtensions(extensions);
+      });
+    } else {
+      setExtensions(configExtensions);
+    }
   }, []);
   const isSearchScope = (scopeType, extensionScope) =>
     scopeType === extensionScopeTypes.searchResults &&

@@ -58,7 +58,9 @@ function SearchFilterFormContainer({
   searchRequest
 }) {
   useEffect(() => {
-    getOrganisationConfig();
+    if (!organisationConfigs) {
+      getOrganisationConfig();
+    }
     getAllLocations();
     getGenders();
   }, []);

@@ -3,12 +3,16 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import { map, join } from "lodash";
+import { map, join, get, filter, isEmpty } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 
-const SubjectSearchTable = ({ searchRequest }) => {
+const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { t } = useTranslation();
+  const searchExtensions = filter(
+    get(organisationConfigs, "organisationConfig.extensions", []),
+    ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults
+  );
   const columns = [
     {
       title: t("name"),
@@ -95,14 +99,16 @@ const SubjectSearchTable = ({ searchRequest }) => {
           addRowPosition: "first",
           sorting: true,
           debounceInterval: 500,
-          search: false
+          search: false,
+          selection: !isEmpty(searchExtensions)
         }}
         components={{
           Toolbar: props => (
             <div style={{ marginRight: "10px" }}>
               <ExtensionOption
-                subjectUUIDs={join(map(props.data, "uuid"), ",")}
+                subjectUUIDs={join(map(props.selectedRows, "uuid"), ",")}
                 scopeType={extensionScopeTypes.searchResults}
+                configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
               />
             </div>
           )
