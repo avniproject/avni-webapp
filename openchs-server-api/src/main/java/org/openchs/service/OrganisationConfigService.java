@@ -79,11 +79,13 @@ public class OrganisationConfigService {
     }
 
     public LinkedHashMap<String, Object> getOrganisationSettings(Long organisationId) {
-        JsonObject jsonObject = organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
+        JsonObject settings = new JsonObject(organisationConfig.getSettings());
         LinkedHashMap<String, Object> organisationSettingsConceptListMap = new LinkedHashMap<>();
         List<String> conceptUuidList = new ArrayList<>();
+        JsonObject searchFilters = new JsonObject().with("searchFilters", settings.getOrDefault("searchFilters", Collections.emptyList()));
         try {
-            JSONObject jsonObj = new JSONObject(jsonObject.toString());
+            JSONObject jsonObj = new JSONObject(searchFilters.toString());
             JSONArray jsonArray = jsonObj.getJSONArray("searchFilters");
             for (int i = 0; i < jsonArray.length(); i++) {
                 if (jsonArray.getJSONObject(i).has("conceptUUID")) {
@@ -94,12 +96,12 @@ public class OrganisationConfigService {
             }
         } catch (JSONException e) {
             logger.error("Ignoring JSONException " + e.getMessage() + " and setting empty searchFilters array in response.");
-            jsonObject.put("searchFilters", Collections.emptyList());
+            settings.put("searchFilters", Collections.emptyList());
         }
         List<ConceptProjection> conceptList = conceptRepository.getAllConceptByUuidIn(conceptUuidList).stream()
                 .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
                 .collect(Collectors.toList());
-        organisationSettingsConceptListMap.put("organisationConfig", jsonObject);
+        organisationSettingsConceptListMap.put("organisationConfig", settings);
         organisationSettingsConceptListMap.put("conceptList", conceptList);
         return organisationSettingsConceptListMap;
     }
