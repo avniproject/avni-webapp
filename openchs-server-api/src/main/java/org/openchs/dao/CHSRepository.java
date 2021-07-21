@@ -37,7 +37,8 @@ public interface CHSRepository<T extends CHSEntity> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (lastModifiedDateTime != null) {
-                predicates.add(cb.between(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime), cb.literal(now)));
+                predicates.add(cb.greaterThan(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime)));
+                predicates.add(cb.lessThan(audit.get("lastModifiedDateTime"), cb.literal(now)));
                 query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
             }
 
