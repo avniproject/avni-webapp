@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -88,6 +89,31 @@ public class ExtensionController {
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Error in serving file %s", filePath));
+        }
+    }
+
+
+    @RequestMapping(value = "/extension/serve/{basePath}/**", method = RequestMethod.GET)
+    public ResponseEntity<?> serveCustomPrintFile(@CookieValue(name = "IMPLEMENTATION-NAME") String implementationName, @PathVariable String basePath, HttpServletRequest request) {
+        Organisation organisation = implementationRepository.findByName(implementationName);
+        if (organisation == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        final String path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
+        final String bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
+        String arguments = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, path);
+        String filePath = null != arguments && !arguments.isEmpty() ? basePath + "/" + arguments : basePath;
+        logger.info(format("Generating url for extension file %s", filePath));
+        try {
+            URL url = s3Service.getURLForExtensions(format("%s/%s", EXTENSION_DIR, filePath), organisation);
+            logger.debug(format("S3 signed URL: %s", url.toString()));
+            return ResponseEntity.status(HttpStatus.FOUND).location(url.toURI()).build();
+        } catch (AccessDeniedException e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

@@ -255,6 +255,14 @@ public class S3Service {
         return getObjectContent(objectKey);
     }
 
+    public URL getURLForExtensions(String fileName, Organisation organisation) {
+        String objectKey = format("%s/%s", organisation.getMediaDirectory(), fileName);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, objectKey)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(getExpireDate(EXPIRY_DURATION));
+        return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+    }
+
     public InputStream downloadFile(String directory, String fileName) {
         if (isDev && !s3InDev) {
             String localFilePath = format("%s/%s/%s", System.getProperty("java.io.tmpdir"), directory, fileName);
