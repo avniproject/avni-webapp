@@ -98,9 +98,9 @@ public class ProgramEnrolmentApiController {
                                 Pageable pageable) {
         Page<ProgramEnrolment> programEnrolments;
         if (S.isEmpty(program) && lastModifiedDateTime != null) {
-            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeGreaterThanAndAuditLastModifiedDateTimeLessThanOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
         } else if (S.isEmpty(subjectUuid) && lastModifiedDateTime != null) {
-            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
+            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeGreaterThanAndAuditLastModifiedDateTimeLessThanAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
         } else if (!S.isEmpty(subjectUuid) && !S.isEmpty(program)) {
             programEnrolments = programEnrolmentRepository.findByProgramNameAndIndividualUuidOrderByAuditLastModifiedDateTimeAscIdAsc(program, subjectUuid, pageable);
         } else {
