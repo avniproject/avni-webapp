@@ -3,7 +3,8 @@ import { filter, forEach, isEmpty, isNil, some, map } from "lodash";
 export const extensionScopeTypes = Object.freeze({
   subjectDashboard: "Subject Dashboard",
   programEnrolment: "Program Enrolment",
-  searchResults: "Search Results"
+  searchResults: "Search Results",
+  fieldAppHomeScreen: "Field App Home Screen"
 });
 
 export const ExtensionReducer = (extension, action) => {
@@ -53,9 +54,19 @@ export const ExtensionReducer = (extension, action) => {
         name: "Search Results",
         uuid: ""
       };
+      const fieldAppHomeScreenOption = {
+        scopeType: extensionScopeTypes.fieldAppHomeScreen,
+        name: "Field App Home Screen",
+        uuid: ""
+      };
       return {
         ...extension,
-        scopeOptions: [...dashboardOptions, ...programOptions, searchResultOption]
+        scopeOptions: [
+          ...dashboardOptions,
+          ...programOptions,
+          searchResultOption,
+          fieldAppHomeScreenOption
+        ]
       };
     default:
       return extension;
