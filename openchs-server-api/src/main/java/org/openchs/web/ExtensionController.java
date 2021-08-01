@@ -1,7 +1,10 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.ImplementationRepository;
+import org.openchs.domain.Extension;
 import org.openchs.domain.Organisation;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.OrganisationConfigService;
 import org.openchs.service.S3Service;
 import org.openchs.util.AvniFiles;
@@ -10,6 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,12 +35,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
 
 @RestController
-public class ExtensionController {
+public class ExtensionController implements RestControllerResourceProcessor<Extension>{
     private final String EXTENSION_DIR = "extensions";
     private final Logger logger;
     private final S3Service s3Service;
@@ -69,12 +77,16 @@ public class ExtensionController {
         }
     }
 
+    @GetMapping(value = "/extensions")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin', 'user')")
+    public PagedResources<Resource<Extension>> listExtensionFiles(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<DateTime> lastModifiedDateTime) {
+        return wrap(new PageImpl<>(s3Service.listExtensionFiles(lastModifiedDateTime)));
+    }
+
     @RequestMapping(value = "/extension/{basePath}/**", method = RequestMethod.GET)
-    public ResponseEntity<?> serveExtensionFile(@CookieValue(name = "IMPLEMENTATION-NAME") String implementationName, @PathVariable String basePath, HttpServletRequest request) {
-        Organisation organisation = implementationRepository.findByName(implementationName);
-        if (organisation == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin', 'user')")
+    public ResponseEntity<?> serveExtensionFile(@PathVariable String basePath, HttpServletRequest request) {
+        Organisation organisation = UserContextHolder.getOrganisation();
         final String path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
         final String bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
         String arguments = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, path);
@@ -117,5 +129,10 @@ public class ExtensionController {
         }
     }
 
-
+    private Organisation findOrganisation(String implementationName) {
+        if (implementationName != null) {
+            return implementationRepository.findByName(implementationName);
+        }
+        return UserContextHolder.getOrganisation();
+    }
 }

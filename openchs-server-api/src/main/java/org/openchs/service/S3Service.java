@@ -12,6 +12,8 @@ import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
+import org.openchs.domain.Extension;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
@@ -31,8 +33,10 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,6 +63,7 @@ public class S3Service {
     private final Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
     private final Logger logger;
     private final Boolean isDev;
+    private final String EXTENSION_DIR = "extensions";
 
     @Autowired
     public S3Service(Boolean isDev) {
@@ -167,6 +172,37 @@ public class S3Service {
         return s3Client.getUrl(bucketName, s3KeyForMediaUpload);
     }
 
+    public List<Extension> listExtensionFiles(Optional<DateTime> modifiedSince) {
+        if (isDev && !s3InDev) {
+            return new ArrayList<>();
+        }
+        DateTime latestDate = modifiedSince.orElse(new DateTime(0));
+        String filePrefix = getOrgDirectoryName() + "/" + EXTENSION_DIR + "/";
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+                .withBucketName(bucketName)
+                .withPrefix(filePrefix);
+
+        List<Extension> keys = new ArrayList<>();
+
+        ObjectListing objects = s3Client.listObjects(listObjectsRequest);
+
+        for (;;) {
+            List<S3ObjectSummary> summaries = objects.getObjectSummaries();
+            if (summaries.size() < 1) {
+                break;
+            }
+
+            summaries.forEach(s -> {
+                if (latestDate.isBefore(s.getLastModified().getTime())) {
+                    keys.add(new Extension(s.getKey().replace(filePrefix, ""), new DateTime(s.getLastModified())));
+                }
+            });
+            objects = s3Client.listNextBatchOfObjects(objects);
+        }
+
+        return keys;
+    }
+
     public void uploadExtensionFile(File tempDirectory, String targetFilePath) throws IOException, InterruptedException {
         if (isDev && !s3InDev) {
             return;
@@ -177,63 +213,6 @@ public class S3Service {
         MultipleFileUpload multipleFileUpload = transferManager.uploadDirectory(bucketName, s3KeyForMediaUpload, tempDirectory, true);
         multipleFileUpload.waitForCompletion();
         FileUtils.forceDelete(tempDirectory);
-    }
-
-    /**
-     * @param prefix : prefix for which all the files will get deleted
-     */
-    private void deleteDirectory(String prefix) {
-        ListObjectsV2Result objectList = this.s3Client.listObjectsV2(bucketName, prefix);
-        if (objectList.getKeyCount() > 0) {
-            List<S3ObjectSummary> objectSummeryList = objectList.getObjectSummaries();
-            String[] keysList = new String[objectSummeryList.size()];
-            int count = 0;
-            for (S3ObjectSummary summery : objectSummeryList) {
-                keysList[count++] = summery.getKey();
-            }
-            DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keysList);
-            s3Client.deleteObjects(deleteObjectsRequest);
-        }
-    }
-
-    private ObjectInfo uploadZip(File tempSourceFile, String destFileName, String directory) throws IOException {
-        String suggestedS3Key = getS3Key(destFileName, directory);
-        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
-        return new ObjectInfo(actualS3Key, 0L);
-    }
-
-    private Date getExpireDate(long expireDuration) {
-        Date expiration = new Date();
-        expiration.setTime(expiration.getTime() + expireDuration);
-        return expiration;
-    }
-
-    private UserContext authorizeUser() {
-        UserContext userContext = UserContextHolder.getUserContext();
-        if (userContext == null) {
-            String message = "UserContext is null";
-            throw new AccessDeniedException(message);
-        }
-        return userContext;
-    }
-
-    private String getOrgDirectoryName() {
-        String mediaDirectory = UserContextHolder.getUserContext().getOrganisation().getMediaDirectory();
-        if (mediaDirectory == null) {
-            logger.error("Media directory needs to be set up for the organisation.");
-            throw new IllegalStateException("Information missing. Media Directory for Implementation absent");
-        }
-        return mediaDirectory;
-    }
-
-    private String putObject(String objectKey, File tempFile) {
-        if (isDev && !s3InDev) {
-            logger.info(format("[dev] Save file locally. '%s'", objectKey));
-            return tempFile.getAbsolutePath();
-        }
-        s3Client.putObject(new PutObjectRequest(bucketName, objectKey, tempFile));
-        tempFile.delete();
-        return objectKey;
     }
 
     public InputStream getObjectContent(String s3Key) {
@@ -301,11 +280,6 @@ public class S3Service {
         s3Client.deleteObject(new DeleteObjectRequest(bucketName, s3Key));
     }
 
-    private String getObjectURL(File file) {
-        String s3Key = getS3KeyForMediaUpload(file.getName());
-        return s3Client.getUrl(bucketName, s3Key).toString();
-    }
-
     public class ObjectInfo implements Serializable {
         private String key;
         private Long noOfLines;
@@ -323,5 +297,67 @@ public class S3Service {
             return noOfLines;
         }
 
+    }
+
+    /**
+     * @param prefix : prefix for which all the files will get deleted
+     */
+    private void deleteDirectory(String prefix) {
+        ListObjectsV2Result objectList = this.s3Client.listObjectsV2(bucketName, prefix);
+        if (objectList.getKeyCount() > 0) {
+            List<S3ObjectSummary> objectSummeryList = objectList.getObjectSummaries();
+            String[] keysList = new String[objectSummeryList.size()];
+            int count = 0;
+            for (S3ObjectSummary summery : objectSummeryList) {
+                keysList[count++] = summery.getKey();
+            }
+            DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keysList);
+            s3Client.deleteObjects(deleteObjectsRequest);
+        }
+    }
+
+    private ObjectInfo uploadZip(File tempSourceFile, String destFileName, String directory) throws IOException {
+        String suggestedS3Key = getS3Key(destFileName, directory);
+        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
+        return new ObjectInfo(actualS3Key, 0L);
+    }
+
+    private Date getExpireDate(long expireDuration) {
+        Date expiration = new Date();
+        expiration.setTime(expiration.getTime() + expireDuration);
+        return expiration;
+    }
+
+    private UserContext authorizeUser() {
+        UserContext userContext = UserContextHolder.getUserContext();
+        if (userContext == null) {
+            String message = "UserContext is null";
+            throw new AccessDeniedException(message);
+        }
+        return userContext;
+    }
+
+    private String getOrgDirectoryName() {
+        String mediaDirectory = UserContextHolder.getUserContext().getOrganisation().getMediaDirectory();
+        if (mediaDirectory == null) {
+            logger.error("Media directory needs to be set up for the organisation.");
+            throw new IllegalStateException("Information missing. Media Directory for Implementation absent");
+        }
+        return mediaDirectory;
+    }
+
+    private String putObject(String objectKey, File tempFile) {
+        if (isDev && !s3InDev) {
+            logger.info(format("[dev] Save file locally. '%s'", objectKey));
+            return tempFile.getAbsolutePath();
+        }
+        s3Client.putObject(new PutObjectRequest(bucketName, objectKey, tempFile));
+        tempFile.delete();
+        return objectKey;
+    }
+
+    private String getObjectURL(File file) {
+        String s3Key = getS3KeyForMediaUpload(file.getName());
+        return s3Client.getUrl(bucketName, s3Key).toString();
     }
 }
