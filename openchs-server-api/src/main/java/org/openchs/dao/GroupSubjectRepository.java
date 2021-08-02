@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.openchs.application.Subject;
 import org.openchs.domain.GroupRole;
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
@@ -59,6 +60,8 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     List<GroupSubject> findAllByGroupSubjectAndIsVoidedFalse(Individual groupSubject);
 
     List<GroupSubject> findAllByMemberSubject(Individual memberSubject);
+
+    List<GroupSubject> findAllByMemberSubjectIn(List<Individual> memberSubjects);
 
     Page<GroupSubject> findByGroupSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
             String groupSubjectUUID,

@@ -2,12 +2,11 @@ package org.openchs.web.response;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.AddressLevel;
-import org.openchs.domain.CHSBaseEntity;
+import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.openchs.service.ConceptService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SubjectResponse extends LinkedHashMap<String, Object> {
     public static SubjectResponse fromSubject(Individual subject, boolean includeSubjectType, ConceptRepository conceptRepository, ConceptService conceptService) {
@@ -57,5 +56,11 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
 
     private static void putAddressLevel(Map<String, String> map, AddressLevel addressLevel) {
         map.put(addressLevel.getTypeString(), addressLevel.getTitle());
+    }
+
+    public static SubjectResponse fromSubject(Individual subject, boolean subjectTypeRequested, ConceptRepository conceptRepository, ConceptService conceptService, List<GroupSubject> groups) {
+        SubjectResponse subjectResponse = fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService);
+        subjectResponse.put("Groups", groups.stream().map(groupSubject -> groupSubject.getGroupSubjectUUID()));
+        return subjectResponse;
     }
 }

@@ -2,8 +2,10 @@ package org.openchs.web.api;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.GroupSubjectRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Concept;
+import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.openchs.service.ConceptService;
 import org.openchs.util.S;
@@ -18,18 +20,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class SubjectApiController {
     private final ConceptService conceptService;
     private final IndividualRepository individualRepository;
     private final ConceptRepository conceptRepository;
+    private final GroupSubjectRepository groupSubjectRepository;
 
-    public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository, ConceptRepository conceptRepository) {
+    public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository, ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
+        this.groupSubjectRepository = groupSubjectRepository;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -42,13 +49,13 @@ public class SubjectApiController {
         Page<Individual> subjects;
         boolean subjectTypeRequested = S.isEmpty(subjectType);
         Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
-        if (subjectTypeRequested) {
-            subjects = individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
-        } else
-            subjects = individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, pageable);
+        subjects = subjectTypeRequested ?
+                individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable) :
+                individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, pageable);
+        List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(subjects.getContent());
         ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
         subjects.forEach(subject -> {
-            subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService));
+            subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService, findGroupAffiliation(subject, groupsOfAllMemberSubjects)));
         });
         return new ResponsePage(subjectResponses, subjects.getNumberOfElements(), subjects.getTotalPages(), subjects.getSize());
     }
@@ -60,6 +67,11 @@ public class SubjectApiController {
         Individual subject = individualRepository.findByUuid(uuid);
         if (subject == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService), HttpStatus.OK);
+        List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(Collections.singletonList(subject));
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, groupsOfAllMemberSubjects), HttpStatus.OK);
+    }
+
+    private List<GroupSubject> findGroupAffiliation(Individual subject, List<GroupSubject> groupSubjects) {
+        return groupSubjects.stream().filter(groupSubject -> groupSubject.getMemberSubject().equals(subject)).collect(Collectors.toList());
     }
 }
