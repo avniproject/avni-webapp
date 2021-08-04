@@ -41,7 +41,7 @@ import java.util.UUID;
 import static java.lang.String.format;
 
 @RestController
-public class ExtensionController implements RestControllerResourceProcessor<Extension>{
+public class ExtensionController implements RestControllerResourceProcessor<Extension> {
     private final String EXTENSION_DIR = "extensions";
     private final Logger logger;
     private final S3Service s3Service;
@@ -61,7 +61,7 @@ public class ExtensionController implements RestControllerResourceProcessor<Exte
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @Transactional
     public ResponseEntity<?> uploadExtensions(@RequestPart(value = "file") MultipartFile file,
-                                               @RequestPart(value = "extensionSettings") @Valid List<ExtensionRequest> extensionSettings) {
+                                              @RequestPart(value = "extensionSettings") @Valid List<ExtensionRequest> extensionSettings) {
         organisationConfigService.updateSettings(EXTENSION_DIR, extensionSettings);
         try {
             Path tempPath = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().toPath();
@@ -84,9 +84,14 @@ public class ExtensionController implements RestControllerResourceProcessor<Exte
     }
 
     @RequestMapping(value = "/extension/{basePath}/**", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin', 'user')")
-    public ResponseEntity<?> serveExtensionFile(@PathVariable String basePath, HttpServletRequest request) {
+    public ResponseEntity<?> serveExtensionFile(@CookieValue(name = "IMPLEMENTATION-NAME", required = false) String implementationName, @PathVariable String basePath, HttpServletRequest request) {
         Organisation organisation = UserContextHolder.getOrganisation();
+        if (organisation == null) {
+            organisation = implementationRepository.findByName(implementationName);
+            if (organisation == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
         final String path = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
         final String bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE).toString();
         String arguments = new AntPathMatcher().extractPathWithinPattern(bestMatchingPattern, path);
@@ -127,12 +132,5 @@ public class ExtensionController implements RestControllerResourceProcessor<Exte
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-    }
-
-    private Organisation findOrganisation(String implementationName) {
-        if (implementationName != null) {
-            return implementationRepository.findByName(implementationName);
-        }
-        return UserContextHolder.getOrganisation();
     }
 }
