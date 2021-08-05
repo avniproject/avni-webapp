@@ -44,6 +44,7 @@ public class AvniJobRepository {
                 "       string_agg(case when bjep.key_name = 'subjectTypeUUID' then bjep.string_val::text else '' end::text, '') subjectTypeUUID,\n" +
                 "       string_agg(case when bjep.key_name = 'programUUID' then bjep.string_val::text else '' end::text, '') programUUID,\n" +
                 "       string_agg(case when bjep.key_name = 'encounterTypeUUID' then bjep.string_val::text else '' end::text, '') encounterTypeUUID,\n" +
+                "       string_agg(case when bjep.key_name = 'reportType' then bjep.string_val::text else '' end::text, '') reportType,\n" +
                 "       max(bse.read_count) read_count,\n" +
                 "       max(bse.write_count) write_count,\n" +
                 "       max(bse.write_skip_count) write_skip_count\n" +

@@ -27,6 +27,7 @@ public class JobStatusMapper implements RowMapper<JobStatus> {
         jobStatus.setSubjectTypeUUID(rs.getString("subjectTypeUUID"));
         jobStatus.setProgramUUID(rs.getString("programUUID"));
         jobStatus.setEncounterTypeUUID(rs.getString("encounterTypeUUID"));
+        jobStatus.setReportType(rs.getString("reportType"));
         return jobStatus;
     }
 }

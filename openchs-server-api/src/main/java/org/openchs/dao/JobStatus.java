@@ -32,6 +32,7 @@ public class JobStatus {
     private String subjectTypeUUID;
     private String programUUID;
     private String encounterTypeUUID;
+    private String reportType;
 
     public Date getStartDate() {
         return startDate;
@@ -184,4 +185,13 @@ public class JobStatus {
     public Long getNoOfLines() {
         return noOfLines;
     }
+
+    public String getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(String reportType) {
+        this.reportType = reportType;
+    }
+
 }
