@@ -1,15 +1,15 @@
 import { FormControl, FormLabel } from "@material-ui/core";
-import _ from "lodash";
+import { isEmpty } from "lodash";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "../dataEntryApp/components/Radio";
 import React from "react";
 
 export const ExportOptions = ({ options, label, selectedOption, onChange }) => {
-  return (
+  return isEmpty(options) ? null : (
     <div>
       <FormControl component="fieldset">
-        {!_.isEmpty(options) && <FormLabel component="legend">{label}</FormLabel>}
+        <FormLabel component="legend">{label}</FormLabel>
         <FormGroup row>
           {options.map(option => (
             <FormControlLabel
