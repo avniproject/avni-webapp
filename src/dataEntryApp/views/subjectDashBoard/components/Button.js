@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Button = ({ btnLabel, btnClass, btnClick, btnDisabled, id }) => {
+const Button = ({ btnLabel, btnClass, btnClick, btnDisabled, id, ...props }) => {
   const classes = useStyles();
   return (
     <Fab
@@ -21,6 +21,7 @@ const Button = ({ btnLabel, btnClass, btnClick, btnDisabled, id }) => {
       onClick={btnClick}
       disabled={btnDisabled}
       id={id}
+      {...props}
     >
       {btnLabel}
     </Fab>

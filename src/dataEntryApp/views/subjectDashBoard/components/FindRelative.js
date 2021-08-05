@@ -151,18 +151,20 @@ const FindRelative = ({
         },
         props.subjects && props.subjects.listOfRecords
           ? {
-              buttonType: "applyButton",
+              buttonType: "applyFloating",
               label: "OK",
               classes: classes.btnCustom,
-              click: applyHandler
+              click: applyHandler,
+              left: 40
             }
           : "",
         props.subjects && props.subjects.listOfRecords
           ? {
-              buttonType: "modifysearch",
+              buttonType: "modifySearchFloating",
               label: "Modify search",
               classes: classes.btnCustom,
-              click: modifySearch
+              click: modifySearch,
+              left: 95
             }
           : ""
       ]}
