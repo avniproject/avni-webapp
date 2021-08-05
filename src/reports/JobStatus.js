@@ -83,6 +83,7 @@ const JobStatus = ({
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
+            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Report Type</TableCell>
             <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Subject type</TableCell>
             <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Program</TableCell>
             <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Encounter type</TableCell>
@@ -101,6 +102,7 @@ const JobStatus = ({
         <TableBody>
           {map(get(exportJobStatuses, "content"), status => (
             <TableRow key={status.uuid}>
+              <TableCell>{status.reportType}</TableCell>
               <TableCell>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</TableCell>
               <TableCell>
                 {findEntityByUUID(programs, status.programUUID).operationalProgramName}
