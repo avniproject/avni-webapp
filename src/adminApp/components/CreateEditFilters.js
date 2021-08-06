@@ -30,13 +30,13 @@ export const CreateEditFilters = props => {
     worklistUpdationRule
   } = props.history.location.state;
   const allTypes = _.values(CustomFilter.type);
-  const getFilterTypes =
+  const filterTypes =
     filterType === "myDashboardFilters"
       ? _.reject(allTypes, t =>
           [CustomFilter.type.Name, CustomFilter.type.Age, CustomFilter.type.SearchAll].includes(t)
         )
       : allTypes;
-  const typeOptions = getFilterTypes.map(t => ({ label: _.startCase(t), value: t }));
+  const typeOptions = filterTypes.map(t => ({ label: _.startCase(t), value: t }));
 
   const scopeOptions = _.values(CustomFilter.scope).map(s => ({ label: _.startCase(s), value: s }));
   const widgetOptions = _.values(CustomFilter.widget)
@@ -51,7 +51,8 @@ export const CreateEditFilters = props => {
     conceptName: "",
     conceptUUID: "",
     widget: "",
-    scopeParameters: {}
+    scopeParameters: {},
+    groupSubjectTypeUUID: ""
   };
 
   const {
@@ -63,7 +64,8 @@ export const CreateEditFilters = props => {
     subjectTypeUUID,
     widget,
     type,
-    conceptDataType
+    conceptDataType,
+    groupSubjectTypeUUID
   } = selectedFilter || emptyFilter;
   const { programs, subjectTypes, encounterTypes } =
     props.history.location.state.operationalModules || {};
@@ -92,6 +94,17 @@ export const CreateEditFilters = props => {
   const [filterName, setFilterName] = useState(titleKey);
   const [selectedSubject, setSubject] = useState(
     mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions)
+  );
+  const groupSubjectTypeOptions = mapToOptions(
+    _.filter(
+      subjectTypes,
+      ({ group }) =>
+        !!group &&
+        !_.get(_.find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value), "group")
+    )
+  );
+  const [selectedGroupSubject, setGroupSubjectType] = useState(
+    mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions)
   );
   const [selectedType, setType] = useState(mapPreviousToOptions(type, typeOptions));
   const [selectedConcept, setConcept] = React.useState(
@@ -132,7 +145,12 @@ export const CreateEditFilters = props => {
           return true;
       }
     } else {
-      return _.isEmpty(filterName) || _.isEmpty(selectedSubject) || _.isEmpty(selectedType);
+      return (
+        _.isEmpty(filterName) ||
+        _.isEmpty(selectedSubject) ||
+        _.isEmpty(selectedType) ||
+        (selectedType.value === CustomFilter.type.GroupSubject && _.isEmpty(selectedGroupSubject))
+      );
     }
   };
 
@@ -146,6 +164,7 @@ export const CreateEditFilters = props => {
     const newFilter = {
       titleKey: filterName,
       subjectTypeUUID: selectedSubject.value,
+      groupSubjectTypeUUID: selectedGroupSubject.value,
       type: selectedType.value,
       scope: (!_.isEmpty(selectedScope) && selectedScope.value) || null,
       conceptName: (!_.isEmpty(selectedConcept) && selectedConcept.label) || null,
@@ -319,6 +338,16 @@ export const CreateEditFilters = props => {
                 type => onTypeChange(type),
                 "APP_DESIGNER_FILTER_TYPE"
               )}
+              <Box m={1} />
+              {selectedType.value === CustomFilter.type.GroupSubject &&
+                renderSelect(
+                  "Group Subject Type",
+                  "Select Group Subject Type",
+                  selectedGroupSubject,
+                  groupSubjectTypeOptions,
+                  sub => setGroupSubjectType(sub),
+                  "APP_DESIGNER_FILTER_GROUP_SUBJECT_TYPE"
+                )}
               <Box m={1} />
               {selectedType.value === "Concept" && (
                 <div style={{ width: 400 }}>
