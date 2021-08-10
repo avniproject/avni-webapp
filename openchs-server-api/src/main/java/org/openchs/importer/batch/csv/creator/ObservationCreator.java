@@ -97,13 +97,26 @@ public class ObservationCreator {
         return observationService.createObservations(observationRequests);
     }
 
+    private List<FormElement> createDecisionFormElement(Set<Concept> concepts) {
+        return concepts.stream().map(dc -> {
+            FormElement formElement = new FormElement();
+            formElement.setType(dc.getDataType().equals(ConceptDataType.Coded.name()) ? FormElementType.MultiSelect.name() : FormElementType.SingleSelect.name());
+            formElement.setConcept(dc);
+            return formElement;
+        }).collect(Collectors.toList());
+    }
+
     private FormElement getFormElementForObservationConcept(Concept concept, FormType formType) throws Exception {
         List<Form> applicableForms = formRepository.findAllByFormType(formType);
         if (applicableForms.size() == 0)
             throw new Exception(String.format("No forms of type %s found", formType));
 
         return applicableForms.stream()
-                .map(Form::getAllFormElements)
+                .map(f -> {
+                    List<FormElement> formElements = f.getAllFormElements();
+                    formElements.addAll(createDecisionFormElement(f.getDecisionConcepts()));
+                    return formElements;
+                })
                 .flatMap(List::stream)
                 .filter(fel -> fel.getConcept().equals(concept))
                 .findFirst()
