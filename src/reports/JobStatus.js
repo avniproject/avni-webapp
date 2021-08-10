@@ -12,11 +12,31 @@ import moment from "moment";
 import http from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import Box from "@material-ui/core/Box";
-import { Grid } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import Refresh from "@material-ui/icons/Refresh";
 import TablePagination from "@material-ui/core/TablePagination";
 import Button from "@material-ui/core/Button";
 import CloudDownload from "@material-ui/icons/CloudDownload";
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: "flex",
+    marginTop: theme.spacing.unit * 3,
+    overflowX: "hide"
+  },
+  table: {
+    minWidth: 340
+  },
+  tableHeader: {
+    paddingRight: 4,
+    paddingLeft: 5,
+    fontWeight: "bold"
+  },
+  tableRow: {
+    paddingRight: 4,
+    paddingLeft: 5
+  }
+}));
 
 const JobStatus = ({
   exportJobStatuses,
@@ -26,7 +46,7 @@ const JobStatus = ({
   React.useEffect(() => {
     getUploadStatuses(0);
   }, []);
-
+  const classes = useStyles();
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
 
@@ -80,43 +100,39 @@ const JobStatus = ({
           {" Refresh"}
         </Button>
       </Grid>
-      <Table aria-label="simple table">
+      <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Report Type</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Subject type</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Program</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Encounter type</TableCell>
-            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Date range</TableCell>
-            <TableCell align="right" style={{ minWidth: 180, fontWeight: "bold", fontSize: 17 }}>
-              Ended at
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold", fontSize: 17 }}>
-              Status
-            </TableCell>
-            <TableCell align="right" style={{ fontWeight: "bold", fontSize: 17 }}>
-              Download
-            </TableCell>
+            <TableCell className={classes.tableHeader}>Report Type</TableCell>
+            <TableCell className={classes.tableHeader}>Subject type</TableCell>
+            <TableCell className={classes.tableHeader}>Program</TableCell>
+            <TableCell className={classes.tableHeader}>Encounter type</TableCell>
+            <TableCell className={classes.tableHeader}>Date range</TableCell>
+            <TableCell className={classes.tableHeader}>Ended at</TableCell>
+            <TableCell className={classes.tableHeader}>Status</TableCell>
+            <TableCell className={classes.tableHeader}>Download</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {map(get(exportJobStatuses, "content"), status => (
             <TableRow key={status.uuid}>
-              <TableCell>{status.reportType}</TableCell>
-              <TableCell>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</TableCell>
-              <TableCell>
+              <TableCell className={classes.tableRow}>{status.reportType}</TableCell>
+              <TableCell className={classes.tableRow}>
+                {findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}
+              </TableCell>
+              <TableCell className={classes.tableRow}>
                 {findEntityByUUID(programs, status.programUUID).operationalProgramName}
               </TableCell>
-              <TableCell>
+              <TableCell className={classes.tableRow}>
                 {
                   findEntityByUUID(encounterTypes, status.encounterTypeUUID)
                     .operationalEncounterTypeName
                 }
               </TableCell>
-              <TableCell>{getDateParams(status)}</TableCell>
-              <TableCell align="right">{formatDate(status.endTime)}</TableCell>
-              <TableCell align="right">{status.status}</TableCell>
-              <TableCell align="right">
+              <TableCell className={classes.tableRow}>{getDateParams(status)}</TableCell>
+              <TableCell className={classes.tableRow}>{formatDate(status.endTime)}</TableCell>
+              <TableCell className={classes.tableRow}>{status.status}</TableCell>
+              <TableCell className={classes.tableRow}>
                 <Button
                   color="primary"
                   onClick={() => onDownloadHandler(status)}
