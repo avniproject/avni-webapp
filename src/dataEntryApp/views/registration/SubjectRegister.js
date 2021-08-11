@@ -201,14 +201,15 @@ const SubjectRegister = props => {
           {props.selectedAddressLevelType.id === -1 ? null : (
             <div>
               <LocationSelect
-                selectedLocation={props.subject.lowestAddressLevel.name || ""}
+                selectedLocation={props.subject.lowestAddressLevel}
                 onSelect={location => {
                   props.setAddress(
                     AddressLevel.create({
                       uuid: location.uuid,
                       title: location.name,
                       level: location.level,
-                      typeString: location.type
+                      typeString: location.type,
+                      titleLineage: location.titleLineage
                     })
                   );
                 }}

@@ -7,6 +7,17 @@ import { isEmpty } from "lodash";
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => {
   const { t } = useTranslation();
 
+  const locationNameRenderer = location => {
+    if (isEmpty(location.name)) {
+      return "";
+    }
+    let retVal = `${location.name} (${location.type})`;
+    let lineageParts = location.titleLineage.split(", ");
+    if (lineageParts.length > 1)
+      retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
+    return retVal;
+  };
+
   const [locationMap, setLocationMap] = React.useState(new Map());
   const [locationOptions, setLocationOptions] = React.useState([]);
   const [selectedLocationValue, setSelectedLocationValue] = React.useState();
@@ -16,20 +27,27 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
       return await getLocationsByType(typeId);
     }
 
-    if (selectedLocationValue && selectedLocationValue.typeId !== typeId) {
+    if (selectedLocationValue && selectedLocationValue.value.typeId !== typeId) {
       setSelectedLocationValue(null);
       onSelect({});
     }
     fetchLocations().then(locations => {
-      setLocationOptions(locations.map(location => ({ label: location.name, value: location })));
+      setLocationOptions(
+        locations.map(location => ({
+          label: location.name,
+          value: location,
+          optionLabel: locationNameRenderer(location)
+        }))
+      );
     });
   }, [typeId]);
 
   React.useEffect(() => {
     if (!isEmpty(selectedLocation)) {
       setSelectedLocationValue({
-        label: selectedLocation,
-        value: locationOptions.find(location => location.title === selectedLocation)
+        label: selectedLocation.name,
+        value: selectedLocation,
+        optionLabel: locationNameRenderer(selectedLocation)
       });
     }
   }, [selectedLocation]);
@@ -47,6 +65,14 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     }
   };
 
+  const formatOptionLabel = ({ optionLabel }) => {
+    return (
+      <div style={{ display: "flex" }}>
+        <div>{optionLabel}</div>
+      </div>
+    );
+  };
+
   return (
     <div style={{ width: "30%" }}>
       <Select
@@ -56,6 +82,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
         onChange={onLocationSelected}
         value={selectedLocationValue}
         placeholder={t(placeholder)}
+        formatOptionLabel={formatOptionLabel}
       />
     </div>
   );
