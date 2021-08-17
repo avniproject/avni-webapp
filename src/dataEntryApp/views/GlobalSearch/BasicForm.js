@@ -10,6 +10,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "react-select";
+import { locationNameRenderer } from "../../utils/LocationUtil";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,7 +46,7 @@ function BasicForm({
     setSelectedAddressLevelType(event.target.value);
     onAddressSelect(null);
   };
-  const location = allLocation.filter(
+  const locations = allLocation.filter(
     location => location.type === selectedAddressLevelType && !location.voided
   );
 
@@ -179,8 +180,13 @@ function BasicForm({
                 isMulti
                 placeholder={t("selectAddress")}
                 value={selectedAddress}
-                options={location.map(({ name, id }) => ({ label: name, value: id }))}
+                options={locations.map(location => ({
+                  label: location.name,
+                  value: location.id,
+                  optionLabel: locationNameRenderer(location)
+                }))}
                 onChange={onAddressSelect}
+                formatOptionLabel={({ optionLabel }) => <div>{optionLabel}</div>}
               />
             </Grid>
           ) : (

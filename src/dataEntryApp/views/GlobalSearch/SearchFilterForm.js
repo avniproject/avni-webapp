@@ -24,6 +24,7 @@ import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
+import { locationNameRenderer } from "../../utils/LocationUtil";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -227,9 +228,10 @@ export const SearchForm = ({
     (addressIds && allLocations.filter(({ id }) => _.includes(addressIds, id))) || [];
   const previousSelectedType = _.get(_.head(previousSelectedLocations), "type", "");
   const [selectedAddress, setSelectedAddress] = React.useState(
-    previousSelectedLocations.map(({ name, id }) => ({
-      label: name,
-      value: id
+    previousSelectedLocations.map(location => ({
+      label: location.name,
+      value: location.id,
+      optionLabel: locationNameRenderer(location)
     }))
   );
   const onAddressSelect = value => setSelectedAddress(value);

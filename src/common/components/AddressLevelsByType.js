@@ -5,6 +5,7 @@ import _ from "lodash";
 import Select from "react-select";
 import httpClient from "../utils/httpClient";
 import { Grid } from "@material-ui/core";
+import { locationNameRenderer } from "../../dataEntryApp/utils/LocationUtil";
 
 const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }) => {
   const [data, setData] = React.useState([]);
@@ -19,7 +20,11 @@ const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }
   }, []);
 
   const createListOptions = () =>
-    _.map(data, ({ name, id, type }) => ({ label: `${name} (${type})`, value: id }));
+    _.map(data, location => ({
+      label: location.name,
+      value: location.id,
+      optionLabel: locationNameRenderer(location)
+    }));
 
   const ids = _.map(selectedAddresses, ({ value }) => value);
   if (!_.isEqual(ids, addressLevelsIds)) {
@@ -55,6 +60,7 @@ const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }
             onInputChange={onInputChange}
             menuIsOpen={openMenu}
             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+            formatOptionLabel={({ optionLabel }) => <div>{optionLabel}</div>}
           />
         </FormControl>
       </Grid>

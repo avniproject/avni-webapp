@@ -3,20 +3,10 @@ import http from "common/utils/httpClient";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { isEmpty } from "lodash";
+import { locationNameRenderer } from "../utils/LocationUtil";
 
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => {
   const { t } = useTranslation();
-
-  const locationNameRenderer = location => {
-    if (isEmpty(location.name)) {
-      return "";
-    }
-    let retVal = `${location.name} (${location.type})`;
-    let lineageParts = location.titleLineage.split(", ");
-    if (lineageParts.length > 1)
-      retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
-    return retVal;
-  };
 
   const [locationMap, setLocationMap] = React.useState(new Map());
   const [locationOptions, setLocationOptions] = React.useState([]);
