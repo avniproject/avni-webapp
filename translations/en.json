@@ -436,6 +436,7 @@
     "editSubject": "Edit subject",
     "dob": "Date of Birth",
     "address": "Address",
-    "relativeAlreadyAdded": "Relative is already added"
+    "relativeAlreadyAdded": "Relative is already added",
+    "programExitDetails": "Program Exit Details"
   }
 }

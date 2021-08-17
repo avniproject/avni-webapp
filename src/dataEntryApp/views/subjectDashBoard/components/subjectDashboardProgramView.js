@@ -7,25 +7,14 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import List from "@material-ui/core/List";
-import Observations from "dataEntryApp/components/Observations";
 import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
-
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
-
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { InternalLink, withParams } from "../../../../common/components/utils";
-import moment from "moment";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
 import { defaultTo, isEmpty, isNil } from "lodash";
 import {
@@ -34,7 +23,6 @@ import {
 } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import MessageDialog from "../../../components/MessageDialog";
-import { DeleteButton } from "../../../components/DeleteButton";
 import {
   fetchProgramSummary,
   selectFetchingRulesResponse,
@@ -43,6 +31,7 @@ import {
 import { RuleSummary } from "./RuleSummary";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "./extension/ExtensionOption";
+import { EnrolmentDetails } from "./EnrolmentDetails";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -171,7 +160,6 @@ const ProgramView = ({
   const { t } = useTranslation();
   const isNotExited = isNil(programData.programExitDateTime);
 
-  const [open, setOpen] = React.useState(false);
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   const dispatch = useDispatch();
 
@@ -181,20 +169,6 @@ const ProgramView = ({
   useEffect(() => {
     dispatch(fetchProgramSummary(programData.uuid));
   }, [dispatch, programData]);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleUndoExit = (programEnrolmentUuid, Link) => {
-    undoExitEnrolment(programEnrolmentUuid);
-    handleClose();
-    handleUpdateComponent(subjectUuid);
-  };
 
   let plannedVisits = [];
   let completedVisits = [];
@@ -262,123 +236,32 @@ const ProgramView = ({
           isFetching={isFetchingSummary}
           summaryObservations={programSummary}
         />
-        <ExpansionPanel className={classes.expansionPanel}>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-            aria-controls="enrollmentPanelbh-content"
-            id="enrolment-details"
-          >
-            <Typography component={"span"} className={classes.expansionHeading}>
-              {t("enrolmentDetails")}{" "}
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid item xs={12}>
-              <List>
-                <Observations
-                  observations={
-                    programData && !programData.programExitDateTime
-                      ? programData.observations
-                      : (programData && programData.exitObservations) || []
-                  }
-                  additionalRows={
-                    programData && !programData.programExitDateTime
-                      ? [
-                          {
-                            label: "Enrolment Date",
-                            value: moment(programData.enrolmentDateTime).format("DD-MMM-YYYY")
-                          }
-                        ]
-                      : programData
-                      ? [
-                          {
-                            label: "Exit Enrolment Date",
-                            value: moment(programData.programExitDateTime).format("DD-MMM-YYYY")
-                          }
-                        ]
-                      : ""
-                  }
-                  form={programEnrolmentForm}
-                />
-              </List>
-              {!programData.programExitDateTime ? (
-                <>
-                  <Link
-                    to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                      programData.program.operationalProgramName
-                    }&formType=ProgramExit&programEnrolmentUuid=${
-                      programData.uuid
-                    }&subjectTypeName=${subjectProfile.subjectType.name}`}
-                  >
-                    <Button id={"exit-program"} color="primary">
-                      {t("Exit")}
-                    </Button>
-                  </Link>
-                  <Link
-                    to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                      programData.program.operationalProgramName
-                    }&formType=ProgramEnrolment&programEnrolmentUuid=${
-                      programData.uuid
-                    }&subjectTypeName=${subjectProfile.subjectType.name}`}
-                  >
-                    <Button id={"edit-program"} color="primary">
-                      {t("Edit")}
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                      programData.program.operationalProgramName
-                    }&formType=ProgramExit&programEnrolmentUuid=${
-                      programData.uuid
-                    }&subjectTypeName=${subjectProfile.subjectType.name}`}
-                  >
-                    <Button id={"edit-exit"} color="primary">
-                      {t("Edit Exit")}
-                    </Button>
-                  </Link>
-
-                  <Button id={"undo-exit"} color="primary" onClick={handleClickOpen}>
-                    {t("Undo Exit")}
-                  </Button>
-
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Do you want to undo exit and restore to enrolled state shows up
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose} color="primary">
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleUndoExit.bind(
-                          this,
-                          programData.uuid,
-                          `/app/subject?uuid=${subjectUuid}&undo=true`
-                        )}
-                        color="primary"
-                        autoFocus
-                      >
-                        Undo Exit
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </>
-              )}
-              <DeleteButton onDelete={() => setVoidConfirmation(true)} />
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+        {programData && programData.programExitDateTime && (
+          <EnrolmentDetails
+            t={t}
+            isExit={true}
+            label={"programExitDetails"}
+            programData={programData}
+            programEnrolmentForm={programEnrolmentForm}
+            subjectUuid={subjectUuid}
+            subjectProfile={subjectProfile}
+            undoExitEnrolment={undoExitEnrolment}
+            handleUpdateComponent={handleUpdateComponent}
+            setVoidConfirmation={setVoidConfirmation}
+          />
+        )}
+        <EnrolmentDetails
+          t={t}
+          isExit={false}
+          label={"enrolmentDetails"}
+          programData={programData}
+          programEnrolmentForm={programEnrolmentForm}
+          subjectUuid={subjectUuid}
+          subjectProfile={subjectProfile}
+          undoExitEnrolment={undoExitEnrolment}
+          handleUpdateComponent={handleUpdateComponent}
+          setVoidConfirmation={setVoidConfirmation}
+        />
         <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
