@@ -59,7 +59,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     List<GroupSubject> findAllByGroupSubjectAndIsVoidedFalse(Individual groupSubject);
 
-    List<GroupSubject> findAllByMemberSubject(Individual memberSubject);
+    List<GroupSubject> findAllByMemberSubjectAndIsVoidedFalse(Individual memberSubject);
 
     List<GroupSubject> findAllByMemberSubjectIn(List<Individual> memberSubjects);
 
