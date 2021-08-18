@@ -125,7 +125,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
     @GetMapping(value = "/locations/web/getAll")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
     @ResponseBody
     public List<AddressLevelContractWeb> getAllLocations() {
         return locationRepository.getAllByIsVoidedFalse().stream()
