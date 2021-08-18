@@ -66,7 +66,7 @@ const renderMember = member => {
 
 const constructSubjectLabel = (subject, isSearchFlow = false) => {
   if (isSearchFlow) {
-    return subject.fullName + " | " + subject.addressLevel.title;
+    return subject.fullName + " | " + subject.addressLevel;
   } else {
     return subject.nameString + " | " + subject.addressLevel;
   }
@@ -113,7 +113,7 @@ const GroupMembershipAddEdit = ({
       ? memberGroupSubjects.map(groupSubject => groupSubject.memberSubject.uuid)
       : [];
 
-    return searchResults.content
+    return searchResults.listOfRecords
       .filter(subject => subjectUuidsToFilter.indexOf(subject.uuid) === -1)
       .map(subject => {
         return { label: constructSubjectLabel(subject, true), value: subject };
