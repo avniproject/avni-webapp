@@ -1,7 +1,12 @@
 import moment from "moment";
 
-export const modifiedAudit = ({ lastModifiedBy, lastModifiedDateTime, lastModifiedByUserName }) => {
-  const [date, time] = getFormattedDateTime(lastModifiedDateTime);
+export const modifiedAudit = ({
+  lastModifiedBy,
+  lastModifiedDateTime,
+  lastModifiedByUserName,
+  modifiedDateTime
+}) => {
+  const [date, time] = getFormattedDateTime(lastModifiedDateTime || modifiedDateTime);
   return `By ${lastModifiedBy || lastModifiedByUserName} at ${time}, ${date}`;
 };
 
