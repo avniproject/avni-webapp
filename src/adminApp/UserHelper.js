@@ -1,7 +1,16 @@
 import React from "react";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, isEqual, isNil } from "lodash";
 import { phoneCountryPrefix } from "../common/constants";
-import { email, Filter, regex, required, SaveButton, TextInput, Toolbar } from "react-admin";
+import {
+  email,
+  Filter,
+  regex,
+  required,
+  SaveButton,
+  TextInput,
+  Toolbar,
+  minLength
+} from "react-admin";
 
 export const UserTitle = ({ record, titlePrefix }) => {
   return (
@@ -59,3 +68,14 @@ export const validatePhone = [
   isRequired,
   regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")
 ];
+export const validatePassword = [
+  isRequired,
+  minLength(8, "Password too small, enter at least 8 characters.")
+];
+export const validatePasswords = ({ password, confirmPassword }) => {
+  const errors = {};
+  if (!isEqual(password, confirmPassword)) {
+    errors.confirmPassword = "Password does not match";
+  }
+  return errors;
+};

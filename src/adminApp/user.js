@@ -24,7 +24,7 @@ import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
-import { datePickerModes, timePickerModes, localeChoices } from "../common/constants";
+import { datePickerModes, localeChoices, timePickerModes } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
 import http from "common/utils/httpClient";
 import {
@@ -33,10 +33,11 @@ import {
   isRequired,
   mobileNumberFormatter,
   mobileNumberParser,
-  PasswordTextField,
   UserFilter,
   UserTitle,
   validateEmail,
+  validatePassword,
+  validatePasswords,
   validatePhone
 } from "./UserHelper";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
@@ -46,6 +47,8 @@ import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
 import { Paper } from "@material-ui/core";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
+import ResetPasswordButton from "./components/ResetPasswordButton";
+import { AvniPasswordInput } from "./components/AvniPasswordInput";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Paper>
@@ -105,12 +108,15 @@ const CustomShowActions = ({ user, basePath, data, resource }) => {
       <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
         <EditButton label="Edit User" basePath={basePath} record={data} />
         {isAdminAndLoggedIn(data, user) ? null : (
-          <EnableDisableButton
-            disabled={data.disabledInCognito}
-            basePath={basePath}
-            record={data}
-            resource={resource}
-          />
+          <Fragment>
+            <EnableDisableButton
+              disabled={data.disabledInCognito}
+              basePath={basePath}
+              record={data}
+              resource={resource}
+            />
+            <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
+          </Fragment>
         )}
         {/*Commenting out delete user functionality as it is not required as of now
             <DeleteButton basePath={basePath} record={data}
@@ -221,31 +227,74 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
     save
   });
   return (
-    <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show">
+    <SimpleForm
+      toolbar={<CustomToolbar />}
+      {...sanitizeProps(props)}
+      redirect="show"
+      validate={validatePasswords}
+    >
       {edit ? (
         <DisabledInput source="username" label="Login ID (username)" />
       ) : (
         <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) => (
-            <Fragment>
-              <AvniTextInput
-                source="ignored"
-                validate={isRequired}
-                label={"Login ID (username)"}
-                onChange={(e, newVal) =>
-                  !isEmpty(newVal) &&
-                  dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
-                }
-                {...rest}
-                toolTipKey={"ADMIN_USER_USER_NAME"}
-              >
-                <span>@{nameSuffix}</span>
-              </AvniTextInput>
-            </Fragment>
-          )}
+          {({ formData, dispatch, ...rest }) => {
+            return (
+              <Fragment>
+                <AvniTextInput
+                  resettable
+                  source="ignored"
+                  validate={isRequired}
+                  label={"Login ID (username)"}
+                  onChange={(e, newVal) =>
+                    !isEmpty(newVal) &&
+                    dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
+                  }
+                  {...rest}
+                  toolTipKey={"ADMIN_USER_USER_NAME"}
+                >
+                  <span>@{nameSuffix}</span>
+                </AvniTextInput>
+                {formData.username && (
+                  <AvniBooleanInput
+                    source={"customPassword"}
+                    style={{ marginTop: "1em" }}
+                    label={
+                      'Set a custom password or the default temporary password will be "password".'
+                    }
+                    onChange={(e, newVal) => {
+                      if (!isNil(newVal)) {
+                        dispatch(change(REDUX_FORM_NAME, "customPassword", newVal));
+                        dispatch(change(REDUX_FORM_NAME, "password", null));
+                        dispatch(change(REDUX_FORM_NAME, "confirmPassword", null));
+                      }
+                    }}
+                    {...rest}
+                    toolTipKey={"ADMIN_USER_SET_PASSWORD"}
+                  />
+                )}
+                {formData.customPassword && (
+                  <Fragment>
+                    <AvniPasswordInput
+                      resettable
+                      source="password"
+                      label="Custom password"
+                      validate={validatePassword}
+                      toolTipKey={"ADMIN_USER_CUSTOM_PASSWORD"}
+                    />
+                    <AvniPasswordInput
+                      resettable
+                      source="confirmPassword"
+                      label="Verify password"
+                      validate={isRequired}
+                      toolTipKey={"ADMIN_USER_CUSTOM_PASSWORD"}
+                    />
+                  </Fragment>
+                )}
+              </Fragment>
+            );
+          }}
         </FormDataConsumer>
       )}
-      {!edit && <PasswordTextField />}
       <AvniTextInput
         source="name"
         label="Name of the Person"
