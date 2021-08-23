@@ -7,6 +7,7 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.*;
 import org.openchs.domain.User;
+import org.openchs.util.S;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class CognitoIdpService {
         return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey));
     }
 
-    private AdminCreateUserRequest prepareCreateUserRequest(User user) {
+    private AdminCreateUserRequest prepareCreateUserRequest(User user, String password) {
         return new AdminCreateUserRequest()
                 .withUserPoolId(userPoolId)
                 .withUsername(user.getUsername())
@@ -77,7 +78,7 @@ public class CognitoIdpService {
                     new AttributeType().withName("phone_number_verified").withValue("true"),
                     new AttributeType().withName("custom:userUUID").withValue(user.getUuid())
                 )
-                .withTemporaryPassword(TEMPORARY_PASSWORD);
+                .withTemporaryPassword(password);
     }
 
     public Boolean exists(User user) {
@@ -98,11 +99,28 @@ public class CognitoIdpService {
             logger.info("Skipping Cognito CREATE in dev mode...");
             return null;
         }
-        AdminCreateUserRequest createUserRequest = prepareCreateUserRequest(user);
+        AdminCreateUserRequest createUserRequest = prepareCreateUserRequest(user, TEMPORARY_PASSWORD);
+        return createCognitoUser(createUserRequest, user);
+    }
+
+    private UserType createCognitoUser(AdminCreateUserRequest createUserRequest, User user) {
         logger.info(String.format("Initiating CREATE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
         AdminCreateUserResult createUserResult =  cognitoClient.adminCreateUser(createUserRequest);
         logger.info(String.format("Created cognito-user | username '%s' | '%s'", user.getUsername(), createUserResult.toString()));
         return createUserResult.getUser();
+    }
+
+    public void createUserWithPassword(User user, String password) {
+        if (isDev && !cognitoInDev()) {
+            logger.info("Skipping Cognito CREATE in dev mode...");
+            return;
+        }
+        boolean isTmpPassword = S.isEmpty(password);
+        AdminCreateUserRequest createUserRequest = prepareCreateUserRequest(user, isTmpPassword ? TEMPORARY_PASSWORD : password);
+        createCognitoUser(createUserRequest, user);
+        if (!isTmpPassword) {
+            resetPassword(user, password);
+        }
     }
 
     public void createUserIfNotExists(User user) {
@@ -161,6 +179,21 @@ public class CognitoIdpService {
         logger.info(String.format("Initiating ENABLE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
         cognitoClient.adminEnableUser(new AdminEnableUserRequest().withUserPoolId(userPoolId).withUsername(user.getUsername()));
         logger.info(String.format("Enabled cognito-user | username '%s'", user.getUsername()));
+    }
+
+    public void resetPassword(User user, String password) {
+        if (isDev && !cognitoInDev()) {
+            logger.info("Skipping Cognito reset password in dev mode...");
+            return;
+        }
+        logger.info(String.format("Initiating reset password cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
+        AdminSetUserPasswordRequest adminSetUserPasswordRequest = new AdminSetUserPasswordRequest()
+                .withUserPoolId(userPoolId)
+                .withUsername(user.getUsername())
+                .withPassword(password)
+                .withPermanent(true);
+        cognitoClient.adminSetUserPassword(adminSetUserPasswordRequest);
+        logger.info(String.format("password reset for cognito-user | username '%s'", user.getUsername()));
     }
 
 }

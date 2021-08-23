@@ -98,9 +98,8 @@ public class UserController {
 
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
-
+            cognitoService.createUserWithPassword(user, userContract.getPassword());
             userService.save(user);
-            cognitoService.createUser(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             userService.addToDefaultUserGroup(user);
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
@@ -226,6 +225,20 @@ public class UserController {
                     logger.info(String.format("User '%s', UUID '%s' already enabled", user.getUsername(), user.getUuid()));
                 }
             }
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateJsonError(ex.getMessage()));
+        }
+    }
+
+    @RequestMapping(value = {"/user/{id}/resetPassword"}, method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity resetPassword(@PathVariable("id") Long id, @RequestParam() String password) {
+        try {
+            User user = userRepository.findOne(id);
+            cognitoService.resetPassword(user, password);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());

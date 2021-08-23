@@ -23,6 +23,7 @@ public class UserContract extends ReferenceDataContract {
     private List<Long> accountIds;
     private boolean disabledInCognito;
     private String[] roles;
+    private String password;
 
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
@@ -140,5 +141,13 @@ public class UserContract extends ReferenceDataContract {
 
     public void setAccountIds(List<Long> accountIds) {
         this.accountIds = accountIds;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

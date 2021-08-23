@@ -82,6 +82,6 @@ bootRun {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
-        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.600'
     }
 }
