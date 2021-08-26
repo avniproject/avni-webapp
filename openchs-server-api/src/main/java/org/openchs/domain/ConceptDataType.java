@@ -21,7 +21,8 @@ public enum ConceptDataType {
     Location,
     PhoneNumber,
     GroupAffiliation,
-    Audio;
+    Audio,
+    File;
 
     private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes, Image, Video, Id);
     private static List<ConceptDataType> dateTypes = Arrays.asList(Date, DateTime, Duration, Time);
