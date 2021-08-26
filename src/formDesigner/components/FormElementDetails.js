@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { pickers } from "../../common/constants";
+import { FileOptions } from "./FileOptions";
 
 export const FormControl = withStyles({
   root: {
@@ -561,6 +562,14 @@ function FormElementDetails(props) {
             </FormControl>
           </Grid>
         </Grid>
+      )}
+      {props.formElementData.concept.dataType === "File" && (
+        <FileOptions
+          keyValues={props.formElementData.keyValues}
+          handleChange={props.handleGroupElementKeyValueChange}
+          groupIndex={props.groupIndex}
+          index={props.index}
+        />
       )}
       {props.formElementData.concept.dataType === "Image" && (
         <Grid container item sm={12}>

@@ -557,6 +557,8 @@ class FormDetails extends Component {
           }
           if (value) value = value.trim();
           formElement.validFormat[propertyName] = value;
+        } else {
+          formElement.keyValues[propertyName] = value;
         }
 
         draft.detectBrowserCloseEvent = true;

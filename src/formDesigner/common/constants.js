@@ -26,5 +26,6 @@ export const inlineConceptDataType = [
   "Location",
   "PhoneNumber",
   "GroupAffiliation",
-  "Audio"
+  "Audio",
+  "File"
 ];

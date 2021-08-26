@@ -31,6 +31,7 @@ import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import Audiotrack from "@material-ui/icons/Audiotrack";
+import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
 
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
@@ -139,6 +140,7 @@ export const dataTypeIcons = {
   PhoneNumber: <PhoneIcon />,
   GroupAffiliation: <b>GA</b>,
   Audio: <Audiotrack />,
+  File: <InsertDriveFileIcon />,
   "": <b />
 };
 
@@ -206,7 +208,8 @@ function FormElement(props) {
                   "Subject",
                   "PhoneNumber",
                   "GroupAffiliation",
-                  "Audio"
+                  "Audio",
+                  "File"
                 ].includes(props.formElementData.concept.dataType) && (
                   <div className={classes.iconDataType}>
                     <Tooltip title={props.formElementData.concept.dataType}>

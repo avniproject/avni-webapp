@@ -1,0 +1,54 @@
+import Select from "react-select";
+import React, { Fragment } from "react";
+import { FileFormat } from "avni-models";
+import FormControl from "@material-ui/core/FormControl";
+import { filter, includes, isNil, toNumber } from "lodash";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import TextField from "@material-ui/core/TextField";
+
+export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
+  const fileFormatOptions = FileFormat.names.map(name => ({
+    label: name,
+    value: FileFormat.getType(name)
+  }));
+
+  const onChange = event => {
+    const allowedTypes = event.map(({ value }) => value);
+    handleChange(groupIndex, "allowedTypes", allowedTypes, index);
+  };
+
+  if (isNil(keyValues.allowedMaxSize)) {
+    handleChange(groupIndex, "allowedMaxSize", 1, index);
+  }
+
+  return (
+    <Fragment>
+      <FormControl fullWidth>
+        <AvniFormLabel
+          label={"Allowed file types (All types will be allowed if nothing is chosen)"}
+          toolTipKey={"APP_DESIGNER_SUPPORTED_FILE_TYPES"}
+        />
+        <Select
+          isMulti
+          placeholder={`Select the file types`}
+          value={filter(fileFormatOptions, ({ value }) => includes(keyValues.allowedTypes, value))}
+          options={fileFormatOptions}
+          onChange={onChange}
+        />
+      </FormControl>
+      <FormControl>
+        <AvniFormLabel label={"Allowed max size in MB"} toolTipKey={"APP_DESIGNER_FILE_MAX_SIZE"} />
+        <TextField
+          value={keyValues.allowedMaxSize}
+          onChange={e => {
+            const value = e.target.value.replace(/[^0-9.]/g, "");
+            handleChange(groupIndex, "allowedMaxSize", value, index);
+          }}
+          onBlur={() =>
+            handleChange(groupIndex, "allowedMaxSize", toNumber(keyValues.allowedMaxSize), index)
+          }
+        />
+      </FormControl>
+    </Fragment>
+  );
+};
