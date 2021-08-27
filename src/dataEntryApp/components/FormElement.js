@@ -31,6 +31,7 @@ const elements = {
   Image: MediaFormElement,
   Video: MediaFormElement,
   Audio: MediaFormElement,
+  File: MediaFormElement,
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
   Subject: SubjectFormElement

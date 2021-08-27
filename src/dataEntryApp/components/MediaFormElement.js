@@ -17,6 +17,7 @@ export default function MediaFormElement({ formElement, value, update, validatio
         label={label}
         obsValue={value}
         update={update}
+        formElement={formElement}
       />
       <ValidationError validationResult={validationResult} />
     </div>

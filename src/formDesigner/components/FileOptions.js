@@ -2,7 +2,7 @@ import Select from "react-select";
 import React, { Fragment } from "react";
 import { FileFormat } from "avni-models";
 import FormControl from "@material-ui/core/FormControl";
-import { filter, includes, isNil, toNumber } from "lodash";
+import { filter, includes, isNil, toNumber, map } from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import TextField from "@material-ui/core/TextField";
 
@@ -13,7 +13,7 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
   }));
 
   const onChange = event => {
-    const allowedTypes = event.map(({ value }) => value);
+    const allowedTypes = map(event, ({ value }) => value);
     handleChange(groupIndex, "allowedTypes", allowedTypes, index);
   };
 

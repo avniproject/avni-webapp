@@ -1,22 +1,25 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { get, isEmpty } from "lodash";
+import { get, isEmpty, includes, lowerCase } from "lodash";
 import { Box, Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../../common/utils/httpClient";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
 import VideoCall from "@material-ui/icons/VideoCall";
 import Audiotrack from "@material-ui/icons/Audiotrack";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import CustomizedBackdrop from "./CustomizedBackdrop";
 import CloseIcon from "@material-ui/icons/Close";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
+import { Concept } from "avni-models";
+import { FilePreview } from "./FilePreview";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
     color: "rgba(0, 0, 0, 0.54)"
   },
   boxStyle: {
-    width: 200,
-    height: 200,
+    minWidth: 200,
+    minHeight: 50,
     marginTop: 5
   },
   iconStyle: {
@@ -28,10 +31,31 @@ const useStyles = makeStyles(theme => ({
 const iconMap = {
   image: AddAPhoto,
   video: VideoCall,
-  audio: Audiotrack
+  audio: Audiotrack,
+  file: CloudUploadIcon
 };
 
-export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
+const getFileMimeType = formElement => {
+  const allowedTypes = formElement.allowedTypes;
+  return !isEmpty(allowedTypes) ? allowedTypes.join(",") : "*";
+};
+
+const isBiggerFile = (formElement, size) => {
+  const allowedMaxSize = formElement.allowedMaxSize;
+  return size > allowedMaxSize;
+};
+
+const isValidFile = (allowedTypes, type) => {
+  return isEmpty(allowedTypes) ? true : includes(allowedTypes, type);
+};
+
+const isValidType = (formElement, type, isFile) => {
+  return isFile
+    ? isValidFile(formElement.allowedTypes, type)
+    : includes(type, lowerCase(formElement.getType()));
+};
+
+export const MediaUploader = ({ label, obsValue, mediaType, update, formElement }) => {
   const classes = useStyles();
   const Icon = iconMap[mediaType];
   const [value, setValue] = useState("");
@@ -39,6 +63,8 @@ export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
   const [preview, setPreview] = useState();
   const [uploading, setUploading] = useState(false);
   const [openImage, setOpenImage] = useState(false);
+  const isFileDataType = formElement.getType() === Concept.dataType.File;
+  const supportedMIMEType = isFileDataType ? getFileMimeType(formElement) : `${mediaType}/*`;
 
   useEffect(() => {
     if (!file) {
@@ -70,13 +96,26 @@ export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
   const onMediaSelect = event => {
     const fileReader = new FileReader();
     event.target.files[0] && fileReader.readAsText(event.target.files[0]);
-    setValue(event.target.value);
     const file = event.target.files[0];
+    if (!isValidType(formElement, file.type, isFileDataType)) {
+      alert("Selected file type not supported. Please choose proper file.");
+      return;
+    }
+    if (isFileDataType && isBiggerFile(formElement, file.size)) {
+      const oneMBInBytes = 1000000;
+      alert(
+        `Selected file size ${file.size /
+          oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
+          oneMBInBytes} MB.`
+      );
+      return;
+    }
+    setValue(event.target.value);
     fileReader.onloadend = event => {
       setFile(file);
       setUploading(true);
       http
-        .uploadFile(http.withParams("/web/uploadMedia", { mediaType }), file)
+        .uploadFile("/web/uploadMedia", file)
         .then(r => {
           setUploading(false);
           update(r.data);
@@ -109,7 +148,8 @@ export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
         Sorry, your browser doesn't support embedded videos.
       </video>
     ),
-    audio: <audio preload="auto" controls src={preview} controlsList="nodownload" />
+    audio: <audio preload="auto" controls src={preview} controlsList="nodownload" />,
+    file: <FilePreview url={preview} obsValue={obsValue} />
   };
 
   const renderMedia = () => {
@@ -160,7 +200,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update }) => {
               <Icon color="primary" className={classes.iconStyle} />
               {`Upload ${mediaType}`}
               <input
-                accept={`${mediaType}/*`}
+                accept={supportedMIMEType}
                 className={classes.input}
                 id="contained-button-file"
                 type="file"

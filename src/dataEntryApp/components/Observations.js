@@ -11,7 +11,7 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { includes, isEmpty, isNil } from "lodash";
+import { includes, isEmpty, isNil, find, get, lowerCase, filter } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
@@ -85,7 +85,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         return renderSubject(subject, index < displayable.length - 1);
       });
     } else if (Concept.dataType.Media.includes(observation.concept.datatype)) {
-      return renderMedia(displayable.displayValue, observation.concept.datatype);
+      return renderMedia(displayable.displayValue, observation.concept);
     } else if (observation.concept.isPhoneNumberConcept()) {
       return renderPhoneNumber(observation.getValueWrapper());
     } else {
@@ -120,10 +120,8 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     window.open(mediaSignedUrls.find(media => media.url.startsWith(mediaUrl)).url);
   };
 
-  const renderMedia = (mediaUrl, dataType) => {
-    return dataType === Concept.dataType.Audio ? (
-      <AudioPlayer url={mediaUrl} />
-    ) : (
+  const imageVideoOptions = mediaUrl => {
+    return (
       <div>
         <Link
           to={"#"}
@@ -148,6 +146,35 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     );
   };
 
+  const fileOptions = conceptName => {
+    const signedURL = get(find(mediaSignedUrls, ({ altTag }) => altTag === conceptName), "url");
+    return (
+      <Link
+        to={"#"}
+        onClick={event => {
+          event.preventDefault();
+          window.open(signedURL, "_blank");
+        }}
+      >
+        {t("View/Download File")}
+      </Link>
+    );
+  };
+
+  const renderMedia = (mediaUrl, concept) => {
+    switch (concept.datatype) {
+      case Concept.dataType.Audio:
+        return <AudioPlayer url={mediaUrl} />;
+      case Concept.dataType.Image:
+      case Concept.dataType.Video:
+        return imageVideoOptions(mediaUrl);
+      case Concept.dataType.File:
+        return fileOptions(concept.name);
+      default:
+        return <div />;
+    }
+  };
+
   const getSignedUrl = async url => {
     return await http.get(`/media/signedUrl?url=${url}`);
   };
@@ -159,7 +186,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           const signedUrl = await getSignedUrl(obs.valueJSON.answer);
           return {
             url: signedUrl.data,
-            type: obs.concept.datatype === "Image" ? "photo" : "video",
+            type: obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype),
             altTag: obs.concept.name
           };
         })
@@ -175,7 +202,10 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const orderedObs = isNil(form) ? observations : form.orderObservations(observations);
 
   const mediaObservations = orderedObs.filter(obs =>
-    includes([Concept.dataType.Image, Concept.dataType.Video], obs.concept.datatype)
+    includes(
+      [Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File],
+      obs.concept.datatype
+    )
   );
 
   React.useEffect(() => {
@@ -230,7 +260,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       </Table>
       {showMedia && (
         <MediaObservations
-          mediaData={mediaSignedUrls}
+          mediaData={filter(mediaSignedUrls, ({ type }) => type !== "file")}
           currentMediaItemIndex={currentMediaItemIndex}
           onClose={() => setShowMedia(false)}
         />
