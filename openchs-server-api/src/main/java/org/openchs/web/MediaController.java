@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -105,19 +103,13 @@ public class MediaController {
 
     @PostMapping("/web/uploadMedia")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
-    public ResponseEntity<?> uploadMedia(@RequestParam MultipartFile file, @RequestParam String mediaType) {
+    public ResponseEntity<?> uploadMedia(@RequestParam MultipartFile file) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
         String targetFilePath = format("%s.%s", uuid, fileExtension);
         try {
             File tempSourceFile = AvniFiles.convertMultiPartToFile(file, "");
-            String mimeType = Files.probeContentType(tempSourceFile.toPath());
-            if (mimeType == null || !mimeType.toLowerCase().contains(mediaType)) {
-                String errorMessage = format("File not supported for upload. Please choose correct %s file.", mediaType);
-                logger.error(errorMessage);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-            }
             URL s3FileUrl = s3Service.uploadImageFile(tempSourceFile, targetFilePath);
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(s3FileUrl.toString());
         } catch (Exception e) {
