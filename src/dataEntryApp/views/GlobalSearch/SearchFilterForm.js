@@ -178,7 +178,9 @@ export const SearchForm = ({
       searchFilter => searchFilter.subjectTypeUUID === selectedSubjectTypeUUID
     );
 
-  const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjectTypeSearchFilter);
+  const [selectedSearchFilter, setSelectedSearchFilter] = useState(
+    initialSubjectTypeSearchFilter || []
+  );
   const onSubjectTypeChange = event => {
     setSelectedSubjectTypeUUID(event.target.value);
     const selectedSubjectTypeSearchFilter =
@@ -186,7 +188,7 @@ export const SearchForm = ({
       organisationConfigs.organisationConfig.searchFilters.filter(
         searchFilter => searchFilter.subjectTypeUUID === event.target.value
       );
-    setSelectedSearchFilter(selectedSubjectTypeSearchFilter);
+    setSelectedSearchFilter(selectedSubjectTypeSearchFilter || []);
   };
 
   // name age search all
