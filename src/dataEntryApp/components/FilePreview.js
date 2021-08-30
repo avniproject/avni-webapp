@@ -1,6 +1,6 @@
 import React from "react";
 import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
-import { size, get } from "lodash";
+import { size, get, isNil } from "lodash";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
@@ -17,7 +17,8 @@ const useStyles = makeStyles(theme => ({
 export const FilePreview = ({ url, obsValue }) => {
   const classes = useStyles();
   const getDisplayFileName = () => {
-    const originalName = get(obsValue.trim().match(/[0-9A-Fa-f-]{36}\.\w+$/), 0);
+    const fileName = isNil(obsValue) ? "" : obsValue;
+    const originalName = get(fileName.trim().match(/[0-9A-Fa-f-]{36}\.\w+$/), 0);
     const nameLength = size(originalName);
     const MAX_CHAR_ALLOWED = 12;
     if (nameLength > MAX_CHAR_ALLOWED + 3) {
