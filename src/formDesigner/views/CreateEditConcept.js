@@ -15,7 +15,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, trim } from "lodash";
+import { filter, find, trim, sortBy } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -81,7 +81,7 @@ class CreateEditConcept extends Component {
         .get("/concept/dataTypes")
         .then(response => {
           this.setState({
-            dataTypes: response.data
+            dataTypes: sortBy(response.data)
           });
         })
         .catch(error => {

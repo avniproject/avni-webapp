@@ -1,3 +1,5 @@
+import { sortBy } from "lodash";
+
 export const constFormType = {
   ChecklistItem: "Check list item",
   Encounter: "Encounter",
@@ -10,7 +12,7 @@ export const constFormType = {
   Location: "Location"
 };
 
-export const inlineConceptDataType = [
+export const inlineConceptDataType = sortBy([
   "Numeric",
   "Text",
   "Notes",
@@ -28,4 +30,4 @@ export const inlineConceptDataType = [
   "GroupAffiliation",
   "Audio",
   "File"
-];
+]);
