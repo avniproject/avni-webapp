@@ -233,8 +233,9 @@ public class ObservationService {
         return observationCollection.entrySet().stream().map(entry -> {
             ObservationContract observationContract = new ObservationContract();
             Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
+            String conceptDataType = questionConcept.getDataType();
             ConceptContract conceptContract = ConceptContract.create(questionConcept);
-            if (questionConcept.getDataType().equals(ConceptDataType.Subject.toString())) {
+            if (conceptDataType.equals(ConceptDataType.Subject.toString())) {
                 Object answerValue = entry.getValue();
                 List<Individual> subjects = null;
                 if (answerValue instanceof Collection) {
@@ -244,8 +245,20 @@ public class ObservationService {
                 }
                 observationContract.setSubjects(subjects.stream().map(this::convertIndividualToContract).collect(Collectors.toList()));
             }
-            if (questionConcept.getDataType().equals(ConceptDataType.Location.toString())) {
+            if (conceptDataType.equals(ConceptDataType.Location.toString())) {
                 observationContract.setLocation(AddressLevelContractWeb.fromEntity(locationRepository.findByUuid((String) entry.getValue())));
+            }
+            // Fetch the answer concept in case it is not there in concept_answer table,
+            // We have such cases for Bahmni Avni integration
+            if (conceptDataType.equals(ConceptDataType.Coded.toString()) && conceptContract.getAnswers().isEmpty()) {
+                Object answerValue = entry.getValue();
+                List<Concept> conceptAnswers;
+                if (answerValue instanceof Collection) {
+                    conceptAnswers = ((List<String>) answerValue).stream().map(uuid -> conceptRepository.findByUuid(uuid)).collect(Collectors.toList());
+                } else {
+                    conceptAnswers = Collections.singletonList(conceptRepository.findByUuid((String) answerValue));
+                }
+                conceptContract.setAnswers(conceptAnswers.stream().map(ConceptContract::create).collect(Collectors.toList()));
             }
             observationContract.setConcept(conceptContract);
             observationContract.setValue(entry.getValue());
