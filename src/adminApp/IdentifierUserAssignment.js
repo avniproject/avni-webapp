@@ -11,7 +11,8 @@ import {
   ReferenceField,
   SelectInput,
   ReferenceInput,
-  required
+  required,
+  AutocompleteInput
 } from "react-admin";
 import { change } from "redux-form";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
@@ -59,7 +60,7 @@ export const IdentifierUserAssignmentDetail = props => {
 
 export const UserSelectInput = props => {
   const choices = props.choices.filter(choice => choice.name != null);
-  return <SelectInput {...props} choices={choices} />;
+  return <AutocompleteInput {...props} choices={choices} optionText="name" />;
 };
 
 const IdentifierUserAssignmentForm = props => (
@@ -73,6 +74,7 @@ const IdentifierUserAssignmentForm = props => (
               reference="user"
               label="Which user?"
               validate={[required()]}
+              filterToQuery={searchText => ({ name: searchText })}
               onChange={(e, newVal) => {
                 dispatch(change(newVal));
               }}
