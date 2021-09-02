@@ -49,6 +49,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
         variant="contained"
         onClick={event => getRefreshStatuse()}
         style={{ float: "right", margin: "10px" }}
+        disabled={true}
       >
         <RefreshIcon />
         REFRESH STATUS{" "}

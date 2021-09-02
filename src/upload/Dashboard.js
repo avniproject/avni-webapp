@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { filter, get, isEmpty, isNil, concat } from "lodash";
+import { filter, get, isEmpty, concat } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -16,6 +16,7 @@ import { getStatuses, getUploadTypes } from "./reducers";
 import UploadTypes from "./UploadTypes";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { Notice } from "../common/components/Notice";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -72,6 +73,11 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
       <Grid item xs={12} style={{ minWidth: 1200, maxWidth: 1400 }}>
         <Paper className={classes.uploadDownloadSection}>
           <DocumentationContainer filename={"Upload.md"}>
+            <Notice
+              message={
+                "We are experiencing heavy traffic. Upload service is not available at the moment. Apologies for the inconvenience."
+              }
+            />
             <Grid container>
               <Grid item xs={12} sm={6}>
                 <Grid container item>
@@ -84,6 +90,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                       value={uploadType}
                       onChange={setUploadType}
                       options={uploadOptions()}
+                      disabled={true}
                     />
                   </Grid>
                   <Grid
@@ -99,7 +106,8 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     <Grid item>
                       <FileUpload
                         canSelect={!isEmpty(uploadType)}
-                        canUpload={!isNil(file)}
+                        // canUpload={!isNil(file)}
+                        canUpload={false}
                         onSelect={selectFile}
                         onUpload={uploadFile}
                       />
@@ -118,11 +126,13 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     value={entityForDownload}
                     onChange={setEntityForDownload}
                     options={downloadOptions()}
+                    disabled={true}
                   />
                   <Button
                     color="primary"
                     onClick={downloadSampleFile}
-                    disabled={isEmpty(entityForDownload)}
+                    // disabled={isEmpty(entityForDownload)}
+                    disabled={true}
                   >
                     <CloudDownload disabled={isEmpty(entityForDownload)} />
                     {" Download"}
