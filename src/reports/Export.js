@@ -46,6 +46,7 @@ const Export = ({
 
   const [exportRequest, dispatchFun] = React.useReducer(ExportReducer, initialState);
   const [enableExport, setEnableExport] = React.useState(false);
+  console.log("enableExport", enableExport);
   const {
     reportType,
     subjectType,
