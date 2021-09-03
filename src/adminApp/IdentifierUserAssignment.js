@@ -59,7 +59,9 @@ export const IdentifierUserAssignmentDetail = props => {
 };
 
 export const UserSelectInput = props => {
-  const choices = props.choices.filter(choice => choice.name != null);
+  const choices = props.choices.filter(
+    choice => choice.name != null && choice.organisationId != null
+  );
   return <AutocompleteInput {...props} choices={choices} optionText="name" />;
 };
 
