@@ -95,7 +95,7 @@ const JobStatus = ({
   return (
     <Box>
       <Grid container direction="row" justify="flex-end">
-        <Button color="primary" onClick={() => getUploadStatuses(0)} disabled={true}>
+        <Button color="primary" onClick={() => getUploadStatuses(0)}>
           <Refresh />
           {" Refresh"}
         </Button>

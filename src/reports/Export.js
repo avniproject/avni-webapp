@@ -23,7 +23,6 @@ import { RegistrationType } from "./components/export/RegistrationType";
 import { EnrolmentType } from "./components/export/EnrolmentType";
 import { EncounterType } from "./components/export/EncounterType";
 import { GroupSubjectType } from "./components/export/GroupSubjectType";
-import { Notice } from "../common/components/Notice";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -157,12 +156,6 @@ const Export = ({
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
             <DocumentationContainer filename={"Report.md"}>
-              <Notice
-                message={
-                  "We are experiencing heavy traffic. Download service is not available at the moment. Apologies for the inconvenience."
-                }
-              />
-              <Box mt={5} />
               <Grid>
                 {RenderReportTypes()}
                 {renderReportTypeOptions()}
@@ -174,8 +167,7 @@ const Export = ({
                   color="primary"
                   aria-haspopup="false"
                   onClick={onStartExportHandler}
-                  // disabled={!enableExport}
-                  disabled={true}
+                  disabled={!enableExport}
                   className={classes.item}
                 >
                   Generate Export
