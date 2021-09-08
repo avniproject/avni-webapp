@@ -22,6 +22,7 @@ const SubjectTypeShow = props => {
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
+  const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
 
   useFormMappings(setFormMappings);
   useLocationType(types => setLocationsTypes(types));
@@ -33,6 +34,17 @@ const SubjectTypeShow = props => {
         setSubjectType(result);
       });
   }, []);
+
+  React.useEffect(() => {
+    if (subjectType.iconFileS3Key != null) {
+      http
+        .get(http.withParams(`/media/signedUrl`, { url: subjectType.iconFileS3Key }))
+        .then(res => res.data)
+        .then(res => {
+          setIconPreviewUrl(res);
+        });
+    }
+  }, [subjectType.iconFileS3Key]);
 
   return (
     !_.isEmpty(subjectType) && (
@@ -57,6 +69,14 @@ const SubjectTypeShow = props => {
               <br />
               <span style={{ fontSize: "15px" }}>{subjectType.type}</span>
             </div>
+            <p />
+            {iconPreviewUrl && (
+              <div>
+                <FormLabel style={{ fontSize: "13px" }}>{"Subject Type Icon"}</FormLabel>
+                <br />
+                <img src={iconPreviewUrl} alt="Icon Preview" />
+              </div>
+            )}
             <p />
             <BooleanStatusInShow status={subjectType.active} label={"Active"} />
             <div>

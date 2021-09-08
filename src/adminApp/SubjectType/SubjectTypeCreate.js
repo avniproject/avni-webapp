@@ -23,6 +23,8 @@ import Editor from "react-simple-code-editor";
 import { sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { AdvancedSettings } from "./AdvancedSettings";
+import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import { bucketName, uploadImage } from "../../common/utils/S3Client";
 
 const SubjectTypeCreate = () => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -33,6 +35,7 @@ const SubjectTypeCreate = () => {
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
+  const [file, setFile] = React.useState();
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormList(forms);
@@ -41,7 +44,7 @@ const SubjectTypeCreate = () => {
   useFormMappings(consumeFormMappingResult);
   useLocationType(types => setLocationsTypes(types));
 
-  const onSubmit = event => {
+  const onSubmit = async event => {
     event.preventDefault();
 
     const groupValidationError = validateGroup(subjectType.groupRoles);
@@ -55,11 +58,21 @@ const SubjectTypeCreate = () => {
     setNameValidation(false);
 
     if (!groupValidationError) {
+      const [s3FileKey, error] = await uploadImage(
+        subjectType.iconFileS3Key,
+        file,
+        bucketName.ICONS
+      );
+      if (error) {
+        alert(error);
+        return;
+      }
       let subjectTypeSavePromise = () =>
         http
           .post("/web/subjectType", {
             ...subjectType,
-            registrationFormUuid: _.get(subjectType, "registrationForm.formUUID")
+            registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
+            iconFileS3Key: s3FileKey
           })
           .then(response => {
             if (response.status === 200) {
@@ -105,6 +118,16 @@ const SubjectTypeCreate = () => {
                   </MenuItem>
                 ))}
                 toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
+              />
+              <p />
+              <AvniImageUpload
+                onSelect={setFile}
+                label={"Icon"}
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ICON"}
+                width={75}
+                height={75}
+                oldImgUrl={subjectType.iconFileS3Key}
+                allowUpload={true}
               />
               <p />
               <AvniSelectForm

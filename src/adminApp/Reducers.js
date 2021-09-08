@@ -116,7 +116,8 @@ export function subjectTypeReducer(subjectType, action) {
         subjectSummaryRule: action.payload.subjectSummaryRule,
         locationTypeUUIDs: action.payload.locationTypeUUIDs,
         validFirstNameFormat: action.payload.validFirstNameFormat,
-        validLastNameFormat: action.payload.validLastNameFormat
+        validLastNameFormat: action.payload.validLastNameFormat,
+        iconFileS3Key: action.payload.iconFileS3Key
       };
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };

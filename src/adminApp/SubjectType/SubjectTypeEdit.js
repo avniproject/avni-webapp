@@ -27,6 +27,8 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
 import { AdvancedSettings } from "./AdvancedSettings";
+import { AvniImageUpload } from "../../common/components/AvniImageUpload";
+import { bucketName, uploadImage } from "../../common/utils/S3Client";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -41,6 +43,7 @@ const SubjectTypeEdit = props => {
   const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
+  const [file, setFile] = React.useState();
 
   const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
@@ -61,7 +64,7 @@ const SubjectTypeEdit = props => {
       });
   }, []);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const groupValidationError = validateGroup(subjectType.groupRoles);
     setGroupValidationError(groupValidationError);
     if (subjectType.name.trim() === "") {
@@ -72,6 +75,15 @@ const SubjectTypeEdit = props => {
 
     setNameValidation(false);
     if (!groupValidationError) {
+      const [s3FileKey, error] = await uploadImage(
+        subjectType.iconFileS3Key,
+        file,
+        bucketName.ICONS
+      );
+      if (error) {
+        alert(error);
+        return;
+      }
       let subjectTypeSavePromise = () =>
         http
           .put("/web/subjectType/" + props.match.params.id, {
@@ -88,7 +100,8 @@ const SubjectTypeEdit = props => {
             registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
             type: subjectType.type,
             subjectSummaryRule: subjectType.subjectSummaryRule,
-            locationTypeUUIDs: subjectType.locationTypeUUIDs
+            locationTypeUUIDs: subjectType.locationTypeUUIDs,
+            iconFileS3Key: s3FileKey
           })
           .then(response => {
             if (response.status === 200) {
@@ -165,6 +178,16 @@ const SubjectTypeEdit = props => {
               </MenuItem>
             ))}
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
+          />
+          <p />
+          <AvniImageUpload
+            onSelect={setFile}
+            label={"Icon"}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ICON"}
+            width={75}
+            height={75}
+            oldImgUrl={subjectType.iconFileS3Key}
+            allowUpload={true}
           />
           <p />
           <AvniSwitch
