@@ -146,6 +146,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
         subjectType.setValidFirstNameFormat(request.getValidFirstNameFormat());
         subjectType.setValidLastNameFormat(request.getValidLastNameFormat());
+        subjectType.setIconFileS3Key(request.getIconFileS3Key());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
         if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);

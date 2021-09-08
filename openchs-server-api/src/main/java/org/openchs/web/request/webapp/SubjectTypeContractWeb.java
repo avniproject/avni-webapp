@@ -3,6 +3,7 @@ package org.openchs.web.request.webapp;
 import org.joda.time.DateTime;
 import org.openchs.application.Format;
 import org.openchs.domain.OperationalSubjectType;
+import org.openchs.domain.SubjectType;
 import org.openchs.web.request.FormatContract;
 import org.springframework.hateoas.core.Relation;
 import org.openchs.web.request.GroupRoleContract;
@@ -36,14 +37,16 @@ public class SubjectTypeContractWeb {
     private boolean uniqueName;
     private FormatContract validFirstNameFormat;
     private FormatContract validLastNameFormat;
+    private String iconFileS3Key;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
+        SubjectType subjectType = operationalSubjectType.getSubjectType();
         contract.setId(operationalSubjectType.getId());
         contract.setName(operationalSubjectType.getName());
         contract.setUUID(operationalSubjectType.getSubjectTypeUUID());
         contract.setOrganisationId(operationalSubjectType.getOrganisationId());
-        contract.setSubjectTypeOrganisationId(operationalSubjectType.getSubjectType().getOrganisationId());
+        contract.setSubjectTypeOrganisationId(subjectType.getOrganisationId());
         contract.setVoided(operationalSubjectType.isVoided());
         contract.setCreatedBy(operationalSubjectType.getAudit().getCreatedBy().getUsername());
         contract.setLastModifiedBy(operationalSubjectType.getAudit().getLastModifiedBy().getUsername());
@@ -51,14 +54,15 @@ public class SubjectTypeContractWeb {
         contract.setModifiedDateTime(operationalSubjectType.getAudit().getLastModifiedDateTime());
         contract.setGroup(operationalSubjectType.isGroup());
         contract.setHousehold(operationalSubjectType.isHousehold());
-        contract.setGroupRoles(operationalSubjectType.getSubjectType().getGroupRolesContract());
-        contract.setActive(operationalSubjectType.getSubjectType().getActive());
-        contract.setAllowEmptyLocation(operationalSubjectType.getSubjectType().isAllowEmptyLocation());
-        contract.setUniqueName(operationalSubjectType.getSubjectType().isUniqueName());
+        contract.setGroupRoles(subjectType.getGroupRolesContract());
+        contract.setActive(subjectType.getActive());
+        contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
+        contract.setUniqueName(subjectType.isUniqueName());
         contract.setType(operationalSubjectType.getType().name());
         contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
         contract.setValidFirstNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidFirstNameFormat()));
         contract.setValidLastNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidLastNameFormat()));
+        contract.setIconFileS3Key(subjectType.getIconFileS3Key());
         return contract;
     }
 
@@ -236,5 +240,13 @@ public class SubjectTypeContractWeb {
 
     public void setValidLastNameFormat(FormatContract validLastNameFormat) {
         this.validLastNameFormat = validLastNameFormat;
+    }
+
+    public String getIconFileS3Key() {
+        return iconFileS3Key;
+    }
+
+    public void setIconFileS3Key(String iconFileS3Key) {
+        this.iconFileS3Key = iconFileS3Key;
     }
 }

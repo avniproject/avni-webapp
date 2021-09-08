@@ -48,6 +48,9 @@ public class SubjectType extends OrganisationAwareEntity {
 
     private boolean uniqueName;
 
+    @Column(name = "icon_file_s3_key")
+    private String iconFileS3Key;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "regex",
@@ -184,6 +187,14 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setValidLastNameFormat(Format validLastNameFormat) {
         this.validLastNameFormat = validLastNameFormat;
+    }
+
+    public String getIconFileS3Key() {
+        return iconFileS3Key;
+    }
+
+    public void setIconFileS3Key(String iconFileS3Key) {
+        this.iconFileS3Key = iconFileS3Key;
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})

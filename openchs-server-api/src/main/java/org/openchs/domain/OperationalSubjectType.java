@@ -78,6 +78,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
         return subjectType.getValidLastNameFormat();
     }
 
+    public String getIconFileS3Key() {
+        return subjectType.getIconFileS3Key();
+    }
+
     public DateTime getLastModifiedDateTime() {
         return getSubjectType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getSubjectType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
