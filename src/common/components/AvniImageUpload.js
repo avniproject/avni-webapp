@@ -1,11 +1,12 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, IconButton, Typography } from "@material-ui/core";
+import { Button, Grid, IconButton, Typography } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../utils/httpClient";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles(theme => ({
   item: {
@@ -21,7 +22,8 @@ export const AvniImageUpload = ({
   height,
   oldImgUrl,
   allowUpload,
-  renderButton
+  onDelete,
+  displayDelete
 }) => {
   const classes = useStyles();
 
@@ -65,6 +67,24 @@ export const AvniImageUpload = ({
     };
   };
 
+  const deleteIcon = () => {
+    setFile(null);
+    onDelete();
+  };
+
+  const renderPreview = () => {
+    return (
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
+        <img src={iconPreview} alt={"Preview"} width={width} height={height} />
+        {displayDelete && (
+          <Button style={{ float: "left", color: "red" }} onClick={deleteIcon}>
+            <CloseIcon />
+          </Button>
+        )}
+      </div>
+    );
+  };
+
   function renderUploadImage() {
     return (
       <React.Fragment>
@@ -91,9 +111,7 @@ export const AvniImageUpload = ({
             )}
           </Grid>
         </FormControl>
-        <Grid item>
-          {iconPreview && <img src={iconPreview} alt={"Preview"} width={width} height={height} />}
-        </Grid>
+        <Grid item>{iconPreview && renderPreview()}</Grid>
       </React.Fragment>
     );
   }

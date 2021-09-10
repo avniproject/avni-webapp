@@ -44,6 +44,7 @@ const SubjectTypeEdit = props => {
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
+  const [removeFile, setRemoveFile] = React.useState(false);
 
   const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
@@ -101,7 +102,7 @@ const SubjectTypeEdit = props => {
             type: subjectType.type,
             subjectSummaryRule: subjectType.subjectSummaryRule,
             locationTypeUUIDs: subjectType.locationTypeUUIDs,
-            iconFileS3Key: s3FileKey
+            iconFileS3Key: removeFile ? null : s3FileKey
           })
           .then(response => {
             if (response.status === 200) {
@@ -188,6 +189,8 @@ const SubjectTypeEdit = props => {
             height={75}
             oldImgUrl={subjectType.iconFileS3Key}
             allowUpload={true}
+            onDelete={() => setRemoveFile(true)}
+            displayDelete={true}
           />
           <p />
           <AvniSwitch

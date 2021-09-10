@@ -36,6 +36,7 @@ const SubjectTypeCreate = () => {
   const [formList, setFormList] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
+  const [removeFile, setRemoveFile] = React.useState(false);
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormList(forms);
@@ -72,7 +73,7 @@ const SubjectTypeCreate = () => {
           .post("/web/subjectType", {
             ...subjectType,
             registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
-            iconFileS3Key: s3FileKey
+            iconFileS3Key: removeFile ? null : s3FileKey
           })
           .then(response => {
             if (response.status === 200) {
@@ -128,6 +129,8 @@ const SubjectTypeCreate = () => {
                 height={75}
                 oldImgUrl={subjectType.iconFileS3Key}
                 allowUpload={true}
+                onDelete={() => setRemoveFile(true)}
+                displayDelete={true}
               />
               <p />
               <AvniSelectForm
