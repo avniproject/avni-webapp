@@ -53,6 +53,9 @@ public class SyncTelemetry {
     @Type(type = "jsonObject")
     private JsonObject deviceInfo;
 
+    @Column
+    private String syncSource;
+
     public JsonObject getDeviceInfo() {
         return deviceInfo;
     }
@@ -147,5 +150,13 @@ public class SyncTelemetry {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
+    }
+
+    public String getSyncSource() {
+        return syncSource;
+    }
+
+    public void setSyncSource(String syncSource) {
+        this.syncSource = syncSource;
     }
 }
