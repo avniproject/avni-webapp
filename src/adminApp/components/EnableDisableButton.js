@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Confirm, crudUpdate } from "react-admin";
 import Button from "@material-ui/core/Button";
+import Colors from "../../dataEntryApp/Colors";
 
 class EnableDisableButton extends Component {
   static propTypes = {
@@ -40,7 +41,7 @@ class EnableDisableButton extends Component {
     const buttonLabel = disabled ? "Enable user" : "Disable user";
     return (
       <Fragment>
-        <Button onClick={this.handleClick} color="secondary">
+        <Button onClick={this.handleClick} style={{ color: Colors.ValidationError }}>
           {buttonLabel}
         </Button>
         <Confirm

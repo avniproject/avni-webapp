@@ -105,17 +105,17 @@ const isAdminAndLoggedIn = (loggedInUser, selectedUser) =>
 const CustomShowActions = ({ user, basePath, data, resource }) => {
   return (
     (data && (
-      <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
+      <CardActions style={{ zIndex: 2, display: "flex", float: "right", flexDirection: "row" }}>
         <EditButton label="Edit User" basePath={basePath} record={data} />
         {isAdminAndLoggedIn(data, user) ? null : (
           <Fragment>
+            <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
             <EnableDisableButton
               disabled={data.disabledInCognito}
               basePath={basePath}
               record={data}
               resource={resource}
             />
-            <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
           </Fragment>
         )}
         {/*Commenting out delete user functionality as it is not required as of now

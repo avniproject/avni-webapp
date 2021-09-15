@@ -2,7 +2,6 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { crudUpdate } from "react-admin";
 import Button from "@material-ui/core/Button";
-import Colors from "../../dataEntryApp/Colors";
 import PasswordDialog from "./PasswordDialog";
 
 class ResetPasswordButton extends Component {
@@ -36,7 +35,7 @@ class ResetPasswordButton extends Component {
     const buttonLabel = "Reset password";
     return (
       <Fragment>
-        <Button onClick={this.handleClick} style={{ color: Colors.ValidationError }}>
+        <Button onClick={this.handleClick} style={{ color: "#3f51b5" }}>
           {buttonLabel}
         </Button>
         <PasswordDialog
