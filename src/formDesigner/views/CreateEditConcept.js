@@ -11,11 +11,10 @@ import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import PropTypes from "prop-types";
-import { DragDropContext } from "react-beautiful-dnd";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, trim, sortBy } from "lodash";
+import { filter, find, sortBy, trim, toLower } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -28,6 +27,28 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
 import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
+
+export const moveUp = (conceptAnswers, index) => {
+  if (index === 0) return conceptAnswers;
+  const answers = [...conceptAnswers];
+  const answer = answers[index];
+  answers[index] = answers[index - 1];
+  answers[index - 1] = answer;
+  return answers;
+};
+
+export const moveDown = (conceptAnswers, index) => {
+  if (index === conceptAnswers.length - 1) return conceptAnswers;
+  const answers = [...conceptAnswers];
+  const answer = answers[index];
+  answers[index] = answers[index + 1];
+  answers[index + 1] = answer;
+  return answers;
+};
+
+export const alphabeticalSort = conceptAnswers => {
+  return sortBy([...conceptAnswers], ans => toLower(ans.name));
+};
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -190,6 +211,24 @@ class CreateEditConcept extends Component {
     answers[index].name = answerName;
     this.setState({
       answers
+    });
+  };
+
+  onMoveUp = index => {
+    this.setState({
+      answers: moveUp(this.state.answers, index)
+    });
+  };
+
+  onMoveDown = index => {
+    this.setState({
+      answers: moveDown(this.state.answers, index)
+    });
+  };
+
+  onAlphabeticalSort = () => {
+    this.setState({
+      answers: alphabeticalSort(this.state.answers)
     });
   };
 
@@ -367,25 +406,6 @@ class CreateEditConcept extends Component {
     e.preventDefault();
 
     this.formValidation();
-  };
-
-  onDragEnd = result => {
-    const { destination, source } = result;
-    if (!destination) {
-      return;
-    }
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
-    const sourceElementIndex = result.draggableId.replace("Element", "");
-    const destinationElementIndex = result.destination.index;
-    const answers = [...this.state.answers];
-    const answer = answers.splice(sourceElementIndex, 1);
-
-    answers.splice(destinationElementIndex, 0, answer[0]);
-    this.setState({
-      answers
-    });
   };
 
   afterSuccessfullValidation = () => {
@@ -581,15 +601,16 @@ class CreateEditConcept extends Component {
     }
     if (this.state.dataType === "Coded") {
       dataType = (
-        <DragDropContext onDragEnd={this.onDragEnd}>
-          <CodedConcept
-            answers={this.state.answers}
-            onDeleteAnswer={this.onDeleteAnswer}
-            onAddAnswer={this.onAddAnswer}
-            onChangeAnswerName={this.onChangeAnswerName}
-            onToggleAnswerField={this.onToggleAnswerField}
-          />
-        </DragDropContext>
+        <CodedConcept
+          answers={this.state.answers}
+          onDeleteAnswer={this.onDeleteAnswer}
+          onAddAnswer={this.onAddAnswer}
+          onChangeAnswerName={this.onChangeAnswerName}
+          onToggleAnswerField={this.onToggleAnswerField}
+          onMoveUp={this.onMoveUp}
+          onMoveDown={this.onMoveDown}
+          onAlphabeticalSort={this.onAlphabeticalSort}
+        />
       );
     }
 

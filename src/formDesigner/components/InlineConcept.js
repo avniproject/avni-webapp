@@ -5,13 +5,13 @@ import Grid from "@material-ui/core/Grid";
 import { CodedConceptUI } from "./CodedConcept";
 import MenuItem from "@material-ui/core/MenuItem";
 import { inlineConceptDataType } from "../common/constants";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { BackButton } from "./FormElementDetails";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
+import Box from "@material-ui/core/Box";
 
 function InlineConcept(props) {
   const renderInlinePhoneNumber = () => {
@@ -90,45 +90,34 @@ function InlineConcept(props) {
       )}
 
       {props.formElementData.inlineConceptDataType === "Coded" && (
-        <>
-          <DragDropContext onDragEnd={props.onDragInlineCodedConceptAnswer}>
-            <Droppable droppableId={"Group" + props.groupIndex + "-" + props.index}>
-              {provided => (
-                <div ref={provided.innerRef} {...provided.droppableProps}>
-                  {props.formElementData.inlineCodedAnswers.map((answer, index) => {
-                    return (
-                      <Draggable draggableId={"Element" + index} index={index} key={index}>
-                        {provided => (
-                          <Grid
-                            container
-                            // style={{ border: "1px solid #ccc", margin: "2px" }}
-                            key={index}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            ref={provided.innerRef}
-                          >
-                            <CodedConceptUI
-                              answer={answer}
-                              elementIndex={props.index}
-                              index={index}
-                              groupIndex={props.groupIndex}
-                              onDeleteAnswer={props.onDeleteInlineConceptCodedAnswerDelete}
-                              onChangeAnswerName={props.handleInlineCodedConceptAnswers}
-                              onToggleAnswerField={props.onToggleInlineConceptCodedAnswerAttribute}
-                              inlineConcept={true}
-                              key={index}
-                            />
-                          </Grid>
-                        )}
-                      </Draggable>
-                    );
-                  })}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </>
+        <Box mt={2}>
+          <Button
+            type="button"
+            color="primary"
+            onClick={() => props.onAlphabeticalSort(props.groupIndex, props.index)}
+          >
+            Sort alphabetically
+          </Button>
+          {props.formElementData.inlineCodedAnswers.map((answer, index) => {
+            return (
+              <Grid container key={index}>
+                <CodedConceptUI
+                  answer={answer}
+                  elementIndex={props.index}
+                  index={index}
+                  groupIndex={props.groupIndex}
+                  onDeleteAnswer={props.onDeleteInlineConceptCodedAnswerDelete}
+                  onMoveUp={props.onMoveUp}
+                  onMoveDown={props.onMoveDown}
+                  onChangeAnswerName={props.handleInlineCodedConceptAnswers}
+                  onToggleAnswerField={props.onToggleInlineConceptCodedAnswerAttribute}
+                  inlineConcept={true}
+                  key={index}
+                />
+              </Grid>
+            );
+          })}
+        </Box>
       )}
       {props.formElementData.inlineConceptDataType === "Coded" && (
         <>

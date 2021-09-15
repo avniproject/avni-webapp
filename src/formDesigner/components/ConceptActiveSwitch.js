@@ -15,12 +15,14 @@ export const ConceptActiveSwitch = ({ active, handleActive, conceptUUID }) => {
   }, [conceptUUID]);
 
   return (
-    <AvniSwitch
-      disabled={!_.isEmpty(conceptUsage.forms)}
-      checked={!!active}
-      onChange={handleActive}
-      name="Active"
-      toolTipKey={"APP_DESIGNER_CONCEPT_ACTIVE"}
-    />
+    <div style={{ marginLeft: 10 }}>
+      <AvniSwitch
+        disabled={!_.isEmpty(conceptUsage.forms)}
+        checked={!!active}
+        onChange={handleActive}
+        name="Active"
+        toolTipKey={"APP_DESIGNER_CONCEPT_ACTIVE"}
+      />
+    </div>
   );
 };

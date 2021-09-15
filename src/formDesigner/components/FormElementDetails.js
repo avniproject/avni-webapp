@@ -261,11 +261,13 @@ function FormElementDetails(props) {
                 props.onToggleInlineConceptCodedAnswerAttribute
               }
               onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
+              onMoveUp={props.onMoveUp}
+              onMoveDown={props.onMoveDown}
+              onAlphabeticalSort={props.onAlphabeticalSort}
               handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
               handleInlineLocationAttributes={props.handleInlineLocationAttributes}
               handleInlineSubjectAttributes={props.handleInlineSubjectAttributes}
               handleInlinePhoneNumberAttributes={props.handleInlinePhoneNumberAttributes}
-              onDragInlineCodedConceptAnswer={props.onDragInlineCodedConceptAnswer}
               handleConceptFormLibrary={props.handleConceptFormLibrary}
             />
           </div>

@@ -2,15 +2,15 @@ import React from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import FormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";
-import { Draggable, Droppable } from "react-beautiful-dnd";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -22,9 +22,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const CodedConceptUI = props => {
+  const action = actionName => {
+    props.inlineConcept
+      ? props[actionName](props.groupIndex, props.elementIndex, props.index)
+      : props[actionName](props.index);
+  };
+
   return (
-    <>
-      <FormControl>
+    <Grid item container spacing={1} alignItems={"center"}>
+      <Grid item>
         <AutoSuggestSingleSelection
           visibility={!props.answer.editable}
           showAnswer={props.answer}
@@ -38,8 +44,8 @@ export const CodedConceptUI = props => {
           groupIndex={props.groupIndex}
         />
         {props.answer.isEmptyAnswer && <FormHelperText error>Answer is required.</FormHelperText>}
-      </FormControl>
-      <FormControl>
+      </Grid>
+      <Grid item>
         <FormControlLabel
           control={
             <Checkbox
@@ -62,8 +68,8 @@ export const CodedConceptUI = props => {
           label="abnormal"
           style={{ marginTop: 15, marginLeft: 2 }}
         />
-      </FormControl>
-      <FormControl>
+      </Grid>
+      <Grid item>
         <FormControlLabel
           control={
             <Checkbox
@@ -86,21 +92,39 @@ export const CodedConceptUI = props => {
           label="unique"
           style={{ marginTop: 15 }}
         />
-      </FormControl>
-      <FormControl>
-        <IconButton
-          aria-label="delete"
-          onClick={() => {
-            props.inlineConcept
-              ? props.onDeleteAnswer(props.groupIndex, props.elementIndex, props.index)
-              : props.onDeleteAnswer(props.index);
-          }}
-          style={{ marginTop: 10 }}
-        >
-          <DeleteIcon fontSize="inherit" />
-        </IconButton>
-      </FormControl>
-    </>
+      </Grid>
+      <Grid item>
+        <Grid item container direction={"column"} alignItems={"center"}>
+          <Grid item>
+            <Tooltip title="Move up" aria-label="up">
+              <ArrowDropUpIcon
+                style={{ cursor: "pointer" }}
+                fontSize={"large"}
+                onClick={() => action("onMoveUp")}
+              />
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Delete" aria-label="delete">
+              <DeleteIcon
+                style={{ cursor: "pointer" }}
+                fontSize={"small"}
+                onClick={() => action("onDeleteAnswer")}
+              />
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Move down" aria-label="down">
+              <ArrowDropDownIcon
+                style={{ cursor: "pointer" }}
+                fontSize={"large"}
+                onClick={() => action("onMoveDown")}
+              />
+            </Tooltip>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 
@@ -114,41 +138,33 @@ export default function CodedConcept(props) {
   return (
     <>
       <Grid container style={{ marginTop: 20 }}>
-        <Droppable droppableId={"Group0"}>
-          {provided => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              {props.answers.map((answer, index) => {
-                return (
-                  !answer.voided && (
-                    <Draggable draggableId={"Element" + index} index={index} key={index}>
-                      {provided => (
-                        <Grid
-                          container
-                          // style={{ border: "1px solid #ccc", margin: "2px" }}
-                          key={index}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          ref={provided.innerRef}
-                        >
-                          <CodedConceptUI
-                            answer={answer}
-                            index={index}
-                            onDeleteAnswer={props.onDeleteAnswer}
-                            onAddAnswer={props.onAddAnswer}
-                            onChangeAnswerName={props.onChangeAnswerName}
-                            onToggleAnswerField={props.onToggleAnswerField}
-                            key={index}
-                          />
-                        </Grid>
-                      )}
-                    </Draggable>
-                  )
-                );
-              })}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        <Button
+          type="button"
+          className={useStyles.button}
+          color="primary"
+          onClick={props.onAlphabeticalSort}
+        >
+          Sort alphabetically
+        </Button>
+        {props.answers.map((answer, index) => {
+          return (
+            !answer.voided && (
+              <Grid container key={index}>
+                <CodedConceptUI
+                  answer={answer}
+                  index={index}
+                  onDeleteAnswer={props.onDeleteAnswer}
+                  onAddAnswer={props.onAddAnswer}
+                  onChangeAnswerName={props.onChangeAnswerName}
+                  onToggleAnswerField={props.onToggleAnswerField}
+                  onMoveUp={props.onMoveUp}
+                  onMoveDown={props.onMoveDown}
+                  key={index}
+                />
+              </Grid>
+            )
+          );
+        })}
       </Grid>
 
       <Button

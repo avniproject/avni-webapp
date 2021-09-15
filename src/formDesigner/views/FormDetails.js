@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, isEmpty, includes } from "lodash";
+import _, { cloneDeep, includes, isEmpty } from "lodash";
 import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -23,6 +23,7 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
 import { Audit } from "../components/Audit";
 import StaticFormElementGroup from "../components/StaticFormElementGroup";
+import { alphabeticalSort, moveDown, moveUp } from "./CreateEditConcept";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -442,11 +443,13 @@ class FormDetails extends Component {
           handleInlineCodedConceptAnswers: this.handleInlineCodedConceptAnswers,
           onToggleInlineConceptCodedAnswerAttribute: this.onToggleInlineConceptCodedAnswerAttribute,
           onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
+          onMoveUp: this.onMoveUp,
+          onMoveDown: this.onMoveDown,
+          onAlphabeticalSort: this.onAlphabeticalSort,
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
           handleInlineLocationAttributes: this.handleInlineLocationAttributes,
           handleInlineSubjectAttributes: this.handleInlineSubjectAttributes,
           handleInlinePhoneNumberAttributes: this.handleInlinePhoneNumberAttributes,
-          onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
           updateFormElementGroupRule: this.updateFormElementGroupRule,
           entityName: this.getEntityNameForRules(),
           disableGroup: this.state.disableForm
@@ -646,6 +649,44 @@ class FormDetails extends Component {
     });
   };
 
+  onMoveUp = (groupIndex, elementIndex, answerIndex) => {
+    const form = cloneDeep(this.state.form);
+    const conceptAnswers =
+      form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers;
+    form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers = moveUp(
+      conceptAnswers,
+      answerIndex
+    );
+    this.setState({
+      form
+    });
+  };
+
+  onMoveDown = (groupIndex, elementIndex, answerIndex) => {
+    const form = cloneDeep(this.state.form);
+    const conceptAnswers =
+      form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers;
+    form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers = moveDown(
+      conceptAnswers,
+      answerIndex
+    );
+    this.setState({
+      form
+    });
+  };
+
+  onAlphabeticalSort = (groupIndex, elementIndex) => {
+    const form = cloneDeep(this.state.form);
+    const conceptAnswers =
+      form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers;
+    form.formElementGroups[groupIndex].formElements[
+      elementIndex
+    ].inlineCodedAnswers = alphabeticalSort(conceptAnswers);
+    this.setState({
+      form
+    });
+  };
+
   handleInlineLocationAttributes(index, propertyName, value, elementIndex) {
     this.setState(
       produce(draft => {
@@ -727,33 +768,6 @@ class FormDetails extends Component {
         verifyPhoneNumber: false
       }
     };
-  };
-
-  onDragInlineCodedConceptAnswer = result => {
-    const { destination, source } = result;
-    if (!destination) {
-      return;
-    }
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
-    const sourceElementIndex = result.draggableId.replace("Element", "");
-
-    const destinationElementIndex = result.destination.index;
-
-    const groupElementIndex = source.droppableId.replace("Group", "").split("-");
-    const clonedForm = cloneDeep(this.state.form);
-
-    const answer = clonedForm["formElementGroups"][parseInt(groupElementIndex[0])]["formElements"][
-      parseInt(groupElementIndex[1])
-    ]["inlineCodedAnswers"].splice(sourceElementIndex, 1);
-
-    clonedForm.formElementGroups[parseInt(groupElementIndex[0])].formElements[
-      parseInt(groupElementIndex[1])
-    ]["inlineCodedAnswers"].splice(destinationElementIndex, 0, answer[0]);
-    this.setState({
-      form: clonedForm
-    });
   };
 
   btnGroupAdd(index, elementIndex = -1) {
