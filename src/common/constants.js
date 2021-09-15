@@ -33,7 +33,8 @@ export const LOCALES = Object.freeze({
   MALAYALAM: "ma_IN",
   PUNJABI: "pu_IN",
   SANSKRIT: "sa_IN",
-  URDU: "ur_IN"
+  URDU: "ur_IN",
+  ASSAMESE: "as_IN"
 });
 
 export const datePickerModes = [
@@ -74,5 +75,6 @@ export const localeChoices = [
   { id: LOCALES.MALAYALAM, name: "Malayalam" },
   { id: LOCALES.PUNJABI, name: "Punjabi" },
   { id: LOCALES.SANSKRIT, name: "Sanskrit" },
-  { id: LOCALES.URDU, name: "Urdu" }
+  { id: LOCALES.URDU, name: "Urdu" },
+  { id: LOCALES.ASSAMESE, name: "Assamese" }
 ];
