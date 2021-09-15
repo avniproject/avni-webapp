@@ -12,6 +12,7 @@ import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import Box from "@material-ui/core/Box";
+import { size } from "lodash";
 
 function InlineConcept(props) {
   const renderInlinePhoneNumber = () => {
@@ -113,6 +114,7 @@ function InlineConcept(props) {
                   onToggleAnswerField={props.onToggleInlineConceptCodedAnswerAttribute}
                   inlineConcept={true}
                   key={index}
+                  totalAnswers={size(props.formElementData.inlineCodedAnswers)}
                 />
               </Grid>
             );

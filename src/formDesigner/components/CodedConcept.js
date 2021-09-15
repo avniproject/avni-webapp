@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import Tooltip from "@material-ui/core/Tooltip";
+import { size } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -94,34 +94,37 @@ export const CodedConceptUI = props => {
         />
       </Grid>
       <Grid item>
-        <Grid item container direction={"column"} alignItems={"center"}>
+        <Grid item container direction={"row"} alignItems={"center"}>
           <Grid item>
-            <Tooltip title="Move up" aria-label="up">
-              <ArrowDropUpIcon
-                style={{ cursor: "pointer" }}
-                fontSize={"large"}
-                onClick={() => action("onMoveUp")}
-              />
-            </Tooltip>
+            <Button
+              disabled={props.index === 0}
+              color="primary"
+              type="button"
+              onClick={() => action("onMoveUp")}
+            >
+              <ArrowDropUpIcon /> Move up
+            </Button>
           </Grid>
           <Grid item>
-            <Tooltip title="Delete" aria-label="delete">
-              <DeleteIcon
-                style={{ cursor: "pointer" }}
-                fontSize={"small"}
-                onClick={() => action("onDeleteAnswer")}
-              />
-            </Tooltip>
+            <Button
+              disabled={props.index + 1 === props.totalAnswers}
+              color="primary"
+              type="button"
+              onClick={() => action("onMoveDown")}
+            >
+              <ArrowDropDownIcon /> Move down
+            </Button>
           </Grid>
           <Grid item>
-            <Tooltip title="Move down" aria-label="down">
-              <ArrowDropDownIcon
-                style={{ cursor: "pointer" }}
-                fontSize={"large"}
-                onClick={() => action("onMoveDown")}
-              />
-            </Tooltip>
+            <Button
+              style={{ color: "#ff0000" }}
+              type="button"
+              onClick={() => action("onDeleteAnswer")}
+            >
+              <DeleteIcon fontSize={"small"} /> Remove
+            </Button>
           </Grid>
+          <Grid item />
         </Grid>
       </Grid>
     </Grid>
@@ -159,6 +162,7 @@ export default function CodedConcept(props) {
                   onToggleAnswerField={props.onToggleAnswerField}
                   onMoveUp={props.onMoveUp}
                   onMoveDown={props.onMoveDown}
+                  totalAnswers={size(props.answers)}
                   key={index}
                 />
               </Grid>
