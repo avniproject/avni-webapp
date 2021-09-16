@@ -259,7 +259,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
                     source={"customPassword"}
                     style={{ marginTop: "1em" }}
                     label={
-                      'Set a custom password or the default temporary password will be "password".'
+                      'Set a custom password. If custom password is not set temporary password will be "password".'
                     }
                     onChange={(e, newVal) => {
                       if (!isNil(newVal)) {
