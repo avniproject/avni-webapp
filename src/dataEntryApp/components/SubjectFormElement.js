@@ -19,7 +19,7 @@ const SubjectFormElement = props => {
 
   const constructSubjectLabel = (subject, isSearchFlow = false) => {
     if (isSearchFlow) {
-      return subject.fullName + " | " + subject.addressLevel.title;
+      return subject.fullName + " | " + subject.addressLevel;
     } else {
       return (
         subject.firstName +
@@ -66,18 +66,18 @@ const SubjectFormElement = props => {
   const loadSubjects = async inputValue => {
     const searchResults = await SubjectSearchService.search({
       name: inputValue,
-      subjectTypeUUID: subjectTypeUuid
+      subjectType: subjectTypeUuid
     });
 
     const filteredSubjects =
       isMultiSelect && selectedSubjects
-        ? searchResults.content.filter(
+        ? searchResults.listOfRecords.filter(
             subject =>
               selectedSubjects
                 .map(selectedSubject => selectedSubject.value.uuid)
                 .indexOf(subject.uuid) === -1
           )
-        : searchResults.content;
+        : searchResults.listOfRecords;
 
     return filteredSubjects.map(subject => ({
       label: constructSubjectLabel(subject, true),
@@ -87,7 +87,7 @@ const SubjectFormElement = props => {
         firstName: subject.firstName,
         lastName: subject.lastName,
         fullName: subject.fullName,
-        addressLevel: subject.addressLevel.title
+        addressLevel: subject.addressLevel
       }
     }));
   };
