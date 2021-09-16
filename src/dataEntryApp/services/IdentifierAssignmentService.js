@@ -1,5 +1,5 @@
 import { filter, find, isNil, forEach } from "lodash";
-import { Concept, FormElement, ObservationsHolder} from "openchs-models";
+import { Concept, FormElement, ObservationsHolder } from "openchs-models";
 
 const getIdentifierByIdAndSource = (id, idSourceUuid, identifierAssignments) => {
   return identifierAssignments.find(
@@ -22,7 +22,10 @@ export default {
           assignment => assignment.identifierSource.uuid === idSourceUuid
         );
         if (!isNil(identifierAssignment)) {
-          observationHolder.addOrUpdateObservation(fe.concept, identifierAssignment.identifier);
+          observationHolder.addOrUpdateObservation(fe.concept, {
+            uuid: identifierAssignment.uuid,
+            value: identifierAssignment.identifier
+          });
         }
       });
     }

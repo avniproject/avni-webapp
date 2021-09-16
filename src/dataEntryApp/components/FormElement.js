@@ -49,7 +49,10 @@ export const FormElement = ({
 }) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
-    formElement.keyValues = [KeyValue.fromResource({ key: "editable", value: false })];
+    formElement.keyValues = [
+      ...formElement.keyValues,
+      KeyValue.fromResource({ key: "editable", value: false })
+    ];
     formElement.mandatory = false;
   }
   const props = { formElement, value, update, obsHolder, validationResults, uuid };

@@ -22,6 +22,8 @@ export const FormElementGroup = ({
         const observationValue = observation
           ? observation.concept.isDurationConcept()
             ? get(observation, "valueJSON")
+            : observation.concept.isIdConcept()
+            ? get(observation, "valueJSON.value")
             : get(observation, "valueJSON.answer")
           : null;
         return (
