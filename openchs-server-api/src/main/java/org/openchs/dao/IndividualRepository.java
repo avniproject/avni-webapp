@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -128,15 +129,22 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
         return spec;
     }
 
-    default Page<Individual> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
-        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
-                .and(withConceptValues(concepts)), pageable);
+    default Specification<Individual> findInLocationSpec(List<Long> addressIds) {
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+            addressIds.isEmpty() ? null : root.get("addressLevel").get("id").in(addressIds);
     }
 
-    default Page<Individual> findByConceptsAndSubjectType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String subjectType, Pageable pageable) {
+    default Page<Individual> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, List<Long> addressIds, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
                 .and(withConceptValues(concepts))
-                .and(findBySubjectTypeSpec(subjectType)), pageable);
+                .and(findInLocationSpec(addressIds)), pageable);
+    }
+
+    default Page<Individual> findByConceptsAndSubjectType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String subjectType, List<Long> addressIds, Pageable pageable) {
+        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
+                .and(withConceptValues(concepts))
+                .and(findBySubjectTypeSpec(subjectType))
+                .and(findInLocationSpec(addressIds)), pageable);
     }
 
     List<Individual> findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(AddressLevel addressLevel, SubjectType subjectType);

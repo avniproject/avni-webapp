@@ -39,6 +39,12 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+            name: locationIds
+            description: comma seperated location Ids
+            required: false
+            schema:
+                type: uuid
         - in: header
           name: auth-token
           schema:
