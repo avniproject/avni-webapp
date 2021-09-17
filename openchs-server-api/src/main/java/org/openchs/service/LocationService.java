@@ -239,4 +239,15 @@ public class LocationService {
         addressLevelTypeRepository.save(addressLevelType);
         return addressLevelType;
     }
+
+    public List<Long> getAllWithChildrenForUUIDs(List<String> locationUUIDs) {
+        List<Long> allAddressLevels = new ArrayList<>();
+        if (locationUUIDs == null) return allAddressLevels;
+        locationRepository.findByUuidIn(locationUUIDs).forEach(addressLevel -> {
+            String lquery = "*.".concat(addressLevel.getLineage()).concat(".*");
+            List<Long> allChildrenLocations = locationRepository.getAllChildrenLocationsIds(lquery);
+            allAddressLevels.addAll(allChildrenLocations);
+        });
+        return allAddressLevels;
+    }
 }

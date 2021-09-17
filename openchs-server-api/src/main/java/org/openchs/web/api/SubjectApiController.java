@@ -4,10 +4,12 @@ import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.GroupSubjectRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Concept;
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.openchs.service.ConceptService;
+import org.openchs.service.LocationService;
 import org.openchs.util.S;
 import org.openchs.web.response.ResponsePage;
 import org.openchs.web.response.SubjectResponse;
@@ -31,27 +33,33 @@ public class SubjectApiController {
     private final IndividualRepository individualRepository;
     private final ConceptRepository conceptRepository;
     private final GroupSubjectRepository groupSubjectRepository;
+    private final LocationService locationService;
 
-    public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository, ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository) {
+    public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
+                                ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
+                                LocationService locationService) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
         this.groupSubjectRepository = groupSubjectRepository;
+        this.locationService = locationService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponsePage getSubjects(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                     @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                    @RequestParam(value = "subjectType", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String subjectType,
+                                    @RequestParam(value = "subjectType", required = false) String subjectType,
                                     @RequestParam(value = "concepts", required = false) String concepts,
+                                    @RequestParam(value= "locationIds", required = false) List<String> locationUUIDs,
                                     Pageable pageable) {
         Page<Individual> subjects;
         boolean subjectTypeRequested = S.isEmpty(subjectType);
+        List<Long> allLocationIds = locationService.getAllWithChildrenForUUIDs(locationUUIDs);
         Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         subjects = subjectTypeRequested ?
-                individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable) :
-                individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, pageable);
+                individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, allLocationIds, pageable) :
+                individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, allLocationIds, pageable);
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(subjects.getContent());
         ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
         subjects.forEach(subject -> {
