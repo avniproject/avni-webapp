@@ -531,10 +531,11 @@ class FormDetails extends Component {
           propertyName === "maxHeight" ||
           propertyName === "maxWidth" ||
           propertyName === "imageQuality" ||
-          propertyName === "durationLimitInSecs" ||
           propertyName === "videoQuality"
         ) {
           formElement.keyValues[propertyName] = value;
+        } else if (propertyName === "durationLimitInSecs") {
+          formElement.keyValues[propertyName] = _.toNumber(value);
         } else if (
           propertyName === "years" ||
           propertyName === "months" ||
