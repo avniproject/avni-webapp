@@ -72,6 +72,7 @@ $BODY$
 BEGIN
     EXECUTE 'set search_path = ' || schema_name;
     EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
+    EXECUTE 'reset search_path';
     RETURN 1;
 END
 $BODY$ LANGUAGE PLPGSQL;
