@@ -4,13 +4,13 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import React from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core";
 import http from "common/utils/httpClient";
 import TextField from "@material-ui/core/TextField";
 import { AlertModal } from "./AlertModal";
 import WarningIcon from "@material-ui/icons/Warning";
+import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -22,12 +22,6 @@ const useStyles = makeStyles(theme => ({
   },
   deleteButton: {
     backgroundColor: "red"
-  },
-  progress: {
-    position: "absolute",
-    top: "30%",
-    left: "50%",
-    zIndex: 1
   }
 }));
 
@@ -132,9 +126,7 @@ export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
           </Grid>
         </Grid>
       </Modal>
-      <Modal disableBackdropClick open={loading}>
-        <CircularProgress size={150} className={classes.progress} />
-      </Modal>
+      <ActivityIndicatorModal open={loading} />
       <AlertModal message={message} setShowAlert={setShowAlert} showAlert={showAlert} />
     </div>
   );
