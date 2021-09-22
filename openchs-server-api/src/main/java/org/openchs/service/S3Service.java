@@ -33,10 +33,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -354,6 +351,16 @@ public class S3Service {
         s3Client.putObject(new PutObjectRequest(bucketName, objectKey, tempFile));
         tempFile.delete();
         return objectKey;
+    }
+
+    public String uploadByteArray(String fileName, String extension, String objectPath, byte[] content) throws IOException {
+        String mediaDirectory = getOrgDirectoryName();
+        String objectKey = format("%s/%s/%s.%s", mediaDirectory, objectPath, fileName, extension);
+        File tempFile = File.createTempFile(fileName, extension);
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        fos.write(content);
+        putObject(objectKey, tempFile);
+        return s3Client.getUrl(bucketName, objectKey).toString();
     }
 
     private String getObjectURL(File file) {

@@ -45,6 +45,7 @@ public class SubjectTypeService {
         subjectType.setValidLastNameFormat(subjectTypeRequest.getValidLastNameFormat());
         subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
         subjectType.setSubjectSummaryRule(subjectTypeRequest.getSubjectSummaryRule());
+        subjectType.setIconFileS3Key(subjectTypeRequest.getIconFileS3Key());
         subjectTypeRepository.save(subjectType);
     }
 

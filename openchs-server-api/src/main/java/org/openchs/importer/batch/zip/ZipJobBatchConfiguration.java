@@ -1,7 +1,7 @@
 package org.openchs.importer.batch.zip;
 
 import org.openchs.framework.security.AuthService;
-import org.openchs.importer.batch.model.JsonFile;
+import org.openchs.importer.batch.model.BundleFile;
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.S3Service;
 import org.springframework.batch.core.Job;
@@ -43,7 +43,7 @@ public class ZipJobBatchConfiguration {
 
     @Bean
     @StepScope
-    public ItemReader<JsonFile> zipItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
+    public ItemReader<BundleFile> zipItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
         return new ZipItemReader(s3Service.getObjectContent(s3Key));
     }
 
@@ -58,9 +58,9 @@ public class ZipJobBatchConfiguration {
     }
 
     @Bean
-    public Step importZipStep(ZipErrorFileWriterListener zipErrorFileWriterListener, ItemReader<JsonFile> zipItemReader, ZipFileWriter zipFileWriter) {
+    public Step importZipStep(ZipErrorFileWriterListener zipErrorFileWriterListener, ItemReader<BundleFile> zipItemReader, ZipFileWriter zipFileWriter) {
         return stepBuilderFactory.get("importZipStep")
-                .<JsonFile, JsonFile>chunk(100)
+                .<BundleFile, BundleFile>chunk(100)
                 .reader(zipItemReader)
                 .writer(zipFileWriter)
                 .faultTolerant()

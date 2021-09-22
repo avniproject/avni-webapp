@@ -1,7 +1,9 @@
 package org.openchs.service;
 
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import org.apache.commons.io.IOUtils;
 import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
 import org.openchs.dao.*;
@@ -15,6 +17,7 @@ import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.*;
 import org.openchs.util.ObjectMapperSingleton;
+import org.openchs.util.S;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.openchs.web.request.application.FormContract;
@@ -27,6 +30,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -80,6 +84,7 @@ public class OrganisationService {
     private final DashboardSectionRepository dashboardSectionRepository;
     private final GroupDashboardRepository groupDashboardRepository;
     private final Msg91ConfigRepository msg91ConfigRepository;
+    private final S3Service s3Service;
 
     //Tx repositories
     private final RuleFailureTelemetryRepository ruleFailureTelemetryRepository;
@@ -142,7 +147,7 @@ public class OrganisationService {
                                DashboardSectionRepository dashboardSectionRepository,
                                GroupDashboardRepository groupDashboardRepository,
                                Msg91ConfigRepository msg91ConfigRepository,
-                               RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
+                               S3Service s3Service, RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
                                IdentifierAssignmentRepository identifierAssignmentRepository,
                                SyncTelemetryRepository syncTelemetryRepository,
                                VideoTelemetricRepository videoTelemetricRepository,
@@ -199,6 +204,7 @@ public class OrganisationService {
         this.dashboardSectionRepository = dashboardSectionRepository;
         this.groupDashboardRepository = groupDashboardRepository;
         this.msg91ConfigRepository = msg91ConfigRepository;
+        this.s3Service = s3Service;
         this.ruleFailureTelemetryRepository = ruleFailureTelemetryRepository;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.syncTelemetryRepository = syncTelemetryRepository;
@@ -438,6 +444,20 @@ public class OrganisationService {
         }
     }
 
+    public void addIcons(ZipOutputStream zos) throws IOException {
+        List<SubjectType> subjectTypes = subjectTypeRepository.findAllByIconFileS3KeyNotNull();
+        if (subjectTypes.size() > 0) {
+            addDirectoryToZip(zos, "icons");
+        }
+        for (SubjectType subjectType : subjectTypes) {
+            AmazonS3URI amazonS3URI = new AmazonS3URI(subjectType.getIconFileS3Key());
+            String objectKey = amazonS3URI.getKey();
+            InputStream objectContent = s3Service.getObjectContent(objectKey);
+            String extension = S.getLastStringAfter(objectKey, ".");
+            addIconToZip(zos, String.format("subjectTypeIcons/%s.%s", subjectType.getUuid(), extension), IOUtils.toByteArray(objectContent));
+        }
+    }
+
     public void addReportCards(ZipOutputStream zos) throws IOException {
         List<CardContract> cardContracts = cardService.getAll();
         if (!cardContracts.isEmpty()) {
@@ -458,6 +478,15 @@ public class OrganisationService {
         if (fileContent != null) {
             PrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
             byte[] bytes = ObjectMapperSingleton.getObjectMapper().writer(prettyPrinter).writeValueAsBytes(fileContent);
+            zos.write(bytes);
+        }
+        zos.closeEntry();
+    }
+
+    private void addIconToZip(ZipOutputStream zos, String fileName, byte[] bytes) throws IOException {
+        ZipEntry entry = new ZipEntry(fileName);
+        zos.putNextEntry(entry);
+        if (bytes != null) {
             zos.write(bytes);
         }
         zos.closeEntry();

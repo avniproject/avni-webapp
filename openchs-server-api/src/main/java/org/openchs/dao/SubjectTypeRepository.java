@@ -17,4 +17,6 @@ public interface SubjectTypeRepository extends ReferenceDataRepository<SubjectTy
 
     @Query("select st from SubjectType st where st.operationalSubjectTypes is not empty and st.isVoided = false")
     List<SubjectTypeProjection> findAllOperational();
+
+    List<SubjectType> findAllByIconFileS3KeyNotNull();
 }
