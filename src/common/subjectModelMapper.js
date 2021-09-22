@@ -187,6 +187,7 @@ export const mapMemberships = memberships => {
         uuid: membership["groupRoleUUID"],
         role: membership["groupRoleName"]
       });
+      groupSubject.groupSubject.subjectType = membership["groupSubjectSubjectType"];
       return groupSubject;
     });
   }

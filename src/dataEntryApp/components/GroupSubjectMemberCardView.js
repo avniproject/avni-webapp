@@ -87,6 +87,7 @@ const GroupSubjectMemberCardView = ({
         gender={memberSubject.gender && memberSubject.gender.name}
         age={memberSubject.dateOfBirth && memberSubject.getAgeInYears() + " " + t("years")}
         location={memberSubject.lowestAddressLevel && memberSubject.lowestAddressLevel.name}
+        subjectTypeName={memberSubject.subjectType.name}
       >
         {dueEncounters && dueEncounters > 0 ? (
           <Typography color="textSecondary" align={"center"}>

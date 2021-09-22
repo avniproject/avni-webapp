@@ -17,7 +17,6 @@ import { withRouter } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { CommentDrawer } from "./comments/CommentDrawer";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -26,6 +25,7 @@ import { get } from "lodash";
 import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
+import SubjectTypeIcon from "../../../components/SubjectTypeIcon";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -111,11 +111,6 @@ const useStyles = makeStyles(theme => ({
   },
   errorText: {
     color: "red"
-  },
-  iconStyle: {
-    fontSize: "50px",
-    color: "#676173",
-    marginTop: "10px"
   },
   commentButton: {
     margin: theme.spacing(1),
@@ -205,9 +200,13 @@ const ProfileDetails = ({
         {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
-        <Grid item container xs={4}>
+        <Grid item container xs={4} alignItems="center">
           <Grid item>
-            <AccountCircle className={classes.iconStyle} />
+            <SubjectTypeIcon
+              subjectTypeName={profileDetails.subjectType.name}
+              size={45}
+              style={{ marginTop: "10px" }}
+            />
           </Grid>
           <Grid item>
             <Table aria-label="caption table" className={classes.tableContainer}>

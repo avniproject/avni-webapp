@@ -112,6 +112,7 @@ export const mapSubjectType = json => {
   subjectType.allowEmptyLocation = json.allowEmptyLocation;
   subjectType.group = json.group;
   subjectType.household = json.household;
+  subjectType.iconFileS3Key = json.iconFileS3Key;
   return subjectType;
 };
 

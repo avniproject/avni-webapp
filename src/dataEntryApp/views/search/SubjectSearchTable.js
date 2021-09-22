@@ -3,9 +3,11 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import { map, join, get, filter, isEmpty } from "lodash";
+import { filter, get, isEmpty, join, map } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
+import SubjectTypeIcon from "../../components/SubjectTypeIcon";
+import { Grid } from "@material-ui/core";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { t } = useTranslation();
@@ -13,12 +15,28 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     get(organisationConfigs, "organisationConfig.extensions", []),
     ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults
   );
+
+  const renderNameWithIcon = ({ uuid, fullName, subjectTypeName }) => {
+    return (
+      <a href={`/#/app/subject?uuid=${uuid}`}>
+        <Grid container spacing={1} direction={"row"} alignItems={"center"}>
+          <Grid item>
+            <SubjectTypeIcon subjectTypeName={subjectTypeName} size={20} />
+          </Grid>
+          <Grid item>
+            <div>{fullName}</div>
+          </Grid>
+        </Grid>
+      </a>
+    );
+  };
+
   const columns = [
     {
       title: t("name"),
       field: "fullName",
       defaultSort: "asc",
-      render: rowData => <a href={`/#/app/subject?uuid=${rowData.uuid}`}>{rowData.fullName}</a>
+      render: rowData => renderNameWithIcon(rowData)
     },
     {
       title: t("subjectType"),

@@ -5,7 +5,11 @@ import { Typography } from "@material-ui/core";
 const GroupMembershipCardView = ({ groupMembership: { groupSubject, groupRole } }) => {
   return (
     <div>
-      <SubjectCardView uuid={groupSubject.uuid} name={groupSubject.name}>
+      <SubjectCardView
+        uuid={groupSubject.uuid}
+        name={groupSubject.name}
+        subjectTypeName={groupSubject.subjectType.name}
+      >
         <Typography component={"div"} color="textSecondary" gutterBottom align={"center"}>
           {groupRole.role}
         </Typography>

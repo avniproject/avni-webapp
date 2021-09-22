@@ -5,11 +5,7 @@ import { LineBreak, withParams } from "../../../common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import { getAllLocations, getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import Button from "@material-ui/core/Button";
 import BasicForm from "../GlobalSearch/BasicForm";
@@ -25,6 +21,7 @@ import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import { locationNameRenderer } from "../../utils/LocationUtil";
+import SubjectTypeOptions from "./SubjectTypeOptions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -181,12 +178,12 @@ export const SearchForm = ({
   const [selectedSearchFilter, setSelectedSearchFilter] = useState(
     initialSubjectTypeSearchFilter || []
   );
-  const onSubjectTypeChange = event => {
-    setSelectedSubjectTypeUUID(event.target.value);
+  const onSubjectTypeChange = subjectTypeUUID => {
+    setSelectedSubjectTypeUUID(subjectTypeUUID);
     const selectedSubjectTypeSearchFilter =
       organisationConfigs.organisationConfig.searchFilters &&
       organisationConfigs.organisationConfig.searchFilters.filter(
-        searchFilter => searchFilter.subjectTypeUUID === event.target.value
+        searchFilter => searchFilter.subjectTypeUUID === subjectTypeUUID
       );
     setSelectedSearchFilter(selectedSubjectTypeSearchFilter || []);
   };
@@ -467,33 +464,12 @@ export const SearchForm = ({
   return (
     <React.Fragment>
       <FormControl component="fieldset">
-        <FormLabel
-          component="legend"
-          classes={{
-            root: classes.formLabelRoot,
-            focused: classes.formLabelFocused
-          }}
-        >
-          {t("subjectType")}
-        </FormLabel>
-        <RadioGroup
-          row
-          aria-label="subjectType"
-          name="subjectType"
-          onChange={onSubjectTypeChange}
-          defaultValue={selectedSubjectTypeUUID}
-        >
-          {operationalModules.subjectTypes
-            ? operationalModules.subjectTypes.map((subjectType, index) => (
-                <FormControlLabel
-                  key={index}
-                  value={subjectType.uuid}
-                  control={<Radio color="primary" />}
-                  label={t(subjectType.name)}
-                />
-              ))
-            : ""}
-        </RadioGroup>
+        <SubjectTypeOptions
+          operationalModules={operationalModules}
+          onSubjectTypeChange={onSubjectTypeChange}
+          selectedSubjectTypeUUID={selectedSubjectTypeUUID}
+          t={t}
+        />
         {selectedSearchFilter ? (
           <div>
             <Grid container>

@@ -9,6 +9,7 @@ import { bold } from "ansi-colors";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import RemoveRelative from "../components/RemoveRelative";
+import SubjectTypeIcon from "../../../components/SubjectTypeIcon";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -47,32 +48,42 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                 <Grid key={index} item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
                     <CardContent>
-                      <Typography component={"div"} color="primary">
-                        <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
-                          {" "}
-                          {relative.individualB.firstName +
-                            " " +
-                            relative.individualB.lastName}{" "}
-                        </InternalLink>
-                      </Typography>
-                      <Typography
-                        component={"div"}
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {t(relative.relationship.individualBIsToARelation.name)}
-                      </Typography>
-                      <Typography
-                        component={"div"}
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {new Date().getFullYear() -
-                          new Date(relative.individualB.dateOfBirth).getFullYear()}{" "}
-                        {t("years")}
-                      </Typography>
+                      <Grid container direction={"row"} spacing={1}>
+                        <Grid item>
+                          <SubjectTypeIcon
+                            subjectTypeName={relative.individualB.subjectType.name}
+                            size={25}
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Typography component={"div"} color="primary">
+                            <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
+                              {" "}
+                              {relative.individualB.firstName +
+                                " " +
+                                relative.individualB.lastName}{" "}
+                            </InternalLink>
+                          </Typography>
+                          <Typography
+                            component={"div"}
+                            className={classes.title}
+                            color="textSecondary"
+                            gutterBottom
+                          >
+                            {t(relative.relationship.individualBIsToARelation.name)}
+                          </Typography>
+                          <Typography
+                            component={"div"}
+                            className={classes.title}
+                            color="textSecondary"
+                            gutterBottom
+                          >
+                            {new Date().getFullYear() -
+                              new Date(relative.individualB.dateOfBirth).getFullYear()}{" "}
+                            {t("years")}
+                          </Typography>
+                        </Grid>
+                      </Grid>
                     </CardContent>
                     {
                       <CardActions style={{ padding: "8px 8px 8px 0px" }}>

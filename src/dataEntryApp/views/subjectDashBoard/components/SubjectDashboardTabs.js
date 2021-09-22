@@ -10,7 +10,7 @@ import SubjectDashboardProfileTab from "./SubjectDashboardProfileTab";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import SubjectDashboardProgramTab from "./subjectDashboardProgramTab";
 import Box from "@material-ui/core/Box";
-import PersonIcon from "@material-ui/icons/Person";
+import DescriptionIcon from "@material-ui/icons/Description";
 import ListIcon from "@material-ui/icons/List";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useTranslation } from "react-i18next";
@@ -130,7 +130,7 @@ export default ({
           )}
           <Tab
             label={t("profile")}
-            icon={<PersonIcon id={"profile-tab"} />}
+            icon={<DescriptionIcon id={"profile-tab"} />}
             {...a11yProps(registrationTabIndex)}
           />
           {showGeneralTab && (

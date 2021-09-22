@@ -8,9 +8,10 @@ import Divider from "@material-ui/core/Divider";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { InternalLink } from "../../../common/components/utils";
 import { useTranslation } from "react-i18next";
+import SubjectTypeIcon from "../../components/SubjectTypeIcon";
+import { sortBy } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   container: {
@@ -39,7 +40,7 @@ function NewMenu({ operationalModules, handleClose }) {
   return (
     <div className={classes.container}>
       <List component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
-        {operationalModules.subjectTypes.map((element, index) => {
+        {sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((element, index) => {
           return (
             <React.Fragment key={index}>
               <InternalLink
@@ -49,7 +50,7 @@ function NewMenu({ operationalModules, handleClose }) {
               >
                 <ListItem button onClick={handleClose}>
                   <ListItemIcon>
-                    <PersonAddIcon style={{ color: "blue" }} />
+                    <SubjectTypeIcon subjectTypeName={element.name} size={25} />
                   </ListItemIcon>
                   <ListItemText primary={t(element.name)} />
                   <ChevronRightIcon />
