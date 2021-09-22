@@ -8,7 +8,7 @@ import org.openchs.domain.Organisation;
 import org.openchs.domain.SubjectType;
 import org.openchs.framework.security.AuthService;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.importer.batch.model.JsonFile;
+import org.openchs.importer.batch.model.BundleFile;
 import org.openchs.service.*;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.*;
@@ -25,15 +25,18 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 @Component
 @JobScope
-public class ZipFileWriter implements ItemWriter<JsonFile> {
+public class ZipFileWriter implements ItemWriter<BundleFile> {
 
     private final AuthService authService;
     private final EncounterTypeService encounterTypeService;
@@ -58,6 +61,8 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
     private VideoService videoService;
     private CardService cardService;
     private DashboardService dashboardService;
+    private S3Service s3Service;
+    private static final String SUBJECT_ICON_DIRECTORY = "subjectTypeIcons";
 
     @Value("#{jobParameters['userId']}")
     private Long userId;
@@ -112,7 +117,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                          GroupPrivilegeService groupPrivilegeService,
                          VideoService videoService,
                          CardService cardService,
-                         DashboardService dashboardService) {
+                         DashboardService dashboardService, S3Service s3Service) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -134,6 +139,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         this.videoService = videoService;
         this.cardService = cardService;
         this.dashboardService = dashboardService;
+        this.s3Service = s3Service;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -144,23 +150,32 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
     }
 
     @Override
-    public void write(List<? extends JsonFile> jsonFiles) throws Exception {
-        Map<String, String> fileDataMap = jsonFiles.stream().collect(Collectors.toMap(JsonFile::getName, JsonFile::getJsonData));
-        List<String> forms = jsonFiles.stream().filter(jf -> jf.getName().startsWith("forms"))
-                .map(JsonFile::getJsonData).collect(Collectors.toList());
+    public void write(List<? extends BundleFile> bundleFiles) throws Exception {
+        Map<String, byte[]> fileDataMap = bundleFiles.stream().collect(Collectors.toMap(BundleFile::getName, BundleFile::getContent));
+        List<String> forms = bundleFiles.stream().filter(jf -> jf.getName().startsWith("forms"))
+                .map(jf -> new String(jf.getContent(), StandardCharsets.UTF_8)).collect(Collectors.toList());
         for (String filename : fileSequence) {
             if (filename.equals("forms")) {
-                for (String form : forms) deployFile("form", form);
+                for (String form : forms) deployFile("form", form, bundleFiles);
             } else {
-                String fileData = fileDataMap.get(filename);
+                byte[] fileData = fileDataMap.get(filename);
                 if (fileData != null) {
-                    deployFile(filename, fileData);
+                    deployFile(filename, new String(fileData, StandardCharsets.UTF_8), bundleFiles);
                 }
             }
         }
     }
 
-    private void deployFile(String fileName, String fileData) throws IOException, FormBuilderException, BuilderException {
+    private String uploadIcon(BundleFile bundleFile) throws IOException {
+        String completePath = bundleFile.getName();
+        logger.info("uploading icon {}", completePath);
+        String[] fileName = completePath.replace(format("%s/", SUBJECT_ICON_DIRECTORY),"").split("\\.");
+        String subjectTypeUUID = fileName[0];
+        String extension = fileName[1];
+        return this.s3Service.uploadByteArray(subjectTypeUUID, extension, "icons", bundleFile.getContent());
+    }
+
+    private void deployFile(String fileName, String fileData, List<? extends BundleFile> bundleFiles) throws IOException, FormBuilderException, BuilderException {
         logger.info("processing file {}", fileName);
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         switch (fileName) {
@@ -185,6 +200,12 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
             case "subjectTypes.json":
                 SubjectTypeContract[] subjectTypeContracts = convertString(fileData, SubjectTypeContract[].class);
                 for (SubjectTypeContract subjectTypeContract : subjectTypeContracts) {
+                    String iconFileName = format("%s/%s", SUBJECT_ICON_DIRECTORY, subjectTypeContract.getUuid());
+                    BundleFile iconFile = bundleFiles.stream().filter(f -> f.getName().contains(iconFileName)).findFirst().orElse(null);
+                    if (iconFile != null) {
+                        String s3ObjectKey = uploadIcon(iconFile);
+                        subjectTypeContract.setIconFileS3Key(s3ObjectKey);
+                    }
                     subjectTypeService.saveSubjectType(subjectTypeContract);
                 }
                 break;

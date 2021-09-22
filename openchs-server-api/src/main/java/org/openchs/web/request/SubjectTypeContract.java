@@ -28,6 +28,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private FormatContract validFirstNameFormat;
     private FormatContract validLastNameFormat;
+    private String iconFileS3Key;
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -116,5 +117,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setValidLastNameFormat(FormatContract validLastNameFormat) {
         this.validLastNameFormat = validLastNameFormat;
+    }
+
+    public String getIconFileS3Key() {
+        return iconFileS3Key;
+    }
+
+    public void setIconFileS3Key(String iconFileS3Key) {
+        this.iconFileS3Key = iconFileS3Key;
     }
 }
