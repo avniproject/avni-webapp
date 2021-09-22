@@ -2,9 +2,7 @@ package org.openchs.service;
 
 import org.openchs.dao.GroupRoleRepository;
 import org.openchs.domain.GroupRole;
-import org.openchs.domain.Organisation;
 import org.openchs.domain.SubjectType;
-import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.GroupRoleContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +24,17 @@ public class GroupRoleService {
 
     public GroupRole saveGroupRole(GroupRoleContract groupRoleRequest, SubjectType groupSubjectType, SubjectType memberSubjectType) {
         logger.info(String.format("Creating Group Role: %s", groupRoleRequest.getRole()));
-        GroupRole groupRole = new GroupRole();
+        GroupRole groupRole = groupRoleRepository.findByUuid(groupRoleRequest.getUuid());
+        if (groupRole == null) {
+            groupRole = new GroupRole();
+            groupRole.setUuid(groupRoleRequest.getUuid() == null ? UUID.randomUUID().toString() : groupRoleRequest.getUuid());
+        }
         groupRole.setGroupSubjectType(groupSubjectType);
         groupRole.setMemberSubjectType(memberSubjectType);
         groupRole.setRole(groupRoleRequest.getRole());
         groupRole.setPrimary(groupRoleRequest.getPrimary());
         groupRole.setMaximumNumberOfMembers(groupRoleRequest.getMaximumNumberOfMembers());
         groupRole.setMinimumNumberOfMembers(groupRoleRequest.getMinimumNumberOfMembers());
-        groupRole.setUuid(groupRoleRequest.getUuid() == null ? UUID.randomUUID().toString() : groupRoleRequest.getUuid());
         return groupRoleRepository.save(groupRole);
     }
 }

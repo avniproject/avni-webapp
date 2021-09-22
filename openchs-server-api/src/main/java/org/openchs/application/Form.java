@@ -143,16 +143,16 @@ public class Form extends OrganisationAwareEntity {
         this.decisionConcepts.add(decisionConcept);
     }
 
-    public boolean hasDecisionConcept(Long conceptId) {
-        return getDecisionConcept(conceptId) != null;
+    public boolean hasDecisionConcept(String conceptUUID) {
+        return getDecisionConcept(conceptUUID) != null;
     }
 
-    private DecisionConcept getDecisionConcept(Long conceptId) {
-        return this.decisionConcepts.stream().filter(decisionConcept -> decisionConcept.getConcept().getId().equals(conceptId)).findFirst().orElse(null);
+    private DecisionConcept getDecisionConcept(String conceptUUID) {
+        return this.decisionConcepts.stream().filter(decisionConcept -> decisionConcept.getConcept().getUuid().equals(conceptUUID)).findFirst().orElse(null);
     }
 
     public void removeDecisionConcept(Concept concept) {
-        DecisionConcept decisionConcept = getDecisionConcept(concept.getId());
+        DecisionConcept decisionConcept = getDecisionConcept(concept.getUuid());
         this.decisionConcepts.remove(decisionConcept);
     }
 }
