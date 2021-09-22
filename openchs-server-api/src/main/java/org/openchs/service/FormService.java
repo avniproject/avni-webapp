@@ -54,12 +54,12 @@ public class FormService {
 
     private void mapDecisionConcepts(FormContract formRequest, Form form) {
         formRequest.getDecisionConcepts().forEach(conceptContract -> {
-            if (!form.hasDecisionConcept(conceptContract.getId())) {
-                form.addDecisionConcept(conceptRepository.findOne(conceptContract.getId()));
+            if (!form.hasDecisionConcept(conceptContract.getUuid())) {
+                form.addDecisionConcept(conceptRepository.findByUuid(conceptContract.getUuid()));
             }
         });
         form.getDecisionConcepts().forEach(concept -> {
-            if (formRequest.getDecisionConcepts().stream().filter(conceptContract -> conceptContract.getId().equals(concept.getId())).findFirst().orElse(null) == null) {
+            if (formRequest.getDecisionConcepts().stream().filter(conceptContract -> conceptContract.getUuid().equals(concept.getUuid())).findFirst().orElse(null) == null) {
                 form.removeDecisionConcept(concept);
             }
         });

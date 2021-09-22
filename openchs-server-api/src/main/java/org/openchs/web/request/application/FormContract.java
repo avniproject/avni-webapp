@@ -143,6 +143,8 @@ public class FormContract extends ReferenceDataContract {
                 .sorted(Comparator.comparingDouble(FormElementGroupContract::getDisplayOrder))
                 .collect(Collectors.toList());
         formContract.setFormElementGroups(fegContracts);
+        List<ConceptContract> decisionConcepts = form.getDecisionConcepts().stream().map(ConceptContract::create).collect(Collectors.toList());
+        formContract.setDecisionConcepts(decisionConcepts);
         return formContract;
     }
 
