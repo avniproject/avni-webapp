@@ -7,9 +7,8 @@ import {
   setLegacyRules,
   types
 } from "dataEntryApp/reducers/metadataReducer";
-import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import api from "../api";
-import { isEmpty } from "lodash/core";
 import { mapGender, mapOperationalModules } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
 
@@ -18,17 +17,6 @@ export function* dataEntryLoadOperationalModulesWatcher() {
 }
 
 export function* dataEntryLoadOperationalModulesWorker() {
-  const operationalModulesFromState = yield select(
-    ({
-      dataEntry: {
-        metadata: { operationalModules }
-      }
-    }) => operationalModules
-  );
-  if (!isEmpty(operationalModulesFromState)) {
-    return;
-  }
-
   const operationalModules = yield call(api.fetchOperationalModules);
 
   yield put(setOperationalModules(yield call(mapOperationalModules, operationalModules)));
