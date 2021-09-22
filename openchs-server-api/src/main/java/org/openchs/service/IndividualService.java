@@ -221,6 +221,7 @@ public class IndividualService {
         individualBContract.setFirstName(individual.getFirstName());
         individualBContract.setLastName(individual.getLastName());
         individualBContract.setDateOfBirth(individual.getDateOfBirth());
+        individualBContract.setSubjectType(SubjectTypeContract.fromSubjectType(individual.getSubjectType()));
         relationshipContract.setIndividualB(individualBContract);
 
         IndividualRelationshipTypeContract individualRelationshipTypeContract = new IndividualRelationshipTypeContract();

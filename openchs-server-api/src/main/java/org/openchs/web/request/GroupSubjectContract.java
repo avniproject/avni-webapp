@@ -2,6 +2,7 @@ package org.openchs.web.request;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.GroupSubject;
+import org.openchs.domain.Individual;
 
 public class GroupSubjectContract extends CHSRequest {
 
@@ -12,18 +13,21 @@ public class GroupSubjectContract extends CHSRequest {
     private String groupRoleName;
     private DateTime membershipStartDate;
     private DateTime membershipEndDate;
+    private SubjectTypeContract groupSubjectSubjectType;
 
     public static GroupSubjectContract fromEntity(GroupSubject groupSubject) {
         GroupSubjectContract groupSubjectContract = new GroupSubjectContract();
+        Individual groupS = groupSubject.getGroupSubject();
         groupSubjectContract.setUuid(groupSubject.getUuid());
         groupSubjectContract.setGroupSubjectUUID(groupSubject.getGroupSubjectUUID());
-        groupSubjectContract.setGroupSubjectName(groupSubject.getGroupSubject().getFirstName()
-                + (groupSubject.getGroupSubject().getLastName() != null ? " " + groupSubject.getGroupSubject().getLastName() : ""));
+        groupSubjectContract.setGroupSubjectName(groupS.getFirstName()
+                + (groupS.getLastName() != null ? " " + groupS.getLastName() : ""));
         groupSubjectContract.setMemberSubjectUUID(groupSubject.getMemberSubjectUUID());
         groupSubjectContract.setGroupRoleUUID(groupSubject.getGroupRoleUUID());
         groupSubjectContract.setGroupRoleName(groupSubject.getGroupRole().getRole());
         groupSubjectContract.setMembershipStartDate(groupSubject.getMembershipStartDate());
         groupSubjectContract.setMembershipEndDate(groupSubject.getMembershipEndDate());
+        groupSubjectContract.setGroupSubjectSubjectType(SubjectTypeContract.fromSubjectType(groupS.getSubjectType()));
         return groupSubjectContract;
     }
 
@@ -81,5 +85,13 @@ public class GroupSubjectContract extends CHSRequest {
 
     public void setMembershipEndDate(DateTime membershipEndDate) {
         this.membershipEndDate = membershipEndDate;
+    }
+
+    public SubjectTypeContract getGroupSubjectSubjectType() {
+        return groupSubjectSubjectType;
+    }
+
+    public void setGroupSubjectSubjectType(SubjectTypeContract groupSubjectSubjectType) {
+        this.groupSubjectSubjectType = groupSubjectSubjectType;
     }
 }
