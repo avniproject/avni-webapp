@@ -447,7 +447,7 @@ public class OrganisationService {
     public void addIcons(ZipOutputStream zos) throws IOException {
         List<SubjectType> subjectTypes = subjectTypeRepository.findAllByIconFileS3KeyNotNull();
         if (subjectTypes.size() > 0) {
-            addDirectoryToZip(zos, "icons");
+            addDirectoryToZip(zos, "subjectTypeIcons");
         }
         for (SubjectType subjectType : subjectTypes) {
             AmazonS3URI amazonS3URI = new AmazonS3URI(subjectType.getIconFileS3Key());
