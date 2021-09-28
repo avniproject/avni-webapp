@@ -1,4 +1,3 @@
-rootProject.name = 'openchs-server'
-include ':openchs-server-api'
-project(':openchs-server-api').projectDir = "$rootDir/opench" +
-        "s-server-api" as File
+rootProject.name = 'avni-server'
+include ':avni-server-api'
+project(':avni-server-api').projectDir = "$rootDir/avni-server-api" as File

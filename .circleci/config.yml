@@ -20,7 +20,7 @@ commands:
           sudo apt-get -y -qq install python3-pip
           sudo pip3 install awscli --upgrade
 
-    - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+    - run: curl -L https://github.com/avniproject/infra/archive/master.zip >> infra.zip
 
     - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
 
@@ -41,7 +41,7 @@ jobs:
       - POSTGRES_DB: openchs_test
       - POSTGRES_PASSWORD: password
 
-    working_directory: ~/openchs-server
+    working_directory: ~/avni-server
 
     environment:
       MAVEN_OPTS: -Xmx3200m
@@ -51,7 +51,7 @@ jobs:
 
     - restore_cache:
         keys:
-        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "avni-server-api/build.gradle" }}
         - v1-dependencies-
 
     - run: sudo apt-get update
@@ -64,17 +64,17 @@ jobs:
         paths:
         - ~/.m2
         - ~/.gradle
-        - ~/openchs-server/.gradle
-        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+        - ~/avni-server/.gradle
+        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "avni-server-api/build.gradle" }}
 
     - store_artifacts:
-        path: openchs-server-api/build/reports/tests/test
+        path: avni-server-api/build/reports/tests/test
         destination: testReports
   build:
     docker:
     - image: circleci/openjdk:8-jdk
 
-    working_directory: ~/openchs-server
+    working_directory: ~/avni-server
 
     environment:
       MAVEN_OPTS: -Xmx3200m
@@ -84,7 +84,7 @@ jobs:
 
     - restore_cache:
         keys:
-        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "avni-server-api/build.gradle" }}
         - v1-dependencies-
 
     - run: sudo apt-get install make openssl
@@ -95,8 +95,8 @@ jobs:
         paths:
         - ~/.m2
         - ~/.gradle
-        - ~/openchs-server/.gradle
-        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+        - ~/avni-server/.gradle
+        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "avni-server-api/build.gradle" }}
 
     - run: mkdir -p ~/artifacts;
 
@@ -104,7 +104,7 @@ jobs:
 
     - run: cp major_version ~/artifacts/major_version;
 
-    - run: cp ~/openchs-server/openchs-server-api/build/distributions/openchs-server-*.noarch.rpm ~/artifacts/;
+    - run: cp ~/avni-server/avni-server-api/build/distributions/avni-server-*.noarch.rpm ~/artifacts/;
 
     - persist_to_workspace:
         root: ~/artifacts

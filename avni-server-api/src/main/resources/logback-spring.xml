@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <springProfile name="dev">
+        <logger name="org.avni" additivity="true" level="info">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.springframework" level="OFF"/>
+        <logger name="org.hibernate.search.batchindexing.impl.SimpleIndexingProgressMonitor" level="OFF"/>
+    </springProfile>
+    <springProfile name="live">
+        <logger name="org.avni" additivity="false" level="info">
+            <appender-ref ref="FILE"/>
+        </logger>
+        <logger name="org.springframework" level="OFF"/>
+        <logger name="org.hibernate.search.batchindexing.impl.SimpleIndexingProgressMonitor" level="OFF"/>
+    </springProfile>
+</configuration>

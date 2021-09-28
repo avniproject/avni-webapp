@@ -1,15 +1,11 @@
-# openchs-server
+# avni-server
 
 ## Build Status
 
-[![CircleCI](https://circleci.com/gh/OpenCHS/openchs-server/tree/master.svg?style=svg)](https://circleci.com/gh/OpenCHS/openchs-server/tree/master)
-
-## RPM Link
-
- [ ![Download](https://api.bintray.com/packages/openchs/rpm/OpenCHS/images/download.svg) ](https://bintray.com/openchs/rpm/OpenCHS/_latestVersion)
+[![CircleCI](https://circleci.com/gh/avniproject/avni-server/tree/master.svg?style=svg)](https://circleci.com/gh/avniproject/avni-server/tree/master)
 
 ## Environment Link
 
-[Staging](https://staging.openchs.org)
+[Staging](https://staging.avniproject.org)
 
-[Demo](https://demo.openchs.org)
+[Demo](https://demo.avniproject.org)

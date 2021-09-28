@@ -15,7 +15,7 @@ help:
 
 
 define _deploy_schema
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ -table=schema_version migrate
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../avni-server/avni-server-api/src/main/resources/db/migration/ -table=schema_version migrate
 endef
 
 su:=$(shell id -un)
@@ -63,11 +63,11 @@ build_db: ## Creates new empty database
 orgId:= $(if $(orgId),$(orgId),0)
 
 delete_org_meta_data:
-	psql -h localhost -U $(su) $(DB) -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
+	psql -h localhost -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
 
 delete_org_data:
 	@echo 'Delete for Organisation ID = $(orgId)'
-	psql -h localhost -U $(su) $(DB) -f openchs-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
+	psql -h localhost -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
 
 rebuild_db: clean_db build_db ## clean + build db
 
@@ -80,7 +80,7 @@ restore_db:
 
 # <testdb>
 backup_db:
-	sudo -u $(su) pg_dump openchs > openchs-server-api/target/backup.sql
+	sudo -u $(su) pg_dump openchs > avni-server-api/target/backup.sql
 
 clean_testdb: ## Drops the test database
 	make _clean_db database=openchs_test
@@ -107,10 +107,10 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 
 # <server>
 start_server: build_server
-	OPENCHS_DATABASE=$(DB) java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_DATABASE=$(DB) java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
 debug_server: build_server
-	OPENCHS_DATABASE=$(DB) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_DATABASE=$(DB) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	./gradlew clean build -x test
@@ -122,7 +122,7 @@ test_server: rebuild_testdb ## Run tests
 	GRADLE_OPTS="-Xmx256m" ./gradlew clean test
 
 start_server_wo_gradle:
-	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
 # LIVE
 log_live:
@@ -141,7 +141,7 @@ start_server_staging: build_server
 	OPENCHS_IAM_USER_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_ACCESS_KEY) \
 	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY)
 	OPENCHS_BUCKET_NAME=staging-user-media \
-		java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+		java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
 debug_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
@@ -153,7 +153,7 @@ debug_server_staging: build_server
 	OPENCHS_IAM_USER_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_ACCESS_KEY) \
 	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY) \
 	OPENCHS_BUCKET_NAME=staging-user-media \
-		java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+		java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
 tail-staging-log:
 	ssh avni-server-staging "tail -f -n1000 /var/log/openchs/openchs.log"
@@ -163,7 +163,7 @@ tail-local-log:
 # /STAGING
 
 debug_server_live: build_server
-	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(STAGING_USER_POOL_ID) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(STAGING_USER_POOL_ID) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 # <server>
 
 ci-test:
@@ -174,15 +174,15 @@ ci-test:
 	./gradlew clean test --stacktrace
 
 open_test_results:
-	open openchs-server-api/build/reports/tests/test/index.html
+	open avni-server-api/build/reports/tests/test/index.html
 
 build-rpm:
-	./gradlew clean openchs-server-api:buildRpm -x test --info --stacktrace
+	./gradlew clean avni-server-api:buildRpm -x test --info --stacktrace
 
 upload-rpm:
 	@openssl aes-256-cbc -a -md md5 -in infra/rpm/keys/openchs.asc.enc -d -out infra/rpm/keys/openchs.asc -k ${ENCRYPTION_KEY}
-	-rm -rf openchs-server-api/build
-	./gradlew clean openchs-server-api:uploadRpm -x test --info --stacktrace --rerun-tasks
+	-rm -rf avni-server-api/build
+	./gradlew clean avni-server-api:uploadRpm -x test --info --stacktrace --rerun-tasks
 
 # <exec-sql>
 exec-sql: ## Usage: make exec-sql sqlfile=</path/to/sql>

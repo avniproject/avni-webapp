@@ -1,0 +1,86 @@
+import groovy.json.JsonSlurper
+
+apply plugin: "nebula.ospackage"
+
+
+ospackage {
+
+    packageName = 'avni-server'
+    release = System.env.CIRCLE_BUILD_NUM ?: 0
+    version = "${project.version.replace('-SNAPSHOT', '')}"
+    arch = NOARCH
+    os = LINUX
+    user = 'root'
+
+    signingKeyId("72845CB15D05862A")
+    signingKeyPassphrase("$System.env.KEY_PASSWORD")
+
+
+    conflicts("java-1.7.0-openjdk")
+    requires("java-1.8.0-openjdk")
+    preInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preInstall.sh")
+    postInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/postInstall.sh")
+    preUninstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preUninstall.sh")
+    postUninstall file("${project.rootProject.rootDir}/infra/rpm/scripts/postUninstall.sh")
+
+    into '/opt/openchs'
+
+    from(bootJar.outputs.files) {
+        rename { String fileName ->
+            fileName.replace("-${project.version}", "")
+        }
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'bin/'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/config/openchs.conf") {
+        createDirectoryEntry = true
+        into 'config'
+        include('openchs.conf')
+    }
+
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs.pid") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'run'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs.log") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'log'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'scripts'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/start.sh") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'scripts'
+    }
+}
+
+buildRpm {
+    dependsOn 'build'
+}
+
+task uploadRpm {
+    dependsOn buildRpm
+    def rpmName = buildRpm.assembleArchiveName()
+    def rpmVersion = buildRpm.release
+    def rpmFilePath = buildRpm.outputs.files.singleFile.getAbsolutePath()
+    doLast {
+        def minorVersionFile = new File("$project.rootProject.rootDir/minor_version")
+        def majorVersionFile = new File("$project.rootProject.rootDir/major_version")
+        minorVersionFile.createNewFile()
+        majorVersionFile.createNewFile()
+        minorVersionFile.text = "$buildRpm.release"
+        majorVersionFile.text = "$buildRpm.version"
+    }
+}
