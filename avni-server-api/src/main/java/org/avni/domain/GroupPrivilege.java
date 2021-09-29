@@ -142,4 +142,38 @@ public class GroupPrivilege extends OrganisationAwareEntity {
         return entity.getUuid();
     }
 
+    public boolean isSubjectPrivilege() {
+        return subjectType != null && program == null && programEncounterType == null && encounterType == null && checklistDetail == null;
+    }
+
+    public boolean isEncounterPrivilege() {
+        return subjectType != null && encounterType !=null;
+    }
+
+    public boolean isProgramPrivilege() {
+        return subjectType != null && program != null && programEncounterType == null;
+    }
+
+    public boolean isProgramEncounterPrivilege() {
+        return subjectType != null && program != null && programEncounterType != null;
+    }
+
+    public boolean isChecklistPrivilege() {
+        return subjectType != null && checklistDetail != null;
+    }
+
+    public String getTypeUUID() {
+        if (isEncounterPrivilege()) {
+            return getEncounterTypeUuid();
+        } else if (isProgramPrivilege()) {
+            return getProgramUuid();
+        } else if (isProgramEncounterPrivilege()) {
+            return getProgramEncounterTypeUuid();
+        } else if (isChecklistPrivilege()) {
+            return getChecklistDetailUuid();
+        } else {
+            return getSubjectTypeUuid();
+        }
+    }
+
 }

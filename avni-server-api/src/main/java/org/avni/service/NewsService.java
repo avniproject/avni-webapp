@@ -5,10 +5,11 @@ import org.avni.domain.News;
 import org.avni.util.BadRequestError;
 import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.NewsContract;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NewsService {
+public class NewsService implements NonScopeAwareService {
 
     private final NewsRepository newsRepository;
 
@@ -56,5 +57,10 @@ public class NewsService {
         if (!newTitle.equals(oldTitle)) {
             assertNoExistingNewsWithTitle(newTitle);
         }
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return newsRepository.existsByPublishedDateNotNullAndAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

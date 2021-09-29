@@ -2,9 +2,11 @@ package org.avni.service;
 
 import org.avni.application.OrganisationConfigSettingKeys;
 import org.avni.dao.AddressLevelTypeRepository;
+import org.avni.dao.LocationRepository;
 import org.avni.domain.AddressLevelType;
 import org.avni.domain.JsonObject;
 import org.avni.framework.security.UserContextHolder;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +18,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class LocationHierarchyService {
+public class LocationHierarchyService implements NonScopeAwareService {
 
     private final OrganisationConfigService organisationConfigService;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private final LocationRepository locationRepository;
     private final Logger logger;
 
     @Autowired
-    public LocationHierarchyService(OrganisationConfigService organisationConfigService, AddressLevelTypeRepository addressLevelTypeRepository) {
+    public LocationHierarchyService(OrganisationConfigService organisationConfigService, AddressLevelTypeRepository addressLevelTypeRepository, LocationRepository locationRepository) {
         this.organisationConfigService = organisationConfigService;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
+        this.locationRepository = locationRepository;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -97,5 +101,15 @@ public class LocationHierarchyService {
             });
         }
         return addressLevelTypeHierarchies;
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        ArrayList<Long> addressLevelTypeIds = (ArrayList<Long>) this.getLowestAddressLevelTypeHierarchiesForOrganisation();
+        if (addressLevelTypeIds != null) {
+            List<AddressLevelType> addressLevelTypes = addressLevelTypeRepository.findAllByIdIn(addressLevelTypeIds);
+            return locationRepository.existsByAuditLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes);
+        }
+        return false;
     }
 }

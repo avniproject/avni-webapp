@@ -39,4 +39,6 @@ public interface IdentifierSourceRepository extends ReferenceDataRepository<Iden
             "(facility is null or (:facility is not null and facility = :facility)) ")
     List<IdentifierSource> getAllAuthorisedIdentifierSources(@Param("catchment") Catchment catchment,
                                                              @Param("facility") Facility facility);
+
+    boolean existsByAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }

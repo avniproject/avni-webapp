@@ -38,6 +38,16 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             DateTime now,
             Pageable pageable);
 
+    boolean existsByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+            long catchmentId,
+            Long subjectTypeId,
+            DateTime lastModifiedDateTime);
+
+    boolean existsByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+            long facilityId,
+            Long subjectTypeId,
+            DateTime lastModifiedDateTime);
+
     @Override
     default Page<Individual> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
@@ -46,6 +56,16 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     @Override
     default Page<Individual> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
+        return existsByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    }
+
+    @Override
+    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+        return existsByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     default Specification<Individual> getFilterSpecForVoid(Boolean includeVoided) {

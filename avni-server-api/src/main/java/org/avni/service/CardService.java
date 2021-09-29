@@ -6,6 +6,7 @@ import org.avni.domain.Card;
 import org.avni.domain.StandardReportCardType;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.CardContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CardService {
+public class CardService implements NonScopeAwareService {
 
     private final CardRepository cardRepository;
     private final StandardReportCardTypeRepository standardReportCardTypeRepository;
@@ -91,5 +92,10 @@ public class CardService {
         if (existingCard != null) {
             throw new BadRequestError(String.format("Card %s already exists", name));
         }
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return cardRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

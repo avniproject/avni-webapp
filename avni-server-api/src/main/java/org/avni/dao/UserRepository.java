@@ -1,8 +1,8 @@
 package org.avni.dao;
 
-import org.avni.domain.Catchment;
 import org.avni.domain.User;
 import org.avni.projection.UserWebProjection;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -52,4 +52,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
             "where u.id=:id and u.isVoided = false and " +
             "(((:organisationIds) is not null and u.organisationId in (:organisationIds) and u.isOrgAdmin = true) or aa.account.id in (:accountIds))")
     User getOne(Long id, List<Long> accountIds, List<Long> organisationIds);
+
+    @PreAuthorize("hasAnyAuthority('user')")
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }

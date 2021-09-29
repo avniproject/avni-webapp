@@ -27,4 +27,6 @@ public interface ApprovalStatusRepository extends JpaRepository<ApprovalStatus, 
     ApprovalStatus findByUuid(String uuid);
 
     ApprovalStatus findByStatus(ApprovalStatus.Status status);
+
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }

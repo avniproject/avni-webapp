@@ -32,4 +32,6 @@ public interface PrivilegeRepository extends PagingAndSortingRepository<Privileg
 
     List<Privilege> findAllByIsVoidedFalse();
 
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+
 }

@@ -10,6 +10,7 @@ import org.avni.web.request.CardContract;
 import org.avni.web.request.DashboardContract;
 import org.avni.web.request.DashboardSectionCardMappingContract;
 import org.avni.web.request.DashboardSectionContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class DashboardService {
+public class DashboardService implements NonScopeAwareService {
 
     private final DashboardRepository dashboardRepository;
     private final CardRepository cardRepository;
@@ -177,5 +178,10 @@ public class DashboardService {
         if (existingDashboard != null) {
             throw new BadRequestError(String.format("Dashboard %s already exists", name));
         }
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return dashboardRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

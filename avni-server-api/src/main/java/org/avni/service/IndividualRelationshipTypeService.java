@@ -6,6 +6,7 @@ import org.avni.domain.individualRelationship.IndividualRelation;
 import org.avni.domain.individualRelationship.IndividualRelationshipType;
 import org.avni.web.request.IndividualRelationshipTypeContract;
 import org.avni.web.request.webapp.IndividualRelationContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class IndividualRelationshipTypeService {
+public class IndividualRelationshipTypeService implements NonScopeAwareService {
     private IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
     private IndividualRelationRepository individualRelationRepository;
 
@@ -63,5 +64,10 @@ public class IndividualRelationshipTypeService {
         individualRelationshipType.setUuid(requestUUID == null ? UUID.randomUUID().toString() : requestUUID);
         individualRelationshipTypeRepository.save(individualRelationshipType);
         return individualRelationshipType;
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return individualRelationshipTypeRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

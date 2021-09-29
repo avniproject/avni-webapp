@@ -8,6 +8,9 @@ import org.avni.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.GenderContract;
 import org.avni.web.request.IndividualRelationContract;
+
+import org.joda.time.DateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class IndividualRelationService {
+public class IndividualRelationService implements NonScopeAwareService {
 
     private IndividualRelationRepository individualRelationRepository;
     private IndividualRelationGenderMappingRepository genderMappingRepository;
@@ -125,5 +128,10 @@ public class IndividualRelationService {
         if (existingRelation != null) {
             throw new BadRequestError(String.format("Relation %s already exists", name));
         }
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return individualRelationRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

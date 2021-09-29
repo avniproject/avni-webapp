@@ -122,4 +122,18 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
             "and (:formType is null or f.formType = :formType) " +
             "and fm.isVoided = false ")
     List<FormMapping> findRequiredFormMappings(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
+
+    @Query(value = "select distinct on (subject_type_id, observations_type_entity_id, entity_id) * \n" +
+            "from form_mapping \n" +
+            "where is_voided = false \n" +
+            "  and entity_id isnull \n" +
+            "  and observations_type_entity_id notnull", nativeQuery = true)
+    List<FormMapping> findByProgramNullAndEncounterTypeNotNullAndIsVoidedFalse();
+
+    @Query(value = "select distinct on (subject_type_id, observations_type_entity_id, entity_id) * \n" +
+            "from form_mapping \n" +
+            "where is_voided = false \n" +
+            "  and entity_id notnull \n" +
+            "  and observations_type_entity_id notnull", nativeQuery = true)
+    List<FormMapping> findByProgramNotNullAndEncounterTypeNotNullAndIsVoidedFalse();
 }

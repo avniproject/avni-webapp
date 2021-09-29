@@ -5,42 +5,36 @@ import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.domain.individualRelationship.IndividualRelation;
 import org.avni.domain.individualRelationship.IndividualRelationship;
+import org.avni.framework.security.UserContextHolder;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
 
 @Service
-public class IndividualService {
-    private final Logger logger;
+public class IndividualService implements ScopeAwareService {
     private final IndividualRepository individualRepository;
-    private final ConceptRepository conceptRepository;
-    private final ProjectionFactory projectionFactory;
-    private final EncounterRepository encounterRepository;
     private final ObservationService observationService;
     private final GroupSubjectRepository groupSubjectRepository;
     private final GroupRoleRepository groupRoleRepository;
+    private final SubjectTypeRepository subjectTypeRepository;
 
     @Autowired
-    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory, EncounterRepository encounterRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository) {
-        this.projectionFactory = projectionFactory;
-        logger = LoggerFactory.getLogger(this.getClass());
-        this.conceptRepository = conceptRepository;
+    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository) {
         this.individualRepository = individualRepository;
-        this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.groupSubjectRepository = groupSubjectRepository;
         this.groupRoleRepository = groupRoleRepository;
+        this.subjectTypeRepository = subjectTypeRepository;
     }
 
     public  IndividualContract getSubjectEncounters(String individualUuid){
@@ -301,4 +295,15 @@ public class IndividualService {
         }
     }
 
+    @Override
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
+        User user = UserContextHolder.getUserContext().getUser();
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId());
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository repository() {
+        return individualRepository;
+    }
 }

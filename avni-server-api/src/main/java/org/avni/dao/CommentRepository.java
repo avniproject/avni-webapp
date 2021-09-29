@@ -31,6 +31,16 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
             DateTime now,
             Pageable pageable);
 
+    boolean existsBySubjectAddressLevelVirtualCatchmentsIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+            long catchmentId,
+            Long subjectTypeId,
+            DateTime lastModifiedDateTime);
+
+    boolean existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+            long facilityId,
+            Long subjectTypeId,
+            DateTime lastModifiedDateTime);
+
     @Override
     default Page<Comment> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findBySubjectAddressLevelVirtualCatchmentsIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
@@ -39,5 +49,15 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
     @Override
     default Page<Comment> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
+        return existsBySubjectAddressLevelVirtualCatchmentsIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    }
+
+    @Override
+    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+        return existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 }

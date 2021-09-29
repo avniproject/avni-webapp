@@ -7,6 +7,7 @@ import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.GroupPrivilegeContractWeb;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupPrivilegeService {
+public class GroupPrivilegeService implements NonScopeAwareService {
     private GroupRepository groupRepository;
     private PrivilegeRepository privilegeRepository;
     private SubjectTypeRepository subjectTypeRepository;
@@ -175,4 +176,25 @@ public class GroupPrivilegeService {
         groupPrivilegeRepository.save(groupPrivilege);
     }
 
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return groupPrivilegeRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    public List<GroupPrivilege> getAllowedPrivilegesForUser() {
+        User user = UserContextHolder.getUserContext().getUser();
+        return groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
+    }
+
+    public List<GroupPrivilege> getRevokedPrivilegesForUser() {
+        User user = UserContextHolder.getUserContext().getUser();
+        List<String> allowedPrivilegeTypeUUIDs =  this.getAllowedPrivilegesForUser()
+                .stream()
+                .map(GroupPrivilege::getTypeUUID)
+                .collect(Collectors.toList());
+        return groupPrivilegeRepository.getAllRevokedPrivilegesForUser(user.getId())
+                .stream()
+                .filter(p -> !allowedPrivilegeTypeUUIDs.contains(p.getTypeUUID()))
+                .collect(Collectors.toList());
+    }
 }

@@ -28,4 +28,6 @@ public interface RuleDependencyRepository extends ImplReferenceDataRepository<Ru
         throw new UnsupportedOperationException("No field 'name' in RuleDependency");
     }
 
+    boolean existsByAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+
 }

@@ -1,6 +1,7 @@
 package org.avni.service;
 
 import com.bugsnag.Bugsnag;
+import org.avni.framework.security.UserContextHolder;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.dao.individualRelationship.RuleFailureLogRepository;
@@ -25,7 +26,7 @@ import java.util.stream.Stream;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 @Service
-public class EncounterService {
+public class EncounterService implements ScopeAwareService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(EncounterService.class);
     @Autowired
     Bugsnag bugsnag;
@@ -137,5 +138,17 @@ public class EncounterService {
         encounter.setObservations(new ObservationCollection());
         encounter.setCancelObservations(new ObservationCollection());
         return encounter;
+    }
+
+    @Override
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUuid) {
+        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+        User user = UserContextHolder.getUserContext().getUser();
+        return encounterType != null &&  isChanged(user, lastModifiedDateTime, encounterType.getId());
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository repository() {
+        return encounterRepository;
     }
 }

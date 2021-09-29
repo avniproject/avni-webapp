@@ -18,5 +18,7 @@ public interface NewsRepository extends TransactionalDataRepository<News>, FindB
     List<News> findByPublishedDateNotNullAndIsVoidedFalse();
 
     Page<News> findByPublishedDateNotNullAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+
+    boolean existsByPublishedDateNotNullAndAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }
 

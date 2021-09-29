@@ -8,7 +8,9 @@ import org.avni.dao.IdentifierSourceRepository;
 import org.avni.domain.IdentifierAssignment;
 import org.avni.domain.IdentifierSource;
 import org.avni.domain.User;
+import org.avni.framework.security.UserContextHolder;
 import org.avni.identifier.IdentifierGenerator;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class IdentifierAssignmentService {
+public class IdentifierAssignmentService implements NonScopeAwareService {
 
     private IdentifierSourceRepository identifierSourceRepository;
 
@@ -65,5 +67,11 @@ public class IdentifierAssignmentService {
     private boolean shouldGenerateIdentifiers(User user, IdentifierSource identifierSource) {
         Integer spareIdentifierAssignments = identifierAssignmentRepository.countIdentifierAssignmentByIdentifierSourceEqualsAndAndAssignedToEqualsAndIndividualIsNullAndProgramEnrolmentIsNull(identifierSource, user);
         return spareIdentifierAssignments < identifierSource.getMinimumBalance();
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        User user = UserContextHolder.getUserContext().getUser();
+        return identifierAssignmentRepository.existsByAssignedToAndAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNull(user, lastModifiedDateTime);
     }
 }

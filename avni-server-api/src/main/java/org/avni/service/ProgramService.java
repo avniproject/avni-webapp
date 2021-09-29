@@ -12,19 +12,19 @@ import org.avni.domain.Organisation;
 import org.avni.domain.Program;
 import org.avni.web.request.OperationalProgramContract;
 import org.avni.web.request.ProgramRequest;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
-public class ProgramService {
+public class ProgramService implements NonScopeAwareService {
     private final Logger logger;
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
@@ -104,5 +104,14 @@ public class ProgramService {
         Program program = new Program();
         program.setUuid(programRequest.getUuid());
         return program;
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return programRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    public Stream<Program> getAll() {
+        return operationalProgramRepository.findAllByIsVoidedFalse().stream().map(OperationalProgram::getProgram);
     }
 }

@@ -6,6 +6,7 @@ import org.avni.dao.UserGroupRepository;
 import org.avni.dao.UserRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements NonScopeAwareService {
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
@@ -60,5 +61,10 @@ public class UserService {
             userGroup.setOrganisationId(user.getOrganisationId());
             userGroupRepository.save(userGroup);
         }
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return userRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

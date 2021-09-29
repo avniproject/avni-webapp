@@ -3,13 +3,14 @@ package org.avni.service;
 import org.avni.dao.GroupRepository;
 import org.avni.domain.Group;
 import org.avni.web.request.GroupContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class GroupsService {
+public class GroupsService implements NonScopeAwareService {
 
     private GroupRepository groupRepository;
 
@@ -27,5 +28,10 @@ public class GroupsService {
         group.setName(groupContract.getName());
         group.setHasAllPrivileges(groupContract.isHasAllPrivileges());
         return groupRepository.save(group);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return groupRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

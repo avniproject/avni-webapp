@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.avni.framework.security.UserContextHolder;
 import org.joda.time.DateTime;
 import org.avni.common.EntityHelper;
 import org.avni.dao.*;
@@ -27,7 +28,7 @@ import static org.springframework.data.jpa.domain.Specification.where;
 
 
 @Service
-public class ProgramEnrolmentService {
+public class ProgramEnrolmentService implements ScopeAwareService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ProgramEnrolmentService.class);
 
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -233,5 +234,17 @@ public class ProgramEnrolmentService {
             String programName = programEnrolment.getProgram().getName();
             throw new BadRequestError(String.format("There are non deleted program encounters for the program %s", programName));
         }
+    }
+
+    @Override
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String programUUID) {
+        Program program = programRepository.findByUuid(programUUID);
+        User user = UserContextHolder.getUserContext().getUser();
+        return program != null && isChanged(user, lastModifiedDateTime, program.getId());
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository repository() {
+        return programEnrolmentRepository;
     }
 }

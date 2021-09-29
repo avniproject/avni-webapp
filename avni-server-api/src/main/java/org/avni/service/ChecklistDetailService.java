@@ -7,6 +7,8 @@ import org.avni.domain.ChecklistDetail;
 import org.avni.domain.ChecklistItemDetail;
 import org.avni.web.request.CHSRequest;
 import org.avni.web.request.application.ChecklistDetailRequest;
+import org.joda.time.DateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ChecklistDetailService {
+public class ChecklistDetailService implements NonScopeAwareService {
 
     private static Logger logger = LoggerFactory.getLogger(ChecklistDetailService.class);
     private final ChecklistDetailRepository checklistDetailRepository;
@@ -63,5 +65,14 @@ public class ChecklistDetailService {
                 .filter(cid -> !newChecklistDetailsUUIDs.contains(cid.getUuid()))
                 .peek(cid -> cid.setVoided(true)).collect(Collectors.toList());
         checklistItemDetailRepository.saveAll(unusedChecklistItemDetails);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return checklistDetailRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    public List<ChecklistDetail> getAll() {
+        return checklistDetailRepository.findAllByIsVoidedFalse();
     }
 }

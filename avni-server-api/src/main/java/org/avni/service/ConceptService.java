@@ -19,6 +19,7 @@ import org.avni.web.request.ReferenceDataContract;
 import org.avni.web.request.application.ConceptUsageContract;
 import org.avni.web.request.application.FormUsageContract;
 import org.avni.web.validation.ValidationException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Service
-public class ConceptService {
+public class ConceptService implements NonScopeAwareService {
     private final Logger logger;
     private ConceptRepository conceptRepository;
     private ConceptAnswerRepository conceptAnswerRepository;
@@ -265,5 +266,10 @@ public class ConceptService {
             });
         }
         return jsonMap;
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return conceptRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

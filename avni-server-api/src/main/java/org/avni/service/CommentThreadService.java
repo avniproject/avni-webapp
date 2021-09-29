@@ -6,6 +6,11 @@ import org.avni.dao.IndividualRepository;
 import org.avni.domain.Comment;
 import org.avni.domain.CommentThread;
 import org.avni.web.request.CommentThreadContract;
+import org.avni.dao.OperatingIndividualScopeAwareRepository;
+import org.avni.dao.SubjectTypeRepository;
+import org.avni.domain.SubjectType;
+import org.avni.domain.User;
+import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +18,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class CommentThreadService {
+public class CommentThreadService implements ScopeAwareService {
 
     private CommentThreadRepository commentThreadRepository;
     private IndividualRepository individualRepository;
+    private SubjectTypeRepository subjectTypeRepository;
 
     @Autowired
-    public CommentThreadService(CommentThreadRepository commentThreadRepository, IndividualRepository individualRepository) {
+    public CommentThreadService(CommentThreadRepository commentThreadRepository, IndividualRepository individualRepository, SubjectTypeRepository subjectTypeRepository) {
         this.commentThreadRepository = commentThreadRepository;
         this.individualRepository = individualRepository;
+        this.subjectTypeRepository = subjectTypeRepository;
     }
 
     public CommentThread createNewThread(CommentThreadContract threadContract) {
@@ -47,5 +54,17 @@ public class CommentThreadService {
         commentThread.setStatus(CommentThread.CommentThreadStatus.Resolved);
         commentThread.setResolvedDateTime(new DateTime());
         return commentThreadRepository.save(commentThread);
+    }
+
+    @Override
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
+        User user = UserContextHolder.getUserContext().getUser();
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId());
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository repository() {
+        return commentThreadRepository;
     }
 }

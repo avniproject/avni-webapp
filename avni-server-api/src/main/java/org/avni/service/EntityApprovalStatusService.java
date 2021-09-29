@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.avni.domain.EntityApprovalStatus.EntityType.*;
 
 @Service
-public class EntityApprovalStatusService {
+public class EntityApprovalStatusService implements NonScopeAwareService {
 
     private EntityApprovalStatusRepository entityApprovalStatusRepository;
     private ApprovalStatusRepository approvalStatusRepository;
@@ -90,6 +90,11 @@ public class EntityApprovalStatusService {
     public EntityApprovalStatusWrapper getLatestEntityApprovalStatus(Long entityId, EntityApprovalStatus.EntityType entityType, String entityUUID) {
         EntityApprovalStatus entityApprovalStatus = entityApprovalStatusRepository.findFirstByEntityIdAndEntityTypeAndIsVoidedFalseOrderByStatusDateTimeDesc(entityId, entityType);
         return entityApprovalStatus == null ? null : EntityApprovalStatusWrapper.fromEntity(entityApprovalStatus, entityUUID);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return entityApprovalStatusRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
 }

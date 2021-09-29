@@ -2,19 +2,14 @@ package org.avni.service;
 
 import org.avni.builder.BuilderException;
 import org.avni.builder.LocationBuilder;
-import org.avni.dao.AddressLevelTypeRepository;
-import org.avni.dao.LocationMappingRepository;
-import org.avni.dao.LocationRepository;
-import org.avni.dao.OrganisationRepository;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.AddressLevelType;
-import org.avni.domain.Organisation;
-import org.avni.domain.ParentLocationMapping;
+import org.avni.dao.*;
+import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.AddressLevelTypeContract;
 import org.avni.web.request.LocationContract;
 import org.avni.web.request.LocationEditContract;
 import org.avni.web.request.ReferenceDataContract;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class LocationService {
+public class LocationService implements ScopeAwareService {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final OrganisationRepository organisationRepository;
@@ -249,5 +244,16 @@ public class LocationService {
             allAddressLevels.addAll(allChildrenLocations);
         });
         return allAddressLevels;
+    }
+
+    @Override
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String typeUUID) {
+        User user = UserContextHolder.getUserContext().getUser();
+        return isChanged(user, lastModifiedDateTime, null);
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository repository() {
+        return locationRepository;
     }
 }

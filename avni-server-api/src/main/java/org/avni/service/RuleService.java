@@ -29,6 +29,7 @@ import org.avni.web.request.rules.response.RuleError;
 import org.avni.web.request.rules.response.RuleResponseEntity;
 import org.avni.web.request.rules.validateRules.RuleValidationService;
 import org.avni.web.validation.ValidationException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class RuleService {
+public class RuleService implements NonScopeAwareService {
     private final Logger logger;
     private final RuleDependencyRepository ruleDependencyRepository;
     private final RuleRepository ruleRepository;
@@ -354,5 +355,9 @@ public class RuleService {
         ruleFailureLogRepository.save(ruleFailureLog);
     }
 
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return ruleRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
 
 }

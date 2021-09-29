@@ -2,12 +2,9 @@ package org.avni.service;
 
 import com.bugsnag.Bugsnag;
 import org.avni.common.EntityHelper;
-import org.avni.dao.EncounterTypeRepository;
-import org.avni.dao.OperationalEncounterTypeRepository;
-import org.avni.dao.ProgramEncounterRepository;
-import org.avni.dao.ProgramEnrolmentRepository;
-import org.avni.dao.individualRelationship.RuleFailureLogRepository;
+import org.avni.dao.*;
 import org.avni.domain.*;
+import org.avni.framework.security.UserContextHolder;
 import org.avni.geo.Point;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.EncounterTypeContract;
@@ -17,6 +14,7 @@ import org.avni.web.request.ProgramEncountersContract;
 import org.avni.web.request.rules.RulesContractWrapper.Decision;
 import org.avni.web.request.rules.RulesContractWrapper.Decisions;
 import org.avni.web.request.rules.RulesContractWrapper.VisitSchedule;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class ProgramEncounterService {
+public class ProgramEncounterService implements ScopeAwareService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ProgramEncounterService.class);
     @Autowired
     Bugsnag bugsnag;
@@ -185,6 +183,18 @@ public class ProgramEncounterService {
             //violating constraint so notify bugsnag
             bugsnag.notify(new Exception(String.format("ProgramEncounter violating scheduling constraint uuid %s earliest %s max %s", request.getUuid(), request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
         }
+    }
+
+    @Override
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUUID) {
+        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
+        User user = UserContextHolder.getUserContext().getUser();
+        return encounterType != null && isChanged(user, lastModifiedDateTime, encounterType.getId());
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository repository() {
+        return programEncounterRepository;
     }
 
 }

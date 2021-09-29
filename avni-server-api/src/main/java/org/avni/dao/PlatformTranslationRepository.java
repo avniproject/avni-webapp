@@ -30,4 +30,6 @@ public interface PlatformTranslationRepository extends PagingAndSortingRepositor
             DateTime now,
             Pageable pageable);
 
+    boolean existsByAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+
 }

@@ -27,4 +27,6 @@ public interface StandardReportCardTypeRepository extends PagingAndSortingReposi
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }

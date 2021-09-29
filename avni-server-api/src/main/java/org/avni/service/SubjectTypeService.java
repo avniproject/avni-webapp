@@ -8,13 +8,16 @@ import org.avni.domain.Organisation;
 import org.avni.domain.SubjectType;
 import org.avni.web.request.OperationalSubjectTypeContract;
 import org.avni.web.request.SubjectTypeContract;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Stream;
+
 @Service
-public class SubjectTypeService {
+public class SubjectTypeService implements NonScopeAwareService {
 
     private final Logger logger;
     private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
@@ -85,5 +88,14 @@ public class SubjectTypeService {
         operationalSubjectType.setName(subjectType.getName());
         operationalSubjectType.setSubjectType(subjectType);
         operationalSubjectTypeRepository.save(operationalSubjectType);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return subjectTypeRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    public Stream<SubjectType> getAll() {
+        return operationalSubjectTypeRepository.findAllByIsVoidedFalse().stream().map(OperationalSubjectType::getSubjectType);
     }
 }

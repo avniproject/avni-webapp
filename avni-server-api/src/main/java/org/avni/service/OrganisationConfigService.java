@@ -20,6 +20,7 @@ import org.avni.projection.ConceptProjection;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.OrganisationConfigRequest;
 import org.avni.web.request.webapp.SubjectTypeSetting;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
-public class OrganisationConfigService {
+public class OrganisationConfigService implements NonScopeAwareService {
 
     private final OrganisationConfigRepository organisationConfigRepository;
     private final ProjectionFactory projectionFactory;
@@ -224,6 +225,17 @@ public class OrganisationConfigService {
             return false;
         }
         return (Boolean) organisationConfig.getSettings().getOrDefault("enableApprovalWorkflow", false);
+    }
+
+    public boolean isCommentEnabled() {
+        OrganisationConfig organisationConfig = organisationConfigRepository.findAllByIsVoidedFalse().stream().findFirst().orElse(null);
+        if (organisationConfig == null) return false;
+        return (boolean) organisationConfig.getSettings().getOrDefault(OrganisationConfigSettingKeys.enableComments, false);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return organisationConfigRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
 }

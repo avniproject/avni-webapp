@@ -31,6 +31,10 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             DateTime now,
             Pageable pageable);
 
+    boolean existsByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsGreaterThan(
+            long catchmentId,
+            DateTime lastModifiedDateTime);
+
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
     @Query(value = "SELECT a FROM AddressLevel a " +
@@ -48,6 +52,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
 
+    boolean existsByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
+
     @Override
     default Page<AddressLevel> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
@@ -56,6 +62,16 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @Override
     default Page<AddressLevel> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
+        return existsByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsGreaterThan(catchmentId, lastModifiedDateTime);
+    }
+
+    @Override
+    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+        return existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     default AddressLevel findByName(String name) {

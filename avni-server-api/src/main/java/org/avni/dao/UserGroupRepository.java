@@ -1,12 +1,11 @@
 package org.avni.dao;
 
+import org.avni.domain.User;
 import org.joda.time.DateTime;
 import org.avni.domain.Group;
 import org.avni.domain.UserGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
@@ -38,4 +37,9 @@ public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> 
     List<UserGroup> findByOrganisationId(Long organisationId);
 
     Long deleteAllByGroupIsNotIn(List<Group> groups);
+
+    boolean existsByUserIdAndAuditLastModifiedDateTimeGreaterThan(Long userId, DateTime lastModifiedDateTime);
+
+    List<UserGroup> findByUserAndGroupHasAllPrivilegesTrueAndIsVoidedFalse(User user);
+
 }

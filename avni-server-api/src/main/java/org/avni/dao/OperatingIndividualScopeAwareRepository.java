@@ -15,4 +15,6 @@ import java.util.List;
 public interface OperatingIndividualScopeAwareRepository<T extends CHSEntity> extends JpaSpecificationExecutor<T> {
     Page<T> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable);
     Page<T> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable);
+    boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId);
+    boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId);
 }

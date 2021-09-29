@@ -5,6 +5,7 @@ import org.avni.dao.GroupDashboardRepository;
 import org.avni.dao.GroupRepository;
 import org.avni.domain.GroupDashboard;
 import org.avni.web.request.GroupDashboardContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class GroupDashboardService {
+public class GroupDashboardService implements NonScopeAwareService {
     private final GroupDashboardRepository groupDashboardRepository;
     private final DashboardRepository dashboardRepository;
     private final GroupRepository groupRepository;
@@ -56,5 +57,10 @@ public class GroupDashboardService {
     public void delete(GroupDashboard groupDashboard) {
         groupDashboard.setVoided(true);
         groupDashboardRepository.save(groupDashboard);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return groupDashboardRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

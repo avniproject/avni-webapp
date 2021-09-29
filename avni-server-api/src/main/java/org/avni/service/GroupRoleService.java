@@ -4,6 +4,7 @@ import org.avni.dao.GroupRoleRepository;
 import org.avni.domain.GroupRole;
 import org.avni.domain.SubjectType;
 import org.avni.web.request.GroupRoleContract;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class GroupRoleService {
+public class GroupRoleService implements NonScopeAwareService {
     private final GroupRoleRepository groupRoleRepository;
     private final Logger logger;
 
@@ -36,5 +37,10 @@ public class GroupRoleService {
         groupRole.setMaximumNumberOfMembers(groupRoleRequest.getMaximumNumberOfMembers());
         groupRole.setMinimumNumberOfMembers(groupRoleRequest.getMinimumNumberOfMembers());
         return groupRoleRepository.save(groupRole);
+    }
+
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return groupRoleRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

@@ -33,6 +33,16 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             DateTime now,
             Pageable pageable);
 
+    boolean existsByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(
+            long catchmentId,
+            Long programId,
+            DateTime lastModifiedDateTime);
+
+    boolean existsByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(
+            long facilityId,
+            Long programId,
+            DateTime lastModifiedDateTime);
+
     @Override
     default Page<ProgramEnrolment> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
@@ -41,6 +51,16 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     @Override
     default Page<ProgramEnrolment> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
         return findByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
+        return existsByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    }
+
+    @Override
+    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+        return existsByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     @Query("select enl from ProgramEnrolment enl " +
