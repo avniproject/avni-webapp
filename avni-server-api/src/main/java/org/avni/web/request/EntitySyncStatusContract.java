@@ -25,7 +25,7 @@ public class EntitySyncStatusContract {
         if (groupPrivilege.isEncounterPrivilege()) {
             return addForTypeUUID(groupPrivilege.getTypeUUID(), "Encounter");
         } else if (groupPrivilege.isProgramPrivilege()) {
-            return addForTypeUUID(groupPrivilege.getTypeUUID(), "ProgramEnrolment");
+            return addForTypeUUID(groupPrivilege.getTypeUUID(), "Program");
         } else if (groupPrivilege.isProgramEncounterPrivilege()) {
             return addForTypeUUID(groupPrivilege.getTypeUUID(), "ProgramEncounter");
         } else if (groupPrivilege.isChecklistPrivilege()) {
