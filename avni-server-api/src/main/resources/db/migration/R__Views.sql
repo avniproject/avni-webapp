@@ -87,5 +87,6 @@ FROM (SELECT pe.individual_id,
                JOIN program prog ON prog.id = pe.program_id
                JOIN operational_program op ON prog.id = op.program_id AND pe.organisation_id = op.organisation_id
       WHERE pe.program_exit_date_time isnull
+      and pe.is_voided = false
       GROUP BY pe.individual_id, op.name, prog.colour) progralalise
 GROUP BY progralalise.individual_id;
