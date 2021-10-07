@@ -3,17 +3,15 @@ package org.avni.web;
 import org.avni.builder.BuilderException;
 import org.avni.dao.CatchmentRepository;
 import org.avni.dao.LocationRepository;
-import org.avni.dao.OrganisationRepository;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.Catchment;
 import org.avni.domain.Organisation;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.CatchmentService;
+import org.avni.service.S3Service;
 import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.CatchmentContract;
 import org.avni.web.request.CatchmentsContract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,19 +30,17 @@ import java.util.stream.Collectors;
 
 @RestController
 public class CatchmentController implements RestControllerResourceProcessor<CatchmentContract> {
-    private final Logger logger;
     private CatchmentRepository catchmentRepository;
     private LocationRepository locationRepository;
-    private OrganisationRepository organisationRepository;
     private final CatchmentService catchmentService;
+    private final S3Service s3Service;
 
     @Autowired
-    public CatchmentController(CatchmentRepository catchmentRepository, LocationRepository locationRepository, OrganisationRepository organisationRepository, CatchmentService catchmentService) {
+    public CatchmentController(CatchmentRepository catchmentRepository, LocationRepository locationRepository, CatchmentService catchmentService, S3Service s3Service) {
         this.catchmentRepository = catchmentRepository;
         this.locationRepository = locationRepository;
-        this.organisationRepository = organisationRepository;
         this.catchmentService = catchmentService;
-        logger = LoggerFactory.getLogger(this.getClass());
+        this.s3Service = s3Service;
     }
 
     @GetMapping(value = "catchment")
@@ -63,6 +59,8 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     public Resource<CatchmentContract> getById(@PathVariable Long id) {
         Catchment catchment = catchmentRepository.findOne(id);
         CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
+        boolean fastSyncExists = s3Service.fileExists(String.format("MobileDbBackup-%s", catchment.getUuid()));
+        catchmentContract.setFastSyncExists(fastSyncExists);
         return new Resource<>(catchmentContract);
     }
 
@@ -120,6 +118,9 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         }
         catchment.updateAudit();
         catchmentRepository.save(catchment);
+        if (catchmentContract.isFastSyncExists() && catchmentContract.isDeleteFastSync()) {
+            s3Service.deleteObject(String.format("MobileDbBackup-%s", catchment.getUuid()));
+        }
         return new ResponseEntity<>(catchment, HttpStatus.OK);
     }
 

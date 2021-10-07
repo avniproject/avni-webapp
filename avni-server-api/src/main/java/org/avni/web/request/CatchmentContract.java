@@ -20,6 +20,8 @@ public class CatchmentContract extends ReferenceDataContract {
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private boolean fastSyncExists;
+    private boolean deleteFastSync;
 
     private List<AddressLevelContract> locations = new ArrayList<>();
 
@@ -97,5 +99,29 @@ public class CatchmentContract extends ReferenceDataContract {
 
     public DateTime getModifiedDateTime(){
         return lastModifiedDateTime;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public boolean isFastSyncExists() {
+        return fastSyncExists;
+    }
+
+    public void setFastSyncExists(boolean fastSyncExists) {
+        this.fastSyncExists = fastSyncExists;
+    }
+
+    public boolean isDeleteFastSync() {
+        return deleteFastSync;
+    }
+
+    public void setDeleteFastSync(boolean deleteFastSync) {
+        this.deleteFastSync = deleteFastSync;
     }
 }
