@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Datagrid,
   List,
@@ -15,7 +15,10 @@ import {
   AutocompleteArrayInput,
   ReferenceArrayField,
   Filter,
-  FunctionField
+  FunctionField,
+  FormDataConsumer,
+  REDUX_FORM_NAME,
+  DisabledInput
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
@@ -29,6 +32,7 @@ import { AvniTextInput } from "./components/AvniTextInput";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { Paper } from "@material-ui/core";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
+import { change } from "redux-form";
 
 const CatchmentFilter = props => (
   <Filter {...props}>
@@ -40,6 +44,9 @@ const TitleChip = props => {
   return <Chip label={`${props.record.title} (${props.record.typeString})`} />;
 };
 
+const catchmentChangeMessage = `Please note that changing locations in the catchment will 
+delete the fast sync setup for this catchment`;
+
 export const CatchmentCreate = props => (
   <Paper>
     <DocumentationContainer filename={"Catchment.md"}>
@@ -50,11 +57,14 @@ export const CatchmentCreate = props => (
   </Paper>
 );
 
-export const CatchmentEdit = props => (
-  <Edit {...props} title="Edit Catchment" undoable={false}>
-    <CatchmentForm edit />
-  </Edit>
-);
+export const CatchmentEdit = props => {
+  const [displayWarning, setDisplayWarning] = React.useState(true);
+  return (
+    <Edit {...props} title="Edit Catchment" undoable={false}>
+      <CatchmentForm edit displayWarning={displayWarning} setDisplayWarning={setDisplayWarning} />
+    </Edit>
+  );
+};
 
 export const CatchmentDetail = props => {
   return (
@@ -108,7 +118,7 @@ const LocationAutocomplete = props => {
   return <AutocompleteArrayInput {...props} />;
 };
 
-const CatchmentForm = ({ edit, ...props }) => {
+const CatchmentForm = ({ edit, displayWarning, setDisplayWarning, ...props }) => {
   const optionRenderer = choice => {
     let retVal = `${choice.title} (${choice.typeString})`;
     let lineageParts = choice.titleLineage.split(", ");
@@ -130,15 +140,36 @@ const CatchmentForm = ({ edit, ...props }) => {
 
       <ToolTipContainer toolTipKey={"ADMIN_CATCHMENT_LOCATIONS"}>
         <div style={{ maxWidth: 400 }}>
-          <ReferenceArrayInput
-            reference="locations"
-            source="locationIds"
-            perPage={1000}
-            label="Locations"
-            filterToQuery={searchText => ({ title: searchText })}
-          >
-            <LocationAutocomplete optionText={optionRenderer} />
-          </ReferenceArrayInput>
+          <FormDataConsumer>
+            {({ formData, dispatch, ...rest }) => {
+              return (
+                <Fragment>
+                  <ReferenceArrayInput
+                    reference="locations"
+                    source="locationIds"
+                    perPage={1000}
+                    label="Locations"
+                    filterToQuery={searchText => ({ title: searchText })}
+                    onChange={() => {
+                      if (edit && props.record.fastSyncExists && displayWarning) {
+                        setDisplayWarning(false);
+                        dispatch(change(REDUX_FORM_NAME, "deleteFastSync", true));
+                        alert(catchmentChangeMessage);
+                      }
+                    }}
+                    {...rest}
+                  >
+                    <LocationAutocomplete optionText={optionRenderer} />
+                  </ReferenceArrayInput>
+                  <DisabledInput
+                    source="deleteFastSync"
+                    defaultValue={false}
+                    style={{ display: "none" }}
+                  />
+                </Fragment>
+              );
+            }}
+          </FormDataConsumer>
         </div>
       </ToolTipContainer>
 
