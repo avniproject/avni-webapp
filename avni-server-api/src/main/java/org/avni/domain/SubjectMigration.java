@@ -1,11 +1,13 @@
 package org.avni.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "subject_migration")
+@JsonIgnoreProperties({"individual", "oldAddressLevel", "newAddressLevel"})
 @DynamicInsert
 public class SubjectMigration extends OrganisationAwareEntity {
 

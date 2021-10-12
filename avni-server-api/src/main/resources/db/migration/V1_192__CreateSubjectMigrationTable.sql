@@ -8,8 +8,11 @@ create table subject_migration
     organisation_id      integer      NOT NULL,
     audit_id             integer      not null references audit (id),
     is_voided            boolean      NOT NULL DEFAULT FALSE,
-    version              integer
+    version              integer not null
 );
+
+alter table subject_migration add unique (uuid, organisation_id);
+alter table subject_migration add unique (individual_id, old_address_level_id, new_address_level_id);
 
 select enable_rls_on_tx_table('subject_migration');
 

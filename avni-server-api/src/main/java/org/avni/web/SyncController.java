@@ -80,6 +80,7 @@ public class SyncController {
     private final UserGroupService userGroupService;
     private final LocationHierarchyService locationHierarchyService;
     private final ExtensionService extensionService;
+    private final SubjectMigrationService subjectMigrationService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -106,7 +107,8 @@ public class SyncController {
                           ApprovalStatusService approvalStatusService, GroupDashboardService groupDashboardService,
                           EntityApprovalStatusService entityApprovalStatusService, NewsService newsService,
                           UserService userService, PrivilegeService privilegeService,
-                          StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService, LocationHierarchyService locationHierarchyService, ExtensionService extensionService) {
+                          StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService, LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
+                          SubjectMigrationService subjectMigrationService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -160,6 +162,7 @@ public class SyncController {
         this.userGroupService = userGroupService;
         this.locationHierarchyService = locationHierarchyService;
         this.extensionService = extensionService;
+        this.subjectMigrationService = subjectMigrationService;
     }
 
     @PostConstruct
@@ -181,6 +184,7 @@ public class SyncController {
         scopeAwareServiceMap.put("CommentThread", commentThreadService);
         scopeAwareServiceMap.put("AddressLevel", addressLevelService);
         scopeAwareServiceMap.put("LocationMapping", locationMappingService);
+        scopeAwareServiceMap.put("SubjectMigration", subjectMigrationService);
     }
 
     private void populateEntityNameToTableMap() {
