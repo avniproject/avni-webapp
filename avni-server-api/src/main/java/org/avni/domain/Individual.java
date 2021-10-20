@@ -259,4 +259,10 @@ public class Individual extends OrganisationAwareEntity {
             throw new ValidationException("Registration date cannot be null");
         }
     }
+
+    public Set<ProgramEncounter> getProgramEncounters() {
+        HashSet<ProgramEncounter> programEncounters = new HashSet<>();
+        this.programEnrolments.forEach(programEnrolment -> programEncounters.addAll(programEnrolment.getProgramEncounters()));
+        return programEncounters;
+    }
 }

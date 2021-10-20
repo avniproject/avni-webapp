@@ -1,11 +1,15 @@
 package org.avni.dao;
 
+import org.avni.domain.Individual;
 import org.joda.time.DateTime;
 import org.avni.domain.ChecklistItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Set;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "txNewChecklistItemEntity", path = "txNewChecklistItemEntity", exported = false)
@@ -27,6 +31,8 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
             long catchmentId, Long checklistDetailId, DateTime lastModifiedDateTime);
 
     ChecklistItem findByChecklistUuidAndChecklistItemDetailUuid(String checklistUUID, String checklistItemDetailUUID);
+
+    Set<ChecklistItem> findByChecklistProgramEnrolmentIndividual(Individual individual);
 
     @Override
     default Page<ChecklistItem> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {

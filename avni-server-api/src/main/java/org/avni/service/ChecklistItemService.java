@@ -1,14 +1,16 @@
 package org.avni.service;
 
+import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.avni.dao.ChecklistDetailRepository;
 import org.avni.dao.ChecklistItemRepository;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
-import org.avni.domain.ChecklistDetail;
-import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class ChecklistItemService implements ScopeAwareService {
@@ -31,5 +33,9 @@ public class ChecklistItemService implements ScopeAwareService {
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return checklistItemRepository;
+    }
+
+    public Set<ChecklistItem> findChecklistItemsByIndividual(Individual individual) {
+        return checklistItemRepository.findByChecklistProgramEnrolmentIndividual(individual);
     }
 }

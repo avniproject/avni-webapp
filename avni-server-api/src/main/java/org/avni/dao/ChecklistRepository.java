@@ -1,11 +1,15 @@
 package org.avni.dao;
 
+import org.avni.domain.Individual;
+import org.avni.domain.ProgramEnrolment;
 import org.joda.time.DateTime;
 import org.avni.domain.Checklist;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
+
+import java.util.Set;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "txNewChecklistEntity", path = "txNewChecklistEntity", exported = false)
@@ -27,6 +31,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
             long facilityId, Long checklistDetailId, DateTime lastModifiedDateTime);
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
+
+    Set<Checklist> findByProgramEnrolmentIndividual(Individual individual);
 
     Checklist findByProgramEnrolmentUuidAndChecklistDetailName(String enrolmentUUID, String name);
 

@@ -1,5 +1,7 @@
 package org.avni.web;
 
+import org.avni.web.response.Response;
+import org.avni.web.response.SyncSubjectResponse;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.*;
@@ -47,6 +49,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualSearchService individualSearchService;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
+    private SubjectSyncResponseBuilderService subjectSyncResponseBuilderService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -60,7 +63,9 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 EncounterService encounterService,
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
-                                ProgramEnrolmentConstructionService programEnrolmentConstructionService) {
+                                ProgramEnrolmentConstructionService programEnrolmentConstructionService,
+                                SubjectSyncResponseBuilderService subjectSyncResponseBuilderService
+    ) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -73,6 +78,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.individualSearchService = individualSearchService;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
+        this.subjectSyncResponseBuilderService = subjectSyncResponseBuilderService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -223,6 +229,13 @@ public class IndividualController extends AbstractController<Individual> impleme
         SubjectType subjectType = subjectTypeRepository.findByName(subjectTypeName);
         List<Individual> individuals = individualRepository.findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(addressLevel, subjectType);
         return individuals.stream().map(programEnrolmentConstructionService::getSubjectInfo).collect(Collectors.toList());
+    }
+
+    @GetMapping("/subject/{uuid}/allEntities")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public Resource<SyncSubjectResponse> getSubjectDetailsForSync(@PathVariable String uuid) {
+        return new Resource<>(subjectSyncResponseBuilderService.getSubject(uuid)) ;
     }
 
     @Override

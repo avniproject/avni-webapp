@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class ChecklistService implements ScopeAwareService {
@@ -26,12 +28,8 @@ public class ChecklistService implements ScopeAwareService {
         this.checklistDetailRepository = checklistDetailRepository;
     }
 
-    public Checklist findChecklist(String programEnrolmentUUID) {
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
-        if (programEnrolment == null)
-            return null;
-
-        return checklistRepository.findByProgramEnrolmentId(programEnrolment.getId());
+    public Set<Checklist> findChecklistsByIndividual(Individual individual) {
+        return checklistRepository.findByProgramEnrolmentIndividual(individual);
     }
 
     @Transactional(Transactional.TxType.REQUIRED)

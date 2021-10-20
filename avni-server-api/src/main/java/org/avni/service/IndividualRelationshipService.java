@@ -1,5 +1,7 @@
 package org.avni.service;
 
+import org.avni.domain.Individual;
+import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.joda.time.DateTime;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SubjectTypeRepository;
@@ -9,6 +11,8 @@ import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class IndividualRelationshipService implements ScopeAwareService {
@@ -32,5 +36,9 @@ public class IndividualRelationshipService implements ScopeAwareService {
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return individualRelationshipRepository;
+    }
+
+    public Set<IndividualRelationship> findByIndividual(Individual individual) {
+        return individualRelationshipRepository.findByIndividual(individual);
     }
 }

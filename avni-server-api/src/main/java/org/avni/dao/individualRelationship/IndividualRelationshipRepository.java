@@ -1,5 +1,6 @@
 package org.avni.dao.individualRelationship;
 
+import org.aspectj.asm.IRelationship;
 import org.joda.time.DateTime;
 import org.avni.dao.FindByLastModifiedDateTime;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
@@ -8,10 +9,12 @@ import org.avni.domain.Individual;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individualRelationship", path = "individualRelationship", exported = false)
@@ -33,6 +36,9 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
 
     boolean existsByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId, Long subjectTypeId, DateTime lastModifiedDateTime);
+
+    @Query(value = "select ir from IndividualRelationship ir where ir.individuala = :individual or ir.individualB = :individual")
+    Set<IndividualRelationship> findByIndividual(Individual individual);
 
     @Override
     default Page<IndividualRelationship> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
