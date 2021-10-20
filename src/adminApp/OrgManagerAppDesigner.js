@@ -26,6 +26,8 @@ import ReportingViews from "../formDesigner/components/ReportingViews/ReportingV
 import ReportCardList from "../formDesigner/components/ReportCard/ReportCardList";
 import DashboardList from "../formDesigner/components/Dashboard/DashboardList";
 import Extensions from "../formDesigner/components/Extensions/Extensions";
+import RuleFailureTelemetryList from "../formDesigner/components/RuleFailureTelemetry/RuleFailureTelemetryList";
+
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -101,6 +103,11 @@ class OrgManagerAppDesigner extends Component {
             list={DashboardList}
           />
           <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
+          <Resource
+            name="ruleFailures"
+            options={{ label: "Rule Failures" }}
+            list={RuleFailureTelemetryList}
+          />
         </Admin>
       </React.Fragment>
     );
