@@ -5,7 +5,6 @@ import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
 import http from "../../common/utils/httpClient";
 
 const SubjectTypeIcon = ({ subjectTypeName, size, style }) => {
-  if (isEmpty(subjectTypeName)) return null;
   const subjectType = useSelector(selectEnrolSubjectTypeFromName(subjectTypeName));
   const label = subjectType.name;
   const isIconSetup = !isEmpty(subjectType.iconFileS3Key);
