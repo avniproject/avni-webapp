@@ -1,7 +1,7 @@
 export const isDevEnv = process.env.REACT_APP_ENVIRONMENT === "development";
 export const cognitoInDev = isDevEnv && process.env.REACT_APP_COGNITO_IN_DEV === "true";
 export const isProdEnv = process.env.REACT_APP_ENVIRONMENT === "production";
-export const devEnvUserName = "admin@hiren";
+export const devEnvUserName = process.env.REACT_APP_DEV_ENV_USER;
 
 //Set by testing tools like Jest
 export const isTestEnv = process.env.NODE_ENV === "test";
