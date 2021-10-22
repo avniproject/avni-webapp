@@ -220,6 +220,7 @@ public class ProgramEncounterConstructionService {
             encounterContractWrapper.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
             encounterContractWrapper.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
             encounterContractWrapper.setVoided(encounter.isVoided());
+            encounterContractWrapper.setEncounterType(EncounterTypeContract.fromEncounterType(encounter.getEncounterType()));
             return encounterContractWrapper;
         }).collect(Collectors.toList());
     }
