@@ -7,6 +7,7 @@ import org.avni.domain.Status;
 import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.RuleFailureTelemetryRequest;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @RestController
 public class RuleFailureTelemetryController implements RestControllerResourceProcessor<RuleFailureTelemetry> {
@@ -29,33 +31,12 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
         this.ruleFailureTelemetryRepository = ruleFailureTelemetryRepository;
     }
 
+    // -------------------Sync APIS Start ----------------------------------------
     @RequestMapping(value = "ruleFailureTelemetry", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<RuleFailureTelemetry>> getEmpty(Pageable pageable) {
         return empty(pageable);
     }
-
-    @RequestMapping(value = "/web/ruleFailureTelemetry", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public Page<RuleFailureTelemetry> getByStatus(@RequestParam(value = "isClosed") Boolean isClosed,
-                                                  Pageable pageable) {
-        return ruleFailureTelemetryRepository.findByIsClosed(isClosed, pageable);
-    }
-
-    @RequestMapping(value = "/web/ruleFailureTelemetry/{id}", method = RequestMethod.PUT)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @Transactional
-    public ResponseEntity updateStatus(@PathVariable("id") Long id,
-                                       @RequestParam(value = "isClosed") Boolean isClosed) {
-        RuleFailureTelemetry ruleFailureTelemetry = ruleFailureTelemetryRepository.findOne(id);
-        if (ruleFailureTelemetry == null) {
-            return ResponseEntity.badRequest().body(String.format("No entry found with id %d", id));
-        }
-        ruleFailureTelemetry.setClosed(isClosed);
-        ruleFailureTelemetryRepository.save(ruleFailureTelemetry);
-        return new ResponseEntity<>(ruleFailureTelemetry, HttpStatus.CREATED);
-    }
-
 
     @RequestMapping(value = "/ruleFailureTelemetry", method = RequestMethod.POST)
     @Transactional
@@ -76,4 +57,32 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
         ruleFailureTelemetryRepository.save(ruleFailureTelemetry);
     }
 
+    // -------------------Sync APIS End ----------------------------------------
+
+
+    // -------------------Web APIS Start ----------------------------------------
+    @RequestMapping(value = "/web/ruleFailureTelemetry", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public Page<RuleFailureTelemetry> getByStatus(@RequestParam(value = "isClosed", required = false) Boolean isClosed,
+                                                  Pageable pageable) {
+        return isClosed != null
+                ? ruleFailureTelemetryRepository.findByIsClosed(isClosed, pageable)
+                : ruleFailureTelemetryRepository.findAll(pageable);
+    }
+
+    @RequestMapping(value = "/web/ruleFailureTelemetry", method = RequestMethod.PUT)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @Transactional
+    public ResponseEntity<List<RuleFailureTelemetry>> updateStatus(@RequestParam("ids") List<Long> ids,
+                                       @RequestParam(value = "isClosed") Boolean isClosed) {
+        List<RuleFailureTelemetry> ruleFailureTelemetries = ruleFailureTelemetryRepository.findAllById(ids);
+        ruleFailureTelemetries.forEach(ruleFailureTelemetry -> {
+            ruleFailureTelemetry.setClosed(isClosed);
+            ruleFailureTelemetry.setCloseDateTime(isClosed ? DateTime.now() : null);
+        });
+        ruleFailureTelemetryRepository.saveAll(ruleFailureTelemetries);
+        return new ResponseEntity<>(ruleFailureTelemetries, HttpStatus.CREATED);
+    }
+
+    // -------------------Web APIS End ----------------------------------------
 }
