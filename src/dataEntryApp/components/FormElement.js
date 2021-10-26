@@ -12,7 +12,7 @@ import SubjectFormElement from "./SubjectFormElement";
 import { Concept, KeyValue } from "avni-models";
 import MediaFormElement from "./MediaFormElement";
 import PhoneNumberFormElement from "./PhoneNumberFormElement";
-// import LocationFormElement from "./LocationFormElement";
+import LocationFormElement from "./LocationFormElement";
 
 const div = () => <div />;
 
@@ -34,8 +34,8 @@ const elements = {
   File: MediaFormElement,
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
-  Subject: SubjectFormElement
-  // Location: LocationFormElement
+  Subject: SubjectFormElement,
+  Location: LocationFormElement
 };
 
 export const FormElement = ({

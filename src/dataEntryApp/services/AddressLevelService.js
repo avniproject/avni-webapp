@@ -1,10 +1,12 @@
+import { isEmpty } from "lodash";
+
 class AddressLevelService {
   constructor() {
     this.addressLevels = [];
   }
 
   findByUUID(addressLevelUuid) {
-    if (addressLevelUuid !== null || addressLevelUuid !== undefined) {
+    if (!isEmpty(addressLevelUuid)) {
       return this.addressLevels.find(x => x.uuid === addressLevelUuid);
     }
   }

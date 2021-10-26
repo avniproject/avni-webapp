@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import { isEmpty } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
+import { addressLevelService } from "../services/AddressLevelService";
 
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => {
   const { t } = useTranslation();
@@ -42,7 +43,10 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     }
   }, [selectedLocation]);
 
-  const onLocationSelected = location => onSelect(location.value);
+  const onLocationSelected = location => {
+    onSelect(location.value);
+    addressLevelService.addAddressLevel(location.value);
+  };
 
   const getLocationsByType = async typeId => {
     if (locationMap.has(typeId)) {

@@ -1,6 +1,6 @@
 import { common, motherCalculations } from "avni-health-modules";
 import * as models from "avni-models";
-import { isEmpty } from "lodash";
+import { isEmpty, get, defaultTo } from "lodash";
 
 const prefix = "app/dataEntry/reducer/metadata/";
 
@@ -77,6 +77,9 @@ export const selectLegacyRulesBundleLoaded = state => state.dataEntry.metadata.r
 
 export const selectLegacyRules = state => state.dataEntry.metadata.rules;
 export const selectLegacyRulesLoaded = state => state.dataEntry.metadata.rulesLoaded;
+
+export const selectAllAddressLevelTypes = state =>
+  defaultTo(get(state, "dataEntry.metadata.operationalModules.allAddressLevels"), []);
 
 const initialState = {
   rules: []
