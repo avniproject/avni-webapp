@@ -11,11 +11,22 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 const tableRef = React.createRef();
 const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
+const STATUS = {
+  OPEN: 1,
+  CLOSED: 2,
+  ALL: 3
+};
+
 const columns = [
   {
     title: "Message",
     field: "errorMessage",
     render: rowData => rowData.errorMessage
+  },
+  {
+    title: "Status",
+    field: "isClosed",
+    render: rowData => (rowData.closed ? "Closed" : "Open")
   },
   {
     title: "Error Date",
@@ -25,7 +36,8 @@ const columns = [
   {
     title: "Closed Date",
     field: "closeDateTime",
-    render: rowData => moment(rowData.closeDateTime).format("YYYY-MM-DD HH:mm")
+    render: rowData =>
+      rowData.closeDateTime && moment(rowData.closeDateTime).format("YYYY-MM-DD HH:mm")
   },
   {
     title: "Individual UUID",
@@ -39,12 +51,10 @@ const columns = [
   }
 ];
 
-const actions = [
+const buildActions = () => [
   {
-    icon: "add",
-    tooltip: "Add User",
-    isFreeAction: true,
-    onClick: () => alert("You want to add a new row")
+    tooltip: "Status",
+    isFreeAction: true
   },
   {
     tooltip: "Close All Selected Errors",
@@ -75,21 +85,21 @@ const actions = [
 ];
 
 const RuleFailureTelemetryList = () => {
-  const [selectedBtn, setSelectedBtn] = React.useState("closed");
+  const [selectedStatus, setSelectedStatus] = React.useState(STATUS.OPEN);
 
   const onSelect = label => {
-    setSelectedBtn(label);
+    setSelectedStatus(label);
     refreshTable(tableRef);
   };
 
   let resourceUrl = "/ruleFailureTelemetry";
   let params = {};
-  if (selectedBtn === "closed") {
+  if (selectedStatus === STATUS.CLOSED) {
     params.isClosed = true;
-  } else if (selectedBtn === "open") {
+  } else if (selectedStatus === STATUS.OPEN) {
     params.isClosed = false;
-  } else if (selectedBtn === "all") {
-    //Do nothing as we don't want to send any param when we are selecting all opiton
+  } else if (selectedStatus === STATUS.ALL) {
+    //Do nothing as we don't need to send any param when we are selecting all filter
   }
   return (
     <>
@@ -102,36 +112,47 @@ const RuleFailureTelemetryList = () => {
               Container: props => <Fragment>{props.children}</Fragment>,
               Action: props =>
                 props.action.icon === "close" ? (
-                  <Button onClick={event => props.action.onClick(props.data)} color="primary">
+                  <Button
+                    onClick={event => props.action.onClick(event, props.data)}
+                    disabled={selectedStatus === STATUS.CLOSED}
+                    color="primary"
+                  >
                     Close Errors
                   </Button>
                 ) : props.action.icon === "open" ? (
-                  <Button onClick={event => props.action.onClick(props.data)} color="primary">
+                  <Button
+                    onClick={event => props.action.onClick(event, props.data)}
+                    color="primary"
+                    disabled={selectedStatus === STATUS.OPEN}
+                  >
                     Reopen Errors
                   </Button>
                 ) : (
                   <ButtonGroup color="primary">
                     <Button
                       style={{
-                        backgroundColor: selectedBtn === "closed" ? "rgba(0, 0, 0, 0.12)" : null
+                        backgroundColor:
+                          selectedStatus === STATUS.OPEN ? "rgba(0, 0, 0, 0.12)" : null
                       }}
-                      onClick={() => onSelect("closed")}
-                    >
-                      Closed
-                    </Button>
-                    <Button
-                      style={{
-                        backgroundColor: selectedBtn === "open" ? "rgba(0, 0, 0, 0.12)" : null
-                      }}
-                      onClick={() => onSelect("open")}
+                      onClick={() => onSelect(STATUS.OPEN)}
                     >
                       Open
                     </Button>
                     <Button
                       style={{
-                        backgroundColor: selectedBtn === "all" ? "rgba(0, 0, 0, 0.12)" : null
+                        backgroundColor:
+                          selectedStatus === STATUS.CLOSED ? "rgba(0, 0, 0, 0.12)" : null
                       }}
-                      onClick={() => onSelect("all")}
+                      onClick={() => onSelect(STATUS.CLOSED)}
+                    >
+                      Closed
+                    </Button>
+                    <Button
+                      style={{
+                        backgroundColor:
+                          selectedStatus === STATUS.ALL ? "rgba(0, 0, 0, 0.12)" : null
+                      }}
+                      onClick={() => onSelect(STATUS.ALL)}
                     >
                       All
                     </Button>
@@ -140,11 +161,18 @@ const RuleFailureTelemetryList = () => {
             }}
             tableRef={tableRef}
             columns={columns}
-            actions={actions}
+            actions={buildActions()}
             data={fetchData(resourceUrl, params)}
-            detailPanel={rowData => {
-              return <div>{rowData.stacktrace}</div>;
-            }}
+            detailPanel={[
+              {
+                icon: "expand_more",
+                openIcon: "expand_less",
+
+                render: rowData => {
+                  return <div>{rowData.stacktrace}</div>;
+                }
+              }
+            ]}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}
             options={{
               selection: true,
@@ -153,7 +181,7 @@ const RuleFailureTelemetryList = () => {
               debounceInterval: 500,
               search: false,
               rowStyle: rowData => ({
-                backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                backgroundColor: rowData["closed"] ? "#DBDBDB" : "#fff"
               })
             }}
           />
