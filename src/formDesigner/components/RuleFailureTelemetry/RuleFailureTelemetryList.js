@@ -84,6 +84,35 @@ const buildActions = () => [
   }
 ];
 
+const statusFilter = (selectedStatus, onSelect) => (
+  <ButtonGroup color="primary">
+    <Button
+      style={{
+        backgroundColor: selectedStatus === STATUS.OPEN ? "rgba(0, 0, 0, 0.12)" : null
+      }}
+      onClick={() => onSelect(STATUS.OPEN)}
+    >
+      Open
+    </Button>
+    <Button
+      style={{
+        backgroundColor: selectedStatus === STATUS.CLOSED ? "rgba(0, 0, 0, 0.12)" : null
+      }}
+      onClick={() => onSelect(STATUS.CLOSED)}
+    >
+      Closed
+    </Button>
+    <Button
+      style={{
+        backgroundColor: selectedStatus === STATUS.ALL ? "rgba(0, 0, 0, 0.12)" : null
+      }}
+      onClick={() => onSelect(STATUS.ALL)}
+    >
+      All
+    </Button>
+  </ButtonGroup>
+);
+
 const RuleFailureTelemetryList = () => {
   const [selectedStatus, setSelectedStatus] = React.useState(STATUS.OPEN);
 
@@ -128,35 +157,7 @@ const RuleFailureTelemetryList = () => {
                     Reopen Errors
                   </Button>
                 ) : (
-                  <ButtonGroup color="primary">
-                    <Button
-                      style={{
-                        backgroundColor:
-                          selectedStatus === STATUS.OPEN ? "rgba(0, 0, 0, 0.12)" : null
-                      }}
-                      onClick={() => onSelect(STATUS.OPEN)}
-                    >
-                      Open
-                    </Button>
-                    <Button
-                      style={{
-                        backgroundColor:
-                          selectedStatus === STATUS.CLOSED ? "rgba(0, 0, 0, 0.12)" : null
-                      }}
-                      onClick={() => onSelect(STATUS.CLOSED)}
-                    >
-                      Closed
-                    </Button>
-                    <Button
-                      style={{
-                        backgroundColor:
-                          selectedStatus === STATUS.ALL ? "rgba(0, 0, 0, 0.12)" : null
-                      }}
-                      onClick={() => onSelect(STATUS.ALL)}
-                    >
-                      All
-                    </Button>
-                  </ButtonGroup>
+                  statusFilter(selectedStatus, onSelect)
                 )
             }}
             tableRef={tableRef}
@@ -167,7 +168,7 @@ const RuleFailureTelemetryList = () => {
               {
                 icon: "expand_more",
                 openIcon: "expand_less",
-
+                tooltip: "Show Stacktrace",
                 render: rowData => {
                   return <div>{rowData.stacktrace}</div>;
                 }
