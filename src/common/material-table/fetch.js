@@ -3,13 +3,16 @@ import http from "../utils/httpClient";
 
 const baseUrl = "/web";
 
-const fetchData = resourceUrl => query =>
+const fetchData = (resourceUrl, params) => query =>
   new Promise(resolve => {
+    let searchParams = new URLSearchParams(params);
+
     let apiUrl = `${baseUrl}${resourceUrl}`;
-    apiUrl += "?size=" + query.pageSize;
-    apiUrl += "&page=" + query.page;
+    searchParams.append("size", query.pageSize);
+    searchParams.append("page", query.page);
     if (!_.isEmpty(query.orderBy) && !_.isEmpty(query.orderBy.field))
-      apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      searchParams.append("sort", `${query.orderBy.field},${query.orderDirection}`);
+    apiUrl += "?" + searchParams.toString();
     http
       .get(apiUrl)
       .then(response => response.data)
