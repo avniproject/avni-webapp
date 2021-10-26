@@ -74,7 +74,11 @@ public class OperationalModulesController {
                 .stream()
                 .map(FormMappingContract::fromFormMapping)
                 .collect(Collectors.toList());
-        List<AddressLevelTypeContract> addressLevelTypeContracts = addressLevelTypeRepository.getAllLowestAddressLevelTypes()
+        List<AddressLevelTypeContract> allLowestAddressLevels = addressLevelTypeRepository.getAllLowestAddressLevelTypes()
+                .stream()
+                .map(AddressLevelTypeContract::fromAddressLevelType)
+                .collect(Collectors.toList());
+        List<AddressLevelTypeContract> allAddressLevels = addressLevelTypeRepository.findAllByIsVoidedFalse()
                 .stream()
                 .map(AddressLevelTypeContract::fromAddressLevelType)
                 .collect(Collectors.toList());
@@ -93,9 +97,10 @@ public class OperationalModulesController {
                 .with("encounterTypes", encounterTypeRepository.findAllOperational())
                 .with("formMappings", formMappingContracts)
                 .with("forms", formsWeb)
-                .with("addressLevelTypes", addressLevelTypeContracts)
+                .with("addressLevelTypes", allLowestAddressLevels)
                 .with("customRegistrationLocations", customRegistrationLocationTypeContracts)
-                .with("relations", relations);
+                .with("relations", relations)
+                .with("allAddressLevels", allAddressLevels);
     }
 
     private CustomRegistrationLocationTypeContract getCustomRegistrationLocationTypeContract(SubjectTypeSetting lt) {

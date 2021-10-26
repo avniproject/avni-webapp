@@ -142,6 +142,17 @@ public class LocationController implements OperatingIndividualScopeAwareControll
                 .collect(Collectors.toList());
     }
 
+    @GetMapping(value = "/locations/web")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity getLocationByParam(@RequestParam("uuid") String uuid) {
+        AddressLevel addressLevel = locationRepository.findByUuid(uuid);
+        if(addressLevel == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<>(AddressLevelContractWeb.fromEntity(addressLevel), HttpStatus.OK);
+    }
+
     @Override
     public OperatingIndividualScopeAwareRepository<AddressLevel> repository() {
         return locationRepository;
