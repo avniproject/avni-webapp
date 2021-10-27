@@ -139,7 +139,10 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @JsonIgnore
     public List<GroupRoleContract> getGroupRolesContract() {
-        return groupRoles.stream().map(GroupRoleContract::fromEntity).collect(Collectors.toList());
+        return groupRoles.stream()
+                .filter(r -> !r.isVoided())
+                .map(GroupRoleContract::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @JsonIgnore
