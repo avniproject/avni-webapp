@@ -52,6 +52,7 @@ public class SubjectSearchQueryBuilder {
         StringBuffer query = new StringBuffer();
         query.append(baseQuery);
         query.append(String.join(" \n ", joinClauses));
+        whereClauses.add("st.is_voided is false");
         if (!whereClauses.isEmpty()) {
             query.append("\n where \n");
         }
