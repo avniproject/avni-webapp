@@ -72,7 +72,7 @@ public class IndividualService implements ScopeAwareService {
         List<ObservationContract> observationContractsList = observationService.constructObservations(individual.getObservations());
         List<RelationshipContract> relationshipContractList = constructRelationships(individual);
         List<EnrolmentContract> enrolmentContractList = constructEnrolments(individual);
-        List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByMemberSubjectAndIsVoidedFalse(individual);
+        List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByMemberSubjectAndGroupRoleIsVoidedFalseAndIsVoidedFalse(individual);
         List<GroupRole> groupRoles = groupRoleRepository.findByGroupSubjectType_IdAndIsVoidedFalse(individual.getSubjectType().getId());
         individualContract.setId(individual.getId());
         individualContract.setSubjectType(constructSubjectType(individual.getSubjectType()));
