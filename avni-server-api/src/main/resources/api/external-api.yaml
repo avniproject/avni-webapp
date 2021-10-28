@@ -40,11 +40,12 @@ paths:
           schema:
             type: string
         - in: query
-            name: locationIds
-            description: comma seperated location Ids
-            required: false
-            schema:
-                type: uuid
+          name: locationIds
+          description: comma seperated location Ids
+          required: false
+          schema:
+            type: string
+            format: uuid
         - in: header
           name: auth-token
           schema:
@@ -298,7 +299,8 @@ paths:
           description: ID of program enrolment
           required: false
           schema:
-            type: uuid
+            type: string
+            format: uuid
         - in: header
           name: auth-token
           schema:
@@ -421,11 +423,12 @@ paths:
           schema:
             type: string
         - in: query
-            name: subjectId
-            description: ID of the subject
-            required: false
-            schema:
-              type: uuid
+          name: subjectId
+          description: ID of the subject
+          required: false
+          schema:
+            type: string
+            format: uuid
         - in: query
           name: concepts
           description: Allows to search by concepts. Remember that '{' and '}' are not valid in a url, and need to be escaped with %7B and %7D respectively.
@@ -549,17 +552,19 @@ paths:
           schema:
             type: string
         - in: query
-            name: groupSubjectId
-            description: ID of the group subject
-            required: false
-            schema:
-              type: uuid
+          name: groupSubjectId
+          description: ID of the group subject
+          required: false
+          schema:
+            type: string
+            format: uuid
         - in: query
-            name: memberSubjectId
-            description: ID of the member subject
-            required: false
-            schema:
-              type: uuid
+          name: memberSubjectId
+          description: ID of the member subject
+          required: false
+          schema:
+            type: string
+            format: uuid
         - in: header
           name: auth-token
           schema:
@@ -965,7 +970,12 @@ components:
           type: integer
           example: 100
           description: Number of entities in each page
-# Added by API Auto Mocking Plugin
 servers:
+  # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/samanvay/avni-external/1.0.0
+  # staging and production server
+  - description: Avni production server
+    url: https://app.avniproject.org/
+  - description: Avni staging server
+    url: https://staging.avniproject.org/
