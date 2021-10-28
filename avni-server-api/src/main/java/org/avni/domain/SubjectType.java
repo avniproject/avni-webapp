@@ -200,6 +200,10 @@ public class SubjectType extends OrganisationAwareEntity {
         this.iconFileS3Key = iconFileS3Key;
     }
 
+    public boolean isPerson() {
+        return type.equals(Subject.Person);
+    }
+
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})
     public interface SubjectTypeProjection extends BaseProjection {
         String getName();

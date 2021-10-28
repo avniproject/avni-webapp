@@ -93,6 +93,59 @@ paths:
                 $ref: '#/components/schemas/Subject'
         '400':
           description: bad input parameter
+    put:
+      tags:
+        - Subject
+      summary: Updates an existing subject
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+  /api/subject:
+    post:
+      tags:
+        - Subject
+      summary: Creates a new subject
+      parameters:
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
   /api/programEnrolments:
     get:
       tags:
@@ -574,6 +627,39 @@ components:
             format: uuid
         audit:
           $ref: '#/components/schemas/Audit'
+    SubjectBody:
+      type: object
+      properties:
+        Subject type:
+          type: string
+          example: Individual
+        Address:
+          type: string
+          example: India, Uttarakhand, Dehradun
+          description: Complete address of the subject
+        Date of birth:
+          type: string
+          format: date
+          description: Applicable only for Person type subject
+        Gender:
+          type: string
+          example: Male
+          description: Applicable only for Person type subject
+        Registration date:
+          type: string
+          format: date
+          description: Registration date
+        First name:
+          type: string
+        Last name:
+          type: string
+        Registration location:
+          $ref: '#/components/schemas/GeoLocation'
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Voided:
+          type: boolean
     SubjectRelationship:
       type: object
       properties:

@@ -2,15 +2,17 @@ package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.avni.domain.individualRelationship.IndividualRelationship;
+import org.avni.geo.Point;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
-import org.avni.domain.individualRelationship.IndividualRelationship;
-import org.avni.geo.Point;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -244,5 +246,17 @@ public class Individual extends OrganisationAwareEntity {
     @JsonIgnore
     public Stream<Encounter> scheduledEncountersOfType(String encounterTypeName) {
         return this.scheduledEncounters().filter(scheduledEncounter -> scheduledEncounter.getEncounterType().getName().equals(encounterTypeName));
+    }
+
+    public void validate() throws ValidationException {
+        if (firstName == null) {
+            throw new ValidationException("First name cannot be null");
+        } else if (subjectType.isPerson()) {
+            if (gender == null) {
+                throw new ValidationException("Gender cannot be null for Person subject type");
+            }
+        } else if (registrationDate == null) {
+            throw new ValidationException("Registration date cannot be null");
+        }
     }
 }
