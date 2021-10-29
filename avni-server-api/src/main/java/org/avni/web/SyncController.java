@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @RestController
@@ -81,6 +80,7 @@ public class SyncController {
     private final LocationHierarchyService locationHierarchyService;
     private final ExtensionService extensionService;
     private final SubjectMigrationService subjectMigrationService;
+    private SyncDetailsService syncDetailService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -108,7 +108,7 @@ public class SyncController {
                           EntityApprovalStatusService entityApprovalStatusService, NewsService newsService,
                           UserService userService, PrivilegeService privilegeService,
                           StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService, LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
-                          SubjectMigrationService subjectMigrationService) {
+                          SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -163,6 +163,7 @@ public class SyncController {
         this.locationHierarchyService = locationHierarchyService;
         this.extensionService = extensionService;
         this.subjectMigrationService = subjectMigrationService;
+        this.syncDetailService = syncDetailService;
     }
 
     @PostConstruct
@@ -174,8 +175,8 @@ public class SyncController {
     private void populateScopeAwareRepositoryMap() {
         scopeAwareServiceMap.put("Individual", individualService);
         scopeAwareServiceMap.put("Encounter", encounterService);
-        scopeAwareServiceMap.put("ProgramEnrolment", programEncounterService);
-        scopeAwareServiceMap.put("ProgramEncounter", programEnrolmentService);
+        scopeAwareServiceMap.put("ProgramEnrolment", programEnrolmentService);
+        scopeAwareServiceMap.put("ProgramEncounter", programEncounterService);
         scopeAwareServiceMap.put("Checklist", checklistService);
         scopeAwareServiceMap.put("ChecklistItem", checklistItemService);
         scopeAwareServiceMap.put("IndividualRelationship", individualRelationshipService);
@@ -239,9 +240,17 @@ public class SyncController {
                                             @RequestParam(value = "isStockApp", required = false) boolean isStockApp) {
         DateTime now = new DateTime();
         DateTime nowMinus10Seconds = getNowMinus10Seconds();
+        Set<SyncableItem> allSyncableItems = syncDetailService.getAllSyncableItems();
+        allSyncableItems.forEach(syncableItem -> {
+            if (entitySyncStatusContracts.stream().noneMatch(entitySyncStatusContract ->
+                    entitySyncStatusContract.matchesEntity(syncableItem))) {
+                entitySyncStatusContracts.add(EntitySyncStatusContract.create(syncableItem.getName(), syncableItem.getEntityTypeUuid()));
+            }
+        });
         List<EntitySyncStatusContract> changedEntities = entitySyncStatusContracts.stream()
                 .filter(this::filterChangedEntities)
                 .collect(Collectors.toList());
+<<<<<<< HEAD
         if (isPrivilegeChanged(changedEntities) || isStockApp) {
             List<String> alreadyPresentTypes = entitySyncStatusContracts.stream()
                     .filter(e -> e.getEntityTypeUuid() != null)
@@ -249,6 +258,16 @@ public class SyncController {
                     .collect(Collectors.toList());
             updateBasedOnNewPrivileges(changedEntities, alreadyPresentTypes);
         }
+||||||| merged common ancestors
+        if (isPrivilegeChanged(changedEntities)) {
+            List<String> alreadyPresentTypes = entitySyncStatusContracts.stream()
+                    .filter(e -> e.getEntityTypeUuid() != null)
+                    .map(EntitySyncStatusContract::getEntityTypeUuid)
+                    .collect(Collectors.toList());
+            updateBasedOnNewPrivileges(changedEntities, alreadyPresentTypes);
+        }
+=======
+>>>>>>> Change syncDetails API to look at all items so that we do not miss items with new permissions.
         return ResponseEntity.ok().body(new JsonObject()
                 .with("syncDetails", changedEntities)
                 .with("now", now)
@@ -256,64 +275,21 @@ public class SyncController {
         );
     }
 
-    private void removeRevokedPrivileges(List<EntitySyncStatusContract> changedEntities) {
-        List<String> revokedTypeUUIDs = groupPrivilegeService.getRevokedPrivilegesForUser()
-                .stream()
-                .map(GroupPrivilege::getTypeUUID)
-                .collect(Collectors.toList());
-        Predicate<EntitySyncStatusContract> isRevoked = contract -> revokedTypeUUIDs.contains(contract.getEntityTypeUuid());
-        changedEntities.removeIf(isRevoked);
-    }
-
-    private void updateBasedOnNewPrivileges(List<EntitySyncStatusContract> changedEntities, List<String> alreadyPresentTypes) {
-        boolean isCommentEnabled = organisationConfigService.isCommentEnabled();
-        if (userGroupService.hasAllPrivilegesToUser()) {
-            Predicate<CHSBaseEntity> removePresentTypes = s -> !alreadyPresentTypes.contains(s.getUuid());
-            addMissingTypesToSyncStatus(changedEntities, removePresentTypes, isCommentEnabled);
-        } else {
-            groupPrivilegeService.getAllowedPrivilegesForUser()
-                    .stream()
-                    .filter(p -> !alreadyPresentTypes.contains(p.getTypeUUID()))
-                    .forEach(p -> changedEntities.addAll(EntitySyncStatusContract.addFromPrivilege(p, isCommentEnabled)));
-            removeRevokedPrivileges(changedEntities);
-        }
-    }
-
-    private void addMissingTypesToSyncStatus(List<EntitySyncStatusContract> changedEntities, Predicate<CHSBaseEntity> removePresentTypes, boolean isCommentEnabled) {
-        subjectTypeService.getAll()
-                .filter(removePresentTypes)
-                .forEach(subjectType -> changedEntities.addAll(EntitySyncStatusContract.addForSubjectType(subjectType, isCommentEnabled)));
-        programService.getAll()
-                .filter(removePresentTypes)
-                .forEach(program -> changedEntities.addAll(EntitySyncStatusContract.addForTypeUUID(program.getUuid(), "Program")));
-        encounterTypeService.getAllGeneralEncounter()
-                .filter(removePresentTypes)
-                .forEach(encounterType -> changedEntities.addAll(EntitySyncStatusContract.addForTypeUUID(encounterType.getUuid(), "Encounter")));
-        encounterTypeService.getAllProgramEncounter()
-                .filter(removePresentTypes)
-                .forEach(encounterType -> changedEntities.addAll(EntitySyncStatusContract.addForTypeUUID(encounterType.getUuid(), "ProgramEncounter")));
-        checklistDetailService.getAll().stream()
-                .filter(removePresentTypes)
-                .forEach(checklistDetail -> changedEntities.addAll(EntitySyncStatusContract.addForTypeUUID(checklistDetail.getUuid(), "ChecklistDetail")));
-    }
-
-    private boolean isPrivilegeChanged(List<EntitySyncStatusContract> changedEntities) {
-        List<String> privilegeEntityNames = Arrays.asList("Groups", "MyGroups", "GroupPrivileges");
-        return changedEntities.stream().anyMatch(e -> privilegeEntityNames.contains(e.getEntityName()));
-    }
-
     private boolean filterChangedEntities(EntitySyncStatusContract entitySyncStatusContract) {
         String entityName = entitySyncStatusContract.getEntityName();
         DateTime loadedSince = entitySyncStatusContract.getLoadedSince();
         ScopeAwareService scopeAwareService = this.scopeAwareServiceMap.get(entityName);
         NonScopeAwareService nonScopeAwareService = this.nonScopeAwareServiceMap.get(entityName);
+
         if (nonScopeAwareService != null) {
             return nonScopeAwareService.isNonScopeEntityChanged(loadedSince);
-        } else if (scopeAwareService != null) {
-            return scopeAwareService.isScopeEntityChanged(loadedSince, entitySyncStatusContract.getEntityTypeUuid());
-        } else {
-            return false;
         }
+
+        if (scopeAwareService != null) {
+            return scopeAwareService.isScopeEntityChanged(loadedSince, entitySyncStatusContract.getEntityTypeUuid());
+        }
+
+        return false;
     }
 
     /**

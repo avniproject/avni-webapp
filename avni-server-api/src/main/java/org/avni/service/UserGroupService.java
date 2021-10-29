@@ -22,10 +22,5 @@ public class UserGroupService implements NonScopeAwareService {
         User user = UserContextHolder.getUserContext().getUser();
         return userGroupRepository.existsByUserIdAndAuditLastModifiedDateTimeGreaterThan(user.getId(), lastModifiedDateTime);
     }
-
-    public boolean hasAllPrivilegesToUser() {
-        User user = UserContextHolder.getUserContext().getUser();
-        return userGroupRepository.findByUserAndGroupHasAllPrivilegesTrueAndIsVoidedFalse(user).size() > 0;
-    }
 }
 

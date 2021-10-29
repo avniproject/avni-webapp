@@ -24,9 +24,11 @@ public class SubjectMigrationController extends AbstractController<SubjectMigrat
     private SubjectMigrationRepository subjectMigrationRepository;
     private SubjectTypeRepository subjectTypeRepository;
     private UserService userService;
+    private final Logger logger;
 
     @Autowired
     public SubjectMigrationController(SubjectMigrationRepository subjectMigrationRepository, SubjectTypeRepository subjectTypeRepository, UserService userService) {
+        logger = LoggerFactory.getLogger(this.getClass());
         this.subjectMigrationRepository = subjectMigrationRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.userService = userService;
@@ -37,7 +39,7 @@ public class SubjectMigrationController extends AbstractController<SubjectMigrat
         return subjectMigrationRepository;
     }
 
-    @RequestMapping(value = "/subjectMigration/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
+    @RequestMapping(value = "/subjectMigrations", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<SubjectMigration>> getEncountersByCatchmentAndLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,

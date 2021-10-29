@@ -147,7 +147,7 @@ public class GroupPrivilege extends OrganisationAwareEntity {
     }
 
     public boolean isEncounterPrivilege() {
-        return subjectType != null && encounterType !=null;
+        return subjectType != null && encounterType != null;
     }
 
     public boolean isProgramPrivilege() {
@@ -160,6 +160,20 @@ public class GroupPrivilege extends OrganisationAwareEntity {
 
     public boolean isChecklistPrivilege() {
         return subjectType != null && checklistDetail != null;
+    }
+
+    public boolean matches(String privilegeName, SubjectType subjectType, Program program, EncounterType encounterType, ChecklistDetail checklistDetail) {
+        return this.getPrivilege().getName().equals(privilegeName)
+                && itemsMatch(subjectType, this.getSubjectType()) && itemsMatch(program, this.getProgram())
+                && itemsMatch(encounterType, this.getEncounterType())
+                && itemsMatch(checklistDetail, this.getChecklistDetail());
+    }
+
+    private boolean itemsMatch(CHSBaseEntity o1, CHSBaseEntity o2) {
+        if (o1 == null && o2 == null) return true;
+        if (o1 == null && o2 != null) return false;
+        if (o2 == null) return false;
+        return o1.getId() == o2.getId();
     }
 
     public String getTypeUUID() {

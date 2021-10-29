@@ -17,14 +17,12 @@ import java.util.Set;
 public class ChecklistService implements ScopeAwareService {
     private ChecklistRepository checklistRepository;
     private ChecklistItemRepository checklistItemRepository;
-    private ProgramEnrolmentRepository programEnrolmentRepository;
     private final ChecklistDetailRepository checklistDetailRepository;
 
     @Autowired
     public ChecklistService(ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository, ProgramEnrolmentRepository programEnrolmentRepository, ChecklistDetailRepository checklistDetailRepository) {
         this.checklistRepository = checklistRepository;
         this.checklistItemRepository = checklistItemRepository;
-        this.programEnrolmentRepository = programEnrolmentRepository;
         this.checklistDetailRepository = checklistDetailRepository;
     }
 

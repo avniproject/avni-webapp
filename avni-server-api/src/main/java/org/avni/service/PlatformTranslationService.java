@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.avni.application.Platform;
 import org.joda.time.DateTime;
 import org.avni.dao.PlatformTranslationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class PlatformTranslationService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return platformTranslationRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return platformTranslationRepository.existsByPlatformAndAuditLastModifiedDateTimeGreaterThan(Platform.Android, lastModifiedDateTime);
     }
 }
 

@@ -61,6 +61,10 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     default List<FormMapping> getAllProgramEnrolmentFormMapping(SubjectType subjectType) {
         return findAllBySubjectTypeAndProgramNotNullAndEncounterTypeNullAndFormFormTypeAndIsVoidedFalse(subjectType, FormType.ProgramEnrolment);
     }
+    List<FormMapping> findByFormFormTypeAndIsVoidedFalse(FormType formType);
+    default List<FormMapping> getAllProgramEnrolmentFormMappings() {
+        return findByFormFormTypeAndIsVoidedFalse(FormType.ProgramEnrolment);
+    }
 
     //    Program Encounter
     FormMapping findBySubjectTypeAndProgramAndEncounterTypeAndIsVoidedFalseAndFormFormType(SubjectType subjectType, Program program, EncounterType encounterType, FormType formType);
@@ -75,6 +79,12 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
         return findAllBySubjectTypeAndProgramAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(subjectType, program, FormType.ProgramEncounter);
     }
 
+    default List<FormMapping> getAllProgramEncounterFormMappings() {
+        return findByEncounterTypeNotNullAndProgramNotNullAndIsVoidedFalseAndFormFormType(FormType.ProgramEncounter);
+    }
+
+    List<FormMapping> findByEncounterTypeNotNullAndProgramNotNullAndIsVoidedFalseAndFormFormType(FormType programEncounter);
+
     //    General Encounter
     FormMapping findBySubjectTypeAndProgramNullAndEncounterTypeAndIsVoidedFalseAndFormFormType(SubjectType subjectType, EncounterType encounterType, FormType formType);
     default FormMapping getGeneralEncounterFormMapping(SubjectType subjectType, EncounterType encounterType) {
@@ -87,6 +97,13 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     default List<FormMapping> getAllGeneralEncounterFormMappings(SubjectType subjectType) {
         return findAllBySubjectTypeAndProgramNullAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(subjectType, FormType.Encounter);
     }
+
+    default List<FormMapping> getAllGeneralEncounterFormMappings() {
+        return findAllByProgramNullAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(FormType.Encounter);
+    }
+
+    List<FormMapping> findAllByProgramNullAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(FormType formType);
+
 
     //left join to fetch eagerly in first select
     @Query("select fm from FormMapping fm " +

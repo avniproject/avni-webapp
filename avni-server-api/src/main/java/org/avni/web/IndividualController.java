@@ -1,6 +1,5 @@
 package org.avni.web;
 
-import org.avni.web.response.Response;
 import org.avni.web.response.SyncSubjectResponse;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
@@ -50,6 +49,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private SubjectSyncResponseBuilderService subjectSyncResponseBuilderService;
+    private SubjectMigrationRepository subjectMigrationRepository;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -64,8 +64,8 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                                SubjectSyncResponseBuilderService subjectSyncResponseBuilderService
-    ) {
+                                SubjectSyncResponseBuilderService subjectSyncResponseBuilderService,
+                                SubjectMigrationRepository subjectMigrationRepository) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -79,6 +79,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
         this.subjectSyncResponseBuilderService = subjectSyncResponseBuilderService;
+        this.subjectMigrationRepository = subjectMigrationRepository;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -87,13 +88,33 @@ public class IndividualController extends AbstractController<Individual> impleme
     public void save(@RequestBody IndividualRequest individualRequest) {
         logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
 
+        this.markSubjectMigrationIfRequired(individualRequest);
+
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
+
         individualRepository.save(individual);
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
+    }
+
+    private void markSubjectMigrationIfRequired(IndividualRequest individualRequest) {
+        Individual individual = individualRepository.findByUuid(individualRequest.getUuid());
+        if (individual == null) {
+            return;
+        }
+
+        AddressLevel newAddressLevel = getAddressLevel(individualRequest);
+        if (!individual.getAddressLevel().equals(newAddressLevel)) {
+            SubjectMigration subjectMigration = new SubjectMigration();
+            subjectMigration.assignUUID();
+            subjectMigration.setIndividual(individual);
+            subjectMigration.setOldAddressLevel(individual.getAddressLevel());
+            subjectMigration.setNewAddressLevel(newAddressLevel);
+            subjectMigrationRepository.save(subjectMigration);
+        }
     }
 
     private void addObservationsFromDecisions(Individual individual, Decisions decisions) {

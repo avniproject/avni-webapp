@@ -1,5 +1,7 @@
 package org.avni.web.request;
 
+import org.avni.domain.SyncableItem;
+import org.hibernate.boot.model.source.internal.hbm.EmbeddableSourceContainer;
 import org.joda.time.DateTime;
 import org.avni.application.Subject;
 import org.avni.domain.GroupPrivilege;
@@ -35,6 +37,15 @@ public class EntitySyncStatusContract {
         }
     }
 
+    public static EntitySyncStatusContract create(String entityName, String entityTypeUuid) {
+        EntitySyncStatusContract contract = new EntitySyncStatusContract();
+        contract.setUuid(UUID.randomUUID().toString());
+        contract.setLoadedSince(REALLY_OLD_DATE);
+        contract.setEntityName(entityName);
+        contract.setEntityTypeUuid(entityTypeUuid);
+        return contract;
+    }
+
     public static List<EntitySyncStatusContract> addForTypeUUID(String typeUUID, String privilegeType) {
         List<String> entityTypes = privilegeTypeToEntityNameMap.get(privilegeType);
         return entityTypes.stream().map(entityName -> {
@@ -60,6 +71,7 @@ public class EntitySyncStatusContract {
             entityTypes.add("Comment");
             entityTypes.add("CommentThread");
         }
+        entityTypes.add("SubjectMigration");
         return entityTypes.stream().map(entityName -> {
             EntitySyncStatusContract entitySyncStatusContract = new EntitySyncStatusContract();
             entitySyncStatusContract.setEntityName(entityName);
@@ -100,5 +112,9 @@ public class EntitySyncStatusContract {
 
     public void setEntityTypeUuid(String entityTypeUuid) {
         this.entityTypeUuid = entityTypeUuid;
+    }
+
+    public boolean matchesEntity(SyncableItem syncableItem) {
+        return syncableItem.getName().equals(this.entityName) && syncableItem.getEntityTypeUuid().equals(this.entityTypeUuid);
     }
 }

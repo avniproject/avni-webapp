@@ -34,4 +34,5 @@ public interface PrivilegeRepository extends PagingAndSortingRepository<Privileg
 
     boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 
+    Privilege findByName(String name);
 }

@@ -30,8 +30,9 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         add("Edit member");
         add("Remove member");
     }};
+    private UserGroupRepository userGroupRepository;
 
-    public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository, GroupPrivilegeRepository groupPrivilegeRepository) {
+    public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository, GroupPrivilegeRepository groupPrivilegeRepository, UserGroupRepository userGroupRepository) {
         this.groupRepository = groupRepository;
         this.privilegeRepository = privilegeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
@@ -40,6 +41,7 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         this.checklistDetailRepository = checklistDetailRepository;
         this.formMappingRepository = formMappingRepository;
         this.groupPrivilegeRepository = groupPrivilegeRepository;
+        this.userGroupRepository = userGroupRepository;
     }
 
     private boolean isGroupSubjectTypePrivilege(SubjectType subjectType, String privilegeName) {
@@ -186,6 +188,22 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         return groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
     }
 
+    public boolean hasPrivilege(String privilegeName, SubjectType subjectType, Program program, EncounterType encounterType, ChecklistDetail checklistDetail) {
+        if (this.userHasAllPrivileges()) {
+            return true;
+        }
+        User user = UserContextHolder.getUserContext().getUser();
+        List<GroupPrivilege> privileges = groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
+        return privileges.stream().anyMatch(groupPrivilege -> groupPrivilege.matches(privilegeName, subjectType, program, encounterType, checklistDetail));
+//        return privileges.stream().anyMatch(
+//                groupPrivilege -> groupPrivilege.isSubjectPrivilege() && groupPrivilege.getSubjectType().equals(subjectType) ||
+//                        groupPrivilege.isProgramEncounterPrivilege() && groupPrivilege.getProgramEncounterType().equals(encounterType) && groupPrivilege.getSubjectType().equals(subjectType)||
+//                        groupPrivilege.isEncounterPrivilege() && groupPrivilege.getEncounterType().equals(encounterType) && groupPrivilege.getSubjectType().equals(subjectType) ||
+//                        groupPrivilege.isProgramPrivilege() && groupPrivilege.getProgram().equals(program) ||
+//                        groupPrivilege.isChecklistPrivilege() && groupPrivilege.getChecklistDetail().equals(checklistDetail)
+//        );
+    }
+
     public List<GroupPrivilege> getRevokedPrivilegesForUser() {
         User user = UserContextHolder.getUserContext().getUser();
         List<String> allowedPrivilegeTypeUUIDs =  this.getAllowedPrivilegesForUser()
@@ -196,5 +214,11 @@ public class GroupPrivilegeService implements NonScopeAwareService {
                 .stream()
                 .filter(p -> !allowedPrivilegeTypeUUIDs.contains(p.getTypeUUID()))
                 .collect(Collectors.toList());
+    }
+
+
+    public boolean userHasAllPrivileges() {
+        User user = UserContextHolder.getUserContext().getUser();
+        return userGroupRepository.findByUserAndGroupHasAllPrivilegesTrueAndIsVoidedFalse(user).size() > 0;
     }
 }
