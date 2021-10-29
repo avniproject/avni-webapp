@@ -1,6 +1,7 @@
 package org.avni.dao;
 
 
+import org.avni.application.projections.VirtualCatchmentProjection;
 import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.AddressLevelType;
@@ -31,9 +32,9 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             DateTime now,
             Pageable pageable);
 
-    boolean existsByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsGreaterThan(
-            long catchmentId,
-            DateTime lastModifiedDateTime);
+    boolean existsByAuditLastModifiedDateTimeIsGreaterThanAndIdIn(
+            DateTime lastModifiedDateTime,
+            List<Long> addressIds);
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
@@ -65,8 +66,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsGreaterThan(catchmentId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByAuditLastModifiedDateTimeIsGreaterThanAndIdIn(lastModifiedDateTime, addressIds);
     }
 
     @Override
@@ -110,5 +111,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Query(value="select id from address_level where lineage ~ cast(:lquery as lquery)", nativeQuery = true)
     List<Long> getAllChildrenLocationsIds(@Param("lquery") String lquery);
+
+    @Query(value="select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId", nativeQuery = true)
+    List<VirtualCatchmentProjection> getVirtualCatchmentsForCatchmentId(@Param("catchmentId") Long catchmentId);
 
 }

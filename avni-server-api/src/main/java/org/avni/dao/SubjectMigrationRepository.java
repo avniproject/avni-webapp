@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface SubjectMigrationRepository extends TransactionalDataRepository<SubjectMigration>, OperatingIndividualScopeAwareRepository<SubjectMigration> {
 
     @Override
@@ -27,12 +29,10 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
     @Override
     @Query("select case when count(sm) > 0 then true else false end " +
             "from SubjectMigration sm " +
-            "  inner join sm.oldAddressLevel.virtualCatchments ovc " +
-            "  inner join sm.newAddressLevel.virtualCatchments nvc " +
-            "where (ovc.id = ?1 or nvc.id = ?1) " +
+            "where (sm.oldAddressLevel.id in ?1 or sm.newAddressLevel.id in ?1) " +
             "  and sm.individual.subjectType.id = ?3 " +
             "  and sm.audit.lastModifiedDateTime > ?2")
-    boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId);
+    boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId);
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId) {

@@ -31,10 +31,10 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
             DateTime now,
             Pageable pageable);
 
-    boolean existsBySubjectAddressLevelVirtualCatchmentsIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId,
+    boolean existsBySubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(
             Long subjectTypeId,
-            DateTime lastModifiedDateTime);
+            DateTime lastModifiedDateTime,
+            List<Long> addressIds);
 
     boolean existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId,
@@ -52,8 +52,8 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsBySubjectAddressLevelVirtualCatchmentsIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsBySubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

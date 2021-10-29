@@ -38,10 +38,10 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             DateTime now,
             Pageable pageable);
 
-    boolean existsByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId,
+    boolean existsBySubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(
             Long subjectTypeId,
-            DateTime lastModifiedDateTime);
+            DateTime lastModifiedDateTime,
+            List<Long> addressIds);
 
     boolean existsByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId,
@@ -59,8 +59,8 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByAddressLevelVirtualCatchmentsIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsBySubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

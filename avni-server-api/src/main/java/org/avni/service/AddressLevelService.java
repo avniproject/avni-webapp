@@ -1,9 +1,11 @@
 package org.avni.service;
 
+import org.avni.application.projections.VirtualCatchmentProjection;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.AddressLevelType;
+import org.avni.domain.Catchment;
 import org.avni.web.request.AddressLevelContract;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,13 @@ public class AddressLevelService {
                 .stream()
                 .sorted(Comparator.comparingDouble(AddressLevelType::getLevel))
                 .map(AddressLevelType::getName)
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getAllAddressLevelIdsForCatchment(Catchment catchment) {
+        return locationRepository.getVirtualCatchmentsForCatchmentId(catchment.getId())
+                .stream()
+                .map(VirtualCatchmentProjection::getAddresslevel_id)
                 .collect(Collectors.toList());
     }
 }

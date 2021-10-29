@@ -15,9 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.sql.Date;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specification.where;
 
@@ -35,8 +34,8 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime);
+    boolean existsByEncounterTypeIdAndAuditLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
+            Long encounterTypeId, DateTime lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime);
@@ -52,8 +51,8 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByEncounterTypeIdAndAuditLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

@@ -24,8 +24,8 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
     Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long checklistDetailId, DateTime lastModifiedDateTime);
+    boolean existsByChecklistChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThanAndChecklistProgramEnrolmentIndividualAddressLevelIdIn(
+            Long checklistDetailId, DateTime lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThan(
             long catchmentId, Long checklistDetailId, DateTime lastModifiedDateTime);
@@ -45,8 +45,8 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByChecklistChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThanAndChecklistProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

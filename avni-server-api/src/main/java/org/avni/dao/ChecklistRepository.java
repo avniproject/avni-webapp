@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -24,8 +25,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long checklistDetailId, DateTime lastModifiedDateTime);
+    boolean existsByChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
+            Long checklistDetailId, DateTime lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId, Long checklistDetailId, DateTime lastModifiedDateTime);
@@ -47,8 +48,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByChecklistDetailIdAndAuditLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

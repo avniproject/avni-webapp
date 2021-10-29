@@ -43,10 +43,10 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             Pageable pageable
     );
 
-    boolean existsByGroupSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId,
+    boolean existsByGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime);
+            DateTime lastModifiedDateTime,
+            List<Long> addressIds);
 
     boolean existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId,
@@ -64,8 +64,8 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByGroupSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

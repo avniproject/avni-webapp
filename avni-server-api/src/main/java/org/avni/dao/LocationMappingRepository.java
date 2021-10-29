@@ -23,9 +23,9 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
 
-    boolean existsByParentLocationVirtualCatchmentsIdAndAuditLastModifiedDateTimeGreaterThan(
-            @Param("catchmentId") long catchmentId,
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime);
+    boolean existsByAuditLastModifiedDateTimeGreaterThanAndParentLocationIdIn(
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @Param("addressIds") List<Long> addressIds);
 
     @Override
     default Page<ParentLocationMapping> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
@@ -38,8 +38,8 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByParentLocationVirtualCatchmentsIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByAuditLastModifiedDateTimeGreaterThanAndParentLocationIdIn(lastModifiedDateTime, addressIds);
     }
 
     @Override

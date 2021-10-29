@@ -33,10 +33,10 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             DateTime now,
             Pageable pageable);
 
-    boolean existsByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId,
+    boolean existsByProgramIdAndAuditLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(
             Long programId,
-            DateTime lastModifiedDateTime);
+            DateTime lastModifiedDateTime,
+            List<Long> addressIds);
 
     boolean existsByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId,
@@ -54,8 +54,8 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByProgramIdAndAuditLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

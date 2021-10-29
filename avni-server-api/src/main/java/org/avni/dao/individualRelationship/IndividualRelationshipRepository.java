@@ -31,8 +31,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     Page<IndividualRelationship> findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, Long subjectTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByIndividualaAddressLevelVirtualCatchmentsIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long subjectTypeId, DateTime lastModifiedDateTime);
+    boolean existsByIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndIndividualaAddressLevelIdIn(
+            Long subjectTypeId, DateTime lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
             long facilityId, Long subjectTypeId, DateTime lastModifiedDateTime);
@@ -51,8 +51,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByIndividualaAddressLevelVirtualCatchmentsIdAndIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByIndividualaSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndIndividualaAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override

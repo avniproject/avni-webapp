@@ -35,8 +35,8 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     Page<Encounter> findByIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThan(
-            long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime);
+    boolean existsByEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(
+            Long encounterTypeId, DateTime lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThan(
             long facilityId, Long encounterTypeId, DateTime lastModifiedDateTime);
@@ -52,8 +52,8 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(long catchmentId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThan(catchmentId, typeId, lastModifiedDateTime);
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+        return existsByEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
