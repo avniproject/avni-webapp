@@ -6,6 +6,7 @@ DELETE FROM form;
 DELETE FROM encounter;
 DELETE FROM program_encounter;
 DELETE FROM program_enrolment;
+DELETE FROM subject_migration;
 DELETE FROM individual;
 DELETE FROM program;
 DELETE FROM encounter_type;

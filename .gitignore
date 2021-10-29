@@ -20,7 +20,7 @@ major_version
 .settings
 .classpath
 bin/
-avni-server-api/org.openchs.domain.Concept/
+avni-server-api/org.avni.domain.Concept/
 local.properties
 _1*
 segments_2
