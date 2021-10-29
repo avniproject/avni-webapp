@@ -34,5 +34,6 @@ public class RepositoryConfig extends RepositoryRestConfigurerAdapter {
         config.exposeIdsFor(News.class);
         config.exposeIdsFor(Comment.class);
         config.exposeIdsFor(CommentThread.class);
+        config.exposeIdsFor(RuleFailureTelemetry.class);
     }
 }
