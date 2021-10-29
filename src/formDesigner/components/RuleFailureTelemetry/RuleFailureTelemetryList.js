@@ -121,12 +121,13 @@ const RuleFailureTelemetryList = () => {
     refreshTable(tableRef);
   };
 
-  let resourceUrl = "/ruleFailureTelemetry";
-  let params = {};
+  const resourceUrl = "/ruleFailureTelemetry";
+  const resourceName = "ruleFailureTelemetries";
+  let queryParams = {};
   if (selectedStatus === STATUS.CLOSED) {
-    params.isClosed = true;
+    queryParams.isClosed = true;
   } else if (selectedStatus === STATUS.OPEN) {
-    params.isClosed = false;
+    queryParams.isClosed = false;
   } else if (selectedStatus === STATUS.ALL) {
     //Do nothing as we don't need to send any param when we are selecting all filter
   }
@@ -163,7 +164,7 @@ const RuleFailureTelemetryList = () => {
             tableRef={tableRef}
             columns={columns}
             actions={buildActions()}
-            data={fetchData(resourceUrl, params)}
+            data={fetchData(resourceName, resourceUrl, queryParams)}
             detailPanel={[
               {
                 icon: "expand_more",

@@ -3,7 +3,7 @@ import http from "../utils/httpClient";
 
 const baseUrl = "/web";
 
-const fetchData = (resourceUrl, params) => query =>
+const fetchData = (resourceName, resourceUrl, params) => query =>
   new Promise(resolve => {
     let searchParams = new URLSearchParams(params);
 
@@ -17,14 +17,10 @@ const fetchData = (resourceUrl, params) => query =>
       .get(apiUrl)
       .then(response => response.data)
       .then(result => {
-        let data = [];
-        if (result.content) {
-          data = result.content;
-        }
         resolve({
-          data: data,
-          page: result.number,
-          totalCount: result.numberOfElements
+          data: result._embedded ? result._embedded[resourceName] : [],
+          page: result.page.number,
+          totalCount: result.page.totalElements
         });
       });
   });
