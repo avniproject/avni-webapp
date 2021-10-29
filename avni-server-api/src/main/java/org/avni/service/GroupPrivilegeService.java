@@ -195,13 +195,6 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         User user = UserContextHolder.getUserContext().getUser();
         List<GroupPrivilege> privileges = groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
         return privileges.stream().anyMatch(groupPrivilege -> groupPrivilege.matches(privilegeName, subjectType, program, encounterType, checklistDetail));
-//        return privileges.stream().anyMatch(
-//                groupPrivilege -> groupPrivilege.isSubjectPrivilege() && groupPrivilege.getSubjectType().equals(subjectType) ||
-//                        groupPrivilege.isProgramEncounterPrivilege() && groupPrivilege.getProgramEncounterType().equals(encounterType) && groupPrivilege.getSubjectType().equals(subjectType)||
-//                        groupPrivilege.isEncounterPrivilege() && groupPrivilege.getEncounterType().equals(encounterType) && groupPrivilege.getSubjectType().equals(subjectType) ||
-//                        groupPrivilege.isProgramPrivilege() && groupPrivilege.getProgram().equals(program) ||
-//                        groupPrivilege.isChecklistPrivilege() && groupPrivilege.getChecklistDetail().equals(checklistDetail)
-//        );
     }
 
     public List<GroupPrivilege> getRevokedPrivilegesForUser() {

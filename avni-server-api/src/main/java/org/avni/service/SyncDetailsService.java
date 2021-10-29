@@ -18,22 +18,18 @@ import java.util.stream.Collectors;
 @Transactional
 public class SyncDetailsService {
     private OperationalSubjectTypeRepository subjectTypeRepository;
-    private EncounterTypeRepository encounterTypeRepository;
     private FormMappingRepository formMappingRepository;
     private ChecklistDetailRepository checklistDetailRepository;
     private OrganisationConfigService organisationConfigService;
     private GroupPrivilegeService groupPrivilegeService;
-    private OperationalProgramRepository programRepository;
 
 
-    public SyncDetailsService(OperationalSubjectTypeRepository subjectTypeRepository1, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ChecklistDetailRepository checklistDetailRepository, OrganisationConfigService organisationConfigService, PrivilegeService privilegeService, GroupPrivilegeService groupPrivilegeService, PrivilegeRepository privilegeRepository, OperationalProgramRepository programRepository) {
+    public SyncDetailsService(OperationalSubjectTypeRepository subjectTypeRepository1, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ChecklistDetailRepository checklistDetailRepository, OrganisationConfigService organisationConfigService, GroupPrivilegeService groupPrivilegeService) {
         this.subjectTypeRepository = subjectTypeRepository1;
-        this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
         this.checklistDetailRepository = checklistDetailRepository;
         this.organisationConfigService = organisationConfigService;
         this.groupPrivilegeService = groupPrivilegeService;
-        this.programRepository = programRepository;
     }
 
     @Transactional

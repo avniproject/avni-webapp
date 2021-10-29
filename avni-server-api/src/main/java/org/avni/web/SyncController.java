@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.avni.domain.*;
 import org.avni.service.*;
 import org.avni.web.request.EntitySyncStatusContract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +83,7 @@ public class SyncController {
     private final ExtensionService extensionService;
     private final SubjectMigrationService subjectMigrationService;
     private SyncDetailsService syncDetailService;
+    private final Logger logger;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -164,6 +167,7 @@ public class SyncController {
         this.extensionService = extensionService;
         this.subjectMigrationService = subjectMigrationService;
         this.syncDetailService = syncDetailService;
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @PostConstruct
@@ -241,6 +245,8 @@ public class SyncController {
         DateTime now = new DateTime();
         DateTime nowMinus10Seconds = getNowMinus10Seconds();
         Set<SyncableItem> allSyncableItems = syncDetailService.getAllSyncableItems();
+        long afterSyncDetailsService = new DateTime().getMillis();
+        logger.info(String.format("Time taken for syncDetailsService %d", afterSyncDetailsService - now.getMillis()));
         allSyncableItems.forEach(syncableItem -> {
             if (entitySyncStatusContracts.stream().noneMatch(entitySyncStatusContract ->
                     entitySyncStatusContract.matchesEntity(syncableItem))) {
@@ -250,24 +256,7 @@ public class SyncController {
         List<EntitySyncStatusContract> changedEntities = entitySyncStatusContracts.stream()
                 .filter(this::filterChangedEntities)
                 .collect(Collectors.toList());
-<<<<<<< HEAD
-        if (isPrivilegeChanged(changedEntities) || isStockApp) {
-            List<String> alreadyPresentTypes = entitySyncStatusContracts.stream()
-                    .filter(e -> e.getEntityTypeUuid() != null)
-                    .map(EntitySyncStatusContract::getEntityTypeUuid)
-                    .collect(Collectors.toList());
-            updateBasedOnNewPrivileges(changedEntities, alreadyPresentTypes);
-        }
-||||||| merged common ancestors
-        if (isPrivilegeChanged(changedEntities)) {
-            List<String> alreadyPresentTypes = entitySyncStatusContracts.stream()
-                    .filter(e -> e.getEntityTypeUuid() != null)
-                    .map(EntitySyncStatusContract::getEntityTypeUuid)
-                    .collect(Collectors.toList());
-            updateBasedOnNewPrivileges(changedEntities, alreadyPresentTypes);
-        }
-=======
->>>>>>> Change syncDetails API to look at all items so that we do not miss items with new permissions.
+        logger.info(String.format("Time taken for stuff %d", new DateTime().getMillis() - afterSyncDetailsService));
         return ResponseEntity.ok().body(new JsonObject()
                 .with("syncDetails", changedEntities)
                 .with("now", now)
