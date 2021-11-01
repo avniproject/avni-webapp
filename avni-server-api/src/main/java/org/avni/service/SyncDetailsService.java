@@ -54,10 +54,10 @@ public class SyncDetailsService {
             }
             addToSyncableItems(syncableItems, "Individual", subjectType.getUuid());
             addToSyncableItems(syncableItems, "SubjectMigration", subjectType.getUuid());
-            if (subjectType.getType().equals(Subject.Person)) {
+            if (subjectType.isPerson()) {
                 addToSyncableItems(syncableItems, "IndividualRelationship", subjectType.getUuid());
             }
-            if (subjectType.getType().equals(Subject.Group)) {
+            if (subjectType.isGroup()) {
                 addToSyncableItems(syncableItems, "GroupSubject", subjectType.getUuid());
             }
             if (organisationConfigService.isCommentEnabled()) {
