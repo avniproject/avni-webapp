@@ -13,6 +13,7 @@ public class SyncSubjectResponse {
     private Set<IndividualRelationship> individualRelationships;
     private Set<Checklist> checklists;
     private Set<ChecklistItem> checklistItems;
+    private Set<GroupSubject> groupSubjects;
 
     public Individual getIndividual() {
         return individual;
@@ -68,5 +69,13 @@ public class SyncSubjectResponse {
 
     public void setChecklistItems(Set<ChecklistItem> checklistItems) {
         this.checklistItems = checklistItems;
+    }
+
+    public Set<GroupSubject> getGroupSubjects() {
+        return groupSubjects;
+    }
+
+    public void setGroupSubjects(Set<GroupSubject> groupSubjects) {
+        this.groupSubjects = groupSubjects;
     }
 }

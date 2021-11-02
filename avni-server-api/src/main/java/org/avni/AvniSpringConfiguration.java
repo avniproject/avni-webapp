@@ -2,7 +2,6 @@ package org.avni;
 
 import org.avni.domain.User;
 import org.avni.framework.jpa.CHSAuditorAware;
-import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -12,10 +11,6 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Objects;
 
 @Configuration
 @EnableJpaAuditing

@@ -1,6 +1,5 @@
 package org.avni.web;
 
-import org.avni.web.response.SyncSubjectResponse;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.*;
@@ -48,7 +47,6 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualSearchService individualSearchService;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
-    private SubjectSyncResponseBuilderService subjectSyncResponseBuilderService;
     private SubjectMigrationRepository subjectMigrationRepository;
 
     @Autowired
@@ -64,7 +62,6 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                                SubjectSyncResponseBuilderService subjectSyncResponseBuilderService,
                                 SubjectMigrationRepository subjectMigrationRepository) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
@@ -78,7 +75,6 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.individualSearchService = individualSearchService;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
-        this.subjectSyncResponseBuilderService = subjectSyncResponseBuilderService;
         this.subjectMigrationRepository = subjectMigrationRepository;
     }
 
@@ -108,6 +104,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
         AddressLevel newAddressLevel = getAddressLevel(individualRequest);
         if (!individual.getAddressLevel().equals(newAddressLevel)) {
+            logger.info(String.format("Migrating subject with UUID %s from %s to %s", individualRequest.getUuid(), individual.getAddressLevel().getTitleLineage(), newAddressLevel.getTitleLineage()));
             SubjectMigration subjectMigration = new SubjectMigration();
             subjectMigration.assignUUID();
             subjectMigration.setIndividual(individual);
@@ -250,13 +247,6 @@ public class IndividualController extends AbstractController<Individual> impleme
         SubjectType subjectType = subjectTypeRepository.findByName(subjectTypeName);
         List<Individual> individuals = individualRepository.findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(addressLevel, subjectType);
         return individuals.stream().map(programEnrolmentConstructionService::getSubjectInfo).collect(Collectors.toList());
-    }
-
-    @GetMapping("/subject/{uuid}/allEntities")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    @ResponseBody
-    public Resource<SyncSubjectResponse> getSubjectDetailsForSync(@PathVariable String uuid) {
-        return new Resource<>(subjectSyncResponseBuilderService.getSubject(uuid)) ;
     }
 
     @Override

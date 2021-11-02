@@ -12,7 +12,6 @@ create table subject_migration
 );
 
 alter table subject_migration add unique (uuid, organisation_id);
-alter table subject_migration add unique (individual_id, old_address_level_id, new_address_level_id);
 
 select enable_rls_on_tx_table('subject_migration');
 

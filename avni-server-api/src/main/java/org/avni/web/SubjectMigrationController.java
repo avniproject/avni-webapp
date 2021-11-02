@@ -1,23 +1,28 @@
 package org.avni.web;
 
-import org.avni.dao.*;
-import org.avni.domain.*;
+import org.avni.dao.OperatingIndividualScopeAwareRepository;
+import org.avni.dao.SubjectMigrationRepository;
+import org.avni.dao.SubjectTypeRepository;
+import org.avni.domain.SubjectMigration;
+import org.avni.domain.SubjectType;
 import org.avni.service.UserService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import java.util.Collections;
 
 @RestController
 public class SubjectMigrationController extends AbstractController<SubjectMigration> implements RestControllerResourceProcessor<SubjectMigration>, OperatingIndividualScopeAwareController<SubjectMigration> {

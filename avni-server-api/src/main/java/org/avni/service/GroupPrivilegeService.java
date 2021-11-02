@@ -197,6 +197,46 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         return privileges.stream().anyMatch(groupPrivilege -> groupPrivilege.matches(privilegeName, subjectType, program, encounterType, checklistDetail));
     }
 
+    public boolean hasViewPrivilege(Individual individual) {
+        return this.hasPrivilege("View subject", individual.getSubjectType(),
+                null, null, null
+        );
+    }
+    public boolean hasViewPrivilege(ProgramEnrolment programEnrolment) {
+        return this.hasPrivilege("View enrolment details",
+                programEnrolment.getIndividual().getSubjectType(),
+                programEnrolment.getProgram(),
+                null, null
+        );
+    }
+
+    public boolean hasViewPrivilege(Checklist checklist) {
+        return this.hasPrivilege("View checklist",
+                checklist.getProgramEnrolment().getIndividual().getSubjectType(),
+                null,
+                null, checklist.getChecklistDetail()
+        );
+    }
+
+    public boolean hasViewPrivilege(ChecklistItem checklistItem) {
+        return this.hasViewPrivilege(checklistItem.getChecklist());
+    }
+
+    public boolean hasViewPrivilege(ProgramEncounter programEncounter) {
+        return this.hasPrivilege("View visit",
+                programEncounter.getProgramEnrolment().getIndividual().getSubjectType(),
+                programEncounter.getProgramEnrolment().getProgram(),
+                null, null
+        );
+    }
+
+    public boolean hasViewPrivilege(Encounter encounter) {
+        return this.hasPrivilege("View visit",
+                encounter.getIndividual().getSubjectType(),
+                null, null, null
+        );
+    }
+
     public List<GroupPrivilege> getRevokedPrivilegesForUser() {
         User user = UserContextHolder.getUserContext().getUser();
         List<String> allowedPrivilegeTypeUUIDs =  this.getAllowedPrivilegesForUser()
