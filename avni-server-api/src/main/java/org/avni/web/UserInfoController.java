@@ -65,7 +65,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         if (user.isAdmin() && organisation == null) {
             organisation = new Organisation();
         }
-
+        String catchmentName = user.getCatchment() == null ? null : user.getCatchment().getName();
         String usernameSuffix = organisation.getUsernameSuffix() != null
                 ? organisation.getUsernameSuffix() : organisation.getDbUser();
         UserInfo userInfo = new UserInfo(
@@ -75,7 +75,8 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
                 usernameSuffix,
                 user.getRoles(),
                 user.getSettings(),
-                user.getName());
+                user.getName(),
+                catchmentName);
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
@@ -98,13 +99,15 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         Organisation organisation = userContext.getOrganisation();
         String usernameSuffix = organisation.getUsernameSuffix() != null
                 ? organisation.getUsernameSuffix() : organisation.getDbUser();
+        String catchmentName = user.getCatchment() == null ? null : user.getCatchment().getName();
         UserInfo userInfo = new UserInfo(user.getUsername(),
                 organisation.getName(),
                 organisation.getId(),
                 usernameSuffix,
                 user.getRoles(),
                 user.getSettings(),
-                user.getName());
+                user.getName(),
+                catchmentName);
         return wrap(new PageImpl<>(Arrays.asList(userInfo)));
     }
 

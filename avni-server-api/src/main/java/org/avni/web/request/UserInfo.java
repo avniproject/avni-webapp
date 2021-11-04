@@ -18,8 +18,9 @@ public class UserInfo {
     private DateTime lastModifiedDateTime;
     private String[] roles;
     private String name;
+    private String catchmentName;
 
-    public UserInfo(String username, String orgName, Long orgId, String usernameSuffix, String[] roles, JsonObject settings, String name) {
+    public UserInfo(String username, String orgName, Long orgId, String usernameSuffix, String[] roles, JsonObject settings, String name, String catchmentName) {
         this.username = username;
         this.organisationName = orgName;
         this.organisationId = orgId;
@@ -28,6 +29,7 @@ public class UserInfo {
         this.lastModifiedDateTime = DateTime.now();
         this.usernameSuffix = usernameSuffix;
         this.name = name;
+        this.catchmentName = catchmentName;
     }
 
     public String getUsername() {
@@ -84,5 +86,13 @@ public class UserInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCatchmentName() {
+        return catchmentName;
+    }
+
+    public void setCatchmentName(String catchmentName) {
+        this.catchmentName = catchmentName;
     }
 }
