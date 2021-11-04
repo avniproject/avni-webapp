@@ -72,6 +72,7 @@ public class IdentifierAssignmentService implements NonScopeAwareService {
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         User user = UserContextHolder.getUserContext().getUser();
+        this.generateIdentifiersIfNecessary(user);
         return identifierAssignmentRepository.existsByAssignedToAndAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNull(user, lastModifiedDateTime);
     }
 }
