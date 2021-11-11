@@ -165,7 +165,8 @@ public class GroupPrivilege extends OrganisationAwareEntity {
     public boolean matches(String privilegeName, SubjectType subjectType, Program program, EncounterType encounterType, ChecklistDetail checklistDetail) {
         return this.getPrivilege().getName().equals(privilegeName)
                 && itemsMatch(subjectType, this.getSubjectType()) && itemsMatch(program, this.getProgram())
-                && itemsMatch(encounterType, this.getEncounterType())
+                && (itemsMatch(encounterType, this.getEncounterType())
+                || itemsMatch(encounterType, this.getProgramEncounterType()))
                 && itemsMatch(checklistDetail, this.getChecklistDetail());
     }
 
