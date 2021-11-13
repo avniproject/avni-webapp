@@ -1,5 +1,6 @@
 package org.avni.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.avni.domain.JsonObject;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +61,46 @@ public class ReportService {
 
     private Long getTotalCount(List<AggregateReportResult> aggregateReportResults) {
         return aggregateReportResults.stream().map(AggregateReportResult::getValue).reduce(0L, Long::sum);
+    }
+
+    public JsonObject cancelledVisits() {
+        List<AggregateReportResult> programEncResults = avniReportRepository.generateAggregatesForEntityByType("program_encounter",
+                "operational_encounter_type",
+                "encounter_type_id",
+                "and cancel_date_time notnull");
+        List<AggregateReportResult> generalEncResults = avniReportRepository.generateAggregatesForEntityByType("encounter",
+                "operational_encounter_type",
+                "encounter_type_id",
+                "and cancel_date_time notnull");
+        programEncResults.addAll(generalEncResults);
+        return new JsonObject()
+                .with("total", getTotalCount(programEncResults))
+                .with("data", programEncResults);
+    }
+
+    public JsonObject onTimeVisits() {
+        List<AggregateReportResult> programEncResults = avniReportRepository.generateAggregatesForEntityByType("program_encounter",
+                "operational_encounter_type",
+                "encounter_type_id",
+                "and encounter_date_time notnull and max_visit_date_time notnull and encounter_date_time <= max_visit_date_time");
+        List<AggregateReportResult> generalEncResults = avniReportRepository.generateAggregatesForEntityByType("encounter",
+                "operational_encounter_type",
+                "encounter_type_id",
+                "and encounter_date_time notnull and max_visit_date_time notnull and encounter_date_time <= max_visit_date_time");
+        programEncResults.addAll(generalEncResults);
+        return new JsonObject()
+                .with("total", getTotalCount(programEncResults))
+                .with("data", programEncResults);
+    }
+
+    public JsonObject programExits() {
+        List<AggregateReportResult> aggregateReportResults = avniReportRepository.generateAggregatesForEntityByType(
+                "program_enrolment",
+                "operational_program",
+                "program_id",
+                "and program_exit_date_time notnull");
+        return new JsonObject()
+                .with("total", getTotalCount(aggregateReportResults))
+                .with("data", aggregateReportResults);
     }
 }

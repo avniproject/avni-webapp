@@ -60,6 +60,9 @@ public class ReportingController {
                 .with("registrations", reportService.allRegistrations())
                 .with("enrolments", reportService.allEnrolments())
                 .with("completedVisits", reportService.completedVisits())
-                .with("daywiseActivities", reportService.dailyActivities());
+                .with("daywiseActivities", reportService.dailyActivities())
+                .with("cancelledVisits", reportService.cancelledVisits())
+                .with("onTimeVisits", reportService.onTimeVisits())
+                .with("programExits", reportService.programExits());
     }
 }
