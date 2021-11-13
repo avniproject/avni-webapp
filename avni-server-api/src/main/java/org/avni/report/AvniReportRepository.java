@@ -56,4 +56,32 @@ public class AvniReportRepository {
         return jdbcTemplate.query(query, new AggregateReportMapper());
     }
 
+    public List<CountForDay> generateDayWiseActivities() {
+        String query = "select date for_date, sum(count) activity_count\n" +
+                "from (select registration_date date, count(*) count\n" +
+                "      from individual\n" +
+                "      group by registration_date\n" +
+                "      union all\n" +
+                "      select date(encounter_date_time) date, count(*) count\n" +
+                "      from encounter\n" +
+                "      where encounter_date_time is not null\n" +
+                "        and is_voided is false\n" +
+                "      group by date(encounter_date_time)\n" +
+                "      union all\n" +
+                "      select date(encounter_date_time) date, count(*) count\n" +
+                "      from program_encounter\n" +
+                "      where encounter_date_time is not null\n" +
+                "        and is_voided is false\n" +
+                "      group by date(encounter_date_time)\n" +
+                "      union all\n" +
+                "      select date(enrolment_date_time) date, count(*) count\n" +
+                "      from program_enrolment\n" +
+                "      where enrolment_date_time is not null\n" +
+                "        and is_voided is false\n" +
+                "      group by date(enrolment_date_time)) data\n" +
+                "group by for_date\n" +
+                "order by for_date asc;";
+        return jdbcTemplate.query(query, new CountForDayMapper());
+    }
+
 }

@@ -52,6 +52,12 @@ public class ReportService {
                 .with("data", programEncResults);
     }
 
+    public JsonObject dailyActivities() {
+        List<CountForDay> countsForDay = avniReportRepository.generateDayWiseActivities();
+        return new JsonObject()
+                .with("data", countsForDay);
+    }
+
     private Long getTotalCount(List<AggregateReportResult> aggregateReportResults) {
         return aggregateReportResults.stream().map(AggregateReportResult::getCount).reduce(0L, Long::sum);
     }

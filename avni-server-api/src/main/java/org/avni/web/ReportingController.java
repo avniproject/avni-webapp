@@ -59,8 +59,7 @@ public class ReportingController {
         return new JsonObject()
                 .with("registrations", reportService.allRegistrations())
                 .with("enrolments", reportService.allEnrolments())
-                .with("completedVisits", reportService.completedVisits());
-
-
+                .with("completedVisits", reportService.completedVisits())
+                .with("daywiseActivities", reportService.dailyActivities());
     }
 }
