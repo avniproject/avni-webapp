@@ -96,7 +96,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     }
 
     @GetMapping(value = "/web/forms")
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public PagedResources<Resource<BasicFormDetails>> getAllFormsWeb(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "includeVoided", required = false) boolean includeVoided,
