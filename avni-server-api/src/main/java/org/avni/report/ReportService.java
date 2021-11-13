@@ -59,6 +59,6 @@ public class ReportService {
     }
 
     private Long getTotalCount(List<AggregateReportResult> aggregateReportResults) {
-        return aggregateReportResults.stream().map(AggregateReportResult::getCount).reduce(0L, Long::sum);
+        return aggregateReportResults.stream().map(AggregateReportResult::getValue).reduce(0L, Long::sum);
     }
 }

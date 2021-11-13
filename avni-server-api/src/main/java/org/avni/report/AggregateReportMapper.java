@@ -10,8 +10,9 @@ public class AggregateReportMapper implements RowMapper<AggregateReportResult> {
     @Override
     public AggregateReportResult mapRow(ResultSet rs, int rowNum) throws SQLException {
         AggregateReportResult aggregateReportResult = new AggregateReportResult();
-        aggregateReportResult.setIndicator(rs.getString("indicator"));
-        aggregateReportResult.setCount(rs.getLong("count"));
+        aggregateReportResult.setLabel(rs.getString("indicator"));
+        aggregateReportResult.setValue(rs.getLong("count"));
+        aggregateReportResult.setId(rs.getString("indicator"));
 
         return aggregateReportResult;
     }

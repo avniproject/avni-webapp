@@ -2,22 +2,31 @@ package org.avni.report;
 
 public class AggregateReportResult {
 
-    private String indicator;
-    private Long count;
+    private String label;
+    private Long value;
+    private String id;
 
-    public String getIndicator() {
-        return indicator;
+    public String getId() {
+        return id;
     }
 
-    public void setIndicator(String indicator) {
-        this.indicator = indicator;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Long getCount() {
-        return count;
+    public String getLabel() {
+        return label;
     }
 
-    public void setCount(Long count) {
-        this.count = count;
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Long getValue() {
+        return value;
+    }
+
+    public void setValue(Long value) {
+        this.value = value;
     }
 }
