@@ -35,7 +35,7 @@ public class ReportingController {
 
 
     @RequestMapping(value = "/report/aggregate/codedConcepts", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public List<JsonObject> getReportData(@RequestParam("formMappingId") Long formMappingId) {
         FormMapping formMapping = formMappingRepository.findById(formMappingId).orElse(null);
         if (formMapping == null) {
@@ -54,7 +54,7 @@ public class ReportingController {
     }
 
     @RequestMapping(value = "/report/aggregate/activities", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public JsonObject getRegistrationAggregate() {
         return new JsonObject()
                 .with("registrations", reportService.allRegistrations())
