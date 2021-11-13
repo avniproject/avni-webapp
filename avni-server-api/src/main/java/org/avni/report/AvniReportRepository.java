@@ -39,11 +39,12 @@ public class AvniReportRepository {
         return jdbcTemplate.query(reportHelper.buildQuery(formMapping, queryWithConceptUUID), new AggregateReportMapper());
     }
 
-    public List<AggregateReportResult> generateAggregatesForEntityByType(String entity, String operationalType, String operationalTypeIdColumn, String dynamicWhere) {
+    public List<AggregateReportResult> generateAggregatesForEntityByType(String entity, String operationalType, String operationalTypeIdColumn, String dynamicWhere, String dynamic_join) {
         String baseQuery = "select o.name as indicator,\n" +
                 "       count(*) as count\n" +
                 "from ${entity} e\n" +
                 "         join ${operational_type} o on e.${operational_type_id} = o.${operational_type_id}\n" +
+                "         ${dynamic_join}\n"+
                 "where e.is_voided = false\n" +
                 "  and o.is_voided = false\n" +
                 "  ${dynamic_where}\n" +
@@ -51,6 +52,7 @@ public class AvniReportRepository {
         String query = baseQuery
                 .replace("${entity}", entity)
                 .replace("${operational_type}", operationalType)
+                .replace("${dynamic_join}", dynamic_join)
                 .replace("${operational_type_id}", operationalTypeIdColumn)
                 .replace("${dynamic_where}", dynamicWhere);
         return jdbcTemplate.query(query, new AggregateReportMapper());
