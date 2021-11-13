@@ -3,22 +3,22 @@ package org.avni.report;
 import java.util.Date;
 
 public class CountForDay {
-    private Date date;
-    private long count;
+    private Date day;
+    private long value;
 
-    public Date getDate() {
-        return date;
+    public Date getDay() {
+        return day;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDay(Date day) {
+        this.day = day;
     }
 
-    public long getCount() {
-        return count;
+    public long getValue() {
+        return value;
     }
 
-    public void setCount(long count) {
-        this.count = count;
+    public void setValue(long value) {
+        this.value = value;
     }
 }
