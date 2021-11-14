@@ -1,5 +1,6 @@
 package org.avni.dao.application;
 
+import org.avni.application.Form;
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.dao.FindByLastModifiedDateTime;
@@ -24,6 +25,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     Page<FormMapping> findByProgramId(Long programId, Pageable pageable);
 
     List<FormMapping> findByFormId(Long formId);
+    FormMapping findFirstByForm(Form form);
 
     List<FormMapping> findByFormIdAndIsVoidedFalse(Long formId);
 
