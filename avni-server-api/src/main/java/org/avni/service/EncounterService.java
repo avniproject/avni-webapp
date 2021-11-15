@@ -142,9 +142,10 @@ public class EncounterService implements ScopeAwareService {
 
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUuid) {
-        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
-        User user = UserContextHolder.getUserContext().getUser();
-        return encounterType != null &&  isChanged(user, lastModifiedDateTime, encounterType.getId());
+        return true;
+//        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+//        User user = UserContextHolder.getUserContext().getUser();
+//        return encounterType != null &&  isChanged(user, lastModifiedDateTime, encounterType.getId());
     }
 
     @Override

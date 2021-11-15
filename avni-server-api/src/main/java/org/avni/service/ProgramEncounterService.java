@@ -4,7 +4,6 @@ import com.bugsnag.Bugsnag;
 import org.avni.common.EntityHelper;
 import org.avni.dao.*;
 import org.avni.domain.*;
-import org.avni.framework.security.UserContextHolder;
 import org.avni.geo.Point;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.EncounterTypeContract;
@@ -187,9 +186,10 @@ public class ProgramEncounterService implements ScopeAwareService {
 
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUUID) {
-        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
-        User user = UserContextHolder.getUserContext().getUser();
-        return encounterType != null && isChanged(user, lastModifiedDateTime, encounterType.getId());
+        return true;
+//        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
+//        User user = UserContextHolder.getUserContext().getUser();
+//        return encounterType != null && isChanged(user, lastModifiedDateTime, encounterType.getId());
     }
 
     @Override

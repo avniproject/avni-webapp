@@ -238,9 +238,10 @@ public class ProgramEnrolmentService implements ScopeAwareService {
 
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String programUUID) {
-        Program program = programRepository.findByUuid(programUUID);
-        User user = UserContextHolder.getUserContext().getUser();
-        return program != null && isChanged(user, lastModifiedDateTime, program.getId());
+        return true;
+//        Program program = programRepository.findByUuid(programUUID);
+//        User user = UserContextHolder.getUserContext().getUser();
+//        return program != null && isChanged(user, lastModifiedDateTime, program.getId());
     }
 
     @Override
