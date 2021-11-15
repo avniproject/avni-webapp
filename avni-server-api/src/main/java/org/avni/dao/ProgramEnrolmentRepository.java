@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import org.avni.domain.AddressLevel;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.avni.domain.ProgramEnrolment;
@@ -19,8 +20,8 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepository<ProgramEnrolment> {
 
-    Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
+    Page<ProgramEnrolment> findByIndividualAddressInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            List<AddressLevel> addressLevels,
             Long programId,
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -42,16 +43,6 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             long facilityId,
             Long programId,
             DateTime lastModifiedDateTime);
-
-    @Override
-    default Page<ProgramEnrolment> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByIndividualAddressLevelVirtualCatchmentsIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
-    }
-
-    @Override
-    default Page<ProgramEnrolment> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        return findByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
-    }
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
@@ -104,4 +95,14 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
+    @Override
+    default Page<ProgramEnrolment> syncByCatchment(SyncParameters syncParameters) {
+        return findByIndividualAddressInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+    }
+
+    @Override
+    default Page<ProgramEnrolment> syncByFacility(SyncParameters syncParameters) {
+        return findByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+    }
 }
