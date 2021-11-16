@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { find, get, map, includes, sortBy } from "lodash";
 import { useSelector } from "react-redux";
 import api from "../api";
-import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { mapGroupMembers } from "../../common/subjectModelMapper";
 import { subjectService } from "../services/SubjectService";
+import { Grid } from "@material-ui/core";
 
 const AttendanceFormElement = ({ formElement, update, validationResults, uuid, value = [] }) => {
   const subjectUUID = useSelector(state =>
@@ -37,30 +36,31 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
   };
 
   return (
-    <FormControl component="fieldset" variant="standard">
+    <Fragment>
       <FormLabel component="legend">{label}</FormLabel>
       <FormGroup>
         {map(memberSubjects, ({ uuid, nameString }) => {
           return (
-            <FormControlLabel
-              key={uuid}
-              control={
+            <Grid key={uuid} container sm={4}>
+              <Grid item sm={10}>
+                <FormLabel>{nameString}</FormLabel>
+              </Grid>
+              <Grid item sm={2}>
                 <Switch
                   color="primary"
                   checked={includes(value, uuid)}
                   onChange={onsSwitchChange}
                   name={uuid}
                 />
-              }
-              label={nameString}
-            />
+              </Grid>
+            </Grid>
           );
         })}
       </FormGroup>
       <FormHelperText>
         {validationResult && t(validationResult.messageKey, validationResult.extra)}
       </FormHelperText>
-    </FormControl>
+    </Fragment>
   );
 };
 
