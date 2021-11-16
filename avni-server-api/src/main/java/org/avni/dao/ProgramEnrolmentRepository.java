@@ -20,7 +20,7 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepository<ProgramEnrolment> {
 
-    Page<ProgramEnrolment> findByIndividualAddressInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByIndividualAddressLevelInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long programId,
             DateTime lastModifiedDateTime,
@@ -98,7 +98,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
 
     @Override
     default Page<ProgramEnrolment> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIndividualAddressLevelInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
