@@ -2,6 +2,8 @@ package org.avni.domain;
 
 import org.joda.time.DateTime;
 
+import org.joda.time.DateTime;
+
 public class Extension {
     private String url;
     private DateTime lastModifiedDateTime;

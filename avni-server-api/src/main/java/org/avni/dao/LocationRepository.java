@@ -15,6 +15,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -27,17 +28,17 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);
 
-    Page<AddressLevel> findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<AddressLevel> findByVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    boolean existsByAuditLastModifiedDateTimeIsGreaterThanAndIdIn(
+    boolean existsByLastModifiedDateTimeIsGreaterThanAndIdIn(
             DateTime lastModifiedDateTime,
             List<Long> addressIds);
 
-    Page<AddressLevel> findByIdInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<AddressLevel> findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<Long> addressLevelIds,
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -58,29 +59,29 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 
-    Page<AddressLevel> findByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
+    Page<AddressLevel> findByLastModifiedDateTimeAfterAndTypeIn(DateTime LastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
 
-    boolean existsByAuditLastModifiedDateTimeAfterAndTypeIn(DateTime audit_lastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
+    boolean existsByLastModifiedDateTimeAfterAndTypeIn(DateTime LastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
 
     @Override
     default Page<AddressLevel> syncByCatchment(SyncParameters syncParameters) {
         List<Long> addressLevelIds = syncParameters.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList());
-        return findByIdInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(addressLevelIds, syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(addressLevelIds, syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default Page<AddressLevel> syncByFacility(SyncParameters syncParameters) {
-        return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsByAuditLastModifiedDateTimeIsGreaterThanAndIdIn(lastModifiedDateTime, addressIds);
+        return existsByLastModifiedDateTimeIsGreaterThanAndIdIn(lastModifiedDateTime, addressIds);
     }
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     default AddressLevel findByName(String name) {

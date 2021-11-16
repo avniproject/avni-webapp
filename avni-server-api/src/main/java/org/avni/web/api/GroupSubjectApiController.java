@@ -45,11 +45,11 @@ public class GroupSubjectApiController {
                               Pageable pageable) {
         Page<GroupSubject> groupSubjects;
         if (!S.isEmpty(groupSubjectUUID) && lastModifiedDateTime == null) {
-            groupSubjects = groupSubjectRepository.findByGroupSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(groupSubjectUUID, pageable);
+            groupSubjects = groupSubjectRepository.findByGroupSubjectUuidOrderByLastModifiedDateTimeAscIdAsc(groupSubjectUUID, pageable);
         } else if (!S.isEmpty(memberSubjectUUID) && lastModifiedDateTime == null) {
-            groupSubjects = groupSubjectRepository.findByMemberSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(memberSubjectUUID, pageable);
+            groupSubjects = groupSubjectRepository.findByMemberSubjectUuidOrderByLastModifiedDateTimeAscIdAsc(memberSubjectUUID, pageable);
         } else if (lastModifiedDateTime != null) {
-            groupSubjects = groupSubjectRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+            groupSubjects = groupSubjectRepository.findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

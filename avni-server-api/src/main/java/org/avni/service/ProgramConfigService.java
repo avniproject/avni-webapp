@@ -1,9 +1,10 @@
 package org.avni.service;
 
-import org.joda.time.DateTime;
 import org.avni.dao.ProgramOrganisationConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.joda.time.DateTime;
 
 @Service
 public class ProgramConfigService implements NonScopeAwareService {
@@ -17,6 +18,6 @@ public class ProgramConfigService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return programOrganisationConfigRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return programOrganisationConfigRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

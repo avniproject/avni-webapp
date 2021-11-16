@@ -29,7 +29,6 @@ import org.avni.web.request.rules.response.RuleError;
 import org.avni.web.request.rules.response.RuleResponseEntity;
 import org.avni.web.request.rules.validateRules.RuleValidationService;
 import org.avni.web.validation.ValidationException;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +42,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import org.joda.time.DateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -357,7 +357,7 @@ public class RuleService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return ruleRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return ruleRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
 }

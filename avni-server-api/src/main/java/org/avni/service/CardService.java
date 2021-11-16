@@ -6,10 +6,10 @@ import org.avni.domain.Card;
 import org.avni.domain.StandardReportCardType;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.CardContract;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,6 +96,6 @@ public class CardService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return cardRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return cardRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

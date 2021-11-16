@@ -6,10 +6,10 @@ import org.avni.domain.Catchment;
 import org.avni.domain.IdentifierSource;
 import org.avni.domain.JsonObject;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.UUID;
 
 @Service
@@ -58,6 +58,6 @@ public class IdentifierSourceService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return identifierSourceRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return identifierSourceRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -25,8 +26,8 @@ public interface IdentifierSourceRepository extends ReferenceDataRepository<Iden
     @Query("select isource from IdentifierSource isource " +
             "where (catchment is null or (:catchment is not null and catchment = :catchment)) and " +
             "(facility is null or (:facility is not null and facility = :facility)) " +
-            "and (isource.audit.lastModifiedDateTime between :lastModifiedDateTime and :now) " +
-            "order by isource.audit.lastModifiedDateTime asc")
+            "and (isource.lastModifiedDateTime between :lastModifiedDateTime and :now) " +
+            "order by isource.lastModifiedDateTime asc")
     Page<IdentifierSource> getAllAuthorisedIdentifierSources(
             @Param("catchment") Catchment catchment,
             @Param("facility") Facility facility,
@@ -40,5 +41,5 @@ public interface IdentifierSourceRepository extends ReferenceDataRepository<Iden
     List<IdentifierSource> getAllAuthorisedIdentifierSources(@Param("catchment") Catchment catchment,
                                                              @Param("facility") Facility facility);
 
-    boolean existsByAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }

@@ -1,9 +1,8 @@
 package org.avni.domain;
 
-import org.joda.time.DateTime;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 public class StandardReportCardType {
@@ -22,10 +21,8 @@ public class StandardReportCardType {
     private String description;
     @Column
     private boolean isVoided;
-    @NotNull
     @Column
     private DateTime createdDateTime;
-    @NotNull
     @Column
     private DateTime lastModifiedDateTime;
 

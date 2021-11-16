@@ -1,10 +1,17 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.joda.time.DateTime;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "rule_failure_telemetry")
@@ -47,25 +54,64 @@ public class RuleFailureTelemetry {
     private Long organisationId;
 
     @JsonIgnore
-    @Embedded
-    private Audit audit = new Audit();
+    @JoinColumn(name = "created_by_id")
+    @CreatedBy
+    @ManyToOne(targetEntity = User.class)
+    @Fetch(FetchMode.JOIN)
+    @NotNull
+    private User createdBy;
+
+    @CreatedDate
+    private DateTime createdDateTime;
+
+    @JsonIgnore
+    @JoinColumn(name = "last_modified_by_id")
+    @LastModifiedBy
+    @ManyToOne(targetEntity = User.class)
+    @Fetch(FetchMode.JOIN)
+    @NotNull
+    private User lastModifiedBy;
+
+    @LastModifiedDate
+    private DateTime lastModifiedDateTime;
 
     @Column(name = "version")
     private int version;
 
-    public Audit getAudit() {
-        if (audit == null) {
-            audit = new Audit();
-        }
-        return audit;
+    public User getCreatedBy() {
+        return createdBy;
     }
 
-    public void setAudit(Audit audit) {
-        this.audit = audit;
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public DateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(DateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public User getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(User lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
     }
 
     public void updateLastModifiedDateTime() {
-        this.getAudit().setLastModifiedDateTime(new DateTime());
+        this.setLastModifiedDateTime(DateTime.now());
     }
 
     public int getVersion() {
@@ -74,10 +120,6 @@ public class RuleFailureTelemetry {
 
     public void setVersion(int version) {
         this.version = version;
-    }
-
-    public DateTime getLastModifiedDateTime() {
-        return getAudit().getLastModifiedDateTime();
     }
 
     public Long getId() {

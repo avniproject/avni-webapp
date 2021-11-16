@@ -2,6 +2,7 @@ package org.avni.web.request.webapp;
 
 import org.avni.domain.OperationalProgram;
 import org.springframework.hateoas.core.Relation;
+
 import org.joda.time.DateTime;
 
 
@@ -91,10 +92,10 @@ public class ProgramContractWeb {
         contract.setProgramOrganisationId(operationalProgram.getProgram().getOrganisationId());
         contract.setEnrolmentSummaryRule(operationalProgram.getEnrolmentSummaryRule());
         contract.setEnrolmentEligibilityCheckRule(operationalProgram.getEnrolmentEligibilityCheckRule());
-        contract.setCreatedBy(operationalProgram.getAudit().getCreatedBy().getUsername());
-        contract.setLastModifiedBy(operationalProgram.getAudit().getLastModifiedBy().getUsername());
-        contract.setCreatedDateTime(operationalProgram.getAudit().getCreatedDateTime());
-        contract.setModifiedDateTime(operationalProgram.getAudit().getLastModifiedDateTime());
+        contract.setCreatedBy(operationalProgram.getCreatedBy().getUsername());
+        contract.setLastModifiedBy(operationalProgram.getLastModifiedBy().getUsername());
+        contract.setCreatedDateTime(operationalProgram.getCreatedDateTime());
+        contract.setModifiedDateTime(operationalProgram.getLastModifiedDateTime());
 
         return contract;
     }

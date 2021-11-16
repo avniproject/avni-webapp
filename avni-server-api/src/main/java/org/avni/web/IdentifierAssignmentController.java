@@ -62,7 +62,7 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
         User currentUser = userService.getCurrentUser();
         identifierAssignmentService.generateIdentifiersIfNecessary(currentUser);
 
-        return wrap(identifierAssignmentRepository.findByAssignedToAndAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(currentUser, lastModifiedDateTime, pageable));
+        return wrap(identifierAssignmentRepository.findByAssignedToAndLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(currentUser, lastModifiedDateTime, pageable));
     }
 
     @RequestMapping(value = "/identifierAssignments", method = RequestMethod.POST)

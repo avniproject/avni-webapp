@@ -4,6 +4,8 @@ import org.avni.domain.OperationalEncounterType;
 import org.springframework.hateoas.core.Relation;
 import org.joda.time.DateTime;
 
+import org.joda.time.DateTime;
+
 
 /**
  * This class represents a combined entity representing one to one mapping of EncounterType and OperationalEncounterType.
@@ -69,10 +71,10 @@ public class EncounterTypeContractWeb {
         contract.setVoided(operationalEncounterType.isVoided());
         contract.setActive(operationalEncounterType.getEncounterType().getActive());
         contract.setEncounterEligibilityCheckRule(operationalEncounterType.getEncounterEligibilityCheckRule());
-        contract.setCreatedBy(operationalEncounterType.getAudit().getCreatedBy().getUsername());
-        contract.setLastModifiedBy(operationalEncounterType.getAudit().getLastModifiedBy().getUsername());
-        contract.setCreatedDateTime(operationalEncounterType.getAudit().getCreatedDateTime());
-        contract.setModifiedDateTime(operationalEncounterType.getAudit().getLastModifiedDateTime());
+        contract.setCreatedBy(operationalEncounterType.getCreatedBy().getUsername());
+        contract.setLastModifiedBy(operationalEncounterType.getLastModifiedBy().getUsername());
+        contract.setCreatedDateTime(operationalEncounterType.getCreatedDateTime());
+        contract.setModifiedDateTime(operationalEncounterType.getLastModifiedDateTime());
         return contract;
     }
 

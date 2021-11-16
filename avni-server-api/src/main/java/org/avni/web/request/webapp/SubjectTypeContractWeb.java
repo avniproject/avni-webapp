@@ -1,6 +1,5 @@
 package org.avni.web.request.webapp;
 
-import org.joda.time.DateTime;
 import org.avni.application.Format;
 import org.avni.domain.OperationalSubjectType;
 import org.avni.domain.SubjectType;
@@ -8,6 +7,7 @@ import org.avni.web.request.FormatContract;
 import org.springframework.hateoas.core.Relation;
 import org.avni.web.request.GroupRoleContract;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 /**
@@ -48,10 +48,10 @@ public class SubjectTypeContractWeb {
         contract.setOrganisationId(operationalSubjectType.getOrganisationId());
         contract.setSubjectTypeOrganisationId(subjectType.getOrganisationId());
         contract.setVoided(operationalSubjectType.isVoided());
-        contract.setCreatedBy(operationalSubjectType.getAudit().getCreatedBy().getUsername());
-        contract.setLastModifiedBy(operationalSubjectType.getAudit().getLastModifiedBy().getUsername());
-        contract.setCreatedDateTime(operationalSubjectType.getAudit().getCreatedDateTime());
-        contract.setModifiedDateTime(operationalSubjectType.getAudit().getLastModifiedDateTime());
+        contract.setCreatedBy(operationalSubjectType.getCreatedBy().getUsername());
+        contract.setLastModifiedBy(operationalSubjectType.getLastModifiedBy().getUsername());
+        contract.setCreatedDateTime(operationalSubjectType.getCreatedDateTime());
+        contract.setModifiedDateTime(operationalSubjectType.getLastModifiedDateTime());
         contract.setGroup(operationalSubjectType.isGroup());
         contract.setHousehold(operationalSubjectType.isHousehold());
         contract.setGroupRoles(subjectType.getGroupRolesContract());

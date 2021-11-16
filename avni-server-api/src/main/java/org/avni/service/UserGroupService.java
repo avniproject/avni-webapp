@@ -1,11 +1,12 @@
 package org.avni.service;
 
-import org.joda.time.DateTime;
 import org.avni.dao.UserGroupRepository;
 import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.joda.time.DateTime;
 
 @Service
 public class UserGroupService implements NonScopeAwareService {
@@ -20,7 +21,7 @@ public class UserGroupService implements NonScopeAwareService {
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         User user = UserContextHolder.getUserContext().getUser();
-        return userGroupRepository.existsByUserIdAndAuditLastModifiedDateTimeGreaterThan(user.getId(), lastModifiedDateTime);
+        return userGroupRepository.existsByUserIdAndLastModifiedDateTimeGreaterThan(user.getId(), lastModifiedDateTime);
     }
 }
 

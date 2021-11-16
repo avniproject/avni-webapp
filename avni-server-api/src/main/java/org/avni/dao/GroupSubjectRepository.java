@@ -13,6 +13,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -27,7 +28,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
         throw new UnsupportedOperationException("No field 'name' in GroupSubject");
     }
 
-    Page<GroupSubject> findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> groupSubjectAddressLevels,
             List<AddressLevel> memberSubjectAddressLevels,
             Long groupSubjectTypeId,
@@ -36,7 +37,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             Pageable pageable
     );
 
-    Page<GroupSubject> findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long groupSubjectFacilityId,
             long memberSubjectFacilityId,
             Long groupSubjectTypeId,
@@ -45,20 +46,20 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             Pageable pageable
     );
 
-    boolean existsByGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(
+    boolean existsByGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(
             Long groupSubjectTypeId,
             DateTime lastModifiedDateTime,
             List<Long> addressIds);
 
 
-    boolean existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+    boolean existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long groupSubjectTypeId,
             DateTime lastModifiedDateTime);
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
+        return existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
@@ -73,12 +74,12 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     List<GroupSubject> findAllByMemberSubjectIn(List<Individual> memberSubjects);
 
-    Page<GroupSubject> findByGroupSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectUuidOrderByLastModifiedDateTimeAscIdAsc(
             String groupSubjectUUID,
             Pageable pageable
     );
 
-    Page<GroupSubject> findByMemberSubjectUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByMemberSubjectUuidOrderByLastModifiedDateTimeAscIdAsc(
             String memberSubjectUUID,
             Pageable pageable
     );
@@ -93,7 +94,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
     Page<GroupSubject> findGroupSubjects(String subjectTypeUUID, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
 
-    Page<GroupSubject> findByGroupSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long groupSubjectTypeId,
             DateTime lastModifiedDateTime,
@@ -101,7 +102,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             Pageable pageable
     );
 
-    Page<GroupSubject> findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long groupSubjectTypeId,
             DateTime lastModifiedDateTime,
@@ -111,17 +112,17 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     @Override
     default Page<GroupSubject> syncByCatchment(SyncParameters syncParameters) {
-        return findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default Page<GroupSubject> syncByFacility(SyncParameters syncParameters) {
-        return findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getFacilityId(), syncParameters.getFacilityId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getFacilityId(), syncParameters.getFacilityId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsByGroupRoleGroupSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+        return existsByGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     List<GroupSubject> findAllByMemberSubject(Individual memberSubject);

@@ -2,10 +2,10 @@ package org.avni.domain;
 
 
 import org.hibernate.annotations.BatchSize;
-import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 @BatchSize(size = 100)
@@ -24,10 +24,8 @@ public class ApprovalStatus {
     private Status status;
     @Column
     private boolean isVoided;
-    @NotNull
     @Column
     private DateTime createdDateTime;
-    @NotNull
     @Column
     private DateTime lastModifiedDateTime;
 

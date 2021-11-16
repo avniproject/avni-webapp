@@ -3,10 +3,10 @@ package org.avni.service;
 import org.avni.dao.VideoRepository;
 import org.avni.domain.Video;
 import org.avni.web.request.VideoContract;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -50,6 +50,6 @@ public class VideoService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return videoRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return videoRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

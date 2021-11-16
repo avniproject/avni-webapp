@@ -263,11 +263,11 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     public FormContract export(@RequestParam String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
 
-        FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
-        formContract.setCreatedBy(form.getAudit().getCreatedBy().getUsername());
-        formContract.setLastModifiedBy(form.getAudit().getLastModifiedBy().getUsername());
-        formContract.setCreatedDateTime(form.getAudit().getCreatedDateTime());
-        formContract.setModifiedDateTime(form.getAudit().getLastModifiedDateTime());
+        FormContract formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
+        formContract.setCreatedBy(form.getCreatedBy().getUsername());
+        formContract.setLastModifiedBy(form.getLastModifiedBy().getUsername());
+        formContract.setCreatedDateTime(form.getCreatedDateTime());
+        formContract.setModifiedDateTime(form.getLastModifiedDateTime());
         formContract.setDecisionRule(form.getDecisionRule());
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
@@ -366,8 +366,8 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             Link formLink = entityLinks.linkToSingleResource(Form.class, form.getId());
             formDetail.add(formLink);
             formDetail.add(new Link(formLink.getHref() + "/formElementGroups", "formElementGroups"));
-            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getAudit().getCreatedBy().getId()).withRel("createdBy"));
-            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getAudit().getLastModifiedBy().getId()).withRel("lastModifiedBy"));
+            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getCreatedBy().getId()).withRel("createdBy"));
+            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getLastModifiedBy().getId()).withRel("lastModifiedBy"));
             return formDetail;
         }).collect(Collectors.toList());
     }

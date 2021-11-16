@@ -46,7 +46,7 @@ public class UserGroupController extends AbstractController<UserGroup> implement
                                                    @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                                    Pageable pageable) {
         User user = UserContextHolder.getUserContext().getUser();
-        return wrap(userGroupRepository.findByUserIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(user.getId(), lastModifiedDateTime, now, pageable));
+        return wrap(userGroupRepository.findByUserIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(user.getId(), lastModifiedDateTime, now, pageable));
     }
 
     @RequestMapping(value = "/groups/{id}/users", method = RequestMethod.GET)

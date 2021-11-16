@@ -54,7 +54,7 @@ public class Comment extends OrganisationAwareEntity {
     }
 
     public String getDisplayUsername() {
-        User createdByUser = this.getAudit().getCreatedBy();
+        User createdByUser = this.getCreatedBy();
         return S.isEmpty(createdByUser.getName()) ? createdByUser.getUsername() : createdByUser.getName();
     }
 

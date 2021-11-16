@@ -2,7 +2,6 @@ package org.avni.service;
 
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
-import org.avni.dao.IndividualRepository;
 import org.avni.dao.OperationalProgramRepository;
 import org.avni.dao.ProgramRepository;
 import org.avni.dao.application.FormMappingRepository;
@@ -12,12 +11,12 @@ import org.avni.domain.Organisation;
 import org.avni.domain.Program;
 import org.avni.web.request.OperationalProgramContract;
 import org.avni.web.request.ProgramRequest;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -108,7 +107,7 @@ public class ProgramService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return programRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return programRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     public Stream<Program> getAll() {

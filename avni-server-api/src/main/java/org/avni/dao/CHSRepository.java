@@ -1,10 +1,8 @@
 package org.avni.dao;
 
 import org.joda.time.DateTime;
-import org.avni.domain.Audit;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.Concept;
-import org.avni.domain.Individual;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
@@ -32,14 +30,12 @@ public interface CHSRepository<T extends CHSEntity> {
 
     default Specification lastModifiedBetween(DateTime lastModifiedDateTime, DateTime now) {
         Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            Join<T, Audit> audit = root.join("audit", JoinType.LEFT);
-
             List<Predicate> predicates = new ArrayList<>();
 
             if (lastModifiedDateTime != null) {
-                predicates.add(cb.greaterThan(audit.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime)));
-                predicates.add(cb.lessThan(audit.get("lastModifiedDateTime"), cb.literal(now)));
-                query.orderBy(cb.asc(audit.get("lastModifiedDateTime")), cb.asc(root.get("id")));
+                predicates.add(cb.greaterThan(root.get("lastModifiedDateTime"), cb.literal(lastModifiedDateTime)));
+                predicates.add(cb.lessThan(root.get("lastModifiedDateTime"), cb.literal(now)));
+                query.orderBy(cb.asc(root.get("lastModifiedDateTime")), cb.asc(root.get("id")));
             }
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

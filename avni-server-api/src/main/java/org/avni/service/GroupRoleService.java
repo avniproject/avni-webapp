@@ -4,12 +4,12 @@ import org.avni.dao.GroupRoleRepository;
 import org.avni.domain.GroupRole;
 import org.avni.domain.SubjectType;
 import org.avni.web.request.GroupRoleContract;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.UUID;
 
 @Service
@@ -41,6 +41,6 @@ public class GroupRoleService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return groupRoleRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return groupRoleRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

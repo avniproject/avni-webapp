@@ -98,11 +98,11 @@ public class ProgramEnrolmentApiController {
                                 Pageable pageable) {
         Page<ProgramEnrolment> programEnrolments;
         if (S.isEmpty(program) && lastModifiedDateTime != null) {
-            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeGreaterThanAndAuditLastModifiedDateTimeLessThanOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+            programEnrolments = programEnrolmentRepository.findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
         } else if (S.isEmpty(subjectUuid) && lastModifiedDateTime != null) {
-            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeGreaterThanAndAuditLastModifiedDateTimeLessThanAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
+            programEnrolments = programEnrolmentRepository.findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanAndProgramNameOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
         } else if (!S.isEmpty(subjectUuid) && !S.isEmpty(program)) {
-            programEnrolments = programEnrolmentRepository.findByProgramNameAndIndividualUuidOrderByAuditLastModifiedDateTimeAscIdAsc(program, subjectUuid, pageable);
+            programEnrolments = programEnrolmentRepository.findByProgramNameAndIndividualUuidOrderByLastModifiedDateTimeAscIdAsc(program, subjectUuid, pageable);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -18,8 +18,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "operationalEncounterType", path = "operationalEncounterType")
 public interface OperationalEncounterTypeRepository extends ImplReferenceDataRepository<OperationalEncounterType> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    @Query("select oet from OperationalEncounterType oet where oet.audit.lastModifiedDateTime between :lastModifiedDateTime and :now or oet.encounterType.audit.lastModifiedDateTime between :lastModifiedDateTime and :now order by CASE WHEN oet.encounterType.audit.lastModifiedDateTime > oet.audit.lastModifiedDateTime THEN oet.encounterType.audit.lastModifiedDateTime ELSE oet.audit.lastModifiedDateTime END")
-    Page<OperationalEncounterType> findByAuditLastModifiedDateTimeIsBetweenOrEncounterTypeAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    @Query("select oet from OperationalEncounterType oet where oet.lastModifiedDateTime between :lastModifiedDateTime and :now or oet.encounterType.lastModifiedDateTime between :lastModifiedDateTime and :now order by CASE WHEN oet.encounterType.lastModifiedDateTime > oet.lastModifiedDateTime THEN oet.encounterType.lastModifiedDateTime ELSE oet.lastModifiedDateTime END")
+    Page<OperationalEncounterType> findByLastModifiedDateTimeIsBetweenOrEncounterTypeLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);

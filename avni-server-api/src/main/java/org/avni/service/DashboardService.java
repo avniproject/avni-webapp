@@ -10,10 +10,10 @@ import org.avni.web.request.CardContract;
 import org.avni.web.request.DashboardContract;
 import org.avni.web.request.DashboardSectionCardMappingContract;
 import org.avni.web.request.DashboardSectionContract;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -182,6 +182,6 @@ public class DashboardService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return dashboardRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return dashboardRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

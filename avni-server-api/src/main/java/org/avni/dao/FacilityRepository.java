@@ -16,13 +16,13 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "facility", path = "facility")
 public interface FacilityRepository extends ReferenceDataRepository<Facility> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<Facility> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Facility> findByLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
 
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
-    Page<Facility> findByAddressLevelCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Facility> findByAddressLevelCatchmentsIdAndLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

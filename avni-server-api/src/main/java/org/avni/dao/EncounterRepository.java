@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.sql.Date;
+import org.joda.time.DateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -20,43 +21,43 @@ import java.util.Map;
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface EncounterRepository extends TransactionalDataRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter> {
-    Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(
+    Page<Encounter> findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Encounter> findByIndividualAddressLevelInAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Encounter> findByIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Encounter> findByIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Encounter> findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(
+    boolean existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(
             Long encounterTypeId, DateTime lastModifiedDateTime, List<Long> addressIds);
 
-    boolean existsByIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThan(
+    boolean existsByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsGreaterThan(
             long facilityId, Long encounterTypeId, DateTime lastModifiedDateTime);
 
     @Override
     default Page<Encounter> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressLevelInAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+        return findByIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
                 syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default Page<Encounter> syncByFacility(SyncParameters syncParameters) {
-        return findByIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsByEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+        return existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByIndividualFacilityIdAndEncounterTypeIdAndAuditLastModifiedDateTimeIsGreaterThan(facilityId, typeId, lastModifiedDateTime);
+        return existsByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     @Query(value = "select count(enc.id) as count " +

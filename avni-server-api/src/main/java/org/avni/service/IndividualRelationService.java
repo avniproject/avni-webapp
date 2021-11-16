@@ -9,11 +9,10 @@ import org.avni.util.BadRequestError;
 import org.avni.web.request.GenderContract;
 import org.avni.web.request.IndividualRelationContract;
 
-import org.joda.time.DateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -132,6 +131,6 @@ public class IndividualRelationService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return individualRelationRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return individualRelationRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

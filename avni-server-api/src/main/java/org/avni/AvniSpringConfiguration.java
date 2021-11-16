@@ -38,5 +38,4 @@ public class AvniSpringConfiguration extends WebMvcAutoConfiguration {
         String[] activeProfiles = environment.getActiveProfiles();
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
     }
-
 }

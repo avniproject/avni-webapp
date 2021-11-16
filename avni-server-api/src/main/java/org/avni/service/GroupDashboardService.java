@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,6 +62,6 @@ public class GroupDashboardService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return groupDashboardRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return groupDashboardRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

@@ -1,9 +1,10 @@
 package org.avni.service;
 
-import org.joda.time.DateTime;
 import org.avni.dao.individualRelationship.IndividualRelationGenderMappingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.joda.time.DateTime;
 
 @Service
 public class IndividualRelationGenderMappingService implements NonScopeAwareService {
@@ -17,6 +18,6 @@ public class IndividualRelationGenderMappingService implements NonScopeAwareServ
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return individualRelationGenderMappingRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return individualRelationGenderMappingRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

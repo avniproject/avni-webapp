@@ -7,13 +7,13 @@ import org.avni.domain.ChecklistDetail;
 import org.avni.domain.ChecklistItemDetail;
 import org.avni.web.request.CHSRequest;
 import org.avni.web.request.application.ChecklistDetailRequest;
-import org.joda.time.DateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +69,7 @@ public class ChecklistDetailService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return checklistDetailRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return checklistDetailRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     public List<ChecklistDetail> getAll() {

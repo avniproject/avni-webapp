@@ -6,6 +6,7 @@ import org.avni.application.Subject;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "operational_subject_type")
@@ -83,7 +84,8 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
     }
 
     public DateTime getLastModifiedDateTime() {
-        return getSubjectType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getSubjectType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
+        return getSubjectType().getLastModifiedDateTime().isAfter(super.getLastModifiedDateTime()) ?
+                getSubjectType().getLastModifiedDateTime() : super.getLastModifiedDateTime();
     }
 
     @Override

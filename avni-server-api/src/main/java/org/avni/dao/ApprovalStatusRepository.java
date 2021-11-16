@@ -2,7 +2,6 @@ package org.avni.dao;
 
 import org.joda.time.DateTime;
 import org.avni.domain.ApprovalStatus;
-import org.avni.domain.StandardReportCardType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +11,8 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
+
+import org.joda.time.DateTime;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "approvalStatus", path = "approvalStatus")

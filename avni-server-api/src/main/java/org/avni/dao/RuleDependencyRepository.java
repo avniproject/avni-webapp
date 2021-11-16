@@ -10,13 +10,15 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "ruleDependency", path = "ruleDependency")
 public interface RuleDependencyRepository extends ImplReferenceDataRepository<RuleDependency> {
     RuleDependency findByOrganisationId(Long organisationId);
 
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<RuleDependency> findByAuditLastModifiedDateTimeIsBetween(
+    Page<RuleDependency> findByLastModifiedDateTimeIsBetween(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now, Pageable pageable);
 
@@ -28,6 +30,6 @@ public interface RuleDependencyRepository extends ImplReferenceDataRepository<Ru
         throw new UnsupportedOperationException("No field 'name' in RuleDependency");
     }
 
-    boolean existsByAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 
 }

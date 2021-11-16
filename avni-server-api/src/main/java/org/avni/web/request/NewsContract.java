@@ -3,6 +3,8 @@ package org.avni.web.request;
 import org.joda.time.DateTime;
 import org.avni.domain.News;
 
+import org.joda.time.DateTime;
+
 public class NewsContract extends CHSRequest {
     private String title;
     private DateTime publishedDate;

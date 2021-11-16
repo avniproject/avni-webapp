@@ -48,7 +48,7 @@ public class LocationHierarchyController implements RestControllerResourceProces
             ArrayList<Long> addressLevelTypeIds = (ArrayList<Long>) locationHierarchyService.getLowestAddressLevelTypeHierarchiesForOrganisation();
             if (addressLevelTypeIds != null) {
                 List<AddressLevelType> addressLevelTypes = addressLevelTypeRepository.findAllByIdIn(addressLevelTypeIds);
-                return wrap(locationRepository.findByAuditLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes, pageable));
+                return wrap(locationRepository.findByLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes, pageable));
             }
         } catch (Exception exception) {
             exception.printStackTrace();

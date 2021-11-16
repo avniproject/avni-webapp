@@ -20,7 +20,6 @@ import org.avni.projection.ConceptProjection;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.OrganisationConfigRequest;
 import org.avni.web.request.webapp.SubjectTypeSetting;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import org.joda.time.DateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -235,7 +235,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return organisationConfigRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return organisationConfigRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
 }

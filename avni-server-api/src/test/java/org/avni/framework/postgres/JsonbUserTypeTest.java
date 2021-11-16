@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.avni.domain.Audit;
 import org.avni.domain.ObservationCollection;
 import org.avni.domain.ProgramEncounter;
 import org.avni.domain.User;
@@ -28,17 +27,11 @@ public class JsonbUserTypeTest {
         ProgramEncounter programEncounter = new ProgramEncounter();
         ObservationCollection observations = new ObservationCollection();
         observations.put("a8d3da51-33f8-4b0d-a867-678471603151", 10);
-        programEncounter.setAudit(dummyAudit());
+        programEncounter.setCreatedBy(new User());
+        programEncounter.setLastModifiedBy(new User());
         programEncounter.setObservations(observations);
         String string = AbstractJsonbUserType.mapper.writeValueAsString(programEncounter);
         JSONObject jsonObject = new JSONObject(string);
         Assert.assertEquals(10, jsonObject.getJSONObject("observations").getInt("a8d3da51-33f8-4b0d-a867-678471603151"));
-    }
-
-    private Audit dummyAudit() {
-        Audit audit = new Audit();
-        audit.setCreatedBy(new User());
-        audit.setLastModifiedBy(new User());
-        return audit;
     }
 }

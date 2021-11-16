@@ -5,11 +5,11 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
-import org.avni.framework.security.UserContextHolder;
 import org.avni.web.validation.ValidationException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 import java.util.*;
 
 @Entity
@@ -52,7 +52,6 @@ public class User {
     @ManyToOne(targetEntity = User.class)
     private User createdBy;
 
-    @NotNull
     private DateTime createdDateTime;
 
     @JsonIgnore
@@ -60,7 +59,6 @@ public class User {
     @ManyToOne(targetEntity = User.class)
     private User lastModifiedBy;
 
-    @NotNull
     private DateTime lastModifiedDateTime;
 
     @Column
@@ -243,7 +241,6 @@ public class User {
         return this.lastModifiedBy.getName();
     }
 
-    @NotNull
     public DateTime getCreatedDateTime() {
         return createdDateTime;
     }
@@ -252,7 +249,6 @@ public class User {
         return lastModifiedBy;
     }
 
-    @NotNull
     public DateTime getLastModifiedDateTime() {
         return lastModifiedDateTime;
     }
@@ -325,10 +321,10 @@ public class User {
     public void setAuditInfo(User currentUser) {
         if (this.getCreatedBy() == null) {
             this.setCreatedBy(currentUser);
-            this.setCreatedDateTime(new DateTime());
+            this.setCreatedDateTime(DateTime.now());
         }
         this.setLastModifiedBy(currentUser);
-        this.setLastModifiedDateTime(new DateTime());
+        this.setLastModifiedDateTime(DateTime.now());
     }
 
     public void assignUUID() {

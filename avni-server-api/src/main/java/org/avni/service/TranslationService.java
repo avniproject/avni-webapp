@@ -5,10 +5,10 @@ import org.avni.dao.PlatformTranslationRepository;
 import org.avni.dao.TranslationRepository;
 import org.avni.domain.*;
 import org.avni.domain.Locale;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.*;
 
 @Service
@@ -63,6 +63,6 @@ public class TranslationService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return translationRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return translationRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

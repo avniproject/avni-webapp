@@ -9,6 +9,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -16,49 +17,49 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface CommentRepository extends TransactionalDataRepository<Comment>, FindByLastModifiedDateTime<Comment>, OperatingIndividualScopeAwareRepository<Comment> {
 
-    List<Comment> findByIsVoidedFalseAndCommentThreadIdOrderByAuditLastModifiedDateTimeAscIdAsc(Long threadId);
+    List<Comment> findByIsVoidedFalseAndCommentThreadIdOrderByLastModifiedDateTimeAscIdAsc(Long threadId);
 
-    Page<Comment> findBySubjectAddressLevelInAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Comment> findBySubjectAddressLevelInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    Page<Comment> findBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Comment> findBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    boolean existsBySubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(
+    boolean existsBySubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             List<Long> addressIds);
 
-    boolean existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+    boolean existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long subjectTypeId,
             DateTime lastModifiedDateTime);
 
     @Override
     default Page<Comment> syncByCatchment(SyncParameters syncParameters) {
-        return findBySubjectAddressLevelInAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findBySubjectAddressLevelInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default Page<Comment> syncByFacility(SyncParameters syncParameters) {
-        return findBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsBySubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+        return existsBySubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
-        return existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
+        return existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 }

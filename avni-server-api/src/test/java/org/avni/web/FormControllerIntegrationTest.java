@@ -320,15 +320,15 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
         assertThat(originalForm).isNotNull();
         assertThat(updatedForm).isNotNull();
-        assertThat(updatedForm.getLastModifiedDateTime()).isEqualByComparingTo(originalForm.getLastModifiedDateTime());
+        assertThat(updatedForm.getLastModifiedDateTime()).isEqualTo(originalForm.getLastModifiedDateTime());
 
         assertThat(originalGroup).isNotNull();
         assertThat(updatedGroup).isNotNull();
-        assertThat(updatedGroup.getLastModifiedDateTime()).isEqualByComparingTo(originalGroup.getLastModifiedDateTime());
+        assertThat(updatedGroup.getLastModifiedDateTime()).isEqualTo(originalGroup.getLastModifiedDateTime());
 
         assertThat(originalFormElement).isNotNull();
         assertThat(updatedFormElement).isNotNull();
-        assertThat(updatedFormElement.getLastModifiedDateTime()).isEqualByComparingTo(originalFormElement.getLastModifiedDateTime());
+        assertThat(updatedFormElement.getLastModifiedDateTime()).isEqualTo(originalFormElement.getLastModifiedDateTime());
 
     }
 

@@ -1,14 +1,9 @@
 package org.avni.web.request;
 
 import org.avni.domain.SyncableItem;
-import org.hibernate.boot.model.source.internal.hbm.EmbeddableSourceContainer;
 import org.joda.time.DateTime;
-import org.avni.application.Subject;
-import org.avni.domain.GroupPrivilege;
-import org.avni.domain.SubjectType;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 public class EntitySyncStatusContract {
     private static final DateTime REALLY_OLD_DATE = new DateTime("1900-01-01T00:00:00.000Z");

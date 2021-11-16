@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -17,8 +18,8 @@ public interface NewsRepository extends TransactionalDataRepository<News>, FindB
 
     List<News> findByPublishedDateNotNullAndIsVoidedFalse();
 
-    Page<News> findByPublishedDateNotNullAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<News> findByPublishedDateNotNullAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    boolean existsByPublishedDateNotNullAndAuditLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByPublishedDateNotNullAndLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }
 

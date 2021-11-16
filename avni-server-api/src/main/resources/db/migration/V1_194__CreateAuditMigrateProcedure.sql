@@ -3,12 +3,16 @@ CREATE OR REPLACE FUNCTION audit_table_trigger()
     LANGUAGE PLPGSQL
 AS
 $$
+DECLARE
+    audit_id INTEGER;
 BEGIN
     IF NEW.audit_id is null THEN
-        insert into audit (uuid, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-        values (uuid_generate_v4(), NEW.created_by_id, NEW.last_modified_by_id, NEW.created_date_time,
-                NEW.last_modified_date_time)
-        returning id into NEW.audit_id;
+        audit_id = nextval('audit_id_seq');
+        NEW.audit_id = audit_id;
+        RAISE NOTICE 'setting value of audit to %', NEW.audit_id ;
+        insert into audit (id, uuid, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+        values (audit_id, uuid_generate_v4(), NEW.created_by_id, NEW.last_modified_by_id, NEW.created_date_time,
+                NEW.last_modified_date_time);
     else
         update audit
         set last_modified_date_time = NEW.last_modified_date_time,
@@ -64,10 +68,12 @@ BEGIN
         alter column last_modified_date_time set not null;';
     RAISE NOTICE 'set audit fields to non-null %', table_name ;
 
+    execute ' drop index if exists ' || table_name || '_last_modified_time_idx';
     execute 'CREATE INDEX ' || table_name || '_last_modified_time_idx
         ON ' || table_name || '(last_modified_date_time);';
     RAISE NOTICE 'create index on last_modified_date_time %', table_name ;
 
+    execute 'drop trigger if exists ' || table_name ||   '_update_audit_before_insert on ' || table_name ;
     execute 'CREATE TRIGGER ' || table_name ||  '_update_audit_before_insert
             BEFORE INSERT
             ON ' || table_name || '
@@ -75,6 +81,7 @@ BEGIN
         EXECUTE PROCEDURE audit_table_trigger();';
     RAISE NOTICE 'create trigger on insert %', table_name ;
 
+    execute 'drop trigger if exists ' || table_name ||   '_update_audit_before_update on ' || table_name ;
     execute 'CREATE TRIGGER ' || table_name ||  '_update_audit_before_update
             BEFORE UPDATE
             ON ' || table_name || '

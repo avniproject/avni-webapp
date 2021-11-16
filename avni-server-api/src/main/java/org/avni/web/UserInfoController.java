@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import org.joda.time.DateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -118,7 +119,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         User user = userService.getCurrentUser();
         user.setSettings(userInfo.getSettings());
         user.setLastModifiedBy(user);
-        user.setLastModifiedDateTime(new DateTime());
+        user.setLastModifiedDateTime(DateTime.now());
         userRepository.save(user);
     }
 

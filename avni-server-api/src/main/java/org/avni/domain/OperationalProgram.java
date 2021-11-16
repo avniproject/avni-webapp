@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "operational_program")
@@ -48,7 +49,7 @@ public class OperationalProgram extends OrganisationAwareEntity {
     }
 
     public DateTime getLastModifiedDateTime() {
-        return getProgram().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
+        return getProgram().getLastModifiedDateTime().isAfter(super.getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : super.getLastModifiedDateTime();
     }
 
     public void setProgramSubjectLabel(String programSubjectLabel) {

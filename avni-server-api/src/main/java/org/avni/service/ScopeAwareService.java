@@ -1,10 +1,11 @@
 package org.avni.service;
 
-import org.avni.framework.ApplicationContextProvider;
-import org.joda.time.DateTime;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.domain.*;
+import org.avni.framework.ApplicationContextProvider;
+import org.joda.time.DateTime;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 import static org.avni.domain.OperatingIndividualScope.ByCatchment;

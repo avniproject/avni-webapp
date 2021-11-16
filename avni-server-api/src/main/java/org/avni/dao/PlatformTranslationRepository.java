@@ -12,6 +12,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin')")
@@ -24,12 +26,12 @@ public interface PlatformTranslationRepository extends PagingAndSortingRepositor
 
     PlatformTranslation findByLanguage(Locale language);
 
-    Page<PlatformTranslation> findByPlatformAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<PlatformTranslation> findByPlatformAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             Platform platform,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    boolean existsByPlatformAndAuditLastModifiedDateTimeGreaterThan(Platform platform, DateTime lastModifiedDateTime);
+    boolean existsByPlatformAndLastModifiedDateTimeGreaterThan(Platform platform, DateTime lastModifiedDateTime);
 
 }

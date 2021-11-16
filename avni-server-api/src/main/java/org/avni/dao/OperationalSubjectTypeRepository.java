@@ -18,8 +18,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "operationalSubjectType", path = "operationalSubjectType")
 public interface OperationalSubjectTypeRepository extends ImplReferenceDataRepository<OperationalSubjectType> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    @Query("select ost from OperationalSubjectType ost where ost.audit.lastModifiedDateTime between :lastModifiedDateTime and :now or ost.subjectType.audit.lastModifiedDateTime between :lastModifiedDateTime and :now order by CASE WHEN ost.subjectType.audit.lastModifiedDateTime > ost.audit.lastModifiedDateTime THEN ost.subjectType.audit.lastModifiedDateTime ELSE ost.audit.lastModifiedDateTime END")
-    Page<OperationalSubjectType> findByAuditLastModifiedDateTimeIsBetweenOrSubjectTypeAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    @Query("select ost from OperationalSubjectType ost where ost.lastModifiedDateTime between :lastModifiedDateTime and :now or ost.subjectType.lastModifiedDateTime between :lastModifiedDateTime and :now order by CASE WHEN ost.subjectType.lastModifiedDateTime > ost.lastModifiedDateTime THEN ost.subjectType.lastModifiedDateTime ELSE ost.lastModifiedDateTime END")
+    Page<OperationalSubjectType> findByLastModifiedDateTimeIsBetweenOrSubjectTypeLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);

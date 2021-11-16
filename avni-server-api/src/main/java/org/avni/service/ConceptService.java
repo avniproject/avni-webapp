@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.application.FormElement;
 import org.avni.dao.ConceptAnswerRepository;
 import org.avni.dao.ConceptRepository;
-import org.avni.dao.OrganisationConfigRepository;
 import org.avni.dao.OrganisationRepository;
 import org.avni.dao.application.FormElementRepository;
 import org.avni.domain.*;
@@ -19,7 +18,6 @@ import org.avni.web.request.ReferenceDataContract;
 import org.avni.web.request.application.ConceptUsageContract;
 import org.avni.web.request.application.FormUsageContract;
 import org.avni.web.validation.ValidationException;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import org.joda.time.DateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -270,6 +269,6 @@ public class ConceptService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return conceptRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return conceptRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

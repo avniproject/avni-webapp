@@ -4,7 +4,6 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.joda.time.DateTime;
-import org.avni.domain.Audit;
 import org.avni.domain.OrganisationAwareEntity;
 import org.avni.domain.User;
 import org.avni.domain.Organisation;
@@ -26,19 +25,6 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
     @Override
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
         boolean somethingChanged = false;
-        int indexOf = getIndexOf(propertyNames, "audit");
-        if (indexOf != -1 && currentState[indexOf] != null) {
-            Audit audit = (Audit) currentState[indexOf];
-            UserContext userContext = UserContextHolder.getUserContext();
-            User user = userContext.getUser();
-            logger.info(String.format("Username is %s", user.getUsername()));
-            if (audit.getCreatedBy() == null) {
-                audit.setCreatedBy(user);
-            }
-            audit.setLastModifiedBy(user);
-            audit.setLastModifiedDateTime(new DateTime());
-            somethingChanged = true;
-        }
         return updateOrganisationId(entity, currentState, propertyNames) || somethingChanged;
     }
 

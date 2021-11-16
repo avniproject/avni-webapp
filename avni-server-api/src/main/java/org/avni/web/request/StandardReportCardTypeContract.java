@@ -1,8 +1,9 @@
 package org.avni.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.joda.time.DateTime;
 import org.avni.domain.StandardReportCardType;
+
+import org.joda.time.DateTime;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class StandardReportCardTypeContract {

@@ -2,7 +2,6 @@ package org.avni.dao;
 
 import org.avni.domain.AddressLevel;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.avni.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -20,38 +20,38 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepository<ProgramEnrolment> {
 
-    Page<ProgramEnrolment> findByIndividualAddressLevelInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByIndividualAddressLevelInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long programId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    Page<ProgramEnrolment> findByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long programId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    boolean existsByProgramIdAndAuditLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(
+    boolean existsByProgramIdAndLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(
             Long programId,
             DateTime lastModifiedDateTime,
             List<Long> addressIds);
 
-    boolean existsByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(
+    boolean existsByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long programId,
             DateTime lastModifiedDateTime);
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsByProgramIdAndAuditLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+        return existsByProgramIdAndLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
+        return existsByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     @Query("select enl from ProgramEnrolment enl " +
@@ -78,31 +78,31 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     Page<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID, String programUUID, Pageable pageable);
 
 
-    Page<ProgramEnrolment> findByAuditLastModifiedDateTimeGreaterThanAndAuditLastModifiedDateTimeLessThanAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanAndProgramNameOrderByLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,
             DateTime now,
             String program,
             Pageable pageable);
 
-    Page<ProgramEnrolment> findByProgramNameAndIndividualUuidOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByProgramNameAndIndividualUuidOrderByLastModifiedDateTimeAscIdAsc(
             String program,
             String individualUuid,
             Pageable pageable);
 
     ProgramEnrolment findByLegacyId(String legacyId);
 
-    Page<ProgramEnrolment> findByAuditLastModifiedDateTimeGreaterThanAndAuditLastModifiedDateTimeLessThanOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanOrderByLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
 
     @Override
     default Page<ProgramEnrolment> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressLevelInAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIndividualAddressLevelInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default Page<ProgramEnrolment> syncByFacility(SyncParameters syncParameters) {
-        return findByIndividualFacilityIdAndProgramIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 }

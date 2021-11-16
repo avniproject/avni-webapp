@@ -38,7 +38,7 @@ public class FormElementRepositoryTest extends AbstractControllerIntegrationTest
         Page<FormElement> allFormElements = formElementRepository
                 .findAll(pageRequest);
         Page<FormElement> allFormElementsWithNonApplicableFilteredOut = formElementRepository
-                .findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime,
+                .findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime,
                         new DateTime(), pageRequest);
         assertEquals(allFormElements.getTotalElements(), allFormElementsWithNonApplicableFilteredOut.getTotalElements());
     }
@@ -64,7 +64,7 @@ public class FormElementRepositoryTest extends AbstractControllerIntegrationTest
 
         // Test non applicable form element to be voided
         Page<FormElement> allFormElementsWithNonApplicableFilteredOut = formElementRepository
-                .findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime,
+                .findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime,
                         new DateTime(), pageRequest);
         assertEquals(allFormElements.getTotalElements(), allFormElementsWithNonApplicableFilteredOut.getTotalElements());
         FormElement voidedFormElement = allFormElementsWithNonApplicableFilteredOut.getContent().stream()

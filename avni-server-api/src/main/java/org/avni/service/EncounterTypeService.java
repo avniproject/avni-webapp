@@ -9,12 +9,12 @@ import org.avni.domain.OperationalEncounterType;
 import org.avni.domain.Organisation;
 import org.avni.web.request.EncounterTypeContract;
 import org.avni.web.request.OperationalEncounterTypeContract;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.stream.Stream;
 
 @Service
@@ -73,7 +73,7 @@ public class EncounterTypeService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return encounterTypeRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return encounterTypeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     public Stream<EncounterType> getAllGeneralEncounter() {

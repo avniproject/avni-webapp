@@ -1,37 +1,85 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.avni.framework.security.UserContextHolder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.joda.time.DateTime;
-import org.avni.framework.security.UserContextHolder;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @MappedSuperclass
-public class CHSEntity extends CHSBaseEntity {
+@EntityListeners({AuditingEntityListener.class})
+public class CHSEntity extends CHSBaseEntity implements Auditable{
 
     @JsonIgnore
-    @Embedded
-    private Audit audit = new Audit();
+    @JoinColumn(name = "created_by_id")
+    @CreatedBy
+    @ManyToOne(targetEntity = User.class)
+    @Fetch(FetchMode.JOIN)
+    @NotNull
+    private User createdBy;
+
+    @CreatedDate
+    @NotNull
+    private DateTime createdDateTime;
+
+    @JsonIgnore
+    @JoinColumn(name = "last_modified_by_id")
+    @LastModifiedBy
+    @ManyToOne(targetEntity = User.class)
+    @Fetch(FetchMode.JOIN)
+    @NotNull
+    private User lastModifiedBy;
+
+    @LastModifiedDate
+    @NotNull
+    private DateTime lastModifiedDateTime;
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public DateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(DateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public User getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(User lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
 
     @Column(name = "version")
     private int version;
 
 
-    public Audit getAudit() {
-        if (audit == null) {
-            audit = new Audit();
-        }
-        return audit;
-    }
-
-    public void setAudit(Audit audit) {
-        this.audit = audit;
-    }
-
     public void updateLastModifiedDateTime() {
-        this.getAudit().setLastModifiedDateTime(new DateTime());
+        this.setLastModifiedDateTime(DateTime.now());
     }
 
     /**
@@ -42,9 +90,8 @@ public class CHSEntity extends CHSBaseEntity {
      * This needs to be used only when absolutely necessary.
      */
     public void updateAudit() {
-        Audit audit = this.getAudit();
-        audit.setLastModifiedBy(UserContextHolder.getUser());
-        audit.setLastModifiedDateTime(DateTime.now());
+        this.setLastModifiedBy(UserContextHolder.getUser());
+        this.setLastModifiedDateTime(DateTime.now());
     }
 
     public int getVersion() {
@@ -54,27 +101,6 @@ public class CHSEntity extends CHSBaseEntity {
     public void setVersion(int version) {
         this.version = version;
     }
-
-    public DateTime getLastModifiedDateTime() {
-        return getAudit().getLastModifiedDateTime();
-    }
-
-    public DateTime getCreatedDateTime() {
-        return getAudit().getCreatedDateTime();
-    }
-
-    public String getCreatedBy() {
-        return getAudit().getCreatedBy().getUsername();
-    }
-
-    public String getLastModifiedBy() {
-        return getAudit().getLastModifiedBy().getUsername();
-    }
-
-//    public Long getAuditId() {
-//        return getAudit().getId();
-//    }
-
 
     @JsonIgnore
     public boolean isNew() {

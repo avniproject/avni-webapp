@@ -1,9 +1,10 @@
 package org.avni.service;
 
-import org.joda.time.DateTime;
 import org.avni.dao.application.FormElementGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.joda.time.DateTime;
 
 @Service
 public class FormElementGroupService implements NonScopeAwareService {
@@ -17,7 +18,7 @@ public class FormElementGroupService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return formElementGroupRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return formElementGroupRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }
 

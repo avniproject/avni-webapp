@@ -63,7 +63,7 @@ public class CommentController extends AbstractController<Comment> implements Re
     @ResponseBody
     @Transactional
     public List<Comment> getCommentsForSubject(@RequestParam(value = "commentThreadId") Long threadId) {
-        return commentRepository.findByIsVoidedFalseAndCommentThreadIdOrderByAuditLastModifiedDateTimeAscIdAsc(threadId);
+        return commentRepository.findByIsVoidedFalseAndCommentThreadIdOrderByLastModifiedDateTimeAscIdAsc(threadId);
     }
 
     @PostMapping(value = "/web/comment")

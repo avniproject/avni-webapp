@@ -18,8 +18,8 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "operationalProgram", path = "operationalProgram")
 public interface OperationalProgramRepository extends ImplReferenceDataRepository<OperationalProgram> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    @Query("select op from OperationalProgram op where op.audit.lastModifiedDateTime > :lastModifiedDateTime or op.program.audit.lastModifiedDateTime > :lastModifiedDateTime order by CASE WHEN op.program.audit.lastModifiedDateTime > op.audit.lastModifiedDateTime THEN op.program.audit.lastModifiedDateTime ELSE op.audit.lastModifiedDateTime END")
-    Page<OperationalProgram> findByAuditLastModifiedDateTimeGreaterThanOrProgramAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    @Query("select op from OperationalProgram op where op.lastModifiedDateTime > :lastModifiedDateTime or op.program.lastModifiedDateTime > :lastModifiedDateTime order by CASE WHEN op.program.lastModifiedDateTime > op.lastModifiedDateTime THEN op.program.lastModifiedDateTime ELSE op.lastModifiedDateTime END")
+    Page<OperationalProgram> findByLastModifiedDateTimeGreaterThanOrProgramLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
     OperationalProgram findByProgramAndOrganisationId(Program program, long organisationId);
 

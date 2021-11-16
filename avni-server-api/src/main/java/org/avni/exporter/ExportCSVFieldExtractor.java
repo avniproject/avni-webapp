@@ -208,7 +208,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             row.add(gender == null ? "" : gender.getName());
             addAddressLevels(row, addressLevel);
             row.addAll(getObs(individual.getObservations(), registrationMap));
-            addAuditFields(individual.getAudit(), row);
+            addAuditFields(individual, row);
             if (programUUID == null && reportType.equals(ReportType.Encounter.toString())) {
                 addGeneralEncounterRelatedFields(exportItemRow, row);
             } else if (reportType.equals(ReportType.Enrolment.toString())) {
@@ -235,14 +235,14 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(group.getGroupRole().getRole());
         row.add(group.getMembershipStartDate());
         row.add(group.getMembershipEndDate());
-        addAuditFields(group.getAudit(), row);
+        addAuditFields(group, row);
     }
 
-    private void addAuditFields(Audit audit, List<Object> row) {
-        row.add(audit.getCreatedBy().getUsername());
-        row.add(audit.getCreatedDateTime());
-        row.add(audit.getLastModifiedBy().getUsername());
-        row.add(audit.getLastModifiedDateTime());
+    private void addAuditFields(Auditable auditable, List<Object> row) {
+        row.add(auditable.getCreatedBy().getUsername());
+        row.add(auditable.getCreatedDateTime());
+        row.add(auditable.getLastModifiedBy().getUsername());
+        row.add(auditable.getLastModifiedDateTime());
     }
 
     private void addProgramEnrolmentFields(ExportItemRow exportItemRow, List<Object> row) {
@@ -255,7 +255,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         //Program Exit
         row.add(programEnrolment.getProgramExitDateTime());
         row.addAll(getObs(programEnrolment.getProgramExitObservations(), exitEnrolmentMap));
-        addAuditFields(programEnrolment.getAudit(), row);
+        addAuditFields(programEnrolment, row);
     }
 
     private void addGeneralEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
@@ -278,7 +278,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.addAll(getObs(encounter.getObservations(), map));
         row.add(encounter.getCancelDateTime());
         row.addAll(getObs(encounter.getCancelObservations(), cancelMap));
-        addAuditFields(encounter.getAudit(), row);
+        addAuditFields(encounter, row);
     }
 
     @Override

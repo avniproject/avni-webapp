@@ -1,9 +1,8 @@
 package org.avni.domain;
 
-import org.joda.time.DateTime;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "privilege")
@@ -26,10 +25,8 @@ public class Privilege {
     private EntityType entityType;
     @Column
     private boolean isVoided;
-    @NotNull
     @Column
     private DateTime createdDateTime;
-    @NotNull
     @Column
     private DateTime lastModifiedDateTime;
 

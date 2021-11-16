@@ -6,12 +6,12 @@ import org.avni.dao.LocationRepository;
 import org.avni.domain.AddressLevelType;
 import org.avni.domain.JsonObject;
 import org.avni.framework.security.UserContextHolder;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -108,7 +108,7 @@ public class LocationHierarchyService implements NonScopeAwareService {
         ArrayList<Long> addressLevelTypeIds = (ArrayList<Long>) this.getLowestAddressLevelTypeHierarchiesForOrganisation();
         if (addressLevelTypeIds != null) {
             List<AddressLevelType> addressLevelTypes = addressLevelTypeRepository.findAllByIdIn(addressLevelTypeIds);
-            return locationRepository.existsByAuditLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes);
+            return locationRepository.existsByLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes);
         }
         return false;
     }

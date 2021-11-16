@@ -12,9 +12,9 @@ import org.avni.domain.ConceptDataType;
 import org.avni.web.request.application.FormContract;
 import org.avni.web.request.application.FormElementContract;
 import org.avni.web.request.application.FormElementGroupContract;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -96,6 +96,6 @@ public class FormService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return formRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return formRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

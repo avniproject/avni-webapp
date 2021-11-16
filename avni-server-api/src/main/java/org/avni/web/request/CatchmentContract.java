@@ -4,6 +4,7 @@ import org.avni.domain.Catchment;
 import org.springframework.hateoas.core.Relation;
 
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,10 +41,10 @@ public class CatchmentContract extends ReferenceDataContract {
         catchmentContract.setName(catchment.getName());
         catchmentContract.setVoided(catchment.isVoided());
         catchmentContract.setLocationIds(catchment.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList()));
-        catchmentContract.setCreatedBy(catchment.getAudit().getCreatedBy().getUsername());
-        catchmentContract.setLastModifiedBy(catchment.getAudit().getLastModifiedBy().getUsername());
-        catchmentContract.setCreatedDateTime(catchment.getAudit().getCreatedDateTime());
-        catchmentContract.setModifiedDateTime(catchment.getAudit().getLastModifiedDateTime());
+        catchmentContract.setCreatedBy(catchment.getCreatedBy().getUsername());
+        catchmentContract.setLastModifiedBy(catchment.getLastModifiedBy().getUsername());
+        catchmentContract.setCreatedDateTime(catchment.getCreatedDateTime());
+        catchmentContract.setModifiedDateTime(catchment.getLastModifiedDateTime());
         return catchmentContract;
     }
 

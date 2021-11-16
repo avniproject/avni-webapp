@@ -7,9 +7,9 @@ import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.GroupPrivilegeContractWeb;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -180,7 +180,7 @@ public class GroupPrivilegeService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return groupPrivilegeRepository.existsByAuditLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return groupPrivilegeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     public List<GroupPrivilege> getAllowedPrivilegesForUser() {

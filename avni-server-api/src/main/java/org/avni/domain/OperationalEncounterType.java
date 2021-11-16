@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "operational_encounter_type")
@@ -49,7 +50,7 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     }
 
     public DateTime getLastModifiedDateTime() {
-        return getEncounterType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getEncounterType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
+        return getEncounterType().getLastModifiedDateTime().isAfter(super.getLastModifiedDateTime()) ? getEncounterType().getLastModifiedDateTime() : super.getLastModifiedDateTime();
     }
 
     public String getEncounterEligibilityCheckRule() {

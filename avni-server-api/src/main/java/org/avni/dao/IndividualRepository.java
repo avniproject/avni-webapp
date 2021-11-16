@@ -16,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
+import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -25,48 +25,48 @@ import java.util.Map;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
 
-    Page<Individual> findByAddressLevelInAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Individual> findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    Page<Individual> findByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Individual> findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    boolean existsBySubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(
+    boolean existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(
             Long subjectTypeId,
             DateTime lastModifiedDateTime,
             List<Long> addressIds);
 
-    boolean existsByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(
+    boolean existsByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long subjectTypeId,
             DateTime lastModifiedDateTime);
 
     @Override
     default Page<Individual> syncByCatchment(SyncParameters syncParameters) {
-        return findByAddressLevelInAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default Page<Individual> syncByFacility(SyncParameters syncParameters) {
-        return findByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
-        return existsBySubjectTypeIdAndAuditLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+        return existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
     default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
-        return existsByFacilityIdAndSubjectTypeIdAndAuditLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
+        return existsByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     default Specification<Individual> getFilterSpecForVoid(Boolean includeVoided) {

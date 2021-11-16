@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 public interface SubjectMigrationRepository extends TransactionalDataRepository<SubjectMigration>, OperatingIndividualScopeAwareRepository<SubjectMigration> {
@@ -15,8 +16,8 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
             "  inner join sm.newAddressLevel.virtualCatchments nvc " +
             "where (ovc.id = ?1 or nvc.id = ?1) " +
             "  and sm.individual.subjectType.id = ?4 " +
-            "  and sm.audit.lastModifiedDateTime between ?2 and ?3 " +
-            "order by sm.audit.lastModifiedDateTime, sm.id desc")
+            "  and sm.lastModifiedDateTime between ?2 and ?3 " +
+            "order by sm.lastModifiedDateTime, sm.id desc")
     Page<SubjectMigration> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable);
 
     default Page<SubjectMigration> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
@@ -29,7 +30,7 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
             "from SubjectMigration sm " +
             "where (sm.oldAddressLevel.id in ?1 or sm.newAddressLevel.id in ?1) " +
             "  and sm.individual.subjectType.id = ?3 " +
-            "  and sm.audit.lastModifiedDateTime > ?2")
+            "  and sm.lastModifiedDateTime > ?2")
     boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId);
 
     @Override

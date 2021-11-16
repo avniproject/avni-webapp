@@ -10,6 +10,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import org.joda.time.DateTime;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> {
 
-    Page<UserGroup> findByUserIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<UserGroup> findByUserIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             Long userId,
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -38,7 +39,7 @@ public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> 
 
     Long deleteAllByGroupIsNotIn(List<Group> groups);
 
-    boolean existsByUserIdAndAuditLastModifiedDateTimeGreaterThan(Long userId, DateTime lastModifiedDateTime);
+    boolean existsByUserIdAndLastModifiedDateTimeGreaterThan(Long userId, DateTime lastModifiedDateTime);
 
     List<UserGroup> findByUserAndGroupHasAllPrivilegesTrueAndIsVoidedFalse(User user);
 
