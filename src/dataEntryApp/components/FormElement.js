@@ -8,11 +8,11 @@ import NumericFormElement from "./NumericFormElement";
 import { DateFormElement, DateTimeFormElement } from "./DateFormElement";
 import TimeFormElement from "./TimeFormElement";
 import DurationFormElement from "./DurationFormElement";
-import SubjectFormElement from "./SubjectFormElement";
 import { Concept, KeyValue } from "avni-models";
 import MediaFormElement from "./MediaFormElement";
 import PhoneNumberFormElement from "./PhoneNumberFormElement";
 import LocationFormElement from "./LocationFormElement";
+import LandingSubjectFormElement from "./LandingSubjectFormElement";
 
 const div = () => <div />;
 
@@ -34,7 +34,7 @@ const elements = {
   File: MediaFormElement,
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
-  Subject: SubjectFormElement,
+  Subject: LandingSubjectFormElement,
   Location: LocationFormElement
 };
 

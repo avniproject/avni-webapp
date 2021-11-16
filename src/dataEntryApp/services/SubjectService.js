@@ -12,6 +12,10 @@ class SubjectService {
   addSubject(subject) {
     this.subjects.push(subject);
   }
+
+  addSubjects(subjects) {
+    this.subjects.push(...subjects);
+  }
 }
 
 export const subjectService = new SubjectService();
