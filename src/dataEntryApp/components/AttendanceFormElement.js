@@ -43,6 +43,7 @@ const AttendanceFormElement = ({ formElement, update, validationResults, uuid, v
         {map(memberSubjects, ({ uuid, nameString }) => {
           return (
             <FormControlLabel
+              key={uuid}
               control={
                 <Switch
                   color="primary"
