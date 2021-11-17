@@ -19,7 +19,7 @@ begin
             from (
                      with recursive recursive_deps(obj_schema, obj_name, obj_type, depth) as
                                         (
-                                            select p_view_schema, p_view_name, null::varchar, 0
+                                            select p_view_schema COLLATE "C", p_view_name COLLATE "C", null::varchar, 0
                                             union
                                             select dep_schema::varchar,
                                                    dep_name::varchar,
