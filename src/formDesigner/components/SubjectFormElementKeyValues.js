@@ -28,22 +28,22 @@ const SubjectFormElementKeyValues = props => {
         </AvniFormControl>
       </Grid>
       <Grid item sm={4}>
-        <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_ALL_OPTIONS"}>
+        <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_SEARCH_OPTIONS"}>
           <FormControlLabel
             control={
               <Checkbox
-                checked={props.formElementData.keyValues.allOptions}
+                checked={props.formElementData.keyValues.searchOptions}
                 onChange={event =>
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
-                    FormElement.keys.allOptions,
+                    FormElement.keys.searchOptions,
                     event.target.checked,
                     props.index
                   )
                 }
               />
             }
-            label="All options"
+            label="Search option"
           />
         </AvniFormControl>
       </Grid>

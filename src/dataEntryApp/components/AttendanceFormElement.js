@@ -14,12 +14,12 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({
   evenBackground: {
-    backgroundColor: "#FFF",
+    backgroundColor: "#ececec",
     paddingLeft: 10,
     paddingRight: 5
   },
   oddBackground: {
-    backgroundColor: "#ececec",
+    backgroundColor: "#FFF",
     paddingLeft: 10,
     paddingRight: 5
   }

@@ -7,11 +7,11 @@ const LandingSubjectFormElement = props => {
   const displayAllGroupMembers = props.formElement.recordValueByKey(
     FormElement.keys.displayAllGroupMembers
   );
-  const allOptions = props.formElement.recordValueByKey(FormElement.keys.allOptions);
-  return allOptions ? (
-    <AttendanceFormElement displayAllGroupMembers={displayAllGroupMembers} {...props} />
-  ) : (
+  const searchOptions = props.formElement.recordValueByKey(FormElement.keys.searchOptions);
+  return searchOptions ? (
     <SubjectFormElement {...props} />
+  ) : (
+    <AttendanceFormElement displayAllGroupMembers={displayAllGroupMembers} {...props} />
   );
 };
 
