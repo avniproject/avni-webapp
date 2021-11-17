@@ -4,8 +4,15 @@ import AttendanceFormElement from "./AttendanceFormElement";
 import SubjectFormElement from "./SubjectFormElement";
 
 const LandingSubjectFormElement = props => {
-  const isAttendance = props.formElement.recordValueByKey(FormElement.keys.isAttendance);
-  return isAttendance ? <AttendanceFormElement {...props} /> : <SubjectFormElement {...props} />;
+  const displayAllGroupMembers = props.formElement.recordValueByKey(
+    FormElement.keys.displayAllGroupMembers
+  );
+  const allOptions = props.formElement.recordValueByKey(FormElement.keys.allOptions);
+  return allOptions ? (
+    <AttendanceFormElement displayAllGroupMembers={displayAllGroupMembers} {...props} />
+  ) : (
+    <SubjectFormElement {...props} />
+  );
 };
 
 export default LandingSubjectFormElement;

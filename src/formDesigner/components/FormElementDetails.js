@@ -27,7 +27,7 @@ import { AvniFormControl } from "../../common/components/AvniFormControl";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { pickers } from "../../common/constants";
 import { FileOptions } from "./FileOptions";
-import { FormElement } from "avni-models";
+import SubjectFormElementKeyValues from "./SubjectFormElementKeyValues";
 
 export const FormControl = withStyles({
   root: {
@@ -750,26 +750,7 @@ function FormElementDetails(props) {
           </AvniFormControl>
         </Grid>
         {props.formElementData.concept.dataType === "Subject" && (
-          <Grid item sm={5}>
-            <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_ATTENDANCE"}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={props.formElementData.keyValues.isAttendance}
-                    onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        FormElement.keys.isAttendance,
-                        event.target.checked,
-                        props.index
-                      )
-                    }
-                  />
-                }
-                label="Is attendance"
-              />
-            </AvniFormControl>
-          </Grid>
+          <SubjectFormElementKeyValues {...props} />
         )}
         <Grid item sm={4}>
           {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(

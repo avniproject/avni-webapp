@@ -118,6 +118,8 @@ export default {
     httpClient.fetchJson(`/web/groupSubjects/${groupUUID}/members`).then(response => {
       return response.json;
     }),
+  fetchSubjectForUUIDs: uuids =>
+    httpClient.fetchJson(`/web/individual?uuids=${uuids}`).then(res => res.json),
   fetchGroupRoles: groupUUID =>
     httpClient.fetchJson(`/web/groupSubjects/${groupUUID}/roles`).then(response => {
       return response.json;
