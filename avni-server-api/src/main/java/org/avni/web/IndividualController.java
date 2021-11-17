@@ -33,6 +33,7 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import javax.websocket.server.PathParam;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -189,6 +190,13 @@ public class IndividualController extends AbstractController<Individual> impleme
     @ResponseBody
     public IndividualWebProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(IndividualWebProjection.class, individualRepository.findByUuid(uuid));
+    }
+
+    @GetMapping(value = "/web/individual")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public List<IndividualWebProjection> getByUUIDs(@RequestParam(value = "uuids") List<String> uuids) {
+        return individualRepository.findAllByUuidIn(uuids);
     }
 
     @GetMapping(value = "/web/subjectProfile")

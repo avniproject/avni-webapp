@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import org.avni.projection.IndividualWebProjection;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.avni.application.projections.WebSearchResultProjection;
@@ -169,4 +170,6 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     List<Individual> findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(AddressLevel addressLevel, SubjectType subjectType);
+
+    List<IndividualWebProjection> findAllByUuidIn(List<String> uuids);
 }
