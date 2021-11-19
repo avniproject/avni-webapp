@@ -58,11 +58,7 @@ const FormListing = ({ history }) => {
       apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
       if (!_.isEmpty(query.orderBy.field)) {
-        const orderBy =
-          query.orderBy.field === "lastModifiedDateTime"
-            ? "auditLastModifiedDateTime"
-            : query.orderBy.field;
-        apiUrl += `&sort=${orderBy},${query.orderDirection}`;
+        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       }
       http
         .get(apiUrl)
