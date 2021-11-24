@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { find, get, map, includes, sortBy, join } from "lodash";
+import { Concept } from "openchs-models";
 import { useSelector } from "react-redux";
 import api from "../api";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -16,12 +17,12 @@ const useStyles = makeStyles(theme => ({
   evenBackground: {
     backgroundColor: "#ececec",
     paddingLeft: 10,
-    paddingRight: 5
+    paddingRight: 15
   },
   oddBackground: {
     backgroundColor: "#FFF",
     paddingLeft: 10,
-    paddingRight: 5
+    paddingRight: 15
   }
 }));
 
@@ -46,7 +47,11 @@ const AttendanceFormElement = ({
   useEffect(() => {
     if (displayAllGroupMembers) {
       api.fetchGroupMembers(subjectUUID).then(groupSubjects => {
-        const mappedGroupSubjects = mapGroupMembers(groupSubjects);
+        const subjectTypeUUID = formElement.concept.recordValueByKey(Concept.keys.subjectTypeUUID);
+        const groupSubjectsMatchingRole = groupSubjects.filter(
+          groupSubject => groupSubject.member.subjectType.uuid === subjectTypeUUID
+        );
+        const mappedGroupSubjects = mapGroupMembers(groupSubjectsMatchingRole);
         const memberSubjects = map(mappedGroupSubjects, ({ memberSubject }) => memberSubject);
         subjectService.addSubjects(memberSubjects);
         setMemberSubjects(sortBy(memberSubjects, s => s.nameString));
