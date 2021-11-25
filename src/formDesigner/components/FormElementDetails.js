@@ -17,7 +17,7 @@ import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { capitalize, get, isEqual } from "lodash";
+import _, { capitalize, get, isEqual, toNumber } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -587,7 +587,7 @@ function FormElementDetails(props) {
                 props.handleGroupElementKeyValueChange(
                   props.groupIndex,
                   "maxHeight",
-                  event.target.value,
+                  toNumber(event.target.value),
                   props.index
                 )
               }
@@ -611,7 +611,7 @@ function FormElementDetails(props) {
                 props.handleGroupElementKeyValueChange(
                   props.groupIndex,
                   "maxWidth",
-                  event.target.value,
+                  toNumber(event.target.value),
                   props.index
                 )
               }
@@ -641,7 +641,7 @@ function FormElementDetails(props) {
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
                     "imageQuality",
-                    _.toNumber(event.target.value),
+                    toNumber(event.target.value),
                     props.index
                   )
                 }
