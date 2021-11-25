@@ -218,19 +218,21 @@ public class OrganisationConfigService implements NonScopeAwareService {
                 .collect(Collectors.toList());
     }
 
-    public Boolean isApprovalWorkflowEnabled() {
+    private Boolean isFeatureEnabled(String feature) {
         Long organisationId = UserContextHolder.getUserContext().getOrganisationId();
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisationId);
         if (organisationConfig == null) {
             return false;
         }
-        return (Boolean) organisationConfig.getSettings().getOrDefault("enableApprovalWorkflow", false);
+        return (Boolean) organisationConfig.getSettings().getOrDefault(feature, false);
+    }
+
+    public Boolean isApprovalWorkflowEnabled() {
+        return isFeatureEnabled("enableApprovalWorkflow");
     }
 
     public boolean isCommentEnabled() {
-        OrganisationConfig organisationConfig = organisationConfigRepository.findAllByIsVoidedFalse().stream().findFirst().orElse(null);
-        if (organisationConfig == null) return false;
-        return (boolean) organisationConfig.getSettings().getOrDefault(OrganisationConfigSettingKeys.enableComments, false);
+        return isFeatureEnabled("enableComments");
     }
 
     @Override
