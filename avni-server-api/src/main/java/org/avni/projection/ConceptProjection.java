@@ -2,6 +2,7 @@ package org.avni.projection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.avni.application.KeyValues;
 import org.avni.application.projections.BaseProjection;
@@ -36,9 +37,11 @@ public interface ConceptProjection extends BaseProjection {
 
     Boolean getActive();
 
-    String getLastModifiedBy();
+    @JsonProperty("lastModifiedBy")
+    String getLastModifiedByName();
 
-    String getCreatedBy();
+    @JsonProperty("createdBy")
+    String getCreatedByName();
 
     DateTime getCreatedDateTime();
 

@@ -203,8 +203,6 @@ public class ConceptService implements NonScopeAwareService {
         return conceptRepository.findByUuid(uuid);
     }
 
-
-
     public ConceptAnswer getAnswer(String conceptUUID, String conceptAnswerUUID) {
         Concept concept = this.get(conceptUUID);
         Concept answerConcept = this.get(conceptAnswerUUID);

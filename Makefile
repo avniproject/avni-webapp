@@ -109,8 +109,14 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 start_server: build_server
 	OPENCHS_DATABASE=$(DB) java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
+start_server_remote_db: build_server
+	OPENCHS_DATABASE_URL=jdbc:postgresql://192.168.33.11:5432/openchs java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
+
 debug_server: build_server
 	OPENCHS_DATABASE=$(DB) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
+
+debug_server_remote_db: build_server
+	OPENCHS_DATABASE_URL=jdbc:postgresql://192.168.33.11:5432/openchs java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	./gradlew clean build -x test
