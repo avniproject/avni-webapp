@@ -2,6 +2,7 @@ package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.avni.framework.security.UserContextHolder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedBy;
@@ -21,8 +22,7 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
     @JsonIgnore
     @JoinColumn(name = "created_by_id")
     @CreatedBy
-    @ManyToOne(targetEntity = User.class)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @NotNull
     private User createdBy;
 
@@ -33,8 +33,7 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
     @JsonIgnore
     @JoinColumn(name = "last_modified_by_id")
     @LastModifiedBy
-    @ManyToOne(targetEntity = User.class)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @NotNull
     private User lastModifiedBy;
 

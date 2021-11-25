@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.avni.application.Platform;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "platform_translation")
+@BatchSize(size = 100)
 public class PlatformTranslation extends CHSEntity {
 
     @Column

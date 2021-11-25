@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 import org.avni.application.projections.BaseProjection;
 import org.avni.domain.EncounterType.EncounterTypeProjection;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "program_encounter")
 @JsonIgnoreProperties({"programEnrolment"})
+@BatchSize(size = 100)
 public class ProgramEncounter extends AbstractEncounter {
 
     @NotNull

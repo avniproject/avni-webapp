@@ -1,6 +1,7 @@
 package org.avni.domain.individualRelationship;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.avni.domain.Individual;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "individual_relationship")
 @JsonIgnoreProperties({"individuala", "individualB"})
+@BatchSize(size = 100)
 public class IndividualRelationship extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

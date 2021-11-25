@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import org.avni.application.projections.BaseProjection;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "checklist_detail")
+@BatchSize(size = 100)
 public class ChecklistDetail extends OrganisationAwareEntity {
     @NotNull
     @Column(name = "name")

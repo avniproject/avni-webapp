@@ -1,5 +1,7 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -7,6 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "catchment")
+@BatchSize(size = 100)
 public class Catchment extends OrganisationAwareEntity {
 
     @Column

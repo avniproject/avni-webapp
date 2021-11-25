@@ -1,11 +1,14 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "groups")
+@BatchSize(size = 100)
 public class Group extends OrganisationAwareEntity {
 
     @Column

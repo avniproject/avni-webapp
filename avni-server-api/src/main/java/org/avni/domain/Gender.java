@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import org.avni.application.projections.BaseProjection;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "gender")
+@BatchSize(size = 100)
 public class Gender extends OrganisationAwareEntity {
     @NotNull
     private String name;

@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "identifier_assignment")
 @JsonIgnoreProperties({"identifierSource", "assignedTo", "individual", "programEnrolment"})
+@BatchSize(size = 100)
 public class IdentifierAssignment extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY)

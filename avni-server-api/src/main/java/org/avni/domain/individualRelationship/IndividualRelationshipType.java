@@ -1,12 +1,14 @@
 package org.avni.domain.individualRelationship;
 
 import org.avni.domain.OrganisationAwareEntity;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "individual_relationship_type")
+@BatchSize(size = 100)
 public class IndividualRelationshipType extends OrganisationAwareEntity {
     @NotNull
     private String name;

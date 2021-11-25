@@ -2,12 +2,14 @@ package org.avni.domain.individualRelationship;
 
 import org.avni.domain.Gender;
 import org.avni.domain.OrganisationAwareEntity;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "individual_relation_gender_mapping")
+@BatchSize(size = 100)
 public class IndividualRelationGenderMapping extends OrganisationAwareEntity {
 
     @NotNull
@@ -16,7 +18,7 @@ public class IndividualRelationGenderMapping extends OrganisationAwareEntity {
     private IndividualRelation relation;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gender_id")
     private Gender gender;
 

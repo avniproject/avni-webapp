@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "sync_telemetry")
+@BatchSize(size = 100)
 public class SyncTelemetry {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

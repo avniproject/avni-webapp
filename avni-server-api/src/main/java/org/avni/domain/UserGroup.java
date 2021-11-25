@@ -2,6 +2,7 @@ package org.avni.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "user_group")
 @JsonIgnoreProperties({"user", "group"})
+@BatchSize(size = 100)
 public class UserGroup extends OrganisationAwareEntity {
 
     @NotNull

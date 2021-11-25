@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Table(name = "subject_migration")
 @JsonIgnoreProperties({"individual", "oldAddressLevel", "newAddressLevel"})
 @DynamicInsert
+@BatchSize(size = 100)
 public class SubjectMigration extends OrganisationAwareEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

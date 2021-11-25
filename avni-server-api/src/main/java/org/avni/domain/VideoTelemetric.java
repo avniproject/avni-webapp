@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "video_telemetric")
+@BatchSize(size = 100)
 public class VideoTelemetric extends CHSBaseEntity {
 
     //the video progress time

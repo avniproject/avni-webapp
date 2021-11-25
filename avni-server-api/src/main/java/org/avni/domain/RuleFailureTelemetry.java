@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.joda.time.DateTime;
@@ -15,6 +16,7 @@ import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "rule_failure_telemetry")
+@BatchSize(size = 100)
 public class RuleFailureTelemetry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)

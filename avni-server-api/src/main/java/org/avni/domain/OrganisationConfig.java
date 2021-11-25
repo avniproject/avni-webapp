@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "organisation_config")
+@BatchSize(size = 100)
 public class OrganisationConfig extends OrganisationAwareEntity {
 
     @Column

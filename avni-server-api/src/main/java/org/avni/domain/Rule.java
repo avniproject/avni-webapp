@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.avni.application.RuleType;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity(name = "rule")
+@BatchSize(size = 100)
 public class Rule extends OrganisationAwareEntity {
 
     @NotNull

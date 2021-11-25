@@ -2,9 +2,12 @@ package org.avni.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 
 @Entity
+@BatchSize(size = 100)
 public class StandardReportCardType {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

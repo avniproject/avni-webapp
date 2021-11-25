@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "organisation")
+@BatchSize(size = 100)
 public class Organisation {
 
     @Id

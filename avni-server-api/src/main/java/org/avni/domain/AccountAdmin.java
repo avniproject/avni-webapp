@@ -1,10 +1,13 @@
 package org.avni.domain;
 
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "account_admin")
+@BatchSize(size = 100)
 public class AccountAdmin {
 
     @Id

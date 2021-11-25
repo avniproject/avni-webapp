@@ -1,11 +1,14 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "rule_dependency")
+@BatchSize(size = 100)
 public class RuleDependency extends OrganisationAwareEntity {
     @NotNull
     @Column(name = "checksum")

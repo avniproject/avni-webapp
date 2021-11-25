@@ -1,6 +1,7 @@
 package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "group_role")
 @JsonIgnoreProperties({"groupSubjectType", "memberSubjectType"})
+@BatchSize(size = 100)
 public class GroupRole extends OrganisationAwareEntity {
 
     @NotNull

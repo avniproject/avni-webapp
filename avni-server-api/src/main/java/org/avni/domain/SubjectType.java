@@ -2,6 +2,7 @@ package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicInsert;
 import org.avni.application.Format;
 import org.avni.application.Subject;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Table(name = "subject_type")
 @JsonIgnoreProperties({"operationalSubjectTypes"})
 @DynamicInsert
+@BatchSize(size = 100)
 public class SubjectType extends OrganisationAwareEntity {
     @NotNull
     @Column

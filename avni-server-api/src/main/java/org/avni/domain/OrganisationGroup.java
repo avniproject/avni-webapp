@@ -2,6 +2,7 @@ package org.avni.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "organisation_group")
+@BatchSize(size = 100)
 public class OrganisationGroup {
 
     @Id

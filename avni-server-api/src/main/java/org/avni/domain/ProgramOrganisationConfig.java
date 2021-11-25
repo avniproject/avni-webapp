@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.avni.domain.programConfig.VisitScheduleConfig;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity(name = "program_organisation_config")
+@BatchSize(size = 100)
 public class ProgramOrganisationConfig extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)

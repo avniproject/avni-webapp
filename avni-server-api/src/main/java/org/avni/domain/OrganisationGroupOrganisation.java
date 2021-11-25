@@ -1,9 +1,12 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "organisation_group_organisation")
+@BatchSize(size = 100)
 public class OrganisationGroupOrganisation {
 
     @Id

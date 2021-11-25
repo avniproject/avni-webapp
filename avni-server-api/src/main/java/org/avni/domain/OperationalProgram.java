@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "operational_program")
+@BatchSize(size = 100)
 public class OperationalProgram extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY)

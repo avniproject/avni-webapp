@@ -2,10 +2,13 @@ package org.avni.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "privilege")
+@BatchSize(size = 100)
 public class Privilege {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

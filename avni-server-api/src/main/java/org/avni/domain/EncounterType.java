@@ -2,6 +2,7 @@ package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.avni.application.projections.BaseProjection;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Table(name = "encounter_type")
 @JsonIgnoreProperties({"operationalEncounterTypes"})
 @DynamicInsert
+@BatchSize(size = 100)
 public class EncounterType extends OrganisationAwareEntity {
     @NotNull
     @Column

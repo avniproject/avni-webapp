@@ -1,10 +1,13 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "video")
+@BatchSize(size = 100)
 public class Video extends OrganisationAwareEntity {
     private String title;
     private String filePath;

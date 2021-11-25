@@ -1,9 +1,12 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "identifier_user_assignment")
+@BatchSize(size = 100)
 public class IdentifierUserAssignment extends OrganisationAwareEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

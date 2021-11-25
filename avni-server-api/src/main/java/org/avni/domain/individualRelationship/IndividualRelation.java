@@ -1,6 +1,7 @@
 package org.avni.domain.individualRelationship;
 
 import org.avni.domain.OrganisationAwareEntity;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "individual_relation")
+@BatchSize(size = 100)
 public class IndividualRelation extends OrganisationAwareEntity {
     @NotNull
     private String name;

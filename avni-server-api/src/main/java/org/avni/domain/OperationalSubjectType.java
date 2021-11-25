@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 import org.avni.application.Format;
 import org.avni.application.Subject;
@@ -10,6 +11,7 @@ import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "operational_subject_type")
+@BatchSize(size = 100)
 public class OperationalSubjectType extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

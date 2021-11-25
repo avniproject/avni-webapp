@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.avni.application.KeyValues;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "identifier_source")
+@BatchSize(size = 100)
 public class IdentifierSource extends OrganisationAwareEntity {
     @NotNull
     private String name;
