@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { TextField, Typography } from "@material-ui/core";
-import { isEmpty, find, isNil, toNumber } from "lodash";
+import { find, isEmpty, isNil, toNumber } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import Colors from "../Colors";
@@ -56,7 +56,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         autoComplete="off"
         required={fe.mandatory}
         name={fe.name}
-        value={value}
+        value={value == null ? "" : value}
         style={{ width: "30%" }}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={error()}

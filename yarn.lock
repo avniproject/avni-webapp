@@ -4708,14 +4708,14 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.10.tgz#c9af9270a7ce340a77da7751470969949bed82e5"
-  integrity sha512-2++vdsNwm05+iIPJ40onFpXv3MfuzTVKBhX/N4L9y7iTT5oQwkeflS3f+wqXb22N6GP0rcjHisVYKxSD3zNoNw==
+avni-health-modules@0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.9.tgz#21b600302b535ca60b0542cce5a380200cd55108"
+  integrity sha512-2HVstgEN/Bpw8Q5YcxzNZVtXGLpsTiZzEvmVel/Xu/WvcjhrGsRyrtbSwsVlNA61paCrwnR1XAL4b6690r24AQ==
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
-    rules-config "github:openchs/rules-config#8206c29f7cc5cd2710dfa783ea28b283941ac306"
+    rules-config "github:openchs/rules-config#3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -6405,14 +6405,14 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000918, caniuse-lite@^1.0.30000929, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125:
-  version "1.0.30001131"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001131.tgz#afad8a28fc2b7a0d3ae9407e71085a0ead905d54"
-  integrity sha512-4QYi6Mal4MMfQMSqGIRPGbKIbZygeN83QsWq1ixpUwvtfgAZot5BrCKzGygvZaV+CnELdTwD0S4cqUNozq7/Cw==
+  version "1.0.30001283"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001283.tgz"
+  integrity sha512-9RoKo841j1GQFSJz/nCXOj0sD7tHBtlowjYlrqIUS812x9/emfBLBt6IyMz1zIaYc/eRL8Cs6HPUVi2Hzq4sIg==
 
 caniuse-lite@^1.0.30001035, caniuse-lite@^1.0.30001165:
-  version "1.0.30001170"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001170.tgz#0088bfecc6a14694969e391cc29d7eb6362ca6a7"
-  integrity sha512-Dd4d/+0tsK0UNLrZs3CvNukqalnVTRrxb5mcQm8rHL49t7V5ZaTygwXkrq+FB+dVDf++4ri8eJnFEJAB8332PA==
+  version "1.0.30001283"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001283.tgz"
+  integrity sha512-9RoKo841j1GQFSJz/nCXOj0sD7tHBtlowjYlrqIUS812x9/emfBLBt6IyMz1zIaYc/eRL8Cs6HPUVi2Hzq4sIg==
 
 capture-exit@^1.2.0:
   version "1.2.0"
@@ -17857,6 +17857,30 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
+"rules-config@github:openchs/rules-config#3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3":
+  version "0.0.1"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3"
+  dependencies:
+    babel-cli "^6.26.0"
+    babel-loader "^7.1.4"
+    babel-plugin-transform-class-properties "^6.24.1"
+    babel-plugin-transform-decorators-legacy "^1.3.5"
+    babel-plugin-transform-es2015-destructuring "^6.23.0"
+    babel-plugin-transform-export-extensions "^6.22.0"
+    babel-preset-env "^1.7.0"
+    babel-register "^6.26.0"
+    chai "^4.1.2"
+    lodash "^4.17.11"
+    mocha "^5.2.0"
+    moment "^2.22.2"
+    openchs-models "^0.2.25"
+    superagent "^3.8.3"
+    test "^0.6.0"
+    uglifyjs-webpack-plugin "^1.2.5"
+    webpack "^3.12.0"
+    webpack-cli "^3.0.3"
+    webpack-node-externals "1.6.0"
+
 "rules-config@github:openchs/rules-config#8206c29f7cc5cd2710dfa783ea28b283941ac306":
   version "0.0.1"
   resolved "https://codeload.github.com/openchs/rules-config/tar.gz/8206c29f7cc5cd2710dfa783ea28b283941ac306"
@@ -20268,7 +20292,7 @@ webpack@4.28.3:
     watchpack "^1.5.0"
     webpack-sources "^1.3.0"
 
-webpack@^3.12.0:
+webpack@^3.12.0, webpack@^3.5.5:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.12.0.tgz#3f9e34360370602fcf639e97939db486f4ec0d74"
   integrity sha512-Sw7MdIIOv/nkzPzee4o0EdvCuPmxT98+vVpIvwtcwcF1Q4SDSNp92vwcKc4REe7NItH9f1S4ra9FuQ7yuYZ8bQ==
