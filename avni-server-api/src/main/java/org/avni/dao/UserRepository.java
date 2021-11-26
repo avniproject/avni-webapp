@@ -55,5 +55,5 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     User getOne(Long id, List<Long> accountIds, List<Long> organisationIds);
 
     @PreAuthorize("hasAnyAuthority('user')")
-    boolean existsByLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }
