@@ -22,10 +22,13 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
   );
 
   const error = () => {
-    if (isNil(value)) {
-      return false;
+    if (validationResult && !validationResult.success) {
+      return true;
     }
-    return fe.concept.isAbnormal(value) || (validationResult && !validationResult.success);
+    if (fe.concept.isAbnormal(value)) {
+      return !isNil(value);
+    }
+    return false;
   };
 
   const textColor = error() ? Colors.ValidationError : Colors.DefaultPrimary;
