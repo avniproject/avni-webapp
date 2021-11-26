@@ -1,5 +1,7 @@
 package org.avni.service;
 
+import org.avni.dao.IndividualRepository;
+import org.avni.domain.Individual;
 import org.joda.time.LocalDate;
 import org.avni.dao.SubjectSearchRepository;
 import org.avni.web.request.EnrolmentContract;
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 @Service
 public class IndividualSearchService {
     private final SubjectSearchRepository subjectSearchRepository;
+    private IndividualRepository individualRepository;
 
     @Autowired
-    public IndividualSearchService( SubjectSearchRepository subjectSearchRepository) {
+    public IndividualSearchService(SubjectSearchRepository subjectSearchRepository, IndividualRepository individualRepository) {
         this.subjectSearchRepository = subjectSearchRepository;
+        this.individualRepository = individualRepository;
     }
 
     @Transactional
@@ -47,8 +51,7 @@ public class IndividualSearchService {
                     individualContract.setGender((String) individualRecord[7]);
                     if(null!=individualRecord[8] && !"".equals(individualRecord[8].toString().trim()))
                         individualContract.setDateOfBirth(new LocalDate(individualRecord[8].toString()));
-                    individualContract.setEnrolments(constructEnrolments((String) individualRecord[9]));
-
+                    individualContract.setEnrolments(constructEnrolments(Long.parseLong(individualRecord[0].toString().trim())));
                     return individualContract;
                 }).collect(Collectors.toList());
         recordsMap.put("totalElements",totalCount);
@@ -56,20 +59,16 @@ public class IndividualSearchService {
         return recordsMap;
     }
 
-    private List<EnrolmentContract> constructEnrolments(String enrolment) {
+    private List<EnrolmentContract> constructEnrolments(Long individualId) {
         List<EnrolmentContract> enrolmentContracts = new ArrayList<>();
-        if (null != enrolment && !"".equals(enrolment.trim())) {
-            String[] program = enrolment.split(",");
-            for (String programs : program) {
-                String[] programcolor = programs.split(":");
-                if (null != programcolor && programcolor.length == 2) {
-                    EnrolmentContract enrolmentContract = new EnrolmentContract();
-                    enrolmentContract.setOperationalProgramName(programcolor[0]);
-                    enrolmentContract.setProgramColor(programcolor[1]);
-                    enrolmentContracts.add(enrolmentContract);
-                }
-            }
-        }
+        Individual individual = individualRepository.findOne(individualId);
+
+        individual.getProgramEnrolments().stream().forEach(programEnrolment -> {
+            EnrolmentContract enrolmentContract = new EnrolmentContract();
+            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
+            enrolmentContract.setProgramColor(programEnrolment.getProgram().getColour());
+            enrolmentContracts.add(enrolmentContract);
+        });
         return enrolmentContracts;
     }
 }

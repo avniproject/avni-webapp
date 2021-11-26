@@ -18,13 +18,11 @@ public class SubjectSearchQueryBuilder {
             "                cast(tllv.title_lineage as text) as title_lineage,\n" +
             "                st.name as subject_type_name,\n" +
             "                gender.name as gender_name,\n" +
-            "                i.date_of_birth as date_of_birth,\n" +
-            "                cast(enrolments.program_name as text) as enrolments\n" +
+            "                i.date_of_birth as date_of_birth\n" +
             "from individual i\n" +
             "         left outer join title_lineage_locations_view tllv on i.address_id = tllv.lowestpoint_id\n" +
             "         left outer join gender on i.gender_id = gender.id\n" +
-            "         left outer join subject_type st on i.subject_type_id = st.id\n" +
-            "         LEFT outer join individual_program_enrolment_search_view enrolments ON i.id=enrolments.individual_id \n";
+            "         left outer join subject_type st on i.subject_type_id = st.id\n";
     private static final String ENCOUNTER_JOIN = "left outer join encounter e\n" +
             "                         on i.id = e.individual_id and\n" +
             "                            e.encounter_date_time is not null and\n" +
@@ -152,12 +150,12 @@ public class SubjectSearchQueryBuilder {
                 String token = "%" + tokens[i] + "%";
                 String parameter = "subjectSearchToken" + i;
                 addParameter(parameter, token);
-                clauses.add("    i.first_name ilike :" + parameter + "\n" +
+                clauses.add("    (i.first_name ilike :" + parameter + "\n" +
                         "        or i.last_name ilike :" + parameter + "\n" +
                         "        or i.first_name ilike :" + parameter + "\n" +
-                        "        or i.last_name like :" + parameter + "");
+                        "        or i.last_name like :" + parameter + ")");
             }
-            whereClause.append(String.join(" or ", clauses));
+            whereClause.append(String.join(" and ", clauses));
             whereClause.append(")");
             whereClauses.add(whereClause.toString());
         }
