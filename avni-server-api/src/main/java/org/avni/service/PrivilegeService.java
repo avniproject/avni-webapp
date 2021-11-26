@@ -1,6 +1,7 @@
 package org.avni.service;
 
 import org.avni.dao.PrivilegeRepository;
+import org.avni.domain.CHSEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,6 @@ public class PrivilegeService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return privilegeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return privilegeRepository.existsByLastModifiedDateTimeGreaterThan(CHSEntity.toDate(lastModifiedDateTime));
     }
 }

@@ -14,6 +14,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "rule_failure_telemetry")
 @BatchSize(size = 100)
@@ -64,7 +66,7 @@ public class RuleFailureTelemetry {
     private User createdBy;
 
     @CreatedDate
-    private DateTime createdDateTime;
+    private Date createdDateTime;
 
     @JsonIgnore
     @JoinColumn(name = "last_modified_by_id")
@@ -75,7 +77,7 @@ public class RuleFailureTelemetry {
     private User lastModifiedBy;
 
     @LastModifiedDate
-    private DateTime lastModifiedDateTime;
+    private Date lastModifiedDateTime;
 
     @Column(name = "version")
     private int version;
@@ -89,11 +91,11 @@ public class RuleFailureTelemetry {
     }
 
     public DateTime getCreatedDateTime() {
-        return createdDateTime;
+        return new DateTime(createdDateTime);
     }
 
     public void setCreatedDateTime(DateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
+        this.createdDateTime = createdDateTime == null ? null : createdDateTime.toDate();
     }
 
     public User getLastModifiedBy() {
@@ -105,11 +107,11 @@ public class RuleFailureTelemetry {
     }
 
     public DateTime getLastModifiedDateTime() {
-        return lastModifiedDateTime;
+        return new DateTime(lastModifiedDateTime);
     }
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
-        this.lastModifiedDateTime = lastModifiedDateTime;
+        this.lastModifiedDateTime = lastModifiedDateTime == null ? null : lastModifiedDateTime.toDate();
     }
 
     public void updateLastModifiedDateTime() {

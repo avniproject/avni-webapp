@@ -20,6 +20,7 @@ endef
 
 su:=$(shell id -un)
 DB=openchs
+dbServer=localhost
 
 # <postgres>
 clean_db_server: _clean_db_server _clean_test_server _drop_roles
@@ -31,26 +32,26 @@ _clean_test_server:
 	make _clean_db database=openchs_test
 
 _drop_roles:
-	-psql -h localhost -U $(su) -d postgres -c 'drop role openchs';
-	-psql -h localhost -U $(su) -d postgres -c 'drop role demo';
-	-psql -h localhost -U $(su) -d postgres -c 'drop role openchs_impl';
-	-psql -h localhost -U $(su) -d postgres -c 'drop role organisation_user';
+	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role openchs';
+	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role demo';
+	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role openchs_impl';
+	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role organisation_user';
 
 _clean_db:
-	-psql -h localhost -U $(su) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
-	-psql -h localhost -U $(su) -d postgres -c 'drop database $(database)';
+	-psql -h $(dbServer) -U $(su) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
+	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop database $(database)';
 
 _build_db:
-	-psql -h localhost -U $(su) -d postgres -c "create user openchs with password 'password' createrole";
-	psql -h localhost -U $(su) -d postgres -c 'create database $(database) with owner openchs';
-	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
-	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
-	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "hstore"';
-	-psql -h localhost -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
-	-psql -h localhost -U $(su) -d postgres  -c 'grant demo to openchs';
-	-psql -h localhost -U $(su) -d postgres  -c 'create role openchs_impl';
-	-psql -h localhost -U $(su) -d postgres  -c 'grant openchs_impl to openchs';
-	-psql -h localhost -U $(su) -d postgres  -c 'create role organisation_user createrole admin openchs_impl';
+	-psql -h $(dbServer) -U $(su) -d postgres -c "create user openchs with password 'password' createrole";
+	psql -h $(dbServer) -U $(su) -d postgres -c 'create database $(database) with owner openchs';
+	-psql -h $(dbServer) -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
+	-psql -h $(dbServer) -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
+	-psql -h $(dbServer) -U $(su) -d $(database) -c 'create extension if not exists "hstore"';
+	-psql -h $(dbServer) -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
+	-psql -h $(dbServer) -U $(su) -d postgres  -c 'grant demo to openchs';
+	-psql -h $(dbServer) -U $(su) -d postgres  -c 'create role openchs_impl';
+	-psql -h $(dbServer) -U $(su) -d postgres  -c 'grant openchs_impl to openchs';
+	-psql -h $(dbServer) -U $(su) -d postgres  -c 'create role organisation_user createrole admin openchs_impl';
 # </postgres>
 
 # <db>
@@ -126,6 +127,10 @@ boot_run:
 
 test_server: rebuild_testdb ## Run tests
 	GRADLE_OPTS="-Xmx256m" ./gradlew clean test
+
+test_server_with_remote_db:
+	make rebuild_testdb su=$(DBUSER) dbServer=$(DBSERVER)
+	OPENCHS_DATABASE_URL=jdbc:postgresql://$(DBSERVER):5432/openchs_test GRADLE_OPTS="-Xmx256m" ./gradlew clean test
 
 start_server_wo_gradle:
 	java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar

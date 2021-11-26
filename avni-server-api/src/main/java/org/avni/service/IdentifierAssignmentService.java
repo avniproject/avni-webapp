@@ -5,6 +5,7 @@ import org.avni.application.Form;
 import org.avni.application.KeyType;
 import org.avni.dao.IdentifierAssignmentRepository;
 import org.avni.dao.IdentifierSourceRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.IdentifierAssignment;
 import org.avni.domain.IdentifierSource;
 import org.avni.domain.User;
@@ -73,6 +74,6 @@ public class IdentifierAssignmentService implements NonScopeAwareService {
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         User user = UserContextHolder.getUserContext().getUser();
         this.generateIdentifiersIfNecessary(user);
-        return identifierAssignmentRepository.existsByAssignedToAndLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNull(user, lastModifiedDateTime);
+        return identifierAssignmentRepository.existsByAssignedToAndLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNull(user, CHSEntity.toDate(lastModifiedDateTime));
     }
 }

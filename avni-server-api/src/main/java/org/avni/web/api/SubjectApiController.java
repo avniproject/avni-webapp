@@ -60,8 +60,8 @@ public class SubjectApiController {
         List<Long> allLocationIds = locationService.getAllWithChildrenForUUIDs(locationUUIDs);
         Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         subjects = subjectTypeRequested ?
-                individualRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, allLocationIds, pageable) :
-                individualRepository.findByConceptsAndSubjectType(lastModifiedDateTime, now, conceptsMap, subjectType, allLocationIds, pageable);
+                individualRepository.findByConcepts(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, allLocationIds, pageable) :
+                individualRepository.findByConceptsAndSubjectType(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, subjectType, allLocationIds, pageable);
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(subjects.getContent());
         ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
         subjects.forEach(subject -> {

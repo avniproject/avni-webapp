@@ -4,10 +4,7 @@ import com.bugsnag.Bugsnag;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.IndividualRepository;
-import org.avni.domain.Encounter;
-import org.avni.domain.EncounterType;
-import org.avni.domain.Individual;
-import org.avni.domain.ObservationCollection;
+import org.avni.domain.*;
 import org.avni.geo.Point;
 import org.avni.service.EncounterService;
 import org.avni.service.ObservationService;
@@ -143,7 +140,7 @@ public class EncounterController extends AbstractController<Encounter> implement
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(encounterRepository.findByIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+        return wrap(encounterRepository.findByIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @RequestMapping(value = "/encounter/search/lastModified", method = RequestMethod.GET)
@@ -152,7 +149,7 @@ public class EncounterController extends AbstractController<Encounter> implement
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(encounterRepository.findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
+        return wrap(encounterRepository.findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @RequestMapping(value = "/encounter", method = RequestMethod.GET)

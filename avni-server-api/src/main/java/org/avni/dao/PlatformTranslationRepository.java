@@ -1,18 +1,16 @@
 package org.avni.dao;
 
-import org.joda.time.DateTime;
 import org.avni.application.Platform;
 import org.avni.domain.Locale;
 import org.avni.domain.PlatformTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation", exported = false)
@@ -28,10 +26,10 @@ public interface PlatformTranslationRepository extends PagingAndSortingRepositor
 
     Page<PlatformTranslation> findByPlatformAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             Platform platform,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
-    boolean existsByPlatformAndLastModifiedDateTimeGreaterThan(Platform platform, DateTime lastModifiedDateTime);
+    boolean existsByPlatformAndLastModifiedDateTimeGreaterThan(Platform platform, Date lastModifiedDateTime);
 
 }

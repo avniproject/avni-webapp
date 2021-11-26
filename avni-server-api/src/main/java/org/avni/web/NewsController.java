@@ -1,5 +1,6 @@
 package org.avni.web;
 
+import org.avni.domain.CHSEntity;
 import org.joda.time.DateTime;
 import org.avni.dao.NewsRepository;
 import org.avni.domain.News;
@@ -108,7 +109,7 @@ public class NewsController extends AbstractController<News> implements RestCont
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(newsRepository.findByPublishedDateNotNullAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
+        return wrap(newsRepository.findByPublishedDateNotNullAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @Override

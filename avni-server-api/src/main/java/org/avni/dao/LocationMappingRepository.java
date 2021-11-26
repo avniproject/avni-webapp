@@ -1,5 +1,8 @@
 package org.avni.dao;
 
+import java.util.Date;
+
+import org.avni.domain.CHSEntity;
 import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.ParentLocationMapping;
@@ -18,17 +21,17 @@ import java.util.List;
 public interface LocationMappingRepository extends ReferenceDataRepository<ParentLocationMapping>, FindByLastModifiedDateTime<ParentLocationMapping>, OperatingIndividualScopeAwareRepository<ParentLocationMapping> {
     Page<ParentLocationMapping> findByParentLocationInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevelIds,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     boolean existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
             @Param("addressIds") List<Long> addressIds);
 
     @Override
     default Page<ParentLocationMapping> syncByCatchment(SyncParameters syncParameters) {
-        return findByParentLocationInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByParentLocationInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
@@ -37,12 +40,12 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 

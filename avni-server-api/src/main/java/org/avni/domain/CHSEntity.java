@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
@@ -26,7 +27,7 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
 
     @CreatedDate
     @NotNull
-    private DateTime createdDateTime;
+    private Date createdDateTime;
 
     @JsonIgnore
     @JoinColumn(name = "last_modified_by_id")
@@ -37,8 +38,9 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
 
     @LastModifiedDate
     @NotNull
-    private DateTime lastModifiedDateTime;
+    private Date lastModifiedDateTime;
 
+    @JsonIgnore
     public User getCreatedBy() {
         return createdBy;
     }
@@ -48,13 +50,14 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
     }
 
     public DateTime getCreatedDateTime() {
-        return createdDateTime;
+        return new DateTime(createdDateTime);
     }
 
     public void setCreatedDateTime(DateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
+        this.createdDateTime = createdDateTime.toDate();
     }
 
+    @JsonIgnore
     public User getLastModifiedBy() {
         return lastModifiedBy;
     }
@@ -64,11 +67,15 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
     }
 
     public DateTime getLastModifiedDateTime() {
-        return lastModifiedDateTime;
+        return toJodaDateTime();
+    }
+
+    private DateTime toJodaDateTime() {
+        return new DateTime(lastModifiedDateTime);
     }
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
-        this.lastModifiedDateTime = lastModifiedDateTime;
+        this.lastModifiedDateTime = lastModifiedDateTime.toDate();
     }
 
     @Column(name = "version")
@@ -113,5 +120,9 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
     @JsonProperty(value = "lastModifiedBy")
     public String getLastModifiedByName() {
         return getLastModifiedBy().getUsername();
+    }
+
+    public static Date toDate(DateTime dateTime) {
+        return dateTime == null ? null : dateTime.toDate();
     }
 }

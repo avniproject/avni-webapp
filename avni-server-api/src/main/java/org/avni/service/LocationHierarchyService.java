@@ -4,6 +4,7 @@ import org.avni.application.OrganisationConfigSettingKeys;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.domain.AddressLevelType;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.JsonObject;
 import org.avni.framework.security.UserContextHolder;
 import org.slf4j.Logger;
@@ -108,7 +109,7 @@ public class LocationHierarchyService implements NonScopeAwareService {
         ArrayList<Long> addressLevelTypeIds = (ArrayList<Long>) this.getLowestAddressLevelTypeHierarchiesForOrganisation();
         if (addressLevelTypeIds != null) {
             List<AddressLevelType> addressLevelTypes = addressLevelTypeRepository.findAllByIdIn(addressLevelTypeIds);
-            return locationRepository.existsByLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes);
+            return locationRepository.existsByLastModifiedDateTimeAfterAndTypeIn(CHSEntity.toDate(lastModifiedDateTime), addressLevelTypes);
         }
         return false;
     }

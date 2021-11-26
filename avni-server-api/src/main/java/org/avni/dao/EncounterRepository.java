@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
-import java.sql.Date;
+import java.util.Date;
 import org.joda.time.DateTime;
 import java.util.Calendar;
 import java.util.List;
@@ -22,41 +22,41 @@ import java.util.Map;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface EncounterRepository extends TransactionalDataRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter> {
     Page<Encounter> findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Encounter> findByIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            List<AddressLevel> addressLevels, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Encounter> findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            long facilityId, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     boolean existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(
-            Long encounterTypeId, DateTime lastModifiedDateTime, List<Long> addressIds);
+            Long encounterTypeId, Date lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsGreaterThan(
-            long facilityId, Long encounterTypeId, DateTime lastModifiedDateTime);
+            long facilityId, Long encounterTypeId, Date lastModifiedDateTime);
 
     @Override
     default Page<Encounter> syncByCatchment(SyncParameters syncParameters) {
         return findByIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-                syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+                syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
     default Page<Encounter> syncByFacility(SyncParameters syncParameters) {
-        return findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
@@ -121,18 +121,18 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         };
     }
 
-    default Page<Encounter> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, Pageable pageable) {
+    default Page<Encounter> findByConcepts(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
                 .and(withConceptValues(concepts)), pageable);
     }
 
-    default Page<Encounter> findByConceptsAndEncounterType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
+    default Page<Encounter> findByConceptsAndEncounterType(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
                 .and(withConceptValues(concepts))
                 .and(findByEncounterTypeSpec(encounterType)), pageable);
     }
 
-    default Page<Encounter> findByConceptsAndEncounterTypeAndSubject(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String encounterType, String subjectUUID, Pageable pageable) {
+    default Page<Encounter> findByConceptsAndEncounterTypeAndSubject(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String encounterType, String subjectUUID, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
                 .and(withConceptValues(concepts))
                 .and(findByEncounterTypeSpec(encounterType))

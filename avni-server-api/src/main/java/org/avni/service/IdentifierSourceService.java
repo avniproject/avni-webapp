@@ -2,6 +2,7 @@ package org.avni.service;
 
 import org.avni.dao.CatchmentRepository;
 import org.avni.dao.IdentifierSourceRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.Catchment;
 import org.avni.domain.IdentifierSource;
 import org.avni.domain.JsonObject;
@@ -58,6 +59,6 @@ public class IdentifierSourceService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return identifierSourceRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return identifierSourceRepository.existsByLastModifiedDateTimeGreaterThan(CHSEntity.toDate(lastModifiedDateTime));
     }
 }

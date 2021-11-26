@@ -13,6 +13,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import org.joda.time.DateTime;
 import java.util.List;
 
@@ -54,5 +55,5 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     User getOne(Long id, List<Long> accountIds, List<Long> organisationIds);
 
     @PreAuthorize("hasAnyAuthority('user')")
-    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
 }

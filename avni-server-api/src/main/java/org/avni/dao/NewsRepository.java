@@ -1,13 +1,12 @@
 package org.avni.dao;
 
-import org.joda.time.DateTime;
 import org.avni.domain.News;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -18,8 +17,8 @@ public interface NewsRepository extends TransactionalDataRepository<News>, FindB
 
     List<News> findByPublishedDateNotNullAndIsVoidedFalse();
 
-    Page<News> findByPublishedDateNotNullAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<News> findByPublishedDateNotNullAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    boolean existsByPublishedDateNotNullAndLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByPublishedDateNotNullAndLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
 }
 

@@ -1,9 +1,6 @@
 package org.avni.dao;
 
-import org.avni.domain.AddressLevel;
-import org.avni.domain.GroupRole;
-import org.avni.domain.GroupSubject;
-import org.avni.domain.Individual;
+import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.data.domain.Page;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import org.joda.time.DateTime;
 import java.util.List;
+import java.util.Date;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
@@ -32,8 +30,8 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             List<AddressLevel> groupSubjectAddressLevels,
             List<AddressLevel> memberSubjectAddressLevels,
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable
     );
 
@@ -41,24 +39,24 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             long groupSubjectFacilityId,
             long memberSubjectFacilityId,
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable
     );
 
     boolean existsByGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime,
+            Date lastModifiedDateTime,
             List<Long> addressIds);
 
 
     boolean existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime);
+            Date lastModifiedDateTime);
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
@@ -97,31 +95,31 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     Page<GroupSubject> findByGroupSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable
     );
 
     Page<GroupSubject> findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long groupSubjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable
     );
 
     @Override
     default Page<GroupSubject> syncByCatchment(SyncParameters syncParameters) {
-        return findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
     default Page<GroupSubject> syncByFacility(SyncParameters syncParameters) {
-        return findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getFacilityId(), syncParameters.getFacilityId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByGroupSubjectFacilityIdAndMemberSubjectFacilityIdAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getFacilityId(), syncParameters.getFacilityId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndGroupSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 

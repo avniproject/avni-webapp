@@ -1,5 +1,5 @@
 package org.avni.dao;
-
+import java.util.Date;
 import org.joda.time.DateTime;
 import org.avni.domain.Catchment;
 import org.avni.domain.Facility;
@@ -31,8 +31,8 @@ public interface IdentifierSourceRepository extends ReferenceDataRepository<Iden
     Page<IdentifierSource> getAllAuthorisedIdentifierSources(
             @Param("catchment") Catchment catchment,
             @Param("facility") Facility facility,
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date now,
             Pageable pageable);
 
     @Query("select isource from IdentifierSource isource " +
@@ -41,5 +41,5 @@ public interface IdentifierSourceRepository extends ReferenceDataRepository<Iden
     List<IdentifierSource> getAllAuthorisedIdentifierSources(@Param("catchment") Catchment catchment,
                                                              @Param("facility") Facility facility);
 
-    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
 }

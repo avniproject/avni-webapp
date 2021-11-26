@@ -41,7 +41,7 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
         User currentUser = userService.getCurrentUser();
-        return wrap(identifierSourceRepository.getAllAuthorisedIdentifierSources(currentUser.getCatchment(), currentUser.getFacility(),lastModifiedDateTime, now, pageable));
+        return wrap(identifierSourceRepository.getAllAuthorisedIdentifierSources(currentUser.getCatchment(), currentUser.getFacility(),CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @RequestMapping(value = "/identifierSource", method = RequestMethod.POST)

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.sql.Date;
+import java.util.Date;
 import org.joda.time.DateTime;
 import java.util.Calendar;
 import java.util.List;
@@ -27,36 +27,36 @@ import static org.springframework.data.jpa.domain.Specification.where;
 public interface ProgramEncounterRepository extends TransactionalDataRepository<ProgramEncounter>, FindByLastModifiedDateTime<ProgramEncounter>, OperatingIndividualScopeAwareRepository<ProgramEncounter> {
 
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            long catchmentId, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     boolean existsByEncounterTypeIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
-            Long encounterTypeId, DateTime lastModifiedDateTime, List<Long> addressIds);
+            Long encounterTypeId, Date lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long encounterTypeId, DateTime lastModifiedDateTime);
+            long catchmentId, Long encounterTypeId, Date lastModifiedDateTime);
 
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(List<AddressLevel> addressLevels, long encounterTypeId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(List<AddressLevel> addressLevels, long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     @Override
     default Page<ProgramEncounter> syncByCatchment(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
     default Page<ProgramEncounter> syncByFacility(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByEncounterTypeIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
@@ -125,16 +125,16 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     }
 
     class SearchParams {
-        public DateTime lastModifiedDateTime;
-        public DateTime now;
+        public Date lastModifiedDateTime;
+        public Date now;
         public Map<Concept, String> concepts;
         public EncounterType encounterType;
         public ProgramEnrolment programEnrolment;
 
-        public SearchParams(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> conceptsMatchingValue, EncounterType encounterType, ProgramEnrolment programEnrolment) {
+        public SearchParams(Date lastModifiedDateTime, Date now, Map<Concept, String> conceptsMatchingValue, EncounterType encounterType, ProgramEnrolment programEnrolment) {
             this.lastModifiedDateTime = lastModifiedDateTime;
             if (lastModifiedDateTime == null) {
-                this.lastModifiedDateTime = DateTime.parse("2000-01-01");
+                this.lastModifiedDateTime = DateTime.parse("2000-01-01").toDate();
             }
             this.now = now;
             this.concepts = conceptsMatchingValue;

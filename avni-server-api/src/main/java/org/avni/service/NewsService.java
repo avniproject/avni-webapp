@@ -1,6 +1,7 @@
 package org.avni.service;
 
 import org.avni.dao.NewsRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.News;
 import org.avni.util.BadRequestError;
 import org.avni.util.ReactAdminUtil;
@@ -62,6 +63,6 @@ public class NewsService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return newsRepository.existsByPublishedDateNotNullAndLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+        return newsRepository.existsByPublishedDateNotNullAndLastModifiedDateTimeGreaterThan(CHSEntity.toDate(lastModifiedDateTime));
     }
 }

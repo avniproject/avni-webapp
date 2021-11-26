@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import java.util.Date;
 import org.avni.projection.IndividualWebProjection;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -20,6 +21,8 @@ import javax.persistence.criteria.*;
 import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
+import java.util.Date;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
@@ -29,44 +32,44 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     Page<Individual> findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long subjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     Page<Individual> findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long subjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     boolean existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(
             Long subjectTypeId,
-            DateTime lastModifiedDateTime,
+            Date lastModifiedDateTime,
             List<Long> addressIds);
 
     boolean existsByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long subjectTypeId,
-            DateTime lastModifiedDateTime);
+            Date lastModifiedDateTime);
 
     @Override
     default Page<Individual> syncByCatchment(SyncParameters syncParameters) {
-        return findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
     default Page<Individual> syncByFacility(SyncParameters syncParameters) {
-        return findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
@@ -156,13 +159,13 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             addressIds.isEmpty() ? null : root.get("addressLevel").get("id").in(addressIds);
     }
 
-    default Page<Individual> findByConcepts(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, List<Long> addressIds, Pageable pageable) {
+    default Page<Individual> findByConcepts(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, List<Long> addressIds, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
                 .and(withConceptValues(concepts))
                 .and(findInLocationSpec(addressIds)), pageable);
     }
 
-    default Page<Individual> findByConceptsAndSubjectType(DateTime lastModifiedDateTime, DateTime now, Map<Concept, String> concepts, String subjectType, List<Long> addressIds, Pageable pageable) {
+    default Page<Individual> findByConceptsAndSubjectType(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String subjectType, List<Long> addressIds, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
                 .and(withConceptValues(concepts))
                 .and(findBySubjectTypeSpec(subjectType))

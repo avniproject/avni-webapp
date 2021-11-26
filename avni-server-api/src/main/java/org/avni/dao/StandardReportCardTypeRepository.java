@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import java.util.Date;
 import org.joda.time.DateTime;
 import org.avni.domain.StandardReportCardType;
 import org.springframework.data.domain.Page;
@@ -25,9 +26,9 @@ public interface StandardReportCardTypeRepository extends PagingAndSortingReposi
 
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<StandardReportCardType> findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date now,
             Pageable pageable);
 
-    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
 }

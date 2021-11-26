@@ -4,6 +4,7 @@ import org.avni.dao.IndividualRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipTypeRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
 import org.avni.domain.individualRelationship.IndividualRelationship;
@@ -71,7 +72,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(individualRelationshipRepository.findByIndividualaAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+        return wrap(individualRelationshipRepository.findByIndividualaAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @RequestMapping(value = "/individualRelationship/search/lastModified", method = RequestMethod.GET)

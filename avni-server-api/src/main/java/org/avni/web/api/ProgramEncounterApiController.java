@@ -70,7 +70,7 @@ public class ProgramEncounterApiController {
             programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUuid);
         }
 
-        return new ProgramEncounterRepository.SearchParams(lastModifiedDateTime, now, conceptsMap, encounterType, programEnrolment);
+        return new ProgramEncounterRepository.SearchParams(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, encounterType, programEnrolment);
     }
 
     @GetMapping(value = "/api/programEncounter/{id}")

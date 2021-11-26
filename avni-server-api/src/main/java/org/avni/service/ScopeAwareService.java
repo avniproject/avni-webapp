@@ -5,7 +5,6 @@ import org.avni.domain.*;
 import org.avni.framework.ApplicationContextProvider;
 import org.joda.time.DateTime;
 
-import org.joda.time.DateTime;
 import java.util.List;
 
 import static org.avni.domain.OperatingIndividualScope.ByCatchment;
@@ -20,10 +19,10 @@ public interface ScopeAwareService<T extends CHSEntity> {
         if (ByCatchment.equals(scope)) {
             AddressLevelService addressLevelService = ApplicationContextProvider.getContext().getBean(AddressLevelService.class);
             List<Long> addressIds = addressLevelService.getAllAddressLevelIdsForCatchment(catchment);
-            return repository().isEntityChangedForCatchment(addressIds, lastModifiedDateTime, typeId);
+            return repository().isEntityChangedForCatchment(addressIds, CHSEntity.toDate(lastModifiedDateTime), typeId);
         }
         if (ByFacility.equals(scope)) {
-            return repository().isEntityChangedForFacility(userFacility.getId(), lastModifiedDateTime, typeId);
+            return repository().isEntityChangedForFacility(userFacility.getId(), CHSEntity.toDate(lastModifiedDateTime), typeId);
         }
         return false;
     }

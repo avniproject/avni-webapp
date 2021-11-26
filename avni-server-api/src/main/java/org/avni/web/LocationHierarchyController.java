@@ -1,5 +1,6 @@
 package org.avni.web;
 
+import org.avni.domain.CHSEntity;
 import org.joda.time.DateTime;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.LocationRepository;
@@ -48,7 +49,7 @@ public class LocationHierarchyController implements RestControllerResourceProces
             ArrayList<Long> addressLevelTypeIds = (ArrayList<Long>) locationHierarchyService.getLowestAddressLevelTypeHierarchiesForOrganisation();
             if (addressLevelTypeIds != null) {
                 List<AddressLevelType> addressLevelTypes = addressLevelTypeRepository.findAllByIdIn(addressLevelTypeIds);
-                return wrap(locationRepository.findByLastModifiedDateTimeAfterAndTypeIn(lastModifiedDateTime, addressLevelTypes, pageable));
+                return wrap(locationRepository.findByLastModifiedDateTimeAfterAndTypeIn(CHSEntity.toDate(lastModifiedDateTime), addressLevelTypes, pageable));
             }
         } catch (Exception exception) {
             exception.printStackTrace();

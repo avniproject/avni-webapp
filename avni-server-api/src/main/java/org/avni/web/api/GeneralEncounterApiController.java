@@ -53,11 +53,11 @@ public class GeneralEncounterApiController {
         Page<Encounter> encounters;
         Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
         if (S.isEmpty(encounterType)) {
-            encounters = encounterRepository.findByConcepts(lastModifiedDateTime, now, conceptsMap, pageable);
+            encounters = encounterRepository.findByConcepts(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, pageable);
         } else if (S.isEmpty(subjectUUID)) {
-            encounters = encounterRepository.findByConceptsAndEncounterType(lastModifiedDateTime, now, conceptsMap, encounterType, pageable);
+            encounters = encounterRepository.findByConceptsAndEncounterType(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, encounterType, pageable);
         } else {
-            encounters = encounterRepository.findByConceptsAndEncounterTypeAndSubject(lastModifiedDateTime, now, conceptsMap, encounterType, subjectUUID, pageable);
+            encounters = encounterRepository.findByConceptsAndEncounterTypeAndSubject(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, encounterType, subjectUUID, pageable);
         }
 
         ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();

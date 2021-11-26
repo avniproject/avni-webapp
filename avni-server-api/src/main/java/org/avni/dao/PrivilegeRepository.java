@@ -1,5 +1,5 @@
 package org.avni.dao;
-
+import java.util.Date;
 import org.avni.domain.Privilege;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +25,15 @@ public interface PrivilegeRepository extends PagingAndSortingRepository<Privileg
 
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<Privilege> findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date now,
             Pageable pageable);
 
     Privilege findByUuid(String uuid);
 
     List<Privilege> findAllByIsVoidedFalse();
 
-    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
 
     Privilege findByName(String name);
 }

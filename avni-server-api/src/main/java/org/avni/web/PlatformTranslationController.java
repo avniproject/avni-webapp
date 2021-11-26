@@ -1,5 +1,6 @@
 package org.avni.web;
 
+import org.avni.domain.CHSEntity;
 import org.joda.time.DateTime;
 import org.avni.application.Platform;
 import org.avni.dao.PlatformTranslationRepository;
@@ -56,7 +57,7 @@ public class PlatformTranslationController implements RestControllerResourceProc
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(platformTranslationRepository.findByPlatformAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(Platform.Android, lastModifiedDateTime, now, pageable));
+        return wrap(platformTranslationRepository.findByPlatformAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(Platform.Android, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
 }

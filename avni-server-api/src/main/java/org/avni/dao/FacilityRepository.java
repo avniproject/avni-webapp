@@ -10,6 +10,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -17,15 +18,15 @@ import java.util.List;
 public interface FacilityRepository extends ReferenceDataRepository<Facility> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<Facility> findByLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByLastModifiedDateTimeAscIdAsc(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date now,
             Pageable pageable);
 
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
     Page<Facility> findByAddressLevelCatchmentsIdAndLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date now,
             Pageable pageable);
 
     @RestResource(path = "findAllById", rel = "findAllById")

@@ -4,6 +4,7 @@ import org.avni.dao.ChecklistDetailRepository;
 import org.avni.dao.ChecklistItemDetailRepository;
 import org.avni.dao.ChecklistItemRepository;
 import org.avni.dao.ChecklistRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.Checklist;
 import org.avni.domain.ChecklistDetail;
 import org.avni.domain.ChecklistItem;
@@ -76,7 +77,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(checklistItemRepository.findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+        return wrap(checklistItemRepository.findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
 

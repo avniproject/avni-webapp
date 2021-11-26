@@ -2,6 +2,7 @@ package org.avni.web;
 
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramEncounterRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.EncounterType;
 import org.avni.domain.ProgramEncounter;
 import org.avni.service.ProgramEncounterService;
@@ -71,7 +72,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(programEncounterRepository.findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+        return wrap(programEncounterRepository.findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(catchmentId, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @RequestMapping(value = "/programEncounter/search/lastModified", method = RequestMethod.GET)

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public interface CHSRepository<T extends CHSEntity> {
         );
     }
 
-    default Specification lastModifiedBetween(DateTime lastModifiedDateTime, DateTime now) {
+    default Specification lastModifiedBetween(Date lastModifiedDateTime, Date now) {
         Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 

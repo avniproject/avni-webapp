@@ -1,6 +1,6 @@
 package org.avni.dao;
 
-
+import java.util.Date;
 import org.avni.application.projections.VirtualCatchmentProjection;
 import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
@@ -30,18 +30,18 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     Page<AddressLevel> findByVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     boolean existsByLastModifiedDateTimeIsGreaterThanAndIdIn(
-            DateTime lastModifiedDateTime,
+            Date lastModifiedDateTime,
             List<Long> addressIds);
 
     Page<AddressLevel> findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<Long> addressLevelIds,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
@@ -59,14 +59,14 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 
-    Page<AddressLevel> findByLastModifiedDateTimeAfterAndTypeIn(DateTime LastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
+    Page<AddressLevel> findByLastModifiedDateTimeAfterAndTypeIn(Date lastModifiedDateTime, Collection<@NotNull AddressLevelType> type, Pageable pageable);
 
-    boolean existsByLastModifiedDateTimeAfterAndTypeIn(DateTime LastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
+    boolean existsByLastModifiedDateTimeAfterAndTypeIn(Date lastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
 
     @Override
     default Page<AddressLevel> syncByCatchment(SyncParameters syncParameters) {
         List<Long> addressLevelIds = syncParameters.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList());
-        return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(addressLevelIds, syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(addressLevelIds, syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
@@ -75,12 +75,12 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByLastModifiedDateTimeIsGreaterThanAndIdIn(lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 

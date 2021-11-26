@@ -1,6 +1,8 @@
 package org.avni.dao;
 
+import java.util.Date;
 import org.avni.domain.AddressLevel;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.CommentThread;
 import org.avni.domain.Individual;
 import org.joda.time.DateTime;
@@ -21,45 +23,45 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
     Page<CommentThread> findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<AddressLevel> addressLevels,
             Long subjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     Page<CommentThread> findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId,
             Long subjectTypeId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
+            Date lastModifiedDateTime,
+            Date now,
             Pageable pageable);
 
     boolean existsByComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndComments_SubjectAddressLevelIdIn(
             Long subjectTypeId,
-            DateTime lastModifiedDateTime,
+            Date lastModifiedDateTime,
             List<Long> addressIds);
 
     boolean existsByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
             long facilityId,
             Long subjectTypeId,
-            DateTime lastModifiedDateTime);
+            Date lastModifiedDateTime);
 
 
     @Override
     default Page<CommentThread> syncByCatchment(SyncParameters syncParameters) {
-        return findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
     default Page<CommentThread> syncByFacility(SyncParameters syncParameters) {
-        return findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndComments_SubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 

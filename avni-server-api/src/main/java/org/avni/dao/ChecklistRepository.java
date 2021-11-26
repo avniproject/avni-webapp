@@ -3,13 +3,12 @@ package org.avni.dao;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.Checklist;
 import org.avni.domain.Individual;
-import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -18,19 +17,19 @@ import java.util.Set;
 public interface ChecklistRepository extends TransactionalDataRepository<Checklist>, OperatingIndividualScopeAwareRepository<Checklist> {
 
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            List<AddressLevel> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId, Long checklistDetailId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+            long facilityId, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     boolean existsByChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
-            Long checklistDetailId, DateTime lastModifiedDateTime, List<Long> addressIds);
+            Long checklistDetailId, Date lastModifiedDateTime, List<Long> addressIds);
 
     boolean existsByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId, Long checklistDetailId, DateTime lastModifiedDateTime);
+            long facilityId, Long checklistDetailId, Date lastModifiedDateTime);
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
 
@@ -40,21 +39,21 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
 
     @Override
     default Page<Checklist> syncByCatchment(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
     default Page<Checklist> syncByFacility(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
+        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, DateTime lastModifiedDateTime, Long typeId){
+    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
         return existsByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 }

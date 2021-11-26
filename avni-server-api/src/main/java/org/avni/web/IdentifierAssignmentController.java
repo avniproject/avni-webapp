@@ -1,5 +1,6 @@
 package org.avni.web;
 
+import org.avni.domain.CHSEntity;
 import org.joda.time.DateTime;
 import org.avni.dao.IdentifierAssignmentRepository;
 import org.avni.dao.IdentifierSourceRepository;
@@ -62,7 +63,7 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
         User currentUser = userService.getCurrentUser();
         identifierAssignmentService.generateIdentifiersIfNecessary(currentUser);
 
-        return wrap(identifierAssignmentRepository.findByAssignedToAndLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(currentUser, lastModifiedDateTime, pageable));
+        return wrap(identifierAssignmentRepository.findByAssignedToAndLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(currentUser, CHSEntity.toDate(lastModifiedDateTime), pageable));
     }
 
     @RequestMapping(value = "/identifierAssignments", method = RequestMethod.POST)
