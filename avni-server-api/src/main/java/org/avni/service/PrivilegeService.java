@@ -19,6 +19,6 @@ public class PrivilegeService implements NonScopeAwareService {
 
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return privilegeRepository.existsByLastModifiedDateTimeGreaterThan(CHSEntity.toDate(lastModifiedDateTime));
+        return privilegeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 }

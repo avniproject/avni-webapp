@@ -28,5 +28,5 @@ public interface ApprovalStatusRepository extends JpaRepository<ApprovalStatus, 
 
     ApprovalStatus findByStatus(ApprovalStatus.Status status);
 
-    boolean existsByLastModifiedDateTimeGreaterThan(Date lastModifiedDateTime);
+    boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 }
