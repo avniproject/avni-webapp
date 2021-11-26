@@ -105,13 +105,13 @@ public class CHSEntity extends CHSBaseEntity implements Auditable{
         return (id == null || id == 0);
     }
 
-    @JsonIgnore
-    public String getLastModifiedByName() {
-        return lastModifiedBy.getUsername();
+    @JsonProperty(value = "createdBy")
+    public String getCreatedByName() {
+        return getCreatedBy().getUsername();
     }
 
-    @JsonIgnore
-    public String getCreatedByName() {
-        return createdBy.getUsername();
+    @JsonProperty(value = "lastModifiedBy")
+    public String getLastModifiedByName() {
+        return getLastModifiedBy().getUsername();
     }
 }
