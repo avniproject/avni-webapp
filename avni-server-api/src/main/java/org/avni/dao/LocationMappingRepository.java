@@ -3,7 +3,6 @@ package org.avni.dao;
 import java.util.Date;
 
 import org.avni.domain.CHSEntity;
-import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.ParentLocationMapping;
 import org.springframework.data.domain.Page;
@@ -13,14 +12,13 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locationMapping", path = "locationMapping", exported = false)
 public interface LocationMappingRepository extends ReferenceDataRepository<ParentLocationMapping>, FindByLastModifiedDateTime<ParentLocationMapping>, OperatingIndividualScopeAwareRepository<ParentLocationMapping> {
-    Page<ParentLocationMapping> findByParentLocationInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevelIds,
+    Page<ParentLocationMapping> findByParentLocationIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevelIds,
             Date lastModifiedDateTime,
             Date now,
             Pageable pageable);
@@ -31,7 +29,7 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
 
     @Override
     default Page<ParentLocationMapping> syncByCatchment(SyncParameters syncParameters) {
-        return findByParentLocationInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findByParentLocationIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override

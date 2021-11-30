@@ -65,8 +65,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Override
     default Page<AddressLevel> syncByCatchment(SyncParameters syncParameters) {
-        List<Long> addressLevelIds = syncParameters.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList());
-        return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(addressLevelIds, syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override

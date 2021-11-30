@@ -10,7 +10,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -20,8 +19,8 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
 
     List<Comment> findByIsVoidedFalseAndCommentThreadIdOrderByLastModifiedDateTimeAscIdAsc(Long threadId);
 
-    Page<Comment> findBySubjectAddressLevelInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels,
+    Page<Comment> findBySubjectAddressLevelIdInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels,
             Long subjectTypeId,
             Date lastModifiedDateTime,
             Date now,
@@ -46,7 +45,7 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
 
     @Override
     default Page<Comment> syncByCatchment(SyncParameters syncParameters) {
-        return findBySubjectAddressLevelInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findBySubjectAddressLevelIdInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override

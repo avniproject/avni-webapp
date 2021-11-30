@@ -13,9 +13,9 @@ public class SyncParameters {
     private final DateTime now;
     private final Long filter;
     private final Pageable pageable;
-    private List<AddressLevel> addressLevels;
+    private List<Long> addressLevels;
 
-    public SyncParameters(long facilityId, long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable, List<AddressLevel> addressLevels) {
+    public SyncParameters(long facilityId, long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable, List<Long> addressLevels) {
         this.facilityId = facilityId;
         this.catchmentId = catchmentId;
         this.lastModifiedDateTime = lastModifiedDateTime;
@@ -49,7 +49,7 @@ public class SyncParameters {
         return facilityId;
     }
 
-    public List<AddressLevel> getAddressLevels() {
+    public List<Long> getAddressLevels() {
         return addressLevels;
     }
 }

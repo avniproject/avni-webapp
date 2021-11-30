@@ -14,7 +14,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.Date;
-import org.joda.time.DateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +37,11 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     boolean existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeGreaterThan(
             long catchmentId, Long encounterTypeId, Date lastModifiedDateTime);
 
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(List<AddressLevel> addressLevels, long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
+    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(List<Long> addressLevels, long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     @Override
     default Page<ProgramEncounter> syncByCatchment(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findByProgramEnrolmentIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override

@@ -9,14 +9,12 @@ import org.avni.domain.AddressLevel;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.Individual;
 import org.avni.domain.individualRelationship.IndividualRelationship;
-import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -26,8 +24,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     Page<IndividualRelationship> findByIndividualaAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<IndividualRelationship> findByIndividualaAddressLevelInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels, Long subjectTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
+    Page<IndividualRelationship> findByIndividualaAddressLevelIdInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels, Long subjectTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<IndividualRelationship> findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId, Long subjectTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
@@ -43,7 +41,7 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
 
     @Override
     default Page<IndividualRelationship> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualaAddressLevelInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findByIndividualaAddressLevelIdInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override

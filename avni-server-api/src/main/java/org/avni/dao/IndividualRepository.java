@@ -18,19 +18,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
-import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-import java.util.Date;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
 
-    Page<Individual> findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels,
+    Page<Individual> findByAddressLevelIdInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels,
             Long subjectTypeId,
             Date lastModifiedDateTime,
             Date now,
@@ -55,7 +52,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     @Override
     default Page<Individual> syncByCatchment(SyncParameters syncParameters) {
-        return findByAddressLevelInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return findByAddressLevelIdInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override

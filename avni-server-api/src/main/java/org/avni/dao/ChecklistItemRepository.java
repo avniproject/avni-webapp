@@ -19,8 +19,8 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
     Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualAddressLevelInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
+    Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualAddressLevelIdInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
@@ -37,7 +37,7 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
 
     @Override
     default Page<ChecklistItem> syncByCatchment(SyncParameters syncParameters) {
-        return findByChecklistProgramEnrolmentIndividualAddressLevelInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return findByChecklistProgramEnrolmentIndividualAddressLevelIdInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override

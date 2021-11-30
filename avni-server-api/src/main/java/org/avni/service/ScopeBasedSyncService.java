@@ -12,22 +12,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.avni.domain.OperatingIndividualScope.ByCatchment;
 import static org.avni.domain.OperatingIndividualScope.ByFacility;
 
 @Service
 public class ScopeBasedSyncService<T extends CHSEntity> {
-    private VirtualCatchmentRepository virtualCatchmentRepository;
+    private AddressLevelService addressLevelService;
 
-    public ScopeBasedSyncService(VirtualCatchmentRepository virtualCatchmentRepository) {
-        this.virtualCatchmentRepository = virtualCatchmentRepository;
+    public ScopeBasedSyncService(AddressLevelService addressLevelService) {
+        this.addressLevelService = addressLevelService;
     }
 
     public Page<T> getSyncResult(OperatingIndividualScopeAwareRepository<T> repository, User user, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable) {
-        List<VirtualCatchment> virtualCatchments = virtualCatchmentRepository.findByCatchment(user.getCatchment());
-        List<AddressLevel> addressLevels = virtualCatchments.stream().map(virtualCatchment -> virtualCatchment.getAddressLevel()).collect(Collectors.toList());
+        List<Long> addressLevels = addressLevelService.getAllAddressLevelIdsForCatchment(user.getCatchment());
 
         OperatingIndividualScope scope = user.getOperatingIndividualScope();
         Facility userFacility = user.getFacility();

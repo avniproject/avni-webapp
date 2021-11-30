@@ -5,14 +5,12 @@ import org.avni.domain.AddressLevel;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.CommentThread;
 import org.avni.domain.Individual;
-import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -20,8 +18,8 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface CommentThreadRepository extends TransactionalDataRepository<CommentThread>, FindByLastModifiedDateTime<CommentThread>, OperatingIndividualScopeAwareRepository<CommentThread> {
 
-    Page<CommentThread> findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels,
+    Page<CommentThread> findByComments_SubjectAddressLevelIdInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels,
             Long subjectTypeId,
             Date lastModifiedDateTime,
             Date now,
@@ -47,7 +45,7 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
 
     @Override
     default Page<CommentThread> syncByCatchment(SyncParameters syncParameters) {
-        return findByComments_SubjectAddressLevelInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findByComments_SubjectAddressLevelIdInAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override

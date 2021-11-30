@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.util.Date;
-import org.joda.time.DateTime;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +26,8 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<Encounter> findByIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
+    Page<Encounter> findByIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Encounter> findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
@@ -41,7 +40,7 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
 
     @Override
     default Page<Encounter> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressLevelInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+        return findByIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
                 syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 

@@ -13,7 +13,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
 import java.util.List;
 
 @Repository
@@ -21,8 +20,8 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepository<ProgramEnrolment> {
 
-    Page<ProgramEnrolment> findByIndividualAddressLevelInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels,
+    Page<ProgramEnrolment> findByIndividualAddressLevelIdInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels,
             Long programId,
             Date lastModifiedDateTime,
             Date now,
@@ -102,7 +101,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
 
     @Override
     default Page<ProgramEnrolment> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressLevelInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return findByIndividualAddressLevelIdInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override

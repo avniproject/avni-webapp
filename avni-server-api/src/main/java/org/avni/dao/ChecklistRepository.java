@@ -19,8 +19,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
+    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelIdInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
     Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long facilityId, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
@@ -39,7 +39,7 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
 
     @Override
     default Page<Checklist> syncByCatchment(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualAddressLevelInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return findByProgramEnrolmentIndividualAddressLevelIdInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.avni.dao;
 
 import org.avni.domain.*;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Date;
 
@@ -26,9 +24,9 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
         throw new UnsupportedOperationException("No field 'name' in GroupSubject");
     }
 
-    Page<GroupSubject> findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<AddressLevel> groupSubjectAddressLevels,
-            List<AddressLevel> memberSubjectAddressLevels,
+    Page<GroupSubject> findByGroupSubjectAddressLevelIdInAndMemberSubjectAddressLevelIdInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            List<Long> groupSubjectAddressLevels,
+            List<Long> memberSubjectAddressLevels,
             Long groupSubjectTypeId,
             Date lastModifiedDateTime,
             Date now,
@@ -110,7 +108,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     @Override
     default Page<GroupSubject> syncByCatchment(SyncParameters syncParameters) {
-        return findByGroupSubjectAddressLevelInAndMemberSubjectAddressLevelInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findByGroupSubjectAddressLevelIdInAndMemberSubjectAddressLevelIdInAndGroupRoleGroupSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
