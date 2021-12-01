@@ -47,6 +47,10 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
         RuleFailureTelemetry ruleFailureTelemetry = new RuleFailureTelemetry();
         ruleFailureTelemetry.setUuid(request.getUuid());
         ruleFailureTelemetry.setUser(user);
+        ruleFailureTelemetry.setCreatedBy(user);
+        ruleFailureTelemetry.setLastModifiedBy(user);
+        ruleFailureTelemetry.setCreatedDateTime(DateTime.now());
+        ruleFailureTelemetry.updateLastModifiedDateTime();
         ruleFailureTelemetry.setOrganisationId(organisation.getId());
         ruleFailureTelemetry.setErrorMessage(request.getErrorMessage());
         ruleFailureTelemetry.setIndividualUuid(request.getIndividualUuid());

@@ -12,7 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 
 import java.util.Date;
 
