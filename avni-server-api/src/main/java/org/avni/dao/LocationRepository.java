@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.AddressLevelType;
 import org.avni.domain.Catchment;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

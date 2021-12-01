@@ -43,13 +43,12 @@ public class SyncDetailsService {
         List<FormMapping> programEncounters = formMappingRepository.getAllProgramEncounterFormMappings();
         List<FormMapping> programEnrolments = formMappingRepository.getAllProgramEnrolmentFormMappings();
         List<ChecklistDetail> checklistDetails = checklistDetailRepository.findAll();
-
+        GroupPrivileges groupPrivileges = groupPrivilegeService.getGroupPrivileges();
 
         HashSet<SyncableItem> syncableItems = new HashSet<>();
 
-
         subjectTypes.forEach(subjectType -> {
-            if (!groupPrivilegeService.hasPrivilege("View subject", subjectType, null, null, null)) {
+            if (!groupPrivileges.hasPrivilege("View subject", subjectType, null, null, null)) {
                 return;
             }
             addToSyncableItems(syncableItems, "Individual", subjectType.getUuid());
@@ -66,26 +65,26 @@ public class SyncDetailsService {
             }
         });
         generalEncounters.forEach(formMapping -> {
-            if (!groupPrivilegeService.hasPrivilege("View visit", formMapping.getSubjectType(), null, formMapping.getEncounterType(), null)) {
+            if (!groupPrivileges.hasPrivilege("View visit", formMapping.getSubjectType(), null, formMapping.getEncounterType(), null)) {
                 return;
             }
             addToSyncableItems(syncableItems, "Encounter", formMapping.getEncounterTypeUuid());
         });
         programEncounters.forEach(formMapping -> {
-            if (!groupPrivilegeService.hasPrivilege("View visit", formMapping.getSubjectType(), formMapping.getProgram(), formMapping.getEncounterType(), null)) {
+            if (!groupPrivileges.hasPrivilege("View visit", formMapping.getSubjectType(), formMapping.getProgram(), formMapping.getEncounterType(), null)) {
                 return;
             }
             addToSyncableItems(syncableItems, "ProgramEncounter", formMapping.getEncounterTypeUuid());
         });
         programEnrolments.forEach(formMapping -> {
-            if (!groupPrivilegeService.hasPrivilege("View enrolment details", formMapping.getSubjectType(), formMapping.getProgram(), formMapping.getEncounterType(), null)) {
+            if (!groupPrivileges.hasPrivilege("View enrolment details", formMapping.getSubjectType(), formMapping.getProgram(), formMapping.getEncounterType(), null)) {
                 return;
             }
             addToSyncableItems(syncableItems, "ProgramEnrolment", formMapping.getProgramUuid());
         });
 
         checklistDetails.forEach(checklistDetail -> {
-            if (subjectTypes.stream().anyMatch(subjectType -> groupPrivilegeService.hasPrivilege("View checklist", subjectType, null, null,checklistDetail))) {
+            if (subjectTypes.stream().anyMatch(subjectType -> groupPrivileges.hasPrivilege("View checklist", subjectType, null, null,checklistDetail))) {
                 addToSyncableItems(syncableItems, "Checklist", checklistDetail.getUuid());
                 addToSyncableItems(syncableItems, "ChecklistItem", checklistDetail.getUuid());
             }

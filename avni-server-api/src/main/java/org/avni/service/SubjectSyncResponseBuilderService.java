@@ -2,6 +2,7 @@ package org.avni.service;
 
 import org.avni.dao.GroupSubjectRepository;
 import org.avni.dao.IndividualRepository;
+import org.avni.domain.GroupPrivileges;
 import org.avni.domain.GroupSubject;
 import org.avni.domain.Individual;
 import org.avni.web.response.SyncSubjectResponse;
@@ -35,52 +36,54 @@ public class SubjectSyncResponseBuilderService {
     }
 
     public SyncSubjectResponse getSubject(String uuid) {
+        GroupPrivileges groupPrivileges = privilegeService.getGroupPrivileges();
+
         SyncSubjectResponse syncSubjectResponse = new SyncSubjectResponse();
         Individual individual = individualRepository.findByUuid(uuid);
         syncSubjectResponse.setIndividual(individual);
         syncSubjectResponse.setProgramEnrolments(individual.getProgramEnrolments()
                 .stream()
                 .filter(programEnrolment ->
-                        privilegeService.hasViewPrivilege(programEnrolment))
+                        groupPrivileges.hasViewPrivilege(programEnrolment))
                 .collect(Collectors.toSet()));
 
         syncSubjectResponse.setProgramEncounters(individual.getProgramEncounters()
                 .stream()
                 .filter(programEncounter ->
-                        privilegeService.hasViewPrivilege(programEncounter))
+                        groupPrivileges.hasViewPrivilege(programEncounter))
                 .collect(Collectors.toSet()));
 
         syncSubjectResponse.setEncounters(individual.getEncounters()
                 .stream()
                 .filter(encounter ->
-                        privilegeService.hasViewPrivilege(encounter))
+                        groupPrivileges.hasViewPrivilege(encounter))
                 .collect(Collectors.toSet()));
 
         syncSubjectResponse.setChecklists(checklistService.findChecklistsByIndividual(individual)
                 .stream()
                 .filter(checklist ->
-                        privilegeService.hasViewPrivilege(checklist))
+                        groupPrivileges.hasViewPrivilege(checklist))
                 .collect(Collectors.toSet()));
 
         syncSubjectResponse.setChecklistItems(checklistItemService.findChecklistItemsByIndividual(individual)
                 .stream()
                 .filter(checklistItem ->
-                        privilegeService.hasViewPrivilege(checklistItem))
+                        groupPrivileges.hasViewPrivilege(checklistItem))
                 .collect(Collectors.toSet()));
 
         syncSubjectResponse.setIndividualRelationships(individualRelationshipService.findByIndividual(individual)
                 .stream()
                 .filter(individualRelationship ->
-                        privilegeService.hasViewPrivilege(individualRelationship.getIndividuala()) &&
-                                privilegeService.hasViewPrivilege(individualRelationship.getIndividualB())
+                        groupPrivileges.hasViewPrivilege(individualRelationship.getIndividuala()) &&
+                                groupPrivileges.hasViewPrivilege(individualRelationship.getIndividualB())
                 )
                 .collect(Collectors.toSet()));
         List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubjectOrMemberSubject(individual, individual);
         syncSubjectResponse.setGroupSubjects(groupSubjects
                 .stream()
                 .filter(groupSubject ->
-                        privilegeService.hasViewPrivilege(groupSubject.getGroupSubject()) &&
-                                privilegeService.hasViewPrivilege(groupSubject.getMemberSubject())
+                        groupPrivileges.hasViewPrivilege(groupSubject.getGroupSubject()) &&
+                                groupPrivileges.hasViewPrivilege(groupSubject.getMemberSubject())
                 )
                 .collect(Collectors.toSet()));
 

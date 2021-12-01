@@ -183,72 +183,14 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         return groupPrivilegeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
-    public List<GroupPrivilege> getAllowedPrivilegesForUser() {
-        User user = UserContextHolder.getUserContext().getUser();
-        return groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
-    }
-
-    public boolean hasPrivilege(String privilegeName, SubjectType subjectType, Program program, EncounterType encounterType, ChecklistDetail checklistDetail) {
+    public GroupPrivileges getGroupPrivileges() {
         if (this.userHasAllPrivileges()) {
-            return true;
+            return new GroupPrivileges();
         }
         User user = UserContextHolder.getUserContext().getUser();
         List<GroupPrivilege> privileges = groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
-        return privileges.stream().anyMatch(groupPrivilege -> groupPrivilege.matches(privilegeName, subjectType, program, encounterType, checklistDetail));
+        return new GroupPrivileges(false, privileges);
     }
-
-    public boolean hasViewPrivilege(Individual individual) {
-        return this.hasPrivilege("View subject", individual.getSubjectType(),
-                null, null, null
-        );
-    }
-    public boolean hasViewPrivilege(ProgramEnrolment programEnrolment) {
-        return this.hasPrivilege("View enrolment details",
-                programEnrolment.getIndividual().getSubjectType(),
-                programEnrolment.getProgram(),
-                null, null
-        );
-    }
-
-    public boolean hasViewPrivilege(Checklist checklist) {
-        return this.hasPrivilege("View checklist",
-                checklist.getProgramEnrolment().getIndividual().getSubjectType(),
-                null,
-                null, checklist.getChecklistDetail()
-        );
-    }
-
-    public boolean hasViewPrivilege(ChecklistItem checklistItem) {
-        return this.hasViewPrivilege(checklistItem.getChecklist());
-    }
-
-    public boolean hasViewPrivilege(ProgramEncounter programEncounter) {
-        return this.hasPrivilege("View visit",
-                programEncounter.getProgramEnrolment().getIndividual().getSubjectType(),
-                programEncounter.getProgramEnrolment().getProgram(),
-                null, null
-        );
-    }
-
-    public boolean hasViewPrivilege(Encounter encounter) {
-        return this.hasPrivilege("View visit",
-                encounter.getIndividual().getSubjectType(),
-                null, null, null
-        );
-    }
-
-    public List<GroupPrivilege> getRevokedPrivilegesForUser() {
-        User user = UserContextHolder.getUserContext().getUser();
-        List<String> allowedPrivilegeTypeUUIDs =  this.getAllowedPrivilegesForUser()
-                .stream()
-                .map(GroupPrivilege::getTypeUUID)
-                .collect(Collectors.toList());
-        return groupPrivilegeRepository.getAllRevokedPrivilegesForUser(user.getId())
-                .stream()
-                .filter(p -> !allowedPrivilegeTypeUUIDs.contains(p.getTypeUUID()))
-                .collect(Collectors.toList());
-    }
-
 
     public boolean userHasAllPrivileges() {
         User user = UserContextHolder.getUserContext().getUser();

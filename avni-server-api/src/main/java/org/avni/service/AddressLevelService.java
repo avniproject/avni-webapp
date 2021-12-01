@@ -17,6 +17,22 @@ import java.util.stream.Collectors;
 public class AddressLevelService {
     private final LocationRepository locationRepository;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private ThreadLocal<AddressLevelsForCatchment> addressLevelCache = ThreadLocal.withInitial(AddressLevelsForCatchment::new);
+
+    private class AddressLevelsForCatchment {
+        private Long catchmentId;
+        private List<Long> addressLevelIds;
+
+        public List<Long> getAddressLevelsForCatchment(Catchment catchment) {
+            if (catchment.getId() == catchmentId) return addressLevelIds;
+            this.catchmentId = catchment.getId();
+            this.addressLevelIds = locationRepository.getVirtualCatchmentsForCatchmentId(catchment.getId())
+                    .stream()
+                    .map(VirtualCatchmentProjection::getAddresslevel_id)
+                    .collect(Collectors.toList());
+            return addressLevelIds;
+        }
+    }
 
     public AddressLevelService(LocationRepository locationRepository,
                                AddressLevelTypeRepository addressLevelTypeRepository) {
@@ -47,9 +63,6 @@ public class AddressLevelService {
     }
 
     public List<Long> getAllAddressLevelIdsForCatchment(Catchment catchment) {
-        return locationRepository.getVirtualCatchmentsForCatchmentId(catchment.getId())
-                .stream()
-                .map(VirtualCatchmentProjection::getAddresslevel_id)
-                .collect(Collectors.toList());
+        return addressLevelCache.get().getAddressLevelsForCatchment(catchment);
     }
 }
