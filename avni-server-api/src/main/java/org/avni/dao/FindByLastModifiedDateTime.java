@@ -8,8 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import org.joda.time.DateTime;
-
 import java.util.Date;
 
 public interface FindByLastModifiedDateTime<T> {

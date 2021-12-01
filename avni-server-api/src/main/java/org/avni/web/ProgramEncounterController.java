@@ -119,5 +119,4 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
         return resource;
     }
-
 }
