@@ -16,7 +16,7 @@ import java.util.List;
 public interface AddressLevelTypeRepository extends ReferenceDataRepository<AddressLevelType> {
 
     AddressLevelType findByNameAndOrganisationId(String name, Long organisationId);
-    AddressLevelType findByNameIgnoreCaseAndOrganisationId(String name, Long organisationId);
+    AddressLevelType findByNameIgnoreCaseAndOrganisationIdAndVoidedIsFalse(String name, Long organisationId);
 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevelType> findByIdIn(@Param("ids") Long[] ids);
