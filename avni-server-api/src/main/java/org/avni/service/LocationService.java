@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +59,7 @@ public class LocationService implements ScopeAwareService {
         ReferenceDataContract parentLocationContract = locationContract.getParent();
         if (parentLocationContract != null) {
             AddressLevel parentLocation = locationRepository.findByUuid(parentLocationContract.getUuid());
-            AddressLevelType parentAddressLevelType = addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationIdAndVoidedIsFalse(parentLocation.getType().getName(), orgId);
+            AddressLevelType parentAddressLevelType = addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationIdAndIsVoidedFalse(parentLocation.getType().getName(), orgId);
             addressLevelType.setParent(parentAddressLevelType);
         }
     }
@@ -69,7 +68,7 @@ public class LocationService implements ScopeAwareService {
         Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
         return locationContract.getAddressLevelTypeUUID() != null
                 ? addressLevelTypeRepository.findByUuid(locationContract.getAddressLevelTypeUUID())
-                : addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationIdAndVoidedIsFalse(locationContract.getType(), orgId);
+                : addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationIdAndIsVoidedFalse(locationContract.getType(), orgId);
     }
 
     private AddressLevelType createType(LocationContract locationContract) {
