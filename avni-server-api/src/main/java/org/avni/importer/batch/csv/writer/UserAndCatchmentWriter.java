@@ -8,6 +8,7 @@ import org.avni.importer.batch.model.Row;
 import org.avni.service.CatchmentService;
 import org.avni.service.CognitoIdpService;
 import org.avni.service.UserService;
+import org.avni.util.S;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,8 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String username = row.get("Username");
         String email = row.get("Email");
         String phoneNumber = row.get("Phone");
-        Locale locale = Locale.valueByName(row.get("Language"));
+        String language = row.get("Language");
+        Locale locale = S.isEmpty(language) ? Locale.en : Locale.valueByName(language);
         Boolean trackLocation = row.getBool("Track Location");
         String datePickerMode = row.get("Date picker mode");
         Boolean beneficiaryMode = row.getBool("Enable Beneficiary mode");
@@ -80,9 +82,9 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setSettings(new JsonObject()
                 .with("locale", locale)
                 .with("trackLocation", trackLocation)
-                .with("datePickerMode", datePickerMode)
+                .withEmptyCheck("datePickerMode", datePickerMode)
                 .with("showBeneficiaryMode", beneficiaryMode)
-                .with("idPrefix", idPrefix));
+                .withEmptyCheck("idPrefix", idPrefix));
 
         User currentUser = userService.getCurrentUser();
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
