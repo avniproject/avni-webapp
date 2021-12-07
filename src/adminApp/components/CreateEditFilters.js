@@ -2,7 +2,22 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "@material-ui/core";
 import Select from "react-select";
-import _, { deburr } from "lodash";
+import {
+  deburr,
+  includes,
+  isNil,
+  reject,
+  startCase,
+  values,
+  map,
+  head,
+  filter,
+  get,
+  find,
+  isEmpty,
+  pickBy,
+  identity
+} from "lodash";
 import Box from "@material-ui/core/Box";
 import http from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -15,10 +30,21 @@ import { DocumentationContainer } from "../../common/components/DocumentationCon
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 
+const nonSupportedTypes = [
+  "Duration",
+  "Image",
+  "Video",
+  "Subject",
+  "Location",
+  "PhoneNumber",
+  "GroupAffiliation",
+  "Audio",
+  "File"
+];
 export const CreateEditFilters = props => {
   const { t } = useTranslation();
 
-  if (_.isNil(props.history.location.state)) {
+  if (isNil(props.history.location.state)) {
     return <div />;
   }
 
@@ -29,17 +55,17 @@ export const CreateEditFilters = props => {
     filterType,
     worklistUpdationRule
   } = props.history.location.state;
-  const allTypes = _.values(CustomFilter.type);
+  const allTypes = values(CustomFilter.type);
   const filterTypes =
     filterType === "myDashboardFilters"
-      ? _.reject(allTypes, t =>
+      ? reject(allTypes, t =>
           [CustomFilter.type.Name, CustomFilter.type.Age, CustomFilter.type.SearchAll].includes(t)
         )
       : allTypes;
-  const typeOptions = filterTypes.map(t => ({ label: _.startCase(t), value: t }));
+  const typeOptions = filterTypes.map(t => ({ label: startCase(t), value: t }));
 
-  const scopeOptions = _.values(CustomFilter.scope).map(s => ({ label: _.startCase(s), value: s }));
-  const widgetOptions = _.values(CustomFilter.widget)
+  const scopeOptions = values(CustomFilter.scope).map(s => ({ label: startCase(s), value: s }));
+  const widgetOptions = values(CustomFilter.widget)
     .filter(w => w !== CustomFilter.widget.Relative)
     .map(t => ({ label: t, value: t }));
 
@@ -70,7 +96,7 @@ export const CreateEditFilters = props => {
   const { programs, subjectTypes, encounterTypes } =
     props.history.location.state.operationalModules || {};
 
-  const mapToOptions = entity => _.map(entity, ({ name, uuid }) => ({ label: name, value: uuid }));
+  const mapToOptions = entity => map(entity, ({ name, uuid }) => ({ label: name, value: uuid }));
 
   const programOptions = mapToOptions(programs);
   const encounterTypeOptions = mapToOptions(encounterTypes);
@@ -86,9 +112,7 @@ export const CreateEditFilters = props => {
   };
 
   const mapPreviousToOptions = (prevValue, options) => {
-    return (
-      (!_.isEmpty(prevValue) && _.head(options.filter(({ value }) => prevValue === value))) || ""
-    );
+    return (!isEmpty(prevValue) && head(options.filter(({ value }) => prevValue === value))) || "";
   };
 
   const [filterName, setFilterName] = useState(titleKey);
@@ -96,11 +120,10 @@ export const CreateEditFilters = props => {
     mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions)
   );
   const groupSubjectTypeOptions = mapToOptions(
-    _.filter(
+    filter(
       subjectTypes,
       ({ group }) =>
-        !!group &&
-        !_.get(_.find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value), "group")
+        !!group && !get(find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value), "group")
     )
   );
   const [selectedGroupSubject, setGroupSubjectType] = useState(
@@ -128,35 +151,35 @@ export const CreateEditFilters = props => {
   const saveDisabled = () => {
     if (selectedType.value === CustomFilter.type.Concept) {
       const allRequiredStatus =
-        _.isEmpty(filterName) ||
-        _.isEmpty(selectedScope) ||
-        _.isEmpty(selectedConcept) ||
-        _.isEmpty(selectedSubject);
+        isEmpty(filterName) ||
+        isEmpty(selectedScope) ||
+        isEmpty(selectedConcept) ||
+        isEmpty(selectedSubject);
       switch (selectedScope.value) {
         case CustomFilter.scope.Registration:
           return allRequiredStatus;
         case CustomFilter.scope.ProgramEnrolment:
-          return allRequiredStatus || _.isEmpty(selectedProgram);
+          return allRequiredStatus || isEmpty(selectedProgram);
         case CustomFilter.scope.ProgramEncounter:
-          return allRequiredStatus || _.isEmpty(selectedProgram) || _.isEmpty(selectedEncounter);
+          return allRequiredStatus || isEmpty(selectedProgram) || isEmpty(selectedEncounter);
         case CustomFilter.scope.Encounter:
-          return allRequiredStatus || _.isEmpty(selectedEncounter);
+          return allRequiredStatus || isEmpty(selectedEncounter);
         default:
           return true;
       }
     } else {
       return (
-        _.isEmpty(filterName) ||
-        _.isEmpty(selectedSubject) ||
-        _.isEmpty(selectedType) ||
-        (selectedType.value === CustomFilter.type.GroupSubject && _.isEmpty(selectedGroupSubject))
+        isEmpty(filterName) ||
+        isEmpty(selectedSubject) ||
+        isEmpty(selectedType) ||
+        (selectedType.value === CustomFilter.type.GroupSubject && isEmpty(selectedGroupSubject))
       );
     }
   };
 
   const saveFilter = () => {
-    const encType = _.isEmpty(selectedEncounter) ? [] : selectedEncounter.map(l => l.value);
-    const prog = _.isEmpty(selectedProgram) ? [] : selectedProgram.map(l => l.value);
+    const encType = isEmpty(selectedEncounter) ? [] : selectedEncounter.map(l => l.value);
+    const prog = isEmpty(selectedProgram) ? [] : selectedProgram.map(l => l.value);
     const scopeParams = {
       programUUIDs: prog,
       encounterTypeUUIDs: encType
@@ -166,14 +189,14 @@ export const CreateEditFilters = props => {
       subjectTypeUUID: selectedSubject.value,
       groupSubjectTypeUUID: selectedGroupSubject.value,
       type: selectedType.value,
-      scope: (!_.isEmpty(selectedScope) && selectedScope.value) || null,
-      conceptName: (!_.isEmpty(selectedConcept) && selectedConcept.label) || null,
-      conceptUUID: (!_.isEmpty(selectedConcept) && selectedConcept.value.uuid) || null,
-      conceptDataType: (!_.isEmpty(selectedConcept) && selectedConcept.value.dataType) || null,
-      widget: (!_.isEmpty(selectedWidget) && selectedWidget.label) || null,
-      scopeParameters: !_.isEmpty(selectedConcept) ? scopeParams : null
+      scope: (!isEmpty(selectedScope) && selectedScope.value) || null,
+      conceptName: (!isEmpty(selectedConcept) && selectedConcept.label) || null,
+      conceptUUID: (!isEmpty(selectedConcept) && selectedConcept.value.uuid) || null,
+      conceptDataType: (!isEmpty(selectedConcept) && selectedConcept.value.dataType) || null,
+      widget: (!isEmpty(selectedWidget) && selectedWidget.label) || null,
+      scopeParameters: !isEmpty(selectedConcept) ? scopeParams : null
     };
-    const data = getNewFilterData(_.pickBy(newFilter, _.identity));
+    const data = getNewFilterData(pickBy(newFilter, identity));
 
     http
       .put("/organisationConfig", data)
@@ -193,7 +216,7 @@ export const CreateEditFilters = props => {
     const setting = props.history.location.state.settings;
     const filterType = props.history.location.state.filterType;
     const oldFilters = setting.settings[filterType];
-    const newFilters = _.isNil(props.history.location.state.selectedFilter)
+    const newFilters = isNil(props.history.location.state.selectedFilter)
       ? [...oldFilters, newFilter]
       : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
     return {
@@ -248,9 +271,9 @@ export const CreateEditFilters = props => {
       .then(response => {
         const concepts = response.data;
         const filteredConcepts = concepts.filter(
-          concept => concept.dataType !== "NA" && concept.dataType !== "Duration"
+          concept => !includes(nonSupportedTypes, concept.dataType)
         );
-        const conceptOptions = _.map(filteredConcepts, ({ name, uuid, dataType }) => ({
+        const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
           label: name,
           value: { uuid, dataType }
         }));
