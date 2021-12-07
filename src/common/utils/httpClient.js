@@ -49,6 +49,13 @@ class HttpClient {
     return localStorage.getItem("ORGANISATION_UUID");
   }
 
+  saveAuthTokenForAnalyticsApp() {
+    Auth.currentSession().then(session => {
+      const authToken = session.idToken.jwtToken;
+      localStorage.setItem("authToken", authToken);
+    });
+  }
+
   async setHeaders(options) {
     const authParams = this.authContext.get();
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });

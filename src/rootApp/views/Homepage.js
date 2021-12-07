@@ -7,8 +7,11 @@ import Grid from "@material-ui/core/Grid";
 import Icon from "@material-ui/core/Icon";
 
 import CardActionArea from "@material-ui/core/CardActionArea";
+import httpClient from "../../common/utils/httpClient";
 
 const Homepage = ({ user }) => {
+  httpClient.saveAuthTokenForAnalyticsApp();
+
   const renderCard = (href, name, customicon) => (
     <CardActionArea style={classes.cardArea} href={href}>
       <Card style={classes.card} raised={true}>
@@ -65,6 +68,7 @@ const Homepage = ({ user }) => {
         {renderCard("/#/export", "Reports", "assessment")}
         {renderCard("/#/app", "Data Entry App", "keyboard")}
         {renderCard("/#/help", "Support And Training", "help")}
+        {renderCard("/analytics/activities", "Canned Reports", "assessment")}
       </Grid>
     </ScreenWithAppBar>
   );
