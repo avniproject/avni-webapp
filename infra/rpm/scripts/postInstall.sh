@@ -20,6 +20,7 @@ ln -s /opt/openchs/scripts/openchs /etc/init.d/openchs
 ln -s /opt/openchs/run /var/run/openchs
 ln -s /opt/openchs/log /var/log/openchs
 ln -s /opt/openchs-webapp /opt/openchs/static
+ln -s /opt/avni-canned-reports /opt/openchs/analytics
 chmod a+x /opt/openchs/scripts/openchs
 chkconfig openchs on
 
