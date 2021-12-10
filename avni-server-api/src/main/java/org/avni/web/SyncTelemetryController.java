@@ -1,6 +1,7 @@
 package org.avni.web;
 
 import org.avni.dao.SyncTelemetryRepository;
+import org.avni.domain.Individual;
 import org.avni.domain.Organisation;
 import org.avni.domain.SyncTelemetry;
 import org.avni.domain.User;
@@ -8,6 +9,7 @@ import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.SyncTelemetryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,5 +56,19 @@ public class SyncTelemetryController implements RestControllerResourceProcessor<
         syncTelemetry.setDeviceInfo(request.getDeviceInfo());
         syncTelemetry.setSyncSource(request.getSyncSource());
         syncTelemetryRepository.save(syncTelemetry);
+    }
+
+    @RequestMapping(value = "/report/syncTelemetry", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public PagedResources<Resource<SyncTelemetry>> getAll(Pageable pageable) {
+        return wrap(syncTelemetryRepository.findAllByOrderByIdDesc(pageable));
+    }
+
+    @Override
+    public Resource<SyncTelemetry> process(Resource<SyncTelemetry> resource) {
+        SyncTelemetry syncTelemetry = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(syncTelemetry.getUser().getName(), "userName"));
+        return resource;
     }
 }

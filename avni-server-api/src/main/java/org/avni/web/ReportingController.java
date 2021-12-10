@@ -9,8 +9,10 @@ import org.avni.domain.AddressLevel;
 import org.avni.domain.CHSBaseEntity;
 import org.avni.domain.Concept;
 import org.avni.domain.JsonObject;
+import org.avni.report.AggregateReportResult;
 import org.avni.report.AvniReportRepository;
 import org.avni.report.ReportService;
+import org.avni.report.UserActivityResult;
 import org.avni.util.BadRequestError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +52,7 @@ public class ReportingController {
     @RequestMapping(value = "/report/aggregate/codedConcepts", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public List<JsonObject> getReportData(@RequestParam(value = "formMappingId", required = false) Long formMappingId,
-                                          @RequestParam(value="formUUID", required = false) String formUUID,
+                                          @RequestParam(value = "formUUID", required = false) String formUUID,
                                           @RequestParam(value = "startDate", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate,
                                           @RequestParam(value = "locationIds", required = false, defaultValue = "") List<Long> locationIds) {
@@ -99,6 +101,55 @@ public class ReportingController {
                 .with("cancelledVisits", reportService.cancelledVisits(startDate, endDate, encounterTypeIds, lowestLocationIds))
                 .with("onTimeVisits", reportService.onTimeVisits(startDate, endDate, encounterTypeIds, lowestLocationIds))
                 .with("programExits", reportService.programExits(startDate, endDate, programIds, lowestLocationIds));
+    }
+
+    @RequestMapping(value = "/report/hr/overallActivities", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<UserActivityResult> getUserWiseActivities(@RequestParam(value = "startDate", required = false) String startDate,
+                                                          @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateUserActivityResults();
+    }
+
+    @RequestMapping(value = "/report/hr/syncFailures", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<UserActivityResult> getUserWiseSyncFailures(@RequestParam(value = "startDate", required = false) String startDate,
+                                                            @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateUserSyncFailures();
+    }
+
+    @RequestMapping(value = "/report/hr/deviceModels", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AggregateReportResult> getUserWiseDeviceModels(@RequestParam(value = "startDate", required = false) String startDate,
+                                                               @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateUserDeviceModels();
+    }
+
+    @RequestMapping(value = "/report/hr/appVersions", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AggregateReportResult> getUserWiseAppVersions(@RequestParam(value = "startDate", required = false) String startDate,
+                                                              @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateUserAppVersions();
+    }
+
+    @RequestMapping(value = "/report/hr/championUsers", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AggregateReportResult> getChampionUsers(@RequestParam(value = "startDate", required = false) String startDate,
+                                                     @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateCompletedVisitsOnTimeByProportion(">= 0.8");
+    }
+
+    @RequestMapping(value = "/report/hr/nonPerformingUsers", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AggregateReportResult> getNonPerformingUsers(@RequestParam(value = "startDate", required = false) String startDate,
+                                                     @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateCompletedVisitsOnTimeByProportion("<= 0.5");
+    }
+
+    @RequestMapping(value = "/report/hr/mostCancelled", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AggregateReportResult> getUsersCancellingMostVisits(@RequestParam(value = "startDate", required = false) String startDate,
+                                                          @RequestParam(value = "endDate", required = false) String endDate) {
+        return avniReportRepository.generateUserCancellingMostVisits();
     }
 
     private List<Long> getLocations(List<Long> addressIds) {
