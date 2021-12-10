@@ -131,19 +131,22 @@ public class AvniReportRepository {
                 "         where is_voided = false\n" +
                 "         group by last_modified_by_id\n" +
                 "     )\n" +
-                "select u.id                         as                                                   id,\n" +
-                "       coalesce(u.name, u.username) as                                                   name,\n" +
-                "       registration_count,\n" +
-                "       encounter_count,\n" +
-                "       enrolment_count,\n" +
-                "       program_encounter_count,\n" +
-                "       (registration_count + encounter_count + enrolment_count + program_encounter_count) total\n" +
+                "select u.id                                              as id,\n" +
+                "       coalesce(u.name, u.username)                      as name,\n" +
+                "       coalesce(registration_count, 0)                   as registration_count,\n" +
+                "       coalesce(encounter_count, 0)                      as encounter_count,\n" +
+                "       coalesce(enrolment_count, 0)                      as enrolment_count,\n" +
+                "       coalesce(program_encounter_count, 0)              as program_encounter_count,\n" +
+                "       coalesce(coalesce(registration_count, 0) + coalesce(encounter_count, 0) + coalesce(enrolment_count, 0) +\n" +
+                "                coalesce(program_encounter_count, 0), 0) as total\n" +
                 "from users u\n" +
-                "         join registrations r on r.last_modified_by_id = u.id\n" +
-                "         join encounters e on e.last_modified_by_id = u.id\n" +
-                "         join enrolments enl on enl.last_modified_by_id = u.id\n" +
-                "         join program_encounters enc on enc.last_modified_by_id = u.id\n" +
-                "order by 7 desc limit 10;";
+                "         left join registrations r on r.last_modified_by_id = u.id\n" +
+                "         left join encounters e on e.last_modified_by_id = u.id\n" +
+                "         left join enrolments enl on enl.last_modified_by_id = u.id\n" +
+                "         left join program_encounters enc on enc.last_modified_by_id = u.id\n" +
+                "where u.is_voided = false and u.organisation_id notnull\n" +
+                "order by 7 desc\n" +
+                "limit 10;";
         return jdbcTemplate.query(baseQuery, new UserActivityMapper());
     }
 
@@ -161,36 +164,51 @@ public class AvniReportRepository {
     }
 
     public List<AggregateReportResult> generateUserAppVersions() {
-        String baseQuery = "SELECT app_version as indicator,\n" +
-                "       count(*)    as count\n" +
-                "FROM users u\n" +
-                "   , LATERAL (\n" +
-                "    SELECT user_id, app_version\n" +
-                "    FROM sync_telemetry\n" +
-                "    WHERE user_id = u.id\n" +
-                "    ORDER BY user_id desc, sync_start_time desc\n" +
-                "    LIMIT 1\n" +
-                "    ) l\n" +
+        String baseQuery = "select app_version as indicator,\n" +
+                "       count(*)     as count\n" +
+                "from users u\n" +
+                "         join\n" +
+                "     (select user_id,\n" +
+                "             app_version,\n" +
+                "             row_number() over (partition by user_id order by sync_start_time desc ) as rn\n" +
+                "      from sync_telemetry) l on l.user_id = u.id and rn = 1\n" +
                 "where u.is_voided = false and u.organisation_id notnull\n" +
                 "group by app_version;";
         return jdbcTemplate.query(baseQuery, new AggregateReportMapper());
     }
 
     public List<AggregateReportResult> generateUserDeviceModels() {
-        String baseQuery = "SELECT device_model as indicator,\n" +
+        String baseQuery = "select device_model as indicator,\n" +
                 "       count(*)     as count\n" +
-                "FROM users u\n" +
-                "   , LATERAL (\n" +
-                "    SELECT user_id,\n" +
-                "           coalesce(device_info ->> 'brand', device_name) as device_model\n" +
-                "    FROM sync_telemetry\n" +
-                "    WHERE user_id = u.id\n" +
-                "    ORDER BY user_id desc, sync_start_time desc\n" +
-                "    LIMIT 1\n" +
-                "    ) l\n" +
-                "where u.is_voided = false and u.organisation_id notnull\n" +
+                "from users u\n" +
+                "         join\n" +
+                "     (select user_id,\n" +
+                "             coalesce(device_info ->> 'brand', device_name)                          as device_model,\n" +
+                "             row_number() over (partition by user_id order by sync_start_time desc ) as rn\n" +
+                "      from sync_telemetry) l on l.user_id = u.id and rn = 1\n" +
+                "where u.is_voided = false and u.organisation_id notnull \n" +
                 "group by device_model;";
         return jdbcTemplate.query(baseQuery, new AggregateReportMapper());
+    }
+
+    public List<UserActivityResult> generateUserDetails() {
+        String baseQuery = "select coalesce(u.name, u.username) as name,\n" +
+                "       app_version,\n" +
+                "       device_model,\n" +
+                "       sync_start_time\n" +
+                "from users u\n" +
+                "         join\n" +
+                "     (select user_id,\n" +
+                "             app_version,\n" +
+                "             coalesce(device_info ->> 'brand', device_name)                          as device_model,\n" +
+                "             sync_start_time,\n" +
+                "             row_number() over (partition by user_id order by sync_start_time desc ) as rn\n" +
+                "      from sync_telemetry\n" +
+                "      where sync_status = 'complete') l on l.user_id = u.id and rn = 1\n" +
+                "where u.is_voided = false\n" +
+                "  and u.organisation_id notnull\n" +
+                "order by 1 desc;";
+        return jdbcTemplate.query(baseQuery, new UserDetailsMapper());
     }
 
     public List<AggregateReportResult> generateCompletedVisitsOnTimeByProportion(String proportionCondition) {

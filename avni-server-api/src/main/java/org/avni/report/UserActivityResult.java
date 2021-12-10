@@ -1,5 +1,7 @@
 package org.avni.report;
 
+import org.joda.time.DateTime;
+
 public class UserActivityResult {
     private String userName;
     private Long id;
@@ -8,6 +10,33 @@ public class UserActivityResult {
     private Long programEncounterCount;
     private Long generalEncounterCount;
     private Long count;
+    private String appVersion;
+    private String deviceModel;
+    private DateTime lastSuccessfulSync;
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public DateTime getLastSuccessfulSync() {
+        return lastSuccessfulSync;
+    }
+
+    public void setLastSuccessfulSync(DateTime lastSuccessfulSync) {
+        this.lastSuccessfulSync = lastSuccessfulSync;
+    }
 
     public Long getCount() {
         return count;
