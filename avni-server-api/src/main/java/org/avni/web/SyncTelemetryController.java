@@ -1,24 +1,22 @@
 package org.avni.web;
 
 import org.avni.dao.SyncTelemetryRepository;
-import org.avni.domain.Individual;
 import org.avni.domain.Organisation;
 import org.avni.domain.SyncTelemetry;
 import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.SyncTelemetryRequest;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @RestController
 public class SyncTelemetryController implements RestControllerResourceProcessor<SyncTelemetry> {
@@ -60,8 +58,19 @@ public class SyncTelemetryController implements RestControllerResourceProcessor<
 
     @RequestMapping(value = "/report/syncTelemetry", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public PagedResources<Resource<SyncTelemetry>> getAll(Pageable pageable) {
-        return wrap(syncTelemetryRepository.findAllByOrderByIdDesc(pageable));
+    public PagedResources<Resource<SyncTelemetry>> getAll(@RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) DateTime startDate,
+                                                          @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) DateTime endDate,
+                                                          @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds,
+                                                          Pageable pageable) {
+        if (startDate == null && userIds.isEmpty()) {
+            return wrap(syncTelemetryRepository.findAllByOrderByIdDesc(pageable));
+        } else if (startDate != null && !userIds.isEmpty()) {
+            return wrap(syncTelemetryRepository.findAllByUserIdInAndSyncStartTimeBetweenOrderByIdDesc(userIds, startDate, endDate, pageable));
+        } else if (!userIds.isEmpty()) {
+            return wrap(syncTelemetryRepository.findAllByUserIdInOrderByIdDesc(userIds, pageable));
+        } else {
+            return wrap(syncTelemetryRepository.findAllBySyncStartTimeBetweenOrderByIdDesc(startDate, endDate, pageable));
+        }
     }
 
     @Override

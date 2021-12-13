@@ -124,4 +124,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @Query(value="select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForCatchmentId(@Param("catchmentId") Long catchmentId);
 
+    @Query(value="select * from virtual_catchment_address_mapping_table where addresslevel_id in (:addressLevelIds)", nativeQuery = true)
+    List<VirtualCatchmentProjection> getVirtualCatchmentsForAddressLevelIds(@Param("addressLevelIds") List<Long> addressLevelIds);
+
 }

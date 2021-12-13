@@ -2,13 +2,13 @@ package org.avni.web;
 
 import org.avni.application.Form;
 import org.avni.application.FormMapping;
+import org.avni.application.projections.VirtualCatchmentProjection;
 import org.avni.dao.LocationRepository;
+import org.avni.dao.UserGroupRepository;
+import org.avni.dao.UserRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.CHSBaseEntity;
-import org.avni.domain.Concept;
-import org.avni.domain.JsonObject;
+import org.avni.domain.*;
 import org.avni.report.AggregateReportResult;
 import org.avni.report.AvniReportRepository;
 import org.avni.report.ReportService;
@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,18 +37,24 @@ public class ReportingController {
     private final ReportService reportService;
     private final FormRepository formRepository;
     private final LocationRepository locationRepository;
+    private final UserGroupRepository userGroupRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public ReportingController(FormMappingRepository formMappingRepository,
                                AvniReportRepository avniReportRepository,
                                ReportService reportService,
                                FormRepository formRepository,
-                               LocationRepository locationRepository) {
+                               LocationRepository locationRepository,
+                               UserGroupRepository userGroupRepository,
+                               UserRepository userRepository) {
         this.formMappingRepository = formMappingRepository;
         this.avniReportRepository = avniReportRepository;
         this.reportService = reportService;
         this.formRepository = formRepository;
         this.locationRepository = locationRepository;
+        this.userGroupRepository = userGroupRepository;
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(value = "/report/aggregate/codedConcepts", method = RequestMethod.GET)
@@ -106,54 +114,114 @@ public class ReportingController {
     @RequestMapping(value = "/report/hr/overallActivities", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public List<UserActivityResult> getUserWiseActivities(@RequestParam(value = "startDate", required = false) String startDate,
-                                                          @RequestParam(value = "endDate", required = false) String endDate) {
-        return avniReportRepository.generateUserActivityResults();
+                                                          @RequestParam(value = "endDate", required = false) String endDate,
+                                                          @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateUserActivityResults(
+                reportService.getDateDynamicWhere(startDate, endDate, "registration_date"),
+                reportService.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportService.getDateDynamicWhere(startDate, endDate, "enrolment_date_time"),
+                reportService.getDynamicUserWhere(userIds, "u.id")
+        );
     }
 
     @RequestMapping(value = "/report/hr/syncFailures", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public List<UserActivityResult> getUserWiseSyncFailures(@RequestParam(value = "startDate", required = false) String startDate,
-                                                            @RequestParam(value = "endDate", required = false) String endDate) {
-        return avniReportRepository.generateUserSyncFailures();
+                                                            @RequestParam(value = "endDate", required = false) String endDate,
+                                                            @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateUserSyncFailures(
+                reportService.getDateDynamicWhere(startDate, endDate, "sync_start_time"),
+                reportService.getDynamicUserWhere(userIds, "u.id")
+        );
     }
 
     @RequestMapping(value = "/report/hr/deviceModels", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public List<AggregateReportResult> getUserWiseDeviceModels() {
-        return avniReportRepository.generateUserDeviceModels();
+    public List<AggregateReportResult> getUserWiseDeviceModels(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateUserDeviceModels(reportService.getDynamicUserWhere(userIds, "u.id"));
     }
 
     @RequestMapping(value = "/report/hr/appVersions", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public List<AggregateReportResult> getUserWiseAppVersions() {
-        return avniReportRepository.generateUserAppVersions();
+    public List<AggregateReportResult> getUserWiseAppVersions(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateUserAppVersions(reportService.getDynamicUserWhere(userIds, "u.id"));
     }
 
     @RequestMapping(value = "/report/hr/userDetails", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public List<UserActivityResult> getUserDetails() {
-        return avniReportRepository.generateUserDetails();
+    public List<UserActivityResult> getUserDetails(@RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateUserDetails(reportService.getDynamicUserWhere(userIds, "u.id"));
     }
 
     @RequestMapping(value = "/report/hr/championUsers", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public List<AggregateReportResult> getChampionUsers(@RequestParam(value = "startDate", required = false) String startDate,
-                                                     @RequestParam(value = "endDate", required = false) String endDate) {
-        return avniReportRepository.generateCompletedVisitsOnTimeByProportion(">= 0.8");
+                                                        @RequestParam(value = "endDate", required = false) String endDate,
+                                                        @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateCompletedVisitsOnTimeByProportion(
+                ">= 0.8",
+                reportService.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportService.getDynamicUserWhere(userIds, "u.id")
+        );
     }
 
     @RequestMapping(value = "/report/hr/nonPerformingUsers", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public List<AggregateReportResult> getNonPerformingUsers(@RequestParam(value = "startDate", required = false) String startDate,
-                                                     @RequestParam(value = "endDate", required = false) String endDate) {
-        return avniReportRepository.generateCompletedVisitsOnTimeByProportion("<= 0.5");
+                                                             @RequestParam(value = "endDate", required = false) String endDate,
+                                                             @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateCompletedVisitsOnTimeByProportion(
+                "<= 0.5",
+                reportService.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportService.getDynamicUserWhere(userIds, "u.id")
+        );
     }
 
     @RequestMapping(value = "/report/hr/mostCancelled", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public List<AggregateReportResult> getUsersCancellingMostVisits(@RequestParam(value = "startDate", required = false) String startDate,
-                                                          @RequestParam(value = "endDate", required = false) String endDate) {
-        return avniReportRepository.generateUserCancellingMostVisits();
+                                                                    @RequestParam(value = "endDate", required = false) String endDate,
+                                                                    @RequestParam(value = "userIds", required = false, defaultValue = "") List<Long> userIds) {
+        return avniReportRepository.generateUserCancellingMostVisits(
+                reportService.getDateDynamicWhere(startDate, endDate, "encounter_date_time"),
+                reportService.getDynamicUserWhere(userIds, "u.id"));
+    }
+
+    @RequestMapping(value = "/report/hr/commonUserIds", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    public Set<Long> getCommonsUsersByLocationAndGroup(@RequestParam(value = "groupId", required = false) Long groupId,
+                                                       @RequestParam(value = "locationIds", required = false, defaultValue = "") List<Long> locationIds) {
+        if (groupId == null && locationIds.isEmpty()) {
+            return new HashSet<>();
+        } else if (groupId != null && !locationIds.isEmpty()) {
+            Set<Long> groupUserIds = userGroupRepository.findByGroup_IdAndIsVoidedFalse(groupId)
+                    .stream()
+                    .map(UserGroup::getUser)
+                    .map(User::getId)
+                    .collect(Collectors.toSet());
+            List<Long> catchmentIds = locationRepository.getVirtualCatchmentsForAddressLevelIds(locationIds)
+                    .stream()
+                    .map(VirtualCatchmentProjection::getCatchment_id)
+                    .collect(Collectors.toList());
+            return userRepository.findByCatchment_IdInAndIsVoidedFalse(catchmentIds)
+                    .stream()
+                    .map(User::getId)
+                    .filter(groupUserIds::contains)
+                    .collect(Collectors.toSet());
+        } else if (!locationIds.isEmpty()) {
+            List<Long> catchmentIds = locationRepository.getVirtualCatchmentsForAddressLevelIds(locationIds)
+                    .stream()
+                    .map(VirtualCatchmentProjection::getCatchment_id).collect(Collectors.toList());
+            return userRepository.findByCatchment_IdInAndIsVoidedFalse(catchmentIds)
+                    .stream()
+                    .map(User::getId).collect(Collectors.toSet());
+        } else {
+            return userGroupRepository.findByGroup_IdAndIsVoidedFalse(groupId)
+                    .stream()
+                    .map(UserGroup::getUser)
+                    .map(User::getId)
+                    .collect(Collectors.toSet());
+        }
     }
 
     private List<Long> getLocations(List<Long> addressIds) {

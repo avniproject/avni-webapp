@@ -129,6 +129,20 @@ public class ReportService {
                 .with("data", aggregateReportResults);
     }
 
+    public String getDateDynamicWhere(String startDate, String endDate, String columnName) {
+        if (startDate != null) {
+            return format("and %s::date between '%s'::date and '%s'::date", columnName, startDate, endDate);
+        }
+        return "";
+    }
+
+    public String getDynamicUserWhere(List<Long> userIds, String columnName) {
+        if (!userIds.isEmpty()) {
+            return format("and %s in (%s)", columnName, S.joinLongToList(userIds));
+        }
+        return "";
+    }
+
     private Long getTotalCount(List<AggregateReportResult> aggregateReportResults) {
         return aggregateReportResults.stream().map(AggregateReportResult::getValue).reduce(0L, Long::sum);
     }

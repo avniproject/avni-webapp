@@ -56,4 +56,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
 
     @PreAuthorize("hasAnyAuthority('user')")
     boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
+
+    List<User> findByCatchment_IdInAndIsVoidedFalse(List<Long> catchmentIds);
 }
