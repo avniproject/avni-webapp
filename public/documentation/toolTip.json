@@ -145,6 +145,7 @@
   "ADMIN_SAVE_DRAFT": "Enable subject draft save",
   "ADMIN_HIDE_DOB": "Hides the DOB on subject dashboard on Data Entry App",
   "ADMIN_ENABLE_COMMENTS": "Enable the comments feature.",
+  "ADMIN_ENABLE_CANNED_REPORTS": "Enable canned reporting app.",
   "APP_DESIGNER_SUPPORTED_FILE_TYPES": "Only selected file types will be allowed in the form.",
   "APP_DESIGNER_FILE_MAX_SIZE": "Max size of file in MB that can be selected in the form."
 }
