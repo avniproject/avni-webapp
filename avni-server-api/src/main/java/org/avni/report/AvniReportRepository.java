@@ -264,6 +264,7 @@ public class AvniReportRepository {
                 "          join program_enc_data ped on ped.last_modified_by_id = u.id\n" +
                 "where u.organisation_id notnull\n" +
                 "  and is_voided = false\n" +
+                "  and coalesce(ged.visits_done_on_time, 0) + coalesce(ped.visits_done_on_time, 0) > 0\n" +
                 "  ${userWhere}\n" +
                 "  and ((coalesce(ged.visits_done_on_time, 0.0) + coalesce(ped.visits_done_on_time, 0.0)) /\n" +
                 "       nullif((coalesce(ged.total_scheduled, 0) + coalesce(ped.total_scheduled, 0)), 0)) ${proportion_condition}\n";
