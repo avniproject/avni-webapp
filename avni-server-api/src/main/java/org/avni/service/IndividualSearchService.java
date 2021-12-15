@@ -2,7 +2,7 @@ package org.avni.service;
 
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.ProgramEnrolmentRepository;
-import org.avni.domain.Individual;
+import org.avni.domain.Program;
 import org.avni.domain.ProgramEnrolment;
 import org.joda.time.LocalDate;
 import org.avni.dao.SubjectSearchRepository;
@@ -63,12 +63,12 @@ public class IndividualSearchService {
 
     private List<EnrolmentContract> constructEnrolments(Long individualId) {
         List<EnrolmentContract> enrolmentContracts = new ArrayList<>();
-        List<ProgramEnrolment> programEnrolments = programEnrolmentRepository.findByIndividualIdAlongWith(individualId);
+        List<Program> programs = programEnrolmentRepository.findActiveEnrolmentsByIndividualId(individualId);
 
-        programEnrolments.stream().forEach(programEnrolment -> {
+        programs.stream().forEach(program -> {
             EnrolmentContract enrolmentContract = new EnrolmentContract();
-            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
-            enrolmentContract.setProgramColor(programEnrolment.getProgram().getColour());
+            enrolmentContract.setOperationalProgramName(program.getOperationalProgramName());
+            enrolmentContract.setProgramColor(program.getColour());
             enrolmentContracts.add(enrolmentContract);
         });
         return enrolmentContracts;

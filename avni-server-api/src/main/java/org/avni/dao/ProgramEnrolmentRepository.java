@@ -2,6 +2,7 @@ package org.avni.dao;
 
 import java.util.Date;
 import org.avni.domain.AddressLevel;
+import org.avni.domain.Program;
 import org.joda.time.DateTime;
 import org.avni.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
@@ -44,8 +45,8 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             Long programId,
             Date lastModifiedDateTime);
 
-    @Query("select pe from ProgramEnrolment pe join pe.program join pe.program.operationalPrograms where pe.individual.id = :individualId ")
-    List<ProgramEnrolment> findByIndividualIdAlongWith(Long individualId);
+    @Query("select pe.program from ProgramEnrolment pe join pe.program join pe.program.operationalPrograms where pe.individual.id = :individualId and pe.programExitDateTime is null")
+    List<Program> findActiveEnrolmentsByIndividualId(Long individualId);
 
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
