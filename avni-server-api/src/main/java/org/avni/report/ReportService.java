@@ -2,11 +2,10 @@ package org.avni.report;
 
 import org.avni.domain.JsonObject;
 import org.avni.util.S;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -67,6 +66,11 @@ public class ReportService {
     }
 
     public JsonObject dailyActivities(String startDate, String endDate, List<Long> subjectTypeIds, List<Long> programIds, List<Long> encounterTypeIds, List<Long> lowestLocationIds) {
+        if (startDate == null) {
+            int currentYear = new DateTime().getYear();
+            startDate = format("%s-%s-%s", currentYear, "01", "01");
+            endDate = format("%s-%s-%s", currentYear, "12", "01");
+        }
         String dynamicSubjectWheres = getApplicableSubjectWheres(startDate, endDate, subjectTypeIds, lowestLocationIds);
         String dynamicEncounterWheres = getApplicableEncounterWheres(startDate, endDate, encounterTypeIds, lowestLocationIds);
         String dynamicEnrolmentWheres = getApplicableEnrolmentWheres(startDate, endDate, programIds, lowestLocationIds);
