@@ -44,6 +44,9 @@ public class Individual extends OrganisationAwareEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "individualB")
     private Set<IndividualRelationship> relationshipsFromOthersToSelf = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupSubject")
+    private Set<GroupSubject> groupSubjects  = new HashSet<>();
+
     @NotNull
     private LocalDate registrationDate;
 
@@ -215,6 +218,14 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setRelationshipsFromOthersToSelf(Set<IndividualRelationship> relationshipsFromOthersToSelf) {
         this.relationshipsFromOthersToSelf = relationshipsFromOthersToSelf;
+    }
+
+    public Set<GroupSubject> getGroupSubjects() {
+        return groupSubjects;
+    }
+
+    public void setGroupSubjects(Set<GroupSubject> groupSubjects) {
+        this.groupSubjects = groupSubjects;
     }
 
     @JsonIgnore

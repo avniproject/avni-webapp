@@ -6,6 +6,7 @@ import org.avni.application.FormType;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramEncounterRepository;
+import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.*;
 import org.avni.service.AddressLevelService;
 import org.avni.service.FormMappingService;
@@ -44,6 +45,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private Date startDate;
     @Value("#{jobParameters['endDate']}")
     private Date endDate;
+    private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private EncounterRepository encounterRepository;
     private ProgramEncounterRepository programEncounterRepository;
@@ -59,11 +61,13 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private FormMappingService formMappingService;
     private AddressLevelService addressLevelService;
 
-    public ExportCSVFieldExtractor(EncounterTypeRepository encounterTypeRepository,
+    public ExportCSVFieldExtractor(SubjectTypeRepository subjectTypeRepository,
+                                   EncounterTypeRepository encounterTypeRepository,
                                    EncounterRepository encounterRepository,
                                    ProgramEncounterRepository programEncounterRepository,
                                    FormMappingService formMappingService,
                                    AddressLevelService addressLevelService) {
+        this.subjectTypeRepository = subjectTypeRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.programEncounterRepository = programEncounterRepository;
@@ -73,11 +77,12 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
 
     @PostConstruct
     public void init() {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
         this.addressLevelTypes = addressLevelService.getAllAddressLevelTypeNames();
         switch (ReportType.valueOf(reportType)) {
             case Registration: {
-                addRegistrationHeaders(this.headers);
+                addRegistrationHeaders(this.headers, subjectType.isGroup());
                 break;
             }
             case GroupSubject: {
@@ -86,7 +91,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             }
             case Enrolment: {
                 setEnrolmentMappings();
-                addRegistrationHeaders(this.headers);
+                addRegistrationHeaders(this.headers, subjectType.isGroup());
                 addEnrolmentHeaders(this.headers);
                 break;
             }
@@ -94,12 +99,12 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
                 if (programUUID == null) {
                     this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
                     this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
-                    addRegistrationHeaders(this.headers);
+                    addRegistrationHeaders(this.headers, subjectType.isGroup());
                 } else {
                     setEnrolmentMappings();
                     this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
                     this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
-                    addRegistrationHeaders(this.headers);
+                    addRegistrationHeaders(this.headers, subjectType.isGroup());
                     addEnrolmentHeaders(this.headers);
                 }
                 this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
@@ -153,7 +158,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         addAuditColumns(headers, "enl");
     }
 
-    private void addRegistrationHeaders(StringBuilder headers) {
+    private void addRegistrationHeaders(StringBuilder headers, boolean isGroup) {
         headers.append("ind.id");
         headers.append(",").append("ind.uuid");
         headers.append(",").append("ind.first_name");
@@ -162,6 +167,9 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         headers.append(",").append("ind.registration_date");
         headers.append(",").append("ind.gender");
         addAddressLevelColumns(headers);
+        if(isGroup) {
+            headers.append(",").append("ind.total_members");
+        }
         appendObsColumns(headers, "ind", registrationMap);
         addAuditColumns(headers, "ind");
     }
@@ -197,6 +205,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         } else {
             Individual individual = exportItemRow.getIndividual();
             AddressLevel addressLevel = individual.getAddressLevel();
+            SubjectType subjectType = individual.getSubjectType();
             //Registration
             Gender gender = individual.getGender();
             row.add(individual.getId());
@@ -207,6 +216,9 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             row.add(individual.getRegistrationDate());
             row.add(gender == null ? "" : gender.getName());
             addAddressLevels(row, addressLevel);
+            if (subjectType.isGroup()) {
+                row.add(getTotalMembers(individual));
+            }
             row.addAll(getObs(individual.getObservations(), registrationMap));
             addAuditFields(individual, row);
             if (programUUID == null && reportType.equals(ReportType.Encounter.toString())) {
@@ -219,6 +231,13 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             }
         }
         return row.toArray();
+    }
+
+    private long getTotalMembers(Individual individual) {
+        return individual.getGroupSubjects()
+                .stream()
+                .filter(gs -> gs.getMembershipEndDate() == null && !gs.getMemberSubject().isVoided())
+                .count();
     }
 
     private void addGroupSubjectFields(ExportItemRow exportItemRow, List<Object> row) {
