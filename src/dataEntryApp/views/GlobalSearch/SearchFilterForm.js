@@ -23,6 +23,20 @@ import { useTranslation } from "react-i18next";
 import { locationNameRenderer } from "../../utils/LocationUtil";
 import SubjectTypeOptions from "./SubjectTypeOptions";
 
+const initialStates = {
+  nameAgeSearchAll: {
+    name: "",
+    age: "",
+    searchAll: ""
+  },
+  entityDate: {
+    RegistrationDate: { minValue: null, maxValue: null },
+    EnrolmentDate: { minValue: null, maxValue: null },
+    ProgramEncounterDate: { minValue: null, maxValue: null },
+    EncounterDate: { minValue: null, maxValue: null }
+  }
+};
+
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -178,15 +192,6 @@ export const SearchForm = ({
   const [selectedSearchFilter, setSelectedSearchFilter] = useState(
     initialSubjectTypeSearchFilter || []
   );
-  const onSubjectTypeChange = subjectTypeUUID => {
-    setSelectedSubjectTypeUUID(subjectTypeUUID);
-    const selectedSubjectTypeSearchFilter =
-      organisationConfigs.organisationConfig.searchFilters &&
-      organisationConfigs.organisationConfig.searchFilters.filter(
-        searchFilter => searchFilter.subjectTypeUUID === subjectTypeUUID
-      );
-    setSelectedSearchFilter(selectedSubjectTypeSearchFilter || []);
-  };
 
   // name age search all
   const [enterValue, setEnterValue] = useState({
@@ -226,6 +231,7 @@ export const SearchForm = ({
   const previousSelectedLocations =
     (addressIds && allLocations.filter(({ id }) => _.includes(addressIds, id))) || [];
   const previousSelectedType = _.get(_.head(previousSelectedLocations), "type", "");
+  const [selectedAddressLevelType, setSelectedAddressLevelType] = useState(previousSelectedType);
   const [selectedAddress, setSelectedAddress] = React.useState(
     previousSelectedLocations.map(location => ({
       label: location.name,
@@ -461,6 +467,27 @@ export const SearchForm = ({
     }
   };
 
+  const resetFilters = () => {
+    setEnterValue(initialStates.nameAgeSearchAll);
+    setSelectedGender({});
+    setSelectedAddress([]);
+    setSelectedAddressLevelType("");
+    setSelectedDate(initialStates.entityDate);
+    setSelectedConcept(initialConceptList);
+    setIncludeVoided(false);
+  };
+
+  const onSubjectTypeChange = subjectTypeUUID => {
+    setSelectedSubjectTypeUUID(subjectTypeUUID);
+    const selectedSubjectTypeSearchFilter =
+      organisationConfigs.organisationConfig.searchFilters &&
+      organisationConfigs.organisationConfig.searchFilters.filter(
+        searchFilter => searchFilter.subjectTypeUUID === subjectTypeUUID
+      );
+    setSelectedSearchFilter(selectedSubjectTypeSearchFilter || []);
+    resetFilters();
+  };
+
   return (
     <React.Fragment>
       <FormControl component="fieldset">
@@ -485,7 +512,8 @@ export const SearchForm = ({
                   selectedGender={selectedGender}
                   onAddressSelect={onAddressSelect}
                   selectedAddress={selectedAddress}
-                  addressLevelType={previousSelectedType}
+                  selectedAddressLevelType={selectedAddressLevelType}
+                  setSelectedAddressLevelType={setSelectedAddressLevelType}
                 />
               </Grid>
               <Grid item xs={12}>

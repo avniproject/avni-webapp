@@ -161,7 +161,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     {t(searchFilterForm.titleKey)}
                   </Typography>
                   <TextField
-                    key={index}
+                    key={`minValue_${index}`}
                     id={searchFilterForm.titleKey}
                     autoComplete="off"
                     type="number"
@@ -174,7 +174,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                   />
                   <TextField
-                    key={index}
+                    key={`maxValue_${index}`}
                     id={searchFilterForm.titleKey}
                     autoComplete="off"
                     type="number"

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { TextField, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
@@ -36,12 +36,12 @@ function BasicForm({
   selectedGender,
   onAddressSelect,
   selectedAddress,
-  addressLevelType,
-  enterValue
+  selectedAddressLevelType,
+  enterValue,
+  setSelectedAddressLevelType
 }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [selectedAddressLevelType, setSelectedAddressLevelType] = useState(addressLevelType);
   const onAddressLevelTypeChange = event => {
     setSelectedAddressLevelType(event.target.value);
     onAddressSelect(null);
@@ -51,7 +51,7 @@ function BasicForm({
   );
 
   return searchFilterForms ? (
-    <Fragment key={searchFilterForms.uuid}>
+    <Fragment>
       <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Name" ? (
@@ -162,7 +162,7 @@ function BasicForm({
                   aria-label="position"
                   name="position"
                   onChange={onAddressLevelTypeChange}
-                  defaultValue={selectedAddressLevelType}
+                  value={selectedAddressLevelType}
                 >
                   {operationalModules.addressLevelTypes
                     ? operationalModules.addressLevelTypes.map((addressLevelType, index) => (
