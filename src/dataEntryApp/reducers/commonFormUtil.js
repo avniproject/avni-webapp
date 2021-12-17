@@ -32,14 +32,17 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   };
 };
 
-const onLoad = (form, entity) => {
+const onLoad = (form, entity, isIndividualRegistration = false) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
     return {
-      formElementGroup: new StaticFormElementGroup(form),
+      //for the individual subject types first group is displayed with static group so moving it to next group.
+      formElementGroup: isIndividualRegistration
+        ? new StaticFormElementGroup(form).next()
+        : new StaticFormElementGroup(form),
       filteredFormElements: [],
       onSummaryPage: false,
       wizard: new Wizard(1),

@@ -168,7 +168,7 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
       onSummaryPage,
       wizard,
       isFormEmpty
-    } = commonFormUtil.onLoad(registrationForm, subject);
+    } = commonFormUtil.onLoad(registrationForm, subject, true);
 
     yield put.resolve(
       onLoadSuccess(
