@@ -89,6 +89,7 @@ public class ImplementationController implements RestControllerResourceProcessor
         if (deleteMetadata) {
             organisationService.deleteMetadata();
         }
+        organisationService.deleteMediaContent(deleteMetadata);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

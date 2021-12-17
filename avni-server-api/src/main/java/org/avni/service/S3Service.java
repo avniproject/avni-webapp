@@ -33,7 +33,6 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
-import org.joda.time.DateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -297,10 +296,12 @@ public class S3Service {
 
     }
 
-    /**
-     * @param prefix : prefix for which all the files will get deleted
-     */
-    private void deleteDirectory(String prefix) {
+    private void deleteKeys(String[] keysList) {
+        DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keysList);
+        s3Client.deleteObjects(deleteObjectsRequest);
+    }
+
+    private String[] getAllKeysWithPrefix(String prefix) {
         ListObjectsV2Result objectList = this.s3Client.listObjectsV2(bucketName, prefix);
         if (objectList.getKeyCount() > 0) {
             List<S3ObjectSummary> objectSummeryList = objectList.getObjectSummaries();
@@ -309,8 +310,32 @@ public class S3Service {
             for (S3ObjectSummary summery : objectSummeryList) {
                 keysList[count++] = summery.getKey();
             }
-            DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keysList);
-            s3Client.deleteObjects(deleteObjectsRequest);
+            return keysList;
+        }
+        return new String[0];
+    }
+
+    /**
+     * @param prefix : prefix for which all the files will get deleted
+     */
+    private void deleteDirectory(String prefix) {
+        String[] keysList = this.getAllKeysWithPrefix(prefix);
+        if (keysList.length > 0) {
+            deleteKeys(keysList);
+        }
+    }
+
+    public void deleteOrgMedia(boolean deleteMetadata) {
+        String mediaDirectory = getOrgDirectoryName();
+        if(deleteMetadata) {
+            this.deleteDirectory(mediaDirectory);
+        } else {
+            List<String> metadataDirs = Arrays.asList("icons/", "extensions/");
+            String[] allKeys = getAllKeysWithPrefix(mediaDirectory);
+            String [] txKeys = Arrays.stream(allKeys)
+                    .filter(key -> metadataDirs.stream().noneMatch(key::contains))
+                    .toArray(String[]::new);
+            deleteKeys(txKeys);
         }
     }
 

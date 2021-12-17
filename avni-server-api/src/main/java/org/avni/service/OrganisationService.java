@@ -103,6 +103,7 @@ public class OrganisationService {
     private final CommentRepository commentRepository;
     private final CommentThreadRepository commentThreadRepository;
     private final NewsRepository newsRepository;
+    private final SubjectMigrationRepository subjectMigrationRepository;
 
 
     @Autowired
@@ -162,7 +163,8 @@ public class OrganisationService {
                                EntityApprovalStatusRepository entityApprovalStatusRepository,
                                CommentRepository commentRepository,
                                CommentThreadRepository commentThreadRepository,
-                               NewsRepository newsRepository) {
+                               NewsRepository newsRepository,
+                               SubjectMigrationRepository subjectMigrationRepository) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -221,6 +223,7 @@ public class OrganisationService {
         this.commentRepository = commentRepository;
         this.commentThreadRepository = commentThreadRepository;
         this.newsRepository = newsRepository;
+        this.subjectMigrationRepository = subjectMigrationRepository;
     }
 
 
@@ -515,6 +518,7 @@ public class OrganisationService {
                 programEncounterRepository,
                 programEnrolmentRepository,
                 encounterRepository,
+                subjectMigrationRepository,
                 individualRepository
         };
 
@@ -563,6 +567,10 @@ public class OrganisationService {
 
     private void deleteAll(JpaRepository repository) {
         repository.deleteAllInBatch();
+    }
+
+    public void deleteMediaContent(boolean deleteMetadata) {
+        s3Service.deleteOrgMedia(deleteMetadata);
     }
 
 }
