@@ -11,6 +11,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "react-select";
 import { locationNameRenderer } from "../../utils/LocationUtil";
+import { find } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,7 +51,29 @@ function BasicForm({
     location => location.type === selectedAddressLevelType && !location.voided
   );
 
-  return searchFilterForms ? (
+  function renderSearchAll(index, titleKey) {
+    return (
+      <Grid item key={index}>
+        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+          {t(titleKey)}
+        </Typography>
+        <TextField
+          id={titleKey}
+          key={index}
+          autoComplete="off"
+          name="searchAll"
+          type="text"
+          style={{ width: "100%" }}
+          onChange={onChange}
+          value={enterValue.searchAll}
+        />
+      </Grid>
+    );
+  }
+
+  const isFilterConfigured = !!find(searchFilterForms, sff => sff.type);
+
+  return isFilterConfigured ? (
     <Fragment>
       <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
@@ -98,25 +121,9 @@ function BasicForm({
         )}
 
         {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "SearchAll" ? (
-            <Grid item key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                {t(searchFilterForm.titleKey)}
-              </Typography>
-              <TextField
-                id={searchFilterForm.titleKey}
-                key={index}
-                autoComplete="off"
-                name="searchAll"
-                type="text"
-                style={{ width: "100%" }}
-                onChange={onChange}
-                value={enterValue.searchAll}
-              />
-            </Grid>
-          ) : (
-            ""
-          )
+          searchFilterForm.type === "SearchAll"
+            ? renderSearchAll(index, searchFilterForm.titleKey)
+            : ""
         )}
       </Grid>
       <Grid container spacing={3} className={classes.componentSpacing}>
@@ -196,7 +203,9 @@ function BasicForm({
       </Grid>
     </Fragment>
   ) : (
-    <div />
+    <Grid container spacing={3} className={classes.componentSpacing}>
+      {renderSearchAll(1, "searchAll")}
+    </Grid>
   );
 }
 

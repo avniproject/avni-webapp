@@ -44,7 +44,7 @@ const SubjectTypeOptions = ({
         {operationalModules.subjectTypes
           ? sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map(
               (subjectType, index) => (
-                <Grid item>
+                <Grid key={index} item>
                   <Button
                     key={index}
                     variant="outlined"

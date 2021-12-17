@@ -179,7 +179,7 @@ export const SearchForm = ({
   } = searchRequest;
 
   const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(
-    subjectType || operationalModules.subjectTypes[0].uuid
+    subjectType || _.get(operationalModules.subjectTypes[0], "uuid")
   );
 
   const initialSubjectTypeSearchFilter =
