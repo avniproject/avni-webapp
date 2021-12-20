@@ -1,21 +1,27 @@
 package org.avni.web.request.rules.constructWrappers;
 
 import org.avni.dao.GenderRepository;
+import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.Gender;
+import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
 import org.avni.web.request.GenderContract;
 import org.avni.web.request.SubjectTypeContract;
+import org.avni.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
 import org.avni.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.avni.web.request.rules.RulesContractWrapper.LowestAddressLevelContract;
+import org.avni.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
 import org.avni.web.request.rules.request.IndividualRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,13 +31,19 @@ public class IndividualConstructionService {
     private final SubjectTypeRepository subjectTypeRepository;
     private final LocationRepository locationRepository;
     private final ObservationConstructionService observationConstructionService;
+    private final ProgramEncounterConstructionService programEncounterConstructionService;
+    private final IndividualRepository individualRepository;
 
     @Autowired
     public IndividualConstructionService(
-                       GenderRepository genderRepository,
-                       SubjectTypeRepository subjectTypeRepository,
-                       LocationRepository locationRepository,
-                       ObservationConstructionService observationConstructionService) {
+            GenderRepository genderRepository,
+            SubjectTypeRepository subjectTypeRepository,
+            LocationRepository locationRepository,
+            ObservationConstructionService observationConstructionService,
+            ProgramEncounterConstructionService programEncounterConstructionService,
+            IndividualRepository individualRepository) {
+        this.programEncounterConstructionService = programEncounterConstructionService;
+        this.individualRepository = individualRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.genderRepository = genderRepository;
         this.subjectTypeRepository = subjectTypeRepository;
@@ -42,6 +54,7 @@ public class IndividualConstructionService {
 
     public IndividualContractWrapper constructIndividualContract(IndividualRequestEntity individualRequestEntity){
         IndividualContractWrapper individualContract = new IndividualContractWrapper();
+        Individual individual = individualRepository.findByUuid(individualRequestEntity.getUuid());
         individualContract.setUuid(individualRequestEntity.getUuid());
         individualContract.setFirstName(individualRequestEntity.getFirstName());
         individualContract.setLastName(individualRequestEntity.getLastName());
@@ -58,6 +71,10 @@ public class IndividualConstructionService {
         }
         if(individualRequestEntity.getObservations() != null){
             individualContract.setObservations(individualRequestEntity.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+        }
+        if (individual != null) {
+            individualContract.setEncounters(programEncounterConstructionService.mapEncounters(individual.getEncounters()));
+            individualContract.setEnrolments(programEncounterConstructionService.mapEnrolments(individual.getProgramEnrolments()));
         }
         return individualContract;
     }
