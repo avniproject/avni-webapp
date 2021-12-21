@@ -16,6 +16,23 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults
   );
 
+  const ageCalc = dob => {
+    let age;
+    let ageInYears = new Date().getFullYear() - new Date(dob).getFullYear();
+    let ageInMonths = new Date().getMonth() - new Date(dob).getMonth();
+
+    if (ageInYears === 0) {
+      if (ageInMonths === 0) {
+        age = new Date().getDate() - new Date(dob).getDate() + " " + `${t("days")}`;
+      } else {
+        age = ageInMonths + " " + `${t("months")}`;
+      }
+    } else {
+      age = ageInYears + " " + `${t("years")}`;
+    }
+    return age;
+  };
+
   const renderNameWithIcon = ({ uuid, fullName, subjectTypeName }) => {
     return (
       <a href={`/#/app/subject?uuid=${uuid}`}>
@@ -47,10 +64,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     {
       title: t("age"),
       field: "dateOfBirth",
-      render: row =>
-        row.dateOfBirth
-          ? `${new Date().getFullYear() - new Date(row.dateOfBirth).getFullYear()} ${t("years")}`
-          : ""
+      render: row => (row.dateOfBirth ? ageCalc(row.dateOfBirth) : "")
     },
     {
       title: t("Address"),

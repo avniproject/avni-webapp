@@ -155,6 +155,23 @@ const ProfileDetails = ({
     return true;
   };
 
+  const ageCalc = dob => {
+    let age;
+    let ageInYears = new Date().getFullYear() - new Date(dob).getFullYear();
+    let ageInMonths = new Date().getMonth() - new Date(dob).getMonth();
+
+    if (ageInYears === 0) {
+      if (ageInMonths === 0) {
+        age = new Date().getDate() - new Date(dob).getDate() + " " + `${t("days")}`;
+      } else {
+        age = ageInMonths + " " + `${t("months")}`;
+      }
+    } else {
+      age = ageInYears + " " + `${t("years")}`;
+    }
+    return age;
+  };
+
   const content = (
     <DialogContent>
       <form className={classes.form} noValidate>
@@ -232,12 +249,7 @@ const ProfileDetails = ({
                   )}
                   {profileDetails.subjectType.isPerson() && (
                     <TableCell className={classes.tableCellDetails}>
-                      {profileDetails.dateOfBirth
-                        ? new Date().getFullYear() -
-                          new Date(profileDetails.dateOfBirth).getFullYear() +
-                          " " +
-                          `${t("years")}`
-                        : "-"}
+                      {profileDetails.dateOfBirth ? ageCalc(profileDetails.dateOfBirth) : "-"}
                     </TableCell>
                   )}
                   <TableCell className={classes.tableCellDetails}>
