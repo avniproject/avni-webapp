@@ -26,6 +26,7 @@ import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import SubjectTypeIcon from "../../../components/SubjectTypeIcon";
+import { getDisplayAge } from "../../../utils/AgeUtil";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -155,23 +156,6 @@ const ProfileDetails = ({
     return true;
   };
 
-  const ageCalc = dob => {
-    let age;
-    let ageInYears = new Date().getFullYear() - new Date(dob).getFullYear();
-    let ageInMonths = new Date().getMonth() - new Date(dob).getMonth();
-
-    if (ageInYears === 0) {
-      if (ageInMonths === 0) {
-        age = new Date().getDate() - new Date(dob).getDate() + " " + `${t("days")}`;
-      } else {
-        age = ageInMonths + " " + `${t("months")}`;
-      }
-    } else {
-      age = ageInYears + " " + `${t("years")}`;
-    }
-    return age;
-  };
-
   const content = (
     <DialogContent>
       <form className={classes.form} noValidate>
@@ -249,7 +233,9 @@ const ProfileDetails = ({
                   )}
                   {profileDetails.subjectType.isPerson() && (
                     <TableCell className={classes.tableCellDetails}>
-                      {profileDetails.dateOfBirth ? ageCalc(profileDetails.dateOfBirth) : "-"}
+                      {profileDetails.dateOfBirth
+                        ? getDisplayAge(profileDetails.dateOfBirth, t)
+                        : "-"}
                     </TableCell>
                   )}
                   <TableCell className={classes.tableCellDetails}>

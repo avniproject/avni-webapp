@@ -8,6 +8,7 @@ import { extensionScopeTypes } from "../../../formDesigner/components/Extensions
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { Grid } from "@material-ui/core";
+import { getDisplayAge } from "../../utils/AgeUtil";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { t } = useTranslation();
@@ -15,23 +16,6 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     get(organisationConfigs, "organisationConfig.extensions", []),
     ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults
   );
-
-  const ageCalc = dob => {
-    let age;
-    let ageInYears = new Date().getFullYear() - new Date(dob).getFullYear();
-    let ageInMonths = new Date().getMonth() - new Date(dob).getMonth();
-
-    if (ageInYears === 0) {
-      if (ageInMonths === 0) {
-        age = new Date().getDate() - new Date(dob).getDate() + " " + `${t("days")}`;
-      } else {
-        age = ageInMonths + " " + `${t("months")}`;
-      }
-    } else {
-      age = ageInYears + " " + `${t("years")}`;
-    }
-    return age;
-  };
 
   const renderNameWithIcon = ({ uuid, fullName, subjectTypeName }) => {
     return (
@@ -64,7 +48,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     {
       title: t("age"),
       field: "dateOfBirth",
-      render: row => (row.dateOfBirth ? ageCalc(row.dateOfBirth) : "")
+      render: row => (row.dateOfBirth ? getDisplayAge(row.dateOfBirth, t) : "")
     },
     {
       title: t("Address"),
