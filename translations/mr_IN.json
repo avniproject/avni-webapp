@@ -378,6 +378,7 @@
     "registrationDetails": "पंजीकरण तपशील",
     "filterResults": "फिल्टर परिणाम",
     "invalidDateFormat": "वैध तारीख नाही",
-    "resetFilter": "फिल्टर रीसेट करा"
+    "resetFilter": "फिल्टर रीसेट करा",
+    "visitDate": "भेटीची तारीख"
   }
 }

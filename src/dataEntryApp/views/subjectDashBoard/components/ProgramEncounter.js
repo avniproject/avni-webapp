@@ -24,6 +24,7 @@ import { AbstractEncounter } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import { LineBreak } from "../../../../common/components/utils";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,7 +46,7 @@ const ProgramEncounter = ({
   const encounterUuid = match.queryParams.encounterUuid;
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
-
+  const { t } = useTranslation();
   useEffect(() => {
     props.resetState();
     if (editProgramEncounter) {
@@ -69,7 +70,7 @@ const ProgramEncounter = ({
               <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>
                 <DateFormElement
                   uuid={AbstractEncounter.fieldKeys.ENCOUNTER_DATE_TIME}
-                  formElement={new StaticFormElement("Visit Date", true, true)}
+                  formElement={new StaticFormElement(t("visitDate"), true, true)}
                   value={programEncounter.encounterDateTime}
                   validationResults={validationResults}
                   update={setEncounterDate}

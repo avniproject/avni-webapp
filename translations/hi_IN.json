@@ -368,6 +368,7 @@
     "ProgramEncounterVoidAlertMessage": "क्या आप वाकई इस प्रोग्राम एनकाउंटर को हटाना चाहते हैं? हटाए जाने के बाद आप इस प्रोग्राम एनकाउंटर को नहीं देख पाएंगे।",
     "GeneralEncounterVoidAlertTitle": "एनकाउंटर को डिलीट करें",
     "GeneralEncounterVoidAlertMessage": "क्या आप वाकई इस एनकाउंटर को हटाना चाहते हैं? हटाए जाने के बाद आप इस एनकाउंटर को नहीं देख पाएंगे।",
-    "programExitDetails": "कार्यक्रम से बाहर निकलने का विवरण"
+    "programExitDetails": "कार्यक्रम से बाहर निकलने का विवरण",
+    "visitDate": "यात्रा तिथि"
   }
 }

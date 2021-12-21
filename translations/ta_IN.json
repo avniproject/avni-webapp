@@ -287,6 +287,7 @@
     "unVoidIndividualConfirmationMessage": "இந்தத் தனிநபரை மீண்டும் இணைக்கிறீர்களா?  ",
     "beneficiaryNotFound": "அடையாளம் காண முடியவில்லை",
     "beneficiaryNotFoundMessage": "கொடுக்கப்பட்ட விவரங்களுக்குத் தனிப்பட்ட பதிவைப் பெற முடியவில்லை",
-    "resetFilter": "வடிப்பானை மீட்டமை"
+    "resetFilter": "வடிப்பானை மீட்டமை",
+    "visitDate": "வருகை தேதி"
   }
 }

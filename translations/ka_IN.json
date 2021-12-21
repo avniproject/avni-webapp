@@ -287,6 +287,7 @@
     "unVoidIndividualConfirmationMessage": "ಈ ವ್ಯಕ್ತಿಯನ್ನು ತಪ್ಪಿಸಲು ನೀವು ಬಯಸುವಿರಾ?",
     "beneficiaryNotFound": "ಗುರುತಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ",
     "beneficiaryNotFoundMessage": "ನೀಡಿರುವ ವಿವರಗಳಿಗಾಗಿ ದಾಖಲೆಯನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ",
-    "resetFilter": "ಫಿಲ್ಟರ್ ಅನ್ನು ಮರುಹೊಂದಿಸಿ"
+    "resetFilter": "ಫಿಲ್ಟರ್ ಅನ್ನು ಮರುಹೊಂದಿಸಿ",
+    "visitDate": "ಭೇಟಿ ದಿನಾಂಕ"
   }
 }

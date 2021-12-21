@@ -437,6 +437,7 @@
     "dob": "Date of Birth",
     "address": "Address",
     "relativeAlreadyAdded": "Relative is already added",
-    "programExitDetails": "Program Exit Details"
+    "programExitDetails": "Program Exit Details",
+    "visitDate": "Visit Date"
   }
 }
