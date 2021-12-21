@@ -10,9 +10,7 @@ import {
   onNext,
   onPrevious
 } from "dataEntryApp/reducers/programEncounterReducer";
-import { useTranslation } from "react-i18next";
 
-const { t } = useTranslation();
 const mapFormStateToProps = state => ({
   form: state.dataEntry.programEncounterReducer.programEncounterForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
@@ -28,7 +26,7 @@ const mapFormStateToProps = state => ({
     : `Encounter Saved`,
   additionalRows: [
     {
-      label: t("visitDate"),
+      label: "visitDate",
       value: moment(
         state.dataEntry.programEncounterReducer.programEncounter.encounterDateTime
       ).format("DD-MMM-YYYY")
