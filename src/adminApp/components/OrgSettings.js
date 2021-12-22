@@ -127,20 +127,20 @@ export const OrgSettings = () => {
             toolTipKey={"ADMIN_ENABLE_COMMENTS"}
           />
         </Grid>
-        <Grid item>
-          <AvniSwitch
-            switchFirst
-            checked={orgSettings[organisationConfigSettingKeys.enableCannedReports]}
-            onChange={event =>
-              onSettingsChange(
-                organisationConfigSettingKeys.enableCannedReports,
-                event.target.checked
-              )
-            }
-            name="Enable canned reports"
-            toolTipKey={"ADMIN_ENABLE_CANNED_REPORTS"}
-          />
-        </Grid>
+        {/*<Grid item>*/}
+        {/*  <AvniSwitch*/}
+        {/*    switchFirst*/}
+        {/*    checked={orgSettings[organisationConfigSettingKeys.enableCannedReports]}*/}
+        {/*    onChange={event =>*/}
+        {/*      onSettingsChange(*/}
+        {/*        organisationConfigSettingKeys.enableCannedReports,*/}
+        {/*        event.target.checked*/}
+        {/*      )*/}
+        {/*    }*/}
+        {/*    name="Enable canned reports"*/}
+        {/*    toolTipKey={"ADMIN_ENABLE_CANNED_REPORTS"}*/}
+        {/*  />*/}
+        {/*</Grid>*/}
       </Grid>
     </Grid>
   ) : (
