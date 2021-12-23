@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Mukta"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        width: 80%;
+        margin: 20px auto;
+      }
+
+      .p {
+        text-align: center;
+        font-size: 14px;
+        padding-top: 140px;
+      }
+    </style>
+    <title>Test graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://jsuites.net/v4/jsuites.css"
+      type="text/css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <!--replace this dice with image once ready-->
+      <div
+        style="position: relative; width: 100%; height: 0; padding-top: 35.0000%;padding-bottom: 48px; margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;will-change: transform;"
+      >
+        <iframe
+          loading="lazy"
+          style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+          src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEzW2G7NVs&#x2F;view?embed"
+          allowfullscreen="allowfullscreen"
+          allow="fullscreen"
+        >
+        </iframe>
+      </div>
+      <h2>Activities</h2>
+      <div>
+        <canvas id="activities"></canvas>
+      </div>
+      <h2>Reach</h2>
+      <div>
+        <canvas id="reach"></canvas>
+      </div>
+      <h2>Subject reached</h2>
+      <div>
+        <canvas id="subjectType"></canvas>
+      </div>
+      <h2>Program reached</h2>
+      <div>
+        <canvas id="program"></canvas>
+      </div>
+    </div>
+  </body>
+  <script>
+    window.onload = function renderData() {
+      fetchData();
+    };
+
+    async function fetchData() {
+      const url = new URL(window.location.href);
+      const options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // 'user-name': url.searchParams.get("user-name"),
+          "user-name": "ShubhangiD@shelter"
+          // 'AUTH-TOKEN': url.searchParams.get("AUTH-TOKEN"),
+        }
+      };
+      const userMatrix = await fetch("/userMatrix", options).then(res =>
+        res.json()
+      );
+      const { user, matrix } = userMatrix;
+      const {
+        reach,
+        activities,
+        activitiesByMonth,
+        reachByMonth,
+        reachBySubjectType,
+        reachByProgram
+      } = matrix;
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ];
+      const subjectTypes = _.map(reachBySubjectType, ({ name }) => name);
+      const programs = _.map(reachByProgram, ({ name }) => name);
+      const activityDataByMonth = _.map(months, m =>
+        _.get(_.find(activitiesByMonth, ({ month }) => m === month), "count", 0)
+      );
+      const reachDataByMonth = _.map(months, m =>
+        _.get(_.find(reachByMonth, ({ month }) => m === month), "count", 0)
+      );
+      const subjectTypeReachData = _.map(subjectTypes, m =>
+        _.get(_.find(reachBySubjectType, ({ name }) => m === name), "count", 0)
+      );
+      const programReachData = _.map(programs, m =>
+        _.get(_.find(reachByProgram, ({ name }) => m === name), "count", 0)
+      );
+      plotBarGraph(months, activityDataByMonth, "activities");
+      plotBarGraph(months, reachDataByMonth, "reach");
+      plotBarGraph(subjectTypes, subjectTypeReachData, "subjectType");
+      plotBarGraph(programs, programReachData, "program");
+    }
+
+    function plotBarGraph(labels, data, elementId) {
+      var chartData = {
+        labels: labels,
+        datasets: [
+          {
+            fillColor: "#89a83c",
+            strokeColor: "#89a83c",
+            data: data
+          }
+        ]
+      };
+      var context = document.getElementById(elementId).getContext("2d");
+      var chart = new Chart(context).Bar(chartData, {
+        responsive: true,
+        barValueSpacing: 2
+      });
+    }
+  </script>
+</html>
