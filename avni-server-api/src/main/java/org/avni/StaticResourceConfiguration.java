@@ -26,6 +26,9 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
                     .addResourceHandler("/static/**")
                     .addResourceLocations("file:" + staticPath + "static/")
                     .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
+            //this is to serve user review html page in the web app.
+            registry.addResourceHandler("/userReview")
+                    .addResourceLocations("file:" + staticPath + "userReview/");
             registry
                     .addResourceHandler("/**")
                     .addResourceLocations("file:" + staticPath);
@@ -55,6 +58,8 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/analytics/**/{path:[^\\.]*}")
                 .setViewName("forward:/analytics/index.html");
+        registry.addViewController("/userReview")
+                .setViewName("forward:/userReview/index.html");
         registry.addViewController("/")
                 .setViewName("forward:/index.html");
     }
