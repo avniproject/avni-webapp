@@ -64,15 +64,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.0/chart.min.js"></script>
     <script src="https://jsuites.net/v4/jsuites.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script
-      src="https://kit.fontawesome.com/a076d05399.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <link
       rel="stylesheet"
       href="https://jsuites.net/v4/jsuites.css"
@@ -342,14 +339,26 @@
       const { id, labels, data, count } = slideToIdMap.get(slideNumber);
       const keys = localKeys[locale];
       var chartData = {
-        labels: labels,
-        datasets: [
-          {
-            fillColor: "#89a83c",
-            strokeColor: "#89a83c",
-            data: data
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              backgroundColor: "#89a83c",
+              borderColor: "#89a83c",
+              data: data,
+              barThickness: 10,
+              maxBarThickness: 50
+            }
+          ]
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            }
           }
-        ]
+        }
       };
       const headerKey = `${id}Header`;
       const descKey = `${id}Desc`;
@@ -363,10 +372,7 @@
       document.getElementById(`${id}-desc`).innerText = `${keys[descKey]}`;
       var context = document.getElementById(id).getContext("2d");
       setTimeout(() => {
-        new Chart(context).Bar(chartData, {
-          responsive: true,
-          barValueSpacing: 2
-        });
+        new Chart(context, chartData);
       }, 100);
     }
   </script>
