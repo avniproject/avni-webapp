@@ -11,58 +11,244 @@
         margin: 20px auto;
       }
 
-      .p {
-        text-align: center;
-        font-size: 14px;
-        padding-top: 140px;
+      .line {
+        background-color: #aacf4f;
+        height: 1px;
+        margin-top: 10px;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: flex-start;
+        color: #000;
+      }
+
+      .desc {
+        display: flex;
+        color: black;
+        align-items: flex-start;
+        justify-content: flex-start;
+        margin-bottom: 2px;
+      }
+
+      .carousel-inner img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .space {
+        margin-top: 10px;
+      }
+
+      .carousel-control-next,
+      .carousel-control-prev {
+        filter: invert(100%);
+      }
+
+      .previous {
+        display: flex;
+        background-color: #90a4ae;
+        border-radius: 50%;
+        height: 30px;
+        width: 30px;
+        padding: 2px;
+        align-items: center;
+        justify-content: center;
       }
     </style>
-    <title>Test graph</title>
+    <title>2021 Review</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
     <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
     <link
       rel="stylesheet"
       href="https://jsuites.net/v4/jsuites.css"
       type="text/css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    />
   </head>
   <body>
     <div class="container">
-      <!--replace this dice with image once ready-->
-      <div
-        style="position: relative; width: 100%; height: 0; padding-top: 35.0000%;padding-bottom: 48px; margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;will-change: transform;"
-      >
-        <iframe
-          loading="lazy"
-          style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-          src="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAEzW2G7NVs&#x2F;view?embed"
-          allowfullscreen="allowfullscreen"
-          allow="fullscreen"
+      <div>
+        <img src="../AvniIn2021.png" style="width: 100%;" />
+        <div
+          style="display: flex; align-items: center; flex-direction: row; margin-top: 10px"
         >
-        </iframe>
+          <div>
+            <span
+              class="fas fa-user-alt"
+              style="font-size:20px; color: #8fad45"
+            ></span>
+          </div>
+          <div>
+            <h5
+              id="userName"
+              style="margin-left: 10px; margin-bottom: 1px"
+            ></h5>
+          </div>
+        </div>
+        <div class="line" />
       </div>
-      <h2>Activities</h2>
-      <div>
-        <canvas id="activities"></canvas>
-      </div>
-      <h2>Reach</h2>
-      <div>
-        <canvas id="reach"></canvas>
-      </div>
-      <h2>Subject reached</h2>
-      <div>
-        <canvas id="subjectType"></canvas>
-      </div>
-      <h2>Program reached</h2>
-      <div>
-        <canvas id="program"></canvas>
+      <div id="demo" class="carousel slide" data-interval="false">
+        <div class="carousel-inner">
+          <div class="carousel-item space active ">
+            <div class="header">
+              <h4 id="activities-count"></h4>
+            </div>
+            <div class="desc" id="activities-desc"></div>
+            <div id="activities-carousel">
+              <canvas id="activities"></canvas>
+            </div>
+          </div>
+          <div class="carousel-item space">
+            <div class="header">
+              <h4 id="reach-count"></h4>
+            </div>
+            <div class="desc" id="reach-desc"></div>
+            <div id="reach-carousel">
+              <canvas id="reach"></canvas>
+            </div>
+          </div>
+          <div class="carousel-item space">
+            <div class="header">
+              <h4 id="subjectType-count"></h4>
+            </div>
+            <div class="desc" id="subjectType-desc"></div>
+            <div id="subjectType-carousel">
+              <canvas id="subjectType"></canvas>
+            </div>
+          </div>
+          <div class="carousel-item space">
+            <div class="header">
+              <h4 id="program-count"></h4>
+            </div>
+            <div class="desc" id="program-desc"></div>
+            <div id="program-carousel">
+              <canvas id="program"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="line" />
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+          <div class="previous">
+            <span class="carousel-control-prev-icon"></span>
+          </div>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+          <div class="previous">
+            <span class="carousel-control-next-icon"></span>
+          </div>
+        </a>
       </div>
     </div>
   </body>
   <script>
+    const localKeys = {
+      en: {
+        activitiesHeader: "Total activities",
+        activitiesDesc:
+          "Includes all the forms covering Registration, Enrolment, Encounter",
+        reachHeader: "Total Reach",
+        reachDesc: "Unique subjects reached",
+        subjectTypeHeader: "Reach by subject types",
+        subjectTypeDesc: "Indicates different subject type registered",
+        programHeader: "Reach by programs",
+        programDesc: "Indicates total program enrolments"
+      },
+      hi_IN: {
+        activitiesHeader: "कुल गतिविधियां",
+        activitiesDesc:
+          "पंजीकरण, नामांकन, एनकाउंटर को कवर करने वाले सभी फॉर्म शामिल हैं",
+        reachHeader: "पहुंच",
+        reachDesc: "अद्वितीय विषय पहुंचे",
+        subjectTypeHeader: "विषय प्रकारों के अनुसार पहुंच",
+        subjectTypeDesc: "पंजीकृत विभिन्न विषय प्रकार को इंगित करता है",
+        programHeader: "कार्यक्रमों द्वारा पहुंच",
+        programDesc: "कुल कार्यक्रम नामांकन दर्शाता है"
+      },
+      mr_IN: {
+        activitiesHeader: "एकूण उपक्रम",
+        activitiesDesc:
+          "नोंदणी, नावनोंदणी, एन्काउंटर या सर्व फॉर्मचा समावेश आहे",
+        reachHeader: "पोहोच",
+        reachDesc: "अनोख्या विषयापर्यंत पोहोचले",
+        subjectTypeHeader: "विषय प्रकारानुसार पोहोचा",
+        subjectTypeDesc: "नोंदणीकृत भिन्न विषय प्रकार सूचित करते",
+        programHeader: "कार्यक्रमांद्वारे पोहोचा",
+        programDesc: "एकूण कार्यक्रम नोंदणी दर्शवते"
+      },
+      gu_IN: {
+        activitiesHeader: "કુલ પ્રવૃત્તિઓ",
+        activitiesDesc:
+          "નોંધણી, નોંધણી, એન્કાઉન્ટર આવરી લેતા તમામ ફોર્મનો સમાવેશ થાય છે",
+        reachHeader: "પહોંચે છે",
+        reachDesc: "અનોખા વિષયો સુધી પહોંચ્યા",
+        subjectTypeHeader: "વિષય પ્રકારો દ્વારા પહોંચો",
+        subjectTypeDesc: "નોંધાયેલ વિવિધ વિષય પ્રકાર સૂચવે છે",
+        programHeader: "કાર્યક્રમો દ્વારા પહોંચો",
+        programDesc: "કુલ પ્રોગ્રામ નોંધણી સૂચવે છે"
+      },
+      ka_IN: {
+        activitiesHeader: "ಒಟ್ಟು ಚಟುವಟಿಕೆಗಳು",
+        activitiesDesc:
+          "ನೋಂದಣಿ, ದಾಖಲಾತಿ, ಎನ್‌ಕೌಂಟರ್ ಅನ್ನು ಒಳಗೊಂಡ ಎಲ್ಲಾ ಫಾರ್ಮ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿದೆ",
+        reachHeader: "ತಲುಪಿ",
+        reachDesc: "ವಿಶಿಷ್ಟ ವಿಷಯಗಳನ್ನು ತಲುಪಿದೆ",
+        subjectTypeHeader: "ವಿಷಯದ ಪ್ರಕಾರಗಳನ್ನು ತಲುಪಿ",
+        subjectTypeDesc: "ನೋಂದಾಯಿತ ವಿವಿಧ ವಿಷಯ ಪ್ರಕಾರವನ್ನು ಸೂಚಿಸುತ್ತದೆ",
+        programHeader: "ಕಾರ್ಯಕ್ರಮಗಳ ಮೂಲಕ ತಲುಪಿ",
+        programDesc: "ಒಟ್ಟು ಪ್ರೋಗ್ರಾಂ ದಾಖಲಾತಿಗಳನ್ನು ಸೂಚಿಸುತ್ತದೆ"
+      },
+      ta_IN: {
+        activitiesHeader: "மொத்த செயல்பாடுகள்",
+        activitiesDesc:
+          "பதிவு, பதிவு, சந்திப்பு ஆகியவற்றை உள்ளடக்கிய அனைத்து படிவங்களும் அடங்கும்",
+        reachHeader: "அடைய",
+        reachDesc: "தனித்துவமான பாடங்களை அடைந்தது",
+        subjectTypeHeader: "பொருள் வகைகளால் அடையலாம்",
+        subjectTypeDesc: "பதிவுசெய்யப்பட்ட வெவ்வேறு பாட வகைகளைக் குறிக்கிறது",
+        programHeader: "நிரல்களின் மூலம் அடையலாம்",
+        programDesc: "மொத்த நிரல் பதிவுகளைக் குறிக்கிறது"
+      }
+    };
+    const slideToIdMap = new Map([]);
+    var locale = "en";
+    var totalItems = $(".carousel-item").length;
+    var currentIndex = $("div.carousel-item.active").index() + 1;
+    $(".carousel-control-next").click(function() {
+      const currentSlide = $("div.carousel-item.active").index() + 2;
+      if (totalItems >= currentSlide) {
+        plotBarGraph(currentSlide);
+      } else {
+        plotBarGraph(currentIndex);
+      }
+    });
+
+    $(".carousel-control-prev").click(function() {
+      const downIndexActive = $("div.carousel-item.active").index() - 1;
+      if (downIndexActive < 0) {
+        plotBarGraph(4);
+      } else {
+        plotBarGraph($("div.carousel-item.active").index());
+      }
+    });
+
     window.onload = function renderData() {
       fetchData();
     };
@@ -74,14 +260,19 @@
         headers: {
           "Content-Type": "application/json",
           // 'user-name': url.searchParams.get("user-name"),
-          "user-name": "ShubhangiD@shelter"
-          // 'AUTH-TOKEN': url.searchParams.get("AUTH-TOKEN"),
+          "user-name": "ShubhangiD@shelter",
+          "AUTH-TOKEN": url.searchParams.get("AUTH-TOKEN")
         }
       };
       const userMatrix = await fetch("/userMatrix", options).then(res =>
         res.json()
       );
+      if (_.isEmpty(userMatrix)) {
+        return;
+      }
       const { user, matrix } = userMatrix;
+      const { username, name, settings } = user;
+      locale = _.get(settings, "locale", "en");
       const {
         reach,
         activities,
@@ -118,13 +309,38 @@
       const programReachData = _.map(programs, m =>
         _.get(_.find(reachByProgram, ({ name }) => m === name), "count", 0)
       );
-      plotBarGraph(months, activityDataByMonth, "activities");
-      plotBarGraph(months, reachDataByMonth, "reach");
-      plotBarGraph(subjectTypes, subjectTypeReachData, "subjectType");
-      plotBarGraph(programs, programReachData, "program");
+
+      slideToIdMap.set(1, {
+        id: "activities",
+        labels: months,
+        data: activityDataByMonth,
+        count: activities
+      });
+      slideToIdMap.set(2, {
+        id: "reach",
+        labels: months,
+        data: reachDataByMonth,
+        count: reach
+      });
+      slideToIdMap.set(3, {
+        id: "subjectType",
+        labels: subjectTypes,
+        data: subjectTypeReachData,
+        count: undefined
+      });
+      slideToIdMap.set(4, {
+        id: "program",
+        labels: programs,
+        data: programReachData,
+        count: undefined
+      });
+      plotBarGraph(1);
+      document.getElementById("userName").innerText = name || username;
     }
 
-    function plotBarGraph(labels, data, elementId) {
+    function plotBarGraph(slideNumber) {
+      const { id, labels, data, count } = slideToIdMap.get(slideNumber);
+      const keys = localKeys[locale];
       var chartData = {
         labels: labels,
         datasets: [
@@ -135,11 +351,23 @@
           }
         ]
       };
-      var context = document.getElementById(elementId).getContext("2d");
-      var chart = new Chart(context).Bar(chartData, {
-        responsive: true,
-        barValueSpacing: 2
-      });
+      const headerKey = `${id}Header`;
+      const descKey = `${id}Desc`;
+      if (count) {
+        document.getElementById(`${id}-count`).innerText = `${
+          keys[headerKey]
+        } : ${count}`;
+      } else {
+        document.getElementById(`${id}-count`).innerText = `${keys[headerKey]}`;
+      }
+      document.getElementById(`${id}-desc`).innerText = `${keys[descKey]}`;
+      var context = document.getElementById(id).getContext("2d");
+      setTimeout(() => {
+        new Chart(context).Bar(chartData, {
+          responsive: true,
+          barValueSpacing: 2
+        });
+      }, 100);
     }
   </script>
 </html>
