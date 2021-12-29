@@ -131,11 +131,15 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
         public ProgramEnrolment programEnrolment;
 
         public SearchParams(Date lastModifiedDateTime, Date now, Map<Concept, String> conceptsMatchingValue, EncounterType encounterType, ProgramEnrolment programEnrolment) {
-            this.lastModifiedDateTime = lastModifiedDateTime;
+//            When the date is not specified the search should not limit results
             if (lastModifiedDateTime == null) {
                 this.lastModifiedDateTime = DateTime.parse("2000-01-01").toDate();
+                this.now = DateTime.now().toDate();
+            } else {
+                this.lastModifiedDateTime = lastModifiedDateTime;
+                this.now = now;
             }
-            this.now = now;
+
             this.concepts = conceptsMatchingValue;
             this.encounterType = encounterType;
             this.programEnrolment = programEnrolment;
