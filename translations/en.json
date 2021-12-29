@@ -438,6 +438,7 @@
     "address": "Address",
     "relativeAlreadyAdded": "Relative is already added",
     "programExitDetails": "Program Exit Details",
-    "visitDate": "Visit Date"
+    "visitDate": "Visit Date",
+    "reviewBannerText": "Click here to see your 2021 personal highlights"
   }
 }

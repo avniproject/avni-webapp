@@ -14,11 +14,22 @@ import { withRouter } from "react-router-dom";
 import { OrganisationOptions } from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import { Box } from "@material-ui/core";
+import Link from "@material-ui/core/Link";
+import Auth from "@aws-amplify/auth";
+import { cognitoInDev, devEnvUserName, isDevEnv } from "../constants";
+import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     marginBottom: theme.spacing(10)
+  },
+  bannerContainer: {
+    display: "flex",
+    height: "50px",
+    backgroundColor: "#aacf4f",
+    alignItems: "center",
+    justifyContent: "center"
   },
   title: {
     flex: 1,
@@ -54,7 +65,20 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
+const onReviewBannerClick = async () => {
+  const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
+  let token = "";
+  if (!isDevEnv || cognitoInDev) {
+    const currentSession = await Auth.currentSession();
+    token = `AUTH-TOKEN=${currentSession.idToken.jwtToken}`;
+  } else {
+    token = `user-name=${devEnvUserName}`;
+  }
+  window.open(`${serverURL}/userReview?${token}`, "_blank");
+};
+
 const AppBar = ({ getUserInfo, component, position, ...props }) => {
+  const { t } = useTranslation();
   const { organisation, user, history, organisations } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -132,6 +156,13 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
             <CustomComponent />
           </div>
         </Toolbar>
+        {props.displayReviewBanner && (
+          <div className={classes.bannerContainer}>
+            <Link onClick={onReviewBannerClick} style={{ color: "#f1fbf8", fontSize: 20 }}>
+              {t("reviewBannerText")}
+            </Link>
+          </div>
+        )}
       </MuiAppBar>
     </div>
   );
