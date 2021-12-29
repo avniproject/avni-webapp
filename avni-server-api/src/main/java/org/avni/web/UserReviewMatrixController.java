@@ -26,6 +26,10 @@ public class UserReviewMatrixController {
     public ResponseEntity<UserReviewMatrix> getUserReview() {
         UserContext userContext = UserContextHolder.getUserContext();
         UserReviewMatrix userMatrix = userReviewMatrixRepository.findFirstByUserAndOrganisationId(userContext.getUser(), userContext.getOrganisation().getId());
+        if (userMatrix == null) {
+            userMatrix = new UserReviewMatrix();
+            userMatrix.setUser(userContext.getUser());
+        }
         return ResponseEntity.ok().body(userMatrix);
     }
 
