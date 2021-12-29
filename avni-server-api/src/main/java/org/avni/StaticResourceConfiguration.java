@@ -36,8 +36,7 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
         if(analyticsPath != null){
             registry
                     .addResourceHandler("/analytics/static/**")
-                    .addResourceLocations("file:" + analyticsPath + "static/")
-                    .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
+                    .addResourceLocations("file:" + analyticsPath + "static/");
             registry
                     .addResourceHandler("/analytics/**")
                     .addResourceLocations("file:" + analyticsPath);
