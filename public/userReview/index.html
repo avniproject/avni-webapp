@@ -64,12 +64,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.0/chart.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.0/chart.min.js"
+      integrity="sha512-RGbSeD/jDcZBWNsI1VCvdjcDULuSfWTtIva2ek5FtteXeSjLfXac4kqkDRHVGf1TwsXCAqPTF7/EYITD0/CTqw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>-->
     <script src="https://jsuites.net/v4/jsuites.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
     <link
       rel="stylesheet"
       href="https://jsuites.net/v4/jsuites.css"
@@ -101,6 +110,14 @@
           </div>
         </div>
         <div class="line" />
+      </div>
+      <div
+        id="no-data"
+        style="margin-top: 20px;margin-bottom: 30px; background-color: rgba(190,212,222,0.4); padding: 10px"
+      >
+        <div>
+          <h5 id="no-data-text" style="text-align: center"></h5>
+        </div>
       </div>
       <div id="demo" class="carousel slide" data-interval="false">
         <div class="carousel-inner">
@@ -166,7 +183,9 @@
         subjectTypeHeader: "Reach by subject types",
         subjectTypeDesc: "Indicates different subject type registered",
         programHeader: "Reach by programs",
-        programDesc: "Indicates total program enrolments"
+        programDesc: "Indicates total program enrolments",
+        noDataMessage:
+          "You haven't done anything on Avni in 2021. We look forward to seeing you being much more active in the year 2022."
       },
       hi_IN: {
         activitiesHeader: "कुल गतिविधियां",
@@ -177,7 +196,9 @@
         subjectTypeHeader: "विषय प्रकारों के अनुसार पहुंच",
         subjectTypeDesc: "पंजीकृत विभिन्न विषय प्रकार को इंगित करता है",
         programHeader: "कार्यक्रमों द्वारा पहुंच",
-        programDesc: "कुल कार्यक्रम नामांकन दर्शाता है"
+        programDesc: "कुल कार्यक्रम नामांकन दर्शाता है",
+        noDataMessage:
+          "आपने 2021 में अवनि पर कुछ नहीं किया है। हम वर्ष 2022 में आपको और अधिक सक्रिय होते हुए देखने के लिए उत्सुक हैं।"
       },
       mr_IN: {
         activitiesHeader: "एकूण उपक्रम",
@@ -188,7 +209,9 @@
         subjectTypeHeader: "विषय प्रकारानुसार पोहोचा",
         subjectTypeDesc: "नोंदणीकृत भिन्न विषय प्रकार सूचित करते",
         programHeader: "कार्यक्रमांद्वारे पोहोचा",
-        programDesc: "एकूण कार्यक्रम नोंदणी दर्शवते"
+        programDesc: "एकूण कार्यक्रम नोंदणी दर्शवते",
+        noDataMessage:
+          "तुम्ही २०२१ मध्ये अवनीवर काहीही केले नाही. २०२२ मध्ये तुम्ही अधिक सक्रिय होताना पाहण्यासाठी आम्ही उत्सुक आहोत."
       },
       gu_IN: {
         activitiesHeader: "કુલ પ્રવૃત્તિઓ",
@@ -199,7 +222,9 @@
         subjectTypeHeader: "વિષય પ્રકારો દ્વારા પહોંચો",
         subjectTypeDesc: "નોંધાયેલ વિવિધ વિષય પ્રકાર સૂચવે છે",
         programHeader: "કાર્યક્રમો દ્વારા પહોંચો",
-        programDesc: "કુલ પ્રોગ્રામ નોંધણી સૂચવે છે"
+        programDesc: "કુલ પ્રોગ્રામ નોંધણી સૂચવે છે",
+        noDataMessage:
+          "તમે 2021 માં અવની પર કંઈ કર્યું નથી. અમે તમને વર્ષ 2022 માં વધુ સક્રિય થવાની આશા રાખીએ છીએ."
       },
       ka_IN: {
         activitiesHeader: "ಒಟ್ಟು ಚಟುವಟಿಕೆಗಳು",
@@ -210,7 +235,9 @@
         subjectTypeHeader: "ವಿಷಯದ ಪ್ರಕಾರಗಳನ್ನು ತಲುಪಿ",
         subjectTypeDesc: "ನೋಂದಾಯಿತ ವಿವಿಧ ವಿಷಯ ಪ್ರಕಾರವನ್ನು ಸೂಚಿಸುತ್ತದೆ",
         programHeader: "ಕಾರ್ಯಕ್ರಮಗಳ ಮೂಲಕ ತಲುಪಿ",
-        programDesc: "ಒಟ್ಟು ಪ್ರೋಗ್ರಾಂ ದಾಖಲಾತಿಗಳನ್ನು ಸೂಚಿಸುತ್ತದೆ"
+        programDesc: "ಒಟ್ಟು ಪ್ರೋಗ್ರಾಂ ದಾಖಲಾತಿಗಳನ್ನು ಸೂಚಿಸುತ್ತದೆ",
+        noDataMessage:
+          "ನೀವು 2021 ರಲ್ಲಿ ಅವ್ನಿಯಲ್ಲಿ ಏನನ್ನೂ ಮಾಡಿಲ್ಲ. 2022 ರಲ್ಲಿ ನೀವು ಹೆಚ್ಚು ಸಕ್ರಿಯರಾಗಿರುವುದನ್ನು ನೋಡಲು ನಾವು ಎದುರು ನೋಡುತ್ತಿದ್ದೇವೆ."
       },
       ta_IN: {
         activitiesHeader: "மொத்த செயல்பாடுகள்",
@@ -221,7 +248,9 @@
         subjectTypeHeader: "பொருள் வகைகளால் அடையலாம்",
         subjectTypeDesc: "பதிவுசெய்யப்பட்ட வெவ்வேறு பாட வகைகளைக் குறிக்கிறது",
         programHeader: "நிரல்களின் மூலம் அடையலாம்",
-        programDesc: "மொத்த நிரல் பதிவுகளைக் குறிக்கிறது"
+        programDesc: "மொத்த நிரல் பதிவுகளைக் குறிக்கிறது",
+        noDataMessage:
+          "2021 இல் நீங்கள் அவ்னியில் எதுவும் செய்யவில்லை. 2022 ஆம் ஆண்டில் நீங்கள் மிகவும் சுறுசுறுப்பாக இருப்பதைக் காண ஆவலுடன் காத்திருக்கிறோம்."
       }
     };
     const slideToIdMap = new Map([]);
@@ -251,6 +280,7 @@
     };
 
     async function fetchData() {
+      document.getElementById("no-data").style.display = "none";
       const url = new URL(window.location.href);
       const options = {
         method: "GET",
@@ -263,12 +293,18 @@
       const userMatrix = await fetch("/userMatrix", options).then(res =>
         res.json()
       );
-      if (_.isEmpty(userMatrix)) {
-        return;
-      }
       const { user, matrix } = userMatrix;
       const { username, name, settings } = user;
       locale = _.get(settings, "locale", "en");
+      const keys = localKeys[locale];
+      document.getElementById("userName").innerText = name || username;
+      if (_.isEmpty(matrix)) {
+        document.getElementById("no-data").style.display = "block";
+        document.getElementById("demo").style.display = "none";
+        document.getElementById("no-data-text").innerText =
+          keys["noDataMessage"];
+        return;
+      }
       const {
         reach,
         activities,
@@ -331,7 +367,6 @@
         count: undefined
       });
       plotBarGraph(1);
-      document.getElementById("userName").innerText = name || username;
     }
 
     function plotBarGraph(slideNumber) {
