@@ -80,12 +80,12 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
 
     default Specification<Encounter> withEncounterEarliestVisitDateTime(DateTime earliestVisitDateTime) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-                earliestVisitDateTime == null ? null : cb.equal(root.get("earliestVisitDateTime").as(Date.class), earliestVisitDateTime.toDate());
+                earliestVisitDateTime == null ? null : cb.equal(root.get("earliestVisitDateTime").as(java.sql.Date.class), earliestVisitDateTime.toDate());
     }
 
     default Specification<Encounter> withEncounterDateTime(DateTime encounterDateTime) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-                encounterDateTime == null ? null : cb.equal(root.get("encounterDateTime").as(Date.class), encounterDateTime.toDate());
+                encounterDateTime == null ? null : cb.equal(root.get("encounterDateTime").as(java.sql.Date.class), encounterDateTime.toDate());
     }
 
     default Specification<Encounter> withNotNullEncounterDateTime() {
