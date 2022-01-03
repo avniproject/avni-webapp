@@ -45,6 +45,16 @@ public class IndividualContractWrapper {
 
     private EntityApprovalStatusWrapper latestEntityApprovalStatus;
 
+    private List<GroupSubjectContractWrapper> groups;
+
+    public List<GroupSubjectContractWrapper> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<GroupSubjectContractWrapper> groups) {
+        this.groups = groups;
+    }
+
     public EntityApprovalStatusWrapper getLatestEntityApprovalStatus() {
         return latestEntityApprovalStatus;
     }

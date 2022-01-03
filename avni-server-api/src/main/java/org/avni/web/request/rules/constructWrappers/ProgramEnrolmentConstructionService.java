@@ -2,6 +2,7 @@ package org.avni.web.request.rules.constructWrappers;
 
 import org.avni.application.Subject;
 import org.avni.dao.ChecklistDetailRepository;
+import org.avni.dao.GroupSubjectRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.ProgramEnrolmentRepository;
 import org.avni.domain.*;
@@ -15,32 +16,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ProgramEnrolmentConstructionService {
     private final ObservationConstructionService observationConstructionService;
     private final IndividualRepository individualRepository;
-    private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final ObservationService observationService;
     private final ChecklistDetailRepository checklistDetailRepository;
     private final EntityApprovalStatusService entityApprovalStatusService;
+    private final GroupSubjectRepository groupSubjectRepository;
 
     @Autowired
     public ProgramEnrolmentConstructionService(
             ObservationConstructionService observationConstructionService,
             IndividualRepository individualRepository,
-            ProgramEnrolmentRepository programEnrolmentRepository,
             ObservationService observationService,
             ChecklistDetailRepository checklistDetailRepository,
-            EntityApprovalStatusService entityApprovalStatusService) {
+            EntityApprovalStatusService entityApprovalStatusService,
+            GroupSubjectRepository groupSubjectRepository) {
         this.observationConstructionService = observationConstructionService;
         this.individualRepository = individualRepository;
-        this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationService = observationService;
         this.checklistDetailRepository = checklistDetailRepository;
         this.entityApprovalStatusService = entityApprovalStatusService;
+        this.groupSubjectRepository = groupSubjectRepository;
     }
 
 
@@ -73,6 +73,32 @@ public class ProgramEnrolmentConstructionService {
     }
 
     public IndividualContractWrapper getSubjectInfo(Individual individual) {
+        IndividualContractWrapper individualContractWrapper = constructBasicSubject(individual);
+        if (individualContractWrapper == null) return null;
+        EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(individual.getId(), EntityApprovalStatus.EntityType.Subject, individual.getUuid());
+        individualContractWrapper.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
+        List<GroupSubjectContractWrapper> groups = groupSubjectRepository
+                .findAllByMemberSubject(individual)
+                .stream()
+                .map(this::constructGroups)
+                .collect(Collectors.toList());
+        individualContractWrapper.setGroups(groups);
+        individualContractWrapper.setEncounters(individual
+                .getEncounters()
+                .stream()
+                .map(enc -> EncounterContractWrapper.fromEncounter(enc, observationService, entityApprovalStatusService))
+                .collect(Collectors.toList())
+        );
+        individualContractWrapper.setEnrolments(individual
+                .getProgramEnrolments()
+                .stream()
+                .map(enl -> ProgramEnrolmentContractWrapper.fromEnrolment(enl, observationService, entityApprovalStatusService))
+                .collect(Collectors.toList())
+        );
+        return individualContractWrapper;
+    }
+
+    private IndividualContractWrapper constructBasicSubject(Individual individual) {
         IndividualContractWrapper individualContractWrapper = new IndividualContractWrapper();
         if (individual == null) {
             return null;
@@ -91,21 +117,19 @@ public class ProgramEnrolmentConstructionService {
         individualContractWrapper.setRegistrationDate(individual.getRegistrationDate());
         individualContractWrapper.setVoided(individual.isVoided());
         individualContractWrapper.setSubjectType(constructSubjectType(individual.getSubjectType()));
-        EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(individual.getId(), EntityApprovalStatus.EntityType.Subject, individual.getUuid());
-        individualContractWrapper.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
-        individualContractWrapper.setEncounters(individual
-                .getEncounters()
-                .stream()
-                .map(enc -> EncounterContractWrapper.fromEncounter(enc, observationService, entityApprovalStatusService))
-                .collect(Collectors.toList())
-        );
-        individualContractWrapper.setEnrolments(individual
-                .getProgramEnrolments()
-                .stream()
-                .map(enl -> ProgramEnrolmentContractWrapper.fromEnrolment(enl, observationService, entityApprovalStatusService))
-                .collect(Collectors.toList())
-        );
         return individualContractWrapper;
+    }
+
+    private GroupSubjectContractWrapper constructGroups(GroupSubject groupSubject){
+        GroupSubjectContractWrapper groupSubjectContractWrapper = new GroupSubjectContractWrapper();
+        groupSubjectContractWrapper.setUuid(groupSubject.getUuid());
+        groupSubjectContractWrapper.setGroupSubject(this.constructBasicSubject(groupSubject.getGroupSubject()));
+        groupSubjectContractWrapper.setMemberSubject(this.constructBasicSubject(groupSubject.getMemberSubject()));
+        groupSubjectContractWrapper.setGroupRole(GroupRoleContractWrapper.fromGroupRole(groupSubject.getGroupRole()));
+        groupSubjectContractWrapper.setMembershipStartDate(groupSubject.getMembershipStartDate());
+        groupSubjectContractWrapper.setMembershipEndDate(groupSubject.getMembershipEndDate());
+        groupSubjectContractWrapper.setVoided(groupSubject.isVoided());
+        return groupSubjectContractWrapper;
     }
 
     private LowestAddressLevelContract constructAddressLevel(AddressLevel addressLevel) {
