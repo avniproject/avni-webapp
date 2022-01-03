@@ -64,8 +64,9 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
                         "Provided Location does not exist. Please check for spelling mistakes '%s'", fullAddress)));
 
         Catchment catchment = catchmentService.createOrUpdate(catchmentName, location);
-
-        User.validateUsername(username);
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        String userSuffix = "@".concat(organisation.getUsernameSuffix());
+        User.validateUsername(username, userSuffix);
         User user = userRepository.findByUsername(username);
         if (user != null) return;
         user = new User();
@@ -87,7 +88,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
                 .withEmptyCheck("idPrefix", idPrefix));
 
         User currentUser = userService.getCurrentUser();
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
 

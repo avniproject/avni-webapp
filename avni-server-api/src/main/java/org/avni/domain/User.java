@@ -352,9 +352,12 @@ public class User {
      * must be in the format of xxx@yyy
      * where yyy is {@link Organisation#getUsernameSuffix()} and xxx represents user
      */
-    public static void validateUsername(String username) {
+    public static void validateUsername(String username, String userSuffix) {
         if (username == null || !username.contains("@") || username.length() < 7) {
             throw new ValidationException(String.format("Invalid username '%s'. It must be at least 7 characters.", username));
+        }
+        if (!username.endsWith(userSuffix)) {
+            throw new ValidationException(String.format("Invalid username '%s'. Include correct userSuffix %s at the end", username, userSuffix));
         }
     }
 }
