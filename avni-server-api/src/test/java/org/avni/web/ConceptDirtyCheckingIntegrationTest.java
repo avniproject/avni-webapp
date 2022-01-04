@@ -35,7 +35,7 @@ public class ConceptDirtyCheckingIntegrationTest extends AbstractControllerInteg
             Object json = mapper.readValue(this.getClass().getResource("/ref/concepts/concepts.json"), Object.class);
             post(json);
 
-            String[] conceptsThatShouldntHaveAnyChange = new String[]{"b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20", "c4e3facf-7594-434b-80d9-01b694758afc", "7d4c79a6-2ad7-452d-839f-6c7cbd6ec5c8", "31f1d3e9-d1e0-4645-947f-8b9fcaa17e01", "c4e3facf-7594-434b-80d9-01b694758afc"};
+            String[] conceptsThatShouldntHaveAnyChange = new String[]{"7d4c79a6-2ad7-452d-839f-6c7cbd6ec5c8", "31f1d3e9-d1e0-4645-947f-8b9fcaa17e01"};
             String[] conceptsThatShouldHaveChanged = new String[]{"90e44d61-97c3-471d-964d-44b2488d0204", "1f7c6df7-5260-439a-8221-28319e8fb98b"};
 
             List<DateTime> dateTimesExpectedToNotChangeBefore = dateTimesForConceptUuids(conceptsThatShouldntHaveAnyChange);
@@ -61,17 +61,6 @@ public class ConceptDirtyCheckingIntegrationTest extends AbstractControllerInteg
         for (int i = 0; i < conceptUuids.length; i++) {
             Assert.assertEquals("" + i, before.get(i), after.get(i));
         }
-    }
-
-    @Test
-    public void conceptUpdateShouldNotModifyLastModifiedDateTime2() throws IOException {
-        Object json = mapper.readValue(this.getClass().getResource("/ref/concepts/conceptUsedAsCodedButAlsoAsAnswer.json"), Object.class);
-        String[] conceptUuids = new String[]{"d78edcbb-2034-4220-ace2-20b445a1e0ad", "60f284a6-0240-4de8-a6a1-8839bc9cc219"};
-        post(json);
-        List<DateTime> before = dateTimesForConceptUuids(conceptUuids);
-        post(json);
-        List<DateTime> after = dateTimesForConceptUuids(conceptUuids);
-        assertNoChangeInDates(conceptUuids, before, after);
     }
 
     private List<DateTime> dateTimesForConceptUuids(String[] conceptUuids) {

@@ -135,6 +135,7 @@ public class ConceptService implements NonScopeAwareService {
         concept.setActive(conceptRequest.getActive());
         concept.setKeyValues(conceptRequest.getKeyValues());
         updateOrganisationIfNeeded(concept, conceptRequest);
+        concept.updateAudit();
         switch (ConceptDataType.valueOf(impliedDataType)) {
             case Coded:
                 concept = createCodedConcept(concept, conceptRequest);
