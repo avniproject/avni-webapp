@@ -70,7 +70,8 @@ const Export = ({
       startDate: startDate.setHours(0, 0, 0, 0),
       endDate: endDate.setHours(23, 59, 59, 999),
       reportType: ReportTypes.getCode(reportType.name),
-      addressLevelIds: addressLevelIds
+      addressLevelIds: addressLevelIds,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     };
     const [ok, error] = await api.startExportJob(request);
     if (!ok && error) {
