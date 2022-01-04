@@ -37,6 +37,9 @@ class FormSettings extends Component {
   }
 
   validateForm() {
+    if (_.every(this.state.formMappings, fm => fm.voided)) {
+      return true;
+    }
     let errorsList = {};
     let formMapping = this.state.formMappings;
     let existingMapping = [];
