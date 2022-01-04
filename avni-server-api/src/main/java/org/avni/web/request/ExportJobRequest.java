@@ -14,6 +14,15 @@ public class ExportJobRequest {
     private Date endDate;
     private ReportType reportType;
     private List<Long> addressLevelIds = new ArrayList<>();
+    private String timeZone;
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
 
     public List<Long> getAddressLevelIds() {
         return addressLevelIds;

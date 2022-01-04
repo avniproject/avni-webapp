@@ -81,6 +81,7 @@ public class ExportController {
                         .addDate("endDate", exportJobRequest.getEndDate(), false)
                         .addString("reportType", exportJobRequest.getReportType().name())
                         .addString("addressIds", exportJobRequest.getAddressLevelString())
+                        .addString("timeZone", exportJobRequest.getTimeZone())
                         .toJobParameters();
 
         try {

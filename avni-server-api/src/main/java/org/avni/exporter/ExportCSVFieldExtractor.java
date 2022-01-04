@@ -11,6 +11,8 @@ import org.avni.domain.*;
 import org.avni.service.AddressLevelService;
 import org.avni.service.FormMappingService;
 import org.avni.web.request.ReportType;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.transform.FieldExtractor;
@@ -45,6 +47,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private Date startDate;
     @Value("#{jobParameters['endDate']}")
     private Date endDate;
+    @Value("#{jobParameters['timeZone']}")
+    private String timeZone;
     private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private EncounterRepository encounterRepository;
@@ -252,16 +256,16 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(memberSubject.getFirstName());
         row.add(memberSubject.getLastName());
         row.add(group.getGroupRole().getRole());
-        row.add(group.getMembershipStartDate());
-        row.add(group.getMembershipEndDate());
+        row.add(getDateForTimeZone(group.getMembershipStartDate()));
+        row.add(getDateForTimeZone(group.getMembershipEndDate()));
         addAuditFields(group, row);
     }
 
     private void addAuditFields(Auditable auditable, List<Object> row) {
         row.add(auditable.getCreatedBy().getUsername());
-        row.add(auditable.getCreatedDateTime());
+        row.add(getDateForTimeZone(auditable.getCreatedDateTime()));
         row.add(auditable.getLastModifiedBy().getUsername());
-        row.add(auditable.getLastModifiedDateTime());
+        row.add(getDateForTimeZone(auditable.getLastModifiedDateTime()));
     }
 
     private void addProgramEnrolmentFields(ExportItemRow exportItemRow, List<Object> row) {
@@ -269,10 +273,10 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         //ProgramEnrolment
         row.add(programEnrolment.getId());
         row.add(programEnrolment.getUuid());
-        row.add(programEnrolment.getEnrolmentDateTime());
+        row.add(getDateForTimeZone(programEnrolment.getEnrolmentDateTime()));
         row.addAll(getObs(programEnrolment.getObservations(), enrolmentMap));
         //Program Exit
-        row.add(programEnrolment.getProgramExitDateTime());
+        row.add(getDateForTimeZone(programEnrolment.getProgramExitDateTime()));
         row.addAll(getObs(programEnrolment.getProgramExitObservations(), exitEnrolmentMap));
         addAuditFields(programEnrolment, row);
     }
@@ -291,11 +295,11 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(encounter.getId());
         row.add(encounter.getUuid());
         row.add(massageStringValue(encounter.getName()));
-        row.add(encounter.getEarliestVisitDateTime());
-        row.add(encounter.getMaxVisitDateTime());
-        row.add(encounter.getEncounterDateTime());
+        row.add(getDateForTimeZone(encounter.getEarliestVisitDateTime()));
+        row.add(getDateForTimeZone(encounter.getMaxVisitDateTime()));
+        row.add(getDateForTimeZone(encounter.getEncounterDateTime()));
         row.addAll(getObs(encounter.getObservations(), map));
-        row.add(encounter.getCancelDateTime());
+        row.add(getDateForTimeZone(encounter.getCancelDateTime()));
         row.addAll(getObs(encounter.getCancelObservations(), cancelMap));
         addAuditFields(encounter, row);
     }
@@ -331,13 +335,25 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         List<Object> values = new ArrayList<>(obsMap.size());
         obsMap.forEach((conceptUUID, formElement) -> {
             Object val = observations == null ? null : observations.getOrDefault(conceptUUID, null);
-            if (formElement.getConcept().getDataType().equals(ConceptDataType.Coded.toString())) {
+            String dataType = formElement.getConcept().getDataType();
+            if (dataType.equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
+            } else if(dataType.equals(ConceptDataType.DateTime.toString()) || dataType.equals(ConceptDataType.Date.toString())){
+                values.add(processDateObs(val));
             } else {
                 values.add(massageStringValue(String.valueOf(Optional.ofNullable(val).orElse(""))));
             }
         });
         return values;
+    }
+
+    private Object processDateObs(Object val) {
+        if(val == null) return "";
+        return getDateForTimeZone(new DateTime(String.valueOf(val)));
+    }
+
+    private DateTime getDateForTimeZone(DateTime dateTime) {
+        return dateTime == null ? null : dateTime.withZone(DateTimeZone.forID(timeZone));
     }
 
     private List<Object> processCodedObs(String formType, Object val, FormElement formElement) {
