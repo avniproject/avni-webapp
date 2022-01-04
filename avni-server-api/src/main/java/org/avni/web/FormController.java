@@ -117,7 +117,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 
         Page<BasicFormDetails> basicFormDetailsPage = forms.map(form -> {
             BasicFormDetails basicFormDetails = new BasicFormDetails(form, null);
-            List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
+            List<FormMapping> formMappings = formMappingRepository.findByFormIdAndIsVoidedFalse(form.getId());
             if (formMappings.size() > 0) {
                 FormMapping firstFormMapping = formMappings.get(0);
                 Program program = firstFormMapping.getProgram();
