@@ -94,6 +94,7 @@ public class ConceptService implements NonScopeAwareService {
         conceptAnswer.setOrder(providedOrder == null ? answerOrder : providedOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
         conceptAnswer.setUnique(answerConceptRequest.isUnique());
+        conceptAnswer.updateAudit();
         return conceptAnswer;
     }
 
@@ -135,6 +136,7 @@ public class ConceptService implements NonScopeAwareService {
         concept.setActive(conceptRequest.getActive());
         concept.setKeyValues(conceptRequest.getKeyValues());
         updateOrganisationIfNeeded(concept, conceptRequest);
+        concept.updateAudit();
         switch (ConceptDataType.valueOf(impliedDataType)) {
             case Coded:
                 concept = createCodedConcept(concept, conceptRequest);
