@@ -8,6 +8,7 @@ export const Audit = ({
   lastModifiedBy,
   createdDateTime,
   modifiedDateTime,
+  lastModifiedDateTime,
   direction
 }) => {
   return (
@@ -35,7 +36,7 @@ export const Audit = ({
           <span style={{ fontSize: "15px" }}>
             {modifiedAudit({
               lastModifiedBy,
-              lastModifiedDateTime: modifiedDateTime
+              lastModifiedDateTime: modifiedDateTime || lastModifiedDateTime
             })}
           </span>
         </Grid>
