@@ -56,7 +56,8 @@ export const OrgSettings = () => {
     draftSave: "saveDrafts",
     hideDateOfBirth: "hideDateOfBirth",
     enableComments: "enableComments",
-    enableCannedReports: "enableCannedReports"
+    enableCannedReports: "enableCannedReports",
+    showSummaryButton: "showSummaryButton"
   };
 
   return orgSettings ? (
@@ -139,6 +140,20 @@ export const OrgSettings = () => {
             }
             name="Enable canned reports"
             toolTipKey={"ADMIN_ENABLE_CANNED_REPORTS"}
+          />
+        </Grid>
+        <Grid item>
+          <AvniSwitch
+            switchFirst
+            checked={orgSettings[organisationConfigSettingKeys.showSummaryButton]}
+            onChange={event =>
+              onSettingsChange(
+                organisationConfigSettingKeys.showSummaryButton,
+                event.target.checked
+              )
+            }
+            name="Show summary button"
+            toolTipKey={"ADMIN_SHOW_SUMMARY_BUTTON"}
           />
         </Grid>
       </Grid>
