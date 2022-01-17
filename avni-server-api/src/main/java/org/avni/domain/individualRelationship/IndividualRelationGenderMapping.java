@@ -42,6 +42,10 @@ public class IndividualRelationGenderMapping extends OrganisationAwareEntity {
         return gender;
     }
 
+    public Boolean genderMatches(Gender gender) {
+        return this.gender.equals(gender);
+    }
+
     public void setGender(Gender gender) {
         this.gender = gender;
     }

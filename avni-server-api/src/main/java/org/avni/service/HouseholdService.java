@@ -34,9 +34,9 @@ public class HouseholdService {
     }
 
     public IndividualRelationship determineRelationshipWithHeadOfHousehold(GroupSubject groupSubject, IndividualRelation individualRelation, List<String> errorMsgs) {
-        IndividualRelationGenderMapping individualRelationGenderMapping = individualRelationGenderMappingRepository.findByRelationAndIsVoidedFalse(individualRelation);
+        List<IndividualRelationGenderMapping> individualRelationGenderMappings = individualRelationGenderMappingRepository.findByRelationAndIsVoidedFalse(individualRelation);
 
-        if (individualRelationGenderMapping == null) {
+        if (individualRelationGenderMappings == null) {
             errorMsgs.add(String.format("Gender mapping for relation '%s' is not defined", individualRelation.getName()));
             return null;
         }
@@ -45,10 +45,12 @@ public class HouseholdService {
             errorMsgs.add(String.format("Member gender is not defined and cannot be added as '%s'", individualRelation.getName()));
             return null;
         }
-        if (!(individualRelationGenderMapping.getGender().getName().equals(memberSubject.getGender().getName()))) {
+
+        if (individualRelationGenderMappings.stream().noneMatch(individualRelationGenderMapping -> individualRelationGenderMapping.genderMatches(memberSubject.getGender()))) {
             errorMsgs.add(String.format("Member cannot be added as '%s' since they were registered as '%s'", individualRelation.getName(), memberSubject.getGender().getName()));
             return null;
         }
+
         Individual headOfHousehold = getHeadOfHouseholdForGroupSubject(groupSubject);
         if (headOfHousehold == null) {
             errorMsgs.add(String.format("Head of household not yet defined for Household id '%s'. Cannot add member.", groupSubject.getGroupSubject().getLegacyId()));
