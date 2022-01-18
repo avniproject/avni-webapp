@@ -149,12 +149,12 @@ public class LocationService implements ScopeAwareService {
         if (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(locationEditContract.getTitle().trim(), location.getType()) != null) {
             throw new RuntimeException("Location with same name '%s' and type '%s' already exists");
         } else {
-            AddressLevel parent = locationRepository.findOne(locationEditContract.getParentId());
+            AddressLevel parent = locationEditContract.getParentId() == null ? null : locationRepository.findOne(locationEditContract.getParentId());
             if (!titleIsValid(location, parent, locationEditContract.getTitle().trim(), location.getType())) {
                 String message = String.format("Location with same name '%s' and type '%s' and parent '%s' already exists",
                         locationEditContract.getTitle(),
                         location.getType().getName(),
-                        parent.getTitle());
+                        parent == null ? null : parent.getTitle());
                 throw new RuntimeException(message);
             }
         }
@@ -210,7 +210,7 @@ public class LocationService implements ScopeAwareService {
 
     private boolean titleIsValid(AddressLevel location, AddressLevel parent, String title, AddressLevelType type) {
         return (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(title, type) == null)
-                || (!location.isTopLevel() && !parent.containsSubLocationExcept(title, type, location));
+                || (!location.isTopLevel() && parent != null && !parent.containsSubLocationExcept(title, type, location));
     }
 
     public AddressLevelType createAddressLevelType(AddressLevelTypeContract contract) {
