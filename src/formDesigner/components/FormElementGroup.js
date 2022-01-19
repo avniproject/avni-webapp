@@ -167,6 +167,7 @@ function FormElementGroup(props) {
           handleGroupElementKeyValueChange: props.handleGroupElementKeyValueChange,
           handleExcludedAnswers: props.handleExcludedAnswers,
           updateSkipLogicRule: props.updateSkipLogicRule,
+          updateSkipLogicJSON: props.updateSkipLogicJSON,
           handleModeForDate: props.handleModeForDate,
           handleRegex: props.handleRegex,
           handleConceptFormLibrary: props.handleConceptFormLibrary,

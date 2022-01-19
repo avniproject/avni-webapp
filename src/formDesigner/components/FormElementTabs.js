@@ -11,6 +11,7 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import { sampleFormElementRule } from "../common/SampleRule";
+import DeclarativeRuleComponent from "./DeclarativeRule/DeclarativeRuleComponent";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -92,9 +93,26 @@ function FormElementTabs(props) {
             overflowY: "auto"
           }}
         > */}
+        <DeclarativeRuleComponent
+          json={props.formElementData.ruleJson}
+          onValueChange={jsonData =>
+            props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)
+          }
+          updateJsCode={declarativeRule =>
+            props.updateSkipLogicRule(
+              props.groupIndex,
+              props.index,
+              declarativeRule.getViewFilterRule(props.entityName)
+            )
+          }
+          jsCode={props.formElementData.rule}
+        />
         <Editor
           value={props.formElementData.rule || sampleFormElementRule(props.entityName)}
-          onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
+          onValueChange={event => {
+            props.updateSkipLogicJSON(props.groupIndex, props.index, null);
+            props.updateSkipLogicRule(props.groupIndex, props.index, event);
+          }}
           highlight={code => highlight(code, languages.js)}
           padding={10}
           style={{

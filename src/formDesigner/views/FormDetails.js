@@ -302,6 +302,15 @@ class FormDetails extends Component {
     );
   };
 
+  updateSkipLogicJSON = (index, elementIndex, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex]["ruleJson"] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
   updateFormElementGroupRule = (index, value) => {
     this.setState(
       produce(draft => {
@@ -435,6 +444,7 @@ class FormDetails extends Component {
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
           handleExcludedAnswers: this.handleExcludedAnswers,
           updateSkipLogicRule: this.updateSkipLogicRule,
+          updateSkipLogicJSON: this.updateSkipLogicJSON,
           handleModeForDate: this.handleModeForDate,
           handleRegex: this.handleRegex,
           handleConceptFormLibrary: this.handleConceptFormLibrary,
