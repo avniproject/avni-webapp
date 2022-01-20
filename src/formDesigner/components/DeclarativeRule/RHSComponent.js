@@ -9,7 +9,7 @@ import ConceptSearch from "./ConceptSearch";
 import InputField from "./InputField";
 import { findOrDefault } from "../../util";
 
-const RHSComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
+const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const { rhs, operator } = rule;
   const types = map(RHS.types, (v, k) => ({ value: v, label: startCase(k) }));
@@ -17,7 +17,10 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
   const isValueNumeric = includes(LHS.numericRHSValueTypes, rule.lhs.type);
   const selectedTypeOption = findOrDefault(types, ({ value }) => value === selectedType, null);
   const onRHSChange = (property, value) => {
-    dispatch({ type: "rhsChange", payload: { ruleIndex, conditionIndex, property, value } });
+    dispatch({
+      type: "rhsChange",
+      payload: { declarativeRuleIndex, ruleIndex, conditionIndex, property, value }
+    });
   };
 
   const isMulti = operator === Rule.operators.ContainsAnyAnswerConceptName;
@@ -40,12 +43,13 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
       {selectedType === RHS.types.AnswerConcept ? (
         <Grid item xs={3}>
           <ConceptSearch
+            placeholder={"Type to search concept answer"}
             isMulti={isMulti}
             onChange={labelValues => {
               const values = isMulti ? labelValues : [labelValues];
               dispatch({
                 type: "rhsConceptChange",
-                payload: { ruleIndex, conditionIndex, labelValues: values }
+                payload: { declarativeRuleIndex, ruleIndex, conditionIndex, labelValues: values }
               });
             }}
             value={isMulti ? selectedConceptAnswerOptions : flatten(selectedConceptAnswerOptions)}

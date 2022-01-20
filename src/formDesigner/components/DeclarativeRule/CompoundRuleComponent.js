@@ -11,17 +11,25 @@ import Colors from "../../../dataEntryApp/Colors";
 import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
 
-const CompoundRuleComponent = ({ compoundRule, conditionIndex, ...props }) => {
+const CompoundRuleComponent = ({
+  compoundRule,
+  conditionIndex,
+  declarativeRuleIndex,
+  ...props
+}) => {
   const dispatch = useDeclarativeRuleDispatch();
   const { conjunction, rules } = compoundRule;
 
   const onCompoundRuleConjunctionChange = event => {
     const conjunction = event.target.value;
-    dispatch({ type: "compoundRuleConjunctionChange", payload: { conjunction, conditionIndex } });
+    dispatch({
+      type: "compoundRuleConjunctionChange",
+      payload: { declarativeRuleIndex, conjunction, conditionIndex }
+    });
   };
 
   const onConditionDelete = () =>
-    dispatch({ type: "deleteCondition", payload: { conditionIndex } });
+    dispatch({ type: "deleteCondition", payload: { declarativeRuleIndex, conditionIndex } });
 
   return (
     <Box component={"div"} m={1} border={1} p={2}>
@@ -45,7 +53,12 @@ const CompoundRuleComponent = ({ compoundRule, conditionIndex, ...props }) => {
               </Grid>
             )}
             <Grid item key={index}>
-              <RuleComponent rule={rule} ruleIndex={index} conditionIndex={conditionIndex} />
+              <RuleComponent
+                rule={rule}
+                ruleIndex={index}
+                conditionIndex={conditionIndex}
+                declarativeRuleIndex={declarativeRuleIndex}
+              />
             </Grid>
           </Grid>
         ))}
@@ -53,7 +66,9 @@ const CompoundRuleComponent = ({ compoundRule, conditionIndex, ...props }) => {
       <IconButton
         Icon={AddCircleIcon}
         label={"Add new rule"}
-        onClick={() => dispatch({ type: "addNewRule", payload: { conditionIndex } })}
+        onClick={() =>
+          dispatch({ type: "addNewRule", payload: { declarativeRuleIndex, conditionIndex } })
+        }
         disabled={isEmpty(conjunction)}
       />
     </Box>

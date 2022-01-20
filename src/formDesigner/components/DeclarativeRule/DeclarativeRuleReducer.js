@@ -1,47 +1,62 @@
-import { Condition, Action, RHS, LHS, DeclarativeRule } from "rules-config";
+import { Condition, Action, RHS, LHS, DeclarativeRuleHolder } from "rules-config";
 import { isEmpty, forEach } from "lodash";
 
 const resetState = () => {
-  return new DeclarativeRule().getInitialState();
+  return DeclarativeRuleHolder.fromResource();
 };
 
-const newCondition = declarativeRule => {
-  const newState = declarativeRule.clone();
-  newState.addCondition(new Condition().getInitialCondition());
+const newCondition = (declarativeRuleHolder, { declarativeRuleIndex }) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  declarativeRule.addCondition(new Condition().getInitialCondition());
   return newState;
 };
 
-const newAction = declarativeRule => {
-  const newState = declarativeRule.clone();
-  newState.addAction(new Action());
+const newAction = (declarativeRuleHolder, { declarativeRuleIndex }) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  declarativeRule.addAction(new Action());
   return newState;
 };
 
-const conditionConjunctionChange = (declarativeRule, { conjunction, index }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[index];
+const conditionConjunctionChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, conjunction, index }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[index];
   const oldConjunction = condition.conjunction;
   condition.conjunction = oldConjunction === conjunction ? undefined : conjunction;
   return newState;
 };
 
-const compoundRuleConjunctionChange = (declarativeRule, { conjunction, conditionIndex }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const compoundRuleConjunctionChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, conjunction, conditionIndex }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   condition.compoundRule.conjunction = conjunction;
   return newState;
 };
 
-const addNewRule = (declarativeRule, { conditionIndex }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const addNewRule = (declarativeRuleHolder, { declarativeRuleIndex, conditionIndex }) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   condition.compoundRule.addEmptyRule();
   return newState;
 };
 
-const lhsChange = (declarativeRule, { ruleIndex, conditionIndex, property, value }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const lhsChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, ruleIndex, conditionIndex, property, value }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
   if (property === "type" && rule.lhs.type !== value) {
     rule.lhs = new LHS();
@@ -52,9 +67,13 @@ const lhsChange = (declarativeRule, { ruleIndex, conditionIndex, property, value
   return newState;
 };
 
-const lhsConceptChange = (declarativeRule, { ruleIndex, conditionIndex, name, uuid, dataType }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const lhsConceptChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, ruleIndex, conditionIndex, name, uuid, dataType }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
   rule.lhs.conceptName = name;
   rule.lhs.conceptUuid = uuid;
@@ -62,9 +81,13 @@ const lhsConceptChange = (declarativeRule, { ruleIndex, conditionIndex, name, uu
   return newState;
 };
 
-const rhsChange = (declarativeRule, { ruleIndex, conditionIndex, property, value }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const rhsChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, ruleIndex, conditionIndex, property, value }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
   if (property === "type" && rule.rhs.type !== value) {
     rule.rhs = new RHS();
@@ -73,9 +96,13 @@ const rhsChange = (declarativeRule, { ruleIndex, conditionIndex, property, value
   return newState;
 };
 
-const rhsConceptChange = (declarativeRule, { ruleIndex, conditionIndex, labelValues }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const rhsConceptChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, ruleIndex, conditionIndex, labelValues }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
   const answerConceptNames = [];
   const answerConceptUuids = [];
@@ -88,45 +115,63 @@ const rhsConceptChange = (declarativeRule, { ruleIndex, conditionIndex, labelVal
   return newState;
 };
 
-const operatorChange = (declarativeRule, { ruleIndex, conditionIndex, operator }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const operatorChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, ruleIndex, conditionIndex, operator }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
   rule.operator = operator;
   rule.rhs = new RHS();
   return newState;
 };
 
-const deleteCondition = (declarativeRule, { conditionIndex }) => {
-  const newState = declarativeRule.clone();
-  newState.conditions.splice(conditionIndex, 1);
+const deleteCondition = (declarativeRuleHolder, { declarativeRuleIndex, conditionIndex }) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  declarativeRule.conditions.splice(conditionIndex, 1);
   return newState;
 };
 
-const deleteRule = (declarativeRule, { ruleIndex, conditionIndex }) => {
-  const newState = declarativeRule.clone();
-  const condition = newState.conditions[conditionIndex];
+const deleteRule = (declarativeRuleHolder, { declarativeRuleIndex, ruleIndex, conditionIndex }) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
   condition.compoundRule.rules.splice(ruleIndex, 1);
   return newState;
 };
 
-const actionChange = (declarativeRule, { index, property, value }) => {
-  const newState = declarativeRule.clone();
-  const oldAction = newState.actions[index];
+const actionChange = (declarativeRuleHolder, { declarativeRuleIndex, index, property, value }) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const oldAction = declarativeRule.actions[index];
   if (property === "actionType") {
     if (oldAction.actionType !== value) {
-      newState.actions[index] = new Action();
+      declarativeRule.actions[index] = new Action();
     }
     if (isEmpty(oldAction.actionType)) {
-      newState.addAction(new Action());
+      declarativeRule.addAction(new Action());
     }
   }
-  const action = newState.actions[index];
+  const action = declarativeRule.actions[index];
   action[property] = value;
   return newState;
 };
 
-export const DeclarativeRuleReducer = (declarativeRule, action) => {
+const newDeclarativeRule = declarativeRuleHolder => {
+  const newState = declarativeRuleHolder.clone();
+  return newState.addEmptyDeclarativeRule();
+};
+
+const deleteDeclarativeRule = (declarativeRuleHolder, { declarativeRuleIndex }) => {
+  const newState = declarativeRuleHolder.clone();
+  newState.deleteAtIndex(declarativeRuleIndex);
+  return newState;
+};
+
+export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
   const actionFns = {
     newCondition: newCondition,
     newAction: newAction,
@@ -141,10 +186,12 @@ export const DeclarativeRuleReducer = (declarativeRule, action) => {
     deleteCondition: deleteCondition,
     deleteRule: deleteRule,
     actionChange: actionChange,
-    resetState: resetState
+    resetState: resetState,
+    newDeclarativeRule: newDeclarativeRule,
+    deleteDeclarativeRule: deleteDeclarativeRule
   };
-  const actionFn = actionFns[action.type] || (() => declarativeRule);
-  const newState = actionFn(declarativeRule, action.payload);
+  const actionFn = actionFns[action.type] || (() => declarativeRuleHolder);
+  const newState = actionFn(declarativeRuleHolder, action.payload);
   action.payload.updateProps(newState);
   return newState;
 };

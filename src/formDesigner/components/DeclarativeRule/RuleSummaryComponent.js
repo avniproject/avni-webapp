@@ -1,17 +1,19 @@
 import React, { Fragment } from "react";
 import { isEmpty, map, zip, toUpper } from "lodash";
-import { Box, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Chip from "@material-ui/core/Chip";
 
-const RuleSummaryComponent = ({ summary }) => {
+const RuleSummaryComponent = ({ summary, ruleNumber, displayRuleCounts }) => {
   if (isEmpty(summary)) return null;
 
   const { actionSummary, ruleSummary, conjunctions } = summary;
   return (
-    <Box component={"div"} m={1} p={1} border={1}>
-      <Typography gutterBottom variant={"subtitle1"}>
-        {"Summary"}
-      </Typography>
+    <Fragment>
+      {displayRuleCounts && (
+        <Typography gutterBottom variant={"subtitle2"}>
+          {`Rule ${ruleNumber}`}
+        </Typography>
+      )}
       <ul>
         {map(actionSummary, as => (
           <li>{as}</li>
@@ -23,7 +25,7 @@ const RuleSummaryComponent = ({ summary }) => {
           </Fragment>
         ))}
       </ul>
-    </Box>
+    </Fragment>
   );
 };
 

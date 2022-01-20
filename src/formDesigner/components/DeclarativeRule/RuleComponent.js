@@ -9,10 +9,10 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Colors from "../../../dataEntryApp/Colors";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 
-const RuleComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
+const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const onRuleDelete = () =>
-    dispatch({ type: "deleteRule", payload: { ruleIndex, conditionIndex } });
+    dispatch({ type: "deleteRule", payload: { declarativeRuleIndex, ruleIndex, conditionIndex } });
 
   return (
     <Box component={"div"} p={2} mb={1} border={1}>
@@ -27,10 +27,25 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
         <Grid item>
           <div>{"The value of"}</div>
         </Grid>
-        <LHSComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} />
-        <OperatorComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} />
+        <LHSComponent
+          rule={rule}
+          ruleIndex={ruleIndex}
+          conditionIndex={conditionIndex}
+          declarativeRuleIndex={declarativeRuleIndex}
+        />
+        <OperatorComponent
+          rule={rule}
+          ruleIndex={ruleIndex}
+          conditionIndex={conditionIndex}
+          declarativeRuleIndex={declarativeRuleIndex}
+        />
         {rule.isRhsRequired() ? (
-          <RHSComponent rule={rule} ruleIndex={ruleIndex} conditionIndex={conditionIndex} />
+          <RHSComponent
+            rule={rule}
+            ruleIndex={ruleIndex}
+            conditionIndex={conditionIndex}
+            declarativeRuleIndex={declarativeRuleIndex}
+          />
         ) : null}
       </Grid>
     </Box>

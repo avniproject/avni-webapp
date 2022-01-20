@@ -10,7 +10,7 @@ import InputField from "./InputField";
 import MiddleText from "./MiddleText";
 import { findOrDefault } from "../../util";
 
-const ActionComponent = ({ action, index, ...props }) => {
+const ActionComponent = ({ action, index, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const types = map(Action.actionTypes, (v, k) => ({ value: v, label: startCase(k) }));
   const selectedType = get(action, "actionType");
@@ -20,12 +20,12 @@ const ActionComponent = ({ action, index, ...props }) => {
   }));
 
   const onActionChange = (property, value) => {
-    dispatch({ type: "actionChange", payload: { index, property, value } });
+    dispatch({ type: "actionChange", payload: { declarativeRuleIndex, index, property, value } });
   };
 
   const onAnswerToSkipChange = (property, labelValues) => {
     const value = map(labelValues, ({ label }) => label);
-    dispatch({ type: "actionChange", payload: { index, property, value } });
+    dispatch({ type: "actionChange", payload: { declarativeRuleIndex, index, property, value } });
   };
 
   return (

@@ -7,13 +7,16 @@ import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import ConceptSearch from "./ConceptSearch";
 import { findOrDefault } from "../../util";
 
-const LHSComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
+const LHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const types = map(LHS.types, (v, k) => ({ value: v, label: startCase(k) }));
   const scopes = map(LHS.scopes, (v, k) => ({ value: v, label: startCase(k) }));
   const { lhs } = rule;
   const onLHSChange = (property, value) => {
-    dispatch({ type: "lhsChange", payload: { ruleIndex, conditionIndex, property, value } });
+    dispatch({
+      type: "lhsChange",
+      payload: { declarativeRuleIndex, ruleIndex, conditionIndex, property, value }
+    });
   };
   const selectedConceptOption = {
     label: lhs.conceptName,
@@ -35,11 +38,12 @@ const LHSComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
         <Grid item container xs={6} alignItems={"center"} direction={"row"}>
           <Grid item xs={6}>
             <ConceptSearch
-              value={selectedConceptOption}
+              placeholder={"Type to search concept"}
+              value={lhs.conceptName ? selectedConceptOption : null}
               onChange={event =>
                 dispatch({
                   type: "lhsConceptChange",
-                  payload: { ruleIndex, conditionIndex, ...event.value }
+                  payload: { declarativeRuleIndex, ruleIndex, conditionIndex, ...event.value }
                 })
               }
               nonSupportedTypes={["NA"]}

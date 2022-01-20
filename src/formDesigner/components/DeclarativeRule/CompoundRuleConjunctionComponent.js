@@ -18,7 +18,7 @@ const CompoundRuleConjunctionComponent = ({ onConjunctionChange, value, ...props
 
   return (
     <RadioGroup row aria-label="position" name="position">
-      <RadioGroup row aria-label="conjunction" defaultValue={value}>
+      <RadioGroup row aria-label="conjunction" value={value || ""}>
         <Conjunction
           label={"Match all of the below"}
           value={CompoundRule.conjunctions.And}

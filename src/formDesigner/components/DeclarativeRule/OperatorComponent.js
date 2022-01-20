@@ -6,13 +6,16 @@ import Select from "react-select";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import { findOrDefault } from "../../util";
 
-const OperatorComponent = ({ rule, ruleIndex, conditionIndex, ...props }) => {
+const OperatorComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
 
   const operators = map(Rule.operators, (v, k) => ({ value: v, label: startCase(k) }));
 
   const onOperatorChange = operator => {
-    dispatch({ type: "operatorChange", payload: { ruleIndex, conditionIndex, operator } });
+    dispatch({
+      type: "operatorChange",
+      payload: { declarativeRuleIndex, ruleIndex, conditionIndex, operator }
+    });
   };
 
   return (
