@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import Grid from "@material-ui/core/Grid";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
-import { map, startCase, get, includes, zip, flatten, toNumber } from "lodash";
-import { RHS, LHS, Rule } from "rules-config";
+import { map, startCase, get, zip, flatten, toNumber } from "lodash";
+import { RHS, Rule } from "rules-config";
 import Select from "react-select";
 import { inlineConceptDataType } from "../../common/constants";
 import ConceptSearch from "./ConceptSearch";
@@ -14,7 +14,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
   const { rhs, operator } = rule;
   const types = map(RHS.types, (v, k) => ({ value: v, label: startCase(k) }));
   const selectedType = get(rhs, "type");
-  const isValueNumeric = includes(LHS.numericRHSValueTypes, rule.lhs.type);
+  const rhsValueType = rule.getRhsValueType();
   const selectedTypeOption = findOrDefault(types, ({ value }) => value === selectedType, null);
   const onRHSChange = (property, value) => {
     dispatch({
@@ -60,12 +60,12 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
       {selectedType === RHS.types.Value ? (
         <Grid item xs={3}>
           <InputField
-            type={isValueNumeric ? "number" : "text"}
+            type={rhsValueType}
             variant="outlined"
             value={rhs.value}
             onChange={event => {
               const value = event.target.value;
-              onRHSChange("value", isValueNumeric ? toNumber(value) : value);
+              onRHSChange("value", rhsValueType === "number" ? toNumber(value) : value);
             }}
           />
         </Grid>

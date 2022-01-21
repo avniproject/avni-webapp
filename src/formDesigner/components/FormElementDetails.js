@@ -184,6 +184,9 @@ function FormElementDetails(props) {
       {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
         <div style={{ color: "red" }}>Please enter name</div>
       )}
+      {get(props.formElementData, "errorMessage.ruleError") && (
+        <div style={{ color: "red" }}>Please check the rule validation errors</div>
+      )}
       <FormControl fullWidth>
         <AvniFormLabel label={t("Question")} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} />
         <Input

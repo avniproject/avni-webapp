@@ -11,16 +11,23 @@ import { Box, Typography } from "@material-ui/core";
 import DeclarativeRuleContext from "./DeclarativeRuleContext";
 import { DeclarativeRuleReducer } from "./DeclarativeRuleReducer";
 
-const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, ...props }) => {
+const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, error, ...props }) => {
   if (!FeatureToggle.ENABLE_DECLARATIVE_RULE) return null;
 
   const initialState = DeclarativeRuleHolder.fromResource(ruleJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(DeclarativeRuleReducer, initialState);
-  const [summaries, setSummaries] = useState(declarativeRuleHolder.generateRuleSummary());
+  const [validationError, setValidationError] = useState(error);
+  const summary = isEmpty(validationError) ? declarativeRuleHolder.generateRuleSummary() : null;
+  const [summaries, setSummaries] = useState(summary);
   const { declarativeRules } = declarativeRuleHolder;
 
+  const updateProps = state => {
+    setValidationError();
+    const value = state.isEmpty() ? null : state.declarativeRules;
+    onValueChange(value);
+  };
+
   const dispatch = ({ type, payload = {} }) => {
-    const updateProps = newState => onValueChange(newState);
     dispatcher({ type, payload: { ...payload, updateProps } });
   };
 
@@ -31,13 +38,18 @@ const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, ...pr
     }
   }, [jsCode]);
 
-  const onOk = () => {
-    onValueChange(declarativeRuleHolder);
-    setSummaries(declarativeRuleHolder.generateRuleSummary());
-    updateJsCode(declarativeRuleHolder);
+  const onValidateAndGenerateRule = () => {
+    const errorMessage = declarativeRuleHolder.validateAndGetError();
+    if (isEmpty(errorMessage)) {
+      updateProps(declarativeRuleHolder);
+      setSummaries(declarativeRuleHolder.generateRuleSummary());
+      updateJsCode(declarativeRuleHolder);
+    } else {
+      setValidationError(errorMessage);
+    }
   };
 
-  console.log(JSON.stringify(declarativeRuleHolder, null, 2));
+  console.log(JSON.stringify(ruleJson, null, 2));
 
   return (
     <DeclarativeRuleContext.Provider
@@ -46,6 +58,7 @@ const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, ...pr
         dispatch: dispatch
       }}
     >
+      {!isEmpty(validationError) && <div style={{ color: "red" }}>{validationError}</div>}
       {!isEmpty(summaries) && (
         <Box component={"div"} mb={1} p={2} border={1}>
           <Typography gutterBottom variant={"subtitle1"}>
@@ -74,10 +87,10 @@ const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, ...pr
           style={{ marginTop: 20, marginBottom: 10 }}
           variant="contained"
           color={"primary"}
-          onClick={onOk}
+          onClick={onValidateAndGenerateRule}
           disabled={declarativeRuleHolder.isPartiallyEmpty()}
         >
-          {"Ok"}
+          {"Validate and generate rule"}
         </Button>
       </div>
     </DeclarativeRuleContext.Provider>

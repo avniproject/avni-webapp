@@ -24,6 +24,7 @@ import FormLevelRules from "../components/FormLevelRules";
 import { Audit } from "../components/Audit";
 import StaticFormElementGroup from "../components/StaticFormElementGroup";
 import { alphabeticalSort, moveDown, moveUp } from "./CreateEditConcept";
+import { DeclarativeRuleHolder } from "rules-config";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -837,6 +838,8 @@ class FormDetails extends Component {
                 fe.errorMessage[key] = false;
               });
             }
+            const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(fe.ruleJson);
+            const validationError = declarativeRuleHolder.validateAndGetError();
             if (
               !fe.voided &&
               (fe.name === "" ||
@@ -847,7 +850,8 @@ class FormDetails extends Component {
                   parseInt(fe.keyValues.durationLimitInSecs) < 0) ||
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0) ||
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0) ||
-                !areValidFormatValuesValid(fe))
+                !areValidFormatValuesValid(fe) ||
+                !_.isEmpty(validationError))
             ) {
               numberElementError = numberElementError + 1;
               fe.error = true;
@@ -864,6 +868,11 @@ class FormDetails extends Component {
               if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0)
                 fe.errorMessage.maxWidth = true;
               if (!areValidFormatValuesValid(fe)) fe.errorMessage.validFormat = true;
+              if (!_.isEmpty(validationError)) {
+                fe.errorMessage.ruleError = validationError;
+              }
+            } else if (!declarativeRuleHolder.isEmpty()) {
+              fe.rule = declarativeRuleHolder.generateViewFilterRule(this.getEntityNameForRules());
             }
           });
           if (groupError || group.error) {

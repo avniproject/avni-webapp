@@ -5,7 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
-import { isEqual } from "lodash";
+import { isEqual, get } from "lodash";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
@@ -121,6 +121,7 @@ function FormElementTabs(props) {
             )
           }
           jsCode={props.formElementData.rule}
+          error={get(props.formElementData, "errorMessage.ruleError")}
         />
         <Editor
           value={props.formElementData.rule || sampleFormElementRule(props.entityName)}
