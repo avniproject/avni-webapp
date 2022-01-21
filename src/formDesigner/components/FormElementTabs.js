@@ -68,7 +68,7 @@ function FormElementTabs(props) {
     const warningMessage =
       "Editing the rule will reset the declarative rule. Are you sure you want to edit it?";
     const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(
-      props.formElementData.ruleJson
+      props.formElementData.declarativeRule
     );
     if (declarativeRuleHolder.isEmpty()) {
       props.updateSkipLogicRule(props.groupIndex, props.index, event);
@@ -109,7 +109,7 @@ function FormElementTabs(props) {
           }}
         > */}
         <DeclarativeRules
-          ruleJson={props.formElementData.ruleJson}
+          rulesJson={props.formElementData.declarativeRule}
           onValueChange={jsonData =>
             props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)
           }

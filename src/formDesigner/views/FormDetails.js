@@ -306,7 +306,7 @@ class FormDetails extends Component {
   updateSkipLogicJSON = (index, elementIndex, value) => {
     this.setState(
       produce(draft => {
-        draft.form.formElementGroups[index].formElements[elementIndex]["ruleJson"] = value;
+        draft.form.formElementGroups[index].formElements[elementIndex]["declarativeRule"] = value;
         draft.detectBrowserCloseEvent = true;
       })
     );
@@ -838,7 +838,7 @@ class FormDetails extends Component {
                 fe.errorMessage[key] = false;
               });
             }
-            const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(fe.ruleJson);
+            const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(fe.declarativeRule);
             const validationError = declarativeRuleHolder.validateAndGetError();
             if (
               !fe.voided &&

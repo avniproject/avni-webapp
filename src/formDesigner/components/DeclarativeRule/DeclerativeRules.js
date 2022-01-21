@@ -11,10 +11,10 @@ import { Box, Typography } from "@material-ui/core";
 import DeclarativeRuleContext from "./DeclarativeRuleContext";
 import { DeclarativeRuleReducer } from "./DeclarativeRuleReducer";
 
-const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, error, ...props }) => {
+const DeclarativeRules = ({ rulesJson, onValueChange, jsCode, updateJsCode, error, ...props }) => {
   if (!FeatureToggle.ENABLE_DECLARATIVE_RULE) return null;
 
-  const initialState = DeclarativeRuleHolder.fromResource(ruleJson);
+  const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(DeclarativeRuleReducer, initialState);
   const [validationError, setValidationError] = useState(error);
   const summary = isEmpty(validationError) ? declarativeRuleHolder.generateRuleSummary() : null;
@@ -32,7 +32,7 @@ const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, error
   };
 
   useEffect(() => {
-    if (isEmpty(ruleJson)) {
+    if (isEmpty(rulesJson)) {
       dispatch({ type: "resetState" });
       setSummaries();
     }
@@ -48,8 +48,6 @@ const DeclarativeRules = ({ ruleJson, onValueChange, jsCode, updateJsCode, error
       setValidationError(errorMessage);
     }
   };
-
-  console.log(JSON.stringify(ruleJson, null, 2));
 
   return (
     <DeclarativeRuleContext.Provider
