@@ -304,6 +304,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 formElementContract.setType(formElement.getType());
                 formElementContract.setOrganisationId(formElement.getOrganisationId());
                 formElementContract.setRule(formElement.getRule());
+                formElementContract.setDeclarativeRule(formElement.getDeclarativeRule());
                 if (formElement.getValidFormat() != null) {
                     formElementContract.setValidFormat(new FormatContract(formElement.getValidFormat().getRegex(),
                             formElement.getValidFormat().getDescriptionKey()));

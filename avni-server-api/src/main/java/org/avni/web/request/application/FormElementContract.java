@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.avni.application.FormElement;
 import org.avni.application.Format;
 import org.avni.application.KeyValues;
+import org.avni.domain.DeclarativeRule;
 import org.avni.web.request.ConceptContract;
 import org.avni.web.request.ReferenceDataContract;
 import org.avni.web.request.FormatContract;
 import org.avni.common.ValidationResult;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type", "rule"})
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type", "rule", "declarativeRule"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
@@ -21,6 +22,7 @@ public class FormElementContract extends ReferenceDataContract {
     private FormatContract validFormat;
     private Long organisationId;
     private String rule;
+    private DeclarativeRule declarativeRule;
 
     public FormElementContract() {
     }
@@ -128,6 +130,7 @@ public class FormElementContract extends ReferenceDataContract {
         conceptContract.setName(formElement.getConcept().getName());
         conceptContract.setUuid(formElement.getConcept().getUuid());
         feContract.setConcept(conceptContract);
+        feContract.setDeclarativeRule(formElement.getDeclarativeRule());
         return feContract;
     }
 
@@ -137,6 +140,14 @@ public class FormElementContract extends ReferenceDataContract {
 
     public void setRule(String rule) {
         this.rule = rule;
+    }
+
+    public DeclarativeRule getDeclarativeRule() {
+        return declarativeRule;
+    }
+
+    public void setDeclarativeRule(DeclarativeRule declarativeRule) {
+        this.declarativeRule = declarativeRule;
     }
 
     @Override

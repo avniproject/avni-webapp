@@ -6,6 +6,7 @@ import org.avni.application.Format;
 import org.avni.application.KeyValues;
 import org.avni.common.ValidationResult;
 import org.avni.domain.Concept;
+import org.avni.domain.DeclarativeRule;
 import org.avni.web.request.ConceptContract;
 import org.avni.web.validation.ValidationException;
 
@@ -61,6 +62,11 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
 
     public FormElementBuilder withRule(String rule) {
         this.get().setRule(rule);
+        return this;
+    }
+
+    public FormElementBuilder withDeclarativeRule(DeclarativeRule declarativeRule) {
+        this.get().setDeclarativeRule(declarativeRule);
         return this;
     }
 

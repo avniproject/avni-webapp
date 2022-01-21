@@ -1,5 +1,6 @@
 package org.avni.application;
 
+import org.avni.domain.DeclarativeRule;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
@@ -59,6 +60,10 @@ public class FormElement extends OrganisationAwareEntity {
 
     @Column(name = "rule")
     private String rule;
+
+    @Column(name = "declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule declarativeRule;
 
     public String getName() {
         return name;
@@ -190,5 +195,13 @@ public class FormElement extends OrganisationAwareEntity {
 
     public void setRule(String rule) {
         this.rule = rule;
+    }
+
+    public DeclarativeRule getDeclarativeRule() {
+        return declarativeRule;
+    }
+
+    public void setDeclarativeRule(DeclarativeRule declarativeRule) {
+        this.declarativeRule = declarativeRule;
     }
 }
