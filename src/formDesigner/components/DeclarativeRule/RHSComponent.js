@@ -12,9 +12,14 @@ import { findOrDefault } from "../../util";
 const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const { rhs, operator } = rule;
-  const types = map(RHS.types, (v, k) => ({ value: v, label: startCase(k) }));
+  const types = map(rule.getApplicableRHSTypes(), (v, k) => ({ value: v, label: startCase(k) }));
   const selectedType = get(rhs, "type");
   const rhsValueType = rule.getRhsValueType();
+  const selectedGenderValue = findOrDefault(
+    RHS.genderOptions,
+    ({ value }) => value === rhs.value,
+    null
+  );
   const selectedTypeOption = findOrDefault(types, ({ value }) => value === selectedType, null);
   const onRHSChange = (property, value) => {
     dispatch({
@@ -59,15 +64,25 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
       ) : null}
       {selectedType === RHS.types.Value ? (
         <Grid item xs={3}>
-          <InputField
-            type={rhsValueType}
-            variant="outlined"
-            value={rhs.value}
-            onChange={event => {
-              const value = event.target.value;
-              onRHSChange("value", rhsValueType === "number" ? toNumber(value) : value);
-            }}
-          />
+          {rule.lhs.isGender() ? (
+            <Select
+              placeholder="Select gender"
+              value={selectedGenderValue}
+              options={RHS.genderOptions}
+              style={{ width: "auto" }}
+              onChange={event => onRHSChange("value", event.value)}
+            />
+          ) : (
+            <InputField
+              type={rhsValueType}
+              variant="outlined"
+              value={rhs.value}
+              onChange={event => {
+                const value = event.target.value;
+                onRHSChange("value", rhsValueType === "number" ? toNumber(value) : value);
+              }}
+            />
+          )}
         </Grid>
       ) : null}
     </Fragment>

@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import Grid from "@material-ui/core/Grid";
-import { Rule } from "rules-config";
 import { map, startCase } from "lodash";
 import Select from "react-select";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
@@ -9,7 +8,10 @@ import { findOrDefault } from "../../util";
 const OperatorComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
 
-  const operators = map(Rule.operators, (v, k) => ({ value: v, label: startCase(k) }));
+  const operators = map(rule.getApplicableOperators(), (v, k) => ({
+    value: v,
+    label: startCase(k)
+  }));
 
   const onOperatorChange = operator => {
     dispatch({
