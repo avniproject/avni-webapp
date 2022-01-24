@@ -186,7 +186,9 @@ function FormElementGroup(props) {
           handleInlineSubjectAttributes: props.handleInlineSubjectAttributes,
           handleInlinePhoneNumberAttributes: props.handleInlinePhoneNumberAttributes,
           entityName: props.entityName,
-          disableFormElement: props.disableGroup
+          disableFormElement: props.disableGroup,
+          subjectType: props.subjectType,
+          formType: props.formType
         };
         formElements.push(
           <Draggable

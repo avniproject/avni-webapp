@@ -11,7 +11,16 @@ import { Box, Typography } from "@material-ui/core";
 import DeclarativeRuleContext from "./DeclarativeRuleContext";
 import { DeclarativeRuleReducer } from "./DeclarativeRuleReducer";
 
-const DeclarativeRules = ({ rulesJson, onValueChange, jsCode, updateJsCode, error, ...props }) => {
+const DeclarativeRules = ({
+  rulesJson,
+  onValueChange,
+  jsCode,
+  updateJsCode,
+  error,
+  subjectType,
+  formType,
+  ...props
+}) => {
   if (!FeatureToggle.ENABLE_DECLARATIVE_RULE) return null;
 
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
@@ -53,7 +62,9 @@ const DeclarativeRules = ({ rulesJson, onValueChange, jsCode, updateJsCode, erro
     <DeclarativeRuleContext.Provider
       value={{
         state: declarativeRuleHolder,
-        dispatch: dispatch
+        dispatch: dispatch,
+        formType: formType,
+        subjectType: subjectType
       }}
     >
       {!isEmpty(validationError) && <div style={{ color: "red" }}>{validationError}</div>}

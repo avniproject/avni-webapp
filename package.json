@@ -69,7 +69,7 @@
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
-    "rules-config": "github:openchs/rules-config#1c910673e63e89a6f9fbd40f902d40736c82e56e",
+    "rules-config": "github:openchs/rules-config#869ecff375a920c8f13239b3728a228cb49977ec",
     "uuid": "^3.3.2"
   },
   "scripts": {

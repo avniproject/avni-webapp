@@ -1,5 +1,5 @@
 import React from "react";
-import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
+import { useDeclarativeRuleDispatch, useDeclarativeRuleState } from "./DeclarativeRuleContext";
 import { map, startCase, get } from "lodash";
 import { Action } from "rules-config";
 import { Grid } from "@material-ui/core";
@@ -8,11 +8,14 @@ import { inlineConceptDataType } from "../../common/constants";
 import ConceptSearch from "./ConceptSearch";
 import InputField from "./InputField";
 import MiddleText from "./MiddleText";
-import { findOrDefault } from "../../util";
 
 const ActionComponent = ({ action, index, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
-  const types = map(Action.actionTypes, (v, k) => ({ value: v, label: startCase(k) }));
+  const state = useDeclarativeRuleState();
+  const types = map(state.getApplicableViewFilterActions(), (v, k) => ({
+    value: v,
+    label: startCase(k)
+  }));
   const selectedType = get(action, "actionType");
   const selectedAnswersToSkipOptions = map(action.answersToSkip, name => ({
     label: name,
@@ -33,7 +36,7 @@ const ActionComponent = ({ action, index, declarativeRuleIndex, ...props }) => {
       <Grid item xs={3}>
         <Select
           placeholder="Select action type"
-          value={findOrDefault(types, ({ value }) => value === selectedType, null)}
+          value={selectedType ? { value: selectedType, label: startCase(selectedType) } : null}
           options={types}
           style={{ width: "auto" }}
           onChange={event => onActionChange("actionType", event.value)}
@@ -70,7 +73,7 @@ const ActionComponent = ({ action, index, declarativeRuleIndex, ...props }) => {
             <InputField
               fullWidth
               variant="outlined"
-              value={get(action, "ValidationError")}
+              value={get(action, "validationError")}
               onChange={event => onActionChange("validationError", event.target.value)}
             />
           </Grid>

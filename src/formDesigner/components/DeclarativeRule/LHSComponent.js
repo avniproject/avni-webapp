@@ -3,14 +3,20 @@ import { map, startCase } from "lodash";
 import { LHS } from "rules-config";
 import Select from "react-select";
 import { Grid } from "@material-ui/core";
-import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
+import { getFormType, getIsPerson, useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 import ConceptSearch from "./ConceptSearch";
 import { findOrDefault } from "../../util";
 
 const LHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
-  const types = map(LHS.types, (v, k) => ({ value: v, label: startCase(k) }));
-  const scopes = map(LHS.scopes, (v, k) => ({ value: v, label: startCase(k) }));
+  const types = map(LHS.getTypesBySubjectType(getIsPerson()), (v, k) => ({
+    value: v,
+    label: startCase(k)
+  }));
+  const scopes = map(LHS.getScopeByFormType(getFormType()), (v, k) => ({
+    value: v,
+    label: startCase(k)
+  }));
   const { lhs } = rule;
   const onLHSChange = (property, value) => {
     dispatch({

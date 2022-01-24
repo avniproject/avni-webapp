@@ -463,7 +463,9 @@ class FormDetails extends Component {
           handleInlinePhoneNumberAttributes: this.handleInlinePhoneNumberAttributes,
           updateFormElementGroupRule: this.updateFormElementGroupRule,
           entityName: this.getEntityNameForRules(),
-          disableGroup: this.state.disableForm
+          disableGroup: this.state.disableForm,
+          subjectType: this.state.subjectType,
+          formType: this.state.formType
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }

@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
-import { map, startCase, get, zip, flatten, toNumber } from "lodash";
+import { map, startCase, get, zip, flatten, toNumber, size } from "lodash";
 import { RHS, Rule } from "rules-config";
 import Select from "react-select";
 import { inlineConceptDataType } from "../../common/constants";
@@ -27,6 +27,12 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
       payload: { declarativeRuleIndex, ruleIndex, conditionIndex, property, value }
     });
   };
+
+  useEffect(() => {
+    if (size(types) === 1) {
+      onRHSChange("type", types[0].value);
+    }
+  }, [rule.operator]);
 
   const isMulti = operator === Rule.operators.ContainsAnyAnswerConceptName;
   const selectedConceptAnswerOptions = map(
