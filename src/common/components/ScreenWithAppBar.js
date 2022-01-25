@@ -177,7 +177,6 @@ const ScreenWithAppBar = props => {
         title={props.appbarTitle}
         handleDrawer={handleDrawer}
         enableLeftMenuButton={props.enableLeftMenuButton}
-        displayReviewBanner={props.displayReviewBanner}
       />
       {props.enableLeftMenuButton &&
         applyLeftMenu(

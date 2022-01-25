@@ -72,7 +72,7 @@ const Homepage = ({ user }) => {
   };
 
   return (
-    <ScreenWithAppBar appbarTitle={"Avni Web Console"} displayReviewBanner={true}>
+    <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin", "supervisor_account")}
         {renderCard("/#/appdesigner", "App Designer", "architecture")}
