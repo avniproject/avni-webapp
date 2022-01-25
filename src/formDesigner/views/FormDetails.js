@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, includes, isEmpty } from "lodash";
+import _, { cloneDeep, get, includes, isEmpty } from "lodash";
 import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -25,6 +25,7 @@ import { Audit } from "../components/Audit";
 import StaticFormElementGroup from "../components/StaticFormElementGroup";
 import { alphabeticalSort, moveDown, moveUp } from "./CreateEditConcept";
 import { DeclarativeRuleHolder } from "rules-config";
+import api from "../../dataEntryApp/api";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -123,6 +124,11 @@ class FormDetails extends Component {
       let subjectTypes = _.get(response, "data._embedded.subjectType", []);
       const groupSubjectTypes = _.filter(subjectTypes, st => !!st.group);
       this.setState({ groupSubjectTypes });
+    });
+
+    api.fetchOrganisationConfigs().then(config => {
+      const isRuleDesignerEnabled = get(config, "organisationConfig.enableRuleDesigner", false);
+      this.setState({ isRuleDesignerEnabled });
     });
 
     return this.getForm();
@@ -465,7 +471,8 @@ class FormDetails extends Component {
           entityName: this.getEntityNameForRules(),
           disableGroup: this.state.disableForm,
           subjectType: this.state.subjectType,
-          formType: this.state.formType
+          formType: this.state.formType,
+          isRuleDesignerEnabled: this.state.isRuleDesignerEnabled
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }

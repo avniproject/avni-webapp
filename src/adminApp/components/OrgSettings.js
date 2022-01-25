@@ -57,7 +57,8 @@ export const OrgSettings = () => {
     hideDateOfBirth: "hideDateOfBirth",
     enableComments: "enableComments",
     enableCannedReports: "enableCannedReports",
-    showSummaryButton: "showSummaryButton"
+    showSummaryButton: "showSummaryButton",
+    enableRuleDesigner: "enableRuleDesigner"
   };
 
   return orgSettings ? (
@@ -154,6 +155,20 @@ export const OrgSettings = () => {
             }
             name="Show summary button"
             toolTipKey={"ADMIN_SHOW_SUMMARY_BUTTON"}
+          />
+        </Grid>
+        <Grid item>
+          <AvniSwitch
+            switchFirst
+            checked={orgSettings[organisationConfigSettingKeys.enableRuleDesigner]}
+            onChange={event =>
+              onSettingsChange(
+                organisationConfigSettingKeys.enableRuleDesigner,
+                event.target.checked
+              )
+            }
+            name="Enable rule designer"
+            toolTipKey={"ADMIN_ENABLE_RULE_DESIGNER"}
           />
         </Grid>
       </Grid>

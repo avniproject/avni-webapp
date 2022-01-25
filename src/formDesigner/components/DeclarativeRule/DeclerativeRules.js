@@ -6,7 +6,6 @@ import Button from "@material-ui/core/Button";
 import { DeclarativeRuleHolder } from "rules-config";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import IconButton from "../IconButton";
-import FeatureToggle from "../../FeatureToggle";
 import { Box, Typography } from "@material-ui/core";
 import DeclarativeRuleContext from "./DeclarativeRuleContext";
 import { DeclarativeRuleReducer } from "./DeclarativeRuleReducer";
@@ -19,9 +18,10 @@ const DeclarativeRules = ({
   error,
   subjectType,
   formType,
+  isRuleDesignerEnabled,
   ...props
 }) => {
-  if (!FeatureToggle.ENABLE_DECLARATIVE_RULE) return null;
+  if (!isRuleDesignerEnabled) return null;
 
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(DeclarativeRuleReducer, initialState);

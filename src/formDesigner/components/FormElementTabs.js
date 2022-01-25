@@ -124,6 +124,7 @@ function FormElementTabs(props) {
           error={get(props.formElementData, "errorMessage.ruleError")}
           subjectType={props.subjectType}
           formType={props.formType}
+          isRuleDesignerEnabled={props.isRuleDesignerEnabled}
         />
         <Editor
           value={props.formElementData.rule || sampleFormElementRule(props.entityName)}
