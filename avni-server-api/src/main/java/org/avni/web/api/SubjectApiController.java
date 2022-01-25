@@ -4,6 +4,7 @@ import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.service.ConceptService;
 import org.avni.service.LocationService;
+import org.avni.service.SubjectMigrationService;
 import org.avni.util.S;
 import org.avni.web.request.api.ApiSubjectRequest;
 import org.avni.web.request.api.RequestUtils;
@@ -32,11 +33,12 @@ public class SubjectApiController {
     private final SubjectTypeRepository subjectTypeRepository;
     private final LocationRepository locationRepository;
     private final  GenderRepository genderRepository;
+    private final SubjectMigrationService subjectMigrationService;
 
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
                                 ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
-                                LocationRepository locationRepository, GenderRepository genderRepository) {
+                                LocationRepository locationRepository, GenderRepository genderRepository, SubjectMigrationService subjectMigrationService) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
@@ -45,6 +47,7 @@ public class SubjectApiController {
         this.subjectTypeRepository = subjectTypeRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
+        this.subjectMigrationService = subjectMigrationService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -126,6 +129,7 @@ public class SubjectApiController {
         subject.setFirstName(request.getFirstName());
         subject.setLastName(request.getLastName());
         subject.setRegistrationDate(request.getRegistrationDate());
+        subjectMigrationService.markSubjectMigrationIfRequired(subject.getUuid(), addressLevel.get());
         subject.setAddressLevel(addressLevel.get());
         if (subjectType.isPerson()) {
             subject.setDateOfBirth(request.getDateOfBirth());

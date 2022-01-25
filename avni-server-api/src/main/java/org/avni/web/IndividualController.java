@@ -33,7 +33,6 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javax.websocket.server.PathParam;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -53,8 +52,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualSearchService individualSearchService;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
-    private SubjectMigrationRepository subjectMigrationRepository;
     private ScopeBasedSyncService<Individual> scopeBasedSyncService;
+    private SubjectMigrationService subjectMigrationService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -69,8 +68,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                                SubjectMigrationRepository subjectMigrationRepository,
-                                ScopeBasedSyncService<Individual> scopeBasedSyncService) {
+                                ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -83,8 +81,8 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.individualSearchService = individualSearchService;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
-        this.subjectMigrationRepository = subjectMigrationRepository;
         this.scopeBasedSyncService = scopeBasedSyncService;
+        this.subjectMigrationService = subjectMigrationService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -106,21 +104,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     private void markSubjectMigrationIfRequired(IndividualRequest individualRequest) {
-        Individual individual = individualRepository.findByUuid(individualRequest.getUuid());
-        if (individual == null) {
-            return;
-        }
-
-        AddressLevel newAddressLevel = getAddressLevel(individualRequest);
-        if (!individual.getAddressLevel().equals(newAddressLevel)) {
-            logger.info(String.format("Migrating subject with UUID %s from %s to %s", individualRequest.getUuid(), individual.getAddressLevel().getTitleLineage(), newAddressLevel.getTitleLineage()));
-            SubjectMigration subjectMigration = new SubjectMigration();
-            subjectMigration.assignUUID();
-            subjectMigration.setIndividual(individual);
-            subjectMigration.setOldAddressLevel(individual.getAddressLevel());
-            subjectMigration.setNewAddressLevel(newAddressLevel);
-            subjectMigrationRepository.save(subjectMigration);
-        }
+        subjectMigrationService.markSubjectMigrationIfRequired(individualRequest.getUuid(), getAddressLevel(individualRequest));
     }
 
     private void addObservationsFromDecisions(Individual individual, Decisions decisions) {
