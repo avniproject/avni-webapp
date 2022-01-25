@@ -2,9 +2,7 @@ package org.avni.web;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.avni.application.Form;
-import org.avni.application.FormMapping;
-import org.avni.application.KeyType;
+import org.avni.application.*;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramRepository;
@@ -12,7 +10,9 @@ import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
 import org.avni.dao.individualRelationship.IndividualRelationRepository;
+import org.avni.domain.Concept;
 import org.avni.domain.JsonObject;
+import org.avni.domain.SubjectType;
 import org.avni.service.OrganisationConfigService;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.AddressLevelTypeContract;
@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -111,5 +113,22 @@ public class OperationalModulesController {
                 .collect(Collectors.toList());
         customRegistrationLocationTypeContract.setAddressLevels(addressLevelTypeContractList);
         return customRegistrationLocationTypeContract;
+    }
+
+    @GetMapping("/web/subjectTypeMetadata")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @ResponseBody
+    public List<JsonObject> getRegistrationFormsForSubjectTypes() {
+        List<SubjectType.SubjectTypeProjection> subjectTypes = subjectTypeRepository.findAllOperational();
+        return subjectTypes.stream().map(st -> {
+            JsonObject jsonObject = new JsonObject();
+            FormMapping registrationFM = formMappingRepository.getRequiredFormMapping(st.getUuid(), null, null, FormType.IndividualProfile);
+            Form form = registrationFM.getForm();
+            Set<Concept> concepts = form.getApplicableFormElements().stream().map(FormElement::getConcept).collect(Collectors.toSet());
+            concepts.addAll(form.getDecisionConcepts());
+            jsonObject.with("subjectType", st);
+            jsonObject.with("concepts", concepts);
+            return jsonObject;
+        }).collect(Collectors.toList());
     }
 }
