@@ -27,6 +27,7 @@ import ReportCardList from "../formDesigner/components/ReportCard/ReportCardList
 import DashboardList from "../formDesigner/components/Dashboard/DashboardList";
 import Extensions from "../formDesigner/components/Extensions/Extensions";
 import RuleFailureTelemetryList from "../formDesigner/components/RuleFailureTelemetry/RuleFailureTelemetryList";
+import SearchResultFields from "../formDesigner/components/SearchResultFields/SearchResultFields";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -107,6 +108,11 @@ class OrgManagerAppDesigner extends Component {
             name="ruleFailures"
             options={{ label: "Rule Failures" }}
             list={RuleFailureTelemetryList}
+          />
+          <Resource
+            name="searchResultFields"
+            options={{ label: "Search Result Fields" }}
+            list={SearchResultFields}
           />
         </Admin>
       </React.Fragment>

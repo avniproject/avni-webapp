@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import ErrorIcon from "@material-ui/icons/Error";
 import CloseIcon from "@material-ui/icons/Close";
 import { green } from "@material-ui/core/colors";
 import IconButton from "@material-ui/core/IconButton";
@@ -10,12 +11,16 @@ import SnackbarContent from "@material-ui/core/SnackbarContent";
 import { makeStyles } from "@material-ui/core/styles";
 
 const variantIcon = {
-  success: CheckCircleIcon
+  success: CheckCircleIcon,
+  error: ErrorIcon
 };
 
 const useStyles1 = makeStyles(theme => ({
   success: {
     backgroundColor: green[600]
+  },
+  error: {
+    backgroundColor: "#d0011b"
   },
   icon: {
     fontSize: 20
@@ -82,7 +87,11 @@ export default function CustomizedSnackbar(props) {
         autoHideDuration={1000}
         onClose={handleClose}
       >
-        <MySnackbarContentWrapper onClose={handleClose} variant="success" message={props.message} />
+        <MySnackbarContentWrapper
+          onClose={handleClose}
+          variant={props.variant || "success"}
+          message={props.message}
+        />
       </Snackbar>
     </div>
   );
