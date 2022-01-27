@@ -46,18 +46,18 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   };
 
   const columnsToDisplay = [
-    ...map(flatten(customColumns), ({ name }) => ({
-      title: t(name),
-      field: name,
-      sorting: false,
-      render: row => row[name]
-    })),
     {
       title: t("name"),
       field: "fullName",
       defaultSort: "asc",
       render: rowData => renderNameWithIcon(rowData)
     },
+    ...map(flatten(customColumns), ({ name }) => ({
+      title: t(name),
+      field: name,
+      sorting: false,
+      render: row => row[name]
+    })),
     isEmpty(subjectType)
       ? {
           title: t("subjectType"),
