@@ -10,17 +10,22 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import api from "../../../dataEntryApp/api";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Select from "react-select";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
-import { Typography } from "@material-ui/core";
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Typography
+} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import Button from "@material-ui/core/Button";
-import Colors from "../../../dataEntryApp/Colors";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControl from "@material-ui/core/FormControl";
+import { DragNDropComponent } from "../../common/DragNDropComponent";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -28,20 +33,6 @@ const reorder = (list, startIndex, endIndex) => {
   result.splice(endIndex, 0, removed);
   return result;
 };
-const grid = 6;
-const getItemStyle = (isDragging, draggableStyle) => ({
-  flex: 1,
-  userSelect: "none",
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
-  cursor: "move",
-  background: isDragging ? "lightgreen" : "white",
-  ...draggableStyle
-});
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
-  padding: grid
-});
 
 const SearchResultFields = () => {
   const [state, dispatch] = useReducer(SearchFieldReducer, new SearchResultFieldState());
@@ -128,50 +119,30 @@ const SearchResultFields = () => {
     </FormControl>
   );
 
+  const renderCustomField = concept => {
+    return (
+      <List>
+        <ListItem>
+          <ListItemText primary={concept.name} />
+          <ListItemSecondaryAction>
+            <IconButton
+              onClick={() => dispatch({ type: "deleteField", payload: { uuid: concept.uuid } })}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+      </List>
+    );
+  };
+
   const renderDraggableFields = () => (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable">
-        {(provided, snapshot) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            style={getListStyle(snapshot.isDraggingOver)}
-          >
-            {map(selectedCustomFields, ({ name, uuid }, index) => (
-              <Draggable key={uuid} draggableId={uuid} index={index}>
-                {(provided, snapshot) => (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    flexWrap="wrap"
-                    justifyContent="space-between"
-                    alignItems={"center"}
-                  >
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                    >
-                      {name}
-                    </div>
-                    <Box style={{ display: snapshot.isDragging ? "none" : "block" }}>
-                      <Button
-                        size="small"
-                        onClick={() => dispatch({ type: "deleteField", payload: { uuid } })}
-                      >
-                        <DeleteIcon style={{ color: Colors.ValidationError }} />
-                      </Button>
-                    </Box>
-                  </Box>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <DragNDropComponent
+      dataList={selectedCustomFields}
+      onDragEnd={onDragEnd}
+      renderOtherSummary={concept => renderCustomField(concept)}
+      summaryDirection={"column"}
+    />
   );
 
   const renderNotConfiguredMessage = () => (
