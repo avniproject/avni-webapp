@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,32 +33,20 @@ public class IndividualSearchService {
 
     @Transactional
     public LinkedHashMap<String, Object> search(SubjectSearchRequest subjectSearchRequest) {
-        List<Object[]> searchResults = subjectSearchRepository.search(subjectSearchRequest);
+        List<Map<String, Object>> searchResults = subjectSearchRepository.search(subjectSearchRequest);
         BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest);
         return constructIndividual(searchResults, totalCount);
     }
 
-    private LinkedHashMap<String, Object> constructIndividual(List<Object[]> individualList, BigInteger totalCount) {
-        LinkedHashMap<String, Object> recordsMap=new LinkedHashMap<String, Object>();
-        List<IndividualContract> individualRecordList= individualList.stream()
-                .map(individualRecord -> {
-                    IndividualContract individualContract = new IndividualContract();
-                    individualContract.setFirstName((String) individualRecord[1]);
-                    individualContract.setLastName((String) individualRecord[2]);
-                    individualContract.setFullName((String) individualRecord[3]);
-                    if(null!=individualRecord[0] && !"".equals(individualRecord[0].toString().trim()))
-                        individualContract.setId(new Long(individualRecord[0].toString()));
-                    individualContract.setUuid((String) individualRecord[4]);
-                    individualContract.setAddressLevel((String) individualRecord[5]);
-                    individualContract.setSubjectTypeName((String) individualRecord[6]);
-                    individualContract.setGender((String) individualRecord[7]);
-                    if(null!=individualRecord[8] && !"".equals(individualRecord[8].toString().trim()))
-                        individualContract.setDateOfBirth(new LocalDate(individualRecord[8].toString()));
-                    individualContract.setEnrolments(constructEnrolments(Long.parseLong(individualRecord[0].toString().trim())));
-                    return individualContract;
+    private LinkedHashMap<String, Object> constructIndividual(List<Map<String, Object>> individualList, BigInteger totalCount) {
+        LinkedHashMap<String, Object> recordsMap = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> listOfRecords = individualList.stream()
+                .peek(individualRecord -> {
+                    Long individualId = Long.valueOf((Integer) individualRecord.get("id"));
+                    individualRecord.put("enrolments", constructEnrolments(individualId));
                 }).collect(Collectors.toList());
-        recordsMap.put("totalElements",totalCount);
-        recordsMap.put("listOfRecords",individualRecordList);
+        recordsMap.put("totalElements", totalCount);
+        recordsMap.put("listOfRecords", listOfRecords);
         return recordsMap;
     }
 

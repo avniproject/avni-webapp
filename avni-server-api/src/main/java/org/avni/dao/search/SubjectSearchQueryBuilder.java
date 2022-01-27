@@ -1,24 +1,35 @@
 package org.avni.dao.search;
 
-import org.joda.time.DateTime;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.avni.application.OrganisationConfigSettingKeys;
+import org.avni.dao.ConceptRepository;
+import org.avni.dao.SubjectTypeRepository;
+import org.avni.domain.ConceptDataType;
+import org.avni.domain.SubjectType;
+import org.avni.framework.ApplicationContextProvider;
+import org.avni.service.OrganisationConfigService;
+import org.avni.util.ObjectMapperSingleton;
+import org.avni.util.S;
 import org.avni.web.request.webapp.search.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SubjectSearchQueryBuilder {
     private final Logger logger;
 
-    private final String baseQuery = "select distinct i.id as id,\n" +
-            "                i.first_name as firstname,\n" +
-            "                i.last_name as lastname,\n" +
-            "                cast(concat_ws(' ',i.first_name,i.last_name)as text) as fullname,\n" +
-            "                i.uuid as uuid,\n" +
-            "                cast(tllv.title_lineage as text) as title_lineage,\n" +
-            "                st.name as subject_type_name,\n" +
-            "                gender.name as gender_name,\n" +
-            "                i.date_of_birth as date_of_birth\n" +
+    private final String baseQuery = "select distinct i.id as \"id\",\n" +
+            "                i.first_name as \"firstName\",\n" +
+            "                i.last_name as \"lastName\",\n" +
+            "                cast(concat_ws(' ',i.first_name,i.last_name)as text) as \"fullName\",\n" +
+            "                i.uuid as \"uuid\",\n" +
+            "                cast(tllv.title_lineage as text) as \"addressLevel\",\n" +
+            "                st.name as \"subjectTypeName\",\n" +
+            "                gender.name as \"gender\",\n" +
+            "                i.date_of_birth as \"dateOfBirth\" $CUSTOM_FIELDS\n" +
             "from individual i\n" +
             "         left outer join title_lineage_locations_view tllv on i.address_id = tllv.lowestpoint_id\n" +
             "         left outer join gender on i.gender_id = gender.id\n" +
@@ -41,6 +52,7 @@ public class SubjectSearchQueryBuilder {
     private Set<String> joinClauses = new HashSet<>();
     private Map<String, Object> parameters = new HashMap<>();
     private boolean forCount;
+    private Set<String> customFields = new HashSet<>();
 
     public SubjectSearchQueryBuilder() {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -70,10 +82,11 @@ public class SubjectSearchQueryBuilder {
                     .append(offsetLimitClause)
                     .toString();
         }
-
-        logger.debug(finalQuery);
+        String customFieldString = customFields.isEmpty() ? "" : ",\n".concat(String.join(",\n", customFields));
+        String queryWithCustomFields = finalQuery.replace(" $CUSTOM_FIELDS", customFieldString);
+        logger.debug(queryWithCustomFields);
         logger.debug(parameters.toString());
-        return new SubjectSearchQuery(finalQuery, parameters);
+        return new SubjectSearchQuery(queryWithCustomFields, parameters);
     }
 
     public SubjectSearchQueryBuilder withSubjectSearchFilter(SubjectSearchRequest request) {
@@ -90,7 +103,8 @@ public class SubjectSearchQueryBuilder {
                 .withConceptsFilter(request.getConcept())
                 .withIncludeVoidedFilter(request.getIncludeVoided())
                 .withSearchAll(request.getSearchAll())
-                .withPaginationFilters(request.getPageElement());
+                .withPaginationFilters(request.getPageElement())
+                .withCustomFields(request.getSubjectType());
     }
 
     private void addDefaultPaginationFilters() {
@@ -138,6 +152,37 @@ public class SubjectSearchQueryBuilder {
 
 
         return this;
+    }
+
+    public SubjectSearchQueryBuilder withCustomFields(String subjectType) {
+        OrganisationConfigService organisationConfigService = ApplicationContextProvider.getContext().getBean(OrganisationConfigService.class);
+        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
+        Object searchResultFields = organisationConfigService.getSettingsByKey(OrganisationConfigSettingKeys.searchResultFields.toString());
+        List<CustomSearchFields> customSearchFields = objectMapper.convertValue(searchResultFields, new TypeReference<List<CustomSearchFields>>() {});
+        if (customSearchFields.isEmpty()) {
+            return this;
+        }
+        List<CustomSearchFields> searchFieldsForSubject = getSearchFields(subjectType, customSearchFields);
+        ConceptRepository conceptRepository = ApplicationContextProvider.getContext().getBean(ConceptRepository.class);
+        searchFieldsForSubject.forEach(sf -> {
+            List<SearchResultConcepts> searchResultConcepts = sf.getSearchResultConcepts();
+            searchResultConcepts.forEach(c -> {
+                org.avni.domain.Concept concept = conceptRepository.findByUuid(c.getUuid());
+                if (concept.isCoded()) {
+                    customFields.add(String.format("multi_select_coded(i.observations -> '%s') as \"%s\"", concept.getUuid(), concept.getName()));
+                } else {
+                    customFields.add(String.format("i.observations ->> '%s' as \"%s\"", concept.getUuid(), concept.getName()));
+                }
+            });
+        });
+        return this;
+    }
+
+    private List<CustomSearchFields> getSearchFields(String subjectTypeUUID, List<CustomSearchFields> customSearchFields) {
+        if (S.isEmpty(subjectTypeUUID)) return customSearchFields;
+        SubjectTypeRepository subjectTypeRepository = ApplicationContextProvider.getContext().getBean(SubjectTypeRepository.class);
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
+        return customSearchFields.stream().filter(csf -> csf.getSubjectTypeUUID().equals(subjectType.getUuid())).collect(Collectors.toList());
     }
 
     public SubjectSearchQueryBuilder withNameFilter(String name) {
