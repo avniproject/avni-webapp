@@ -3,19 +3,32 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import { filter, get, isEmpty, join, map } from "lodash";
+import { filter, get, isEmpty, join, map, flatten, find, reject, isNil } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { Grid } from "@material-ui/core";
 import { getDisplayAge } from "../../utils/AgeUtil";
+import { useSelector } from "react-redux";
+import { selectSubjectTypes } from "../../reducers/metadataReducer";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { t } = useTranslation();
+  const subjectTypes = useSelector(selectSubjectTypes);
   const searchExtensions = filter(
     get(organisationConfigs, "organisationConfig.extensions", []),
     ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults
   );
+  const customSearchFields = get(organisationConfigs, "organisationConfig.searchResultFields", []);
+  const subjectType = find(subjectTypes, ({ uuid }) => uuid === get(searchRequest, "subjectType"));
+  const isPerson = get(subjectType, "type", "Person") === "Person";
+  const getResultConcepts = customSearchFields =>
+    map(customSearchFields, ({ searchResultConcepts }) => searchResultConcepts);
+  const customColumns = isEmpty(subjectType)
+    ? getResultConcepts(customSearchFields)
+    : getResultConcepts(
+        filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid)
+      );
 
   const renderNameWithIcon = ({ uuid, fullName, subjectTypeName }) => {
     return (
@@ -32,24 +45,36 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     );
   };
 
-  const columns = [
+  const columnsToDisplay = [
+    ...map(flatten(customColumns), ({ name }) => ({
+      title: t(name),
+      field: name,
+      sorting: false,
+      render: row => row[name]
+    })),
     {
       title: t("name"),
       field: "fullName",
       defaultSort: "asc",
       render: rowData => renderNameWithIcon(rowData)
     },
-    {
-      title: t("subjectType"),
-      field: "subjectType",
-      render: row => row.subjectTypeName && t(row.subjectTypeName)
-    },
-    { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) },
-    {
-      title: t("age"),
-      field: "dateOfBirth",
-      render: row => (row.dateOfBirth ? getDisplayAge(row.dateOfBirth, t) : "")
-    },
+    isEmpty(subjectType)
+      ? {
+          title: t("subjectType"),
+          field: "subjectType",
+          render: row => row.subjectTypeName && t(row.subjectTypeName)
+        }
+      : null,
+    isPerson
+      ? { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) }
+      : null,
+    isPerson
+      ? {
+          title: t("age"),
+          field: "dateOfBirth",
+          render: row => (row.dateOfBirth ? getDisplayAge(row.dateOfBirth, t) : "")
+        }
+      : null,
     {
       title: t("Address"),
       field: "addressLevel",
@@ -77,6 +102,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       }
     }
   ];
+  const columns = reject(columnsToDisplay, isNil);
 
   const tableRef = React.createRef();
 

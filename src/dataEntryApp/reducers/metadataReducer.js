@@ -81,6 +81,8 @@ export const selectLegacyRulesLoaded = state => state.dataEntry.metadata.rulesLo
 export const selectAllAddressLevelTypes = state =>
   defaultTo(get(state, "dataEntry.metadata.operationalModules.allAddressLevels"), []);
 
+export const selectSubjectTypes = state =>
+  get(state, "dataEntry.metadata.operationalModules.subjectTypes");
 const initialState = {
   rules: []
 };
