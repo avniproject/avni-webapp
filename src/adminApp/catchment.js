@@ -106,8 +106,6 @@ const validateCatchment = (values, allLocations) => {
   const errors = {};
   if (!allLocations) return errors;
   if (_.isEmpty(values.locationIds)) errors.locationIds = ["It can not be empty"];
-  if (!LocationUtils.areAtTheSameLevel(values.locationIds, allLocations))
-    errors.locationIds = ["All locations must be of same level"];
   return errors;
 };
 
