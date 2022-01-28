@@ -3,7 +3,7 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import { filter, get, isEmpty, join, map, flatten, find, reject, isNil } from "lodash";
+import { filter, get, isEmpty, join, map, flatten, find, reject, isNil, size } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import SubjectTypeIcon from "../../components/SubjectTypeIcon";
@@ -58,7 +58,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       sorting: false,
       render: row => row[name]
     })),
-    isEmpty(subjectType)
+    isEmpty(subjectType) && size(subjectTypes) > 1
       ? {
           title: t("subjectType"),
           field: "subjectType",
