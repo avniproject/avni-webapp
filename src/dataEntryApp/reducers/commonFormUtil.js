@@ -38,11 +38,11 @@ const onLoad = (form, entity, isIndividualRegistration = false) => {
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
+    const staticFEG = new StaticFormElementGroup(form);
+    const nextFEG = staticFEG.next();
     return {
       //for the individual subject types first group is displayed with static group so moving it to next group.
-      formElementGroup: isIndividualRegistration
-        ? new StaticFormElementGroup(form).next()
-        : new StaticFormElementGroup(form),
+      formElementGroup: isIndividualRegistration && nextFEG ? nextFEG : staticFEG,
       filteredFormElements: [],
       onSummaryPage: false,
       wizard: new Wizard(1),
