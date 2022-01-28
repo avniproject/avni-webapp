@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from "react";
 import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import { Title } from "react-admin";
-import { get, map, find, isEmpty, differenceBy } from "lodash";
+import { get, map, find, isEmpty, differenceBy, includes, filter } from "lodash";
 import http from "../../../common/utils/httpClient";
 import { SearchFieldReducer } from "./SearchFieldReducer";
 import SearchResultFieldState from "./SearchResultFieldState";
@@ -49,7 +49,10 @@ const SearchResultFields = () => {
     ({ subjectType }) => subjectType.uuid === selectedSubjectTypeUUID
   );
   const selectedCustomFields = state.getFieldsForSelectedSubjectType();
-  const allConcepts = get(selectedSubjectTypeMetadata, "concepts");
+  const allowedDataTypes = ["Numeric", "Text", "Coded", "Id"];
+  const allConcepts = filter(get(selectedSubjectTypeMetadata, "concepts", []), ({ dataType }) =>
+    includes(allowedDataTypes, dataType)
+  );
   const possibleOptions = differenceBy(allConcepts, selectedCustomFields, "uuid");
 
   useEffect(() => {
