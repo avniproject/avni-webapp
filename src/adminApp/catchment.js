@@ -23,7 +23,6 @@ import {
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import { LineBreak } from "../common/components/utils";
-import LocationUtils from "./LocationUtils";
 import _ from "lodash";
 import { Title } from "./components/Title";
 import Chip from "@material-ui/core/Chip";
