@@ -49,7 +49,7 @@ const SearchResultFields = () => {
     ({ subjectType }) => subjectType.uuid === selectedSubjectTypeUUID
   );
   const selectedCustomFields = state.getFieldsForSelectedSubjectType();
-  const allowedDataTypes = ["Numeric", "Text", "Coded", "Id"];
+  const allowedDataTypes = ["Numeric", "Text", "Coded", "Id", "Date"];
   const allConcepts = filter(get(selectedSubjectTypeMetadata, "concepts", []), ({ dataType }) =>
     includes(allowedDataTypes, dataType)
   );
