@@ -74,6 +74,11 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Search Filters" }}
             list={WithProps({ organisation, filename: "SearchFilter.md" }, customFilters)}
           />
+          <Resource
+            name="searchResultFields"
+            options={{ label: "Search Result Fields" }}
+            list={SearchResultFields}
+          />
           <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
           <Resource name={"checklist"} options={{ label: "Checklist" }} list={ChecklistDetails} />
           <Resource
@@ -108,11 +113,6 @@ class OrgManagerAppDesigner extends Component {
             name="ruleFailures"
             options={{ label: "Rule Failures" }}
             list={RuleFailureTelemetryList}
-          />
-          <Resource
-            name="searchResultFields"
-            options={{ label: "Search Result Fields" }}
-            list={SearchResultFields}
           />
         </Admin>
       </React.Fragment>
