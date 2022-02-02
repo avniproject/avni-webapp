@@ -170,6 +170,8 @@ public class SubjectSearchQueryBuilder {
                 org.avni.domain.Concept concept = conceptRepository.findByUuid(c.getUuid());
                 if (concept.isCoded()) {
                     customFields.add(String.format("multi_select_coded(i.observations -> '%s') as \"%s\"", concept.getUuid(), concept.getName()));
+                } else if (concept.getDataType().equals(ConceptDataType.Date.toString())) {
+                    customFields.add(String.format("cast(i.observations ->> '%s' as date) as \"%s\"", concept.getUuid(), concept.getName()));
                 } else {
                     customFields.add(String.format("i.observations ->> '%s' as \"%s\"", concept.getUuid(), concept.getName()));
                 }
