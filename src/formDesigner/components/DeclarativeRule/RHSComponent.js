@@ -42,7 +42,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
 
   return (
     <Fragment>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         <Select
           placeholder="Select type"
           value={selectedTypeOption}
@@ -52,7 +52,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
         />
       </Grid>
       {selectedType === RHS.types.AnswerConcept ? (
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <ConceptSearch
             placeholder={"Type to search concept answer"}
             isMulti={isMulti}
@@ -69,7 +69,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
         </Grid>
       ) : null}
       {selectedType === RHS.types.Value ? (
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           {rule.lhs.isGender() ? (
             <Select
               placeholder="Select gender"

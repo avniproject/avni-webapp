@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useReducer } from "react";
 import DeclarativeRuleComponent from "./DeclarativeRuleComponent";
-import { isEmpty, map, size } from "lodash";
+import { isEmpty, map, size, noop } from "lodash";
 import RuleSummaryComponent from "./RuleSummaryComponent";
 import Button from "@material-ui/core/Button";
 import { DeclarativeRuleHolder } from "rules-config";
@@ -19,6 +19,7 @@ const DeclarativeRules = ({
   subjectType,
   formType,
   isRuleDesignerEnabled,
+  getApplicableActions = noop,
   ...props
 }) => {
   if (!isRuleDesignerEnabled) return null;
@@ -83,7 +84,11 @@ const DeclarativeRules = ({
         </Box>
       )}
       {map(declarativeRules, (declarativeRule, index) => (
-        <DeclarativeRuleComponent declarativeRuleIndex={index} declarativeRule={declarativeRule} />
+        <DeclarativeRuleComponent
+          declarativeRuleIndex={index}
+          declarativeRule={declarativeRule}
+          getApplicableActions={getApplicableActions}
+        />
       ))}
       <IconButton
         Icon={AddCircleIcon}

@@ -3,10 +3,8 @@ import React from "react";
 
 const MiddleText = ({ text }) => {
   return (
-    <Grid item>
-      <Typography variant={"subtitle1"} style={{ marginRight: 10, marginLeft: 10 }}>
-        {text}
-      </Typography>
+    <Grid item container xs={1} justify={"center"}>
+      <Typography variant={"subtitle1"}>{text}</Typography>
     </Grid>
   );
 };

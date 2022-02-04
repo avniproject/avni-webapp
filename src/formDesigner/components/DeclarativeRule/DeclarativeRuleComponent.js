@@ -15,6 +15,7 @@ const DeclarativeRuleComponent = ({
   onStateChange,
   onDelete,
   declarativeRuleIndex,
+  getApplicableActions,
   ...props
 }) => {
   const dispatch = useDeclarativeRuleDispatch();
@@ -56,6 +57,7 @@ const DeclarativeRuleComponent = ({
           action={action}
           index={index}
           declarativeRuleIndex={declarativeRuleIndex}
+          getApplicableActions={getApplicableActions}
         />
       ))}
     </Box>

@@ -327,6 +327,15 @@ class FormDetails extends Component {
     );
   };
 
+  updateFormElementGroupRuleJSON = (index, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index]["declarativeRule"] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
   onUpdateDragDropOrder = (
     groupSourceIndex,
     sourceElementIndex,
@@ -452,6 +461,7 @@ class FormDetails extends Component {
           handleExcludedAnswers: this.handleExcludedAnswers,
           updateSkipLogicRule: this.updateSkipLogicRule,
           updateSkipLogicJSON: this.updateSkipLogicJSON,
+          updateFormElementGroupRuleJSON: this.updateFormElementGroupRuleJSON,
           handleModeForDate: this.handleModeForDate,
           handleRegex: this.handleRegex,
           handleConceptFormLibrary: this.handleConceptFormLibrary,
@@ -830,12 +840,22 @@ class FormDetails extends Component {
       produce(draft => {
         draft.nameError = draft.name === "" ? true : false;
         _.forEach(draft.form.formElementGroups, group => {
+          group.errorMessage = {};
           group.error = false;
           group.expanded = false;
-          if (!group.voided && group.name.trim() === "") {
+          const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(group.declarativeRule);
+          const validationError = declarativeRuleHolder.validateAndGetError();
+          const isGroupNameEmpty = group.name.trim() === "";
+          if (!group.voided && (isGroupNameEmpty || !_.isEmpty(validationError))) {
             group.error = true;
             flag = true;
             numberGroupError += 1;
+            if (isGroupNameEmpty) group.errorMessage.name = true;
+            if (!_.isEmpty(validationError)) group.errorMessage.ruleError = validationError;
+          } else if (!declarativeRuleHolder.isEmpty()) {
+            group.rule = declarativeRuleHolder.generateFormElementGroupRule(
+              this.getEntityNameForRules()
+            );
           }
           let groupError = false;
           group.formElements.forEach(fe => {

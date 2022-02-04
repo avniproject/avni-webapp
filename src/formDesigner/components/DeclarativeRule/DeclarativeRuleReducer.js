@@ -104,14 +104,9 @@ const rhsConceptChange = (
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
-  const answerConceptNames = [];
-  const answerConceptUuids = [];
-  forEach(labelValues, ({ value }) => {
-    answerConceptNames.push(value.name);
-    answerConceptUuids.push(value.uuid);
-  });
-  rule.rhs.answerConceptNames = answerConceptNames;
-  rule.rhs.answerConceptUuids = answerConceptUuids;
+  const { names, uuids } = getConceptNamesAndUUIDs(labelValues);
+  rule.rhs.answerConceptNames = names;
+  rule.rhs.answerConceptUuids = uuids;
   return newState;
 };
 
@@ -160,6 +155,29 @@ const actionChange = (declarativeRuleHolder, { declarativeRuleIndex, index, prop
   return newState;
 };
 
+const getConceptNamesAndUUIDs = labelValues => {
+  const names = [];
+  const uuids = [];
+  forEach(labelValues, ({ value }) => {
+    names.push(value.name);
+    uuids.push(value.uuid);
+  });
+  return { names, uuids };
+};
+
+const answerToSkipChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, index, labelValues }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const action = declarativeRule.actions[index];
+  const { names, uuids } = getConceptNamesAndUUIDs(labelValues);
+  action.answersToSkip = names;
+  action.answerUuidsToSkip = uuids;
+  return newState;
+};
+
 const newDeclarativeRule = declarativeRuleHolder => {
   const newState = declarativeRuleHolder.clone();
   return newState.addEmptyDeclarativeRule();
@@ -186,6 +204,7 @@ export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
     deleteCondition: deleteCondition,
     deleteRule: deleteRule,
     actionChange: actionChange,
+    answerToSkipChange: answerToSkipChange,
     resetState: resetState,
     newDeclarativeRule: newDeclarativeRule,
     deleteDeclarativeRule: deleteDeclarativeRule

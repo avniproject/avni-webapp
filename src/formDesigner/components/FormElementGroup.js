@@ -1,5 +1,5 @@
 import React from "react";
-import _, { isEqual } from "lodash";
+import _, { get, isEqual } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -270,8 +270,13 @@ function FormElementGroup(props) {
                     </Grid>
                     <Grid item sm={6}>
                       <Typography className={classes.heading}>
-                        {props.groupData.error && (
+                        {props.groupData.errorMessage && props.groupData.errorMessage.name && (
                           <div style={{ color: "red" }}>Please enter group name.</div>
+                        )}
+                        {get(props.groupData, "errorMessage.ruleError") && (
+                          <div style={{ color: "red" }}>
+                            Please check the rule validation errors
+                          </div>
                         )}
                         <FormControl fullWidth>
                           <Input
@@ -358,10 +363,9 @@ function FormElementGroup(props) {
                   </Grid>
                   <Grid hidden={tabIndex !== 1}>
                     <FormElementGroupRule
-                      rule={props.groupData.rule}
-                      onChange={props.updateFormElementGroupRule}
-                      index={props.index}
+                      groupData={props.groupData}
                       disable={disableGroup}
+                      {...props}
                     />
                   </Grid>
                 </Grid>

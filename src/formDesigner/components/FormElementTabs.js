@@ -11,8 +11,8 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import { sampleFormElementRule } from "../common/SampleRule";
-import { DeclarativeRuleHolder } from "rules-config";
 import DeclarativeRules from "./DeclarativeRule/DeclerativeRules";
+import { confirmBeforeRuleEdit } from "../util";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -65,17 +65,11 @@ function FormElementTabs(props) {
   }
 
   const onSkipLogicRuleChange = event => {
-    const warningMessage =
-      "Editing the rule will reset the declarative rule. Are you sure you want to edit it?";
-    const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(
-      props.formElementData.declarativeRule
+    confirmBeforeRuleEdit(
+      props.formElementData.declarativeRule,
+      () => props.updateSkipLogicRule(props.groupIndex, props.index, event),
+      () => props.updateSkipLogicJSON(props.groupIndex, props.index, null)
     );
-    if (declarativeRuleHolder.isEmpty()) {
-      props.updateSkipLogicRule(props.groupIndex, props.index, event);
-    } else if (window.confirm(warningMessage)) {
-      props.updateSkipLogicJSON(props.groupIndex, props.index, null);
-      props.updateSkipLogicRule(props.groupIndex, props.index, event);
-    }
   };
 
   return (
@@ -125,6 +119,7 @@ function FormElementTabs(props) {
           subjectType={props.subjectType}
           formType={props.formType}
           isRuleDesignerEnabled={props.isRuleDesignerEnabled}
+          getApplicableActions={state => state.getApplicableViewFilterActions()}
         />
         <Editor
           value={props.formElementData.rule || sampleFormElementRule(props.entityName)}

@@ -31,7 +31,7 @@ const LHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
 
   return (
     <Fragment>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         <Select
           placeholder="Select type"
           value={findOrDefault(types, ({ value }) => value === lhs.type, null)}
