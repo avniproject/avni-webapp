@@ -46,7 +46,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             Long programId,
             Date lastModifiedDateTime);
 
-    @Query("select pe.program from ProgramEnrolment pe join pe.program join pe.program.operationalPrograms where pe.individual.id = :individualId and pe.programExitDateTime is null")
+    @Query("select pe.program from ProgramEnrolment pe join pe.program join pe.program.operationalPrograms where pe.individual.id = :individualId and pe.programExitDateTime is null and pe.isVoided = false")
     List<Program> findActiveEnrolmentsByIndividualId(Long individualId);
 
     @Override
