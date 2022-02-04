@@ -1,14 +1,12 @@
 package org.avni.dao;
 
 import java.util.Date;
+
+import org.avni.domain.*;
 import org.avni.projection.IndividualWebProjection;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.avni.application.projections.WebSearchResultProjection;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.Concept;
-import org.avni.domain.Individual;
-import org.avni.domain.SubjectType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -136,9 +134,11 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID,  Pageable pageable);
 
 
-    Individual findByLegacyId(String legacyId);
+    @Query("select i from Individual i where i.uuid =:id or i.legacyId = :id")
+    Individual findByLegacyIdOrUuid(String id);
 
-    Individual findByLegacyIdAndSubjectType(String legacyId, SubjectType subjectType);
+    @Query("select i from Individual i where (i.uuid =:id or i.legacyId = :id) and i.subjectType = :subjectType")
+    Individual findByLegacyIdOrUuidAndSubjectType(String id, SubjectType subjectType);
 
     @Query(value = "select firstname,lastname,fullname,id,uuid,title_lineage,subject_type_name,gender_name,date_of_birth,enrolments,total_elements from web_search_function(:jsonSearch, :dbUser)", nativeQuery = true)
     List<WebSearchResultProjection> getWebSearchResults(String jsonSearch, String dbUser);

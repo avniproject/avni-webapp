@@ -120,12 +120,12 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
             return null;
         }
 
-        existingGroup = individualRepository.findByLegacyId(groupId);
+        existingGroup = individualRepository.findByLegacyIdOrUuid(groupId);
         if (existingGroup == null) {
             errorMsgs.add(String.format("Could not find '%s' - '%s'", groupIdIdentifier, groupId));
             return null;
         }
-        existingMember = individualRepository.findByLegacyId(memberId);
+        existingMember = individualRepository.findByLegacyIdOrUuid(memberId);
         if (existingMember == null) {
             errorMsgs.add(String.format("Could not find '%s' - '%s'", groupMemberHeaders.memberId, memberId));
             return null;

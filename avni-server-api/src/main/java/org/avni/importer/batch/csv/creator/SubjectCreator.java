@@ -23,7 +23,7 @@ public class SubjectCreator {
             errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
             return null;
         }
-        Individual individual = individualRepository.findByLegacyId(legacyId);
+        Individual individual = individualRepository.findByLegacyIdOrUuid(legacyId);
         if (individual == null) {
             errorMsgs.add(String.format("'%s' not found in database", identifierForErrorMessage));
             return null;

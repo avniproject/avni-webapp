@@ -2,6 +2,7 @@ package org.avni.dao;
 
 import java.util.Date;
 import org.avni.domain.AddressLevel;
+import org.avni.domain.Individual;
 import org.avni.domain.Program;
 import org.joda.time.DateTime;
 import org.avni.domain.ProgramEnrolment;
@@ -93,7 +94,8 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             String individualUuid,
             Pageable pageable);
 
-    ProgramEnrolment findByLegacyId(String legacyId);
+    @Query("select pe from ProgramEnrolment pe where pe.uuid =:id or pe.legacyId = :id")
+    ProgramEnrolment findByLegacyIdOrUuid(String id);
 
     Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanOrderByLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,

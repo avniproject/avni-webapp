@@ -164,10 +164,10 @@ public class ObservationCreator {
                     String[] providedAnswers = splitMultiSelectAnswer(answerValue);
 
                     return Stream.of(providedAnswers)
-                            .map(answer -> individualRepository.findByLegacyIdAndSubjectType(answer, subjectType).getUuid())
+                            .map(answer -> individualRepository.findByLegacyIdOrUuidAndSubjectType(answer, subjectType).getUuid())
                             .collect(Collectors.toList());
                 } else {
-                    return individualRepository.findByLegacyIdAndSubjectType(answerValue, subjectType).getUuid();
+                    return individualRepository.findByLegacyIdOrUuidAndSubjectType(answerValue, subjectType).getUuid();
                 }
             case Location:
                 FormElement locationFormElement = getFormElementForObservationConcept(concept, formType);

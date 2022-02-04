@@ -69,7 +69,8 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
             "limit 1", nativeQuery = true)
     Long getMaxEncounterCount(String encounterTypeUUID, Calendar startDate, Calendar endDate);
 
-    Encounter findByLegacyId(String legacyId);
+    @Query("select e from Encounter e where e.uuid =:id or e.legacyId = :id")
+    Encounter findByLegacyIdOrUuid(String id);
 
     default Specification<Encounter> withIndividualId(Long id) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->

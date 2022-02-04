@@ -105,7 +105,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         String externalId = row.get(headers.id);
         Individual existingIndividual = null;
         if (!(externalId == null || externalId.isEmpty())) {
-            existingIndividual = individualRepository.findByLegacyId(externalId);
+            existingIndividual = individualRepository.findByLegacyIdOrUuid(externalId);
         }
         return existingIndividual == null ? createNewIndividual(externalId) : existingIndividual;
     }

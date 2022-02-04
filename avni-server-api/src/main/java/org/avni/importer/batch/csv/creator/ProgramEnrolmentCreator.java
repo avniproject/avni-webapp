@@ -21,7 +21,7 @@ public class ProgramEnrolmentCreator {
             errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
             return null;
         }
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyId(legacyId);
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyId);
         if (programEnrolment == null) {
             errorMsgs.add(String.format("'%s' not found in database", identifierForErrorMessage));
             return null;

@@ -69,7 +69,8 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
             "limit 1", nativeQuery = true)
     Long getMaxProgramEncounterCount(String programEncounterTypeUUID, Calendar startDate, Calendar endDate);
 
-    ProgramEncounter findByLegacyId(String legacyId);
+    @Query("select pe from ProgramEncounter pe where pe.uuid =:id or pe.legacyId = :id")
+    ProgramEncounter findByLegacyIdOrUuid(String id);
 
     default Specification<ProgramEncounter> withProgramEncounterId(Long id) {
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->

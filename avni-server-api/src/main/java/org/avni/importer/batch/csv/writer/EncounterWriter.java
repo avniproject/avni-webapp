@@ -78,7 +78,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
             errorMsgs.add(String.format("'%s' is required", headers.subjectId));
             return null;
         }
-        Individual individual = individualRepository.findByLegacyId(subjectExternalId);
+        Individual individual = individualRepository.findByLegacyIdOrUuid(subjectExternalId);
         if (individual == null) {
             errorMsgs.add(String.format("'%s' not found in database", headers.subjectId));
             return null;
@@ -90,7 +90,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         String legacyId = row.get(headers.id);
         Encounter existingEncounter = null;
         if (legacyId != null && !legacyId.isEmpty()) {
-            existingEncounter = encounterRepository.findByLegacyId(legacyId);
+            existingEncounter = encounterRepository.findByLegacyIdOrUuid(legacyId);
         }
         return existingEncounter == null ? createNewEncounter(legacyId) : existingEncounter;
     }

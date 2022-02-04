@@ -98,7 +98,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         String legacyId = row.get(headers.id);
         ProgramEnrolment existingEnrolment = null;
         if (legacyId != null && !legacyId.isEmpty()) {
-            existingEnrolment = programEnrolmentRepository.findByLegacyId(legacyId);
+            existingEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyId);
         }
         return existingEnrolment == null ? createNewEnrolment(legacyId) : existingEnrolment;
     }
