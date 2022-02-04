@@ -16,12 +16,12 @@ public class ProgramEnrolmentCreator {
         this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
-    public ProgramEnrolment getProgramEnrolment(String legacyId, List<String> errorMsgs, String identifierForErrorMessage) {
-        if (legacyId == null || legacyId.isEmpty()) {
+    public ProgramEnrolment getProgramEnrolment(String enrolmentId, List<String> errorMsgs, String identifierForErrorMessage) {
+        if (enrolmentId == null || enrolmentId.isEmpty()) {
             errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
             return null;
         }
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyId);
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(enrolmentId);
         if (programEnrolment == null) {
             errorMsgs.add(String.format("'%s' not found in database", identifierForErrorMessage));
             return null;

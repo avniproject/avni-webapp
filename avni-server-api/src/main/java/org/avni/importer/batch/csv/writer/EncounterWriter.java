@@ -87,12 +87,12 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     }
 
     private Encounter getOrCreateEncounter(Row row) {
-        String legacyId = row.get(headers.id);
+        String id = row.get(headers.id);
         Encounter existingEncounter = null;
-        if (legacyId != null && !legacyId.isEmpty()) {
-            existingEncounter = encounterRepository.findByLegacyIdOrUuid(legacyId);
+        if (id != null && !id.isEmpty()) {
+            existingEncounter = encounterRepository.findByLegacyIdOrUuid(id);
         }
-        return existingEncounter == null ? createNewEncounter(legacyId) : existingEncounter;
+        return existingEncounter == null ? createNewEncounter(id) : existingEncounter;
     }
 
     private Encounter createNewEncounter(String externalId) {

@@ -95,12 +95,12 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {
-        String legacyId = row.get(headers.id);
+        String id = row.get(headers.id);
         ProgramEnrolment existingEnrolment = null;
-        if (legacyId != null && !legacyId.isEmpty()) {
-            existingEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyId);
+        if (id != null && !id.isEmpty()) {
+            existingEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(id);
         }
-        return existingEnrolment == null ? createNewEnrolment(legacyId) : existingEnrolment;
+        return existingEnrolment == null ? createNewEnrolment(id) : existingEnrolment;
     }
 
     private ProgramEnrolment createNewEnrolment(String externalId) {

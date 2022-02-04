@@ -69,12 +69,12 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     }
 
     private ProgramEncounter getOrCreateProgramEncounter(Row row) {
-        String legacyId = row.get(headers.id);
+        String id = row.get(headers.id);
         ProgramEncounter existingEncounter = null;
-        if (legacyId != null && !legacyId.isEmpty()) {
-            existingEncounter = programEncounterRepository.findByLegacyIdOrUuid(legacyId);
+        if (id != null && !id.isEmpty()) {
+            existingEncounter = programEncounterRepository.findByLegacyIdOrUuid(id);
         }
-        return existingEncounter == null ? createNewEncounter(legacyId) : existingEncounter;
+        return existingEncounter == null ? createNewEncounter(id) : existingEncounter;
     }
 
     private ProgramEncounter createNewEncounter(String externalId) {

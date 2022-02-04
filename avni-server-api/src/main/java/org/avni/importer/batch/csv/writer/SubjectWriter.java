@@ -102,12 +102,12 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     }
 
     private Individual getOrCreateIndividual(Row row) {
-        String externalId = row.get(headers.id);
+        String id = row.get(headers.id);
         Individual existingIndividual = null;
-        if (!(externalId == null || externalId.isEmpty())) {
-            existingIndividual = individualRepository.findByLegacyIdOrUuid(externalId);
+        if (!(id == null || id.isEmpty())) {
+            existingIndividual = individualRepository.findByLegacyIdOrUuid(id);
         }
-        return existingIndividual == null ? createNewIndividual(externalId) : existingIndividual;
+        return existingIndividual == null ? createNewIndividual(id) : existingIndividual;
     }
 
     private Individual createNewIndividual(String externalId) {

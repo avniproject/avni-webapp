@@ -18,12 +18,12 @@ public class SubjectCreator {
         this.individualRepository = individualRepository;
     }
 
-    public Individual getSubject(String legacyId, List<String> errorMsgs, String identifierForErrorMessage) {
-        if (legacyId == null || legacyId.isEmpty()) {
+    public Individual getSubject(String subjectId, List<String> errorMsgs, String identifierForErrorMessage) {
+        if (subjectId == null || subjectId.isEmpty()) {
             errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
             return null;
         }
-        Individual individual = individualRepository.findByLegacyIdOrUuid(legacyId);
+        Individual individual = individualRepository.findByLegacyIdOrUuid(subjectId);
         if (individual == null) {
             errorMsgs.add(String.format("'%s' not found in database", identifierForErrorMessage));
             return null;
