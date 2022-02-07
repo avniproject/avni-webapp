@@ -2,6 +2,7 @@ package org.avni.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.avni.application.FormElementGroup;
+import org.avni.domain.DeclarativeRule;
 import org.avni.web.request.ReferenceDataContract;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
     private List<FormElementContract> formElements;
     private Long organisationId;
     private String rule;
+    private DeclarativeRule declarativeRule;
 
     public FormElementGroupContract() {
     }
@@ -62,6 +64,14 @@ public class FormElementGroupContract extends ReferenceDataContract {
         this.display = display;
     }
 
+    public DeclarativeRule getDeclarativeRule() {
+        return declarativeRule;
+    }
+
+    public void setDeclarativeRule(DeclarativeRule declarativeRule) {
+        this.declarativeRule = declarativeRule;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -87,6 +97,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
         fegContract.setDisplayOrder(feg.getDisplayOrder());
         fegContract.setVoided(feg.isVoided());
         fegContract.setRule(feg.getRule());
+        fegContract.setDeclarativeRule(feg.getDeclarativeRule());
         List<FormElementContract> feContracts = feg.getFormElements().stream()
                 .map(FormElementContract::fromFormElement)
                 .sorted(Comparator.comparingDouble(FormElementContract::getDisplayOrder))

@@ -1,5 +1,6 @@
 package org.avni.builder;
 
+import org.avni.domain.DeclarativeRule;
 import org.joda.time.DateTime;
 import org.avni.application.Form;
 import org.avni.application.FormElement;
@@ -47,6 +48,12 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         this.get().setRule(rule);
         return this;
     }
+
+    public FormElementGroupBuilder withDeclarativeRule(DeclarativeRule declarativeRule) {
+        this.get().setDeclarativeRule(declarativeRule);
+        return this;
+    }
+
 
     private FormElement getExistingFormElement(String uuid) {
         return this.get().findFormElement(uuid);

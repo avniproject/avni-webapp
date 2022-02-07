@@ -291,6 +291,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             formElementGroupContract.setVoided(formElementGroup.isVoided());
             formElementGroupContract.setOrganisationId(formElementGroup.getOrganisationId());
             formElementGroupContract.setRule(formElementGroup.getRule());
+            formElementGroupContract.setDeclarativeRule(formElementGroup.getDeclarativeRule());
             formContract.addFormElementGroup(formElementGroupContract);
             formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();

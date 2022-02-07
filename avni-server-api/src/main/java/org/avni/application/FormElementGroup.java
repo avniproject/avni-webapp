@@ -1,7 +1,9 @@
 package org.avni.application;
 
+import org.avni.domain.DeclarativeRule;
 import org.hibernate.annotations.BatchSize;
 import org.avni.domain.OrganisationAwareEntity;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -33,6 +35,10 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     @Column(name = "rule")
     private String rule;
+
+    @Column(name = "declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule declarativeRule;
 
     public String getRule() {
         return rule;
@@ -102,5 +108,13 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     public List<FormElement> getApplicableFormElements() {
         return this.getFormElements().stream().filter(formElement -> formElement.isApplicable()).collect(Collectors.toList());
+    }
+
+    public DeclarativeRule getDeclarativeRule() {
+        return declarativeRule;
+    }
+
+    public void setDeclarativeRule(DeclarativeRule declarativeRule) {
+        this.declarativeRule = declarativeRule;
     }
 }
