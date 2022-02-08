@@ -23,6 +23,9 @@ import {
   sampleEnrolmentEligibilityCheckRule,
   sampleEnrolmentSummaryRule
 } from "../../formDesigner/common/SampleRule";
+import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
+import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
+import { DeclarativeRuleHolder } from "rules-config";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -34,6 +37,7 @@ const ProgramCreate = props => {
   const [subjectT, setSubjectT] = useState({});
   const [subjectType, setSubjectType] = useState([]);
   const [formList, setFormList] = useState([]);
+  const [ruleValidationError, setRuleValidationError] = useState();
 
   useEffect(() => {
     http
@@ -60,6 +64,16 @@ const ProgramCreate = props => {
       setSubjectValidation(true);
       hasError = true;
     }
+    const { jsCode, validationError } = validateRule(
+      program.enrolmentEligibilityCheckDeclarativeRule,
+      holder => holder.generateEligibilityRule()
+    );
+    if (!_.isEmpty(validationError)) {
+      hasError = true;
+      setRuleValidationError(validationError);
+    } else if (!_.isEmpty(jsCode)) {
+      program.enrolmentEligibilityCheckRule = jsCode;
+    }
 
     if (hasError) {
       return;
@@ -78,7 +92,8 @@ const ProgramCreate = props => {
         subjectTypeUuid: subjectT.uuid,
         programEnrolmentFormUuid: _.get(program, "programEnrolmentForm.formUUID"),
         programExitFormUuid: _.get(program, "programExitForm.formUUID"),
-        enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule
+        enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
+        enrolmentEligibilityCheckDeclarativeRule: program.enrolmentEligibilityCheckDeclarativeRule
       })
       .then(response => {
         if (response.status === 200) {
@@ -209,21 +224,33 @@ const ProgramCreate = props => {
                 label={"Enrolment Eligibility Check Rule"}
                 toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
               />
-              <Editor
-                value={
-                  program.enrolmentEligibilityCheckRule || sampleEnrolmentEligibilityCheckRule()
+              <RuleDesigner
+                rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
+                onValueChange={jsonData =>
+                  dispatch({
+                    type: "enrolmentEligibilityCheckDeclarativeRule",
+                    payload: jsonData
+                  })
                 }
-                onValueChange={event =>
-                  dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })
+                updateJsCode={declarativeRuleHolder =>
+                  dispatch({
+                    type: "enrolmentEligibilityCheckRule",
+                    payload: declarativeRuleHolder.generateEligibilityRule()
+                  })
                 }
-                highlight={code => highlight(code, languages.js)}
-                padding={10}
-                style={{
-                  fontFamily: '"Fira code", "Fira Mono", monospace',
-                  fontSize: 15,
-                  height: "auto",
-                  borderStyle: "solid",
-                  borderWidth: "1px"
+                jsCode={program.enrolmentEligibilityCheckRule}
+                error={ruleValidationError}
+                subjectType={subjectT}
+                isRuleDesignerEnabled={true} //TODO:
+                getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
+                sampleRule={sampleEnrolmentEligibilityCheckRule()}
+                onJsCodeChange={event => {
+                  confirmBeforeRuleEdit(
+                    program.enrolmentEligibilityCheckDeclarativeRule,
+                    () => dispatch({ type: "enrolmentEligibilityCheckRule", payload: event }),
+                    () =>
+                      dispatch({ type: "enrolmentEligibilityCheckDeclarativeRule", payload: null })
+                  );
                 }}
               />
               <p />

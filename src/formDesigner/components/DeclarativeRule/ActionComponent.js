@@ -76,7 +76,6 @@ const ActionComponent = ({
           <MiddleText text={"Is"} />
           <Grid item xs={11}>
             <InputField
-              fullWidth
               variant="outlined"
               value={get(action, "validationError")}
               onChange={event => onActionChange("validationError", event.target.value)}

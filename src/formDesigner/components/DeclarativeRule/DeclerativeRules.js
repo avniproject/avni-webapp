@@ -26,10 +26,12 @@ const DeclarativeRules = ({
 
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(DeclarativeRuleReducer, initialState);
-  const [validationError, setValidationError] = useState(error);
+  const [validationError, setValidationError] = useState();
   const summary = isEmpty(validationError) ? declarativeRuleHolder.generateRuleSummary() : null;
   const [summaries, setSummaries] = useState(summary);
   const { declarativeRules } = declarativeRuleHolder;
+
+  const errorMessage = error || validationError;
 
   const updateProps = state => {
     setValidationError();
@@ -68,7 +70,7 @@ const DeclarativeRules = ({
         subjectType: subjectType
       }}
     >
-      {!isEmpty(validationError) && <div style={{ color: "red" }}>{validationError}</div>}
+      {!isEmpty(errorMessage) && <div style={{ color: "red" }}>{errorMessage}</div>}
       {!isEmpty(summaries) && (
         <Box component={"div"} mb={1} p={2} border={1}>
           <Typography gutterBottom variant={"subtitle1"}>

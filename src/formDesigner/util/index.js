@@ -1,4 +1,4 @@
-import { find, defaultTo } from "lodash";
+import { find, defaultTo, isEmpty } from "lodash";
 import { DeclarativeRuleHolder } from "rules-config";
 
 export const findOrDefault = (collection, predicate, defaultValue) => {
@@ -16,4 +16,16 @@ export const confirmBeforeRuleEdit = (ruleJson, updateRuleFunc, resetDeclarative
     resetDeclarativeRuleFunc();
     updateRuleFunc();
   }
+};
+
+export const validateRule = (declarativeRule, generateCodeFunction) => {
+  const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(declarativeRule);
+  const validationError = declarativeRuleHolder.validateAndGetError();
+  if (!isEmpty(validationError)) {
+    return { validationError };
+  } else if (!declarativeRuleHolder.isEmpty()) {
+    const jsCode = generateCodeFunction(declarativeRuleHolder);
+    return { jsCode };
+  }
+  return { jsCode: null };
 };

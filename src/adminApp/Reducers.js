@@ -3,6 +3,7 @@ import { default as UUID } from "uuid";
 import { map, isEmpty } from "lodash";
 
 export function programReducer(program, action) {
+  console.log("came heree====");
   switch (action.type) {
     case "name":
       return { ...program, name: action.payload };
@@ -16,6 +17,8 @@ export function programReducer(program, action) {
       return { ...program, enrolmentSummaryRule: action.payload };
     case "enrolmentEligibilityCheckRule":
       return { ...program, enrolmentEligibilityCheckRule: action.payload };
+    case "enrolmentEligibilityCheckDeclarativeRule":
+      return { ...program, enrolmentEligibilityCheckDeclarativeRule: action.payload };
     case "programEnrolmentForm":
       return { ...program, programEnrolmentForm: action.payload };
     case "programExitForm":
@@ -28,6 +31,8 @@ export function programReducer(program, action) {
         programSubjectLabel: action.payload.programSubjectLabel,
         enrolmentSummaryRule: action.payload.enrolmentSummaryRule,
         enrolmentEligibilityCheckRule: action.payload.enrolmentEligibilityCheckRule,
+        enrolmentEligibilityCheckDeclarativeRule:
+          action.payload.enrolmentEligibilityCheckDeclarativeRule,
         active: action.payload.active
       };
     default:
