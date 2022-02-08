@@ -6,13 +6,9 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual, get } from "lodash";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-javascript";
 import { sampleFormElementRule } from "../common/SampleRule";
-import DeclarativeRules from "./DeclarativeRule/DeclerativeRules";
 import { confirmBeforeRuleEdit } from "../util";
+import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -102,7 +98,7 @@ function FormElementTabs(props) {
             overflowY: "auto"
           }}
         > */}
-        <DeclarativeRules
+        <RuleDesigner
           rulesJson={props.formElementData.declarativeRule}
           onValueChange={jsonData =>
             props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)
@@ -120,20 +116,9 @@ function FormElementTabs(props) {
           formType={props.formType}
           isRuleDesignerEnabled={props.isRuleDesignerEnabled}
           getApplicableActions={state => state.getApplicableViewFilterActions()}
-        />
-        <Editor
-          value={props.formElementData.rule || sampleFormElementRule(props.entityName)}
-          onValueChange={onSkipLogicRuleChange}
-          highlight={code => highlight(code, languages.js)}
-          padding={10}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 15,
-            height: "auto",
-            borderStyle: "solid",
-            borderWidth: "1px"
-          }}
-          disabled={disableFormElement}
+          sampleRule={sampleFormElementRule(props.entityName)}
+          onJsCodeChange={onSkipLogicRuleChange}
+          disableEditor={disableFormElement}
         />
         {/* </div> */}
       </TabPanel>
