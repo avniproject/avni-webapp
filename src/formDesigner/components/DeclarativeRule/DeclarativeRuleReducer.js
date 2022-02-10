@@ -1,5 +1,5 @@
 import { Condition, Action, RHS, LHS, DeclarativeRuleHolder } from "rules-config";
-import { isEmpty, forEach } from "lodash";
+import { isEmpty, forEach, size } from "lodash";
 
 const resetState = () => {
   return DeclarativeRuleHolder.fromResource();
@@ -138,7 +138,10 @@ const deleteRule = (declarativeRuleHolder, { declarativeRuleIndex, ruleIndex, co
   return newState;
 };
 
-const actionChange = (declarativeRuleHolder, { declarativeRuleIndex, index, property, value }) => {
+const actionChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, index, property, value, types }
+) => {
   const newState = declarativeRuleHolder.clone();
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const oldAction = declarativeRule.actions[index];
@@ -146,12 +149,13 @@ const actionChange = (declarativeRuleHolder, { declarativeRuleIndex, index, prop
     if (oldAction.actionType !== value) {
       declarativeRule.actions[index] = new Action();
     }
-    if (isEmpty(oldAction.actionType)) {
+    if (isEmpty(oldAction.actionType) && size(types) > 1) {
       declarativeRule.addAction(new Action());
     }
+    declarativeRule.actions[index].setActionType(value);
+  } else {
+    declarativeRule.actions[index].addDetails(property, value);
   }
-  const action = declarativeRule.actions[index];
-  action[property] = value;
   return newState;
 };
 
@@ -173,8 +177,8 @@ const answerToSkipChange = (
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const action = declarativeRule.actions[index];
   const { names, uuids } = getConceptNamesAndUUIDs(labelValues);
-  action.answersToSkip = names;
-  action.answerUuidsToSkip = uuids;
+  action.addDetails("answersToSkip", names);
+  action.addDetails("answerUuidsToSkip", uuids);
   return newState;
 };
 

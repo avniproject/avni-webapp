@@ -823,6 +823,24 @@ class FormDetails extends Component {
     this.setState({ createFlag: false });
   }
 
+  getDeclarativeRuleValidationError(declarativeRule) {
+    const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(declarativeRule);
+    const validationError = declarativeRuleHolder.validateAndGetError();
+    return { declarativeRuleHolder, validationError };
+  }
+
+  validateFormLevelRules(form, declarativeRule, ruleKey, generateRuleFuncName) {
+    const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(
+      declarativeRule
+    );
+    if (!_.isEmpty(validationError)) {
+      form.ruleError[ruleKey] = validationError;
+      return true;
+    } else if (!declarativeRuleHolder.isEmpty()) {
+      form[ruleKey] = declarativeRuleHolder[generateRuleFuncName](this.getEntityNameForRules());
+    }
+  }
+
   // END Group level Events
   validateForm() {
     let flag = false;
@@ -832,12 +850,22 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         draft.nameError = draft.name === "" ? true : false;
+        draft.form.ruleError = {};
+        const { validationDeclarativeRule } = draft.form;
+        const isValidationError = this.validateFormLevelRules(
+          draft.form,
+          validationDeclarativeRule,
+          "validationRule",
+          "generateFormValidationRule"
+        );
+        flag = isValidationError;
         _.forEach(draft.form.formElementGroups, group => {
           group.errorMessage = {};
           group.error = false;
           group.expanded = false;
-          const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(group.declarativeRule);
-          const validationError = declarativeRuleHolder.validateAndGetError();
+          const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(
+            group.declarativeRule
+          );
           const isGroupNameEmpty = group.name.trim() === "";
           if (!group.voided && (isGroupNameEmpty || !_.isEmpty(validationError))) {
             group.error = true;
@@ -860,8 +888,10 @@ class FormDetails extends Component {
                 fe.errorMessage[key] = false;
               });
             }
-            const declarativeRuleHolder = DeclarativeRuleHolder.fromResource(fe.declarativeRule);
-            const validationError = declarativeRuleHolder.validateAndGetError();
+            const {
+              declarativeRuleHolder,
+              validationError
+            } = this.getDeclarativeRuleValidationError(fe.declarativeRule);
             if (
               !fe.voided &&
               (fe.name === "" ||
@@ -1037,6 +1067,15 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         draft.form[name] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
+  onDeclarativeRuleUpdate = (ruleName, json) => {
+    this.setState(
+      produce(draft => {
+        draft.form[ruleName] = json;
         draft.detectBrowserCloseEvent = true;
       })
     );
@@ -1434,6 +1473,7 @@ class FormDetails extends Component {
             <FormLevelRules
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
+              onDeclarativeRuleUpdate={this.onDeclarativeRuleUpdate}
               onDecisionConceptsUpdate={this.onDecisionConceptsUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
               entityName={this.getEntityNameForRules()}
