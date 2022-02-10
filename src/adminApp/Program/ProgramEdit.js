@@ -34,7 +34,6 @@ import {
 } from "../../formDesigner/common/SampleRule";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
-import { DeclarativeRuleHolder } from "rules-config";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -275,34 +274,36 @@ const ProgramEdit = props => {
             label={"Enrolment Eligibility Check Rule"}
             toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
           />
-          <RuleDesigner
-            rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
-            onValueChange={jsonData =>
-              dispatch({
-                type: "enrolmentEligibilityCheckDeclarativeRule",
-                payload: jsonData
-              })
-            }
-            updateJsCode={declarativeRuleHolder =>
-              dispatch({
-                type: "enrolmentEligibilityCheckRule",
-                payload: declarativeRuleHolder.generateEligibilityRule()
-              })
-            }
-            jsCode={program.enrolmentEligibilityCheckRule}
-            error={ruleValidationError} //TODO:
-            subjectType={subjectT} //TODO:
-            isRuleDesignerEnabled={true} //TODO:
-            getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
-            sampleRule={sampleEnrolmentEligibilityCheckRule()}
-            onJsCodeChange={event => {
-              confirmBeforeRuleEdit(
-                program.enrolmentEligibilityCheckDeclarativeRule,
-                () => dispatch({ type: "enrolmentEligibilityCheckRule", payload: event }),
-                () => dispatch({ type: "enrolmentEligibilityCheckDeclarativeRule", payload: null })
-              );
-            }}
-          />
+          {program.loaded && (
+            <RuleDesigner
+              rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
+              onValueChange={jsonData =>
+                dispatch({
+                  type: "enrolmentEligibilityCheckDeclarativeRule",
+                  payload: jsonData
+                })
+              }
+              updateJsCode={declarativeRuleHolder =>
+                dispatch({
+                  type: "enrolmentEligibilityCheckRule",
+                  payload: declarativeRuleHolder.generateEligibilityRule()
+                })
+              }
+              jsCode={program.enrolmentEligibilityCheckRule}
+              error={ruleValidationError}
+              subjectType={subjectT}
+              getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
+              sampleRule={sampleEnrolmentEligibilityCheckRule()}
+              onJsCodeChange={event => {
+                confirmBeforeRuleEdit(
+                  program.enrolmentEligibilityCheckDeclarativeRule,
+                  () => dispatch({ type: "enrolmentEligibilityCheckRule", payload: event }),
+                  () =>
+                    dispatch({ type: "enrolmentEligibilityCheckDeclarativeRule", payload: null })
+                );
+              }}
+            />
+          )}
           <p />
         </div>
         <Grid container item sm={12}>

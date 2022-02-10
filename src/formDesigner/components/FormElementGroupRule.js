@@ -36,7 +36,6 @@ export const FormElementGroupRule = ({
         error={get(groupData, "errorMessage.ruleError")}
         subjectType={props.subjectType}
         formType={props.formType}
-        isRuleDesignerEnabled={props.isRuleDesignerEnabled}
         getApplicableActions={state => state.getApplicableFormElementGroupRuleActions()}
         sampleRule={sampleFormElementGroupRule()}
         onJsCodeChange={onChange}

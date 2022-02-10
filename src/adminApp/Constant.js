@@ -3,12 +3,14 @@ export const programInitialState = {
   colour: "",
   programSubjectLabel: "",
   enrolmentSummaryRule: "",
-  enrolmentEligibilityCheckRule: ""
+  enrolmentEligibilityCheckRule: "",
+  loaded: false
 };
 
 export const encounterTypeInitialState = {
   name: "",
-  encounterEligibilityCheckRule: ""
+  encounterEligibilityCheckRule: "",
+  loaded: false
 };
 
 export const subjectTypeInitialState = {

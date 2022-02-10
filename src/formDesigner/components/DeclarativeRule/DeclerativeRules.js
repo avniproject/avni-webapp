@@ -18,12 +18,9 @@ const DeclarativeRules = ({
   error,
   subjectType,
   formType,
-  isRuleDesignerEnabled,
   getApplicableActions = noop,
   ...props
 }) => {
-  if (!isRuleDesignerEnabled) return null;
-
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
   const [declarativeRuleHolder, dispatcher] = useReducer(DeclarativeRuleReducer, initialState);
   const [validationError, setValidationError] = useState();

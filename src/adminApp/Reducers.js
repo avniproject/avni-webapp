@@ -3,7 +3,6 @@ import { default as UUID } from "uuid";
 import { map, isEmpty } from "lodash";
 
 export function programReducer(program, action) {
-  console.log("came heree====");
   switch (action.type) {
     case "name":
       return { ...program, name: action.payload };
@@ -19,6 +18,8 @@ export function programReducer(program, action) {
       return { ...program, enrolmentEligibilityCheckRule: action.payload };
     case "enrolmentEligibilityCheckDeclarativeRule":
       return { ...program, enrolmentEligibilityCheckDeclarativeRule: action.payload };
+    case "setLoaded":
+      return { ...program, loaded: true };
     case "programEnrolmentForm":
       return { ...program, programEnrolmentForm: action.payload };
     case "programExitForm":
@@ -33,7 +34,8 @@ export function programReducer(program, action) {
         enrolmentEligibilityCheckRule: action.payload.enrolmentEligibilityCheckRule,
         enrolmentEligibilityCheckDeclarativeRule:
           action.payload.enrolmentEligibilityCheckDeclarativeRule,
-        active: action.payload.active
+        active: action.payload.active,
+        loaded: true
       };
     default:
       return program;
@@ -52,12 +54,19 @@ export function encounterTypeReducer(encounterType, action) {
       return { ...encounterType, programEncounterForm: action.payload };
     case "programEncounterCancellationForm":
       return { ...encounterType, programEncounterCancellationForm: action.payload };
+    case "encounterEligibilityCheckDeclarativeRule":
+      return { ...encounterType, encounterEligibilityCheckDeclarativeRule: action.payload };
+    case "setLoaded":
+      return { ...encounterType, loaded: true };
     case "setData":
       return {
         ...encounterType,
         name: action.payload.name,
         encounterEligibilityCheckRule: action.payload.encounterEligibilityCheckRule,
-        active: action.payload.active
+        encounterEligibilityCheckDeclarativeRule:
+          action.payload.encounterEligibilityCheckDeclarativeRule,
+        active: action.payload.active,
+        loaded: true
       };
     default:
       return encounterType;

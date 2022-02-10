@@ -5,8 +5,6 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -23,6 +21,8 @@ import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
+import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
+import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 
 const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -36,8 +36,10 @@ const EncounterTypeCreate = props => {
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
+  const [ruleValidationError, setRuleValidationError] = useState();
 
   useEffect(() => {
+    dispatch({ type: "setLoaded" });
     http
       .get("/web/operationalModules")
       .then(response => {
@@ -62,7 +64,16 @@ const EncounterTypeCreate = props => {
       setSubjectValidation(true);
       hasError = true;
     }
-
+    const { jsCode, validationError } = validateRule(
+      encounterType.encounterEligibilityCheckDeclarativeRule,
+      holder => holder.generateEligibilityRule()
+    );
+    if (!_.isEmpty(validationError)) {
+      hasError = true;
+      setRuleValidationError(validationError);
+    } else if (!_.isEmpty(jsCode)) {
+      encounterType.encounterEligibilityCheckRule = jsCode;
+    }
     if (hasError) {
       return;
     }
@@ -73,6 +84,8 @@ const EncounterTypeCreate = props => {
       .post("/web/encounterType", {
         name: encounterType.name,
         encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
+        encounterEligibilityCheckDeclarativeRule:
+          encounterType.encounterEligibilityCheckDeclarativeRule,
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
         programEncounterCancelFormUuid: _.get(
@@ -225,24 +238,39 @@ const EncounterTypeCreate = props => {
                 label={"Encounter Eligibility Check Rule"}
                 toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
               />
-              <Editor
-                value={
-                  encounterType.encounterEligibilityCheckRule ||
-                  sampleEncounterEligibilityCheckRule()
-                }
-                onValueChange={event =>
-                  dispatch({ type: "encounterEligibilityCheckRule", payload: event })
-                }
-                highlight={code => highlight(code, languages.js)}
-                padding={10}
-                style={{
-                  fontFamily: '"Fira code", "Fira Mono", monospace',
-                  fontSize: 15,
-                  height: "auto",
-                  borderStyle: "solid",
-                  borderWidth: "1px"
-                }}
-              />
+              {encounterType.loaded && (
+                <RuleDesigner
+                  rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}
+                  onValueChange={jsonData =>
+                    dispatch({
+                      type: "encounterEligibilityCheckDeclarativeRule",
+                      payload: jsonData
+                    })
+                  }
+                  updateJsCode={declarativeRuleHolder =>
+                    dispatch({
+                      type: "encounterEligibilityCheckRule",
+                      payload: declarativeRuleHolder.generateEligibilityRule()
+                    })
+                  }
+                  jsCode={encounterType.encounterEligibilityCheckRule}
+                  error={ruleValidationError}
+                  subjectType={subjectT}
+                  getApplicableActions={state => state.getApplicableEncounterEligibilityActions()}
+                  sampleRule={sampleEncounterEligibilityCheckRule()}
+                  onJsCodeChange={event => {
+                    confirmBeforeRuleEdit(
+                      encounterType.encounterEligibilityCheckDeclarativeRule,
+                      () => dispatch({ type: "encounterEligibilityCheckRule", payload: event }),
+                      () =>
+                        dispatch({
+                          type: "encounterEligibilityCheckDeclarativeRule",
+                          payload: null
+                        })
+                    );
+                  }}
+                />
+              )}
               <p />
 
               <Button color="primary" variant="contained" type="submit">

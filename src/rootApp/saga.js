@@ -4,6 +4,7 @@ import {
   sendAuthConfigured,
   sendInitComplete,
   setAdminOrgs,
+  setOrganisationConfig,
   setUserInfo,
   types
 } from "./ducks";
@@ -26,6 +27,8 @@ const api = {
   fetchUserInfo: () => http.fetchJson("/me").then(response => response.json),
   fetchAdminOrgs: () => http.fetchJson("/organisation", {}, true).then(response => response.json),
   fetchTranslations: () => http.fetchJson("/web/translations").then(response => response.json),
+  fetchOrganisationConfig: () =>
+    http.fetchJson("/web/organisationConfig").then(response => response.json),
   saveUserInfo: userInfo => http.post("/me", userInfo)
 };
 
@@ -77,6 +80,10 @@ function* setUserDetails() {
   yield put(setUserInfo(userDetails));
   const organisationName = get(userDetails, "organisationName", "");
   document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(organisationName)}; path=/`;
+  if (!isEmpty(organisationName)) {
+    const organisationConfig = yield call(api.fetchOrganisationConfig);
+    yield put(setOrganisationConfig(get(organisationConfig, "organisationConfig", {})));
+  }
   const i18nInstance = i18n.use(initReactI18next).use(LanguageDetector);
   const i18nParams = {
     resources: translationData,

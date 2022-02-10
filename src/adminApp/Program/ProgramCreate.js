@@ -25,7 +25,6 @@ import {
 } from "../../formDesigner/common/SampleRule";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
-import { DeclarativeRuleHolder } from "rules-config";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -40,6 +39,7 @@ const ProgramCreate = props => {
   const [ruleValidationError, setRuleValidationError] = useState();
 
   useEffect(() => {
+    dispatch({ type: "setLoaded" });
     http
       .get("/web/operationalModules")
       .then(response => {
@@ -224,35 +224,39 @@ const ProgramCreate = props => {
                 label={"Enrolment Eligibility Check Rule"}
                 toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
               />
-              <RuleDesigner
-                rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
-                onValueChange={jsonData =>
-                  dispatch({
-                    type: "enrolmentEligibilityCheckDeclarativeRule",
-                    payload: jsonData
-                  })
-                }
-                updateJsCode={declarativeRuleHolder =>
-                  dispatch({
-                    type: "enrolmentEligibilityCheckRule",
-                    payload: declarativeRuleHolder.generateEligibilityRule()
-                  })
-                }
-                jsCode={program.enrolmentEligibilityCheckRule}
-                error={ruleValidationError}
-                subjectType={subjectT}
-                isRuleDesignerEnabled={true} //TODO:
-                getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
-                sampleRule={sampleEnrolmentEligibilityCheckRule()}
-                onJsCodeChange={event => {
-                  confirmBeforeRuleEdit(
-                    program.enrolmentEligibilityCheckDeclarativeRule,
-                    () => dispatch({ type: "enrolmentEligibilityCheckRule", payload: event }),
-                    () =>
-                      dispatch({ type: "enrolmentEligibilityCheckDeclarativeRule", payload: null })
-                  );
-                }}
-              />
+              {program.loaded && (
+                <RuleDesigner
+                  rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
+                  onValueChange={jsonData =>
+                    dispatch({
+                      type: "enrolmentEligibilityCheckDeclarativeRule",
+                      payload: jsonData
+                    })
+                  }
+                  updateJsCode={declarativeRuleHolder =>
+                    dispatch({
+                      type: "enrolmentEligibilityCheckRule",
+                      payload: declarativeRuleHolder.generateEligibilityRule()
+                    })
+                  }
+                  jsCode={program.enrolmentEligibilityCheckRule}
+                  error={ruleValidationError}
+                  subjectType={subjectT}
+                  getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
+                  sampleRule={sampleEnrolmentEligibilityCheckRule()}
+                  onJsCodeChange={event => {
+                    confirmBeforeRuleEdit(
+                      program.enrolmentEligibilityCheckDeclarativeRule,
+                      () => dispatch({ type: "enrolmentEligibilityCheckRule", payload: event }),
+                      () =>
+                        dispatch({
+                          type: "enrolmentEligibilityCheckDeclarativeRule",
+                          payload: null
+                        })
+                    );
+                  }}
+                />
+              )}
               <p />
 
               <Button color="primary" variant="contained" type="submit">

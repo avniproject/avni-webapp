@@ -1,3 +1,5 @@
+import { get } from "lodash";
+
 export const types = {
   INIT_COGNITO: "app/INIT_COGNITO",
   SET_COGNITO_USER: "app/SET_COGNITO_USER",
@@ -9,6 +11,7 @@ export const types = {
   AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
   GET_ADMIN_ORGANISATIONS: "app/GET_ADMIN_ORGANISATIONS",
   SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS",
+  SET_ORGANISATION_CONFIG: "app/SET_ORGANISATION_CONFIG",
   SET_TRANSLATIONS: "app/SET_TRANSLATIONS",
   SAVE_USER_INFO: "app/SAVE_USER_INFO"
 };
@@ -26,6 +29,13 @@ export const setAdminOrgs = organisations => ({
   type: types.SET_ADMIN_ORGANISATIONS,
   payload: {
     organisations
+  }
+});
+
+export const setOrganisationConfig = organisationConfig => ({
+  type: types.SET_ORGANISATION_CONFIG,
+  payload: {
+    organisationConfig
   }
 });
 
@@ -63,6 +73,9 @@ export const setTranslations = translations => ({
   translations
 });
 
+export const isRuleDesignerEnabled = state =>
+  get(state, "app.organisationConfig.enableRuleDesigner", false);
+
 const initialState = {
   authConfigured: false,
   user: {
@@ -75,7 +88,8 @@ const initialState = {
     id: undefined,
     name: undefined
   },
-  appInitialised: false
+  appInitialised: false,
+  organisationConfig: {}
 };
 
 // reducer
@@ -125,6 +139,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         organisations: action.payload.organisations
+      };
+    }
+    case types.SET_ORGANISATION_CONFIG: {
+      return {
+        ...state,
+        organisationConfig: action.payload.organisationConfig
       };
     }
     case types.SET_TRANSLATIONS: {
