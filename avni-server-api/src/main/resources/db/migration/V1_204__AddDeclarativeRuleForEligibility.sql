@@ -1,0 +1,2 @@
+ALTER TABLE program ADD COLUMN enrolment_eligibility_check_declarative_rule jsonb;
+ALTER TABLE encounter_type ADD COLUMN encounter_eligibility_check_declarative_rule jsonb;

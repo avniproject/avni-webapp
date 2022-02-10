@@ -47,6 +47,7 @@ public class ProgramService implements NonScopeAwareService {
         program.setColour(programRequest.getColour());
         program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(programRequest.getEnrolmentEligibilityCheckRule());
+        program.setEnrolmentEligibilityCheckDeclarativeRule(programRequest.getEnrolmentEligibilityCheckDeclarativeRule());
         program.setActive(programRequest.getActive());
         programRepository.save(program);
     }

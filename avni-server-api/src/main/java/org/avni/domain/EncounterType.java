@@ -6,6 +6,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.avni.application.projections.BaseProjection;
+import org.hibernate.annotations.Type;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -34,6 +35,10 @@ public class EncounterType extends OrganisationAwareEntity {
 
     @Column(name = "encounter_eligibility_check_rule")
     private String encounterEligibilityCheckRule;
+
+    @Column(name = "encounter_eligibility_check_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule encounterEligibilityCheckDeclarativeRule;
 
     private Boolean active;
 
@@ -90,6 +95,14 @@ public class EncounterType extends OrganisationAwareEntity {
 
     public void setActive(Boolean active) {
         this.active = Optional.ofNullable(active).orElse(true);
+    }
+
+    public DeclarativeRule getEncounterEligibilityCheckDeclarativeRule() {
+        return encounterEligibilityCheckDeclarativeRule;
+    }
+
+    public void setEncounterEligibilityCheckDeclarativeRule(DeclarativeRule encounterEligibilityCheckDeclarativeRule) {
+        this.encounterEligibilityCheckDeclarativeRule = encounterEligibilityCheckDeclarativeRule;
     }
 
     @Projection(name = "EncounterTypeProjection", types = {EncounterType.class})

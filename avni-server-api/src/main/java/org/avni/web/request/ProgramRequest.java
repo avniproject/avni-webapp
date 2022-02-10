@@ -1,5 +1,6 @@
 package org.avni.web.request;
 
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.Program;
 
 public class ProgramRequest {
@@ -11,6 +12,7 @@ public class ProgramRequest {
     private Boolean active;
     private String enrolmentEligibilityCheckRule;
     private String enrolmentSummaryRule;
+    private DeclarativeRule enrolmentEligibilityCheckDeclarativeRule;
 
     public String getName() {
         return name;
@@ -45,6 +47,7 @@ public class ProgramRequest {
         program.setActive(program.getActive());
         programRequest.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
         programRequest.setEnrolmentSummaryRule(program.getEnrolmentSummaryRule());
+        programRequest.setEnrolmentEligibilityCheckDeclarativeRule(program.getEnrolmentEligibilityCheckDeclarativeRule());
         return programRequest;
     }
 
@@ -78,5 +81,13 @@ public class ProgramRequest {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public DeclarativeRule getEnrolmentEligibilityCheckDeclarativeRule() {
+        return enrolmentEligibilityCheckDeclarativeRule;
+    }
+
+    public void setEnrolmentEligibilityCheckDeclarativeRule(DeclarativeRule enrolmentEligibilityCheckDeclarativeRule) {
+        this.enrolmentEligibilityCheckDeclarativeRule = enrolmentEligibilityCheckDeclarativeRule;
     }
 }

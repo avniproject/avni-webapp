@@ -1,5 +1,6 @@
 package org.avni.web.request.webapp;
 
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.OperationalEncounterType;
 import org.springframework.hateoas.core.Relation;
 import org.joda.time.DateTime;
@@ -28,6 +29,7 @@ public class EncounterTypeContractWeb {
     private String programEncounterFormUuid;
     private String programEncounterCancelFormUuid;
     private String programUuid;
+    private DeclarativeRule encounterEligibilityCheckDeclarativeRule;
 
     public String getName() {
         return name;
@@ -75,6 +77,7 @@ public class EncounterTypeContractWeb {
         contract.setLastModifiedBy(operationalEncounterType.getLastModifiedBy().getUsername());
         contract.setCreatedDateTime(operationalEncounterType.getCreatedDateTime());
         contract.setModifiedDateTime(operationalEncounterType.getLastModifiedDateTime());
+        contract.setEncounterEligibilityCheckDeclarativeRule(operationalEncounterType.getEncounterEligibilityCheckDeclarativeRule());
         return contract;
     }
 
@@ -172,5 +175,14 @@ public class EncounterTypeContractWeb {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+
+    public DeclarativeRule getEncounterEligibilityCheckDeclarativeRule() {
+        return encounterEligibilityCheckDeclarativeRule;
+    }
+
+    public void setEncounterEligibilityCheckDeclarativeRule(DeclarativeRule encounterEligibilityCheckDeclarativeRule) {
+        this.encounterEligibilityCheckDeclarativeRule = encounterEligibilityCheckDeclarativeRule;
     }
 }

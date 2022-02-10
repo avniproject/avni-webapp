@@ -1,5 +1,6 @@
 package org.avni.web.request.webapp;
 
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.OperationalProgram;
 import org.springframework.hateoas.core.Relation;
 
@@ -29,6 +30,7 @@ public class ProgramContractWeb {
     private String programEnrolmentFormUuid;
     private String programExitFormUuid;
     private String uuid;
+    private DeclarativeRule enrolmentEligibilityCheckDeclarativeRule;
 
     public String getName() {
         return name;
@@ -96,7 +98,7 @@ public class ProgramContractWeb {
         contract.setLastModifiedBy(operationalProgram.getLastModifiedBy().getUsername());
         contract.setCreatedDateTime(operationalProgram.getCreatedDateTime());
         contract.setModifiedDateTime(operationalProgram.getLastModifiedDateTime());
-
+        contract.setEnrolmentEligibilityCheckDeclarativeRule(operationalProgram.getEnrolmentEligibilityCheckDeclarativeRule());
         return contract;
     }
 
@@ -195,5 +197,13 @@ public class ProgramContractWeb {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public DeclarativeRule getEnrolmentEligibilityCheckDeclarativeRule() {
+        return enrolmentEligibilityCheckDeclarativeRule;
+    }
+
+    public void setEnrolmentEligibilityCheckDeclarativeRule(DeclarativeRule enrolmentEligibilityCheckDeclarativeRule) {
+        this.enrolmentEligibilityCheckDeclarativeRule = enrolmentEligibilityCheckDeclarativeRule;
     }
 }

@@ -102,6 +102,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
         encounterType.assignUUID();
         encounterType.setName(request.getName());
         encounterType.setEncounterEligibilityCheckRule(request.getEncounterEligibilityCheckRule());
+        encounterType.setEncounterEligibilityCheckDeclarativeRule(request.getEncounterEligibilityCheckDeclarativeRule());
         encounterType.setActive(request.getActive());
         encounterTypeRepository.save(encounterType);
         OperationalEncounterType operationalEncounterType = new OperationalEncounterType();
@@ -134,6 +135,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
 
         encounterType.setName(request.getName());
         encounterType.setEncounterEligibilityCheckRule(request.getEncounterEligibilityCheckRule());
+        encounterType.setEncounterEligibilityCheckDeclarativeRule(request.getEncounterEligibilityCheckDeclarativeRule());
         encounterType.setActive(request.getActive());
         encounterTypeRepository.save(encounterType);
 

@@ -43,6 +43,7 @@ public class EncounterTypeService implements NonScopeAwareService {
         encounterType.setEncounterEligibilityCheckRule(encounterTypeRequest.getEncounterEligibilityCheckRule());
         encounterType.setVoided(encounterTypeRequest.isVoided());
         encounterType.setActive(encounterTypeRequest.getActive());
+        encounterType.setEncounterEligibilityCheckDeclarativeRule(encounterTypeRequest.getEncounterEligibilityCheckDeclarativeRule());
         encounterTypeRepository.save(encounterType);
     }
 

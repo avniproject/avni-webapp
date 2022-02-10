@@ -58,4 +58,8 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     public String getEncounterEligibilityCheckRule() {
         return getEncounterType().getEncounterEligibilityCheckRule();
     }
+
+    public DeclarativeRule getEncounterEligibilityCheckDeclarativeRule() {
+        return getEncounterType().getEncounterEligibilityCheckDeclarativeRule();
+    }
 }

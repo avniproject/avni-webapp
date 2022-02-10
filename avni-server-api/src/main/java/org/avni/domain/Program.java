@@ -6,6 +6,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.avni.application.projections.BaseProjection;
+import org.hibernate.annotations.Type;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -35,6 +36,10 @@ public class Program extends OrganisationAwareEntity {
 
     @Column(name = "enrolment_eligibility_check_rule")
     private String enrolmentEligibilityCheckRule;
+
+    @Column(name = "enrolment_eligibility_check_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule enrolmentEligibilityCheckDeclarativeRule;
 
     private Boolean active;
 
@@ -105,6 +110,13 @@ public class Program extends OrganisationAwareEntity {
         this.active = Optional.ofNullable(active).orElse(true);
     }
 
+    public DeclarativeRule getEnrolmentEligibilityCheckDeclarativeRule() {
+        return enrolmentEligibilityCheckDeclarativeRule;
+    }
+
+    public void setEnrolmentEligibilityCheckDeclarativeRule(DeclarativeRule enrolmentEligibilityCheckDeclarativeRule) {
+        this.enrolmentEligibilityCheckDeclarativeRule = enrolmentEligibilityCheckDeclarativeRule;
+    }
 
     @Projection(name = "ProgramProjection", types = {Program.class})
     public interface ProgramProjection extends BaseProjection {
