@@ -2,7 +2,9 @@ package org.avni.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.avni.domain.Concept;
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.OrganisationAwareEntity;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -33,6 +35,18 @@ public class Form extends OrganisationAwareEntity {
 
     @Column(name = "checklists_rule")
     private String checklistsRule;
+
+    @Column(name = "validation_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule validationDeclarativeRule;
+
+    @Column(name = "decision_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule decisionDeclarativeRule;
+
+    @Column(name = "visit_schedule_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule visitScheduleDeclarativeRule;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
     private Set<DecisionConcept> decisionConcepts = new HashSet<>();
@@ -121,6 +135,30 @@ public class Form extends OrganisationAwareEntity {
 
     public void setValidationRule(String validationRule) {
         this.validationRule = validationRule;
+    }
+
+    public DeclarativeRule getValidationDeclarativeRule() {
+        return validationDeclarativeRule;
+    }
+
+    public void setValidationDeclarativeRule(DeclarativeRule validationDeclarativeRule) {
+        this.validationDeclarativeRule = validationDeclarativeRule;
+    }
+
+    public DeclarativeRule getDecisionDeclarativeRule() {
+        return decisionDeclarativeRule;
+    }
+
+    public void setDecisionDeclarativeRule(DeclarativeRule decisionDeclarativeRule) {
+        this.decisionDeclarativeRule = decisionDeclarativeRule;
+    }
+
+    public DeclarativeRule getVisitScheduleDeclarativeRule() {
+        return visitScheduleDeclarativeRule;
+    }
+
+    public void setVisitScheduleDeclarativeRule(DeclarativeRule visitScheduleDeclarativeRule) {
+        this.visitScheduleDeclarativeRule = visitScheduleDeclarativeRule;
     }
 
     public String getChecklistsRule() {

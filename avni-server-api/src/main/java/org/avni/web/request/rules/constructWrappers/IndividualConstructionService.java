@@ -84,6 +84,7 @@ public class IndividualConstructionService {
         SubjectTypeContract subjectTypeContract = new SubjectTypeContract();
         subjectTypeContract.setName(subjectType.getName());
         subjectTypeContract.setUuid(subjectType.getUuid());
+        subjectTypeContract.setType(subjectType.getType().toString());
         return subjectTypeContract;
     }
 

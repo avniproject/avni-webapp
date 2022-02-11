@@ -279,6 +279,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             BeanUtils.copyProperties(concept, conceptContract);
             formContract.addDecisionConcept(conceptContract);
         });
+        formContract.setValidationDeclarativeRule(form.getValidationDeclarativeRule());
+        formContract.setDecisionDeclarativeRule(form.getDecisionDeclarativeRule());
+        formContract.setVisitScheduleDeclarativeRule(form.getVisitScheduleDeclarativeRule());
 
         if (form.getFormType().equals(FormType.IndividualProfile)) {
             //Assuming that we'll have single registration form per subject types

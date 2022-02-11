@@ -43,6 +43,9 @@ public class FormService implements NonScopeAwareService {
                 .withValidationRule(formRequest.getValidationRule())
                 .withChecklistRule(formRequest.getChecklistsRule())
                 .withVoided(formRequest.isVoided())
+                .withValidationDeclarativeRule(formRequest.getValidationDeclarativeRule())
+                .withDecisionDeclarativeRule(formRequest.getDecisionDeclarativeRule())
+                .withVisitScheduleDeclarativeRule(formRequest.getVisitScheduleDeclarativeRule())
                 .build();
 
         mapDecisionConcepts(formRequest, form);

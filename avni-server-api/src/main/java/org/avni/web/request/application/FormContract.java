@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.avni.application.Form;
 import org.avni.application.FormType;
 import org.avni.domain.ConceptDataType;
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.SubjectType;
 import org.avni.web.request.ConceptContract;
 import org.avni.web.request.ReferenceDataContract;
@@ -39,6 +40,9 @@ public class FormContract extends ReferenceDataContract {
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
     private List<ConceptContract> decisionConcepts = new ArrayList<>();
+    private DeclarativeRule validationDeclarativeRule;
+    private DeclarativeRule decisionDeclarativeRule;
+    private DeclarativeRule visitScheduleDeclarativeRule;
 
     public FormContract() {
     }
@@ -138,6 +142,9 @@ public class FormContract extends ReferenceDataContract {
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
         formContract.setChecklistsRule(form.getChecklistsRule());
+        formContract.setDecisionDeclarativeRule(form.getDecisionDeclarativeRule());
+        formContract.setValidationDeclarativeRule(form.getValidationDeclarativeRule());
+        formContract.setVisitScheduleDeclarativeRule(form.getVisitScheduleDeclarativeRule());
 
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
@@ -229,5 +236,29 @@ public class FormContract extends ReferenceDataContract {
 
     public void setDecisionConcepts(List<ConceptContract> decisionConcepts) {
         this.decisionConcepts = decisionConcepts;
+    }
+
+    public DeclarativeRule getValidationDeclarativeRule() {
+        return validationDeclarativeRule;
+    }
+
+    public void setValidationDeclarativeRule(DeclarativeRule validationDeclarativeRule) {
+        this.validationDeclarativeRule = validationDeclarativeRule;
+    }
+
+    public DeclarativeRule getDecisionDeclarativeRule() {
+        return decisionDeclarativeRule;
+    }
+
+    public void setDecisionDeclarativeRule(DeclarativeRule decisionDeclarativeRule) {
+        this.decisionDeclarativeRule = decisionDeclarativeRule;
+    }
+
+    public DeclarativeRule getVisitScheduleDeclarativeRule() {
+        return visitScheduleDeclarativeRule;
+    }
+
+    public void setVisitScheduleDeclarativeRule(DeclarativeRule visitScheduleDeclarativeRule) {
+        this.visitScheduleDeclarativeRule = visitScheduleDeclarativeRule;
     }
 }

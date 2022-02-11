@@ -4,6 +4,7 @@ import org.avni.application.Form;
 import org.avni.application.FormElementGroup;
 import org.avni.application.FormType;
 import org.avni.domain.Concept;
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.Organisation;
 import org.avni.web.request.CHSRequest;
 import org.avni.web.request.ConceptContract;
@@ -51,6 +52,19 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
 
     public FormBuilder withVoided(boolean voided) {
         this.get().setVoided(voided);
+        return this;
+    }
+
+    public FormBuilder withValidationDeclarativeRule(DeclarativeRule validationDeclarativeRule) {
+        this.get().setValidationDeclarativeRule(validationDeclarativeRule);
+        return this;
+    }
+    public FormBuilder withDecisionDeclarativeRule(DeclarativeRule decisionDeclarativeRule) {
+        this.get().setDecisionDeclarativeRule(decisionDeclarativeRule);
+        return this;
+    }
+    public FormBuilder withVisitScheduleDeclarativeRule(DeclarativeRule visitScheduleDeclarativeRule) {
+        this.get().setVisitScheduleDeclarativeRule(visitScheduleDeclarativeRule);
         return this;
     }
 
