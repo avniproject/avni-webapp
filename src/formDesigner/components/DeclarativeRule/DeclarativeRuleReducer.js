@@ -193,6 +193,29 @@ const deleteDeclarativeRule = (declarativeRuleHolder, { declarativeRuleIndex }) 
   return newState;
 };
 
+const decisionConcept = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, index, name, uuid, dataType }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  declarativeRule.actions[index].addDetails("conceptName", name);
+  declarativeRule.actions[index].addDetails("conceptUuid", uuid);
+  declarativeRule.actions[index].addDetails("conceptDataType", dataType);
+  return newState;
+};
+
+const decisionCodedValue = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, index, labelValues }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const { names } = getConceptNamesAndUUIDs(labelValues);
+  declarativeRule.actions[index].addDetails("value", names);
+  return newState;
+};
+
 export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
   const actionFns = {
     newCondition: newCondition,
@@ -211,7 +234,9 @@ export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
     answerToSkipChange: answerToSkipChange,
     resetState: resetState,
     newDeclarativeRule: newDeclarativeRule,
-    deleteDeclarativeRule: deleteDeclarativeRule
+    deleteDeclarativeRule: deleteDeclarativeRule,
+    decisionConcept: decisionConcept,
+    decisionCodedValue: decisionCodedValue
   };
   const actionFn = actionFns[action.type] || (() => declarativeRuleHolder);
   const newState = actionFn(declarativeRuleHolder, action.payload);

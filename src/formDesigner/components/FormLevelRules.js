@@ -89,12 +89,17 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
         title={"Decision Rule"}
         onValueChange={jsonData => onDeclarativeRuleUpdate("decisionDeclarativeRule", jsonData)}
         rulesJson={form.decisionDeclarativeRule}
-        updateJsCode={declarativeRuleHolder => {}}
+        updateJsCode={declarativeRuleHolder =>
+          props.onRuleUpdate(
+            "decisionRule",
+            declarativeRuleHolder.generateDecisionRule(props.entityName)
+          )
+        }
         jsCode={form.decisionRule}
         error={get(form, "ruleError.decisionRule")}
         subjectType={form.subjectType}
         formType={form.formType}
-        getApplicableActions={state => {}}
+        getApplicableActions={state => state.getApplicableDecisionRulActions()}
         sampleRule={sampleDecisionRule(props.entityName)}
         onJsCodeChange={event =>
           confirmBeforeRuleEdit(

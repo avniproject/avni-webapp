@@ -851,14 +851,20 @@ class FormDetails extends Component {
       produce(draft => {
         draft.nameError = draft.name === "" ? true : false;
         draft.form.ruleError = {};
-        const { validationDeclarativeRule } = draft.form;
+        const { validationDeclarativeRule, decisionDeclarativeRule } = draft.form;
         const isValidationError = this.validateFormLevelRules(
           draft.form,
           validationDeclarativeRule,
           "validationRule",
           "generateFormValidationRule"
         );
-        flag = isValidationError;
+        const isDecisionError = this.validateFormLevelRules(
+          draft.form,
+          decisionDeclarativeRule,
+          "decisionRule",
+          "generateDecisionRule"
+        );
+        flag = isValidationError || isDecisionError;
         _.forEach(draft.form.formElementGroups, group => {
           group.errorMessage = {};
           group.error = false;
