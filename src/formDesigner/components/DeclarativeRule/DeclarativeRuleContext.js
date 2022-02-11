@@ -24,3 +24,8 @@ export const getFormType = () => {
   const { formType } = useContext(DeclarativeRuleContext);
   return formType;
 };
+
+export const getEncounterTypes = () => {
+  const { encounterTypes } = useContext(DeclarativeRuleContext);
+  return encounterTypes;
+};

@@ -55,7 +55,8 @@ const DeclarativeFormRule = ({
   formType,
   getApplicableActions,
   sampleRule,
-  onJsCodeChange
+  onJsCodeChange,
+  encounterTypes
 }) => {
   return (
     <RulePanel
@@ -74,6 +75,7 @@ const DeclarativeFormRule = ({
             sampleRule={sampleRule}
             onJsCodeChange={onJsCodeChange}
             disableEditor={disabled}
+            encounterTypes={encounterTypes}
           />
           <div>{children}</div>
         </Fragment>
@@ -82,7 +84,13 @@ const DeclarativeFormRule = ({
   );
 };
 
-const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) => {
+const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterTypes, ...props }) => {
+  const commonProps = {
+    encounterTypes,
+    subjectType: form.subjectType,
+    formType: form.formType,
+    disabled
+  };
   return (
     <div>
       <DeclarativeFormRule
@@ -97,9 +105,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
         }
         jsCode={form.decisionRule}
         error={get(form, "ruleError.decisionRule")}
-        subjectType={form.subjectType}
-        formType={form.formType}
-        getApplicableActions={state => state.getApplicableDecisionRulActions()}
+        getApplicableActions={state => state.getApplicableDecisionRuleActions()}
         sampleRule={sampleDecisionRule(props.entityName)}
         onJsCodeChange={event =>
           confirmBeforeRuleEdit(
@@ -108,7 +114,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
             () => onDeclarativeRuleUpdate("decisionDeclarativeRule", null)
           )
         }
-        disabled={disabled}
+        {...commonProps}
       >
         <Box mt={5}>
           <Typography gutterBottom variant="body1" component="div">
@@ -133,12 +139,15 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
           onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", jsonData)
         }
         rulesJson={form.visitScheduleDeclarativeRule}
-        updateJsCode={declarativeRuleHolder => {}}
+        updateJsCode={declarativeRuleHolder =>
+          props.onRuleUpdate(
+            "visitScheduleRule",
+            declarativeRuleHolder.generateVisitScheduleRule(props.entityName)
+          )
+        }
         jsCode={form.visitScheduleRule}
         error={get(form, "ruleError.visitScheduleRule")}
-        subjectType={form.subjectType}
-        formType={form.formType}
-        getApplicableActions={state => {}}
+        getApplicableActions={state => state.getApplicableVisitScheduleRuleActions()}
         sampleRule={sampleVisitScheduleRule(props.entityName)}
         onJsCodeChange={event =>
           confirmBeforeRuleEdit(
@@ -147,7 +156,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
             () => onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", null)
           )
         }
-        disabled={disabled}
+        {...commonProps}
       />
       <DeclarativeFormRule
         title={"Validation Rule"}
@@ -161,8 +170,6 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
         }
         jsCode={form.validationRule}
         error={get(form, "ruleError.validationRule")}
-        subjectType={form.subjectType}
-        formType={form.formType}
         getApplicableActions={state => state.getApplicableFormValidationRuleActions()}
         sampleRule={sampleValidationRule(props.entityName)}
         onJsCodeChange={event =>
@@ -172,7 +179,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, ...props }) =
             () => onDeclarativeRuleUpdate("validationDeclarativeRule", null)
           )
         }
-        disabled={disabled}
+        {...commonProps}
       />
       {form.formType === "ProgramEnrolment" && (
         <RulePanel

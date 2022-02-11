@@ -19,6 +19,7 @@ const DeclarativeRules = ({
   subjectType,
   formType,
   getApplicableActions = noop,
+  encounterTypes = [],
   ...props
 }) => {
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
@@ -64,7 +65,8 @@ const DeclarativeRules = ({
         state: declarativeRuleHolder,
         dispatch: dispatch,
         formType: formType,
-        subjectType: subjectType
+        subjectType: subjectType,
+        encounterTypes: encounterTypes
       }}
     >
       {!isEmpty(errorMessage) && <div style={{ color: "red" }}>{errorMessage}</div>}

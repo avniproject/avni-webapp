@@ -125,6 +125,11 @@ class FormDetails extends Component {
       this.setState({ groupSubjectTypes });
     });
 
+    http.get("/web/encounterType").then(res => {
+      const encounterTypes = _.get(res, "data._embedded.encounterType", []);
+      this.setState({ encounterTypes });
+    });
+
     return this.getForm();
   }
 
@@ -851,7 +856,11 @@ class FormDetails extends Component {
       produce(draft => {
         draft.nameError = draft.name === "" ? true : false;
         draft.form.ruleError = {};
-        const { validationDeclarativeRule, decisionDeclarativeRule } = draft.form;
+        const {
+          validationDeclarativeRule,
+          decisionDeclarativeRule,
+          visitScheduleDeclarativeRule
+        } = draft.form;
         const isValidationError = this.validateFormLevelRules(
           draft.form,
           validationDeclarativeRule,
@@ -864,7 +873,13 @@ class FormDetails extends Component {
           "decisionRule",
           "generateDecisionRule"
         );
-        flag = isValidationError || isDecisionError;
+        const isVisitScheduleError = this.validateFormLevelRules(
+          draft.form,
+          visitScheduleDeclarativeRule,
+          "visitScheduleRule",
+          "generateVisitScheduleRule"
+        );
+        flag = isValidationError || isDecisionError || isVisitScheduleError;
         _.forEach(draft.form.formElementGroups, group => {
           group.errorMessage = {};
           group.error = false;
@@ -1484,6 +1499,7 @@ class FormDetails extends Component {
               onToggleExpandPanel={this.onToggleExpandPanel}
               entityName={this.getEntityNameForRules()}
               disabled={this.state.disableForm}
+              encounterTypes={this.state.encounterTypes}
             />
           </div>
         </Grid>

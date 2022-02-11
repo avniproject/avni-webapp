@@ -12,7 +12,6 @@ const ActionComponent = ({
   getApplicableActions,
   ...props
 }) => {
-  console.log("action =>>>", action);
   const dispatch = useDeclarativeRuleDispatch();
   const state = useDeclarativeRuleState();
   const types = map(getApplicableActions(state), (v, k) => ({

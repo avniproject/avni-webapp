@@ -18,7 +18,8 @@ const RuleDesigner = ({
   getApplicableActions,
   sampleRule,
   onJsCodeChange,
-  disableEditor
+  disableEditor,
+  encounterTypes
 }) => {
   const showDeclarativeRules = useSelector(isRuleDesignerEnabled);
   return (
@@ -34,6 +35,7 @@ const RuleDesigner = ({
           formType={formType}
           isRuleDesignerEnabled={isRuleDesignerEnabled}
           getApplicableActions={getApplicableActions}
+          encounterTypes={encounterTypes}
         />
       )}
       <Editor
