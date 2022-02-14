@@ -480,7 +480,7 @@ class FormDetails extends Component {
           entityName: this.getEntityNameForRules(),
           disableGroup: this.state.disableForm,
           subjectType: this.state.subjectType,
-          formType: this.state.formType
+          form: this.state.form
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }

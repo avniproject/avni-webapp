@@ -14,12 +14,12 @@ const RuleDesigner = ({
   jsCode,
   error,
   subjectType,
-  formType,
   getApplicableActions,
   sampleRule,
   onJsCodeChange,
   disableEditor,
-  encounterTypes
+  encounterTypes,
+  form
 }) => {
   const showDeclarativeRules = useSelector(isRuleDesignerEnabled);
   return (
@@ -32,10 +32,10 @@ const RuleDesigner = ({
           jsCode={jsCode}
           error={error}
           subjectType={subjectType}
-          formType={formType}
           isRuleDesignerEnabled={isRuleDesignerEnabled}
           getApplicableActions={getApplicableActions}
           encounterTypes={encounterTypes}
+          form={form}
         />
       )}
       <Editor

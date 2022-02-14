@@ -8,16 +8,28 @@ import { inlineConceptDataType } from "../../common/constants";
 import { Action, AddDecisionActionDetails, VisitScheduleActionDetails } from "rules-config";
 import {
   getEncounterTypes,
+  getForm,
   getFormType,
   useDeclarativeRuleDispatch
 } from "./DeclarativeRuleContext";
 import Select from "react-select";
 
-function VisitScheduleDetails({ actionDetails, onActionChange }) {
-  const dateFieldOptions = VisitScheduleActionDetails.formTypeToDateFieldMap[getFormType()] || [];
-  const selectedDateField = get(actionDetails, "dateField");
+function VisitScheduleDetails({
+  actionDetails,
+  onActionChange,
+  declarativeRuleIndex,
+  index,
+  dispatch
+}) {
+  const dateFieldOptions = VisitScheduleActionDetails.getDateFieldOptions(getForm());
+  const dateField = get(actionDetails, "dateField");
+  const dateFieldUuid = get(actionDetails, "dateFieldUuid");
   const encounterTypes = getEncounterTypes();
   const selectedET = get(actionDetails, "encounterType");
+  const selectedDateFieldOption = {
+    label: startCase(dateField),
+    value: { dateField, dateFieldUuid, toString: () => dateField }
+  };
 
   return (
     <Fragment>
@@ -37,22 +49,20 @@ function VisitScheduleDetails({ actionDetails, onActionChange }) {
           <Grid item xs={3}>
             <Select
               placeholder="Date field to use"
-              value={
-                selectedDateField
-                  ? {
-                      value: selectedDateField,
-                      label: startCase(selectedDateField)
-                    }
-                  : null
-              }
-              options={map(dateFieldOptions, s => ({ value: s, label: startCase(s) }))}
+              value={dateField ? selectedDateFieldOption : null}
+              options={dateFieldOptions}
               style={{ width: "auto" }}
-              onChange={event => onActionChange("dateField", event.value)}
+              onChange={event =>
+                dispatch({
+                  type: "visitDateField",
+                  payload: { declarativeRuleIndex, index, ...event.value }
+                })
+              }
             />
           </Grid>
         </Fragment>
       )}
-      {!isEmpty(selectedDateField) && (
+      {!isEmpty(dateField) && (
         <Fragment>
           <MiddleText text={"Schedule on"} />
           <Grid item xs={1}>
@@ -72,7 +82,7 @@ function VisitScheduleDetails({ actionDetails, onActionChange }) {
               onChange={event => onActionChange("daysToOverdue", event.target.value)}
             />
           </Grid>
-          <MiddleText xs={3} text={`Days from the ${startCase(selectedDateField)}`} />
+          <MiddleText xs={3} text={`Days from the ${startCase(dateField)}`} />
         </Fragment>
       )}
     </Fragment>
@@ -227,7 +237,13 @@ const ActionDetailsComponent = ({
         />
       )}
       {selectedType === actionTypes.ScheduleVisit && (
-        <VisitScheduleDetails onActionChange={onActionChange} actionDetails={actionDetails} />
+        <VisitScheduleDetails
+          onActionChange={onActionChange}
+          actionDetails={actionDetails}
+          declarativeRuleIndex={declarativeRuleIndex}
+          index={index}
+          dispatch={dispatch}
+        />
       )}
     </Fragment>
   );

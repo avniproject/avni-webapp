@@ -52,7 +52,7 @@ const DeclarativeFormRule = ({
   jsCode,
   error,
   subjectType,
-  formType,
+  form,
   getApplicableActions,
   sampleRule,
   onJsCodeChange,
@@ -70,7 +70,7 @@ const DeclarativeFormRule = ({
             jsCode={jsCode}
             error={error}
             subjectType={subjectType}
-            formType={formType}
+            form={form}
             getApplicableActions={getApplicableActions}
             sampleRule={sampleRule}
             onJsCodeChange={onJsCodeChange}
@@ -88,8 +88,8 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
   const commonProps = {
     encounterTypes,
     subjectType: form.subjectType,
-    formType: form.formType,
-    disabled
+    disabled,
+    form
   };
   return (
     <div>

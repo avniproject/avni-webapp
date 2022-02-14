@@ -18901,9 +18901,9 @@ rsvp@^4.8.4:
     webpack-cli "^3.0.3"
     webpack-node-externals "1.6.0"
 
-"rules-config@github:openchs/rules-config#9695ac983840a0aa2d6bdda2703cf12afa648815":
+"rules-config@github:openchs/rules-config#44c542178a8cd5f0992c790b5ff1ef001c5006f2":
   version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/9695ac983840a0aa2d6bdda2703cf12afa648815"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/44c542178a8cd5f0992c790b5ff1ef001c5006f2"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"

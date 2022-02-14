@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useReducer } from "react";
 import DeclarativeRuleComponent from "./DeclarativeRuleComponent";
-import { isEmpty, map, size, noop } from "lodash";
+import { isEmpty, map, size, noop, get } from "lodash";
 import RuleSummaryComponent from "./RuleSummaryComponent";
 import Button from "@material-ui/core/Button";
 import { DeclarativeRuleHolder } from "rules-config";
@@ -17,9 +17,9 @@ const DeclarativeRules = ({
   updateJsCode,
   error,
   subjectType,
-  formType,
   getApplicableActions = noop,
   encounterTypes = [],
+  form,
   ...props
 }) => {
   const initialState = DeclarativeRuleHolder.fromResource(rulesJson);
@@ -64,9 +64,10 @@ const DeclarativeRules = ({
       value={{
         state: declarativeRuleHolder,
         dispatch: dispatch,
-        formType: formType,
+        formType: get(form, "formType"),
         subjectType: subjectType,
-        encounterTypes: encounterTypes
+        encounterTypes: encounterTypes,
+        form: form
       }}
     >
       {!isEmpty(errorMessage) && <div style={{ color: "red" }}>{errorMessage}</div>}

@@ -216,6 +216,17 @@ const decisionCodedValue = (
   return newState;
 };
 
+const visitDateField = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, index, dateField, dateFieldUuid }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  declarativeRule.actions[index].addDetails("dateField", dateField);
+  declarativeRule.actions[index].addDetails("dateFieldUuid", dateFieldUuid);
+  return newState;
+};
+
 export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
   const actionFns = {
     newCondition: newCondition,
@@ -236,7 +247,8 @@ export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
     newDeclarativeRule: newDeclarativeRule,
     deleteDeclarativeRule: deleteDeclarativeRule,
     decisionConcept: decisionConcept,
-    decisionCodedValue: decisionCodedValue
+    decisionCodedValue: decisionCodedValue,
+    visitDateField: visitDateField
   };
   const actionFn = actionFns[action.type] || (() => declarativeRuleHolder);
   const newState = actionFn(declarativeRuleHolder, action.payload);

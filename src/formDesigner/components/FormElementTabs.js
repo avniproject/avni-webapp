@@ -113,7 +113,7 @@ function FormElementTabs(props) {
           jsCode={props.formElementData.rule}
           error={get(props.formElementData, "errorMessage.ruleError")}
           subjectType={props.subjectType}
-          formType={props.formType}
+          form={props.form}
           getApplicableActions={state => state.getApplicableViewFilterActions()}
           sampleRule={sampleFormElementRule(props.entityName)}
           onJsCodeChange={onSkipLogicRuleChange}
