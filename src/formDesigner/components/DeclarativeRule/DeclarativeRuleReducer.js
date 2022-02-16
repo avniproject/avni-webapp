@@ -1,5 +1,5 @@
 import { Condition, Action, RHS, LHS, DeclarativeRuleHolder } from "rules-config";
-import { isEmpty, forEach, size } from "lodash";
+import { forEach, size } from "lodash";
 
 const resetState = () => {
   return DeclarativeRuleHolder.fromResource();
@@ -149,10 +149,10 @@ const actionChange = (
     if (oldAction.actionType !== value) {
       declarativeRule.actions[index] = new Action();
     }
-    if (isEmpty(oldAction.actionType) && size(types) > 1) {
-      declarativeRule.addAction(new Action());
-    }
     declarativeRule.actions[index].setActionType(value);
+    if (size(types) > 1) {
+      declarativeRule.addNewAction();
+    }
   } else {
     declarativeRule.actions[index].addDetails(property, value);
   }

@@ -35,7 +35,8 @@ const ActionComponent = ({
           value={selectedType ? { value: selectedType, label: startCase(selectedType) } : null}
           options={types}
           style={{ width: "auto" }}
-          onChange={event => onActionChange("actionType", event.value)}
+          onChange={event => onActionChange("actionType", get(event, "value", null))}
+          isClearable={true}
         />
       </Grid>
       <ActionDetailsComponent
