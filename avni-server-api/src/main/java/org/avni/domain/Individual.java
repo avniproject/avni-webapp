@@ -220,6 +220,7 @@ public class Individual extends OrganisationAwareEntity {
         this.relationshipsFromOthersToSelf = relationshipsFromOthersToSelf;
     }
 
+    @JsonIgnore
     public Set<GroupSubject> getGroupSubjects() {
         return groupSubjects;
     }
@@ -271,6 +272,7 @@ public class Individual extends OrganisationAwareEntity {
         }
     }
 
+    @JsonIgnore
     public Set<ProgramEncounter> getProgramEncounters() {
         HashSet<ProgramEncounter> programEncounters = new HashSet<>();
         this.programEnrolments.forEach(programEnrolment -> programEncounters.addAll(programEnrolment.getProgramEncounters()));
