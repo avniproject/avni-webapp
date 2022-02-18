@@ -17,10 +17,10 @@ public class ProgramCreator {
         this.programRepository = programRepository;
     }
 
-    public Program getProgram(String name, List<String> errorMsgs, String identifierForErrorMessage) {
+    public Program getProgram(String name, String header) throws Exception {
         Program program = programRepository.findByName(name);
         if (program == null) {
-            errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
+            throw new Exception(String.format("'%s' '%s' not found", header, name));
         }
         return program;
     }

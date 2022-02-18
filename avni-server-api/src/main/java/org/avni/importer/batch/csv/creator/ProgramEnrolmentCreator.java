@@ -16,15 +16,13 @@ public class ProgramEnrolmentCreator {
         this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
-    public ProgramEnrolment getProgramEnrolment(String enrolmentId, List<String> errorMsgs, String identifierForErrorMessage) {
+    public ProgramEnrolment getProgramEnrolment(String enrolmentId, String identifierForErrorMessage) throws Exception {
         if (enrolmentId == null || enrolmentId.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
-            return null;
+            throw new Exception(String.format("'%s' is required", identifierForErrorMessage));
         }
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(enrolmentId);
         if (programEnrolment == null) {
-            errorMsgs.add(String.format("'%s' not found in database", identifierForErrorMessage));
-            return null;
+            throw new Exception(String.format("'%s' id '%s' not found in database", identifierForErrorMessage, enrolmentId));
         }
         return programEnrolment;
     }

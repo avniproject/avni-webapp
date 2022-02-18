@@ -65,6 +65,20 @@ public class ProgramEnrolmentConstructionService {
         return programEnrolmentContractWrapper;
     }
 
+    public ProgramEnrolmentContractWrapper constructProgramEnrolmentContract(ProgramEnrolment programEnrolment) {
+        ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = new ProgramEnrolmentContractWrapper();
+        programEnrolmentContractWrapper.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
+        programEnrolmentContractWrapper.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
+        programEnrolmentContractWrapper.setUuid(programEnrolment.getUuid());
+        programEnrolmentContractWrapper.setVoided(programEnrolment.isVoided());
+        programEnrolmentContractWrapper.setObservations(observationService.constructObservationModelContracts(programEnrolment.getObservations()));
+        programEnrolmentContractWrapper.setExitObservations(observationService.constructObservationModelContracts(programEnrolment.getProgramExitObservations()));
+        if (programEnrolment.getIndividual() != null) {
+            programEnrolmentContractWrapper.setSubject(getSubjectInfo(programEnrolment.getIndividual()));
+        }
+        return programEnrolmentContractWrapper;
+    }
+
     public List<ChecklistDetailRequest> constructChecklistDetailRequest() {
         List<ChecklistDetail> checklistDetails = checklistDetailRepository.findAllByIsVoidedFalse();
         return checklistDetails
@@ -98,7 +112,7 @@ public class ProgramEnrolmentConstructionService {
         return individualContractWrapper;
     }
 
-    private IndividualContractWrapper constructBasicSubject(Individual individual) {
+    public IndividualContractWrapper constructBasicSubject(Individual individual) {
         IndividualContractWrapper individualContractWrapper = new IndividualContractWrapper();
         if (individual == null) {
             return null;

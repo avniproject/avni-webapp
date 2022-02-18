@@ -1,10 +1,10 @@
 package org.avni.importer.batch.csv.creator;
 
-import org.joda.time.LocalDate;
-import org.avni.application.FormType;
 import org.avni.domain.AbstractEncounter;
-import org.avni.importer.batch.csv.writer.header.ProgramEncounterHeaders;
+import org.avni.domain.EncounterType;
+import org.avni.importer.batch.csv.writer.header.CommonEncounterHeaders;
 import org.avni.importer.batch.model.Row;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,23 +14,19 @@ import java.util.List;
 @Component
 public class BasicEncounterCreator {
 
-    private static ProgramEncounterHeaders headers = new ProgramEncounterHeaders();
+    private static CommonEncounterHeaders headers = new CommonEncounterHeaders();
     private final LocationCreator locationCreator;
-    private ObservationCreator observationCreator;
     private DateCreator dateCreator;
     private EncounterTypeCreator encounterTypeCreator;
 
-
     @Autowired
-    public BasicEncounterCreator(ObservationCreator observationCreator,
-                                 EncounterTypeCreator encounterTypeCreator) {
-        this.observationCreator = observationCreator;
+    public BasicEncounterCreator(EncounterTypeCreator encounterTypeCreator) {
         this.encounterTypeCreator = encounterTypeCreator;
         this.locationCreator = new LocationCreator();
         this.dateCreator = new DateCreator();
     }
 
-    public AbstractEncounter updateEncounter(Row row, AbstractEncounter basicEncounter, List<String> allErrorMsgs, FormType formType) throws Exception {
+    public AbstractEncounter updateEncounter(Row row, AbstractEncounter basicEncounter, List<String> allErrorMsgs) throws Exception {
 
         LocalDate earliestVisitDate = dateCreator.getDate(
                 row,
@@ -56,13 +52,8 @@ public class BasicEncounterCreator {
 
         basicEncounter.setEncounterLocation(locationCreator.getLocation(row, headers.encounterLocation, allErrorMsgs));
         basicEncounter.setCancelLocation(locationCreator.getLocation(row, headers.cancelLocation, allErrorMsgs));
-        basicEncounter.setEncounterType(encounterTypeCreator.getEncounterType(row.get(headers.encounterType), allErrorMsgs, headers.encounterType));
-        basicEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, formType, basicEncounter.getObservations()));
-
-        if (allErrorMsgs.size() > 0) {
-            throw new Exception(String.join(", ", allErrorMsgs));
-        }
-
+        EncounterType encounterType = encounterTypeCreator.getEncounterType(row.get(headers.encounterType), headers.encounterType);
+        basicEncounter.setEncounterType(encounterType);
         return basicEncounter;
     }
 }

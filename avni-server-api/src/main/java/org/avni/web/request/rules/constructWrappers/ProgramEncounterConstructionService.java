@@ -69,10 +69,7 @@ public class ProgramEncounterConstructionService {
         }
         if (request.getProgramEnrolmentUUID() != null) {
             ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID());
-            ProgramEnrolmentContractWrapper enrolmentContract = constructEnrolments(programEnrolment);
-            Set<ProgramEncounterContractWrapper> encountersContractList = constructEncountersExcludingSelf(programEnrolment.getProgramEncounters(), request.getUuid());
-            enrolmentContract.setProgramEncounters(encountersContractList);
-            enrolmentContract.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
+            ProgramEnrolmentContractWrapper enrolmentContract = constructEnrolments(programEnrolment, request.getUuid());
             programEncounterContractWrapper.setProgramEnrolment(enrolmentContract);
         }
         if (request.getEncounterTypeUUID() != null) {
@@ -144,7 +141,7 @@ public class ProgramEncounterConstructionService {
         return programEncounterContractWrapper;
     }
 
-    public ProgramEnrolmentContractWrapper constructEnrolments(ProgramEnrolment programEnrolment) {
+    public ProgramEnrolmentContractWrapper constructEnrolments(ProgramEnrolment programEnrolment, String currentProgramEncounterUUID) {
         ProgramEnrolmentContractWrapper enrolmentContract = new ProgramEnrolmentContractWrapper();
         enrolmentContract.setUuid(programEnrolment.getUuid());
         enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
@@ -160,7 +157,9 @@ public class ProgramEncounterConstructionService {
             List<ObservationContract> observationContracts = observationService.constructObservations(programEnrolment.getProgramExitObservations());
             enrolmentContract.setExitObservations(getObservationModelContracts(observationContracts));
         }
-
+        Set<ProgramEncounterContractWrapper> encountersContractList = constructEncountersExcludingSelf(programEnrolment.getProgramEncounters(), currentProgramEncounterUUID);
+        enrolmentContract.setProgramEncounters(encountersContractList);
+        enrolmentContract.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
         return enrolmentContract;
     }
 

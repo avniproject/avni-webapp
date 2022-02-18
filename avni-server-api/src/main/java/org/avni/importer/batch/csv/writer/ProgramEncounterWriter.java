@@ -3,15 +3,18 @@ package org.avni.importer.batch.csv.writer;
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.dao.ProgramEncounterRepository;
+import org.avni.dao.ProgramEnrolmentRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.domain.ProgramEncounter;
 import org.avni.domain.ProgramEnrolment;
-import org.avni.importer.batch.csv.creator.BasicEncounterCreator;
-import org.avni.importer.batch.csv.creator.ProgramEnrolmentCreator;
+import org.avni.domain.SubjectType;
+import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
+import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.ProgramEncounterHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
+import org.avni.service.ObservationService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,25 +27,39 @@ import java.util.List;
 @Component
 public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
 
-    private final ProgramEncounterRepository programEncounterRepository;
     private static ProgramEncounterHeaders headers = new ProgramEncounterHeaders();
+    private final ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentCreator programEnrolmentCreator;
     private BasicEncounterCreator basicEncounterCreator;
     private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
-
+    private RuleServerInvoker ruleServerInvoker;
+    private ObservationService observationService;
+    private VisitCreator visitCreator;
+    private DecisionCreator decisionCreator;
+    private ProgramEnrolmentRepository programEnrolmentRepository;
 
     @Autowired
     public ProgramEncounterWriter(ProgramEncounterRepository programEncounterRepository,
                                   ProgramEnrolmentCreator programEnrolmentCreator,
                                   BasicEncounterCreator basicEncounterCreator,
                                   EntityApprovalStatusService entityApprovalStatusService,
-                                  FormMappingRepository formMappingRepository) {
+                                  FormMappingRepository formMappingRepository,
+                                  RuleServerInvoker ruleServerInvoker,
+                                  ObservationService observationService,
+                                  VisitCreator visitCreator,
+                                  DecisionCreator decisionCreator,
+                                  ProgramEnrolmentRepository programEnrolmentRepository) {
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentCreator = programEnrolmentCreator;
         this.basicEncounterCreator = basicEncounterCreator;
         this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
+        this.ruleServerInvoker = ruleServerInvoker;
+        this.observationService = observationService;
+        this.visitCreator = visitCreator;
+        this.decisionCreator = decisionCreator;
+        this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
     @Override
@@ -53,16 +70,24 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private void write(Row row) throws Exception {
         ProgramEncounter programEncounter = getOrCreateProgramEncounter(row);
         List<String> allErrorMsgs = new ArrayList<>();
-        basicEncounterCreator.updateEncounter(row, programEncounter, allErrorMsgs, FormType.ProgramEncounter);
-        ProgramEnrolment programEnrolment = programEnrolmentCreator.getProgramEnrolment(row.get(headers.enrolmentId), allErrorMsgs, headers.enrolmentId);
+        ProgramEnrolment programEnrolment = programEnrolmentCreator.getProgramEnrolment(row.get(headers.enrolmentId), headers.enrolmentId);
+        SubjectType subjectType = programEnrolment.getIndividual().getSubjectType();
         programEncounter.setProgramEnrolment(programEnrolment);
+        basicEncounterCreator.updateEncounter(row, programEncounter, allErrorMsgs);
 
-        if (allErrorMsgs.size() > 0) {
-            throw new Exception(String.join(", ", allErrorMsgs));
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(subjectType.getUuid(), programEnrolment.getProgram().getUuid(), programEncounter.getEncounterType().getUuid(), FormType.ProgramEncounter);
+        if (formMapping == null) {
+            throw new Exception(String.format("No form found for the encounter type %s", programEncounter.getEncounterType().getName()));
         }
+        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEncounter, allErrorMsgs);
+        programEncounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+        decisionCreator.addEncounterDecisions(programEncounter.getObservations(), ruleResponse.getDecisions());
+        decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
 
         ProgramEncounter savedEncounter = programEncounterRepository.save(programEncounter);
-        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(programEnrolment.getIndividual().getSubjectType().getUuid(), programEnrolment.getProgram().getUuid(), savedEncounter.getEncounterType().getUuid(), FormType.ProgramEncounter);
+        programEnrolmentRepository.save(programEnrolment);
+
+        visitCreator.saveScheduledVisits(formMapping.getType(), null, programEnrolment.getUuid(), ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEncounter, savedEncounter.getId());
         }

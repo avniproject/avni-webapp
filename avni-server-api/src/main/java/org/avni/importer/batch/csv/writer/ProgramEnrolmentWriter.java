@@ -1,6 +1,5 @@
 package org.avni.importer.batch.csv.writer;
 
-import org.joda.time.LocalDate;
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.dao.ProgramEnrolmentRepository;
@@ -8,12 +7,13 @@ import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.domain.Individual;
 import org.avni.domain.ProgramEnrolment;
+import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.avni.service.ObservationService;
+import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,30 +26,38 @@ import java.util.List;
 @Component
 public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
 
-    private final ProgramEnrolmentRepository programEnrolmentRepository;
     private static final ProgramEnrolmentHeaders headers = new ProgramEnrolmentHeaders();
-    private ObservationCreator observationCreator;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
     private LocationCreator locationCreator;
     private SubjectCreator subjectCreator;
     private DateCreator dateCreator;
     private ProgramCreator programCreator;
     private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
-    private static Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
+    private ObservationService observationService;
+    private RuleServerInvoker ruleServerInvoker;
+    private VisitCreator visitCreator;
+    private DecisionCreator decisionCreator;
 
     @Autowired
     public ProgramEnrolmentWriter(ProgramEnrolmentRepository programEnrolmentRepository,
-                                  ObservationCreator observationCreator,
                                   SubjectCreator subjectCreator,
                                   ProgramCreator programCreator,
                                   EntityApprovalStatusService entityApprovalStatusService,
-                                  FormMappingRepository formMappingRepository) {
+                                  FormMappingRepository formMappingRepository,
+                                  ObservationService observationService,
+                                  RuleServerInvoker ruleServerInvoker,
+                                  VisitCreator visitCreator,
+                                  DecisionCreator decisionCreator) {
         this.programEnrolmentRepository = programEnrolmentRepository;
-        this.observationCreator = observationCreator;
         this.subjectCreator = subjectCreator;
         this.programCreator = programCreator;
         this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
+        this.observationService = observationService;
+        this.ruleServerInvoker = ruleServerInvoker;
+        this.visitCreator = visitCreator;
+        this.decisionCreator = decisionCreator;
         this.locationCreator = new LocationCreator();
         this.dateCreator = new DateCreator();
     }
@@ -65,6 +73,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         List<String> allErrorMsgs = new ArrayList<>();
         Individual individual = subjectCreator.getSubject(row.get(headers.subjectId), allErrorMsgs, headers.subjectId);
         programEnrolment.setIndividual(individual);
+        org.avni.domain.Program program = programCreator.getProgram(row.get(headers.program), headers.program);
         LocalDate enrolmentDate = dateCreator.getDate(
                 row,
                 headers.enrolmentDate,
@@ -80,15 +89,17 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
 
         programEnrolment.setEnrolmentLocation(locationCreator.getLocation(row, headers.enrolmentLocation, allErrorMsgs));
         programEnrolment.setExitLocation(locationCreator.getLocation(row, headers.exitLocation, allErrorMsgs));
-        programEnrolment.setProgram(programCreator.getProgram(row.get(headers.program), allErrorMsgs, headers.program));
-        programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
-
-        if (allErrorMsgs.size() > 0) {
-            throw new Exception(String.join(", ", allErrorMsgs));
+        programEnrolment.setProgram(program);
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(individual.getSubjectType().getUuid(), program.getUuid(), null, FormType.ProgramEnrolment);
+        if (formMapping == null) {
+            throw new Exception(String.format("No form found for the subject type '%s' and program '%s'", individual.getSubjectType().getName(), program.getName()));
         }
-
+        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEnrolment, allErrorMsgs);
+        programEnrolment.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+        decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
         ProgramEnrolment savedEnrolment = programEnrolmentRepository.save(programEnrolment);
-        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(individual.getSubjectType().getUuid(), savedEnrolment.getProgram().getUuid(), null, FormType.ProgramEnrolment);
+
+        visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEnrolment, savedEnrolment.getId());
         }

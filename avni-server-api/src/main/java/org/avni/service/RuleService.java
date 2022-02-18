@@ -299,10 +299,9 @@ public class RuleService implements NonScopeAwareService {
 
     private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog) {
         try {
-            HttpHeaders httpHeaders = constructHeaders();
             ObjectMapper mapper = ObjectMapperSingleton.getObjectMapper();
             mapper.registerModule(new JodaModule());
-            String ruleResponse = restClient.post(url, contractObject, httpHeaders);
+            String ruleResponse = restClient.post(url, contractObject);
             RuleResponseEntity ruleResponseEntity = mapper.readValue(ruleResponse, RuleResponseEntity.class);
             if (ruleResponseEntity.getStatus().equals("failure")) {
                 RuleError ruleError = ruleResponseEntity.getError();
@@ -315,22 +314,7 @@ public class RuleService implements NonScopeAwareService {
         }
     }
 
-    private HttpHeaders constructHeaders() {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        UserContext userContext = UserContextHolder.getUserContext();
-        String userName = userContext.getUserName();
-        String organisationUUID = userContext.getOrganisation().getUuid();
-        String authToken = userContext.getAuthToken();
 
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        if(userName != null)
-            httpHeaders.add(AuthenticationFilter.USER_NAME_HEADER, userName);
-        if(organisationUUID != null)
-            httpHeaders.add(AuthenticationFilter.ORGANISATION_UUID, organisationUUID);
-        if(authToken != null)
-            httpHeaders.add(AuthenticationFilter.AUTH_TOKEN_HEADER, authToken);
-        return httpHeaders;
-    }
 
     private RuleResponseEntity getFailureRuleResponseEntity(Exception e) {
         RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();

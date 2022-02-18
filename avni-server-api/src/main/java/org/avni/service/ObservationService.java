@@ -212,7 +212,8 @@ public class ObservationService {
         }
     }
 
-    public List<ObservationModelContract> constructObservationModelContracts(@NotNull ObservationCollection observationCollection) {
+    public List<ObservationModelContract> constructObservationModelContracts(ObservationCollection observationCollection) {
+        if(observationCollection == null) return Collections.emptyList();
         List<ObservationContract> observationContracts = this.constructObservations(observationCollection);
         List<ObservationModelContract> observationModelContracts = observationContracts.stream()
                 .map(this::constructObservation)

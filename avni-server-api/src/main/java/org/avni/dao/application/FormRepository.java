@@ -25,5 +25,5 @@ public interface FormRepository extends ReferenceDataRepository<Form>, FindByLas
     @Query("select f.name from Form f where f.isVoided = false")
     List<String> getAllNames();
 
-    List<Form> findAllByFormType(FormType formType);
+    List<Form> findByFormTypeAndIsVoidedFalse(FormType formType);
 }

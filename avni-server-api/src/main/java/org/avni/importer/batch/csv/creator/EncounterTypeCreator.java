@@ -16,15 +16,13 @@ public class EncounterTypeCreator {
         this.encounterTypeRepository = encounterTypeRepository;
     }
 
-    public EncounterType getEncounterType(String name, List<String> errorMsgs, String identifierForErrorMessage) {
+    public EncounterType getEncounterType(String name, String identifierForErrorMessage) throws Exception {
         if (name == null || name.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is required", identifierForErrorMessage));
-            return null;
+            throw new Exception(String.format("'%s' is required", identifierForErrorMessage));
         }
         EncounterType encounterType = encounterTypeRepository.findByName(name);
         if (encounterType == null) {
-            errorMsgs.add(String.format("'%s' not found in database", identifierForErrorMessage));
-            return null;
+            throw new Exception(String.format("'%s' '%s' is required", identifierForErrorMessage, name));
         }
         return encounterType;
     }

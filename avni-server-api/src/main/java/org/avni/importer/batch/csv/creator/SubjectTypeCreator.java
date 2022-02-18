@@ -18,11 +18,10 @@ public class SubjectTypeCreator {
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
     }
 
-    public SubjectType getSubjectType(String subjectTypeValue, List<String> errorMsgs, String key) {
+    public SubjectType getSubjectType(String subjectTypeValue, String header) throws Exception {
         OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeValue);
         if (operationalSubjectType == null) {
-            errorMsgs.add(String.format("'%s' not found", key));
-            return null;
+            throw new Exception(String.format("'%s' '%s' not found", header, subjectTypeValue));
         }
         return operationalSubjectType.getSubjectType();
     }

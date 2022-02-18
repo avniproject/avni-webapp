@@ -1,5 +1,7 @@
 package org.avni.importer.batch.csv.creator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.apache.commons.io.FileUtils;
 import org.avni.application.*;
 import org.avni.dao.*;
@@ -107,7 +109,7 @@ public class ObservationCreator {
     }
 
     private FormElement getFormElementForObservationConcept(Concept concept, FormType formType) throws Exception {
-        List<Form> applicableForms = formRepository.findAllByFormType(formType);
+        List<Form> applicableForms = formRepository.findByFormTypeAndIsVoidedFalse(formType);
         if (applicableForms.size() == 0)
             throw new Exception(String.format("No forms of type %s found", formType));
 

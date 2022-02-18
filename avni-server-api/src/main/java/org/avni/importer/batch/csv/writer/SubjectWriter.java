@@ -1,8 +1,6 @@
 package org.avni.importer.batch.csv.writer;
 
-import org.joda.time.LocalDate;
 import org.avni.application.FormMapping;
-import org.avni.application.FormType;
 import org.avni.application.Subject;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.GenderRepository;
@@ -10,12 +8,13 @@ import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.*;
-import org.avni.importer.batch.csv.creator.LocationCreator;
-import org.avni.importer.batch.csv.creator.ObservationCreator;
-import org.avni.importer.batch.csv.creator.SubjectTypeCreator;
+import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
+import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.SubjectHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
+import org.avni.service.ObservationService;
+import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,16 +30,19 @@ import java.util.stream.Stream;
 @Component
 public class SubjectWriter implements ItemWriter<Row>, Serializable {
 
+    private static final SubjectHeaders headers = new SubjectHeaders();
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final LocationRepository locationRepository;
     private final IndividualRepository individualRepository;
     private final GenderRepository genderRepository;
-    private static final SubjectHeaders headers = new SubjectHeaders();
     private SubjectTypeCreator subjectTypeCreator;
-    private ObservationCreator observationCreator;
     private LocationCreator locationCreator;
     private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
+    private ObservationService observationService;
+    private RuleServerInvoker ruleServerInvoker;
+    private VisitCreator visitCreator;
+    private DecisionCreator decisionCreator;
 
     @Autowired
     public SubjectWriter(AddressLevelTypeRepository addressLevelTypeRepository,
@@ -48,17 +50,23 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          IndividualRepository individualRepository,
                          GenderRepository genderRepository,
                          SubjectTypeCreator subjectTypeCreator,
-                         ObservationCreator observationCreator,
                          EntityApprovalStatusService entityApprovalStatusService,
-                         FormMappingRepository formMappingRepository) {
+                         FormMappingRepository formMappingRepository,
+                         ObservationService observationService,
+                         RuleServerInvoker ruleServerInvoker,
+                         VisitCreator visitCreator,
+                         DecisionCreator decisionCreator) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
         this.genderRepository = genderRepository;
         this.subjectTypeCreator = subjectTypeCreator;
-        this.observationCreator = observationCreator;
         this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
+        this.observationService = observationService;
+        this.ruleServerInvoker = ruleServerInvoker;
+        this.visitCreator = visitCreator;
+        this.decisionCreator = decisionCreator;
         this.locationCreator = new LocationCreator();
     }
 
@@ -76,7 +84,8 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         Individual individual = getOrCreateIndividual(row);
         List<String> allErrorMsgs = new ArrayList<>();
 
-        individual.setSubjectType(subjectTypeCreator.getSubjectType(row.get(headers.subjectType), allErrorMsgs, headers.subjectType));
+        SubjectType subjectType = subjectTypeCreator.getSubjectType(row.get(headers.subjectType), headers.subjectType);
+        individual.setSubjectType(subjectType);
         individual.setFirstName(row.get(headers.firstName));
         individual.setLastName(row.get(headers.lastName));
         setDateOfBirth(individual, row, allErrorMsgs);
@@ -84,18 +93,19 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         setRegistrationDate(individual, row, allErrorMsgs);
         individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
-        individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
-        if (individual.getSubjectType().getType().equals(Subject.Person)) setGender(individual, row, allErrorMsgs);
-
-        if (allErrorMsgs.size() > 0) {
-            throw new Exception(String.join(", ", allErrorMsgs));
+        if (individual.getSubjectType().getType().equals(Subject.Person)) setGender(individual, row);
+        FormMapping formMapping = formMappingRepository.getRegistrationFormMapping(subjectType);
+        if (formMapping == null) {
+            throw new Exception(String.format("No form found for the subject type %s", subjectType.getName()));
         }
-
+        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
+        individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
         individual.setVoided(false);
         individual.assignUUIDIfRequired();
-
+        decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
         Individual savedIndividual = individualRepository.save(individual);
-        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(savedIndividual.getSubjectType().getUuid(), null, null, FormType.IndividualProfile);
+
+        visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Subject, savedIndividual.getId());
         }
@@ -135,17 +145,16 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         }
     }
 
-    private void setGender(Individual individual, Row row, List<String> errorMsgs) {
+    private void setGender(Individual individual, Row row) throws Exception {
         try {
             String genderName = row.get(headers.gender);
             Gender gender = genderRepository.findByNameIgnoreCase(genderName);
             if (gender == null) {
-                errorMsgs.add(String.format("Invalid '%s' - '%s'", headers.gender, genderName));
-                return;
+                throw new Exception(String.format("Invalid '%s' - '%s'", headers.gender, genderName));
             }
             individual.setGender(gender);
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", headers.gender));
+            throw new Exception(String.format("Invalid '%s'", headers.gender));
         }
     }
 
@@ -166,7 +175,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                     locations.stream()
                             .filter(location ->
                                     location.getTitle().toLowerCase().equals(lowestInputAddressLevel.toLowerCase()) &&
-                                    location.getType().getName().equals(lowestAddressLevelType.getName()));
+                                            location.getType().getName().equals(lowestAddressLevelType.getName()));
 
             if (addressMatches.get().count() > 1) {
                 // filter by lineage if more than one location with same name present
