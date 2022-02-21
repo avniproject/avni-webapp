@@ -1,10 +1,14 @@
 package org.avni.service;
 
+import org.avni.application.FormElement;
+import org.avni.application.FormElementType;
+import org.avni.application.KeyType;
 import org.avni.builder.BuilderException;
 import org.avni.builder.LocationBuilder;
 import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
+import org.avni.util.S;
 import org.avni.web.request.AddressLevelTypeContract;
 import org.avni.web.request.LocationContract;
 import org.avni.web.request.LocationEditContract;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class LocationService implements ScopeAwareService {
@@ -255,5 +260,21 @@ public class LocationService implements ScopeAwareService {
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return locationRepository;
+    }
+
+    public Object getObservationValueForUpload(FormElement formElement, String answerValue) {
+        Concept concept = formElement.getConcept();
+        List<String> lowestLevelUuids = (List<String>) concept.getKeyValues().get(KeyType.lowestAddressLevelTypeUUIDs).getValue();
+        List<AddressLevelType> lowestLevels = lowestLevelUuids.stream()
+                .map(uuid -> addressLevelTypeRepository.findByUuid(uuid))
+                .collect(Collectors.toList());
+        if (formElement.getType().equals(FormElementType.MultiSelect.name())) {
+            String[] providedAnswers = S.splitMultiSelectAnswer(answerValue);
+            return Stream.of(providedAnswers)
+                    .map(answer -> locationRepository.findByTitleIgnoreCaseAndTypeIn(answer, lowestLevels).getUuid())
+                    .collect(Collectors.toList());
+        } else {
+            return locationRepository.findByTitleIgnoreCaseAndTypeIn(answerValue, lowestLevels).getUuid();
+        }
     }
 }

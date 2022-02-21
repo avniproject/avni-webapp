@@ -1,13 +1,15 @@
 package org.avni.web;
 
+import org.avni.application.FormElement;
 import org.avni.dao.JobStatus;
+import org.avni.dao.application.FormElementRepository;
+import org.avni.domain.ConceptDataType;
+import org.avni.domain.JsonObject;
 import org.avni.domain.Organisation;
 import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.JobService;
-import org.avni.service.BulkUploadS3Service;
-import org.avni.service.ImportService;
-import org.avni.service.OldDataImportService;
+import org.avni.service.*;
 import org.avni.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +45,28 @@ public class ImportController {
     private final JobService jobService;
     private final BulkUploadS3Service bulkUploadS3Service;
     private final ImportService importService;
+    private final S3Service s3Service;
+    private final IndividualService individualService;
+    private final LocationService locationService;
+    private final FormElementRepository formElementRepository;
 
     @Autowired
     public ImportController(OldDataImportService oldDataImportService,
                             JobService jobService,
                             BulkUploadS3Service bulkUploadS3Service,
-                            ImportService importService) {
+                            ImportService importService,
+                            S3Service s3Service,
+                            IndividualService individualService,
+                            LocationService locationService,
+                            FormElementRepository formElementRepository) {
         this.oldDataImportService = oldDataImportService;
         this.jobService = jobService;
         this.bulkUploadS3Service = bulkUploadS3Service;
         this.importService = importService;
+        this.s3Service = s3Service;
+        this.individualService = individualService;
+        this.locationService = locationService;
+        this.formElementRepository = formElementRepository;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -125,5 +139,34 @@ public class ImportController {
                 .cacheControl(CacheControl.noCache())
                 .header("Content-Disposition", "attachment; ")
                 .body(new InputStreamResource(file));
+    }
+
+    @GetMapping("/upload/media")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public JsonObject uploadMedia(@RequestParam("url") String url,
+                                  @RequestParam("oldValue") String oldValue) {
+        JsonObject response = new JsonObject();
+        try {
+            String obsValue = s3Service.getObservationValueForUpload(url, oldValue);
+            response.with("value", obsValue);
+        } catch (Exception e) {
+            response.with("error", e.getMessage());
+        }
+        return response;
+    }
+
+    @GetMapping("/upload")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public JsonObject getSubjectOrLocationObsValue(@RequestParam("type") String type,
+                                                   @RequestParam("ids") String ids,
+                                                   @RequestParam("formElementUuid") String formElementUuid) {
+        FormElement formElement = formElementRepository.findByUuid(formElementUuid);
+        JsonObject response = new JsonObject();
+        if (ConceptDataType.Location.toString().equals(type)) {
+            response.with("value", locationService.getObservationValueForUpload(formElement, ids));
+        } else if (ConceptDataType.Subject.toString().equals(type)) {
+            response.with("value", individualService.getObservationValueForUpload(formElement, ids));
+        }
+        return response;
     }
 }

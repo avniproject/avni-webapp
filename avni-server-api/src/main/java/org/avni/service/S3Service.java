@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.apache.commons.io.FileUtils;
+import org.avni.util.S;
 import org.joda.time.DateTime;
 import org.avni.domain.Extension;
 import org.avni.domain.Organisation;
@@ -259,10 +260,10 @@ public class S3Service {
     }
 
     public String uploadFileToS3(File file) throws IOException {
-        if (!file.exists() || isDev) {
-            logger.info("Skipping media upload to S3");
-            return null;
-        }
+//        if (!file.exists() || isDev) {
+//            logger.info("Skipping media upload to S3");
+//            return null;
+//        }
         String s3Key = getS3KeyForMediaUpload(file.getName());
         s3Client.putObject(new PutObjectRequest(bucketName, s3Key, file));
         Files.delete(file.toPath());
@@ -392,5 +393,29 @@ public class S3Service {
     private String getObjectURL(File file) {
         String s3Key = getS3KeyForMediaUpload(file.getName());
         return s3Client.getUrl(bucketName, s3Key).toString();
+    }
+
+    public String getObservationValueForUpload(String mediaURL, Object oldValue) throws Exception {
+        return (mediaURL.trim().equals("")) ? null : processMediaObservation(mediaURL, oldValue);
+    }
+
+    private String processMediaObservation(String mediaURL, Object oldValue) throws Exception {
+        if (oldValue != null) {
+            this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
+        }
+        String extension = S.getLastStringAfter(mediaURL, ".");
+        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString().concat(format(".%s", extension))));
+        downloadMediaToFile(mediaURL, file);
+        return this.uploadFileToS3(file);
+    }
+
+    private void downloadMediaToFile(String mediaURL, File file) throws Exception {
+        try {
+            FileUtils.copyURLToFile(new URL(mediaURL), file, 5000, 5000);
+        } catch (IOException e) {
+            String message = format("Error while downloading media '%s' ", mediaURL);
+            logger.error(message, e);
+            throw new Exception(message);
+        }
     }
 }

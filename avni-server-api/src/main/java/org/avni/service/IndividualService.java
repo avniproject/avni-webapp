@@ -1,5 +1,8 @@
 package org.avni.service;
 
+import org.avni.application.FormElement;
+import org.avni.application.FormElementType;
+import org.avni.application.KeyType;
 import org.avni.application.Subject;
 import org.avni.dao.*;
 import org.avni.domain.*;
@@ -7,6 +10,7 @@ import org.avni.domain.individualRelationship.IndividualRelation;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.util.BadRequestError;
+import org.avni.util.S;
 import org.avni.web.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,5 +310,18 @@ public class IndividualService implements ScopeAwareService {
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return individualRepository;
+    }
+
+    public Object getObservationValueForUpload(FormElement formElement, String answerValue) {
+        Concept concept = formElement.getConcept();
+        SubjectType subjectType = subjectTypeRepository.findByUuid(concept.getKeyValues().get(KeyType.subjectTypeUUID).getValue().toString());
+        if (formElement.getType().equals(FormElementType.MultiSelect.name())) {
+            String[] providedAnswers = S.splitMultiSelectAnswer(answerValue);
+            return Stream.of(providedAnswers)
+                    .map(answer -> individualRepository.findByLegacyIdOrUuidAndSubjectType(answer, subjectType).getUuid())
+                    .collect(Collectors.toList());
+        } else {
+            return individualRepository.findByLegacyIdOrUuidAndSubjectType(answerValue, subjectType).getUuid();
+        }
     }
 }
