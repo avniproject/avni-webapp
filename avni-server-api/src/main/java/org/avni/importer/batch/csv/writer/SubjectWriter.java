@@ -1,6 +1,7 @@
 package org.avni.importer.batch.csv.writer;
 
 import org.avni.application.FormMapping;
+import org.avni.application.FormType;
 import org.avni.application.Subject;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.GenderRepository;
@@ -17,6 +18,7 @@ import org.avni.service.ObservationService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -43,6 +45,10 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private RuleServerInvoker ruleServerInvoker;
     private VisitCreator visitCreator;
     private DecisionCreator decisionCreator;
+    private ObservationCreator observationCreator;
+
+    @Value("${avni.skipUploadValidations}")
+    private boolean skipUploadValidations;
 
     @Autowired
     public SubjectWriter(AddressLevelTypeRepository addressLevelTypeRepository,
@@ -55,7 +61,8 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          ObservationService observationService,
                          RuleServerInvoker ruleServerInvoker,
                          VisitCreator visitCreator,
-                         DecisionCreator decisionCreator) {
+                         DecisionCreator decisionCreator,
+                         ObservationCreator observationCreator) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -67,6 +74,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         this.ruleServerInvoker = ruleServerInvoker;
         this.visitCreator = visitCreator;
         this.decisionCreator = decisionCreator;
+        this.observationCreator = observationCreator;
         this.locationCreator = new LocationCreator();
     }
 
@@ -95,17 +103,23 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
         if (individual.getSubjectType().getType().equals(Subject.Person)) setGender(individual, row);
         FormMapping formMapping = formMappingRepository.getRegistrationFormMapping(subjectType);
+        individual.setVoided(false);
+        individual.assignUUIDIfRequired();
         if (formMapping == null) {
             throw new Exception(String.format("No form found for the subject type %s", subjectType.getName()));
         }
-        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
-        individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
-        individual.setVoided(false);
-        individual.assignUUIDIfRequired();
-        decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
-        Individual savedIndividual = individualRepository.save(individual);
+        Individual savedIndividual;
+        if (skipUploadValidations) {
+            individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
+            savedIndividual = individualRepository.save(individual);
+        } else {
+            UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
+            individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+            decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
+            savedIndividual = individualRepository.save(individual);
+            visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
+        }
 
-        visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Subject, savedIndividual.getId());
         }

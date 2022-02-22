@@ -16,6 +16,7 @@ import org.avni.service.ObservationService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -38,6 +39,10 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private RuleServerInvoker ruleServerInvoker;
     private VisitCreator visitCreator;
     private DecisionCreator decisionCreator;
+    private ObservationCreator observationCreator;
+
+    @Value("${avni.skipUploadValidations}")
+    private boolean skipUploadValidations;
 
     @Autowired
     public ProgramEnrolmentWriter(ProgramEnrolmentRepository programEnrolmentRepository,
@@ -48,7 +53,8 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
                                   ObservationService observationService,
                                   RuleServerInvoker ruleServerInvoker,
                                   VisitCreator visitCreator,
-                                  DecisionCreator decisionCreator) {
+                                  DecisionCreator decisionCreator,
+                                  ObservationCreator observationCreator) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.subjectCreator = subjectCreator;
         this.programCreator = programCreator;
@@ -58,6 +64,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         this.ruleServerInvoker = ruleServerInvoker;
         this.visitCreator = visitCreator;
         this.decisionCreator = decisionCreator;
+        this.observationCreator = observationCreator;
         this.locationCreator = new LocationCreator();
         this.dateCreator = new DateCreator();
     }
@@ -94,12 +101,17 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         if (formMapping == null) {
             throw new Exception(String.format("No form found for the subject type '%s' and program '%s'", individual.getSubjectType().getName(), program.getName()));
         }
-        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEnrolment, allErrorMsgs);
-        programEnrolment.setObservations(observationService.createObservations(ruleResponse.getObservations()));
-        decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
-        ProgramEnrolment savedEnrolment = programEnrolmentRepository.save(programEnrolment);
-
-        visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
+        ProgramEnrolment savedEnrolment;
+        if (skipUploadValidations) {
+            programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
+            savedEnrolment = programEnrolmentRepository.save(programEnrolment);
+        } else {
+            UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEnrolment, allErrorMsgs);
+            programEnrolment.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+            decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
+            savedEnrolment = programEnrolmentRepository.save(programEnrolment);
+            visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
+        }
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEnrolment, savedEnrolment.getId());
         }

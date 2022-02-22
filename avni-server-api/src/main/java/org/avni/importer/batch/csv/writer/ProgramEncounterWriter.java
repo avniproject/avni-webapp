@@ -17,6 +17,7 @@ import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -38,6 +39,10 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private VisitCreator visitCreator;
     private DecisionCreator decisionCreator;
     private ProgramEnrolmentRepository programEnrolmentRepository;
+    private ObservationCreator observationCreator;
+
+    @Value("${avni.skipUploadValidations}")
+    private boolean skipUploadValidations;
 
     @Autowired
     public ProgramEncounterWriter(ProgramEncounterRepository programEncounterRepository,
@@ -49,7 +54,8 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
                                   ObservationService observationService,
                                   VisitCreator visitCreator,
                                   DecisionCreator decisionCreator,
-                                  ProgramEnrolmentRepository programEnrolmentRepository) {
+                                  ProgramEnrolmentRepository programEnrolmentRepository,
+                                  ObservationCreator observationCreator) {
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentCreator = programEnrolmentCreator;
         this.basicEncounterCreator = basicEncounterCreator;
@@ -60,6 +66,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         this.visitCreator = visitCreator;
         this.decisionCreator = decisionCreator;
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.observationCreator = observationCreator;
     }
 
     @Override
@@ -79,15 +86,19 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         if (formMapping == null) {
             throw new Exception(String.format("No form found for the encounter type %s", programEncounter.getEncounterType().getName()));
         }
-        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEncounter, allErrorMsgs);
-        programEncounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
-        decisionCreator.addEncounterDecisions(programEncounter.getObservations(), ruleResponse.getDecisions());
-        decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
-
-        ProgramEncounter savedEncounter = programEncounterRepository.save(programEncounter);
-        programEnrolmentRepository.save(programEnrolment);
-
-        visitCreator.saveScheduledVisits(formMapping.getType(), null, programEnrolment.getUuid(), ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
+        ProgramEncounter savedEncounter;
+        if (skipUploadValidations) {
+            programEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEncounter, programEncounter.getObservations()));
+            savedEncounter = programEncounterRepository.save(programEncounter);
+        } else {
+            UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEncounter, allErrorMsgs);
+            programEncounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+            decisionCreator.addEncounterDecisions(programEncounter.getObservations(), ruleResponse.getDecisions());
+            decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
+            savedEncounter = programEncounterRepository.save(programEncounter);
+            programEnrolmentRepository.save(programEnrolment);
+            visitCreator.saveScheduledVisits(formMapping.getType(), null, programEnrolment.getUuid(), ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
+        }
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEncounter, savedEncounter.getId());
         }

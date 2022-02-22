@@ -9,16 +9,14 @@ import org.avni.domain.Encounter;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.domain.Individual;
 import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
-import org.avni.importer.batch.csv.creator.BasicEncounterCreator;
-import org.avni.importer.batch.csv.creator.DecisionCreator;
-import org.avni.importer.batch.csv.creator.RuleServerInvoker;
-import org.avni.importer.batch.csv.creator.VisitCreator;
+import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.EncounterHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -39,6 +37,10 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     private RuleServerInvoker ruleServerInvoker;
     private VisitCreator visitCreator;
     private DecisionCreator decisionCreator;
+    private ObservationCreator observationCreator;
+
+    @Value("${avni.skipUploadValidations}")
+    private boolean skipUploadValidations;
 
     @Autowired
     public EncounterWriter(EncounterRepository encounterRepository,
@@ -48,7 +50,9 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
                            FormMappingRepository formMappingRepository,
                            ObservationService observationService,
                            RuleServerInvoker ruleServerInvoker,
-                           VisitCreator visitCreator, DecisionCreator decisionCreator) {
+                           VisitCreator visitCreator,
+                           DecisionCreator decisionCreator,
+                           ObservationCreator observationCreator) {
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
         this.basicEncounterCreator = basicEncounterCreator;
@@ -58,6 +62,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         this.ruleServerInvoker = ruleServerInvoker;
         this.visitCreator = visitCreator;
         this.decisionCreator = decisionCreator;
+        this.observationCreator = observationCreator;
     }
 
     @Override
@@ -72,21 +77,25 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         Individual subject = getSubject(row);
         encounter.setIndividual(subject);
         basicEncounterCreator.updateEncounter(row, encounter, allErrorMsgs);
+        encounter.setVoided(false);
+        encounter.assignUUIDIfRequired();
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(subject.getSubjectType().getUuid(), null, encounter.getEncounterType().getUuid(), FormType.Encounter);
         if (formMapping == null) {
             throw new Exception(String.format("No form found for the encounter type %s", encounter.getEncounterType().getName()));
         }
-        UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), encounter, allErrorMsgs);
-        encounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
-        encounter.setVoided(false);
-        encounter.assignUUIDIfRequired();
-        decisionCreator.addEncounterDecisions(encounter.getObservations(), ruleResponse.getDecisions());
-        decisionCreator.addRegistrationDecisions(subject.getObservations(), ruleResponse.getDecisions());
-
-        Encounter savedEncounter = encounterRepository.save(encounter);
-        individualRepository.save(subject);
-
-        visitCreator.saveScheduledVisits(formMapping.getType(), subject.getUuid(), null, ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
+        Encounter savedEncounter;
+        if (skipUploadValidations) {
+            encounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Encounter, encounter.getObservations()));
+            savedEncounter = encounterRepository.save(encounter);
+        } else {
+            UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), encounter, allErrorMsgs);
+            encounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+            decisionCreator.addEncounterDecisions(encounter.getObservations(), ruleResponse.getDecisions());
+            decisionCreator.addRegistrationDecisions(subject.getObservations(), ruleResponse.getDecisions());
+            savedEncounter = encounterRepository.save(encounter);
+            individualRepository.save(subject);
+            visitCreator.saveScheduledVisits(formMapping.getType(), subject.getUuid(), null, ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
+        }
         if (formMapping.isEnableApproval()) {
             entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Encounter, savedEncounter.getId());
         }
