@@ -92,23 +92,26 @@ public class ReportingController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/report/aggregate/activities", method = RequestMethod.GET)
+    @RequestMapping(value = "/report/aggregate/activity", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public JsonObject getRegistrationAggregate(@RequestParam(value = "startDate", required = false) String startDate,
+    public JsonObject getRegistrationAggregate(@RequestParam(value = "type", required = false) String type,
+                                               @RequestParam(value = "startDate", required = false) String startDate,
                                                @RequestParam(value = "endDate", required = false) String endDate,
                                                @RequestParam(value = "locationIds", required = false, defaultValue = "") List<Long> locationIds,
                                                @RequestParam(value = "subjectTypeIds", required = false, defaultValue = "") List<Long> subjectTypeIds,
                                                @RequestParam(value = "programIds", required = false, defaultValue = "") List<Long> programIds,
                                                @RequestParam(value = "encounterTypeIds", required = false, defaultValue = "") List<Long> encounterTypeIds) {
         List<Long> lowestLocationIds = getLocations(locationIds);
-        return new JsonObject()
-                .with("registrations", reportService.allRegistrations(startDate, endDate, subjectTypeIds, lowestLocationIds))
-                .with("enrolments", reportService.allEnrolments(startDate, endDate, programIds, lowestLocationIds))
-                .with("completedVisits", reportService.completedVisits(startDate, endDate, encounterTypeIds, lowestLocationIds))
-                .with("daywiseActivities", reportService.dailyActivities(startDate, endDate, subjectTypeIds, programIds, encounterTypeIds, lowestLocationIds))
-                .with("cancelledVisits", reportService.cancelledVisits(startDate, endDate, encounterTypeIds, lowestLocationIds))
-                .with("onTimeVisits", reportService.onTimeVisits(startDate, endDate, encounterTypeIds, lowestLocationIds))
-                .with("programExits", reportService.programExits(startDate, endDate, programIds, lowestLocationIds));
+        switch (type){
+            case "registrations" : return reportService.allRegistrations(startDate, endDate, subjectTypeIds, lowestLocationIds);
+            case "enrolments": return reportService.allEnrolments(startDate, endDate, programIds, lowestLocationIds);
+            case "completedVisits": return reportService.completedVisits(startDate, endDate, encounterTypeIds, lowestLocationIds);
+            case "daywiseActivities": return reportService.dailyActivities(startDate, endDate, subjectTypeIds, programIds, encounterTypeIds, lowestLocationIds);
+            case "cancelledVisits": return reportService.cancelledVisits(startDate, endDate, encounterTypeIds, lowestLocationIds);
+            case "onTimeVisits": return reportService.onTimeVisits(startDate, endDate, encounterTypeIds, lowestLocationIds);
+            case "programExits": return reportService.programExits(startDate, endDate, programIds, lowestLocationIds);
+            default: return new JsonObject();
+        }
     }
 
     @RequestMapping(value = "/report/hr/overallActivities", method = RequestMethod.GET)
