@@ -1,5 +1,5 @@
 import React from "react";
-import { map, find, isEmpty } from "lodash";
+import { map, find, isEmpty, size } from "lodash";
 import ActionComponent from "./ActionComponent";
 import ConditionComponent from "./ConditionComponent";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -12,8 +12,6 @@ import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 
 const DeclarativeRuleComponent = ({
   declarativeRule,
-  onStateChange,
-  onDelete,
   declarativeRuleIndex,
   getApplicableActions,
   ...props
@@ -22,18 +20,17 @@ const DeclarativeRuleComponent = ({
 
   return (
     <Box component={"div"} border={1} p={1} mb={1}>
-      {declarativeRuleIndex !== 0 && (
-        <Grid container item justify={"flex-end"}>
-          <Button
-            size="small"
-            onClick={() =>
-              dispatch({ type: "deleteDeclarativeRule", payload: { declarativeRuleIndex } })
-            }
-          >
-            <DeleteIcon style={{ color: Colors.ValidationError }} />
-          </Button>
-        </Grid>
-      )}
+      <Grid container item justify={"flex-end"}>
+        <Button
+          size="small"
+          onClick={() =>
+            dispatch({ type: "deleteDeclarativeRule", payload: { declarativeRuleIndex } })
+          }
+          disabled={size(declarativeRule.conditions) > 1}
+        >
+          <DeleteIcon style={{ color: Colors.ValidationError }} />
+        </Button>
+      </Grid>
       {map(declarativeRule.conditions, (condition, index) => (
         <ConditionComponent
           key={index}

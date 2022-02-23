@@ -1,6 +1,6 @@
 import React from "react";
 import RuleComponent from "./RuleComponent";
-import { map, isEmpty, toUpper } from "lodash";
+import { isEmpty, map, toUpper } from "lodash";
 import { Box, Grid } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import IconButton from "../IconButton";
@@ -32,18 +32,18 @@ const CompoundRuleComponent = ({
     dispatch({ type: "deleteCondition", payload: { declarativeRuleIndex, conditionIndex } });
 
   return (
-    <Box component={"div"} m={1} border={1} p={2}>
-      {conditionIndex !== 0 && (
-        <Grid item container justify={"flex-end"}>
+    <Box m={1} border={1} p={2}>
+      <Box display="flex" alignItems="flex-start" justifyContent={"space-between"}>
+        <CompoundRuleConjunctionComponent
+          onConjunctionChange={onCompoundRuleConjunctionChange}
+          value={conjunction}
+        />
+        <Box>
           <Button size="small" onClick={onConditionDelete}>
             <DeleteIcon style={{ color: Colors.ValidationError }} />
           </Button>
-        </Grid>
-      )}
-      <CompoundRuleConjunctionComponent
-        onConjunctionChange={onCompoundRuleConjunctionChange}
-        value={conjunction}
-      />
+        </Box>
+      </Box>
       <Grid container direction={"column"}>
         {map(rules, (rule, index) => (
           <Grid item container direction={"column"} spacing={3}>

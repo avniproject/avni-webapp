@@ -15,14 +15,7 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
     dispatch({ type: "deleteRule", payload: { declarativeRuleIndex, ruleIndex, conditionIndex } });
 
   return (
-    <Box component={"div"} p={2} mb={1} border={1}>
-      {ruleIndex !== 0 && (
-        <Grid item container justify={"flex-end"}>
-          <Button size="small" onClick={onRuleDelete}>
-            <DeleteIcon style={{ color: Colors.ValidationError }} />
-          </Button>
-        </Grid>
-      )}
+    <Box p={2} mb={1} border={1} display="flex" alignItems="flex-start">
       <Grid item container spacing={1} direction={"row"} alignItems={"center"}>
         <Grid item>
           <div>{"The value of"}</div>
@@ -33,21 +26,28 @@ const RuleComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, 
           conditionIndex={conditionIndex}
           declarativeRuleIndex={declarativeRuleIndex}
         />
-        <OperatorComponent
-          rule={rule}
-          ruleIndex={ruleIndex}
-          conditionIndex={conditionIndex}
-          declarativeRuleIndex={declarativeRuleIndex}
-        />
-        {rule.isRhsRequired() ? (
+        {rule.isOperatorRequired() && (
+          <OperatorComponent
+            rule={rule}
+            ruleIndex={ruleIndex}
+            conditionIndex={conditionIndex}
+            declarativeRuleIndex={declarativeRuleIndex}
+          />
+        )}
+        {rule.isRhsRequired() && (
           <RHSComponent
             rule={rule}
             ruleIndex={ruleIndex}
             conditionIndex={conditionIndex}
             declarativeRuleIndex={declarativeRuleIndex}
           />
-        ) : null}
+        )}
       </Grid>
+      <Box>
+        <Button size="small" onClick={onRuleDelete}>
+          <DeleteIcon style={{ color: Colors.ValidationError }} />
+        </Button>
+      </Box>
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { Condition, Action, RHS, LHS, DeclarativeRuleHolder } from "rules-config";
+import { Action, Condition, DeclarativeRuleHolder, LHS, RHS } from "rules-config";
 import { forEach, size } from "lodash";
 
 const resetState = () => {
@@ -126,7 +126,7 @@ const operatorChange = (
 const deleteCondition = (declarativeRuleHolder, { declarativeRuleIndex, conditionIndex }) => {
   const newState = declarativeRuleHolder.clone();
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
-  declarativeRule.conditions.splice(conditionIndex, 1);
+  declarativeRule.deleteConditionAtIndex(conditionIndex);
   return newState;
 };
 
@@ -134,7 +134,7 @@ const deleteRule = (declarativeRuleHolder, { declarativeRuleIndex, ruleIndex, co
   const newState = declarativeRuleHolder.clone();
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const condition = declarativeRule.conditions[conditionIndex];
-  condition.compoundRule.rules.splice(ruleIndex, 1);
+  condition.compoundRule.deleteRuleAtIndex(ruleIndex);
   return newState;
 };
 
