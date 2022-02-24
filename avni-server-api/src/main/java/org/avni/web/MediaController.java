@@ -18,9 +18,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -70,7 +75,7 @@ public class MediaController {
             throw new ValidationException("NoCatchmentFound");
         }
         String catchmentUuid = user.getCatchment().getUuid();
-        return String.format("MobileDbBackup-%s", catchmentUuid);
+        return format("MobileDbBackup-%s", catchmentUuid);
     }
 
     @RequestMapping(value = "/media/mobileDatabaseBackupUrl/download", method = RequestMethod.GET)
@@ -98,6 +103,21 @@ public class MediaController {
         } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/web/media", method = RequestMethod.GET)
+    public void downloadFile(@RequestParam String url, HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+
+        User user = UserContextHolder.getUser();
+        if (user == null) {
+            String originalUrl = format("/web/media?url=%s", request.getParameter("url"));
+            String redirectUrl = format("/?redirect_url=%s", URLEncoder.encode(originalUrl, "UTF-8"));
+            response.setHeader("Location", redirectUrl);
+            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        } else {
+            response.setHeader("Location", s3Service.generateMediaDownloadUrl(url).toString());
+            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         }
     }
 
