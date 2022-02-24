@@ -118,6 +118,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByUuidIn(List<String> addressLevelUUIDs);
 
+    List<AddressLevel> findByIsVoidedFalseAndTitleIgnoreCaseContains(String title);
+
     @Query(value="select id from address_level where lineage ~ cast(:lquery as lquery)", nativeQuery = true)
     List<Long> getAllChildrenLocationsIds(@Param("lquery") String lquery);
 

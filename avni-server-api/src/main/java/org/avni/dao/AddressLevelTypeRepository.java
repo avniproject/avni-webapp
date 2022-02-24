@@ -32,4 +32,6 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     List<AddressLevelType> findByUuidIn(Collection<@NotNull String> uuid);
 
     AddressLevelType findByParent(AddressLevelType parent);
+
+    List<AddressLevelType> findByIsVoidedFalseAndNameIgnoreCaseContains(String name);
 }

@@ -1,9 +1,12 @@
 package org.avni.web;
 
+import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.ConceptRepository;
+import org.avni.dao.LocationRepository;
 import org.avni.domain.Concept;
+import org.avni.web.request.AddressLevelContractWeb;
+import org.avni.web.request.AddressLevelTypeContract;
 import org.avni.web.request.ConceptContract;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -19,13 +22,17 @@ import java.util.stream.Collectors;
 @RestController
 public class SearchController {
     private final ConceptRepository conceptRepository;
-    private final Logger logger;
+    private final LocationRepository locationRepository;
+    private final AddressLevelTypeRepository addressLevelTypeRepository;
 
     @Autowired
     @Lazy
-    public SearchController(ConceptRepository conceptRepository) {
+    public SearchController(ConceptRepository conceptRepository,
+                            LocationRepository locationRepository,
+                            AddressLevelTypeRepository addressLevelTypeRepository) {
         this.conceptRepository = conceptRepository;
-        logger = LoggerFactory.getLogger(this.getClass());
+        this.locationRepository = locationRepository;
+        this.addressLevelTypeRepository = addressLevelTypeRepository;
     }
 
     @RequestMapping(value = "/search/concept", method = RequestMethod.GET)
@@ -39,10 +46,30 @@ public class SearchController {
         }
     }
 
+    @RequestMapping(value = "/search/location", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AddressLevelContractWeb> searchLocation(@RequestParam String name) {
+        return locationRepository.findByIsVoidedFalseAndTitleIgnoreCaseContains(name)
+                .stream()
+                .map(AddressLevelContractWeb::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/search/locationType", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public List<AddressLevelTypeContract> searchLocationType(@RequestParam String name) {
+        return addressLevelTypeRepository.findByIsVoidedFalseAndNameIgnoreCaseContains(name)
+                .stream()
+                .map(AddressLevelTypeContract::fromAddressLevelType)
+                .collect(Collectors.toList());
+    }
+
     private List<ConceptContract> getConceptContract(List<Concept> concepts) {
         return concepts
                 .stream()
                 .map(Concept::toConceptContract)
                 .collect(Collectors.toList());
     }
+
+
 }
