@@ -1,5 +1,7 @@
 package org.avni.framework.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.avni.domain.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 public class AuthenticationFilter extends BasicAuthenticationFilter {
     public static final String USER_NAME_HEADER = "USER-NAME";
     public static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     public static final String ORGANISATION_UUID = "ORGANISATION-UUID";
     public static final String AUTH_TOKEN_COOKIE = "auth-token";
-    public static final int ONE_HOUR = 3600;
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private AuthService authService;
@@ -74,8 +76,14 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         if (authToken != null && !authToken.isEmpty()) {
-            response.addCookie(makeCookie(authToken, ONE_HOUR));
+            response.addCookie(makeCookie(authToken, getCookieMaxAge(authToken)));
         }
+    }
+
+    private int getCookieMaxAge(String authToken) {
+        DecodedJWT jwt = JWT.decode(authToken);
+        int expiryDuration = (int) ((jwt.getExpiresAt().getTime() - new Date().getTime()) / 1000) - 60;
+        return expiryDuration < 0 ? 0 : expiryDuration;
     }
 
     private Cookie makeCookie(String value, int age) {
