@@ -1,4 +1,4 @@
-import { Action, Condition, DeclarativeRuleHolder, LHS, RHS } from "rules-config";
+import { Action, Condition, DeclarativeRuleHolder, RHS } from "rules-config";
 import { forEach, size } from "lodash";
 
 const resetState = () => {
@@ -58,26 +58,20 @@ const lhsChange = (
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const condition = declarativeRule.conditions[conditionIndex];
   const rule = condition.compoundRule.rules[ruleIndex];
-  if (property === "type" && rule.lhs.type !== value) {
-    rule.lhs = new LHS();
-  }
   rule.lhs[property] = value;
   rule.rhs = new RHS();
   rule.operator = undefined;
   return newState;
 };
 
-const lhsConceptChange = (
+const typeChange = (
   declarativeRuleHolder,
-  { declarativeRuleIndex, ruleIndex, conditionIndex, name, uuid, dataType }
+  { declarativeRuleIndex, ruleIndex, conditionIndex, name, uuid, dataType, formType }
 ) => {
   const newState = declarativeRuleHolder.clone();
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const condition = declarativeRule.conditions[conditionIndex];
-  const rule = condition.compoundRule.rules[ruleIndex];
-  rule.lhs.conceptName = name;
-  rule.lhs.conceptUuid = uuid;
-  rule.lhs.conceptDataType = dataType;
+  condition.compoundRule.updateRuleAtIndex(ruleIndex, name, uuid, dataType, formType);
   return newState;
 };
 
@@ -235,7 +229,7 @@ export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
     compoundRuleConjunctionChange: compoundRuleConjunctionChange,
     addNewRule: addNewRule,
     lhsChange: lhsChange,
-    lhsConceptChange: lhsConceptChange,
+    typeChange: typeChange,
     rhsChange: rhsChange,
     rhsConceptChange: rhsConceptChange,
     operatorChange: operatorChange,

@@ -8,8 +8,23 @@ const styles = {
   }
 };
 
-const InputField = props => {
-  return <TextField InputProps={{ classes: { input: props.classes.input } }} {...props} />;
+const InputField = ({ type, value, onChange, ...props }) => {
+  const getValue = () => {
+    if (type === "number") {
+      return value === 0 ? null : value;
+    }
+    return value;
+  };
+
+  return (
+    <TextField
+      variant="outlined"
+      type={type || "text"}
+      value={getValue()}
+      onChange={onChange}
+      InputProps={{ classes: { input: props.classes.input } }}
+    />
+  );
 };
 
 export default withStyles(styles)(InputField);

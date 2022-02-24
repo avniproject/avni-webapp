@@ -46,20 +46,23 @@ const CompoundRuleComponent = ({
       </Box>
       <Grid container direction={"column"}>
         {map(rules, (rule, index) => (
-          <Grid item container direction={"column"} spacing={3}>
+          <Grid item container direction={"column"} spacing={1}>
             {index !== 0 && (
               <Grid item container justify={"center"}>
-                <Chip color="primary" label={toUpper(compoundRule.conjunction)} />
+                <Chip
+                  style={{ marginTop: "10px", marginBottom: "10px" }}
+                  color="primary"
+                  label={toUpper(compoundRule.conjunction)}
+                />
               </Grid>
             )}
-            <Grid item key={index}>
-              <RuleComponent
-                rule={rule}
-                ruleIndex={index}
-                conditionIndex={conditionIndex}
-                declarativeRuleIndex={declarativeRuleIndex}
-              />
-            </Grid>
+            <RuleComponent
+              key={index}
+              rule={rule}
+              ruleIndex={index}
+              conditionIndex={conditionIndex}
+              declarativeRuleIndex={declarativeRuleIndex}
+            />
           </Grid>
         ))}
       </Grid>

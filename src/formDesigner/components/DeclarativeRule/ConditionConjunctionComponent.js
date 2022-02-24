@@ -13,6 +13,7 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
     <Grid container direction={"row"} justify={"center"}>
       <Grid item>
         <Chip
+          style={{ marginTop: "15px", marginBottom: "15px" }}
           label={toUpper(andConjunction)}
           color={chipColor(andConjunction)}
           onClick={() => onConjunctionChange(andConjunction)}
@@ -20,6 +21,7 @@ const ConditionConjunctionComponent = ({ onConjunctionChange, value, ...props })
       </Grid>
       <Grid item>
         <Chip
+          style={{ marginTop: "15px", marginBottom: "15px" }}
           label={toUpper(orConjunction)}
           color={chipColor(orConjunction)}
           onClick={() => onConjunctionChange(orConjunction)}

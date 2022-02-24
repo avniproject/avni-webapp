@@ -22,7 +22,7 @@ const OperatorComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleInd
 
   return (
     <Fragment>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Select
           placeholder="Select operator"
           value={findOrDefault(operators, ({ value }) => value === rule.operator, null)}

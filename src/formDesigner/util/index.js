@@ -29,3 +29,7 @@ export const validateRule = (declarativeRule, generateCodeFunction) => {
   }
   return { jsCode: null };
 };
+
+export const getSelectLabelValue = (value, label) => {
+  return isEmpty(value) ? null : { value, label: label || value };
+};

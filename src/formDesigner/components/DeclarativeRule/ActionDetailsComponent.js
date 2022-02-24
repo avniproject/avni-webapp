@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Grid } from "@material-ui/core";
 import MiddleText from "./MiddleText";
 import InputField from "./InputField";
-import { get, includes, map, zip, isEmpty, startCase } from "lodash";
+import { get, includes, isEmpty, map, startCase, zip } from "lodash";
 import ConceptSearch from "./ConceptSearch";
 import { inlineConceptDataType } from "../../common/constants";
 import { Action, AddDecisionActionDetails, VisitScheduleActionDetails } from "rules-config";
@@ -31,22 +31,34 @@ function VisitScheduleDetails({
     value: { dateField, dateFieldUuid, toString: () => dateField }
   };
 
+  const onEncounterTypeChange = value => {
+    onActionChange("encounterType", value);
+    onActionChange("encounterName", value);
+  };
+
   return (
     <Fragment>
       <MiddleText text={"Of Type"} />
-      <Grid item xs={4}>
+      <Grid item xs={2}>
         <Select
           placeholder="Select encounter type"
           value={selectedET ? { value: selectedET, label: selectedET } : null}
           options={map(encounterTypes, ({ name }) => ({ value: name, label: name }))}
           style={{ width: "auto" }}
-          onChange={event => onActionChange("encounterType", event.value)}
+          onChange={event => onEncounterTypeChange(event.value)}
         />
       </Grid>
       {!isEmpty(actionDetails.encounterType) && (
         <Fragment>
+          <MiddleText text={"Visit name"} />
+          <Grid item xs={2}>
+            <InputField
+              value={get(actionDetails, "encounterName")}
+              onChange={event => onActionChange("encounterName", event.target.value)}
+            />
+          </Grid>
           <MiddleText text={"Using"} />
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Select
               placeholder="Date field to use"
               value={dateField ? selectedDateFieldOption : null}
@@ -68,21 +80,19 @@ function VisitScheduleDetails({
           <Grid item xs={1}>
             <InputField
               type={"number"}
-              variant="outlined"
               value={get(actionDetails, "daysToSchedule")}
               onChange={event => onActionChange("daysToSchedule", event.target.value)}
             />
           </Grid>
-          <MiddleText xs={2} text={"Days, and Overdue after"} />
+          <MiddleText text={"Days, and Overdue after"} />
           <Grid item xs={1}>
             <InputField
               type={"number"}
-              variant="outlined"
               value={get(actionDetails, "daysToOverdue")}
               onChange={event => onActionChange("daysToOverdue", event.target.value)}
             />
           </Grid>
-          <MiddleText xs={3} text={`Days from the ${startCase(dateField)}`} />
+          <MiddleText text={`Days from the ${startCase(dateField)}`} />
         </Fragment>
       )}
     </Fragment>
@@ -123,12 +133,12 @@ function DecisionDetails({ index, actionDetails, declarativeRuleIndex, onActionC
       {!isEmpty(actionDetails.conceptName) && (
         <Fragment>
           <MiddleText text={"Value"} />
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             {actionDetails.conceptDataType === "Coded" ? (
               <ConceptSearch
                 key={index}
                 isMulti={true}
-                placeholder={"Type to search concept answers"}
+                placeholder={"search answer"}
                 value={selectedDecisionValues}
                 onChange={labelValues =>
                   dispatch({
@@ -140,7 +150,6 @@ function DecisionDetails({ index, actionDetails, declarativeRuleIndex, onActionC
               />
             ) : (
               <InputField
-                variant="outlined"
                 value={actionDetails.value}
                 onChange={event => onActionChange("value", event.target.value)}
               />
@@ -151,7 +160,7 @@ function DecisionDetails({ index, actionDetails, declarativeRuleIndex, onActionC
       {!isEmpty(actionDetails.value) && (
         <Fragment>
           <MiddleText text={"In"} />
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Select
               placeholder="Select scope"
               value={
@@ -193,11 +202,10 @@ const ActionDetailsComponent = ({
   return (
     <Fragment>
       {selectedType === actionTypes.Value && (
-        <Grid item container xs={5} alignItems={"center"} direction={"row"} spacing={1}>
+        <Grid item container xs={4} alignItems={"center"} direction={"row"} spacing={1}>
           <MiddleText text={"Is"} />
           <Grid item xs={11}>
             <InputField
-              variant="outlined"
               value={get(actionDetails, "value")}
               onChange={event => onActionChange("value", event.target.value)}
             />
@@ -209,7 +217,7 @@ const ActionDetailsComponent = ({
           <ConceptSearch
             key={index}
             isMulti={true}
-            placeholder={"Type to search concept answers"}
+            placeholder={"Search answer"}
             value={selectedAnswersToSkipOptions}
             onChange={labelValues => onAnswerToSkipChange(labelValues)}
             nonSupportedTypes={inlineConceptDataType}
@@ -221,7 +229,6 @@ const ActionDetailsComponent = ({
           <MiddleText text={"Is"} />
           <Grid item xs={11}>
             <InputField
-              variant="outlined"
               value={get(actionDetails, "validationError")}
               onChange={event => onActionChange("validationError", event.target.value)}
             />

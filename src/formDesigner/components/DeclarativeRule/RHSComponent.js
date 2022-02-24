@@ -1,13 +1,15 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import Grid from "@material-ui/core/Grid";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
-import { map, startCase, get, zip, flatten, toNumber, size } from "lodash";
+import { flatten, get, map, startCase, toNumber, zip } from "lodash";
 import { RHS, Rule } from "rules-config";
 import Select from "react-select";
 import { inlineConceptDataType } from "../../common/constants";
 import ConceptSearch from "./ConceptSearch";
 import InputField from "./InputField";
-import { findOrDefault } from "../../util";
+import { findOrDefault, getSelectLabelValue } from "../../util";
+import LocationSearch from "../../common/LocationSearch";
+import LocationTypeSearch from "../../common/LocationTypeSearch";
 
 const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
@@ -28,13 +30,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
     });
   };
 
-  useEffect(() => {
-    if (size(types) === 1) {
-      onRHSChange("type", types[0].value);
-    }
-  }, [rule.operator]);
-
-  const isMulti = operator === Rule.operators.ContainsAnyAnswerConceptName;
+  const isMulti = operator === Rule.operators.HasAnyOneAnswer;
   const selectedConceptAnswerOptions = map(
     zip(rhs.answerConceptNames, rhs.answerConceptUuids),
     ([name, uuid]) => ({ label: name, value: { name, uuid, toString: () => uuid } })
@@ -42,7 +38,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
 
   return (
     <Fragment>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Select
           placeholder="Select type"
           value={selectedTypeOption}
@@ -54,7 +50,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
       {selectedType === RHS.types.AnswerConcept ? (
         <Grid item xs={4}>
           <ConceptSearch
-            placeholder={"Type to search concept answer"}
+            placeholder={"Search answer"}
             isMulti={isMulti}
             onChange={labelValues => {
               const values = isMulti ? labelValues : [labelValues];
@@ -69,7 +65,7 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
         </Grid>
       ) : null}
       {selectedType === RHS.types.Value ? (
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           {rule.lhs.isGender() ? (
             <Select
               placeholder="Select gender"
@@ -78,10 +74,19 @@ const RHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
               style={{ width: "auto" }}
               onChange={event => onRHSChange("value", event.value)}
             />
+          ) : rule.lhs.isAddressLevel() ? (
+            <LocationSearch
+              value={getSelectLabelValue(rhs.value)}
+              onChange={({ value }) => onRHSChange("value", value.name)}
+            />
+          ) : rule.lhs.isAddressLevelType() ? (
+            <LocationTypeSearch
+              value={getSelectLabelValue(rhs.value)}
+              onChange={({ value }) => onRHSChange("value", value.name)}
+            />
           ) : (
             <InputField
               type={rhsValueType}
-              variant="outlined"
               value={rhs.value}
               onChange={event => {
                 const value = event.target.value;

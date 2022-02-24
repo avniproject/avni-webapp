@@ -1,42 +1,38 @@
-import AsyncSelect from "react-select/async";
 import React from "react";
-import { deburr, includes, map, isEmpty } from "lodash";
+import { includes, map } from "lodash";
 import http from "../../../common/utils/httpClient";
+import CommonSearch from "../../common/CommonSearch";
 
-const ConceptSearch = ({ value, onChange, nonSupportedTypes = [], isMulti, placeholder }) => {
-  const [options, setOptions] = React.useState([]);
+const ConceptSearch = ({
+  value,
+  onChange,
+  nonSupportedTypes = [],
+  isMulti,
+  placeholder,
+  defaultOptions = []
+}) => {
   const loadConcept = (value, callback) => {
-    if (!value) {
-      return callback([]);
-    }
-    const inputValue = deburr(value.trim()).toLowerCase();
-    http
-      .get("/search/concept?name=" + encodeURIComponent(inputValue))
-      .then(response => {
-        const concepts = response.data;
-        const filteredConcepts = concepts.filter(
-          concept => !includes(nonSupportedTypes, concept.dataType)
-        );
-        const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
-          label: name,
-          value: { name, uuid, dataType, toString: () => uuid }
-        }));
-        setOptions(conceptOptions);
-        callback(conceptOptions);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    return http.get("/search/concept?name=" + value).then(response => {
+      const concepts = response.data;
+      const filteredConcepts = concepts.filter(
+        concept => !includes(nonSupportedTypes, concept.dataType)
+      );
+      const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
+        label: name,
+        value: { name, uuid, dataType, toString: () => uuid }
+      }));
+      return callback(conceptOptions);
+    });
   };
+
   return (
-    <AsyncSelect
-      cacheOptions
-      isMulti={isMulti}
-      defaultOptions={options}
-      value={isEmpty(value) ? null : value}
-      placeholder={placeholder || "Type to search concept"}
+    <CommonSearch
+      value={value}
       onChange={onChange}
-      loadOptions={loadConcept}
+      isMulti={isMulti}
+      placeholder={placeholder || "Type to search concept"}
+      defaultOptions={defaultOptions}
+      loadOptionsByValue={loadConcept}
     />
   );
 };
