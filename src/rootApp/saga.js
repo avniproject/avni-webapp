@@ -21,6 +21,8 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { get, intersection, isEmpty } from "lodash";
+import { userLogout } from "react-admin";
+import Auth from "@aws-amplify/auth";
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
@@ -29,7 +31,8 @@ const api = {
   fetchTranslations: () => http.fetchJson("/web/translations").then(response => response.json),
   fetchOrganisationConfig: () =>
     http.fetchJson("/web/organisationConfig").then(response => response.json),
-  saveUserInfo: userInfo => http.post("/me", userInfo)
+  saveUserInfo: userInfo => http.post("/me", userInfo),
+  logout: () => http.get("/web/logout")
 };
 
 export function* initialiseCognito() {
@@ -118,4 +121,15 @@ export function* getAdminOrgsWatcher() {
 function* setAdminOrgsWorker() {
   const organisations = yield call(api.fetchAdminOrgs);
   yield put(setAdminOrgs(organisations));
+}
+
+function* logoutWorker() {
+  console.log("calling api");
+  yield call(api.logout);
+  localStorage.clear();
+  userLogout() && Auth.signOut().then(() => (document.location.href = "/"));
+}
+
+export function* logoutWatcher() {
+  yield takeLatest(types.LOGOUT, logoutWorker);
 }

@@ -12,7 +12,13 @@ import {
   dataProvider as springDataProvider
 } from "../adminApp/react-admin-config/index";
 
-import { getAdminOrgsWatcher, initialiseCognito, onSetCognitoUser, userInfoWatcher } from "./saga";
+import {
+  getAdminOrgsWatcher,
+  initialiseCognito,
+  logoutWatcher,
+  onSetCognitoUser,
+  userInfoWatcher
+} from "./saga";
 
 const dataProvider = springDataProvider("");
 const i18nProvider = defaultI18nProvider;
@@ -25,6 +31,7 @@ export default function* rootSaga() {
       onSetCognitoUser,
       userInfoWatcher,
       getAdminOrgsWatcher,
+      logoutWatcher,
       organisationConfigWatcher,
       dataEntrySaga,
       translationsSaga,

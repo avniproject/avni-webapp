@@ -13,7 +13,8 @@ export const types = {
   SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS",
   SET_ORGANISATION_CONFIG: "app/SET_ORGANISATION_CONFIG",
   SET_TRANSLATIONS: "app/SET_TRANSLATIONS",
-  SAVE_USER_INFO: "app/SAVE_USER_INFO"
+  SAVE_USER_INFO: "app/SAVE_USER_INFO",
+  LOGOUT: "app/LOGOUT"
 };
 
 export const getAdminOrgs = () => ({
@@ -71,6 +72,10 @@ export const sendAuthConfigured = () => ({
 export const setTranslations = translations => ({
   type: types.SET_TRANSLATIONS,
   translations
+});
+
+export const logout = () => ({
+  type: types.LOGOUT
 });
 
 export const isRuleDesignerEnabled = state =>

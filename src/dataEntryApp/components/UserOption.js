@@ -16,10 +16,9 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { LOCALES } from "../../common/constants";
 import { useTranslation } from "react-i18next";
-import { saveUserInfo } from "rootApp/ducks";
+import { logout, saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import Auth from "@aws-amplify/auth";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -194,10 +193,10 @@ const mapStateToProps = state => ({
       : "en"
 });
 
-const mapDispatchToProps = {
+const mapDispatchToProps = dispatch => ({
   saveUserInfo: saveUserInfo,
-  logout: () => Auth.signOut().then(() => (document.location.href = "/"))
-};
+  logout: () => dispatch(logout())
+});
 
 export default connect(
   mapStateToProps,
