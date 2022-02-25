@@ -90,7 +90,7 @@ const rhsChange = (
   return newState;
 };
 
-const rhsConceptChange = (
+const rhsAnswerConceptChange = (
   declarativeRuleHolder,
   { declarativeRuleIndex, ruleIndex, conditionIndex, labelValues }
 ) => {
@@ -101,6 +101,18 @@ const rhsConceptChange = (
   const { names, uuids } = getConceptNamesAndUUIDs(labelValues);
   rule.rhs.answerConceptNames = names;
   rule.rhs.answerConceptUuids = uuids;
+  return newState;
+};
+
+const rhsConceptChange = (
+  declarativeRuleHolder,
+  { declarativeRuleIndex, ruleIndex, conditionIndex, name, uuid, formType }
+) => {
+  const newState = declarativeRuleHolder.clone();
+  const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
+  const condition = declarativeRule.conditions[conditionIndex];
+  const rule = condition.compoundRule.rules[ruleIndex];
+  rule.rhs.changeConceptAndScope(name, uuid, formType);
   return newState;
 };
 
@@ -231,7 +243,7 @@ export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
     lhsChange: lhsChange,
     typeChange: typeChange,
     rhsChange: rhsChange,
-    rhsConceptChange: rhsConceptChange,
+    rhsAnswerConceptChange: rhsAnswerConceptChange,
     operatorChange: operatorChange,
     deleteCondition: deleteCondition,
     deleteRule: deleteRule,
@@ -242,7 +254,8 @@ export const DeclarativeRuleReducer = (declarativeRuleHolder, action) => {
     deleteDeclarativeRule: deleteDeclarativeRule,
     decisionConcept: decisionConcept,
     decisionCodedValue: decisionCodedValue,
-    visitDateField: visitDateField
+    visitDateField: visitDateField,
+    rhsConceptChange: rhsConceptChange
   };
   const actionFn = actionFns[action.type] || (() => declarativeRuleHolder);
   const newState = actionFn(declarativeRuleHolder, action.payload);
