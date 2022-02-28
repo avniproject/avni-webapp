@@ -132,8 +132,16 @@ public class AbstractEncounter extends OrganisationAwareEntity {
     }
 
     public boolean isEncounteredOrCancelledBetween(DateTime startDate, DateTime endDate) {
-        return (getEncounterDateTime() != null && getEncounterDateTime().isAfter(startDate) && getEncounterDateTime().isBefore(endDate)) ||
-                (getCancelDateTime() != null && getCancelDateTime().isAfter(startDate) && getCancelDateTime().isBefore(endDate));
+        return (getEncounterDateTime() != null && isAfterOrEqual(getEncounterDateTime(), startDate) && isBeforeOrEqual(getEncounterDateTime(), endDate)) ||
+                (getCancelDateTime() != null && isAfterOrEqual(getCancelDateTime(), startDate) && isBeforeOrEqual(getCancelDateTime(), endDate));
+    }
+
+    private boolean isAfterOrEqual(DateTime d1, DateTime d2) {
+        return d1.equals(d2) || d1.isAfter(d2);
+    }
+
+    private boolean isBeforeOrEqual(DateTime d1, DateTime d2) {
+        return d1.equals(d2) || d1.isBefore(d2);
     }
 
     public String getLegacyId() {
