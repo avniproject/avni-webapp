@@ -65,9 +65,6 @@ const useStyles = makeStyles(theme => ({
   tab: {
     minHeight: "26px",
     height: "26px"
-  },
-  formElementGroupInputText: {
-    lineHeight: "56px"
   }
 }));
 export const ExpansionPanel = withStyles({
@@ -279,7 +276,6 @@ function FormElementGroup(props) {
                         )}
                         <FormControl fullWidth>
                           <Input
-                            classes={{ input: classes.formElementGroupInputText }}
                             type="text"
                             placeholder="Group name"
                             name={"name" + panel}
