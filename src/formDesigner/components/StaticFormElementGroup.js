@@ -20,9 +20,6 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     fontSize: theme.typography.pxToRem(15)
-  },
-  formElementGroupInputText: {
-    lineHeight: "56px"
   }
 }));
 
@@ -65,7 +62,6 @@ const StaticFormElementGroup = ({ name, formElements, ...props }) => {
               <Typography className={classes.heading}>
                 <FormControl fullWidth>
                   <Input
-                    classes={{ input: classes.formElementGroupInputText }}
                     type="text"
                     placeholder="Group name"
                     name={"name" + panel}
