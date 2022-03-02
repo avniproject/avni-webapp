@@ -12,9 +12,6 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
   );
-  const toFormatTime = !isNil(value) && moment(value).format("HH:mm");
-  const hrs = toFormatTime && toFormatTime.split(":")[0];
-  const mins = toFormatTime && toFormatTime.split(":")[1];
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -28,19 +25,20 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
       </Typography>
       <KeyboardTimePicker
         required={fe.mandatory}
-        value={!isNil(value) ? new Date().setHours(hrs, mins) : value}
+        value={!isNil(value) ? moment(value, "HH:mm").toDate() : value}
         ampm={false}
         onChange={value => {
-          update(value);
+          update(moment(value).format("HH:mm"));
         }}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
-        placeholder="hh:mm"
+        placeholder="HH:mm"
         style={{ width: "30%" }}
         KeyboardButtonProps={{
           "aria-label": "change time",
           color: "primary"
         }}
+        format={"HH:mm"}
       />
     </MuiPickersUtilsProvider>
   );
