@@ -403,7 +403,7 @@ public class S3Service {
         if (oldValue != null) {
             this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
         }
-        String extension = S.getLastStringAfter(mediaURL, ".");
+        String extension = mediaURL.contains(".") ? S.getLastStringAfter(mediaURL, ".") : "";
         File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString().concat(format(".%s", extension))));
         downloadMediaToFile(mediaURL, file);
         return this.uploadFileToS3(file);
