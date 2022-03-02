@@ -1,29 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Icon from "@material-ui/core/Icon";
-import { useDispatch, useSelector } from "react-redux";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import httpClient from "../../common/utils/httpClient";
-import { getOrgConfigInfo } from "../../i18nTranslations/TranslationReducers";
-import { defaultTo, get } from "lodash";
-import { selectOrganisationConfig } from "../../dataEntryApp/sagas/selectors";
 import { isProdEnv } from "../../common/constants";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
-
-  const dispatch = useDispatch();
-  const isCannedEnabled = get(
-    defaultTo(useSelector(selectOrganisationConfig), {}),
-    "settings.enableCannedReports"
-  );
-  useEffect(() => {
-    dispatch(getOrgConfigInfo());
-  }, []);
 
   const renderCard = (href, name, customicon) => (
     <CardActionArea style={classes.cardArea} href={href}>
@@ -81,9 +68,7 @@ const Homepage = ({ user }) => {
         {renderCard("/#/export", "Reports", "assessment")}
         {renderCard("/#/app", "Data Entry App", "keyboard")}
         {renderCard("/#/help", "Support And Training", "help")}
-        {isProdEnv &&
-          isCannedEnabled &&
-          renderCard("/analytics/activities", "Canned Reports", "assessment")}
+        {isProdEnv && renderCard("/analytics/activities", "Canned Reports", "assessment")}
       </Grid>
     </ScreenWithAppBar>
   );
