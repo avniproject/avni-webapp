@@ -32,7 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -146,8 +148,9 @@ public class ImportController {
     public JsonObject uploadMedia(@RequestParam("url") String url,
                                   @RequestParam("oldValue") String oldValue) {
         JsonObject response = new JsonObject();
+        String decodedURL = new String(Base64.getDecoder().decode(url));
         try {
-            String obsValue = s3Service.getObservationValueForUpload(url, oldValue);
+            String obsValue = s3Service.getObservationValueForUpload(decodedURL, oldValue);
             response.with("value", obsValue);
         } catch (Exception e) {
             response.with("error", e.getMessage());
