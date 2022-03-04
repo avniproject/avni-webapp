@@ -283,11 +283,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         formContract.setDecisionDeclarativeRule(form.getDecisionDeclarativeRule());
         formContract.setVisitScheduleDeclarativeRule(form.getVisitScheduleDeclarativeRule());
 
-        if (form.getFormType().equals(FormType.IndividualProfile)) {
-            //Assuming that we'll have single registration form per subject types
-            List<FormMapping> formMappings = formMappingRepository.findByFormIdAndIsVoidedFalse(form.getId());
-            formContract.setSubjectType(formMappings.isEmpty() ? null : formMappings.get(0).getSubjectType());
-        }
+        //Assuming that we'll have single registration form per subject types
+        List<FormMapping> formMappings = formMappingRepository.findByFormIdAndIsVoidedFalse(form.getId());
+        formContract.setSubjectType(formMappings.isEmpty() ? null : formMappings.get(0).getSubjectType());
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());
