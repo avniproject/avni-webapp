@@ -29,5 +29,6 @@ export const inlineConceptDataType = sortBy([
   "PhoneNumber",
   "GroupAffiliation",
   "Audio",
-  "File"
+  "File",
+  "QuestionGroup"
 ]);

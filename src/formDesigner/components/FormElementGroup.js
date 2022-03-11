@@ -149,7 +149,7 @@ function FormElementGroup(props) {
     const displayOrderFormElements = props.groupData.formElements;
 
     _.forEach(displayOrderFormElements, (formElement, index) => {
-      if (!formElement.voided) {
+      if (!formElement.voided && _.isNil(formElement.parentFormElementUuid)) {
         let propsElement = {
           key: "Element" + props.index + "" + index,
           formElementData: formElement,
