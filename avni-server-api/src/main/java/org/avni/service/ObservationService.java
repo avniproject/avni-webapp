@@ -1,10 +1,13 @@
 package org.avni.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.domain.*;
 import org.avni.util.BadRequestError;
+import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.*;
 import org.avni.web.request.rules.RulesContractWrapper.Decision;
 import org.avni.web.request.rules.constant.WorkFlowTypeEnum;
@@ -22,12 +25,14 @@ public class ObservationService {
     private ConceptRepository conceptRepository;
     private IndividualRepository individualRepository;
     private LocationRepository locationRepository;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public ObservationService(ConceptRepository conceptRepository, IndividualRepository individualRepository, LocationRepository locationRepository) {
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
+        this.objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
     public ObservationCollection createObservations(List<ObservationRequest> observationRequests) {
@@ -45,7 +50,13 @@ public class ObservationService {
                     } else {
                         concept = conceptRepository.findByUuid(observationRequest.getConceptUUID());
                     }
-                    return new SimpleEntry<>(concept, observationRequest.getValue());
+                    if(ConceptDataType.isGroupQuestion(concept.getDataType())) {
+                        List<ObservationRequest> groupQuestionObservations = objectMapper.convertValue(observationRequest.getValue(), new TypeReference<List<ObservationRequest>>() {});
+                        ObservationCollection observationValues = this.createObservations(groupQuestionObservations);
+                        return new SimpleEntry<Concept, Object>(concept, observationValues);
+                    } else {
+                        return new SimpleEntry<>(concept, observationRequest.getValue());
+                    }
                 })
                 .filter(obsReqAsMap -> null != obsReqAsMap.getKey()
                         && !"null".equalsIgnoreCase(String.valueOf(obsReqAsMap.getValue())))
