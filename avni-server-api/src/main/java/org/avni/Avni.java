@@ -136,6 +136,9 @@ public class Avni {
                 resource.removeLinks();
                 resource.add(new Link(formElement.getFormElementGroup().getUuid(), "formElementGroupUUID"));
                 resource.add(new Link(formElement.getConcept().getUuid(), "conceptUUID"));
+                if (formElement.getGroup() != null) {
+                    resource.add(new Link(formElement.getGroup().getUuid(), "groupQuestionUUID"));
+                }
                 return resource;
             }
         };

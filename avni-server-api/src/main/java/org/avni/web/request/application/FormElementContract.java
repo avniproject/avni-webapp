@@ -23,6 +23,7 @@ public class FormElementContract extends ReferenceDataContract {
     private Long organisationId;
     private String rule;
     private DeclarativeRule declarativeRule;
+    private String parentFormElementUuid;
 
     public FormElementContract() {
     }
@@ -128,6 +129,10 @@ public class FormElementContract extends ReferenceDataContract {
         feContract.setRule(formElement.getRule());
         feContract.setConcept(ConceptContract.create(formElement.getConcept()));
         feContract.setDeclarativeRule(formElement.getDeclarativeRule());
+        FormElement group = formElement.getGroup();
+        if(group != null) {
+            feContract.setParentFormElementUuid(group.getUuid());
+        }
         return feContract;
     }
 
@@ -145,6 +150,14 @@ public class FormElementContract extends ReferenceDataContract {
 
     public void setDeclarativeRule(DeclarativeRule declarativeRule) {
         this.declarativeRule = declarativeRule;
+    }
+
+    public String getParentFormElementUuid() {
+        return parentFormElementUuid;
+    }
+
+    public void setParentFormElementUuid(String parentFormElementUuid) {
+        this.parentFormElementUuid = parentFormElementUuid;
     }
 
     @Override

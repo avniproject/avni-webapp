@@ -6,6 +6,7 @@ import org.avni.builder.FormBuilderException;
 import org.avni.dao.OperationalEncounterTypeRepository;
 import org.avni.dao.OperationalProgramRepository;
 import org.avni.dao.ProgramRepository;
+import org.avni.dao.application.FormElementRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
 import org.avni.domain.*;
@@ -63,7 +64,6 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     private FormRepository formRepository;
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
-    private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private RepositoryEntityLinks entityLinks;
     private ProjectionFactory projectionFactory;
     private UserService userService;
@@ -74,7 +74,6 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                           ProgramRepository programRepository,
                           FormMappingRepository formMappingRepository,
                           OperationalProgramRepository operationalProgramRepository,
-                          OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                           RepositoryEntityLinks entityLinks,
                           ProjectionFactory projectionFactory,
                           FormMappingService formMappingService,
@@ -85,7 +84,6 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
         this.operationalProgramRepository = operationalProgramRepository;
-        this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.entityLinks = entityLinks;
         this.projectionFactory = projectionFactory;
         this.formMappingService = formMappingService;
@@ -310,6 +308,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 if (formElement.getValidFormat() != null) {
                     formElementContract.setValidFormat(new FormatContract(formElement.getValidFormat().getRegex(),
                             formElement.getValidFormat().getDescriptionKey()));
+                }
+                if(formElement.getGroup() != null) {
+                    formElementContract.setParentFormElementUuid(formElement.getGroup().getUuid());
                 }
 
 

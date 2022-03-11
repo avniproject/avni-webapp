@@ -65,6 +65,10 @@ public class FormElement extends OrganisationAwareEntity {
     @Type(type = "declarativeRule")
     private DeclarativeRule declarativeRule;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private FormElement group;
+
     public String getName() {
         return name;
     }
@@ -203,5 +207,13 @@ public class FormElement extends OrganisationAwareEntity {
 
     public void setDeclarativeRule(DeclarativeRule declarativeRule) {
         this.declarativeRule = declarativeRule;
+    }
+
+    public FormElement getGroup() {
+        return group;
+    }
+
+    public void setGroup(FormElement group) {
+        this.group = group;
     }
 }

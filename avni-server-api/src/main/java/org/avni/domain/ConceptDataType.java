@@ -22,7 +22,8 @@ public enum ConceptDataType {
     PhoneNumber,
     GroupAffiliation,
     Audio,
-    File;
+    File,
+    QuestionGroup;
 
     private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes, Image, Video, Id);
     private static List<ConceptDataType> dateTypes = Arrays.asList(Date, DateTime, Duration, Time);
@@ -47,5 +48,9 @@ public enum ConceptDataType {
     public static boolean matches(String dataType, ConceptDataType ... conceptDataTypes) {
         ConceptDataType found = Arrays.stream(conceptDataTypes).filter(conceptDataType -> conceptDataType.toString().equals(dataType)).findAny().orElse(null);
         return found != null;
+    }
+
+    public static boolean isGroupQuestion(String dataType) {
+        return ConceptDataType.valueOf(dataType).equals(QuestionGroup);
     }
 }

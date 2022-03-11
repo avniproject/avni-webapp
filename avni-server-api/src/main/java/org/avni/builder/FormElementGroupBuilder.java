@@ -1,11 +1,10 @@
 package org.avni.builder;
 
-import org.avni.domain.DeclarativeRule;
-import org.joda.time.DateTime;
 import org.avni.application.Form;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementGroup;
 import org.avni.domain.Concept;
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.Organisation;
 import org.avni.framework.ApplicationContextProvider;
 import org.avni.service.ConceptService;
@@ -75,12 +74,12 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return this;
     }
 
-    private void makeFormElement(FormElementContract formElementContract) throws FormBuilderException {
+    private FormElement makeFormElement(FormElementContract formElementContract) throws FormBuilderException {
         FormElement existingFormElement = getExistingFormElement(formElementContract.getUuid());
         FormElement newFormElement = new FormElement();
         Concept existingConcept = getExistingConcept(formElementContract.getConcept().getUuid(), existingFormElement == null ? newFormElement : existingFormElement);
         FormElementBuilder formElementBuilder = new FormElementBuilder(this.get(), existingFormElement, newFormElement);
-        formElementBuilder
+        FormElement formElement = formElementBuilder
                 .withName(formElementContract.getName())
                 .withDisplayOrder(formElementContract.getDisplayOrder())
                 .withIsVoided(formElementContract.isVoided())
@@ -91,9 +90,22 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
                 .withValidFormat(formElementContract.getValidFormat())
                 .withRule(formElementContract.getRule())
                 .withDeclarativeRule(formElementContract.getDeclarativeRule())
+                .withGroup(this.getQuestionGroup(formElementContract))
                 .withConcept(existingConcept) //Concept should be in the end otherwise it may cause a flush on incomplete object causing JPA errors
                 .build();
         formElementBuilder.linkWithFormElementGroup();
+        return formElement;
+    }
+
+    private FormElement getQuestionGroup(FormElementContract formElementContract) throws FormBuilderException {
+        FormElement group = null;
+        if (formElementContract.getParentFormElementUuid() != null) {
+            group = getExistingFormElement(formElementContract.getParentFormElementUuid());
+            if (group == null) {
+                throw new FormBuilderException(String.format("Parent form element with uuid '%s' not found", formElementContract.getParentFormElementUuid()));
+            }
+        }
+        return group;
     }
 
     public FormElementGroupBuilder withoutFormElements(Organisation organisation, List<FormElementContract> formElementContracts) throws FormBuilderException {

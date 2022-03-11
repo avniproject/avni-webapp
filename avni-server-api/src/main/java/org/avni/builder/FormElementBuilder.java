@@ -70,6 +70,11 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
         return this;
     }
 
+    public FormElementBuilder withGroup(FormElement group) {
+        this.get().setGroup(group);
+        return this;
+    }
+
     //This is done separately instead of regular builder because during the building if any db query has to be fired it tries to flush out existing state which is incomplete and gives validation error
     public void linkWithFormElementGroup() {
         this.get().setFormElementGroup(formElementGroup);
