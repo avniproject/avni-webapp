@@ -16,7 +16,7 @@ function QuestionGroup(props) {
   );
   const childFormElementsWithIndex = _.filter(
     allFormElementsWithIndex,
-    ([fe, index]) => _.get(fe, "parentFormElementUuid") === formElementData.uuid
+    ([fe, index]) => _.get(fe, "parentFormElementUuid") === formElementData.uuid && !fe.voided
   );
 
   const btnGroupAdd = (groupIndex, elementIndex) => {
