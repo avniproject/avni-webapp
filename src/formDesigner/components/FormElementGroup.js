@@ -267,7 +267,7 @@ function FormElementGroup(props) {
                     <Grid item sm={6}>
                       <Typography className={classes.heading}>
                         {props.groupData.errorMessage && props.groupData.errorMessage.name && (
-                          <div style={{ color: "red" }}>Please enter group name.</div>
+                          <div style={{ color: "red" }}>Please enter Page name.</div>
                         )}
                         {get(props.groupData, "errorMessage.ruleError") && (
                           <div style={{ color: "red" }}>
@@ -277,7 +277,7 @@ function FormElementGroup(props) {
                         <FormControl fullWidth>
                           <Input
                             type="text"
-                            placeholder="Group name"
+                            placeholder="Page name"
                             name={"name" + panel}
                             disableUnderline={true}
                             onClick={stopPropagation}
