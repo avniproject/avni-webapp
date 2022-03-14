@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.avni.application.FormElement;
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.dao.AddressLevelTypeRepository;
@@ -7,6 +8,7 @@ import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.application.FormMappingRepository;
+import org.avni.domain.ConceptDataType;
 import org.avni.domain.EncounterType;
 import org.avni.domain.Program;
 import org.avni.domain.SubjectType;
@@ -192,10 +194,19 @@ public class ImportService {
                 .getForm()
                 .getApplicableFormElements()
                 .stream()
-                .map(formElement -> "\"" + formElement.getConcept().getName() + "\"")
+                .filter(formElement -> !ConceptDataType.isGroupQuestion(formElement.getConcept().getDataType()))
+                .map(this::getHeaderName)
                 .collect(Collectors.toList());
         concatenatedString = concatenatedString.concat(String.join(",", conceptNames));
         return concatenatedString;
+    }
+
+    private String getHeaderName(FormElement formElement) {
+        String conceptName = formElement.getConcept().getName();
+        if (formElement.getGroup() != null) {
+            return "\"" + formElement.getGroup().getConcept().getName() + "|" + conceptName + "\"";
+        }
+        return "\"" + conceptName + "\"";
     }
 
     private String addToResponse(String inputString, List headers) {

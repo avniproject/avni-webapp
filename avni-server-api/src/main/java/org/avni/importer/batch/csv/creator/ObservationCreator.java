@@ -1,9 +1,17 @@
 package org.avni.importer.batch.csv.creator;
 
-import org.avni.application.*;
-import org.avni.dao.*;
+import org.avni.application.Form;
+import org.avni.application.FormElement;
+import org.avni.application.FormElementType;
+import org.avni.application.FormType;
+import org.avni.dao.AddressLevelTypeRepository;
+import org.avni.dao.ConceptRepository;
+import org.avni.dao.application.FormElementRepository;
 import org.avni.dao.application.FormRepository;
-import org.avni.domain.*;
+import org.avni.domain.AddressLevelType;
+import org.avni.domain.Concept;
+import org.avni.domain.ConceptDataType;
+import org.avni.domain.ObservationCollection;
 import org.avni.importer.batch.csv.writer.header.Headers;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.IndividualService;
@@ -32,8 +40,8 @@ import static java.lang.String.format;
 @Component
 public class ObservationCreator {
 
-    private static Logger logger = LoggerFactory.getLogger(ObservationCreator.class);
     private static final String PHONE_NUMBER_PATTERN = "^[0-9]{10}";
+    private static Logger logger = LoggerFactory.getLogger(ObservationCreator.class);
     private AddressLevelTypeRepository addressLevelTypeRepository;
     private ConceptRepository conceptRepository;
     private FormRepository formRepository;
@@ -41,6 +49,7 @@ public class ObservationCreator {
     private S3Service s3Service;
     private IndividualService individualService;
     private LocationService locationService;
+    private FormElementRepository formElementRepository;
 
     @Autowired
     public ObservationCreator(AddressLevelTypeRepository addressLevelTypeRepository,
@@ -49,7 +58,8 @@ public class ObservationCreator {
                               ObservationService observationService,
                               S3Service s3Service,
                               IndividualService individualService,
-                              LocationService locationService) {
+                              LocationService locationService,
+                              FormElementRepository formElementRepository) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.conceptRepository = conceptRepository;
         this.formRepository = formRepository;
@@ -57,9 +67,10 @@ public class ObservationCreator {
         this.s3Service = s3Service;
         this.individualService = individualService;
         this.locationService = locationService;
+        this.formElementRepository = formElementRepository;
     }
 
-    public List<Concept> getConceptHeaders(Headers fixedHeaders, String[] fileHeaders) {
+    public Set<Concept> getConceptHeaders(Headers fixedHeaders, String[] fileHeaders) {
         List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAll();
         locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
 
@@ -67,29 +78,64 @@ public class ObservationCreator {
                 locationTypes.stream().map(AddressLevelType::getName),
                 Stream.of(fixedHeaders.getAllHeaders())).collect(Collectors.toSet());
 
-        List<Concept> obsConcepts = getConceptHeaders(fileHeaders, nonConceptHeaders)
+        return getConceptHeaders(fileHeaders, nonConceptHeaders)
                 .stream()
-                .map(conceptRepository::findByName)
+                .map(name -> this.findConcept(name, false))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        return obsConcepts;
+                .collect(Collectors.toSet());
+    }
+
+    private Concept findConcept(String name, boolean isChildQuestionGroup) {
+        Concept concept = conceptRepository.findByName(name);
+        if (concept == null && name.contains("|")) {
+            String[] parentChildNameArray = name.split("\\|");
+            String questionGroupConceptName = isChildQuestionGroup ? parentChildNameArray[1] : parentChildNameArray[0];
+            concept = conceptRepository.findByName(questionGroupConceptName);
+        }
+        return concept;
     }
 
     public ObservationCollection getObservations(Row row,
                                                  Headers headers,
-                                                 List<String> errorMsgs, FormType formType, ObservationCollection oldObservations) {
-        List<ObservationRequest> observationRequests = new ArrayList<>();
+                                                 List<String> errorMsgs, FormType formType, ObservationCollection oldObservations) throws Exception {
+        return constructObservations(row, headers, errorMsgs, formType, oldObservations);
+    }
 
+    private boolean isNonEmptyQuestionGroup(FormElement formElement, Row row) {
+        Concept concept = formElement.getConcept();
+        if (ConceptDataType.isGroupQuestion(concept.getDataType())) {
+            List<FormElement> allChildQuestions = formElementRepository.findAllByGroupId(formElement.getId());
+            return allChildQuestions.stream().anyMatch(fe -> {
+                String headerName = concept.getName() + "|" + fe.getConcept().getName();
+                String rowValue = row.get(headerName);
+                return !(rowValue == null || rowValue.trim().equals(""));
+            });
+        }
+        return false;
+    }
+
+    private String getRowValue(FormElement formElement, Row row) {
+        Concept concept = formElement.getConcept();
+        if(formElement.getGroup() != null) {
+            Concept parentConcept = formElement.getGroup().getConcept();
+            String headerName = parentConcept.getName() + "|" + concept.getName();
+            return row.get(headerName);
+        }
+        return row.get(concept.getName());
+    }
+
+    private ObservationCollection constructObservations(Row row, Headers headers, List<String> errorMsgs, FormType formType, ObservationCollection oldObservations) throws Exception {
+        List<ObservationRequest> observationRequests = new ArrayList<>();
         for (Concept concept : getConceptHeaders(headers, row.getHeaders())) {
-            String rowValue = row.get(concept.getName());
-            if (rowValue == null || rowValue.trim().equals(""))
+            FormElement formElement = getFormElementForObservationConcept(concept, formType);
+            String rowValue = getRowValue(formElement, row);
+            if (!isNonEmptyQuestionGroup(formElement, row) && (rowValue == null || rowValue.trim().equals("")))
                 continue;
             ObservationRequest observationRequest = new ObservationRequest();
             observationRequest.setConceptName(concept.getName());
             observationRequest.setConceptUUID(concept.getUuid());
-            Object oldValue = oldObservations == null ? null : oldObservations.getOrDefault(concept.getUuid(), null);
             try {
-                observationRequest.setValue(getObservationValue(concept, rowValue, formType, errorMsgs, oldValue));
+                observationRequest.setValue(getObservationValue(formElement, rowValue, formType, errorMsgs, row, headers, oldObservations));
             } catch (Exception ex) {
                 logger.error(String.format("Error processing observation %s in row %s", rowValue, row), ex);
                 errorMsgs.add(String.format("Invalid answer '%s' for '%s'", rowValue, concept.getName()));
@@ -97,6 +143,28 @@ public class ObservationCreator {
             observationRequests.add(observationRequest);
         }
         return observationService.createObservations(observationRequests);
+    }
+
+    private List<ObservationRequest> constructChildObservations(Row row, Headers headers, List<String> errorMsgs, FormElement parentFormElement, FormType formType, ObservationCollection oldObservations) {
+        List<FormElement> allChildQuestions = formElementRepository.findAllByGroupId(parentFormElement.getId());
+        List<ObservationRequest> observationRequests = new ArrayList<>();
+        for (FormElement formElement : allChildQuestions) {
+            Concept concept = formElement.getConcept();
+            String rowValue = getRowValue(formElement, row);
+            if (rowValue == null || rowValue.trim().equals(""))
+                continue;
+            ObservationRequest observationRequest = new ObservationRequest();
+            observationRequest.setConceptName(concept.getName());
+            observationRequest.setConceptUUID(concept.getUuid());
+            try {
+                observationRequest.setValue(getObservationValue(formElement, rowValue, formType, errorMsgs, row, headers, oldObservations));
+            } catch (Exception ex) {
+                logger.error(String.format("Error processing observation %s in row %s", rowValue, row), ex);
+                errorMsgs.add(String.format("Invalid answer '%s' for '%s'", rowValue, concept.getName()));
+            }
+            observationRequests.add(observationRequest);
+        }
+        return observationRequests;
     }
 
     private List<FormElement> createDecisionFormElement(Set<Concept> concepts) {
@@ -125,8 +193,9 @@ public class ObservationCreator {
                 .orElseThrow(() -> new Exception("No form element linked to concept found"));
     }
 
-    private Object getObservationValue(Concept concept, String answerValue, FormType formType, List<String> errorMsgs, Object oldValue) throws Exception {
-        FormElement formElement = getFormElementForObservationConcept(concept, formType);
+    private Object getObservationValue(FormElement formElement, String answerValue, FormType formType, List<String> errorMsgs, Row row, Headers headers, ObservationCollection oldObservations) throws Exception {
+        Concept concept = formElement.getConcept();
+        Object oldValue = oldObservations == null ? null : oldObservations.getOrDefault(concept.getUuid(), null);
         switch (ConceptDataType.valueOf(concept.getDataType())) {
             case Coded:
                 if (formElement.getType().equals(FormElementType.MultiSelect.name())) {
@@ -150,7 +219,9 @@ public class ObservationCreator {
             case Location:
                 return locationService.getObservationValueForUpload(formElement, answerValue);
             case PhoneNumber:
-                    return (answerValue.trim().equals("")) ? null : toPhoneNumberFormat(answerValue.trim(), errorMsgs, concept.getName());
+                return (answerValue.trim().equals("")) ? null : toPhoneNumberFormat(answerValue.trim(), errorMsgs, concept.getName());
+            case QuestionGroup:
+                return this.constructChildObservations(row, headers, errorMsgs, formElement, formType, null);
             default:
                 return answerValue;
         }

@@ -22,4 +22,6 @@ public interface FormElementRepository extends ReferenceDataRepository<FormEleme
     List<FormElement> findAllByConceptUuidAndIsVoidedFalse(String conceptUUID);
 
     List<FormElement> findAllByFormElementGroupIdAndConceptDataType(long formGroupId, String dataType);
+
+    List<FormElement> findAllByGroupId(long groupId);
 }
