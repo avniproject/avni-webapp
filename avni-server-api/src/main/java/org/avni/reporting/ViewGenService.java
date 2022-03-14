@@ -102,13 +102,18 @@ public class ViewGenService {
         if (formElements.isEmpty())
             return new ArrayList<>();
         List<ViewGenConcept> formElementConcepts = formElements.stream()
-                .map(formElement -> new ViewGenConcept(
-                        formElement.getConcept(), String.format("concepts_%d", formElement.getFormElementGroup().getId()), false))
+                .filter(formElement -> !ConceptDataType.isGroupQuestion(formElement.getConcept().getDataType()))
+                .map(formElement -> {
+                    FormElement parentFormElement = formElement.getGroup();
+                    Concept parentConcept = parentFormElement == null ? null: parentFormElement.getConcept();
+                    return new ViewGenConcept(
+                            formElement.getConcept(), String.format("concepts_%d", formElement.getFormElementGroup().getId()), false, parentConcept);
+                })
                 .collect(Collectors.toList());
         Form form = formElements.get(0).getFormElementGroup().getForm();
         List<ViewGenConcept> decisionConcepts = form.getDecisionConcepts().stream()
                 .map(concept -> new ViewGenConcept(
-                        concept, Names.DecisionConceptMapName, true))
+                        concept, Names.DecisionConceptMapName, true,  null))
                 .collect(Collectors.toList());
         return Stream.concat(formElementConcepts.stream(), decisionConcepts.stream()).collect(Collectors.toList());
     }
@@ -291,34 +296,33 @@ public class ViewGenService {
         String obsColumn = entity + "." + obsColumnName;
         return viewGenConcepts.parallelStream().filter(viewGenConcept -> !skipConcept(elements, viewGenConcept)).map(viewGenConcept -> {
             Concept concept = viewGenConcept.getConcept();
-            String conceptUUID = concept.getUuid();
-            String columnName = concept.getViewColumnName();
+            String columnName = viewGenConcept.getViewColumnName();
             switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
                     if (spreadMultiSelectObs) {
                         return spreadMultiSelectSQL(obsColumn, concept);
                     }
-                    return String.format("public.get_coded_string_value(%s->'%s', %s.map)::TEXT as \"%s\"",
-                            obsColumn, conceptUUID, viewGenConcept.getConceptMapName(), columnName);
+                    return String.format("public.get_coded_string_value(%s%s, %s.map)::TEXT as \"%s\"",
+                            obsColumn, viewGenConcept.getJsonbExtractor(), viewGenConcept.getConceptMapName(), columnName);
                 }
                 case Date:
                 case DateTime: {
-                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::DATE as \"%s\"", obsColumn, viewGenConcept.getTextExtractor(), columnName);
                 }
                 case Numeric: {
-                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::NUMERIC as \"%s\"", obsColumn, viewGenConcept.getTextExtractor(), columnName);
                 }
                 case Subject:
                 case Location: {
-                    return String.format("(%s->>'%s') as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s) as \"%s\"", obsColumn, viewGenConcept.getTextExtractor(), columnName);
                 }
                 case PhoneNumber: {
-                    String phoneNumber = String.format("jsonb_extract_path_text(%s->'%s', 'phoneNumber') as \"%s\"", obsColumn, conceptUUID, columnName);
-                    String verified = String.format("jsonb_extract_path_text(%s->'%s', 'verified') as \"%s\"", obsColumn, conceptUUID, columnName.concat(" Verified"));
+                    String phoneNumber = String.format("jsonb_extract_path_text(%s%s, 'phoneNumber') as \"%s\"", obsColumn, viewGenConcept.getJsonbExtractor(), columnName);
+                    String verified = String.format("jsonb_extract_path_text(%s%s, 'verified') as \"%s\"", obsColumn, viewGenConcept.getJsonbExtractor(), columnName.concat(" Verified"));
                     return phoneNumber.concat(",\n").concat(verified);
                 }
                 default: {
-                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, columnName);
+                    return String.format("(%s%s)::TEXT as \"%s\"", obsColumn, viewGenConcept.getTextExtractor(), columnName);
                 }
             }
         }).collect(Collectors.joining(",\n"));
