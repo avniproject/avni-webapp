@@ -311,16 +311,21 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
 
     private void appendObsColumns(StringBuilder sb, String prefix, LinkedHashMap<String, FormElement> map) {
         map.forEach((uuid, fe) -> {
+            if (ConceptDataType.isGroupQuestion(fe.getConcept().getDataType())) return;
             Concept concept = fe.getConcept();
+            sb.append(",\"").append(prefix).append("_");
+            if (fe.getGroup() != null) {
+                sb.append(fe.getGroup().getConcept().getName())
+                        .append("_")
+                        .append(concept.getName());
+            } else {
+                sb.append(concept.getName());
+            }
             if (concept.getDataType().equals(ConceptDataType.Coded.toString()) && fe.getType().equals(FormElementType.MultiSelect.toString())) {
                 concept.getSortedAnswers().map(ca -> ca.getAnswerConcept().getName()).forEach(can ->
-                        sb.append(",\"")
-                                .append(prefix)
-                                .append("_")
-                                .append(concept.getName())
-                                .append("_").append(can).append("\""));
+                        sb.append("_").append(can).append("\""));
             } else {
-                sb.append(",\"").append(prefix).append("_").append(concept.getName()).append("\"");
+                sb.append("\"");
             }
         });
     }
@@ -334,7 +339,15 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private List<Object> getObs(ObservationCollection observations, LinkedHashMap<String, FormElement> obsMap) {
         List<Object> values = new ArrayList<>(obsMap.size());
         obsMap.forEach((conceptUUID, formElement) -> {
-            Object val = observations == null ? null : observations.getOrDefault(conceptUUID, null);
+            if (ConceptDataType.isGroupQuestion(formElement.getConcept().getDataType())) return;
+            Object val;
+            if (formElement.getGroup() != null) {
+                Concept parentConcept = formElement.getGroup().getConcept();
+                Map<String, Object> nestedObservations = observations == null ? Collections.EMPTY_MAP : (Map<String, Object>) observations.getOrDefault(parentConcept.getUuid(), new HashMap<String, Object>());
+                val = nestedObservations.getOrDefault(conceptUUID, null);
+            } else {
+                val = observations == null ? null : observations.getOrDefault(conceptUUID, null);
+            }
             String dataType = formElement.getConcept().getDataType();
             if (dataType.equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
