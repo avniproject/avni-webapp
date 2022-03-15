@@ -15442,10 +15442,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.10.1:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.10.1.tgz#aab3c9913db49bda67eb0b54cbc96438a8fb0063"
-  integrity sha512-Bip0J2j/4TgDxGPUnfiPPP8zNwJyVhemyvBK/adAOieHXy0fawBEwK3SJFiKQckmdTLpePSsdLrWGB8X2LBLhQ==
+openchs-models@1.11.2:
+  version "1.11.2"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.11.2.tgz#9869a2f084db6d9e712ab2003b949cc4e9c31ca0"
+  integrity sha512-rbvfNkVtQRk/DHMqWzQzWlxJoY9zWvQ2B8Dqs+E+x+LKmNLQ7jsys4xn/qh3hSxOsi3HeNTfMqOv4FuxKAj0qw==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"

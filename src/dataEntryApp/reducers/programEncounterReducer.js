@@ -73,10 +73,11 @@ export const onLoadSuccess = (
   isFormEmpty
 });
 
-export const updateObs = (formElement, value) => ({
+export const updateObs = (formElement, value, childFormElement) => ({
   type: types.UPDATE_OBS,
   formElement,
-  value
+  value,
+  childFormElement
 });
 
 export const updateCancelObs = (formElement, value) => ({

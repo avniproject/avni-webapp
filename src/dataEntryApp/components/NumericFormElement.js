@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { TextField, Typography } from "@material-ui/core";
 import { find, isEmpty, isNil, toNumber } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -10,10 +10,25 @@ const useStyles = makeStyles(theme => ({
     width: "50%",
     marginBottom: 10,
     color: "rgba(0, 0, 0, 0.54)"
+  },
+  containerStyle: {},
+  gridContainerStyle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: "10px",
+    border: "1px solid rgba(0, 0, 0, 0.12)",
+    width: "50%"
+  },
+  gridLabelStyle: {
+    color: "rgba(0, 0, 0, 0.54)",
+    flex: 0.5,
+    marginRight: "15px",
+    borderRight: "1px solid rgba(0, 0, 0, 0.12)"
   }
 }));
 
-export default ({ formElement: fe, value, update, validationResults, uuid }) => {
+export default ({ formElement: fe, value, update, validationResults, uuid, isGrid }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const validationResult = find(
@@ -48,8 +63,12 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
   };
 
   return (
-    <Fragment>
-      <Typography variant="body1" gutterBottom className={classes.labelStyle}>
+    <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
+      <Typography
+        variant="body1"
+        gutterBottom={!isGrid}
+        className={isGrid ? classes.gridLabelStyle : classes.labelStyle}
+      >
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
         {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}
@@ -71,6 +90,6 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         disabled={!fe.editable}
         onBlur={() => (isNil(value) ? update(null) : update(toNumber(value)))}
       />
-    </Fragment>
+    </div>
   );
 };

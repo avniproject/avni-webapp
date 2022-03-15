@@ -1,17 +1,33 @@
 import React from "react";
 import { TextField, Typography } from "@material-ui/core";
-import { isEmpty, find } from "lodash";
+import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
+
 const useStyles = makeStyles(theme => ({
-  lableStyle: {
+  labelStyle: {
     width: "50%",
     marginBottom: 10,
     color: "rgba(0, 0, 0, 0.54)"
+  },
+  containerStyle: {},
+  gridContainerStyle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: "10px",
+    border: "1px solid rgba(0, 0, 0, 0.12)",
+    width: "50%"
+  },
+  gridLabelStyle: {
+    color: "rgba(0, 0, 0, 0.54)",
+    flex: 0.5,
+    marginRight: "15px",
+    borderRight: "1px solid rgba(0, 0, 0, 0.12)"
   }
 }));
 
-export default ({ formElement: fe, value, update, validationResults, uuid }) => {
+export default ({ formElement: fe, value, update, validationResults, uuid, isGrid }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const validationResult = find(
@@ -19,8 +35,12 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
     validationResult => validationResult.formIdentifier === uuid
   );
   return (
-    <div>
-      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+    <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
+      <Typography
+        variant="body1"
+        gutterBottom={!isGrid}
+        className={isGrid ? classes.gridLabelStyle : classes.labelStyle}
+      >
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>

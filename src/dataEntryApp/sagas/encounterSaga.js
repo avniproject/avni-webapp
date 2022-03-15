@@ -97,7 +97,7 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
 function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
-export function* updateEncounterObsWorker({ formElement, value }) {
+export function* updateEncounterObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectEncounterState);
   const encounter = state.encounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -105,7 +105,8 @@ export function* updateEncounterObsWorker({ formElement, value }) {
     value,
     encounter,
     new ObservationsHolder(encounter.observations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setState({
@@ -180,7 +181,7 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
 function* updateCancelEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_CANCEL_OBS, updateCancelEncounterObsWorker);
 }
-export function* updateCancelEncounterObsWorker({ formElement, value }) {
+export function* updateCancelEncounterObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectEncounterState);
   const encounter = state.encounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -188,7 +189,8 @@ export function* updateCancelEncounterObsWorker({ formElement, value }) {
     value,
     encounter,
     new ObservationsHolder(encounter.cancelObservations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setState({

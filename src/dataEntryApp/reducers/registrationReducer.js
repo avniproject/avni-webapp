@@ -101,10 +101,11 @@ export const setLoaded = () => ({
   type: types.SET_LOADED
 });
 
-export const updateObs = (formElement, value) => ({
+export const updateObs = (formElement, value, childFormElement) => ({
   type: types.UPDATE_OBS,
   formElement,
-  value
+  value,
+  childFormElement
 });
 
 export const saveComplete = () => ({

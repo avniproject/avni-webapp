@@ -114,7 +114,7 @@ export function* createProgramEncounterForScheduledWorker({ programEncounterUuid
 function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
-export function* updateEncounterObsWorker({ formElement, value }) {
+export function* updateEncounterObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -122,7 +122,8 @@ export function* updateEncounterObsWorker({ formElement, value }) {
     value,
     programEncounter,
     new ObservationsHolder(programEncounter.observations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setState({
@@ -205,7 +206,7 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
 function* updateEncounterCancelObsWatcher() {
   yield takeEvery(types.UPDATE_CANCEL_OBS, updateEncounterCancelObsWorker);
 }
-export function* updateEncounterCancelObsWorker({ formElement, value }) {
+export function* updateEncounterCancelObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -213,7 +214,8 @@ export function* updateEncounterCancelObsWorker({ formElement, value }) {
     value,
     programEncounter,
     new ObservationsHolder(programEncounter.cancelObservations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setState({

@@ -67,10 +67,11 @@ export const setEncounter = encounter => ({
   encounter
 });
 
-export const updateObs = (formElement, value) => ({
+export const updateObs = (formElement, value, childFormElement) => ({
   type: types.UPDATE_OBS,
   formElement,
-  value
+  value,
+  childFormElement
 });
 
 export const saveEncounter = isCancel => ({

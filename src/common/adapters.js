@@ -45,6 +45,7 @@ export const mapFormElement = (json, formElementGroup) => {
   formElement.keyValues = map(json.keyValues, KeyValue.fromResource);
   formElement.validFormat = Format.fromResource(json.validFormat);
   formElement.concept = mapConcept(json.concept);
+  if (json.group) formElement.groupUuid = json.group.uuid;
   return formElement;
 };
 

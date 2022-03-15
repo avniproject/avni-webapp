@@ -267,9 +267,15 @@ const updateObservations = (
   value,
   entity,
   observationsHolder,
-  existingValidationResults
+  existingValidationResults,
+  childFormElement
 ) => {
-  const obsValue = formElementService.updateObservations(observationsHolder, formElement, value);
+  const obsValue = formElementService.updateObservations(
+    observationsHolder,
+    formElement,
+    value,
+    childFormElement
+  );
   const formElementStatuses = getFormElementStatuses(
     entity,
     formElement.formElementGroup,
@@ -285,7 +291,8 @@ const updateObservations = (
     obsValue,
     observationsHolder.observations,
     existingValidationResults,
-    formElementStatuses
+    formElementStatuses,
+    childFormElement
   );
   return { filteredFormElements, validationResults };
 };

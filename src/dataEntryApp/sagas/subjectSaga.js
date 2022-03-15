@@ -189,7 +189,7 @@ function* updateObsWatcher() {
   yield takeEvery(subjectTypes.UPDATE_OBS, updateObsWorker);
 }
 
-export function* updateObsWorker({ formElement, value }) {
+export function* updateObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectRegistrationState);
   const subject = state.subject.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -197,7 +197,8 @@ export function* updateObsWorker({ formElement, value }) {
     value,
     subject,
     new ObservationsHolder(subject.observations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setRegistrationState({

@@ -1,23 +1,24 @@
 import {
-  Individual,
-  ModelGeneral as General,
-  Observation,
+  AddressLevel,
   Concept,
-  ProgramEncounter,
-  Program,
-  ProgramEnrolment,
-  IndividualRelationship,
-  IndividualRelationshipType,
-  IndividualRelation,
+  ConceptAnswer,
   Encounter,
   EncounterType,
   Gender,
-  AddressLevel,
-  ConceptAnswer,
   GroupRole,
-  GroupSubject
+  GroupSubject,
+  Individual,
+  IndividualRelation,
+  IndividualRelationship,
+  IndividualRelationshipType,
+  ModelGeneral as General,
+  Observation,
+  Program,
+  ProgramEncounter,
+  ProgramEnrolment,
+  QuestionGroup
 } from "avni-models";
-import { map, isNil } from "lodash";
+import { isNil, map } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
 import { subjectService } from "../dataEntryApp/services/SubjectService";
 import { addressLevelService } from "../dataEntryApp/services/AddressLevelService";
@@ -92,8 +93,13 @@ export const mapObservation = observationJson => {
         subjectService.addSubject(subject);
       });
     observationJson.location && addressLevelService.addAddressLevel(observationJson.location);
-
-    const value = concept.getValueWrapperFor(observationJson.value);
+    let value;
+    if (concept.isQuestionGroup()) {
+      const questionGroupObservations = mapObservations(observationJson.value);
+      value = new QuestionGroup(questionGroupObservations);
+    } else {
+      value = concept.getValueWrapperFor(observationJson.value);
+    }
     observation.concept = concept;
     observation.valueJSON = value;
     return observation;

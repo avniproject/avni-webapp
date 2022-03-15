@@ -175,7 +175,7 @@ function* updateExitEnrolmentObsWatcher() {
   yield takeEvery(enrolmentTypes.UPDATE_EXIT_OBS, updateExitEnrolmentObsWorker);
 }
 
-export function* updateExitEnrolmentObsWorker({ formElement, value }) {
+export function* updateExitEnrolmentObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectProgramEnrolmentState);
   const programEnrolment = state.programEnrolment.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -183,7 +183,8 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
     value,
     programEnrolment,
     new ObservationsHolder(programEnrolment.programExitObservations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setProgramEnrolmentState({
@@ -195,7 +196,7 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   );
 }
 
-export function* updateEnrolmentObsWorker({ formElement, value }) {
+export function* updateEnrolmentObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectProgramEnrolmentState);
   const programEnrolment = state.programEnrolment.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -203,7 +204,8 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
     value,
     programEnrolment,
     new ObservationsHolder(programEnrolment.observations),
-    state.validationResults
+    state.validationResults,
+    childFormElement
   );
   yield put(
     setProgramEnrolmentState({

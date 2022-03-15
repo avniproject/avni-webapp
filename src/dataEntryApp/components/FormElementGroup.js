@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import { get, find } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
@@ -34,10 +34,12 @@ export const FormElementGroup = ({
             value={observationValue}
             validationResults={validationResults}
             uuid={fe.uuid}
-            update={value => {
-              updateObs(fe, value);
+            update={(value, childFormElement) => {
+              updateObs(fe, value, childFormElement);
             }}
             feIndex={index}
+            filteredFormElements={filteredFormElements}
+            updateObs={updateObs}
           >
             {fe}
           </FormElement>

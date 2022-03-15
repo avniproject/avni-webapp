@@ -1,10 +1,25 @@
-import { Concept, FormElementGroup, ValidationResult } from "avni-models";
+import { Concept, FormElementGroup, ValidationResult, QuestionGroup } from "avni-models";
 import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
-  updateObservations(observationsHolder, formElement, value) {
-    if (
+  updateObservations(observationsHolder, formElement, value, childFormElement) {
+    if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
+      observationsHolder.updateGroupQuestion(
+        formElement.concept,
+        childFormElement.concept,
+        value,
+        childFormElement
+      );
+      const childObservations = observationsHolder.findObservation(formElement.concept);
+      const childObservationsValue = childObservations
+        ? childObservations.getValueWrapper()
+        : new QuestionGroup();
+      const childObs = childObservationsValue.findObservation(childFormElement.concept);
+      return childFormElement.concept.isPrimitive() && isNil(childFormElement.durationOptions)
+        ? value
+        : childObs && childObs.getValueWrapper();
+    } else if (
       formElement.isMultiSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
         formElement.concept.datatype === Concept.dataType.Subject)
@@ -43,7 +58,14 @@ export default {
     }
   },
 
-  validate(formElement, value, observations, validationResults, formElementStatuses) {
+  validate(
+    formElement,
+    value,
+    observations,
+    validationResults,
+    formElementStatuses,
+    childFormElement
+  ) {
     const validationResult = formElement.validate(value);
     remove(
       validationResults,
@@ -61,7 +83,13 @@ export default {
       validationResult,
       validationResults
     );
-    remove(ruleErrorsAdded, result => result.success);
+    const isChildFormElement =
+      !isNil(childFormElement) && childFormElement.groupUuid === formElement.uuid;
+    remove(
+      ruleErrorsAdded,
+      result =>
+        result.success || (isChildFormElement && result.formIdentifier === childFormElement.uuid)
+    );
     return differenceWith(
       ruleErrorsAdded,
       hiddenFormElementStatus,

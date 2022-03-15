@@ -13,6 +13,8 @@ import MediaFormElement from "./MediaFormElement";
 import PhoneNumberFormElement from "./PhoneNumberFormElement";
 import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
+import QuestionGroupFormElement from "./QuestionGroupFormElement";
+import { isNil } from "lodash";
 
 const div = () => <div />;
 
@@ -35,7 +37,8 @@ const elements = {
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
   Subject: LandingSubjectFormElement,
-  Location: LocationFormElement
+  Location: LocationFormElement,
+  QuestionGroup: QuestionGroupFormElement
 };
 
 export const FormElement = ({
@@ -45,8 +48,14 @@ export const FormElement = ({
   obsHolder,
   validationResults,
   uuid,
-  feIndex
+  feIndex,
+  filteredFormElements,
+  isChildFormElement,
+  ignoreLineBreak,
+  isGrid,
+  updateObs
 }) => {
+  if (!isChildFormElement && !isNil(formElement.groupUuid)) return null;
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
     formElement.keyValues = [
@@ -55,11 +64,21 @@ export const FormElement = ({
     ];
     formElement.mandatory = false;
   }
-  const props = { formElement, value, update, obsHolder, validationResults, uuid };
+  const props = {
+    formElement,
+    value,
+    update,
+    obsHolder,
+    validationResults,
+    uuid,
+    filteredFormElements,
+    isGrid,
+    updateObs
+  };
   const Element = elements[type];
   return (
     <div>
-      <LineBreak num={feIndex === 0 ? 0 : 2} />
+      {!ignoreLineBreak && <LineBreak num={feIndex === 0 ? 0 : 2} />}
       {/*this check can be removed later when DEA supports all the data types (Location is not supported yet)*/}
       {Element && <Element {...props} />}
       {/* <LineBreak num={1} /> */}

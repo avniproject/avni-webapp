@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -11,7 +11,7 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { includes, isEmpty, isNil, find, get, lowerCase, filter } from "lodash";
+import { filter, find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
@@ -220,27 +220,70 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return () => clearInterval(refreshedMediaUrls);
   }, []);
 
-  const rows = orderedObs.map((obs, index) => {
+  const renderGroupQuestionView = (observation, index) => {
+    const valueWrapper = observation.getValueWrapper();
+    const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
+    return (
+      <Fragment>
+        <TableRow key={`${index}-${customKey}`}>
+          <TableCell
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
+            width={"0.1%"}
+          />
+          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+            {t(observation.concept["name"])}
+          </TableCell>
+          <TableCell align="left" width="50%" style={{ backgroundColor: "rgba(0, 0, 0, 0.12)" }} />
+        </TableRow>
+        {map(groupObservations, (obs, i) => (
+          <TableRow key={`${index}-${i}-${customKey}`}>
+            <TableCell
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
+              width={"0.1%"}
+            />
+            <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+              <div style={{ marginLeft: "10px" }}>{t(obs.concept["name"])}</div>
+            </TableCell>
+            <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+              {renderValue(obs)}
+            </TableCell>
+          </TableRow>
+        ))}
+      </Fragment>
+    );
+  };
+
+  const renderNormalView = (observation, index) => {
     return (
       <TableRow key={`${index}-${customKey}`}>
+        <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
         <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-          {t(obs.concept["name"])}
+          {t(observation.concept["name"])}
         </TableCell>
-        <TableCell align="left" width="50%">
-          <div>{renderValue(obs)}</div>
+        <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+          {renderValue(observation)}
         </TableCell>
       </TableRow>
     );
-  });
+  };
+
+  const renderObservationValue = observation => {
+    return observation.concept.isQuestionGroup()
+      ? renderGroupQuestionView(observation)
+      : renderNormalView(observation);
+  };
+
+  const rows = orderedObs.map((obs, index) => renderObservationValue(obs, index));
 
   additionalRows &&
     additionalRows.forEach((row, index) => {
       rows.unshift(
         <TableRow key={observations.length + index}>
+          <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
           <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
             {t(row.label)}
           </TableCell>
-          <TableCell align="left" width="50%">
+          <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
             <div>{renderText(t(row.value), row.abnormal)}</div>
           </TableCell>
         </TableRow>
