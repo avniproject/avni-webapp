@@ -1,6 +1,14 @@
 import React from "react";
 import { SignIn } from "aws-amplify-react";
-import { Grid, TextField, Box } from "@material-ui/core";
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Grid,
+  TextField
+} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
@@ -33,76 +41,111 @@ class CustomSignIn extends SignIn {
     return (
       <Grid container component="main" className={classes.root}>
         <Grid item xs={false} sm={4} md={7} className={classes.image} />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6}>
-          <Box mt={10} ml={4} display={"flex"} flexDirection={"column"} alignItems={"flex-start"}>
-            <Box mb={4}>
-              <img src={AvniLogo} alt="logo" height="45px" />
-            </Box>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={5}
+          component={Paper}
+          elevation={6}
+          style={{ backgroundColor: "#f0f2f0" }}
+        >
+          <Box mb={4}>
+            <img src={AvniLogo} alt="logo" height="45px" />
           </Box>
-          <Box display={"flex"} flexDirection={"column"} mb={8} ml={4} mr={4}>
-            <form className={classes.form} noValidate>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                key="username"
-                id="username"
-                label="Username"
-                name="username"
-                type="text"
-                onChange={this.handleInputChange}
-                autoFocus
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                key="password"
-                name="password"
-                label="Password"
-                type={passwordIsMasked ? "password" : "text"}
-                onChange={this.handleInputChange}
-                id="password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <RemoveRedEye className={classes.eye} onClick={togglePasswordMask} />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                className={classes.submit}
-                onClick={event => {
-                  event.preventDefault();
-                  super.signIn();
-                }}
-                disabled={this.state.loading}
-                classes={{ disabled: classes.disabledButton }}
-              >
-                SIGN IN
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link
-                    href="#"
-                    variant="body2"
-                    onClick={() => super.changeState("forgotPassword")}
-                  >
-                    Forgot password?
-                  </Link>
+          <Card>
+            <CardHeader title={"Sign in"} />
+            <CardContent>
+              <form className={classes.form} noValidate>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  key="username"
+                  id="username"
+                  label="Username"
+                  name="username"
+                  type="text"
+                  onChange={this.handleInputChange}
+                  autoFocus
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  key="password"
+                  name="password"
+                  label="Password"
+                  type={passwordIsMasked ? "password" : "text"}
+                  onChange={this.handleInputChange}
+                  id="password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <RemoveRedEye className={classes.eye} onClick={togglePasswordMask} />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  className={classes.submit}
+                  onClick={event => {
+                    event.preventDefault();
+                    super.signIn();
+                  }}
+                  disabled={this.state.loading}
+                  classes={{ disabled: classes.disabledButton }}
+                >
+                  SIGN IN
+                </Button>
+                <Grid container>
+                  <Grid item xs>
+                    <Link
+                      href="#"
+                      variant="body2"
+                      onClick={() => super.changeState("forgotPassword")}
+                    >
+                      Forgot password?
+                    </Link>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </form>
-          </Box>
+              </form>
+            </CardContent>
+          </Card>
+          <Grid style={{ backgroundColor: "#f0f2f0" }}>
+            <CardHeader title={"View Reports"} />
+            <CardContent>
+              <Typography variant="body2" color="text.secondary">
+                Avni provides reports using one of two different external BI tools - Metabase and
+                Jasper Reports. You can find out the reports used by your organisation from your
+                system administrator.
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                <br />
+                Choose your reporting system
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Link href={"https://reporting.avniproject.org"}>
+                <Button size="small" variant={"contained"} className={classes.submit}>
+                  Metabase Reports
+                </Button>
+              </Link>
+              <Link
+                href={"https://reporting-jasper.avniproject.org/jasperserver"}
+                style={{ marginLeft: "56px" }}
+              >
+                <Button size="small" variant={"contained"} className={classes.submit}>
+                  Jasper Reports
+                </Button>
+              </Link>
+            </CardActions>
+          </Grid>
         </Grid>
       </Grid>
     );
@@ -128,8 +171,7 @@ const useStyles = theme => ({
     alignItems: "center"
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    width: "100%" // Fix IE 11 issue.
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
