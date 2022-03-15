@@ -17,4 +17,5 @@ public interface FormElementWebProjection {
     String getType();
     Format getValidFormat();
     String getRule();
+    FormElementWebProjection getGroup();
 }

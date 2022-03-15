@@ -242,40 +242,47 @@ public class ObservationService {
     }
 
     public List<ObservationContract> constructObservations(@NotNull ObservationCollection observationCollection) {
-        return observationCollection.entrySet().stream().map(entry -> {
-            ObservationContract observationContract = new ObservationContract();
-            Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
-            String conceptDataType = questionConcept.getDataType();
-            ConceptContract conceptContract = ConceptContract.create(questionConcept);
-            if (conceptDataType.equals(ConceptDataType.Subject.toString())) {
-                Object answerValue = entry.getValue();
-                List<Individual> subjects = null;
-                if (answerValue instanceof Collection) {
-                    subjects = ((ArrayList<String>) answerValue).stream().map((String uuid) -> individualRepository.findByUuid(uuid)).collect(Collectors.toList());
-                } else {
-                    subjects = Collections.singletonList(individualRepository.findByUuid((String) answerValue));
-                }
-                observationContract.setSubjects(subjects.stream().map(this::convertIndividualToContract).collect(Collectors.toList()));
+        return observationCollection.entrySet().stream().map(this::getObservationContract).collect(Collectors.toList());
+    }
+
+    private ObservationContract getObservationContract(Map.Entry<String, Object> entry) {
+        ObservationContract observationContract = new ObservationContract();
+        Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
+        String conceptDataType = questionConcept.getDataType();
+        ConceptContract conceptContract = ConceptContract.create(questionConcept);
+        if (conceptDataType.equals(ConceptDataType.Subject.toString())) {
+            Object answerValue = entry.getValue();
+            List<Individual> subjects = null;
+            if (answerValue instanceof Collection) {
+                subjects = ((ArrayList<String>) answerValue).stream().map((String uuid) -> individualRepository.findByUuid(uuid)).collect(Collectors.toList());
+            } else {
+                subjects = Collections.singletonList(individualRepository.findByUuid((String) answerValue));
             }
-            if (conceptDataType.equals(ConceptDataType.Location.toString())) {
-                observationContract.setLocation(AddressLevelContractWeb.fromEntity(locationRepository.findByUuid((String) entry.getValue())));
+            observationContract.setSubjects(subjects.stream().map(this::convertIndividualToContract).collect(Collectors.toList()));
+        }
+        if (conceptDataType.equals(ConceptDataType.Location.toString())) {
+            observationContract.setLocation(AddressLevelContractWeb.fromEntity(locationRepository.findByUuid((String) entry.getValue())));
+        }
+        // Fetch the answer concept in case it is not there in concept_answer table,
+        // We have such cases for Bahmni Avni integration
+        if (conceptDataType.equals(ConceptDataType.Coded.toString()) && conceptContract.getAnswers().isEmpty()) {
+            Object answerValue = entry.getValue();
+            List<Concept> conceptAnswers;
+            if (answerValue instanceof Collection) {
+                conceptAnswers = ((List<String>) answerValue).stream().map(uuid -> conceptRepository.findByUuid(uuid)).collect(Collectors.toList());
+            } else {
+                conceptAnswers = Collections.singletonList(conceptRepository.findByUuid((String) answerValue));
             }
-            // Fetch the answer concept in case it is not there in concept_answer table,
-            // We have such cases for Bahmni Avni integration
-            if (conceptDataType.equals(ConceptDataType.Coded.toString()) && conceptContract.getAnswers().isEmpty()) {
-                Object answerValue = entry.getValue();
-                List<Concept> conceptAnswers;
-                if (answerValue instanceof Collection) {
-                    conceptAnswers = ((List<String>) answerValue).stream().map(uuid -> conceptRepository.findByUuid(uuid)).collect(Collectors.toList());
-                } else {
-                    conceptAnswers = Collections.singletonList(conceptRepository.findByUuid((String) answerValue));
-                }
-                conceptContract.setAnswers(conceptAnswers.stream().map(ConceptContract::create).collect(Collectors.toList()));
-            }
-            observationContract.setConcept(conceptContract);
+            conceptContract.setAnswers(conceptAnswers.stream().map(ConceptContract::create).collect(Collectors.toList()));
+        }
+        observationContract.setConcept(conceptContract);
+        if (ConceptDataType.isGroupQuestion(conceptDataType)) {
+            HashMap<String, Object> values = (HashMap<String, Object>) entry.getValue();
+            observationContract.setValue(this.constructObservations(new ObservationCollection(values)));
+        } else {
             observationContract.setValue(entry.getValue());
-            return observationContract;
-        }).collect(Collectors.toList());
+        }
+        return observationContract;
     }
 
     public IndividualContract convertIndividualToContract(Individual individual) {
