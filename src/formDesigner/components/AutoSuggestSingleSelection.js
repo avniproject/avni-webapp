@@ -75,8 +75,9 @@ const useStyles = theme => ({
 });
 
 export default function AutoSuggestSingleSelection(props) {
+  const ignoredDatatypesFromProps = props.dataTypesToIgnore || [];
   const classes = useStyles();
-  const dataTypesToIgnore = [...props.dataTypesToIgnore, "NA"];
+  const dataTypesToIgnore = [...ignoredDatatypesFromProps, "NA"];
   const [state, setState] = React.useState({
     single: ""
   });
