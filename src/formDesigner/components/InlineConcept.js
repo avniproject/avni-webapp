@@ -12,7 +12,7 @@ import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import Box from "@material-ui/core/Box";
-import { size } from "lodash";
+import { size, filter, includes } from "lodash";
 
 function InlineConcept(props) {
   const renderInlinePhoneNumber = () => {
@@ -70,13 +70,15 @@ function InlineConcept(props) {
           }
           style={{ width: "200px", marginBottom: "10px" }}
           required
-          options={inlineConceptDataType.map(datatype => {
-            return (
-              <MenuItem value={datatype} key={datatype}>
-                {datatype}
-              </MenuItem>
-            );
-          })}
+          options={filter(inlineConceptDataType, t => !includes(props.dataTypesToIgnore, t)).map(
+            datatype => {
+              return (
+                <MenuItem value={datatype} key={datatype}>
+                  {datatype}
+                </MenuItem>
+              );
+            }
+          )}
           toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
         />
       </Grid>

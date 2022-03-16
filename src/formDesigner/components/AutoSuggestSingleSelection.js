@@ -76,7 +76,7 @@ const useStyles = theme => ({
 
 export default function AutoSuggestSingleSelection(props) {
   const classes = useStyles();
-
+  const dataTypesToIgnore = [...props.dataTypesToIgnore, "NA"];
   const [state, setState] = React.useState({
     single: ""
   });
@@ -114,7 +114,7 @@ export default function AutoSuggestSingleSelection(props) {
           setSuggestions(filteredSuggestions);
         } else {
           const filteredSuggestions = suggestions.filter(suggestion => {
-            return !suggestion.voided && suggestion.dataType !== "NA";
+            return !suggestion.voided && !_.includes(dataTypesToIgnore, suggestion.dataType);
           });
           setSuggestions(filteredSuggestions);
         }

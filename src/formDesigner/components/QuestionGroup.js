@@ -56,6 +56,7 @@ function QuestionGroup(props) {
                   index={feIndex}
                   btnGroupAdd={btnGroupAdd}
                   dragHandleProps={provided.dragHandleProps}
+                  ignoreDataTypes={["QuestionGroup"]}
                 />
               </div>
             )}

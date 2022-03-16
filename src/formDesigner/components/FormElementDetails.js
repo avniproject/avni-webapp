@@ -97,7 +97,7 @@ function FormElementDetails(props) {
   const classes = useStyles();
   const { t } = useTranslation();
   const disableFormElement = props.disableFormElement;
-
+  const dataTypesToIgnore = props.ignoreDataTypes || [];
   const cssClasses = {
     label: {
       marginTop: 13,
@@ -279,6 +279,7 @@ function FormElementDetails(props) {
                 handleInlineSubjectAttributes={props.handleInlineSubjectAttributes}
                 handleInlinePhoneNumberAttributes={props.handleInlinePhoneNumberAttributes}
                 handleConceptFormLibrary={props.handleConceptFormLibrary}
+                dataTypesToIgnore={dataTypesToIgnore}
               />
             </div>
           )}
@@ -307,6 +308,7 @@ function FormElementDetails(props) {
                       finalReturn={true}
                       index={0}
                       label="Concept"
+                      dataTypesToIgnore={dataTypesToIgnore}
                     />
                   )}
                   {!props.formElementData.newFlag && (
