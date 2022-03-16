@@ -4,8 +4,6 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import { useSelector } from "react-redux";
-import { isRuleDesignerEnabled } from "../../../rootApp/ducks";
 
 const RuleDesigner = ({
   rulesJson,
@@ -21,23 +19,19 @@ const RuleDesigner = ({
   encounterTypes,
   form
 }) => {
-  const showDeclarativeRules = useSelector(isRuleDesignerEnabled);
   return (
     <Fragment>
-      {showDeclarativeRules && (
-        <DeclarativeRules
-          rulesJson={rulesJson}
-          onValueChange={onValueChange}
-          updateJsCode={updateJsCode}
-          jsCode={jsCode}
-          error={error}
-          subjectType={subjectType}
-          isRuleDesignerEnabled={isRuleDesignerEnabled}
-          getApplicableActions={getApplicableActions}
-          encounterTypes={encounterTypes}
-          form={form}
-        />
-      )}
+      <DeclarativeRules
+        rulesJson={rulesJson}
+        onValueChange={onValueChange}
+        updateJsCode={updateJsCode}
+        jsCode={jsCode}
+        error={error}
+        subjectType={subjectType}
+        getApplicableActions={getApplicableActions}
+        encounterTypes={encounterTypes}
+        form={form}
+      />
       <Editor
         value={jsCode || sampleRule}
         onValueChange={onJsCodeChange}

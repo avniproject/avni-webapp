@@ -1,5 +1,3 @@
-import { get } from "lodash";
-
 export const types = {
   INIT_COGNITO: "app/INIT_COGNITO",
   SET_COGNITO_USER: "app/SET_COGNITO_USER",
@@ -77,9 +75,6 @@ export const setTranslations = translations => ({
 export const logout = () => ({
   type: types.LOGOUT
 });
-
-export const isRuleDesignerEnabled = state =>
-  get(state, "app.organisationConfig.enableRuleDesigner", false);
 
 const initialState = {
   authConfigured: false,
