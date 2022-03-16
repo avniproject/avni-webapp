@@ -62,6 +62,7 @@ class NewFormModal extends Component {
             http
               .get(`/forms/export?formUUID=${this.props.uuid}`)
               .then(response => {
+                const oldParentToNewParentUUIDsMap = new Map();
                 editResponse = response.data;
                 editResponse["uuid"] = newUUID;
                 editResponse["name"] = this.state.name;
@@ -71,7 +72,14 @@ class NewFormModal extends Component {
                   _.forEach(editResponse.formElementGroups, group => {
                     group["uuid"] = UUID.v4();
                     _.forEach(group.formElements, element => {
-                      element["uuid"] = UUID.v4();
+                      const newUuid = UUID.v4();
+                      oldParentToNewParentUUIDsMap.set(element.uuid, newUuid);
+                      element["uuid"] = newUuid;
+                      if (element.parentFormElementUuid) {
+                        element.parentFormElementUuid = oldParentToNewParentUUIDsMap.get(
+                          element.parentFormElementUuid
+                        );
+                      }
                     });
                   });
                   resolve("Promise resolved ");
