@@ -5616,14 +5616,14 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.9.tgz#21b600302b535ca60b0542cce5a380200cd55108"
-  integrity sha512-2HVstgEN/Bpw8Q5YcxzNZVtXGLpsTiZzEvmVel/Xu/WvcjhrGsRyrtbSwsVlNA61paCrwnR1XAL4b6690r24AQ==
+avni-health-modules@0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.11.tgz#2bf76ee0de0917ee6ae6a67849f9425ad4936679"
+  integrity sha512-AEMNwtc6lXL4/ZvqHLsuFPYDFl7f1vvNvOysz1MVJPtwB77SLdycSGrIY3DQeIt3jaZ75nh1VejkQX2N5USd6Q==
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
-    rules-config "github:openchs/rules-config#3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3"
+    rules-config "github:openchs/rules-config#75addcb054843b76246b1c0ad884112da31e83d5"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -11209,10 +11209,15 @@ good-listener@^1.2.2:
   dependencies:
     delegate "^3.1.2"
 
-graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.4, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@^4.2.0, graceful-fs@^4.2.4:
+graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@^4.2.0, graceful-fs@^4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
+
+graceful-fs@^4.1.4:
+  version "4.2.9"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.9.tgz#041b05df45755e587a24942279b9d113146e1c96"
+  integrity sha512-NtNxqUcXgpW2iMrfqSfR73Glt39K+BLwWsPs94yR63v45T0Wbej7eRmL5cWfwEgqXnmjQp3zaJTshdRW/qC2ZQ==
 
 graphql@14.0.0:
   version "14.0.0"
@@ -18878,9 +18883,9 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
-"rules-config@github:openchs/rules-config#3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3":
+"rules-config@github:openchs/rules-config#75addcb054843b76246b1c0ad884112da31e83d5":
   version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/3c6ceb7d49a1ddb7dada099ab60c1b8e824ed7f3"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/75addcb054843b76246b1c0ad884112da31e83d5"
   dependencies:
     babel-cli "^6.26.0"
     babel-loader "^7.1.4"
@@ -18901,9 +18906,9 @@ rsvp@^4.8.4:
     webpack-cli "^3.0.3"
     webpack-node-externals "1.6.0"
 
-"rules-config@github:openchs/rules-config#75addcb054843b76246b1c0ad884112da31e83d5":
+"rules-config@github:openchs/rules-config#76b55cb40a7b9e5a4f386121fefa3e138f3144cd":
   version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/75addcb054843b76246b1c0ad884112da31e83d5"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/76b55cb40a7b9e5a4f386121fefa3e138f3144cd"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"

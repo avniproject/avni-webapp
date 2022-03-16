@@ -233,7 +233,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
             {t(observation.concept["name"])}
           </TableCell>
-          <TableCell align="left" width="50%" style={{ backgroundColor: "rgba(0, 0, 0, 0.12)" }} />
+          <TableCell align="left" width="50%" />
         </TableRow>
         {map(groupObservations, (obs, i) => (
           <TableRow key={`${index}-${i}-${customKey}`}>
