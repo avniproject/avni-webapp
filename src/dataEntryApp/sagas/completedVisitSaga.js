@@ -1,7 +1,5 @@
 import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
 import { types, setCompletedVisits, setEncounterTypes } from "../reducers/completedVisitsReducer";
-import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
-import { mapProfile } from "../../common/subjectModelMapper";
 import { setProgramEnrolment } from "../reducers/programEncounterReducer";
 
 import api from "../api";
@@ -10,6 +8,7 @@ import {
   selectGeneralEncounterTypes
 } from "dataEntryApp/sagas/selectors";
 import { setLoad } from "../reducers/loadReducer";
+import { selectSubjectProfile } from "./selectors";
 
 export default function*() {
   yield all(
@@ -28,20 +27,11 @@ export function* loadProgramEncountersWatcher() {
 
 export function* loadProgramEncountersWorker({ enrolmentUuid, filterQueryString }) {
   yield put.resolve(setLoad(false));
-  const completedVisits = yield call(
-    api.fetchCompletedProgramEncounters,
-    enrolmentUuid,
-    filterQueryString
-  );
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolment.subjectUuid);
-  const subjectProfile = mapProfile(subjectProfileJson);
+  const subjectProfile = yield select(selectSubjectProfile);
   const encounterTypes = yield select(
     selectProgramEncounterTypes(subjectProfile.subjectType.uuid, programEnrolment.program.uuid)
   );
-
-  yield put(setCompletedVisits(completedVisits));
-  yield put(setSubjectProfile(subjectProfile));
   yield put(setEncounterTypes(encounterTypes));
   yield put(setProgramEnrolment(programEnrolment));
   yield put.resolve(setLoad(true));
@@ -53,13 +43,8 @@ export function* loadEncountersWatcher() {
 
 export function* loadEncountersWorker({ subjectUuid }) {
   yield put.resolve(setLoad(false));
-  const completedVisits = yield call(api.fetchCompletedEncounters, subjectUuid);
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
-  const subjectProfile = mapProfile(subjectProfileJson);
+  const subjectProfile = yield select(selectSubjectProfile);
   const encounterTypes = yield select(selectGeneralEncounterTypes(subjectProfile.subjectType.uuid));
-
-  yield put(setCompletedVisits(completedVisits));
-  yield put(setSubjectProfile(subjectProfile));
   yield put(setEncounterTypes(encounterTypes));
   yield put.resolve(setLoad(true));
 }

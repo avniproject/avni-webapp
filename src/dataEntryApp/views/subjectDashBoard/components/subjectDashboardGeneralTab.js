@@ -10,13 +10,13 @@ import Typography from "@material-ui/core/Typography";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "common/components/utils";
-import Button from "@material-ui/core/Button";
-import PlannedEncounter from "dataEntryApp/views/subjectDashBoard/components/PlannedEncounter";
-import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/CompletedEncounter";
-import { isEmpty } from "lodash";
+import { filter, isEmpty, isNil } from "lodash";
 import { connect } from "react-redux";
 import { selectFormMappingsForSubjectType } from "../../../sagas/encounterSelector";
 import SubjectVoided from "../../../components/SubjectVoided";
+import PlannedVisitsTable from "../PlannedVisitsTable";
+import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
+import CompletedVisits from "./CompletedVisits";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -70,22 +70,17 @@ const SubjectDashboardGeneralTab = ({
   subjectUuid,
   subjectTypeUuid,
   encounterFormMappings,
-  subjectVoided
+  subjectVoided,
+  voidGeneralEncounter
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  let plannedVisits = [];
-  let completedVisits = [];
-
-  if (general) {
-    general.forEach(function(row) {
-      if (row.encounterDateTime || row.cancelDateTime) {
-        completedVisits.push(row);
-      } else {
-        plannedVisits.push(row);
-      }
-    });
-  }
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const plannedVisits = filter(
+    general,
+    ({ voided, encounterDateTime, cancelDateTime }) =>
+      !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
+  );
 
   return (
     <Fragment>
@@ -114,27 +109,18 @@ const SubjectDashboardGeneralTab = ({
               {t("plannedVisits")}
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container spacing={2}>
-              {general && plannedVisits.length !== 0 ? (
-                plannedVisits.map((row, index) => (
-                  <PlannedEncounter
-                    index={index}
-                    encounter={row}
-                    subjectUuid={subjectUuid}
-                    subjectTypeUuid={subjectTypeUuid}
-                  />
-                ))
-              ) : (
-                <Typography variant="caption" gutterBottom className={classes.infomsg}>
-                  {" "}
-                  {t("no")} {t("plannedVisits")}{" "}
-                </Typography>
-              )}
-            </Grid>
+          <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+            <PlannedVisitsTable
+              plannedVisits={plannedVisits || []}
+              doBaseUrl={`/app/subject/encounter?encounterUuid`}
+              cancelBaseURL={`/app/subject/cancelEncounter?uuid`}
+              onDelete={uuid => voidGeneralEncounter(uuid)}
+              deleteTitle={"GeneralEncounterVoidAlertTitle"}
+              deleteMessage={"GeneralEncounterVoidAlertMessage"}
+            />
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanel className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
@@ -144,33 +130,11 @@ const SubjectDashboardGeneralTab = ({
               {t("completedVisits")}
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container spacing={2}>
-              {general && completedVisits.length !== 0 ? (
-                completedVisits.map((row, index) => (
-                  <CompletedEncounter
-                    index={index}
-                    encounter={row}
-                    subjectTypeUuid={subjectTypeUuid}
-                  />
-                ))
-              ) : (
-                <Typography variant="caption" gutterBottom className={classes.infomsg}>
-                  {" "}
-                  {t("no")} {t("completedVisits")}{" "}
-                </Typography>
-              )}
-            </Grid>
+          <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+            {isExpanded && (
+              <CompletedVisits entityUuid={subjectUuid} isForProgramEncounters={false} />
+            )}
           </ExpansionPanelDetails>
-          {general && completedVisits.length !== 0 ? (
-            <InternalLink to={`/app/subject/completedEncounters?uuid=${subjectUuid}`}>
-              <Button color="primary" className={classes.visitAllButton}>
-                {t("viewAllVisits")}
-              </Button>
-            </InternalLink>
-          ) : (
-            ""
-          )}
         </ExpansionPanel>
       </Paper>
     </Fragment>
@@ -181,4 +145,11 @@ const mapStateToProps = (state, props) => ({
   encounterFormMappings: selectFormMappingsForSubjectType(props.subjectTypeUuid)(state)
 });
 
-export default connect(mapStateToProps)(SubjectDashboardGeneralTab);
+const mapDispatchToProps = {
+  voidGeneralEncounter
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SubjectDashboardGeneralTab);

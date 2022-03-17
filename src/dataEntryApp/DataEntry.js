@@ -17,7 +17,6 @@ import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import ViewVisit from "./views/subjectDashBoard/components/ViewVisit";
 import AddRelative from "./views/subjectDashBoard/components/AddRelative";
-import CompletedVisits from "./views/subjectDashBoard/components/CompletedVisits";
 import NewProgramVisit from "./views/subjectDashBoard/components/NewProgramVisit";
 import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncounter";
 import CancelProgramEncounter from "./views/subjectDashBoard/components/CancelProgramEncounter";
@@ -102,17 +101,6 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorSt
                     exact
                     path={`${path}/subject/editGroupMembership`}
                     component={GroupMembershipAddEdit}
-                  />
-                  {/* <Route exact path={`${path}/completeVisit/:id/:uuid`} component={CompleteVisit} /> */}
-                  <Route
-                    exact
-                    path={`${path}/subject/completedEncounters`}
-                    component={CompletedVisits}
-                  />
-                  <Route
-                    exact
-                    path={`${path}/subject/completedProgramEncounters`}
-                    component={CompletedVisits}
                   />
                   <Route
                     exact
