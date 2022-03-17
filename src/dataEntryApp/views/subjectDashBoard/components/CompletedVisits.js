@@ -1,14 +1,12 @@
 import React, { Fragment, useEffect } from "react";
 import { Paper } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
 import { loadEncounters, loadProgramEncounters } from "../../../reducers/completedVisitsReducer";
 import { useTranslation } from "react-i18next";
-import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import CompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/CompletedVisitsTable";
@@ -75,10 +73,8 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const CompleteVisit = ({
-  match,
-  getCompletedVisit,
-  getEnrolments,
-  completedVisits,
+  entityUuid,
+  isForProgramEncounters,
   encounterTypes,
   load,
   loadProgramEncounters,
@@ -91,8 +87,7 @@ const CompleteVisit = ({
   const [filterParams, setFilterParams] = React.useState({});
 
   const filterQueryString = new URLSearchParams(filterParams).toString();
-  const isForProgramEncounters = match.path === "/app/subject/completedProgramEncounters";
-  const entityUuid = match.queryParams.uuid;
+
   const apiUrl = isForProgramEncounters
     ? `/web/programEnrolment/${entityUuid}/completed`
     : `/web/subject/${entityUuid}/completed`;
@@ -107,9 +102,9 @@ const CompleteVisit = ({
 
   useEffect(() => {
     isForProgramEncounters
-      ? loadProgramEncounters(match.queryParams.uuid, filterQueryString)
-      : loadEncounters(match.queryParams.uuid, filterQueryString);
-  }, []);
+      ? loadProgramEncounters(entityUuid, filterQueryString)
+      : loadEncounters(entityUuid, filterQueryString);
+  }, [entityUuid]);
 
   const [encounterUUID, setEncounterUUID] = React.useState();
   const voidEncounter = isForProgramEncounters ? voidProgramEncounter : voidGeneralEncounter;
@@ -117,24 +112,15 @@ const CompleteVisit = ({
   return encounterTypes && load ? (
     <div>
       <Fragment>
-        <Breadcrumbs path={match.path} />
         <Paper className={classes.searchBox}>
-          <Grid container spacing={3} alignItems="flex-start">
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom className={classes.completedVsits}>
-                {t("completedVisits")}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult encounterTypes={encounterTypes} setFilterParams={setFilterParams} />
-            </Grid>
+          <Grid container item justify="flex-end">
+            <FilterResult encounterTypes={encounterTypes} setFilterParams={setFilterParams} />
           </Grid>
           <Paper className={classes.tableBox}>
             <CompletedVisitsTable
               apiUrl={apiUrl}
               viewEncounterUrl={viewEncounterUrl}
               filterParams={filterParams}
-              entityUuid={match.queryParams.uuid}
               editEncounterUrl={editEncounterUrl}
               isForProgramEncounters={isForProgramEncounters}
               onDelete={encounter => setEncounterUUID(encounter.uuid)}

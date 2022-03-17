@@ -1,13 +1,12 @@
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
+import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { mapObservations } from "common/subjectModelMapper";
 import { Box, Grid } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import moment from "moment/moment";
 import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
 import { selectFormMappingForProgramEncounter } from "../../sagas/programEncounterSelector";
 import { connect } from "react-redux";
@@ -15,6 +14,7 @@ import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer"
 import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
+import { formatDate } from "../../utils/General";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -22,16 +22,6 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 500
   }
 }));
-
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
-const formatDate = aDate => (aDate ? moment(aDate).format("DD-MM-YYYY") : "-");
 
 const transformApiResponse = response => {
   response.observations = mapObservations(response.observations);
@@ -88,7 +78,7 @@ const EncounterObs = ({
 }) => {
   const formMapping = isForProgramEncounters ? programEncounterFormMapping : encounterFormMapping;
   const formUUID = formMapping.formUUID;
-  const requiredFormDetails = _.find(encounterForms, ef => ef.formUUID === formUUID);
+  const requiredFormDetails = find(encounterForms, ef => ef.formUUID === formUUID);
 
   React.useEffect(() => {
     if (!requiredFormDetails) {
@@ -106,7 +96,7 @@ const EncounterObs = ({
       key={encounter.uuid}
     />
   ) : (
-    <CustomizedBackdrop load={!_.isEmpty(requiredFormDetails)} />
+    <CustomizedBackdrop load={!isEmpty(requiredFormDetails)} />
   );
 };
 
@@ -129,7 +119,6 @@ const CompletedVisitsTable = ({
   onDelete
 }) => {
   const { t } = useTranslation();
-  usePrevious(filterParams);
   const columns = [
     {
       title: t("visitName"),
@@ -182,14 +171,14 @@ const CompletedVisitsTable = ({
 
   useEffect(() => {
     refreshTable(tableRef);
-  });
+  }, [filterParams]);
 
   const fetchData = query =>
     new Promise(resolve => {
       const params = { ...filterParams };
       params.page = query.page;
       params.size = query.pageSize;
-      if (!_.isEmpty(query.orderBy.field))
+      if (!isEmpty(query.orderBy.field))
         params.sort = `${query.orderBy.field},${query.orderDirection}`;
       const filterQueryString = new URLSearchParams(params).toString();
       http

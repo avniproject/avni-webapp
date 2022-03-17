@@ -7,8 +7,6 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import Visit from "./Visit";
-import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
@@ -16,9 +14,10 @@ import { withRouter } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { InternalLink, withParams } from "../../../../common/components/utils";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
-import { defaultTo, isEmpty, isNil } from "lodash";
+import { filter, get, isEmpty, isNil } from "lodash";
 import {
   clearVoidServerError,
+  voidProgramEncounter,
   voidProgramEnrolment
 } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
@@ -32,6 +31,8 @@ import { RuleSummary } from "./RuleSummary";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { EnrolmentDetails } from "./EnrolmentDetails";
+import PlannedVisitsTable from "../PlannedVisitsTable";
+import CompletedVisits from "./CompletedVisits";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -145,7 +146,8 @@ const ProgramView = ({
   subjectProfile,
   voidError,
   clearVoidServerError,
-  voidProgramEnrolment
+  voidProgramEnrolment,
+  voidProgramEncounter
 }) => {
   React.useEffect(() => {
     const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
@@ -161,6 +163,7 @@ const ProgramView = ({
   const isNotExited = isNil(programData.programExitDateTime);
 
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
   const dispatch = useDispatch();
 
   const programSummary = useSelector(selectProgramSummary);
@@ -170,36 +173,11 @@ const ProgramView = ({
     dispatch(fetchProgramSummary(programData.uuid));
   }, [dispatch, programData]);
 
-  let plannedVisits = [];
-  let completedVisits = [];
-
-  if (programData && programData.encounters) {
-    programData.encounters.forEach(function(row, index) {
-      if (!row.encounterDateTime) {
-        let sub = {
-          uuid: row.uuid,
-          name: row.name,
-          key: index,
-          index: index,
-          visitDate: row.encounterDateTime,
-          earliestVisitDate: row.earliestVisitDateTime,
-          overdueDate: row.maxVisitDateTime
-        };
-        plannedVisits.push(sub);
-      } else if (row.encounterDateTime && row.encounterType && index <= 3) {
-        let sub = {
-          uuid: row.uuid,
-          name: row.name,
-          key: index,
-          index: index,
-          visitDate: row.encounterDateTime,
-          earliestVisitDate: row.earliestVisitDateTime,
-          overdueDate: row.maxVisitDateTime
-        };
-        completedVisits.push(sub);
-      }
-    });
-  }
+  const plannedVisits = filter(
+    get(programData, "encounters", []),
+    ({ voided, encounterDateTime, cancelDateTime }) =>
+      !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
+  );
 
   return (
     <div>
@@ -272,46 +250,18 @@ const ProgramView = ({
               {t("plannedVisits")}
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid
-              container
-              direction="row"
-              justify="flex-start"
-              alignItems="flex-start"
-              spacing={2}
-            >
-              {programData && programData.encounters && plannedVisits.length !== 0 ? (
-                programData.encounters
-                  .filter(
-                    ({ encounterDateTime, cancelDateTime, voided }) =>
-                      !voided && !encounterDateTime && !cancelDateTime
-                  )
-                  .map((row, index) => (
-                    <Visit
-                      type={"programEncounter"}
-                      uuid={row.uuid}
-                      name={defaultTo(row.name, row.encounterType.name)}
-                      index={index}
-                      visitDate={row.encounterDateTime}
-                      earliestVisitDate={row.earliestVisitDateTime}
-                      overdueDate={row.maxVisitDateTime}
-                      enrolUuid={programData.uuid}
-                      encounterTypeUuid={row.encounterType.uuid}
-                      cancelDateTime={row.cancelDateTime}
-                      programUuid={programData.program.uuid}
-                      subjectTypeUuid={subjectTypeUuid}
-                    />
-                  ))
-              ) : (
-                <Typography variant="caption" gutterBottom className={classes.infomsg}>
-                  {" "}
-                  {t("no")} {t("plannedVisits")}{" "}
-                </Typography>
-              )}
-            </Grid>
+          <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+            <PlannedVisitsTable
+              plannedVisits={plannedVisits || []}
+              doBaseUrl={`/app/subject/programEncounter?encounterUuid`}
+              cancelBaseURL={`/app/subject/cancelProgramEncounter?uuid`}
+              onDelete={uuid => voidProgramEncounter(uuid)}
+              deleteTitle={"ProgramEncounterVoidAlertTitle"}
+              deleteMessage={"ProgramEncounterVoidAlertMessage"}
+            />
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanel className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
@@ -321,60 +271,11 @@ const ProgramView = ({
               {t("completedVisits")}
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid
-              container
-              direction="row"
-              justify="flex-start"
-              alignItems="flex-start"
-              spacing={2}
-              className={
-                programData && programData.encounters && completedVisits.length !== 0
-                  ? classes.gridBottomBorder
-                  : ""
-              }
-            >
-              {programData && programData.encounters && completedVisits.length !== 0 ? (
-                programData.encounters
-                  .filter(
-                    ({ encounterDateTime, cancelDateTime, voided }) =>
-                      (cancelDateTime || encounterDateTime) && !voided
-                  )
-                  .slice(0, 3)
-                  .map((row, index) => (
-                    <Visit
-                      uuid={row.uuid}
-                      type={"programEncounter"}
-                      name={defaultTo(row.name, row.encounterType.name)}
-                      key={index}
-                      index={index}
-                      visitDate={row.encounterDateTime}
-                      earliestVisitDate={row.earliestVisitDateTime}
-                      encounterDateTime={row.encounterDateTime}
-                      enrolUuid={programData.uuid}
-                      cancelDateTime={row.cancelDateTime}
-                      encounterTypeUuid={row.encounterType.uuid}
-                      programUuid={programData.program.uuid}
-                      subjectTypeUuid={subjectTypeUuid}
-                    />
-                  ))
-              ) : (
-                <Typography variant="caption" gutterBottom className={classes.infomsg}>
-                  {" "}
-                  {t("no")} {t("completedVisits")}{" "}
-                </Typography>
-              )}
-            </Grid>
+          <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+            {isExpanded && (
+              <CompletedVisits entityUuid={programData.uuid} isForProgramEncounters={true} />
+            )}
           </ExpansionPanelDetails>
-          {programData && programData.encounters && completedVisits.length !== 0 ? (
-            <InternalLink to={`/app/subject/completedProgramEncounters?uuid=${programData.uuid}`}>
-              <Button color="primary" className={classes.visitAllButton}>
-                {t("viewAllVisits")}
-              </Button>
-            </InternalLink>
-          ) : (
-            ""
-          )}
         </ExpansionPanel>
       </Paper>
       <ConfirmDialog
@@ -405,7 +306,8 @@ const mapDispatchToProps = {
   undoExitEnrolment,
   getProgramEnrolmentForm,
   voidProgramEnrolment,
-  clearVoidServerError
+  clearVoidServerError,
+  voidProgramEncounter
 };
 
 export default withRouter(
