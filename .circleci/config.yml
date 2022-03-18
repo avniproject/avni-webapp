@@ -88,6 +88,7 @@ jobs:
           root: ~/artifacts
           paths:
             - build_version
+            - openchs-webapp.zip
 
       - store_artifacts:
           path: ~/artifacts
