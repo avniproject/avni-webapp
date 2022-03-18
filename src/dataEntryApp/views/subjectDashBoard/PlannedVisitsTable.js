@@ -48,13 +48,14 @@ const PlannedVisitsTable = ({
   const columns = [
     {
       title: t("visitName"),
-      field: "name",
-      defaultSort: "asc"
+      field: "name"
     },
     {
       title: t("visitscheduledate"),
       field: "earliestVisitDateTime",
-      render: row => formatDate(row.earliestVisitDateTime)
+      type: "date",
+      render: row => formatDate(row.earliestVisitDateTime),
+      defaultSort: "desc"
     },
     {
       title: t("status"),

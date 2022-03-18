@@ -123,16 +123,15 @@ const CompletedVisitsTable = ({
     {
       title: t("visitName"),
       field: "name",
-      defaultSort: "asc",
       render: row => {
-        const valueToDisplay = row.name ? t(row.name) : t(row.encounterType.name);
-        const action = row.cancelDateTime ? "cancel" : "";
-        return <Link to={`${viewEncounterUrl(action)}?uuid=${row.uuid}`}>{valueToDisplay}</Link>;
+        return t(row.name || row.encounterType.name);
       }
     },
     {
       title: t("visitcompleteddate"),
       field: "encounterDateTime",
+      type: "date",
+      defaultSort: "desc",
       render: row => formatDate(row.encounterDateTime)
     },
     {
