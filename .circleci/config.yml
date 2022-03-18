@@ -28,8 +28,8 @@ commands:
           name: Deploy app
           command: |
             ssh -o StrictHostKeyChecking=no ec2-user@<< parameters.hostname >> \<< EOF
-            sudo rm -rf /opt/openchs-webapp
-            sudo unzip -qq /tmp/openchs-webapp.zip -d /opt/
+            sudo rm -rf /opt/openchs-webapp/*
+            sudo unzip -qq /tmp/openchs-webapp.zip -d /opt/openchs-webapp
             sudo rm -rf /tmp/openchs-webapp.zip
             EOF
 
