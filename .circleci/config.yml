@@ -138,13 +138,6 @@ workflows:
           post-steps:
             - store_test_results:
                 path: cypress/results
-      - UAT_approve:
-          type: approval
-          requires:
-            - app_build
-      - UAT_deploy:
-          requires:
-            - UAT_approve
       - PRERELEASE_approve:
           type: approval
           requires:
