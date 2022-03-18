@@ -19,15 +19,19 @@ commands:
             sudo apt-get -y -qq install make openssl python3-pip
             sudo pip3 install awscli --upgrade
 
-      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+      - run:
+          name: Copy build to server
+          command: |
+            scp -o StrictHostKeyChecking=no ~/artifacts/openchs-webapp.zip ec2-user@<< parameters.hostname >>:/tmp
 
-      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
-
-      - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
-
-      #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
-
-      - run: cd ~/infra; make install; make << parameters.to >>-webapp-create;
+      - run:
+          name: Deploy app
+          command: |
+            ssh -o StrictHostKeyChecking=no ec2-user@<< parameters.hostname >> \<< EOF
+            sudo rm -rf /opt/openchs-webapp
+            sudo unzip -qq /tmp/openchs-webapp.zip -d /opt/
+            sudo rm -rf /tmp/openchs-webapp.zip
+            EOF
 
 jobs:
   app_test:
@@ -72,13 +76,13 @@ jobs:
 
       - run: yarn run build
 
-      - run: cd build; zip -r ../build.zip *
+      - run: cd build; zip -r ../openchs-webapp.zip *
 
       - run: mkdir -p ~/artifacts
 
       - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
-      - run: cp ~/openchs-webapp/build.zip ~/artifacts/
+      - run: cp ~/openchs-webapp/openchs-webapp.zip ~/artifacts/
 
       - persist_to_workspace:
           root: ~/artifacts
