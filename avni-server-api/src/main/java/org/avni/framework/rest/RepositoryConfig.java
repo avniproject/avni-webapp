@@ -12,7 +12,6 @@ public class RepositoryConfig extends RepositoryRestConfigurerAdapter {
         config.exposeIdsFor(User.class);
         config.exposeIdsFor(Organisation.class);
         config.exposeIdsFor(Catchment.class);
-        config.exposeIdsFor(Facility.class);
         config.exposeIdsFor(AddressLevel.class);
         config.exposeIdsFor(AddressLevelType.class);
         config.exposeIdsFor(Concept.class);

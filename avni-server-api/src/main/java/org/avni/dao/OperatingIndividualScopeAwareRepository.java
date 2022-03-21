@@ -12,7 +12,5 @@ import java.util.Date;
 @NoRepositoryBean
 public interface OperatingIndividualScopeAwareRepository<T extends CHSEntity> extends JpaSpecificationExecutor<T> {
     Page<T> syncByCatchment(SyncParameters syncParameters);
-    Page<T> syncByFacility(SyncParameters syncParameters);
     boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId);
-    boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId);
 }

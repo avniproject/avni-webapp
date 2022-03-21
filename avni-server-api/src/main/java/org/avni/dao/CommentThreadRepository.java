@@ -25,22 +25,10 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
             Date now,
             Pageable pageable);
 
-    Page<CommentThread> findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId,
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
     boolean existsByComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndComments_SubjectAddressLevelIdIn(
             Long subjectTypeId,
             Date lastModifiedDateTime,
             List<Long> addressIds);
-
-    boolean existsByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId,
-            Long subjectTypeId,
-            Date lastModifiedDateTime);
 
 
     @Override
@@ -49,18 +37,8 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
     }
 
     @Override
-    default Page<CommentThread> syncByFacility(SyncParameters syncParameters) {
-        return findByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndComments_SubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByComments_SubjectFacilityIdAndComments_SubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     List<CommentThread> findDistinctByIsVoidedFalseAndCommentsIsVoidedFalseAndComments_SubjectOrderByOpenDateTimeDescIdDesc(Individual subject);

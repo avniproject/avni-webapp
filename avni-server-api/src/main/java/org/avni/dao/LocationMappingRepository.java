@@ -33,18 +33,8 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
     }
 
     @Override
-    default Page<ParentLocationMapping> syncByFacility(SyncParameters syncParameters) {
-        return findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     default ParentLocationMapping findByName(String name) {

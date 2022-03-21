@@ -39,7 +39,7 @@ public class IdentifierAssignmentService implements NonScopeAwareService {
 
     @Transactional
     public void generateIdentifiersIfNecessary(User user) {
-        List<IdentifierSource> allAuthorisedIdentifierSources = identifierSourceRepository.getAllAuthorisedIdentifierSources(user.getCatchment(), user.getFacility());
+        List<IdentifierSource> allAuthorisedIdentifierSources = identifierSourceRepository.getAllAuthorisedIdentifierSources(user.getCatchment());
         for (IdentifierSource identifierSource : allAuthorisedIdentifierSources) {
             generateIdentifiersIfNecessary(user, identifierSource);
         }

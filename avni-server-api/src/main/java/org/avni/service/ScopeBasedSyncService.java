@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.avni.domain.OperatingIndividualScope.ByCatchment;
-import static org.avni.domain.OperatingIndividualScope.ByFacility;
 
 @Service
 public class ScopeBasedSyncService<T extends CHSEntity> {
@@ -28,13 +27,9 @@ public class ScopeBasedSyncService<T extends CHSEntity> {
         List<Long> addressLevels = addressLevelService.getAllAddressLevelIdsForCatchment(user.getCatchment());
 
         OperatingIndividualScope scope = user.getOperatingIndividualScope();
-        Facility userFacility = user.getFacility();
         Catchment catchment = user.getCatchment();
         if (ByCatchment.equals(scope)) {
-            return repository.syncByCatchment(new SyncParameters(0, catchment.getId(), lastModifiedDateTime, now, filter, pageable, addressLevels));
-        }
-        if (ByFacility.equals(scope)) {
-            return repository.syncByFacility(new SyncParameters(userFacility.getId(), 0, lastModifiedDateTime, now, filter, pageable, addressLevels));
+            return repository.syncByCatchment(new SyncParameters(catchment.getId(), lastModifiedDateTime, now, filter, pageable, addressLevels));
         }
         return new PageImpl<>(Collections.emptyList());
     }

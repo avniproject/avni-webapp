@@ -28,14 +28,8 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
     boolean existsByEncounterTypeIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
             Long encounterTypeId, Date lastModifiedDateTime, List<Long> addressIds);
-
-    boolean existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long encounterTypeId, Date lastModifiedDateTime);
 
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(List<Long> addressLevels, long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
@@ -45,18 +39,8 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     }
 
     @Override
-    default Page<ProgramEncounter> syncByFacility(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByEncounterTypeIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByProgramEnrolmentIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     @Query(value = "select count(enc.id) as count " +

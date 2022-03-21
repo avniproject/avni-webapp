@@ -34,20 +34,16 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
     private UserRepository userRepository;
-    private UserFacilityMappingRepository userFacilityMappingRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
-    private FacilityRepository facilityRepository;
     private CognitoIdpService cognitoService;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService, FacilityRepository facilityRepository, CognitoIdpService cognitoService) {
+    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, OrganisationRepository organisationRepository, UserService userService, CognitoIdpService cognitoService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
-        this.userFacilityMappingRepository = userFacilityMappingRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
-        this.facilityRepository = facilityRepository;
         this.cognitoService = cognitoService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -140,16 +136,6 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
             user.setCatchment(catchment);
 
-            List<UserFacilityMapping> userFacilityMappings = userContract.getFacilities().stream().map(userFacilityMappingContract -> {
-                UserFacilityMapping mapping = userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid());
-                if (mapping == null) {
-                    mapping = new UserFacilityMapping();
-                    mapping.setUuid(userFacilityMappingContract.getUuid());
-                }
-                mapping.setFacility(facilityRepository.findByUuid(userFacilityMappingContract.getFacilityUUID()));
-                return mapping;
-            }).collect(Collectors.toList());
-            user.addUserFacilityMappings(userFacilityMappings);
             Long organisationId = getOrganisationId(userContract);
             user.setOrganisationId(organisationId);
             user.setOrgAdmin(userContract.isOrgAdmin());

@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public class SyncParameters {
-    private final long facilityId;
     private final long catchmentId;
     private final DateTime lastModifiedDateTime;
     private final DateTime now;
@@ -15,8 +14,7 @@ public class SyncParameters {
     private final Pageable pageable;
     private List<Long> addressLevels;
 
-    public SyncParameters(long facilityId, long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable, List<Long> addressLevels) {
-        this.facilityId = facilityId;
+    public SyncParameters(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable, List<Long> addressLevels) {
         this.catchmentId = catchmentId;
         this.lastModifiedDateTime = lastModifiedDateTime;
         this.now = now;
@@ -43,10 +41,6 @@ public class SyncParameters {
 
     public Pageable getPageable() {
         return pageable;
-    }
-
-    public long getFacilityId() {
-        return facilityId;
     }
 
     public List<Long> getAddressLevels() {

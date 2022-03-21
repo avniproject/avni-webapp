@@ -10,7 +10,6 @@ import java.util.List;
 public class UserBulkUploadContract extends ReferenceDataContract {
     private String organisationUUID;
     private Long organisationId;
-    private List<UserFacilityMappingContract> facilities;
     private String catchmentUUID;
     private long catchmentId;
     private boolean orgAdmin;
@@ -26,14 +25,6 @@ public class UserBulkUploadContract extends ReferenceDataContract {
 
     public void setOrganisationUUID(String organisationUUID) {
         this.organisationUUID = organisationUUID;
-    }
-
-    public List<UserFacilityMappingContract> getFacilities() {
-        return facilities == null ? new ArrayList<>() : facilities;
-    }
-
-    public void setFacilities(List<UserFacilityMappingContract> facilities) {
-        this.facilities = facilities;
     }
 
     public String getCatchmentUUID() {

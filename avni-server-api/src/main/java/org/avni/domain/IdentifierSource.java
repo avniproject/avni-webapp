@@ -22,10 +22,6 @@ public class IdentifierSource extends OrganisationAwareEntity {
     @JoinColumn(name = "catchment_id")
     private Catchment catchment;
 
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name = "facility_id")
-    private Facility facility;
-
     @Column
     private Long minimumBalance;
 
@@ -64,14 +60,6 @@ public class IdentifierSource extends OrganisationAwareEntity {
 
     public void setCatchment(Catchment catchment) {
         this.catchment = catchment;
-    }
-
-    public Facility getFacility() {
-        return facility;
-    }
-
-    public void setFacility(Facility facility) {
-        this.facility = facility;
     }
 
     public Long getMinimumBalance() {

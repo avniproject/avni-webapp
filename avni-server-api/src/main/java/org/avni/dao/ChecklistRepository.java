@@ -22,14 +22,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelIdInAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<Long> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
     boolean existsByChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
             Long checklistDetailId, Date lastModifiedDateTime, List<Long> addressIds);
-
-    boolean existsByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId, Long checklistDetailId, Date lastModifiedDateTime);
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
 
@@ -43,17 +37,8 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     }
 
     @Override
-    default Page<Checklist> syncByFacility(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByProgramEnrolmentIndividualFacilityIdAndChecklistDetailIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
-    }
 }

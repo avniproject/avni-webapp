@@ -22,14 +22,8 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
     Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualAddressLevelIdInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<Long> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
     boolean existsByChecklistChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndChecklistProgramEnrolmentIndividualAddressLevelIdIn(
             Long checklistDetailId, Date lastModifiedDateTime, List<Long> addressIds);
-
-    boolean existsByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndLastModifiedDateTimeGreaterThan(
-            long catchmentId, Long checklistDetailId, Date lastModifiedDateTime);
 
     ChecklistItem findByChecklistUuidAndChecklistItemDetailUuid(String checklistUUID, String checklistItemDetailUUID);
 
@@ -41,17 +35,8 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
     }
 
     @Override
-    default Page<ChecklistItem> syncByFacility(SyncParameters syncParameters) {
-        return findByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByChecklistChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndChecklistProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByChecklistProgramEnrolmentIndividualFacilityIdAndChecklistChecklistDetailIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
-    }
 }

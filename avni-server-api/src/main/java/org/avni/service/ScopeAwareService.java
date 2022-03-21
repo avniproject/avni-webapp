@@ -8,21 +8,16 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 import static org.avni.domain.OperatingIndividualScope.ByCatchment;
-import static org.avni.domain.OperatingIndividualScope.ByFacility;
 
 public interface ScopeAwareService<T extends CHSEntity> {
 
     default boolean isChanged(User user, DateTime lastModifiedDateTime, Long typeId) {
         OperatingIndividualScope scope = user.getOperatingIndividualScope();
-        Facility userFacility = user.getFacility();
         Catchment catchment = user.getCatchment();
         if (ByCatchment.equals(scope)) {
             AddressLevelService addressLevelService = ApplicationContextProvider.getContext().getBean(AddressLevelService.class);
             List<Long> addressIds = addressLevelService.getAllAddressLevelIdsForCatchment(catchment);
             return repository().isEntityChangedForCatchment(addressIds, CHSEntity.toDate(lastModifiedDateTime), typeId);
-        }
-        if (ByFacility.equals(scope)) {
-            return repository().isEntityChangedForFacility(userFacility.getId(), CHSEntity.toDate(lastModifiedDateTime), typeId);
         }
         return false;
     }

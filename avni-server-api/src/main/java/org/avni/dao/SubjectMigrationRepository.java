@@ -21,11 +21,6 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
             "order by sm.lastModifiedDateTime, sm.id desc")
     Page<SubjectMigration> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, Date lastModifiedDateTime, Date now, Long filter, Pageable pageable);
 
-    default Page<SubjectMigration> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, Date lastModifiedDateTime, Date now, Long filter, Pageable pageable) {
-        //Changes in facility not yet implemented for subject migration
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     @Query("select case when count(sm) > 0 then true else false end " +
             "from SubjectMigration sm " +
@@ -35,17 +30,8 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
     boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId);
 
     @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     default Page<SubjectMigration> syncByCatchment(SyncParameters syncParameters) {
         return findByCatchmentIndividualOperatingScopeAndFilterByType(syncParameters.getCatchmentId(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getFilter(), syncParameters.getPageable());
     }
 
-    @Override
-    default Page<SubjectMigration> syncByFacility(SyncParameters syncParameters) {
-        return findByFacilityIndividualOperatingScopeAndFilterByType(syncParameters.getFacilityId(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getFilter(), syncParameters.getPageable());
-    }
 }

@@ -9,7 +9,6 @@ public class IdentifierSourceContract extends CHSRequest {
     private JsonObject options;
     private String type;
     private String catchmentUUID;
-    private String facilityUUID;
     private Integer minLength;
     private Integer maxLength;
 
@@ -59,14 +58,6 @@ public class IdentifierSourceContract extends CHSRequest {
 
     public void setCatchmentUUID(String catchmentUUID) {
         this.catchmentUUID = catchmentUUID;
-    }
-
-    public String getFacilityUUID() {
-        return facilityUUID;
-    }
-
-    public void setFacilityUUID(String facilityUUID) {
-        this.facilityUUID = facilityUUID;
     }
 
     public Integer getMinLength() {

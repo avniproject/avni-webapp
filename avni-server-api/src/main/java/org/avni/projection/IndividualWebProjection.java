@@ -39,8 +39,6 @@ public interface IndividualWebProjection extends BaseProjection {
     @Value("#{target.getFirstName() + (target.getLastName() != null ? ' ' + target.getLastName(): '')}")
     String getFullName();
 
-    Facility getFacility();
-
     Point getRegistrationLocation();
 
     List<ProgramProjection> getActivePrograms();

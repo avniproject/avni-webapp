@@ -29,22 +29,10 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             Date now,
             Pageable pageable);
 
-    Page<ProgramEnrolment> findByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId,
-            Long programId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
     boolean existsByProgramIdAndLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(
             Long programId,
             Date lastModifiedDateTime,
             List<Long> addressIds);
-
-    boolean existsByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId,
-            Long programId,
-            Date lastModifiedDateTime);
 
     @Query("select pe.program from ProgramEnrolment pe join pe.program join pe.program.operationalPrograms where pe.individual.id = :individualId and pe.programExitDateTime is null and pe.isVoided = false")
     List<Program> findActiveEnrolmentsByIndividualId(Long individualId);
@@ -52,11 +40,6 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByProgramIdAndLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     @Query("select enl from ProgramEnrolment enl " +
@@ -107,8 +90,4 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
         return findByIndividualAddressLevelIdInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
-    @Override
-    default Page<ProgramEnrolment> syncByFacility(SyncParameters syncParameters) {
-        return findByIndividualFacilityIdAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
-    }
 }

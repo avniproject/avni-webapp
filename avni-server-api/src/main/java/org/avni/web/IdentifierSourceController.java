@@ -24,14 +24,12 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private UserService userService;
     private CatchmentRepository catchmentRepository;
-    private FacilityRepository facilityRepository;
 
     @Autowired
-    public IdentifierSourceController(IdentifierSourceRepository identifierSourceRepository, UserService userService, CatchmentRepository catchmentRepository, FacilityRepository facilityRepository) {
+    public IdentifierSourceController(IdentifierSourceRepository identifierSourceRepository, UserService userService, CatchmentRepository catchmentRepository) {
         this.identifierSourceRepository = identifierSourceRepository;
         this.userService = userService;
         this.catchmentRepository = catchmentRepository;
-        this.facilityRepository = facilityRepository;
     }
 
     @RequestMapping(value = "/identifierSource/search/lastModified", method = RequestMethod.GET)
@@ -41,7 +39,7 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
         User currentUser = userService.getCurrentUser();
-        return wrap(identifierSourceRepository.getAllAuthorisedIdentifierSources(currentUser.getCatchment(), currentUser.getFacility(),CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
+        return wrap(identifierSourceRepository.getAllAuthorisedIdentifierSources(currentUser.getCatchment(), CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
     @RequestMapping(value = "/identifierSource", method = RequestMethod.POST)
@@ -55,7 +53,6 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
         IdentifierSource identifierSource = newOrExistingEntity(identifierSourceRepository, identifierSourceContract, new IdentifierSource());
         identifierSource.setBatchGenerationSize(identifierSourceContract.getBatchGenerationSize());
         identifierSource.setCatchment(catchmentRepository.findByUuid(identifierSourceContract.getCatchmentUUID()));
-        identifierSource.setFacility(facilityRepository.findByUuid(identifierSourceContract.getFacilityUUID()));
         identifierSource.setMinimumBalance(identifierSourceContract.getMinimumBalance());
         identifierSource.setName(identifierSourceContract.getName());
         identifierSource.setOptions(identifierSourceContract.getOptions());

@@ -64,9 +64,6 @@ public class User {
     @Column
     private boolean isVoided;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<UserFacilityMapping> userFacilityMappings = new HashSet<>();
-
     @Column
     private boolean isOrgAdmin;
 
@@ -214,21 +211,6 @@ public class User {
         this.lastModifiedDateTime = lastModifiedDateTime;
     }
 
-    public Set<UserFacilityMapping> getUserFacilityMappings() {
-        return userFacilityMappings;
-    }
-
-    public void addUserFacilityMapping(UserFacilityMapping userFacilityMapping) {
-        if (this.userFacilityMappings == null)
-            this.userFacilityMappings = new HashSet<>();
-        userFacilityMapping.setUser(this);
-        this.userFacilityMappings.add(userFacilityMapping);
-    }
-
-    public void addUserFacilityMappings(List<UserFacilityMapping> userFacilityMappings) {
-        userFacilityMappings.forEach(this::addUserFacilityMapping);
-    }
-
     public User getCreatedBy() {
         return createdBy;
     }
@@ -298,16 +280,6 @@ public class User {
 
     public void setOperatingIndividualScope(@NotNull OperatingIndividualScope operatingIndividualScope) {
         this.operatingIndividualScope = operatingIndividualScope;
-    }
-
-    public Facility getFacility() {
-        Set<UserFacilityMapping> userFacilityMappings = getUserFacilityMappings();
-        if (userFacilityMappings.size() > 1) {
-            throw new AssertionError("User cannot belong to more than one facility yet");
-        } else if (userFacilityMappings.size() == 1) {
-            return userFacilityMappings.stream().findFirst().get().getFacility();
-        }
-        return null;
     }
 
     public JsonObject getSettings() {

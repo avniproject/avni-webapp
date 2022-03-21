@@ -68,10 +68,6 @@ public class Individual extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection observations;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "facility_id")
-    private Facility facility;
-
     @Type(type = "org.avni.geo.PointType")
     @Column
     private Point registrationLocation;
@@ -170,14 +166,6 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Facility getFacility() {
-        return facility;
-    }
-
-    public void setFacility(Facility facility) {
-        this.facility = facility;
     }
 
     public Point getRegistrationLocation() {

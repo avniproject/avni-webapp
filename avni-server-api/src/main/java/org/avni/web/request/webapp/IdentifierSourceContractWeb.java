@@ -12,7 +12,6 @@ public class IdentifierSourceContractWeb {
     private JsonObject options;
     private String type;
     private Long catchmentId;
-    private Long facilityId;
     private Integer minLength;
     private Integer maxLength;
     private boolean voided;
@@ -81,14 +80,6 @@ public class IdentifierSourceContractWeb {
         this.catchmentId = catchmentId;
     }
 
-    public Long getFacilityId() {
-        return facilityId;
-    }
-
-    public void setFacilityId(Long facilityId) {
-        this.facilityId = facilityId;
-    }
-
     public Integer getMinLength() {
         return minLength;
     }
@@ -110,8 +101,6 @@ public class IdentifierSourceContractWeb {
         contract.setBatchGenerationSize(identifierSource.getBatchGenerationSize());
         if(identifierSource.getCatchment() != null)
             contract.setCatchmentId(identifierSource.getCatchment().getId());
-        if(identifierSource.getFacility() != null)
-            contract.setFacilityId(identifierSource.getFacility().getId());
         contract.setMaxLength(identifierSource.getMaxLength());
         contract.setMinLength(identifierSource.getMinLength());
         contract.setMinimumBalance(identifierSource.getMinimumBalance());

@@ -12,7 +12,6 @@ import java.util.List;
 public class UserContract extends ReferenceDataContract {
     private String username;
     private long catchmentId;
-    private List<UserFacilityMappingContract> facilities;
     private String phoneNumber;
     private String email;
     private boolean orgAdmin = false;
@@ -77,14 +76,6 @@ public class UserContract extends ReferenceDataContract {
 
     public void setCatchmentId(long catchmentId) {
         this.catchmentId = catchmentId;
-    }
-
-    public List<UserFacilityMappingContract> getFacilities() {
-        return facilities == null ? new ArrayList<>() : facilities;
-    }
-
-    public void setFacilities(List<UserFacilityMappingContract> facilities) {
-        this.facilities = facilities;
     }
 
     public String getPhoneNumber() {

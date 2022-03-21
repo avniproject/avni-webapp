@@ -26,22 +26,10 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
             Date now,
             Pageable pageable);
 
-    Page<Comment> findBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId,
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
     boolean existsBySubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(
             Long subjectTypeId,
             Date lastModifiedDateTime,
             List<Long> addressIds);
-
-    boolean existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId,
-            Long subjectTypeId,
-            Date lastModifiedDateTime);
 
     @Override
     default Page<Comment> syncByCatchment(SyncParameters syncParameters) {
@@ -49,17 +37,8 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
     }
 
     @Override
-    default Page<Comment> syncByFacility(SyncParameters syncParameters) {
-        return findBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsBySubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
     }
 
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsBySubjectFacilityIdAndSubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
-    }
 }

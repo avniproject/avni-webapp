@@ -31,22 +31,10 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             Date now,
             Pageable pageable);
 
-    Page<Individual> findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId,
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
     boolean existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(
             Long subjectTypeId,
             Date lastModifiedDateTime,
             List<Long> addressIds);
-
-    boolean existsByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId,
-            Long subjectTypeId,
-            Date lastModifiedDateTime);
 
     @Override
     default Page<Individual> syncByCatchment(SyncParameters syncParameters) {
@@ -54,18 +42,8 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     @Override
-    default Page<Individual> syncByFacility(SyncParameters syncParameters) {
-        return findByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByFacilityIdAndSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     default Specification<Individual> getFilterSpecForVoid(Boolean includeVoided) {

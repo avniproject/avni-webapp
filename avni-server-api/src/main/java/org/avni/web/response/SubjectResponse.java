@@ -17,7 +17,6 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         Response.putIfPresent(subjectResponse, "Registration location", subject.getRegistrationLocation());
         subjectResponse.put("Registration date", subject.getRegistrationDate());
         putLocation(subject, subjectResponse);
-        if (subject.getFacility() != null) subjectResponse.put("Facility", subject.getFacility().getName());
         putRelatives(subject, subjectResponse);
 
         LinkedHashMap<String, Object> observations = new LinkedHashMap<>();

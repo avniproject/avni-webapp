@@ -38,11 +38,9 @@ public class UserController {
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
     private UserRepository userRepository;
-    private UserFacilityMappingRepository userFacilityMappingRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
     private CognitoIdpService cognitoService;
-    private FacilityRepository facilityRepository;
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
@@ -54,19 +52,15 @@ public class UserController {
     @Autowired
     public UserController(CatchmentRepository catchmentRepository,
                           UserRepository userRepository,
-                          UserFacilityMappingRepository userFacilityMappingRepository,
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           CognitoIdpService cognitoService,
-                          FacilityRepository facilityRepository,
                           AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ProjectionFactory projectionFactory) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
-        this.userFacilityMappingRepository = userFacilityMappingRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
         this.cognitoService = cognitoService;
-        this.facilityRepository = facilityRepository;
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
@@ -158,18 +152,6 @@ public class UserController {
 
         user.setName(userContract.getName());
         user.setCatchment(catchmentRepository.findOne(userContract.getCatchmentId()));
-
-        List<UserFacilityMapping> userFacilityMappings = userContract.getFacilities().stream().map(
-                userFacilityMappingContract -> {
-                    UserFacilityMapping mapping = userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid());
-                    if (mapping == null) {
-                        mapping = new UserFacilityMapping();
-                        mapping.setUuid(userFacilityMappingContract.getUuid());
-                    }
-                    mapping.setFacility(facilityRepository.findByUuid(userFacilityMappingContract.getFacilityUUID()));
-                    return mapping;
-                }).collect(Collectors.toList());
-        user.addUserFacilityMappings(userFacilityMappings);
 
         user.setOrgAdmin(userContract.isOrgAdmin());
         user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));

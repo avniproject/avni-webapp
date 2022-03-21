@@ -27,14 +27,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     Page<IndividualRelationship> findByIndividualaAddressLevelIdInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<Long> addressLevels, Long subjectTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<IndividualRelationship> findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId, Long subjectTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
     boolean existsByIndividualaSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndIndividualaAddressLevelIdIn(
             Long subjectTypeId, Date lastModifiedDateTime, List<Long> addressIds);
-
-    boolean existsByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndLastModifiedDateTimeGreaterThan(
-            long facilityId, Long subjectTypeId, Date lastModifiedDateTime);
 
     @Query(value = "select ir from IndividualRelationship ir where ir.individuala = :individual or ir.individualB = :individual")
     Set<IndividualRelationship> findByIndividual(Individual individual);
@@ -45,18 +39,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     }
 
     @Override
-    default Page<IndividualRelationship> syncByFacility(SyncParameters syncParameters) {
-        return findByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByIndividualaSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndIndividualaAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByIndividualaFacilityIdAndIndividualaSubjectTypeIdAndLastModifiedDateTimeGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     List<IndividualRelationship> findByIndividualaAndIndividualBAndIsVoidedFalse(Individual individualA, Individual individualB);

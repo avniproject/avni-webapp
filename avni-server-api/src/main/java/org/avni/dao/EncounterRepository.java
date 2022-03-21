@@ -29,14 +29,8 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     Page<Encounter> findByIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             List<Long> addressLevels, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<Encounter> findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long facilityId, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
     boolean existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(
             Long encounterTypeId, Date lastModifiedDateTime, List<Long> addressIds);
-
-    boolean existsByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsGreaterThan(
-            long facilityId, Long encounterTypeId, Date lastModifiedDateTime);
 
     @Override
     default Page<Encounter> syncByCatchment(SyncParameters syncParameters) {
@@ -45,18 +39,8 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     }
 
     @Override
-    default Page<Encounter> syncByFacility(SyncParameters syncParameters) {
-        return findByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchmentId(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByIndividualFacilityIdAndEncounterTypeIdAndLastModifiedDateTimeIsGreaterThan(facilityId, typeId, lastModifiedDateTime);
     }
 
     @Query(value = "select count(enc.id) as count " +

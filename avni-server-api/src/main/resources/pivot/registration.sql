@@ -11,7 +11,6 @@ SELECT individual.id                                                            
        EXTRACT(year FROM age(date_of_birth)) * 12 + EXTRACT(month FROM age(date_of_birth)) as "age_in_months",
        individual.date_of_birth_verified                                                   as "date_of_birth_verified",
        individual.registration_date                                                        as "registration_date",
-       individual.facility_id                                                              as "facility_id",
        individual.registration_location                                                    as "registration_location",
        individual.subject_type_id                                                          as "subject_type_id",
        individual.audit_id                                                                 as "audit_id",

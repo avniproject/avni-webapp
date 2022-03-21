@@ -70,18 +70,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     }
 
     @Override
-    default Page<AddressLevel> syncByFacility(SyncParameters syncParameters) {
-        return findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getLastModifiedDateTime(), syncParameters.getNow(), syncParameters.getPageable());
-    }
-
-    @Override
     default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
         return existsByLastModifiedDateTimeIsGreaterThanAndIdIn(lastModifiedDateTime, addressIds);
-    }
-
-    @Override
-    default boolean isEntityChangedForFacility(long facilityId, Date lastModifiedDateTime, Long typeId){
-        return existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
     default AddressLevel findByName(String name) {

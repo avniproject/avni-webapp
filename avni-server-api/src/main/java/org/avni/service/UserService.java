@@ -30,11 +30,6 @@ public class UserService implements NonScopeAwareService {
         this.userGroupRepository = userGroupRepository;
     }
 
-    public Facility getUserFacility() {
-        UserContext userContext = UserContextHolder.getUserContext();
-        return userContext.getUser().getFacility();
-    }
-
     public User getCurrentUser() {
         UserContext userContext = UserContextHolder.getUserContext();
         return userContext.getUser();
