@@ -118,6 +118,7 @@ function FormElementTabs(props) {
           sampleRule={sampleFormElementRule(props.entityName)}
           onJsCodeChange={onSkipLogicRuleChange}
           disableEditor={disableFormElement}
+          parentConceptUuid={props.parentConceptUuid}
         />
         {/* </div> */}
       </TabPanel>

@@ -17,7 +17,8 @@ const RuleDesigner = ({
   onJsCodeChange,
   disableEditor,
   encounterTypes,
-  form
+  form,
+  parentConceptUuid
 }) => {
   return (
     <Fragment>
@@ -31,6 +32,7 @@ const RuleDesigner = ({
         getApplicableActions={getApplicableActions}
         encounterTypes={encounterTypes}
         form={form}
+        parentConceptUuid={parentConceptUuid}
       />
       <Editor
         value={jsCode || sampleRule}

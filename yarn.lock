@@ -15447,10 +15447,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.11.2:
-  version "1.11.2"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.11.2.tgz#9869a2f084db6d9e712ab2003b949cc4e9c31ca0"
-  integrity sha512-rbvfNkVtQRk/DHMqWzQzWlxJoY9zWvQ2B8Dqs+E+x+LKmNLQ7jsys4xn/qh3hSxOsi3HeNTfMqOv4FuxKAj0qw==
+openchs-models@1.11.3:
+  version "1.11.3"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.11.3.tgz#93b7f189d829fd564c724c3e890bbc858deee5eb"
+  integrity sha512-2AbpMPlqgCJIafb5gYpZh29mV50oye1SMihiJYAnf1PAXWPt+8/cLRlx/MM9R9DtsVOrms5aEyuL9egNIiUx0A==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -18906,9 +18906,9 @@ rsvp@^4.8.4:
     webpack-cli "^3.0.3"
     webpack-node-externals "1.6.0"
 
-"rules-config@github:openchs/rules-config#76b55cb40a7b9e5a4f386121fefa3e138f3144cd":
+"rules-config@github:openchs/rules-config#f580538eb91ebe250cab11832bbebd1b54627db4":
   version "0.0.1"
-  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/76b55cb40a7b9e5a4f386121fefa3e138f3144cd"
+  resolved "https://codeload.github.com/openchs/rules-config/tar.gz/f580538eb91ebe250cab11832bbebd1b54627db4"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"

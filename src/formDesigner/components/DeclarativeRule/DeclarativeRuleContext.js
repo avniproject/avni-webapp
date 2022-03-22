@@ -34,3 +34,8 @@ export const getForm = () => {
   const { form } = useContext(DeclarativeRuleContext);
   return form;
 };
+
+export const getParentConceptUuid = () => {
+  const { parentConceptUuid } = useContext(DeclarativeRuleContext);
+  return parentConceptUuid;
+};

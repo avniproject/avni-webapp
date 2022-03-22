@@ -1,7 +1,7 @@
 import React from "react";
 import { getFormState, useSetFormState } from "../views/FormDesignerContext";
 import { Draggable } from "react-beautiful-dnd";
-import _, { isEqual } from "lodash";
+import { isEqual, map, isEmpty, get, filter } from "lodash";
 import produce from "immer";
 import { formDesignerGetEmptyFormElement } from "../common/FormDesignerHandlers";
 import FormElementWithAddButton from "./FormElementWithAddButton";
@@ -10,13 +10,13 @@ function QuestionGroup(props) {
   const { groupIndex, index, formElementData } = props;
   const setState = useSetFormState();
   const state = getFormState();
-  const allFormElementsWithIndex = _.map(
+  const allFormElementsWithIndex = map(
     state.form.formElementGroups[groupIndex].formElements,
     (fe, index) => [fe, index]
   );
-  const childFormElementsWithIndex = _.filter(
+  const childFormElementsWithIndex = filter(
     allFormElementsWithIndex,
-    ([fe, index]) => _.get(fe, "parentFormElementUuid") === formElementData.uuid && !fe.voided
+    ([fe, index]) => get(fe, "parentFormElementUuid") === formElementData.uuid && !fe.voided
   );
 
   const btnGroupAdd = (groupIndex, elementIndex) => {
@@ -32,14 +32,14 @@ function QuestionGroup(props) {
   };
 
   React.useEffect(() => {
-    if (_.isEmpty(childFormElementsWithIndex)) {
+    if (isEmpty(childFormElementsWithIndex)) {
       btnGroupAdd(groupIndex, index);
     }
   }, [childFormElementsWithIndex]);
 
   return (
     <React.Fragment key={formElementData.uuid}>
-      {_.map(childFormElementsWithIndex, ([formElement, feIndex]) => {
+      {map(childFormElementsWithIndex, ([formElement, feIndex]) => {
         return (
           <Draggable
             key={"Element" + props.groupIndex + "" + feIndex}
@@ -57,6 +57,7 @@ function QuestionGroup(props) {
                   btnGroupAdd={btnGroupAdd}
                   dragHandleProps={provided.dragHandleProps}
                   ignoreDataTypes={["QuestionGroup"]}
+                  parentConceptUuid={get(formElementData, "concept.uuid")}
                 />
               </div>
             )}

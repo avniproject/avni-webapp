@@ -3,6 +3,7 @@ import {
   getForm,
   getFormType,
   getIsPerson,
+  getParentConceptUuid,
   useDeclarativeRuleDispatch
 } from "./DeclarativeRuleContext";
 import ConceptAndScope from "./ConceptAndScope";
@@ -12,6 +13,7 @@ import { isEmpty } from "lodash";
 const LHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
   const formType = getFormType();
+  const parentConceptUuid = getParentConceptUuid();
   const { lhs } = rule;
   const onLHSChange = (property, value) => {
     dispatch({
@@ -26,7 +28,14 @@ const LHSComponent = ({ rule, ruleIndex, conditionIndex, declarativeRuleIndex, .
       onConceptChange={value =>
         dispatch({
           type: "typeChange",
-          payload: { declarativeRuleIndex, ruleIndex, conditionIndex, formType, ...value }
+          payload: {
+            declarativeRuleIndex,
+            ruleIndex,
+            conditionIndex,
+            formType,
+            parentConceptUuid,
+            ...value
+          }
         })
       }
       defaultOptions={lhs.getDefaultTypeOptions(getForm(), getIsPerson())}

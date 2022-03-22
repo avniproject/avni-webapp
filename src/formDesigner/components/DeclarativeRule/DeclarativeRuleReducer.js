@@ -66,12 +66,28 @@ const lhsChange = (
 
 const typeChange = (
   declarativeRuleHolder,
-  { declarativeRuleIndex, ruleIndex, conditionIndex, name, uuid, dataType, formType }
+  {
+    declarativeRuleIndex,
+    ruleIndex,
+    conditionIndex,
+    name,
+    uuid,
+    dataType,
+    formType,
+    parentConceptUuid
+  }
 ) => {
   const newState = declarativeRuleHolder.clone();
   const declarativeRule = newState.getDeclarativeRuleAtIndex(declarativeRuleIndex);
   const condition = declarativeRule.conditions[conditionIndex];
-  condition.compoundRule.updateRuleAtIndex(ruleIndex, name, uuid, dataType, formType);
+  condition.compoundRule.updateRuleAtIndex(
+    ruleIndex,
+    name,
+    uuid,
+    dataType,
+    formType,
+    parentConceptUuid
+  );
   return newState;
 };
 
