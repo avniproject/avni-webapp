@@ -11,7 +11,7 @@
     "@material-ui/styles": "4.10.0",
     "@nivo/bar": "^0.62.0",
     "@nivo/pie": "^0.62.0",
-    "avni-health-modules": "0.0.11",
+    "avni-health-modules": "0.0.12",
     "aws-amplify": "^1.1.19",
     "aws-amplify-react": "^2.3.0",
     "axios": "^0.21.1",
