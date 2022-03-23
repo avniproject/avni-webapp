@@ -313,19 +313,17 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         map.forEach((uuid, fe) -> {
             if (ConceptDataType.isGroupQuestion(fe.getConcept().getDataType())) return;
             Concept concept = fe.getConcept();
-            sb.append(",\"").append(prefix).append("_");
-            if (fe.getGroup() != null) {
-                sb.append(fe.getGroup().getConcept().getName())
-                        .append("_")
-                        .append(concept.getName());
-            } else {
-                sb.append(concept.getName());
-            }
+            String groupPrefix = fe.getGroup() != null ? fe.getGroup().getConcept().getName() + "_" : "";
             if (concept.getDataType().equals(ConceptDataType.Coded.toString()) && fe.getType().equals(FormElementType.MultiSelect.toString())) {
                 concept.getSortedAnswers().map(ca -> ca.getAnswerConcept().getName()).forEach(can ->
-                        sb.append("_").append(can).append("\""));
+                        sb.append(",\"")
+                                .append(prefix)
+                                .append("_")
+                                .append(groupPrefix)
+                                .append(concept.getName())
+                                .append("_").append(can).append("\""));
             } else {
-                sb.append("\"");
+                sb.append(",\"").append(prefix).append("_").append(groupPrefix).append(concept.getName()).append("\"");
             }
         });
     }
