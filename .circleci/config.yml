@@ -4,9 +4,9 @@ commands:
   deploy:
     description: Deployment of server
     parameters:
-      to:
+      hostname:
         type: string
-        default: staging
+        default: "ssh.staging.openchs.org"
     steps:
     - attach_workspace:
         at: ~/artifacts
@@ -20,15 +20,19 @@ commands:
           sudo apt-get -y -qq install python3-pip
           sudo pip3 install awscli --upgrade
 
-    - run: curl -L https://github.com/avniproject/infra/archive/master.zip >> infra.zip
+    - run:
+        name: Copy build to server
+        command: |
+          scp -o StrictHostKeyChecking=no ~/artifacts/avni-server-*.noarch.rpm ec2-user@<< parameters.hostname >>:/tmp/avni-server.rpm
 
-    - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
-
-    - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
-
-    - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
-
-    - run: cd ~/infra; make install; make << parameters.to >>-create;
+    - run:
+        name: Deploy server
+        command: |
+          ssh -o StrictHostKeyChecking=no ec2-user@<< parameters.hostname >> \<< EOF
+          chmod a+x /opt/rules-server/deploy/install.sh
+          sudo ./deploy/install.sh
+          sudo rm -rf /tmp/avni-server.rpm
+          EOF
 
 jobs:
   test:
@@ -111,6 +115,8 @@ jobs:
         paths:
         - minor_version
         - major_version
+        - avni-server-*.noarch.rpm
+
     - store_artifacts:
         path: ~/artifacts
 
@@ -120,7 +126,7 @@ jobs:
     working_directory: ~/
     steps:
     - deploy:
-        to: staging
+        hostname: "ssh.staging.openchs.org"
 
   UAT_deploy:
     docker:
@@ -128,7 +134,7 @@ jobs:
     working_directory: ~/
     steps:
     - deploy:
-        to: uat
+        hostname: "ssh.uat.openchs.org"
 
   PRERELEASE_deploy:
     docker:
@@ -136,7 +142,7 @@ jobs:
     working_directory: ~/
     steps:
     - deploy:
-        to: prerelease
+        hostname: "ssh.prerelease.openchs.org"
 
 workflows:
   version: 2
