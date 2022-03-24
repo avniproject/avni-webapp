@@ -1,30 +1,34 @@
 package org.avni.dao;
 
-import org.avni.domain.AddressLevel;
+import org.avni.domain.JsonObject;
+import org.avni.domain.SubjectType;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public class SyncParameters {
-    private final long catchmentId;
     private final DateTime lastModifiedDateTime;
     private final DateTime now;
-    private final Long filter;
+    private final Long typeId;
     private final Pageable pageable;
     private List<Long> addressLevels;
+    private SubjectType subjectType;
+    private JsonObject syncSettings;
 
-    public SyncParameters(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Long filter, Pageable pageable, List<Long> addressLevels) {
-        this.catchmentId = catchmentId;
+    public SyncParameters(DateTime lastModifiedDateTime,
+                          DateTime now, Long typeId,
+                          Pageable pageable,
+                          List<Long> addressLevels,
+                          SubjectType subjectType,
+                          JsonObject syncSettings) {
         this.lastModifiedDateTime = lastModifiedDateTime;
         this.now = now;
-        this.filter = filter;
+        this.typeId = typeId;
         this.pageable = pageable;
         this.addressLevels = addressLevels;
-    }
-
-    public long getCatchmentId() {
-        return catchmentId;
+        this.subjectType = subjectType;
+        this.syncSettings = syncSettings;
     }
 
     public DateTime getLastModifiedDateTime() {
@@ -35,8 +39,8 @@ public class SyncParameters {
         return now;
     }
 
-    public Long getFilter() {
-        return filter;
+    public Long getTypeId() {
+        return typeId;
     }
 
     public Pageable getPageable() {
@@ -45,5 +49,13 @@ public class SyncParameters {
 
     public List<Long> getAddressLevels() {
         return addressLevels;
+    }
+
+    public SubjectType getSubjectType() {
+        return subjectType;
+    }
+
+    public JsonObject getSyncSettings() {
+        return syncSettings;
     }
 }

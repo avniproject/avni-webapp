@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
@@ -22,12 +23,24 @@ public class ProgramEncounter extends AbstractEncounter {
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 
+    @Column(name= "individual_id")
+    private Long individualId;
+
     public ProgramEnrolment getProgramEnrolment() {
         return programEnrolment;
     }
 
     public void setProgramEnrolment(ProgramEnrolment programEnrolment) {
         this.programEnrolment = programEnrolment;
+    }
+
+    @JsonIgnore
+    public Long getIndividualId() {
+        return individualId;
+    }
+
+    public void setIndividualId(Long individualId) {
+        this.individualId = individualId;
     }
 
     @Projection(name = "ProgramEncounterProjectionMinimal", types = {ProgramEncounter.class})

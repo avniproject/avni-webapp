@@ -1,6 +1,5 @@
 package org.avni.web.resourceProcessors;
 
-import org.avni.domain.Encounter;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;

@@ -45,7 +45,10 @@ public class ChecklistService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String checklistDetailUuid) {
         ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
         User user = UserContextHolder.getUserContext().getUser();
-        return checklistDetail != null && isChanged(user, lastModifiedDateTime, checklistDetail.getId());
+        Checklist checklist = checklistRepository.findFirstByChecklistDetail(checklistDetail);
+        return checklistDetail != null &&
+                checklist != null &&
+                isChanged(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType());
     }
 
     @Override

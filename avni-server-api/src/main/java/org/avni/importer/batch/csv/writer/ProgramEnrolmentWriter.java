@@ -13,6 +13,7 @@ import org.avni.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
+import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private VisitCreator visitCreator;
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
+    private ProgramEnrolmentService programEnrolmentService;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -54,7 +56,8 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
                                   RuleServerInvoker ruleServerInvoker,
                                   VisitCreator visitCreator,
                                   DecisionCreator decisionCreator,
-                                  ObservationCreator observationCreator) {
+                                  ObservationCreator observationCreator,
+                                  ProgramEnrolmentService programEnrolmentService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.subjectCreator = subjectCreator;
         this.programCreator = programCreator;
@@ -65,6 +68,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         this.visitCreator = visitCreator;
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
+        this.programEnrolmentService = programEnrolmentService;
         this.locationCreator = new LocationCreator();
         this.dateCreator = new DateCreator();
     }
@@ -104,11 +108,13 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         ProgramEnrolment savedEnrolment;
         if (skipUploadValidations) {
             programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
+            programEnrolmentService.addSyncAttributes(programEnrolment, individual);
             savedEnrolment = programEnrolmentRepository.save(programEnrolment);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEnrolment, allErrorMsgs);
             programEnrolment.setObservations(observationService.createObservations(ruleResponse.getObservations()));
             decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
+            programEnrolmentService.addSyncAttributes(programEnrolment, individual);
             savedEnrolment = programEnrolmentRepository.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
         }

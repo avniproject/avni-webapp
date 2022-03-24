@@ -1,5 +1,7 @@
 package org.avni.web;
 
+import org.avni.application.FormMapping;
+import org.avni.dao.application.FormMappingRepository;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.Program;
@@ -35,15 +37,17 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final ProgramEnrolmentService programEnrolmentService;
     private final ProgramRepository programRepository;
     private ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService;
+    private FormMappingRepository formMappingRepository;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService, FormMappingRepository formMappingRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
         this.projectionFactory = projectionFactory;
         this.programEnrolmentService = programEnrolmentService;
         this.programRepository = programRepository;
         this.scopeBasedSyncService = scopeBasedSyncService;
+        this.formMappingRepository = formMappingRepository;
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
@@ -59,12 +63,19 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "programUuid", required = false) String programUuid,
-            Pageable pageable) {
+            Pageable pageable) throws Exception {
         if (programUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         else {
             Program program = programRepository.findByUuid(programUuid);
             if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            return wrap(scopeBasedSyncService.getSyncResult(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable));
+            FormMapping formMapping = formMappingRepository.getAllProgramEnrolmentFormMappings()
+                    .stream()
+                    .filter(fm -> fm.getProgramUuid().equals(programUuid))
+                    .findFirst()
+                    .orElse(null);
+            if (formMapping == null)
+                throw new Exception(String.format("No form mapping found for program %s", program.getName()));
+            return wrap(scopeBasedSyncService.getSyncResult(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable, formMapping.getSubjectType()));
         }
     }
 

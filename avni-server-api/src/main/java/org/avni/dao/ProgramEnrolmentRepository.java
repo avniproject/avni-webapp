@@ -1,13 +1,14 @@
 package org.avni.dao;
 
 import java.util.Date;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.Individual;
+
 import org.avni.domain.Program;
 import org.joda.time.DateTime;
 import org.avni.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -15,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
@@ -22,25 +24,8 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface ProgramEnrolmentRepository extends TransactionalDataRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment>, OperatingIndividualScopeAwareRepository<ProgramEnrolment> {
 
-    Page<ProgramEnrolment> findByIndividualAddressLevelIdInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevels,
-            Long programId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
-    boolean existsByProgramIdAndLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(
-            Long programId,
-            Date lastModifiedDateTime,
-            List<Long> addressIds);
-
     @Query("select pe.program from ProgramEnrolment pe join pe.program join pe.program.operationalPrograms where pe.individual.id = :individualId and pe.programExitDateTime is null and pe.isVoided = false")
     List<Program> findActiveEnrolmentsByIndividualId(Long individualId);
-
-    @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByProgramIdAndLastModifiedDateTimeGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
-    }
 
     @Query("select enl from ProgramEnrolment enl " +
             "join enl.individual i " +
@@ -85,9 +70,25 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date now,
             Pageable pageable);
 
+    default Specification<ProgramEnrolment> syncTypeIdSpecification(Long typeId) {
+        return (Root<ProgramEnrolment> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("program").get("id"), typeId);
+    }
+
     @Override
-    default Page<ProgramEnrolment> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressLevelIdInAndProgramIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+    default Page<ProgramEnrolment> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                        .and(syncStrategySpecification(syncParameters, false, true)),
+                syncParameters.getPageable());
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                .and(syncStrategySpecification(syncParameters, false, true))
+        ) > 0;
     }
 
 }

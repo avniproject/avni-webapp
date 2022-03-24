@@ -4,10 +4,8 @@ import org.avni.dao.GroupRoleRepository;
 import org.avni.dao.GroupSubjectRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.SubjectTypeRepository;
-import org.avni.domain.GroupRole;
-import org.avni.domain.GroupSubject;
-import org.avni.domain.Individual;
-import org.avni.domain.SubjectType;
+import org.avni.domain.*;
+import org.avni.service.GroupSubjectService;
 import org.avni.service.IndividualService;
 import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
@@ -44,9 +42,10 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
     private final IndividualService individualService;
     private final Logger logger;
     private ScopeBasedSyncService<GroupSubject> scopeBasedSyncService;
+    private GroupSubjectService groupSubjectService;
 
     @Autowired
-    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, IndividualService individualService, ScopeBasedSyncService<GroupSubject> scopeBasedSyncService) {
+    public GroupSubjectController(GroupSubjectRepository groupSubjectRepository, UserService userService, IndividualRepository individualRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, IndividualService individualService, ScopeBasedSyncService<GroupSubject> scopeBasedSyncService, GroupSubjectService groupSubjectService) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.userService = userService;
         this.individualRepository = individualRepository;
@@ -54,6 +53,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         this.subjectTypeRepository = subjectTypeRepository;
         this.individualService = individualService;
         this.scopeBasedSyncService = scopeBasedSyncService;
+        this.groupSubjectService = groupSubjectService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -68,7 +68,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
             return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
         if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
     }
 
     @RequestMapping(value = "/groupSubjects", method = RequestMethod.POST)
@@ -86,7 +86,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         existingOrNewGroupSubject.setMembershipStartDate(request.getMembershipStartDate() != null ? request.getMembershipStartDate() : new DateTime());
         existingOrNewGroupSubject.setMembershipEndDate(request.getMembershipEndDate());
         existingOrNewGroupSubject.setVoided(request.isVoided());
-
+        groupSubjectService.addSyncAttributes(existingOrNewGroupSubject);
         groupSubjectRepository.save(existingOrNewGroupSubject);
     }
 

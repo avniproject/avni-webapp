@@ -1,6 +1,7 @@
 package org.avni.web.api;
 
 import org.avni.domain.CHSEntity;
+import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.Individual;
@@ -31,14 +32,16 @@ public class ProgramEnrolmentApiController {
     private final ConceptService conceptService;
     private final IndividualRepository individualRepository;
     private final ProgramRepository programRepository;
+    private final ProgramEnrolmentService programEnrolmentService;
 
     @Autowired
-    public ProgramEnrolmentApiController(ProgramEnrolmentRepository programEnrolmentRepository, ConceptRepository conceptRepository, ConceptService conceptService, IndividualRepository individualRepository, ProgramRepository programRepository) {
+    public ProgramEnrolmentApiController(ProgramEnrolmentRepository programEnrolmentRepository, ConceptRepository conceptRepository, ConceptService conceptService, IndividualRepository individualRepository, ProgramRepository programRepository, ProgramEnrolmentService programEnrolmentService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.programRepository = programRepository;
+        this.programEnrolmentService = programEnrolmentService;
     }
 
     @PostMapping(value = "/api/programEnrolment")
@@ -85,7 +88,7 @@ public class ProgramEnrolmentApiController {
         enrolment.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         enrolment.setProgramExitObservations(RequestUtils.createObservations(request.getExitObservations(), conceptRepository));
         enrolment.setVoided(request.isVoided());
-
+        programEnrolmentService.addSyncAttributes(enrolment, subject);
         programEnrolmentRepository.save(enrolment);
     }
 

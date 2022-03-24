@@ -65,13 +65,13 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     boolean existsByLastModifiedDateTimeAfterAndTypeIn(Date lastModifiedDateTime, Collection<@NotNull AddressLevelType> type);
 
     @Override
-    default Page<AddressLevel> syncByCatchment(SyncParameters syncParameters) {
+    default Page<AddressLevel> getSyncResults(SyncParameters syncParameters) {
         return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByLastModifiedDateTimeIsGreaterThanAndIdIn(lastModifiedDateTime, addressIds);
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return existsByLastModifiedDateTimeIsGreaterThanAndIdIn(syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getAddressLevels());
     }
 
     default AddressLevel findByName(String name) {

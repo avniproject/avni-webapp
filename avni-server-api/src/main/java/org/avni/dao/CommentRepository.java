@@ -1,15 +1,15 @@
 package org.avni.dao;
 
-import java.util.Date;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.CHSEntity;
-import org.avni.domain.Comment;
+import java.util.ArrayList;
+
+import org.avni.domain.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
@@ -19,26 +19,28 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
 
     List<Comment> findByIsVoidedFalseAndCommentThreadIdOrderByLastModifiedDateTimeAscIdAsc(Long threadId);
 
-    Page<Comment> findBySubjectAddressLevelIdInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevels,
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
-    boolean existsBySubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            List<Long> addressIds);
-
     @Override
-    default Page<Comment> syncByCatchment(SyncParameters syncParameters) {
-        return findBySubjectAddressLevelIdInAndSubjectSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+    default Page<Comment> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncStrategySpecification(syncParameters)),
+                syncParameters.getPageable());
+    }
+
+    default Specification<Comment> syncStrategySpecification(SyncParameters syncParameters) {
+        return (Root<Comment> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<Comment, Individual> individualJoin = root.join("subject", JoinType.LEFT);
+            predicates.add(cb.equal(individualJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
+            addSyncStrategyPredicates(syncParameters, cb, predicates, individualJoin, true, false);
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsBySubjectSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndSubjectAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncStrategySpecification(syncParameters))
+        ) > 0;
     }
 
 }

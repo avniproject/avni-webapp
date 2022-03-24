@@ -3,6 +3,7 @@ package org.avni.dao;
 import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
@@ -10,9 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -28,19 +27,25 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    boolean existsByEncounterTypeIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(
-            Long encounterTypeId, Date lastModifiedDateTime, List<Long> addressIds);
-
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(List<Long> addressLevels, long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
-    @Override
-    default Page<ProgramEncounter> syncByCatchment(SyncParameters syncParameters) {
-        return findByProgramEnrolmentIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+    default Specification<ProgramEncounter> syncTypeIdSpecification(Long typeId) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("encounterType").get("id"), typeId);
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByEncounterTypeIdAndLastModifiedDateTimeGreaterThanAndProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+    default Page<ProgramEncounter> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                        .and(syncStrategySpecification(syncParameters, false, false)),
+                syncParameters.getPageable());
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                .and(syncStrategySpecification(syncParameters, false, false))
+        ) > 0;
     }
 
     @Query(value = "select count(enc.id) as count " +

@@ -1,6 +1,6 @@
 package org.avni.dao;
 
-import java.util.Date;
+import java.util.*;
 
 import org.avni.domain.*;
 import org.avni.projection.IndividualWebProjection;
@@ -16,34 +16,31 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
-import java.util.List;
-import java.util.Map;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
 
-    Page<Individual> findByAddressLevelIdInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevels,
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
-
-    boolean existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(
-            Long subjectTypeId,
-            Date lastModifiedDateTime,
-            List<Long> addressIds);
-
-    @Override
-    default Page<Individual> syncByCatchment(SyncParameters syncParameters) {
-        return findByAddressLevelIdInAndSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+    default Specification<Individual> syncTypeIdSpecification(Long typeId) {
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("subjectType").get("id"), typeId);
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsBySubjectTypeIdAndLastModifiedDateTimeGreaterThanAndAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+    default Page<Individual> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                        .and(syncStrategySpecification(syncParameters, true, false)),
+                syncParameters.getPageable());
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                .and(syncStrategySpecification(syncParameters, true, false))
+        ) > 0;
     }
 
     default Specification<Individual> getFilterSpecForVoid(Boolean includeVoided) {
@@ -109,7 +106,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)" +
             "group by i.id")
-    Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID,  Pageable pageable);
+    Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID, Pageable pageable);
 
 
     @Query("select i from Individual i where i.uuid =:id or i.legacyId = :id")
@@ -131,7 +128,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     default Specification<Individual> findInLocationSpec(List<Long> addressIds) {
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-            addressIds.isEmpty() ? null : root.get("addressLevel").get("id").in(addressIds);
+                addressIds.isEmpty() ? null : root.get("addressLevel").get("id").in(addressIds);
     }
 
     default Page<Individual> findByConcepts(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, List<Long> addressIds, Pageable pageable) {

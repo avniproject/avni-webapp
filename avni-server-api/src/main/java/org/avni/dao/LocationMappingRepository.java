@@ -28,13 +28,13 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
             @Param("addressIds") List<Long> addressIds);
 
     @Override
-    default Page<ParentLocationMapping> syncByCatchment(SyncParameters syncParameters) {
+    default Page<ParentLocationMapping> getSyncResults(SyncParameters syncParameters) {
         return findByParentLocationIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(lastModifiedDateTime, addressIds);
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getAddressLevels());
     }
 
     default ParentLocationMapping findByName(String name) {

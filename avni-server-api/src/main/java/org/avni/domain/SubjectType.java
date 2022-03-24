@@ -71,6 +71,24 @@ public class SubjectType extends OrganisationAwareEntity {
     })
     private Format validLastNameFormat;
 
+    @Column(name = "directly_assignable")
+    private boolean isDirectlyAssignable;
+
+    @Column(name = "should_sync_by_location")
+    private boolean shouldSyncByLocation;
+
+    @Column(name = "sync_registration_concept_1")
+    private String syncRegistrationConcept1;
+
+    @Column(name = "sync_registration_concept_2")
+    private String syncRegistrationConcept2;
+
+    @Column(name = "sync_registration_concept_1_usable")
+    private boolean isSyncRegistrationConcept1Usable;
+
+    @Column(name = "sync_registration_concept_2_usable")
+    private boolean isSyncRegistrationConcept2Usable;
+
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
     }
@@ -204,6 +222,54 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public boolean isPerson() {
         return type.equals(Subject.Person);
+    }
+
+    public boolean isDirectlyAssignable() {
+        return isDirectlyAssignable;
+    }
+
+    public void setDirectlyAssignable(boolean directlyAssignable) {
+        isDirectlyAssignable = directlyAssignable;
+    }
+
+    public boolean isShouldSyncByLocation() {
+        return shouldSyncByLocation;
+    }
+
+    public void setShouldSyncByLocation(boolean shouldSyncByLocation) {
+        this.shouldSyncByLocation = shouldSyncByLocation;
+    }
+
+    public String getSyncRegistrationConcept1() {
+        return syncRegistrationConcept1;
+    }
+
+    public void setSyncRegistrationConcept1(String syncRegistrationConcept1) {
+        this.syncRegistrationConcept1 = syncRegistrationConcept1;
+    }
+
+    public String getSyncRegistrationConcept2() {
+        return syncRegistrationConcept2;
+    }
+
+    public void setSyncRegistrationConcept2(String syncRegistrationConcept2) {
+        this.syncRegistrationConcept2 = syncRegistrationConcept2;
+    }
+
+    public boolean isSyncRegistrationConcept1Usable() {
+        return isSyncRegistrationConcept1Usable;
+    }
+
+    public void setSyncRegistrationConcept1Usable(boolean syncRegistrationConcept1Usable) {
+        isSyncRegistrationConcept1Usable = syncRegistrationConcept1Usable;
+    }
+
+    public boolean isSyncRegistrationConcept2Usable() {
+        return isSyncRegistrationConcept2Usable;
+    }
+
+    public void setSyncRegistrationConcept2Usable(boolean syncRegistrationConcept2Usable) {
+        isSyncRegistrationConcept2Usable = syncRegistrationConcept2Usable;
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})

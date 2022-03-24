@@ -13,4 +13,9 @@ public class ObservationCollection extends HashMap<String, Object> implements Se
     public ObservationCollection(Map<String, Object> observations) {
         this.putAll(observations);
     }
+
+    public String getStringValue(Object key) {
+        Object value = this.getOrDefault(key, null);
+       return value == null ? null : value.toString();
+    }
 }

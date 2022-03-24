@@ -25,6 +25,18 @@ public class SubjectMigration extends OrganisationAwareEntity {
     @JoinColumn(name = "new_address_level_id")
     private AddressLevel newAddressLevel;
 
+    @Column(name = "old_sync_concept_1_value")
+    private String oldSyncConcept1Value;
+
+    @Column(name = "new_sync_concept_1_value")
+    private String newSyncConcept1Value;
+
+    @Column(name = "old_sync_concept_2_value")
+    private String oldSyncConcept2Value;
+
+    @Column(name = "new_sync_concept_2_value")
+    private String newSyncConcept2Value;
+
     public Individual getIndividual() {
         return individual;
     }
@@ -47,5 +59,37 @@ public class SubjectMigration extends OrganisationAwareEntity {
 
     public void setNewAddressLevel(AddressLevel newAddressLevel) {
         this.newAddressLevel = newAddressLevel;
+    }
+
+    public String getOldSyncConcept1Value() {
+        return oldSyncConcept1Value;
+    }
+
+    public void setOldSyncConcept1Value(String oldSyncConcept1Value) {
+        this.oldSyncConcept1Value = oldSyncConcept1Value;
+    }
+
+    public String getNewSyncConcept1Value() {
+        return newSyncConcept1Value;
+    }
+
+    public void setNewSyncConcept1Value(String newSyncConcept1Value) {
+        this.newSyncConcept1Value = newSyncConcept1Value;
+    }
+
+    public String getOldSyncConcept2Value() {
+        return oldSyncConcept2Value;
+    }
+
+    public void setOldSyncConcept2Value(String oldSyncConcept2Value) {
+        this.oldSyncConcept2Value = oldSyncConcept2Value;
+    }
+
+    public String getNewSyncConcept2Value() {
+        return newSyncConcept2Value;
+    }
+
+    public void setNewSyncConcept2Value(String newSyncConcept2Value) {
+        this.newSyncConcept2Value = newSyncConcept2Value;
     }
 }

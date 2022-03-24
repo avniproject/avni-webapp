@@ -3,6 +3,7 @@ package org.avni.dao;
 import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
@@ -26,21 +27,25 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<Encounter> findByIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevels, Long encounterTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
-    boolean existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(
-            Long encounterTypeId, Date lastModifiedDateTime, List<Long> addressIds);
-
     @Override
-    default Page<Encounter> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualAddressLevelIdInAndEncounterTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-                syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+    default Page<Encounter> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                        .and(syncStrategySpecification(syncParameters, false, true)),
+                syncParameters.getPageable());
+    }
+
+    default Specification<Encounter> syncTypeIdSpecification(Long typeId) {
+        return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                cb.equal(root.get("encounterType").get("id"), typeId);
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByEncounterTypeIdAndLastModifiedDateTimeIsGreaterThanAndIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                .and(syncStrategySpecification(syncParameters, false, true))
+        ) > 0;
     }
 
     @Query(value = "select count(enc.id) as count " +

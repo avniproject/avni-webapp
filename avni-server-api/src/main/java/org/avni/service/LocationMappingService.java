@@ -23,7 +23,7 @@ public class LocationMappingService implements ScopeAwareService {
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String typeUUID) {
         User user = UserContextHolder.getUserContext().getUser();
-        return isChanged(user, lastModifiedDateTime, null);
+        return isChanged(user, lastModifiedDateTime, null, null);
     }
 
     @Override

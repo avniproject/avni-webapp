@@ -1,5 +1,7 @@
 package org.avni.service;
 
+import org.avni.application.FormMapping;
+import org.avni.dao.application.FormMappingRepository;
 import org.avni.framework.security.UserContextHolder;
 import org.joda.time.DateTime;
 import org.avni.common.EntityHelper;
@@ -18,7 +20,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +45,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
     private ChecklistRepository checklistRepository;
     private ChecklistItemRepository checklistItemRepository;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
+    private final FormMappingRepository formMappingRepository;
 
     @Autowired
     public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository,
@@ -57,7 +59,8 @@ public class ProgramEnrolmentService implements ScopeAwareService {
                                    ChecklistItemDetailRepository checklistItemDetailRepository,
                                    ChecklistRepository checklistRepository,
                                    ChecklistItemRepository checklistItemRepository,
-                                   IdentifierAssignmentRepository identifierAssignmentRepository) {
+                                   IdentifierAssignmentRepository identifierAssignmentRepository,
+                                   FormMappingRepository formMappingRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.programEncounterService = programEncounterService;
         this.programEncounterRepository = programEncounterRepository;
@@ -70,6 +73,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         this.checklistRepository = checklistRepository;
         this.checklistItemRepository = checklistItemRepository;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
+        this.formMappingRepository = formMappingRepository;
     }
 
     @Transactional
@@ -162,9 +166,9 @@ public class ProgramEnrolmentService implements ScopeAwareService {
             }
         }
 
-
+        Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
+        this.addSyncAttributes(programEnrolment, individual);
         if (programEnrolment.isNew()) {
-            Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
             programEnrolment.setIndividual(individual);
             individual.addEnrolment(programEnrolment);
             saveIdentifierAssignments(programEnrolment, request);
@@ -183,6 +187,20 @@ public class ProgramEnrolmentService implements ScopeAwareService {
 
 
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
+    }
+
+    public void addSyncAttributes(ProgramEnrolment enrolment, Individual individual) {
+        SubjectType subjectType = individual.getSubjectType();
+        ObservationCollection observations = individual.getObservations();
+        if (individual.getAddressLevel() != null) {
+            enrolment.setAddressId(individual.getAddressLevel().getId());
+        }
+        if (subjectType.getSyncRegistrationConcept1() != null) {
+            enrolment.setSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
+        }
+        if (subjectType.getSyncRegistrationConcept2() != null) {
+            enrolment.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
+        }
     }
 
     private void saveIdentifierAssignments(ProgramEnrolment programEnrolment, ProgramEnrolmentRequest programEnrolmentRequest) {
@@ -241,8 +259,15 @@ public class ProgramEnrolmentService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String programUUID) {
         return true;
 //        Program program = programRepository.findByUuid(programUUID);
+//        FormMapping formMapping = formMappingRepository.getAllProgramEnrolmentFormMappings()
+//                .stream()
+//                .filter(fm -> fm.getProgramUuid().equals(programUUID))
+//                .findFirst()
+//                .orElse(null);
 //        User user = UserContextHolder.getUserContext().getUser();
-//        return program != null && isChanged(user, lastModifiedDateTime, program.getId());
+//        return program != null &&
+//                formMapping != null &&
+//                isChanged(user, lastModifiedDateTime, program.getId(), formMapping.getSubjectType());
     }
 
     @Override

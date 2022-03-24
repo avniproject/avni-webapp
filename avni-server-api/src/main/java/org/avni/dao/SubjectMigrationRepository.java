@@ -1,37 +1,68 @@
 package org.avni.dao;
 
-import java.util.Date;
+import java.util.ArrayList;
 
-import org.avni.domain.CHSEntity;
-import org.avni.domain.SubjectMigration;
+import org.avni.domain.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.query.Procedure;
 
+import javax.persistence.criteria.*;
 import java.util.List;
 
 public interface SubjectMigrationRepository extends TransactionalDataRepository<SubjectMigration>, OperatingIndividualScopeAwareRepository<SubjectMigration> {
 
-    @Query("select sm from SubjectMigration sm " +
-            "  inner join sm.oldAddressLevel.virtualCatchments ovc  " +
-            "  inner join sm.newAddressLevel.virtualCatchments nvc " +
-            "where (ovc.id = ?1 or nvc.id = ?1) " +
-            "  and sm.individual.subjectType.id = ?4 " +
-            "  and sm.lastModifiedDateTime between ?2 and ?3 " +
-            "order by sm.lastModifiedDateTime, sm.id desc")
-    Page<SubjectMigration> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, Date lastModifiedDateTime, Date now, Long filter, Pageable pageable);
-
-    @Override
-    @Query("select case when count(sm) > 0 then true else false end " +
-            "from SubjectMigration sm " +
-            "where (sm.oldAddressLevel.id in ?1 or sm.newAddressLevel.id in ?1) " +
-            "  and sm.individual.subjectType.id = ?3 " +
-            "  and sm.lastModifiedDateTime > ?2")
-    boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId);
-
-    @Override
-    default Page<SubjectMigration> syncByCatchment(SyncParameters syncParameters) {
-        return findByCatchmentIndividualOperatingScopeAndFilterByType(syncParameters.getCatchmentId(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getFilter(), syncParameters.getPageable());
+    default Specification<SubjectMigration> syncStrategySpecification(SyncParameters syncParameters) {
+        return (Root<SubjectMigration> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            SubjectType subjectType = syncParameters.getSubjectType();
+            JsonObject syncSettings = syncParameters.getSyncSettings();
+            Join<SubjectMigration, Individual> individualJoin = root.join("individual", JoinType.LEFT);
+            predicates.add(cb.equal(individualJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
+            if (subjectType.isShouldSyncByLocation()) {
+                List<Long> addressLevels = syncParameters.getAddressLevels();
+                if (addressLevels.size() > 0) {
+                    CriteriaBuilder.In<Long> inClause1 = cb.in(root.get("oldAddressLevel").get("id"));
+                    CriteriaBuilder.In<Long> inClause2 = cb.in(root.get("newAddressLevel").get("id"));
+                    for (Long id : addressLevels) {
+                        inClause1.value(id);
+                        inClause2.value(id);
+                    }
+                    predicates.add(inClause1);
+                    predicates.add(inClause2);
+                } else {
+                    predicates.add(cb.equal(root.get("id"), cb.literal(0)));
+                }
+            }
+            if (subjectType.isSyncRegistrationConcept1Usable()) {
+                String syncConcept1 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), "");
+                predicates.add(cb.equal(root.get("newSyncConcept1Value"), cb.literal(syncConcept1)));
+                predicates.add(cb.equal(root.get("oldSyncConcept1Value"), cb.literal(syncConcept1)));
+            }
+            if (subjectType.isSyncRegistrationConcept2Usable()) {
+                String syncConcept2 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), "");
+                predicates.add(cb.equal(root.get("newSyncConcept2Value"), cb.literal(syncConcept2)));
+                predicates.add(cb.equal(root.get("oldSyncConcept2Value"), cb.literal(syncConcept2)));
+            }
+            return cb.or(predicates.toArray(new Predicate[0]));
+        };
     }
+
+    @Override
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncStrategySpecification(syncParameters))
+        ) > 0;
+    }
+
+    @Override
+    default Page<SubjectMigration> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncStrategySpecification(syncParameters)),
+                syncParameters.getPageable());
+    }
+
+    @Procedure(value = "update_sync_attributes")
+    void updateSyncAttributes(Long individualId, Long addressId, String syncConcept1Value, String syncConcept2Value);
 
 }

@@ -3,6 +3,7 @@ package org.avni.web.api;
 import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.service.ConceptService;
+import org.avni.service.IndividualService;
 import org.avni.service.LocationService;
 import org.avni.service.SubjectMigrationService;
 import org.avni.util.S;
@@ -34,11 +35,12 @@ public class SubjectApiController {
     private final LocationRepository locationRepository;
     private final  GenderRepository genderRepository;
     private final SubjectMigrationService subjectMigrationService;
+    private final IndividualService individualService;
 
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
                                 ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
-                                LocationRepository locationRepository, GenderRepository genderRepository, SubjectMigrationService subjectMigrationService) {
+                                LocationRepository locationRepository, GenderRepository genderRepository, SubjectMigrationService subjectMigrationService, IndividualService individualService) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
@@ -48,6 +50,7 @@ public class SubjectApiController {
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
         this.subjectMigrationService = subjectMigrationService;
+        this.individualService = individualService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -129,18 +132,19 @@ public class SubjectApiController {
         subject.setFirstName(request.getFirstName());
         subject.setLastName(request.getLastName());
         subject.setRegistrationDate(request.getRegistrationDate());
-        subjectMigrationService.markSubjectMigrationIfRequired(subject.getUuid(), addressLevel.get());
+        ObservationCollection observations = RequestUtils.createObservations(request.getObservations(), conceptRepository);
+        subjectMigrationService.markSubjectMigrationIfRequired(subject.getUuid(), addressLevel.get(), observations);
         subject.setAddressLevel(addressLevel.get());
         if (subjectType.isPerson()) {
             subject.setDateOfBirth(request.getDateOfBirth());
             subject.setGender(genderRepository.findByName(request.getGender()));
         }
-        subject.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
+        subject.setObservations(observations);
         subject.setRegistrationLocation(request.getRegistrationLocation());
         subject.setVoided(request.isVoided());
 
         subject.validate();
-
+        individualService.addSyncAttributes(subject);
         individualRepository.save(subject);
     }
 

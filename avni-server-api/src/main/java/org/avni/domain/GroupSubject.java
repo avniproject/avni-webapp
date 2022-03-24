@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
@@ -33,6 +34,18 @@ public class GroupSubject extends OrganisationAwareEntity {
 
     @Column
     private DateTime membershipEndDate;
+
+    @Column(name = "member_subject_address_id")
+    private Long memberSubjectAddressId;
+
+    @Column(name = "group_subject_address_id")
+    private Long groupSubjectAddressId;
+
+    @Column(name = "group_subject_sync_concept_1_value")
+    private String groupSubjectSyncConcept1Value;
+
+    @Column(name = "group_subject_sync_concept_2_value")
+    private String groupSubjectSyncConcept2Value;
 
     public Individual getGroupSubject() {
         return groupSubject;
@@ -84,6 +97,42 @@ public class GroupSubject extends OrganisationAwareEntity {
 
     public String getGroupRoleUUID() {
         return groupRole.getUuid();
+    }
+
+    @JsonIgnore
+    public Long getMemberSubjectAddressId() {
+        return memberSubjectAddressId;
+    }
+
+    public void setMemberSubjectAddressId(Long memberSubjectAddressId) {
+        this.memberSubjectAddressId = memberSubjectAddressId;
+    }
+
+    @JsonIgnore
+    public Long getGroupSubjectAddressId() {
+        return groupSubjectAddressId;
+    }
+
+    public void setGroupSubjectAddressId(Long groupSubjectAddressId) {
+        this.groupSubjectAddressId = groupSubjectAddressId;
+    }
+
+    @JsonIgnore
+    public String getGroupSubjectSyncConcept1Value() {
+        return groupSubjectSyncConcept1Value;
+    }
+
+    public void setGroupSubjectSyncConcept1Value(String groupSubjectSyncConcept1Value) {
+        this.groupSubjectSyncConcept1Value = groupSubjectSyncConcept1Value;
+    }
+
+    @JsonIgnore
+    public String getGroupSubjectSyncConcept2Value() {
+        return groupSubjectSyncConcept2Value;
+    }
+
+    public void setGroupSubjectSyncConcept2Value(String groupSubjectSyncConcept2Value) {
+        this.groupSubjectSyncConcept2Value = groupSubjectSyncConcept2Value;
     }
 
 }

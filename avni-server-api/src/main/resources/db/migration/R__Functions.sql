@@ -87,3 +87,42 @@ SELECT name
 FROM concept
 WHERE uuid = $1;
 $$;
+
+CREATE OR REPLACE FUNCTION update_sync_attributes(indId NUMERIC,
+                                                  addressId NUMERIC,
+                                                  syncConcept1Value TEXT,
+                                                  syncConcept2Value TEXT)
+    RETURNS INTEGER AS
+$$
+BEGIN
+    update individual
+    set sync_concept_1_value = syncConcept1Value,
+        sync_concept_2_value = syncConcept2Value
+    where id = indId;
+    update encounter
+    set address_id           = addressId,
+        sync_concept_1_value = syncConcept1Value,
+        sync_concept_2_value = syncConcept2Value
+    where individual_id = indId;
+    update program_enrolment
+    set address_id           = addressId,
+        sync_concept_1_value = syncConcept1Value,
+        sync_concept_2_value = syncConcept2Value
+    where individual_id = indId;
+    update program_encounter
+    set address_id           = addressId,
+        sync_concept_1_value = syncConcept1Value,
+        sync_concept_2_value = syncConcept2Value
+    where individual_id = indId;
+    update group_subject
+    set group_subject_address_id           = addressId,
+        group_subject_sync_concept_1_value = syncConcept1Value,
+        group_subject_sync_concept_2_value = syncConcept2Value
+    where group_subject_id = indId;
+    update group_subject
+    set member_subject_address_id = addressId
+    where member_subject_id = indId;
+    RETURN 1;
+END
+$$
+    LANGUAGE plpgsql;

@@ -91,7 +91,9 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
         if (checklistDetailUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         ChecklistDetail checklistDetail = checklistDetailRepository.findByUuid(checklistDetailUuid);
         if (checklistDetail == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(checklistItemRepository, userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable));
+        Checklist checklist = checklistRepository.findFirstByChecklistDetail(checklistDetail);
+        if(checklist == null || checklist.getProgramEnrolment() == null) return wrap(new PageImpl<>(Collections.emptyList()));
+        return wrap(scopeBasedSyncService.getSyncResult(checklistItemRepository, userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable, checklist.getProgramEnrolment().getIndividual().getSubjectType()));
     }
 
     @Override

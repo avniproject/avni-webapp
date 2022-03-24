@@ -14,6 +14,7 @@ import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.SubjectHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
+import org.avni.service.IndividualService;
 import org.avni.service.ObservationService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
@@ -46,6 +47,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private VisitCreator visitCreator;
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
+    private final IndividualService individualService;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -62,7 +64,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          RuleServerInvoker ruleServerInvoker,
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
-                         ObservationCreator observationCreator) {
+                         ObservationCreator observationCreator, IndividualService individualService) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -75,6 +77,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         this.visitCreator = visitCreator;
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
+        this.individualService = individualService;
         this.locationCreator = new LocationCreator();
     }
 
@@ -111,11 +114,13 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         Individual savedIndividual;
         if (skipUploadValidations) {
             individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
+            individualService.addSyncAttributes(individual);
             savedIndividual = individualRepository.save(individual);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
             individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
             decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
+            individualService.addSyncAttributes(individual);
             savedIndividual = individualRepository.save(individual);
             visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         }

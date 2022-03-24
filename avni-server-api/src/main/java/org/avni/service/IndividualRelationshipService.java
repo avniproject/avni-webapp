@@ -31,7 +31,7 @@ public class IndividualRelationshipService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId());
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
     }
 
     @Override

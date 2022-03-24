@@ -41,7 +41,7 @@ public class LocationMappingController implements RestControllerResourceProcesso
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(scopeBasedSyncService.getSyncResult(locationMappingRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(locationMappingRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable, null));
     }
 
     @Override

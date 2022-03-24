@@ -1,6 +1,8 @@
 package org.avni.service;
 
 import com.bugsnag.Bugsnag;
+import org.avni.application.FormMapping;
+import org.avni.dao.application.FormMappingRepository;
 import org.avni.framework.security.UserContextHolder;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
@@ -16,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,14 +37,16 @@ public class EncounterService implements ScopeAwareService {
     private IndividualRepository individualRepository;
     private RuleFailureLogRepository ruleFailureLogRepository;
     private EncounterTypeRepository encounterTypeRepository;
+    private FormMappingRepository formMappingRepository;
 
     @Autowired
-    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository, RuleFailureLogRepository ruleFailureLogRepository, EncounterTypeRepository encounterTypeRepository) {
+    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository, RuleFailureLogRepository ruleFailureLogRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository) {
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.individualRepository = individualRepository;
         this.ruleFailureLogRepository = ruleFailureLogRepository;
         this.encounterTypeRepository = encounterTypeRepository;
+        this.formMappingRepository = formMappingRepository;
     }
 
     public EncounterContract getEncounterByUuid(String uuid) {
@@ -145,12 +148,37 @@ public class EncounterService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUuid) {
         return true;
 //        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+//        FormMapping formMapping = formMappingRepository.getAllGeneralEncounterFormMappings()
+//                .stream()
+//                .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
+//                .findFirst()
+//                .orElse(null);
 //        User user = UserContextHolder.getUserContext().getUser();
-//        return encounterType != null &&  isChanged(user, lastModifiedDateTime, encounterType.getId());
+//        return encounterType != null &&
+//                formMapping != null &&
+//                isChanged(user, lastModifiedDateTime, encounterType.getId(), formMapping.getSubjectType());
     }
 
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return encounterRepository;
+    }
+
+    public void addSyncAttributes(AbstractEncounter encounter, Individual individual) {
+        SubjectType subjectType = individual.getSubjectType();
+        ObservationCollection observations = individual.getObservations();
+        if (individual.getAddressLevel() != null) {
+            encounter.setAddressId(individual.getAddressLevel().getId());
+        }
+        if (subjectType.getSyncRegistrationConcept1() != null) {
+            encounter.setSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
+        }
+        if (subjectType.getSyncRegistrationConcept2() != null) {
+            encounter.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
+        }
+        if(encounter instanceof ProgramEncounter) {
+            ProgramEncounter programEncounter = (ProgramEncounter) encounter;
+            programEncounter.setIndividualId(individual.getId());
+        }
     }
 }

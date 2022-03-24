@@ -1,22 +1,22 @@
 package org.avni.dao.individualRelationship;
 
-import java.util.Date;
+import java.util.*;
+
 import org.avni.dao.FindByLastModifiedDateTime;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SyncParameters;
 import org.avni.dao.TransactionalDataRepository;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.CHSEntity;
-import org.avni.domain.Individual;
+import org.avni.domain.*;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Set;
+import javax.persistence.criteria.*;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individualRelationship", path = "individualRelationship", exported = false)
@@ -24,23 +24,73 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     Page<IndividualRelationship> findByIndividualaAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<IndividualRelationship> findByIndividualaAddressLevelIdInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevels, Long subjectTypeId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
-    boolean existsByIndividualaSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndIndividualaAddressLevelIdIn(
-            Long subjectTypeId, Date lastModifiedDateTime, List<Long> addressIds);
-
     @Query(value = "select ir from IndividualRelationship ir where ir.individuala = :individual or ir.individualB = :individual")
     Set<IndividualRelationship> findByIndividual(Individual individual);
 
-    @Override
-    default Page<IndividualRelationship> syncByCatchment(SyncParameters syncParameters) {
-        return findByIndividualaAddressLevelIdInAndIndividualaSubjectTypeIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+    default Specification<IndividualRelationship> syncStrategySpecification(SyncParameters syncParameters) {
+        return (Root<IndividualRelationship> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            SubjectType subjectType = syncParameters.getSubjectType();
+            JsonObject syncSettings = syncParameters.getSyncSettings();
+            Join<IndividualRelationship, Individual> individualAJoin = root.join("individuala", JoinType.LEFT);
+            Join<IndividualRelationship, Individual> individualBJoin = root.join("individualB", JoinType.LEFT);
+            predicates.add(cb.equal(individualAJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
+            if (subjectType.isShouldSyncByLocation()) {
+                List<Long> addressLevels = syncParameters.getAddressLevels();
+                if (addressLevels.size() > 0) {
+                    CriteriaBuilder.In<Long> inClause1 = cb.in(individualAJoin.get("addressLevel").get("id"));
+                    CriteriaBuilder.In<Long> inClause2 = cb.in(individualBJoin.get("addressLevel").get("id"));
+                    for (Long id : addressLevels) {
+                        inClause1.value(id);
+                        inClause2.value(id);
+                    }
+                    predicates.add(inClause1);
+                    predicates.add(inClause2);
+                } else {
+                    predicates.add(cb.equal(root.get("id"), cb.literal(0)));
+                }
+            }
+            if (subjectType.isDirectlyAssignable()) {
+                List<Integer> subjectIds = (List<Integer>) syncSettings.getOrDefault(User.SyncSettingKeys.subjectIds.name(), Collections.EMPTY_LIST);
+                if (subjectIds.size() > 0) {
+                    CriteriaBuilder.In<Integer> inClause1 = cb.in(individualAJoin.get("id"));
+                    CriteriaBuilder.In<Integer> inClause2 = cb.in(individualBJoin.get("id"));
+                    for (Integer id : subjectIds) {
+                        inClause1.value(id);
+                        inClause2.value(id);
+                    }
+                    predicates.add(inClause1);
+                    predicates.add(inClause2);
+                } else {
+                    predicates.add(cb.equal(root.get("id"), cb.literal(0)));
+                }
+            }
+            if (subjectType.isSyncRegistrationConcept1Usable()) {
+                String syncConcept1 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), "");
+                predicates.add(cb.equal(individualAJoin.get("syncConcept1Value"), cb.literal(syncConcept1)));
+                predicates.add(cb.equal(individualBJoin.get("syncConcept1Value"), cb.literal(syncConcept1)));
+            }
+            if (subjectType.isSyncRegistrationConcept2Usable()) {
+                String syncConcept2 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), "");
+                predicates.add(cb.equal(individualAJoin.get("syncConcept2Value"), cb.literal(syncConcept2)));
+                predicates.add(cb.equal(individualBJoin.get("syncConcept2Value"), cb.literal(syncConcept2)));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByIndividualaSubjectTypeIdAndLastModifiedDateTimeGreaterThanAndIndividualaAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+    default Page<IndividualRelationship> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncStrategySpecification(syncParameters)),
+                syncParameters.getPageable());
+    }
+
+    @Override
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncStrategySpecification(syncParameters))
+        ) > 0;
     }
 
     List<IndividualRelationship> findByIndividualaAndIndividualBAndIsVoidedFalse(Individual individualA, Individual individualB);

@@ -90,21 +90,21 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
-
-        this.markSubjectMigrationIfRequired(individualRequest);
+        ObservationCollection observations = observationService.createObservations(individualRequest.getObservations());
+        this.markSubjectMigrationIfRequired(individualRequest, observations);
 
         Individual individual = createIndividualWithoutObservations(individualRequest);
-        individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
+        individual.setObservations(observations);
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
-
+        individualService.addSyncAttributes(individual);
         individualRepository.save(individual);
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
     }
 
-    private void markSubjectMigrationIfRequired(IndividualRequest individualRequest) {
-        subjectMigrationService.markSubjectMigrationIfRequired(individualRequest.getUuid(), getAddressLevel(individualRequest));
+    private void markSubjectMigrationIfRequired(IndividualRequest individualRequest, ObservationCollection newObservations) {
+        subjectMigrationService.markSubjectMigrationIfRequired(individualRequest.getUuid(), getAddressLevel(individualRequest), newObservations);
     }
 
     private void addObservationsFromDecisions(Individual individual, Decisions decisions) {
@@ -143,7 +143,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable));
+        return wrap(scopeBasedSyncService.getSyncResult(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
     }
 
     @GetMapping(value = "/individual/search")

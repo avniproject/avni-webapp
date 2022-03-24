@@ -1,7 +1,9 @@
 package org.avni.web;
 
+import org.avni.application.FormMapping;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramEncounterRepository;
+import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.EncounterType;
 import org.avni.domain.ProgramEncounter;
@@ -34,14 +36,16 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     private UserService userService;
     private final ProgramEncounterService programEncounterService;
     private ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService;
+    private FormMappingRepository formMappingRepository;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService, ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService, ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService, FormMappingRepository formMappingRepository) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.userService = userService;
         this.programEncounterService = programEncounterService;
         this.scopeBasedSyncService = scopeBasedSyncService;
+        this.formMappingRepository = formMappingRepository;
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")
@@ -90,11 +94,18 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "programEncounterTypeUuid", required = false) String encounterTypeUuid,
-            Pageable pageable) {
+            Pageable pageable) throws Exception {
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
+        FormMapping formMapping = formMappingRepository.getAllProgramEncounterFormMappings()
+                .stream()
+                .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
+                .findFirst()
+                .orElse(null);
+        if (formMapping == null)
+            throw new Exception(String.format("No form mapping found for program encounter %s", encounterType.getName()));
+        return wrap(scopeBasedSyncService.getSyncResult(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType()));
     }
 
     @DeleteMapping("/web/programEncounter/{uuid}")

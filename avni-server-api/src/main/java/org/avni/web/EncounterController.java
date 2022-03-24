@@ -1,9 +1,11 @@
 package org.avni.web;
 
 import com.bugsnag.Bugsnag;
+import org.avni.application.FormMapping;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.IndividualRepository;
+import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.*;
 import org.avni.geo.Point;
 import org.avni.service.EncounterService;
@@ -41,6 +43,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     private Bugsnag bugsnag;
     private final EncounterService encounterService;
     private ScopeBasedSyncService<Encounter> scopeBasedSyncService;
+    private FormMappingRepository formMappingRepository;
 
     @Autowired
     public EncounterController(IndividualRepository individualRepository,
@@ -49,7 +52,7 @@ public class EncounterController extends AbstractController<Encounter> implement
                                ObservationService observationService,
                                UserService userService,
                                Bugsnag bugsnag,
-                               EncounterService encounterService, ScopeBasedSyncService<Encounter> scopeBasedSyncService) {
+                               EncounterService encounterService, ScopeBasedSyncService<Encounter> scopeBasedSyncService, FormMappingRepository formMappingRepository) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
@@ -58,6 +61,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         this.bugsnag = bugsnag;
         this.encounterService = encounterService;
         this.scopeBasedSyncService = scopeBasedSyncService;
+        this.formMappingRepository = formMappingRepository;
     }
 
     @GetMapping(value = "/web/encounter/{uuid}")
@@ -125,6 +129,7 @@ public class EncounterController extends AbstractController<Encounter> implement
                 encounter.getObservations().putAll(observationsFromDecisions);
             }
         }
+        encounterService.addSyncAttributes(encounter, individual);
 
         encounterRepository.save(encounter);
         if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
@@ -158,11 +163,18 @@ public class EncounterController extends AbstractController<Encounter> implement
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "encounterTypeUuid", required = false) String encounterTypeUuid,
-            Pageable pageable) {
+            Pageable pageable) throws Exception {
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(encounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable));
+        FormMapping formMapping = formMappingRepository.getAllGeneralEncounterFormMappings()
+                .stream()
+                .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
+                .findFirst()
+                .orElse(null);
+        if (formMapping == null)
+            throw new Exception(String.format("No form mapping found for encounter %s", encounterType.getName()));
+        return wrap(scopeBasedSyncService.getSyncResult(encounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType()));
     }
 
     @DeleteMapping("/web/encounter/{uuid}")

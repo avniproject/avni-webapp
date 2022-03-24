@@ -1,16 +1,14 @@
 package org.avni.dao;
 
-import org.avni.domain.AddressLevel;
-import org.avni.domain.ChecklistItem;
-import org.avni.domain.Individual;
+import org.avni.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.criteria.*;
+import java.util.*;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "txNewChecklistItemEntity", path = "txNewChecklistItemEntity", exported = false)
@@ -19,24 +17,33 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
     Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    Page<ChecklistItem> findByChecklistProgramEnrolmentIndividualAddressLevelIdInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevels, Long checklistDetailId, Date lastModifiedDateTime, Date now, Pageable pageable);
-
-    boolean existsByChecklistChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndChecklistProgramEnrolmentIndividualAddressLevelIdIn(
-            Long checklistDetailId, Date lastModifiedDateTime, List<Long> addressIds);
-
     ChecklistItem findByChecklistUuidAndChecklistItemDetailUuid(String checklistUUID, String checklistItemDetailUUID);
 
     Set<ChecklistItem> findByChecklistProgramEnrolmentIndividual(Individual individual);
 
     @Override
-    default Page<ChecklistItem> syncByCatchment(SyncParameters syncParameters) {
-        return findByChecklistProgramEnrolmentIndividualAddressLevelIdInAndChecklistChecklistDetailIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getFilter(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+    default Page<ChecklistItem> getSyncResults(SyncParameters syncParameters) {
+        return findAll(syncAuditSpecification(syncParameters)
+                        .and(syncStrategySpecification(syncParameters)),
+                syncParameters.getPageable());
+    }
+
+    default Specification<ChecklistItem> syncStrategySpecification(SyncParameters syncParameters) {
+        return (Root<ChecklistItem> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Join<ChecklistItem, Checklist> checklistJoin = root.join("checklist", JoinType.LEFT);
+            Join<Checklist, ProgramEnrolment> programEnrolmentJoin = checklistJoin.join("programEnrolment", JoinType.LEFT);
+            predicates.add(cb.equal(checklistJoin.get("checklistDetail").get("id"), syncParameters.getTypeId()));
+            addSyncStrategyPredicates(syncParameters, cb, predicates, programEnrolmentJoin, false, true);
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(List<Long> addressIds, Date lastModifiedDateTime, Long typeId){
-        return existsByChecklistChecklistDetailIdAndLastModifiedDateTimeGreaterThanAndChecklistProgramEnrolmentIndividualAddressLevelIdIn(typeId, lastModifiedDateTime, addressIds);
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        return count(syncEntityChangedAuditSpecification(syncParameters)
+                .and(syncStrategySpecification(syncParameters))
+        ) > 0;
     }
 
 }

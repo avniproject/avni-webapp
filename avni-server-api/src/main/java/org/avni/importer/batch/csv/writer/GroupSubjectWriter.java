@@ -1,5 +1,6 @@
 package org.avni.importer.batch.csv.writer;
 
+import org.avni.service.GroupSubjectService;
 import org.joda.time.LocalDate;
 import org.avni.dao.GroupRoleRepository;
 import org.avni.dao.GroupSubjectRepository;
@@ -34,19 +35,26 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
     private final IndividualRelationRepository individualRelationRepository;
     private final IndividualRelationshipRepository individualRelationshipRepository;
     private final HouseholdService householdService;
+    private final GroupSubjectService groupSubjectService;
 
     private final GroupMemberHeaders groupMemberHeaders = new GroupMemberHeaders();
     private final HouseholdMemberHeaders householdMemberHeaders = new HouseholdMemberHeaders();
     private DateCreator dateCreator;
 
     @Autowired
-    public GroupSubjectWriter(GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, IndividualRepository individualRepository, IndividualRelationRepository individualRelationRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, IndividualRelationGenderMappingRepository individualRelationGenderMappingRepository, IndividualRelationshipRepository individualRelationshipRepository, HouseholdService householdService) {
+    public GroupSubjectWriter(GroupSubjectRepository groupSubjectRepository,
+                              GroupRoleRepository groupRoleRepository,
+                              IndividualRepository individualRepository,
+                              IndividualRelationRepository individualRelationRepository,
+                              IndividualRelationshipRepository individualRelationshipRepository,
+                              HouseholdService householdService, GroupSubjectService groupSubjectService) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.individualRepository = individualRepository;
         this.individualRelationRepository = individualRelationRepository;
         this.individualRelationshipRepository = individualRelationshipRepository;
         this.householdService = householdService;
+        this.groupSubjectService = groupSubjectService;
         this.dateCreator = new DateCreator();
     }
 
@@ -96,6 +104,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         }
 
         groupSubject.assignUUIDIfRequired();
+        groupSubjectService.addSyncAttributes(groupSubject);
         groupSubjectRepository.save(groupSubject);
         saveRelationshipWithHeadOfHousehold(individualRelationship);
     }

@@ -88,6 +88,16 @@ public class User {
     @Type(type = "jsonObject")
     private JsonObject settings;
 
+    @Column(name = "sync_settings")
+    @Type(type = "jsonObject")
+    private JsonObject syncSettings;
+
+    public enum SyncSettingKeys {
+       subjectIds,
+       syncConcept1,
+       syncConcept2,
+    }
+
     public static final String USER = "user";
     public static final String ORGANISATION_ADMIN = "organisation_admin";
     public static final String ADMIN = "admin";
@@ -233,6 +243,15 @@ public class User {
 
     public DateTime getLastModifiedDateTime() {
         return lastModifiedDateTime;
+    }
+
+    @JsonIgnore
+    public JsonObject getSyncSettings() {
+        return syncSettings;
+    }
+
+    public void setSyncSettings(JsonObject syncSettings) {
+        this.syncSettings = syncSettings;
     }
 
     public String[] getRoles() {

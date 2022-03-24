@@ -1,11 +1,10 @@
 package org.avni.service;
 
+import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.avni.dao.GroupSubjectRepository;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SubjectTypeRepository;
-import org.avni.domain.SubjectType;
-import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +27,30 @@ public class GroupSubjectService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String groupSubjectTypeUuid) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId());
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
     }
 
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return groupSubjectRepository;
+    }
+
+    public void addSyncAttributes(GroupSubject groupSubject) {
+        Individual groupIndividual = groupSubject.getGroupSubject();
+        SubjectType subjectType = groupIndividual.getSubjectType();
+        ObservationCollection observations = groupIndividual.getObservations();
+        Individual memberIndividual = groupSubject.getMemberSubject();
+        if (groupIndividual.getAddressLevel() != null) {
+            groupSubject.setGroupSubjectAddressId(groupIndividual.getAddressLevel().getId());
+        }
+        if (memberIndividual.getAddressLevel() != null) {
+            groupSubject.setMemberSubjectAddressId(memberIndividual.getAddressLevel().getId());
+        }
+        if (subjectType.getSyncRegistrationConcept1() != null) {
+            groupSubject.setGroupSubjectSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
+        }
+        if (subjectType.getSyncRegistrationConcept2() != null) {
+            groupSubject.setGroupSubjectSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
+        }
     }
 }

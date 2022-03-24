@@ -1,5 +1,6 @@
 package org.avni.web.api;
 
+import org.avni.service.EncounterService;
 import org.joda.time.DateTime;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.EncounterRepository;
@@ -32,14 +33,16 @@ public class GeneralEncounterApiController {
     private final ConceptRepository conceptRepository;
     private final IndividualRepository individualRepository;
     private final EncounterTypeRepository encounterTypeRepository;
+    private final EncounterService encounterService;
 
     @Autowired
-    public GeneralEncounterApiController(ConceptService conceptService, EncounterRepository encounterRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository) {
+    public GeneralEncounterApiController(ConceptService conceptService, EncounterRepository encounterRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterService encounterService) {
         this.conceptService = conceptService;
         this.encounterRepository = encounterRepository;
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
+        this.encounterService = encounterService;
     }
 
     @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
@@ -133,7 +136,7 @@ public class GeneralEncounterApiController {
         encounter.setVoided(request.isVoided());
 
         encounter.validate();
-
+        encounterService.addSyncAttributes(encounter, individual);
         encounterRepository.save(encounter);
     }
 }

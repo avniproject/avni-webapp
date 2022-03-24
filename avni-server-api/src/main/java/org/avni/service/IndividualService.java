@@ -12,13 +12,10 @@ import org.avni.framework.security.UserContextHolder;
 import org.avni.util.BadRequestError;
 import org.avni.util.S;
 import org.avni.web.request.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -304,7 +301,7 @@ public class IndividualService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId());
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
     }
 
     @Override
@@ -322,6 +319,17 @@ public class IndividualService implements ScopeAwareService {
                     .collect(Collectors.toList());
         } else {
             return individualRepository.findByLegacyIdOrUuidAndSubjectType(answerValue, subjectType).getUuid();
+        }
+    }
+
+    public void addSyncAttributes(Individual individual) {
+        SubjectType subjectType = individual.getSubjectType();
+        ObservationCollection observations = individual.getObservations();
+        if (subjectType.getSyncRegistrationConcept1() != null) {
+            individual.setSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
+        }
+        if (subjectType.getSyncRegistrationConcept2() != null) {
+            individual.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
         }
     }
 }
