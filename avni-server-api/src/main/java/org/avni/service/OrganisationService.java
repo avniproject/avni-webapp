@@ -25,6 +25,8 @@ import org.avni.web.request.webapp.CatchmentExport;
 import org.avni.web.request.webapp.CatchmentsExport;
 import org.avni.web.request.webapp.ConceptExport;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -104,7 +106,7 @@ public class OrganisationService {
     private final CommentThreadRepository commentThreadRepository;
     private final NewsRepository newsRepository;
     private final SubjectMigrationRepository subjectMigrationRepository;
-
+    private final Logger logger;
 
     @Autowired
     public OrganisationService(FormRepository formRepository,
@@ -224,6 +226,7 @@ public class OrganisationService {
         this.commentThreadRepository = commentThreadRepository;
         this.newsRepository = newsRepository;
         this.subjectMigrationRepository = subjectMigrationRepository;
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
 
@@ -570,7 +573,11 @@ public class OrganisationService {
     }
 
     public void deleteMediaContent(boolean deleteMetadata) {
-        s3Service.deleteOrgMedia(deleteMetadata);
+        try {
+            s3Service.deleteOrgMedia(deleteMetadata);
+        } catch (Exception e) {
+            logger.info("Error while deleting the media files, skipping.");
+        }
     }
 
 }
