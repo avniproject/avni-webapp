@@ -160,6 +160,10 @@ public class FormElementContract extends ReferenceDataContract {
         this.parentFormElementUuid = parentFormElementUuid;
     }
 
+    public boolean isChildFormElement() {
+        return this.parentFormElementUuid != null;
+    }
+
     @Override
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public boolean isVoided() {

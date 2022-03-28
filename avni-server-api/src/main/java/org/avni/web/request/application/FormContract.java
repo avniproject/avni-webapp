@@ -95,7 +95,7 @@ public class FormContract extends ReferenceDataContract {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 String conceptUuid = formElement.getConcept().getUuid();
                 String conceptName = formElement.getConcept().getName();
-                if (!formElement.isVoided() &&
+                if (!formElement.isVoided() && !formElement.isChildFormElement() &&
                         !PLACEHOLDER_CONCEPT_NAME.matcher(conceptName == null ? "" : conceptName).matches() &&
                         !conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) &&
                         !uniqueConcepts.add(conceptUuid)) {
