@@ -1,6 +1,9 @@
 package org.avni.dao;
 
-import org.avni.domain.*;
+import org.avni.domain.CHSEntity;
+import org.avni.domain.JsonObject;
+import org.avni.domain.SubjectType;
+import org.avni.domain.User;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -92,13 +95,36 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                 predicates.add(cb.equal(from.get("id"), cb.literal(0)));
             }
         }
+        addSyncAttributeConceptPredicate(cb, predicates, from, syncParameters, "syncConcept1Value", "syncConcept2Value");
+    }
+
+    default <A extends CHSEntity, B extends CHSEntity> void addSyncAttributeConceptPredicate(CriteriaBuilder cb,
+                                                                                             List<Predicate> predicates,
+                                                                                             From<A, B> from,
+                                                                                             SyncParameters syncParameters,
+                                                                                             String syncConcept1Column,
+                                                                                             String syncConcept2Column) {
+        SubjectType subjectType = syncParameters.getSubjectType();
+        JsonObject syncSettings = syncParameters.getSyncSettings();
         if (subjectType.isSyncRegistrationConcept1Usable()) {
-            String syncConcept1 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), "");
-            predicates.add(cb.equal(from.get("syncConcept1Value"), cb.literal(syncConcept1)));
+            List<String> syncConcept1Values = (List<String>) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST);
+            addPredicate(cb, predicates, from, syncConcept1Values, syncConcept1Column);
         }
         if (subjectType.isSyncRegistrationConcept2Usable()) {
-            String syncConcept2 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), "");
-            predicates.add(cb.equal(from.get("syncConcept2Value"), cb.literal(syncConcept2)));
+            List<String> syncConcept2Values = (List<String>) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST);
+            addPredicate(cb, predicates, from, syncConcept2Values, syncConcept2Column);
+        }
+    }
+
+    default <B extends CHSEntity, A extends CHSEntity> void addPredicate(CriteriaBuilder cb, List<Predicate> predicates, From<A, B> from, List<String> conceptValues, String syncAttributeColumn) {
+        if (conceptValues.size() > 0) {
+            CriteriaBuilder.In<Object> inClause = cb.in(from.get(syncAttributeColumn));
+            for (String value : conceptValues) {
+                inClause.value(value);
+            }
+            predicates.add(inClause);
+        } else {
+            predicates.add(cb.equal(from.get("id"), cb.literal(0)));
         }
     }
 }

@@ -34,16 +34,8 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
                     predicates.add(cb.equal(root.get("id"), cb.literal(0)));
                 }
             }
-            if (subjectType.isSyncRegistrationConcept1Usable()) {
-                String syncConcept1 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), "");
-                predicates.add(cb.equal(root.get("newSyncConcept1Value"), cb.literal(syncConcept1)));
-                predicates.add(cb.equal(root.get("oldSyncConcept1Value"), cb.literal(syncConcept1)));
-            }
-            if (subjectType.isSyncRegistrationConcept2Usable()) {
-                String syncConcept2 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), "");
-                predicates.add(cb.equal(root.get("newSyncConcept2Value"), cb.literal(syncConcept2)));
-                predicates.add(cb.equal(root.get("oldSyncConcept2Value"), cb.literal(syncConcept2)));
-            }
+            addSyncAttributeConceptPredicate(cb, predicates, root, syncParameters, "newSyncConcept1Value", "newSyncConcept2Value");
+            addSyncAttributeConceptPredicate(cb, predicates, root, syncParameters, "oldSyncConcept1Value", "oldSyncConcept2Value");
             return cb.or(predicates.toArray(new Predicate[0]));
         };
     }
@@ -64,5 +56,8 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
 
     @Procedure(value = "update_sync_attributes")
     void updateSyncAttributes(Long individualId, Long addressId, String syncConcept1Value, String syncConcept2Value);
+
+    @Procedure(value = "update_concept_sync_attributes")
+    void updateConceptSyncAttributes(Long subjectTypeId, String syncConcept1Uuid, String syncConcept2Uuid);
 
 }

@@ -65,16 +65,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
                     predicates.add(cb.equal(root.get("id"), cb.literal(0)));
                 }
             }
-            if (subjectType.isSyncRegistrationConcept1Usable()) {
-                String syncConcept1 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), "");
-                predicates.add(cb.equal(individualAJoin.get("syncConcept1Value"), cb.literal(syncConcept1)));
-                predicates.add(cb.equal(individualBJoin.get("syncConcept1Value"), cb.literal(syncConcept1)));
-            }
-            if (subjectType.isSyncRegistrationConcept2Usable()) {
-                String syncConcept2 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), "");
-                predicates.add(cb.equal(individualAJoin.get("syncConcept2Value"), cb.literal(syncConcept2)));
-                predicates.add(cb.equal(individualBJoin.get("syncConcept2Value"), cb.literal(syncConcept2)));
-            }
+            addSyncAttributeConceptPredicate(cb, predicates, individualAJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
+            addSyncAttributeConceptPredicate(cb, predicates, individualBJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -94,8 +94,8 @@ public class User {
 
     public enum SyncSettingKeys {
        subjectIds,
-       syncConcept1,
-       syncConcept2,
+       syncConcept1Values,
+       syncConcept2Values,
     }
 
     public static final String USER = "user";

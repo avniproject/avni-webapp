@@ -2,7 +2,6 @@ package org.avni.dao;
 
 import org.avni.domain.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -13,7 +12,6 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Date;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
@@ -86,14 +84,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
                     predicates.add(cb.equal(root.get("id"), cb.literal(0)));
                 }
             }
-            if (subjectType.isSyncRegistrationConcept1Usable()) {
-                String syncConcept1 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), "");
-                predicates.add(cb.equal(root.get("groupSubjectSyncConcept1Value"), cb.literal(syncConcept1)));
-            }
-            if (subjectType.isSyncRegistrationConcept2Usable()) {
-                String syncConcept2 = (String) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), "");
-                predicates.add(cb.equal(root.get("groupSubjectSyncConcept2Value"), cb.literal(syncConcept2)));
-            }
+            addSyncAttributeConceptPredicate(cb, predicates, root, syncParameters, "groupSubjectSyncConcept1Value", "groupSubjectSyncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
