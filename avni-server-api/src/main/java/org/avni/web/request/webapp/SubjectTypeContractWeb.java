@@ -4,10 +4,10 @@ import org.avni.application.Format;
 import org.avni.domain.OperationalSubjectType;
 import org.avni.domain.SubjectType;
 import org.avni.web.request.FormatContract;
-import org.springframework.hateoas.core.Relation;
 import org.avni.web.request.GroupRoleContract;
-
 import org.joda.time.DateTime;
+import org.springframework.hateoas.core.Relation;
+
 import java.util.List;
 
 /**
@@ -38,6 +38,12 @@ public class SubjectTypeContractWeb {
     private FormatContract validFirstNameFormat;
     private FormatContract validLastNameFormat;
     private String iconFileS3Key;
+    private boolean isDirectlyAssignable;
+    private boolean shouldSyncByLocation;
+    private String syncRegistrationConcept1;
+    private String syncRegistrationConcept2;
+    private boolean isSyncRegistrationConcept1Usable;
+    private boolean isSyncRegistrationConcept2Usable;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -63,6 +69,12 @@ public class SubjectTypeContractWeb {
         contract.setValidFirstNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidFirstNameFormat()));
         contract.setValidLastNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidLastNameFormat()));
         contract.setIconFileS3Key(subjectType.getIconFileS3Key());
+        contract.setDirectlyAssignable(subjectType.isDirectlyAssignable());
+        contract.setShouldSyncByLocation(subjectType.isShouldSyncByLocation());
+        contract.setSyncRegistrationConcept1(subjectType.getSyncRegistrationConcept1());
+        contract.setSyncRegistrationConcept2(subjectType.getSyncRegistrationConcept2());
+        contract.setSyncRegistrationConcept1Usable(subjectType.isSyncRegistrationConcept1Usable());
+        contract.setSyncRegistrationConcept2Usable(subjectType.isSyncRegistrationConcept2Usable());
         return contract;
     }
 
@@ -248,5 +260,53 @@ public class SubjectTypeContractWeb {
 
     public void setIconFileS3Key(String iconFileS3Key) {
         this.iconFileS3Key = iconFileS3Key;
+    }
+
+    public boolean isDirectlyAssignable() {
+        return  isDirectlyAssignable;
+    }
+
+    public void setDirectlyAssignable(boolean directlyAssignable) {
+        isDirectlyAssignable = directlyAssignable;
+    }
+
+    public boolean isShouldSyncByLocation() {
+        return shouldSyncByLocation;
+    }
+
+    public void setShouldSyncByLocation(boolean shouldSyncByLocation) {
+        this.shouldSyncByLocation = shouldSyncByLocation;
+    }
+
+    public String getSyncRegistrationConcept1() {
+        return syncRegistrationConcept1;
+    }
+
+    public void setSyncRegistrationConcept1(String syncRegistrationConcept1) {
+        this.syncRegistrationConcept1 = syncRegistrationConcept1;
+    }
+
+    public String getSyncRegistrationConcept2() {
+        return syncRegistrationConcept2;
+    }
+
+    public void setSyncRegistrationConcept2(String syncRegistrationConcept2) {
+        this.syncRegistrationConcept2 = syncRegistrationConcept2;
+    }
+
+    public boolean isSyncRegistrationConcept1Usable() {
+        return isSyncRegistrationConcept1Usable;
+    }
+
+    public void setSyncRegistrationConcept1Usable(boolean syncRegistrationConcept1Usable) {
+        isSyncRegistrationConcept1Usable = syncRegistrationConcept1Usable;
+    }
+
+    public boolean isSyncRegistrationConcept2Usable() {
+        return isSyncRegistrationConcept2Usable;
+    }
+
+    public void setSyncRegistrationConcept2Usable(boolean syncRegistrationConcept2Usable) {
+        isSyncRegistrationConcept2Usable = syncRegistrationConcept2Usable;
     }
 }

@@ -126,3 +126,47 @@ BEGIN
 END
 $$
     LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION update_concept_sync_attributes(subjectTypeId NUMERIC, syncConcept1 TEXT, syncConcept2 TEXT)
+    RETURNS INTEGER AS
+$$
+BEGIN
+    raise notice 'Starting the update ====';
+    update individual
+    set sync_concept_1_value = individual.observations ->> syncConcept1,
+        sync_concept_2_value = individual.observations ->> syncConcept2
+    where subject_type_id = subjectTypeId;
+
+    update encounter
+    set sync_concept_1_value = i.sync_concept_1_value,
+        sync_concept_2_value = i.sync_concept_2_value
+    from individual i
+    where individual_id = i.id
+      and i.subject_type_id = subjectTypeId;
+
+    update program_enrolment
+    set sync_concept_1_value = i.sync_concept_1_value,
+        sync_concept_2_value = i.sync_concept_2_value
+    from individual i
+    where individual_id = i.id
+      and i.subject_type_id = subjectTypeId;
+
+    update program_encounter
+    set sync_concept_1_value = i.sync_concept_1_value,
+        sync_concept_2_value = i.sync_concept_2_value
+    from individual i
+    where individual_id = i.id
+      and i.subject_type_id = subjectTypeId;
+
+    update group_subject
+    set group_subject_sync_concept_1_value = i.sync_concept_1_value,
+        group_subject_sync_concept_2_value = i.sync_concept_2_value
+    from individual i
+    where group_subject_id = i.id
+      and i.subject_type_id = subjectTypeId;
+    raise notice 'Updates done ====';
+    RETURN 1;
+END
+$$
+    LANGUAGE plpgsql;

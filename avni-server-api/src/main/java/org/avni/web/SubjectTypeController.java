@@ -147,6 +147,10 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setValidFirstNameFormat(request.getValidFirstNameFormat());
         subjectType.setValidLastNameFormat(request.getValidLastNameFormat());
         subjectType.setIconFileS3Key(request.getIconFileS3Key());
+        subjectType.setShouldSyncByLocation(request.isShouldSyncByLocation());
+        subjectType.setDirectlyAssignable(request.isDirectlyAssignable());
+        subjectType.setSyncRegistrationConcept1(request.getSyncRegistrationConcept1());
+        subjectType.setSyncRegistrationConcept2(request.getSyncRegistrationConcept2());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
         if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);
@@ -161,7 +165,6 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
 
     @PutMapping(value = "/web/subjectType/{id}")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    @Transactional
     public ResponseEntity updateSubjectTypeForWeb(@RequestBody SubjectTypeContractWeb request,
                                                   @PathVariable("id") Long id) {
         logger.info(String.format("Processing Subject Type update request: %s", request.toString()));
@@ -173,7 +176,15 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         if (operationalSubjectType == null)
             return ResponseEntity.badRequest()
                     .body(ReactAdminUtil.generateJsonError(String.format("Subject Type with id '%d' not found", id)));
+        subjectTypeService.updateSyncAttributesIfRequired(request, operationalSubjectType.getSubjectType());
+        updateSubjectType(request, operationalSubjectType);
+        SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
+        subjectTypeContractWeb.setLocationTypeUUIDs(request.getLocationTypeUUIDs());
+        return ResponseEntity.ok(subjectTypeContractWeb);
+    }
 
+    @Transactional
+    public void updateSubjectType(@RequestBody SubjectTypeContractWeb request, OperationalSubjectType operationalSubjectType) {
         SubjectType subjectType = operationalSubjectType.getSubjectType();
 
         buildSubjectType(request, subjectType);
@@ -187,9 +198,6 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
                         String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
 
         organisationConfigService.saveCustomRegistrationLocations(request.getLocationTypeUUIDs(), subjectType);
-        SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
-        subjectTypeContractWeb.setLocationTypeUUIDs(request.getLocationTypeUUIDs());
-        return ResponseEntity.ok(subjectTypeContractWeb);
     }
 
     @DeleteMapping(value = "/web/subjectType/{id}")
