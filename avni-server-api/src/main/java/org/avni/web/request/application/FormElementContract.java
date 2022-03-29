@@ -1,5 +1,6 @@
 package org.avni.web.request.application;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.avni.application.FormElement;
@@ -12,6 +13,7 @@ import org.avni.web.request.FormatContract;
 import org.avni.common.ValidationResult;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties({"childFormElement"})
 @JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type", "rule", "declarativeRule"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
