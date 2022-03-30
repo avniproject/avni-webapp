@@ -116,32 +116,24 @@ public class SubjectTypeService implements NonScopeAwareService {
         return operationalSubjectTypeRepository.findAllByIsVoidedFalse().stream().map(OperationalSubjectType::getSubjectType);
     }
 
-    public void updateSyncAttributesIfRequired(SubjectTypeContractWeb request, SubjectType subjectType) {
-        Boolean isSyncConcept1Changed = !Objects.equals(request.getSyncRegistrationConcept1(), subjectType.getSyncRegistrationConcept1());
-        Boolean isSyncConcept2Changed = !Objects.equals(request.getSyncRegistrationConcept2(), subjectType.getSyncRegistrationConcept2());
-        if (isSyncConcept1Changed || isSyncConcept2Changed) {
-            if (isSyncConcept1Changed)
-                subjectType.setSyncRegistrationConcept1Usable(false);
-            if (isSyncConcept2Changed)
-                subjectType.setSyncRegistrationConcept2Usable(false);
-            UserContext userContext = UserContextHolder.getUserContext();
-            User user = userContext.getUser();
-            Organisation organisation = userContext.getOrganisation();
-            String jobUUID = UUID.randomUUID().toString();
-            JobParameters jobParameters =
-                    new JobParametersBuilder()
-                            .addString("uuid", jobUUID)
-                            .addString("organisationUUID", organisation.getUuid())
-                            .addLong("userId", user.getId(), false)
-                            .addLong("subjectTypeId", subjectType.getId())
-                            .addString("syncConcept1Changed", isSyncConcept1Changed.toString())
-                            .addString("syncConcept2Changed", isSyncConcept2Changed.toString())
-                            .toJobParameters();
-            try {
-                syncAttributesJobLauncher.run(syncAttributesJob, jobParameters);
-            } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
-                throw new RuntimeException(String.format("Error while starting the sync attribute job, %s", e.getMessage()));
-            }
+    public void updateSyncAttributesIfRequired(SubjectType subjectType, Boolean isSyncConcept1Changed, Boolean isSyncConcept2Changed) {
+        UserContext userContext = UserContextHolder.getUserContext();
+        User user = userContext.getUser();
+        Organisation organisation = userContext.getOrganisation();
+        String jobUUID = UUID.randomUUID().toString();
+        JobParameters jobParameters =
+                new JobParametersBuilder()
+                        .addString("uuid", jobUUID)
+                        .addString("organisationUUID", organisation.getUuid())
+                        .addLong("userId", user.getId(), false)
+                        .addLong("subjectTypeId", subjectType.getId())
+                        .addString("syncConcept1Changed", isSyncConcept1Changed.toString())
+                        .addString("syncConcept2Changed", isSyncConcept2Changed.toString())
+                        .toJobParameters();
+        try {
+            syncAttributesJobLauncher.run(syncAttributesJob, jobParameters);
+        } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
+            throw new RuntimeException(String.format("Error while starting the sync attribute job, %s", e.getMessage()));
         }
     }
 }

@@ -29,7 +29,4 @@ public class S {
                 .toArray(String[]::new);
     }
 
-    public static String getOrEmpty(String value) {
-        return value == null ? "" : value;
-    }
 }

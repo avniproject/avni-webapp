@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -176,8 +177,15 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         if (operationalSubjectType == null)
             return ResponseEntity.badRequest()
                     .body(ReactAdminUtil.generateJsonError(String.format("Subject Type with id '%d' not found", id)));
-        subjectTypeService.updateSyncAttributesIfRequired(request, operationalSubjectType.getSubjectType());
+        SubjectType subjectType = operationalSubjectType.getSubjectType();
+        Boolean isSyncConcept1Changed = !Objects.equals(request.getSyncRegistrationConcept1(), subjectType.getSyncRegistrationConcept1());
+        Boolean isSyncConcept2Changed = !Objects.equals(request.getSyncRegistrationConcept2(), subjectType.getSyncRegistrationConcept2());
+            if (isSyncConcept1Changed)
+                subjectType.setSyncRegistrationConcept1Usable(false);
+            if (isSyncConcept2Changed)
+                subjectType.setSyncRegistrationConcept2Usable(false);
         updateSubjectType(request, operationalSubjectType);
+        subjectTypeService.updateSyncAttributesIfRequired(subjectType, isSyncConcept1Changed, isSyncConcept2Changed);
         SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
         subjectTypeContractWeb.setLocationTypeUUIDs(request.getLocationTypeUUIDs());
         return ResponseEntity.ok(subjectTypeContractWeb);

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -91,4 +92,19 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
         ) > 0;
     }
 
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update program_enrolment enl set " +
+            "address_id = :addressId, " +
+            "sync_concept_1_value = :syncAttribute1Value, " +
+            "sync_concept_2_value = :syncAttribute2Value " +
+            "where enl.individual_id = :individualId", nativeQuery = true)
+    void updateSyncAttributesForIndividual(Long individualId, Long addressId, String syncAttribute1Value, String syncAttribute2Value);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update program_enrolment enl set " +
+            "sync_concept_1_value = CAST((i.observations ->> CAST(:syncAttribute1 as text)) as text), " +
+            "sync_concept_2_value = CAST((i.observations ->> CAST(:syncAttribute2 as text)) as text) " +
+            "from individual i " +
+            "where enl.individual_id = i.id and i.subject_type_id = :subjectTypeId", nativeQuery = true)
+    void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
 }

@@ -4,6 +4,8 @@ import org.avni.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
@@ -104,4 +106,26 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     }
 
     List<GroupSubject> findAllByMemberSubject(Individual memberSubject);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update group_subject gs set " +
+            "group_subject_address_id = :addressId, " +
+            "group_subject_sync_concept_1_value = :syncAttribute1Value, " +
+            "group_subject_sync_concept_2_value = :syncAttribute2Value " +
+            "where gs.group_subject_id = :individualId", nativeQuery = true)
+    void updateSyncAttributesForGroupSubject(Long individualId, Long addressId, String syncAttribute1Value, String syncAttribute2Value);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update group_subject gs set " +
+            "member_subject_address_id = :addressId " +
+            "where gs.member_subject_id = :individualId", nativeQuery = true)
+    void updateSyncAttributesForMemberSubject(Long individualId, Long addressId);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update group_subject gs set " +
+            "group_subject_sync_concept_1_value = CAST((i.observations ->> CAST(:syncAttribute1 as text)) as text), " +
+            "group_subject_sync_concept_2_value = CAST((i.observations ->> CAST(:syncAttribute2 as text)) as text) " +
+            "from individual i " +
+            "where gs.group_subject_id = i.id and i.subject_type_id = :subjectTypeId", nativeQuery = true)
+    void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
 }

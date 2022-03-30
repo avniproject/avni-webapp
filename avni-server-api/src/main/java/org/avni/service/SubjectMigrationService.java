@@ -1,12 +1,8 @@
 package org.avni.service;
 
-import org.avni.dao.IndividualRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
-import org.avni.dao.SubjectMigrationRepository;
-import org.avni.dao.SubjectTypeRepository;
+import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
-import org.avni.util.S;
 import org.avni.web.IndividualController;
 import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
@@ -23,12 +19,26 @@ public class SubjectMigrationService implements ScopeAwareService {
     private SubjectMigrationRepository subjectMigrationRepository;
     private SubjectTypeRepository subjectTypeRepository;
     private IndividualRepository individualRepository;
+    private EncounterRepository encounterRepository;
+    private ProgramEnrolmentRepository programEnrolmentRepository;
+    private ProgramEncounterRepository programEncounterRepository;
+    private GroupSubjectRepository groupSubjectRepository;
 
     @Autowired
-    public SubjectMigrationService(SubjectMigrationRepository subjectMigrationRepository, SubjectTypeRepository subjectTypeRepository, IndividualRepository individualRepository) {
+    public SubjectMigrationService(SubjectMigrationRepository subjectMigrationRepository,
+                                   SubjectTypeRepository subjectTypeRepository,
+                                   IndividualRepository individualRepository,
+                                   EncounterRepository encounterRepository,
+                                   ProgramEnrolmentRepository programEnrolmentRepository,
+                                   ProgramEncounterRepository programEncounterRepository,
+                                   GroupSubjectRepository groupSubjectRepository) {
         this.subjectMigrationRepository = subjectMigrationRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.individualRepository = individualRepository;
+        this.encounterRepository = encounterRepository;
+        this.programEnrolmentRepository = programEnrolmentRepository;
+        this.programEncounterRepository = programEncounterRepository;
+        this.groupSubjectRepository = groupSubjectRepository;
     }
 
     @Override
@@ -74,7 +84,12 @@ public class SubjectMigrationService implements ScopeAwareService {
                 subjectMigration.setNewSyncConcept2Value(newObservations.getStringValue(syncConcept2));
             }
             subjectMigrationRepository.save(subjectMigration);
-            subjectMigrationRepository.updateSyncAttributes(individual.getId(), newAddressLevel.getId(), S.getOrEmpty(newObservations.getStringValue(syncConcept1)), S.getOrEmpty(newObservations.getStringValue(syncConcept2)));
+            individualRepository.updateSyncAttributesForIndividual(individual.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
+            encounterRepository.updateSyncAttributesForIndividual(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
+            programEnrolmentRepository.updateSyncAttributesForIndividual(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
+            programEncounterRepository.updateSyncAttributes(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
+            groupSubjectRepository.updateSyncAttributesForGroupSubject(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
+            groupSubjectRepository.updateSyncAttributesForMemberSubject(individual.getId(), newAddressLevel.getId());
         }
     }
 }

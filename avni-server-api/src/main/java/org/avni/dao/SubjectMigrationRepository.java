@@ -54,10 +54,4 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
                 syncParameters.getPageable());
     }
 
-    @Procedure(value = "update_sync_attributes")
-    void updateSyncAttributes(Long individualId, Long addressId, String syncConcept1Value, String syncConcept2Value);
-
-    @Procedure(value = "update_concept_sync_attributes")
-    void updateConceptSyncAttributes(Long subjectTypeId, String syncConcept1Uuid, String syncConcept2Uuid);
-
 }

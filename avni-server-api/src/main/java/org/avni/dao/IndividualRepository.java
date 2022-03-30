@@ -10,6 +10,7 @@ import org.avni.application.projections.WebSearchResultProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -147,4 +148,19 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     List<Individual> findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(AddressLevel addressLevel, SubjectType subjectType);
 
     List<IndividualWebProjection> findAllByUuidIn(List<String> uuids);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update individual i set " +
+            "sync_concept_1_value = :syncAttribute1Value, " +
+            "sync_concept_2_value = :syncAttribute2Value " +
+            "where i.id = :individualId", nativeQuery = true)
+    void updateSyncAttributesForIndividual(Long individualId, String syncAttribute1Value, String syncAttribute2Value);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update individual i set " +
+            "sync_concept_1_value = CAST((i.observations ->> CAST(:syncAttribute1 as text)) as text), " +
+            "sync_concept_2_value = CAST((i.observations ->> CAST(:syncAttribute2 as text)) as text) " +
+            "where i.subject_type_id = :subjectTypeId", nativeQuery = true)
+    void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
+
 }
