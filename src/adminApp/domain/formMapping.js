@@ -1,3 +1,5 @@
+import { find, get } from "lodash";
+
 export const findProgramEncounterForm = (formMappings, encounterType) =>
   formMappings.find(
     mapping =>
@@ -60,3 +62,13 @@ export const findProgramEnrolmentForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEnrolment");
 
 export const findProgramExitForms = (formList = []) => findFormsOfType(formList, "ProgramExit");
+
+export const findFormUuidForSubjectType = (subjectType, formMappings = []) =>
+  get(
+    find(
+      formMappings,
+      ({ formType, subjectTypeUUID }) =>
+        formType === "IndividualProfile" && subjectTypeUUID === get(subjectType, "uuid")
+    ),
+    "formUUID"
+  );

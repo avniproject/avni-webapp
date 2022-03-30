@@ -1,6 +1,6 @@
 import Types from "./SubjectType/Types";
 import { default as UUID } from "uuid";
-import { map, isEmpty } from "lodash";
+import { isEmpty, map } from "lodash";
 
 export function programReducer(program, action) {
   switch (action.type) {
@@ -117,21 +117,10 @@ export function subjectTypeReducer(subjectType, action) {
     case "setData":
       return {
         ...subjectType,
-        name: action.payload.name,
-        groupRoles: action.payload.groupRoles,
-        uuid: action.payload.uuid,
-        active: action.payload.active,
-        allowEmptyLocation: action.payload.allowEmptyLocation,
-        uniqueName: action.payload.uniqueName,
-        type: action.payload.type,
+        ...action.payload,
         memberSubjectType: Types.isHousehold(action.payload.type)
           ? map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
-          : "",
-        subjectSummaryRule: action.payload.subjectSummaryRule,
-        locationTypeUUIDs: action.payload.locationTypeUUIDs,
-        validFirstNameFormat: action.payload.validFirstNameFormat,
-        validLastNameFormat: action.payload.validLastNameFormat,
-        iconFileS3Key: action.payload.iconFileS3Key
+          : ""
       };
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };
@@ -172,6 +161,12 @@ export function subjectTypeReducer(subjectType, action) {
           ...subjectType.validLastNameFormat,
           descriptionKey: _getNullOrValue(action.payload)
         }
+      };
+    case "syncAttribute":
+      const { name, value } = action.payload;
+      return {
+        ...subjectType,
+        [name]: value
       };
     default:
       return subjectType;

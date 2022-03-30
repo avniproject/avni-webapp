@@ -34,12 +34,14 @@ const SubjectTypeCreate = () => {
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
   const [removeFile, setRemoveFile] = React.useState(false);
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormList(forms);
+    setFormMappings(formMap);
   };
 
   useFormMappings(consumeFormMappingResult);
@@ -181,6 +183,7 @@ const SubjectTypeCreate = () => {
                 subjectType={subjectType}
                 dispatch={dispatch}
                 locationTypes={locationTypes}
+                formMappings={formMappings}
               />
               <div />
               {nameValidation && (
