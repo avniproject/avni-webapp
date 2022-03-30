@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "subject_migration")
-@JsonIgnoreProperties({"individual", "oldAddressLevel", "newAddressLevel"})
+@JsonIgnoreProperties({"individual", "oldAddressLevel", "newAddressLevel", "subjectType"})
 @DynamicInsert
 @BatchSize(size = 100)
 public class SubjectMigration extends OrganisationAwareEntity {
@@ -36,6 +36,10 @@ public class SubjectMigration extends OrganisationAwareEntity {
 
     @Column(name = "new_sync_concept_2_value")
     private String newSyncConcept2Value;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_type_id")
+    private SubjectType subjectType;
 
     public Individual getIndividual() {
         return individual;
@@ -91,5 +95,13 @@ public class SubjectMigration extends OrganisationAwareEntity {
 
     public void setNewSyncConcept2Value(String newSyncConcept2Value) {
         this.newSyncConcept2Value = newSyncConcept2Value;
+    }
+
+    public SubjectType getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(SubjectType subjectType) {
+        this.subjectType = subjectType;
     }
 }

@@ -28,4 +28,8 @@ public class S {
                 .map(value -> value.trim().replaceAll("\"", ""))
                 .toArray(String[]::new);
     }
+
+    public static String getOrEmpty(String value) {
+        return value == null ? "" : value;
+    }
 }

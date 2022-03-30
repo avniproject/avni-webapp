@@ -73,7 +73,8 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
                 user.getRoles(),
                 user.getSettings(),
                 user.getName(),
-                catchmentName);
+                catchmentName,
+                user.getSyncSettings());
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
@@ -104,7 +105,8 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
                 user.getRoles(),
                 user.getSettings(),
                 user.getName(),
-                catchmentName);
+                catchmentName,
+                user.getSyncSettings());
         return wrap(new PageImpl<>(Arrays.asList(userInfo)));
     }
 

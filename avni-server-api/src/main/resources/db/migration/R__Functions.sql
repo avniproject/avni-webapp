@@ -96,28 +96,28 @@ CREATE OR REPLACE FUNCTION update_sync_attributes(indId NUMERIC,
 $$
 BEGIN
     update individual
-    set sync_concept_1_value = syncConcept1Value,
-        sync_concept_2_value = syncConcept2Value
+    set sync_concept_1_value = nullif(syncConcept1Value, ''),
+        sync_concept_2_value = nullif(syncConcept2Value, '')
     where id = indId;
     update encounter
     set address_id           = addressId,
-        sync_concept_1_value = syncConcept1Value,
-        sync_concept_2_value = syncConcept2Value
+        sync_concept_1_value = nullif(syncConcept1Value, ''),
+        sync_concept_2_value = nullif(syncConcept2Value, '')
     where individual_id = indId;
     update program_enrolment
     set address_id           = addressId,
-        sync_concept_1_value = syncConcept1Value,
-        sync_concept_2_value = syncConcept2Value
+        sync_concept_1_value = nullif(syncConcept1Value, ''),
+        sync_concept_2_value = nullif(syncConcept2Value, '')
     where individual_id = indId;
     update program_encounter
     set address_id           = addressId,
-        sync_concept_1_value = syncConcept1Value,
-        sync_concept_2_value = syncConcept2Value
+        sync_concept_1_value = nullif(syncConcept1Value, ''),
+        sync_concept_2_value = nullif(syncConcept2Value, '')
     where individual_id = indId;
     update group_subject
     set group_subject_address_id           = addressId,
-        group_subject_sync_concept_1_value = syncConcept1Value,
-        group_subject_sync_concept_2_value = syncConcept2Value
+        group_subject_sync_concept_1_value = nullif(syncConcept1Value, ''),
+        group_subject_sync_concept_2_value = nullif(syncConcept2Value, '')
     where group_subject_id = indId;
     update group_subject
     set member_subject_address_id = addressId
@@ -132,7 +132,6 @@ CREATE OR REPLACE FUNCTION update_concept_sync_attributes(subjectTypeId NUMERIC,
     RETURNS INTEGER AS
 $$
 BEGIN
-    raise notice 'Starting the update ====';
     update individual
     set sync_concept_1_value = individual.observations ->> syncConcept1,
         sync_concept_2_value = individual.observations ->> syncConcept2
@@ -165,7 +164,6 @@ BEGIN
     from individual i
     where group_subject_id = i.id
       and i.subject_type_id = subjectTypeId;
-    raise notice 'Updates done ====';
     RETURN 1;
 END
 $$

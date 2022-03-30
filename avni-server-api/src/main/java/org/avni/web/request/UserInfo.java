@@ -19,8 +19,9 @@ public class UserInfo {
     private String[] roles;
     private String name;
     private String catchmentName;
+    private JsonObject syncSettings;
 
-    public UserInfo(String username, String orgName, Long orgId, String usernameSuffix, String[] roles, JsonObject settings, String name, String catchmentName) {
+    public UserInfo(String username, String orgName, Long orgId, String usernameSuffix, String[] roles, JsonObject settings, String name, String catchmentName, JsonObject syncSettings) {
         this.username = username;
         this.organisationName = orgName;
         this.organisationId = orgId;
@@ -30,6 +31,7 @@ public class UserInfo {
         this.usernameSuffix = usernameSuffix;
         this.name = name;
         this.catchmentName = catchmentName;
+        this.syncSettings = syncSettings;
     }
 
     public String getUsername() {
@@ -94,5 +96,13 @@ public class UserInfo {
 
     public void setCatchmentName(String catchmentName) {
         this.catchmentName = catchmentName;
+    }
+
+    public JsonObject getSyncSettings() {
+        return syncSettings;
+    }
+
+    public void setSyncSettings(JsonObject syncSettings) {
+        this.syncSettings = syncSettings;
     }
 }

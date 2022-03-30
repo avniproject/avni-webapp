@@ -6,6 +6,7 @@ import org.avni.dao.SubjectMigrationRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
+import org.avni.util.S;
 import org.avni.web.IndividualController;
 import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ public class SubjectMigrationService implements ScopeAwareService {
             SubjectMigration subjectMigration = new SubjectMigration();
             subjectMigration.assignUUID();
             subjectMigration.setIndividual(individual);
+            subjectMigration.setSubjectType(individual.getSubjectType());
             if (!Objects.equals(individual.getAddressLevel().getId(), newAddressLevel.getId())) {
                 subjectMigration.setOldAddressLevel(individual.getAddressLevel());
                 subjectMigration.setNewAddressLevel(newAddressLevel);
@@ -72,7 +74,7 @@ public class SubjectMigrationService implements ScopeAwareService {
                 subjectMigration.setNewSyncConcept2Value(newObservations.getStringValue(syncConcept2));
             }
             subjectMigrationRepository.save(subjectMigration);
-            subjectMigrationRepository.updateSyncAttributes(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
+            subjectMigrationRepository.updateSyncAttributes(individual.getId(), newAddressLevel.getId(), S.getOrEmpty(newObservations.getStringValue(syncConcept1)), S.getOrEmpty(newObservations.getStringValue(syncConcept2)));
         }
     }
 }

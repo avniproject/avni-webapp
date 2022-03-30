@@ -4,6 +4,7 @@ import org.avni.dao.SubjectMigrationRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.SubjectType;
 import org.avni.framework.security.AuthService;
+import org.avni.util.S;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -43,14 +44,9 @@ public class UpdateSyncAttributesTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
         authService.authenticateByUserId(userId, organisationUUID);
         SubjectType subjectType = subjectTypeRepository.findOne(subjectTypeId);
-        String syncRegistrationConcept1 = getOrEmpty(subjectType.getSyncRegistrationConcept1());
-        String syncRegistrationConcept2 = getOrEmpty(subjectType.getSyncRegistrationConcept2());
+        String syncRegistrationConcept1 = S.getOrEmpty(subjectType.getSyncRegistrationConcept1());
+        String syncRegistrationConcept2 = S.getOrEmpty(subjectType.getSyncRegistrationConcept2());
         subjectMigrationRepository.updateConceptSyncAttributes(subjectTypeId, syncRegistrationConcept1, syncRegistrationConcept2);
-        System.out.println("Returning after the update ============");
         return RepeatStatus.FINISHED;
-    }
-
-    private String getOrEmpty(String value) {
-        return value == null ? "" : value;
     }
 }

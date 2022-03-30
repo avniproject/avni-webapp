@@ -111,6 +111,7 @@ public class ProgramEncounterService implements ScopeAwareService {
         }
         allScheduleEncountersByType.stream().forEach(programEncounter -> {
             updateProgramEncounterWithVisitSchedule(programEncounter, visitSchedule);
+            encounterService.addSyncAttributes(programEncounter, programEnrolment.getIndividual());
             programEncounterRepository.save(programEncounter);
         });
     }

@@ -52,6 +52,24 @@ public class Avni {
     }
 
     @Bean
+    public ResourceProcessor<Resource<OperationalSubjectType>> OperationalSubjectTypeProcessor() {
+        return new ResourceProcessor<Resource<OperationalSubjectType>>() {
+            @Override
+            public Resource<OperationalSubjectType> process(Resource<OperationalSubjectType> resource) {
+                OperationalSubjectType operationalSubjectType = resource.getContent();
+                resource.removeLinks();
+                if (operationalSubjectType.getSubjectType().getSyncRegistrationConcept1() != null) {
+                    resource.add(new Link(operationalSubjectType.getSubjectType().getSyncRegistrationConcept1(), "syncRegistrationConcept1"));
+                }
+                if (operationalSubjectType.getSubjectType().getSyncRegistrationConcept2() != null) {
+                    resource.add(new Link(operationalSubjectType.getSubjectType().getSyncRegistrationConcept2(), "syncRegistrationConcept2"));
+                }
+                return resource;
+            }
+        };
+    }
+
+    @Bean
     public ResourceProcessor<Resource<GroupDashboard>> GroupDashboardProcessor() {
         return new ResourceProcessor<Resource<GroupDashboard>>() {
             @Override

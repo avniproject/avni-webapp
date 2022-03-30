@@ -61,8 +61,11 @@ public class SubjectMigrationController extends AbstractController<SubjectMigrat
         SubjectMigration content = resource.getContent();
         resource.removeLinks();
         resource.add(new Link(content.getIndividual().getUuid(), "individualUUID"));
-        resource.add(new Link(content.getOldAddressLevel().getUuid(), "oldAddressLevelUUID"));
-        resource.add(new Link(content.getNewAddressLevel().getUuid(), "newAddressLevelUUID"));
+        resource.add(new Link(content.getSubjectType().getUuid(), "subjectTypeUUID"));
+        if (content.getOldAddressLevel() != null)
+            resource.add(new Link(content.getOldAddressLevel().getUuid(), "oldAddressLevelUUID"));
+        if (content.getNewAddressLevel() != null)
+            resource.add(new Link(content.getNewAddressLevel().getUuid(), "newAddressLevelUUID"));
         return resource;
     }
 }
