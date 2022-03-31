@@ -2,6 +2,7 @@ package org.avni.web;
 
 import com.bugsnag.Bugsnag;
 import org.avni.application.FormMapping;
+import org.avni.application.FormType;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.IndividualRepository;
@@ -167,7 +168,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        FormMapping formMapping = formMappingRepository.getAllGeneralEncounterFormMappings()
+        FormMapping formMapping = formMappingRepository.findByFormFormType(FormType.Encounter)
                 .stream()
                 .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
                 .findFirst()

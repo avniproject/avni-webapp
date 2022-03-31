@@ -1,6 +1,7 @@
 package org.avni.web;
 
 import org.avni.application.FormMapping;
+import org.avni.application.FormType;
 import org.avni.dao.application.FormMappingRepository;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
@@ -68,7 +69,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         else {
             Program program = programRepository.findByUuid(programUuid);
             if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            FormMapping formMapping = formMappingRepository.getAllProgramEnrolmentFormMappings()
+            FormMapping formMapping = formMappingRepository.findByFormFormType(FormType.ProgramEnrolment)
                     .stream()
                     .filter(fm -> fm.getProgramUuid().equals(programUuid))
                     .findFirst()

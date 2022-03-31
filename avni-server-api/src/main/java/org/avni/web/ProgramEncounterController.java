@@ -1,6 +1,7 @@
 package org.avni.web;
 
 import org.avni.application.FormMapping;
+import org.avni.application.FormType;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramEncounterRepository;
 import org.avni.dao.application.FormMappingRepository;
@@ -98,7 +99,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        FormMapping formMapping = formMappingRepository.getAllProgramEncounterFormMappings()
+        FormMapping formMapping = formMappingRepository.findByFormFormType(FormType.ProgramEncounter)
                 .stream()
                 .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
                 .findFirst()
