@@ -1,10 +1,29 @@
 import FormLabel from "@material-ui/core/FormLabel";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import _, { isEmpty } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
+import http from "../../common/utils/httpClient";
 
 export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
+  const [concept1Name, setConcept1Name] = useState("");
+  const [concept2Name, setConcept2Name] = useState("");
+
+  useEffect(() => {
+    if (subjectType.syncRegistrationConcept1) {
+      http
+        .get(`/web/concept/${subjectType.syncRegistrationConcept1}`)
+        .then(res => setConcept1Name(_.get(res, "data.name")))
+        .catch(error => {});
+    }
+    if (subjectType.syncRegistrationConcept2) {
+      http
+        .get(`/web/concept/${subjectType.syncRegistrationConcept2}`)
+        .then(res => setConcept2Name(_.get(res, "data.name")))
+        .catch(error => {});
+    }
+  }, [subjectType.syncRegistrationConcept2, subjectType.syncRegistrationConcept1]);
+
   const addressLevelNames = _(locationTypes)
     .filter(({ uuid }) => _.includes(subjectType.locationTypeUUIDs, uuid))
     .map(({ name }) => name)
@@ -26,20 +45,14 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         label={"Sync By Direct Assignment"}
       />
       {subjectType.syncRegistrationConcept1 && (
-        <ShowLabelValue
-          label={"Sync Concept 1 UUID"}
-          value={subjectType.syncRegistrationConcept1}
-        />
+        <ShowLabelValue label={"Sync Concept 1"} value={concept1Name} />
       )}
       <BooleanStatusInShow
         status={subjectType.syncRegistrationConcept1Usable}
         label={"Sync Concept 1 Usable"}
       />
       {subjectType.syncRegistrationConcept2 && (
-        <ShowLabelValue
-          label={"Sync Concept 2 UUID"}
-          value={subjectType.syncRegistrationConcept2}
-        />
+        <ShowLabelValue label={"Sync Concept 2"} value={concept2Name} />
       )}
       <BooleanStatusInShow
         status={subjectType.syncRegistrationConcept2Usable}
