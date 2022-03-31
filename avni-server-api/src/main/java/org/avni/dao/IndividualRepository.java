@@ -151,13 +151,6 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     @Modifying(clearAutomatically = true)
     @Query(value = "update individual i set " +
-            "sync_concept_1_value = :syncAttribute1Value, " +
-            "sync_concept_2_value = :syncAttribute2Value " +
-            "where i.id = :individualId", nativeQuery = true)
-    void updateSyncAttributesForIndividual(Long individualId, String syncAttribute1Value, String syncAttribute2Value);
-
-    @Modifying(clearAutomatically = true)
-    @Query(value = "update individual i set " +
             "sync_concept_1_value = CAST((i.observations ->> CAST(:syncAttribute1 as text)) as text), " +
             "sync_concept_2_value = CAST((i.observations ->> CAST(:syncAttribute2 as text)) as text) " +
             "where i.subject_type_id = :subjectTypeId", nativeQuery = true)

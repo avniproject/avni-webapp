@@ -84,7 +84,6 @@ public class SubjectMigrationService implements ScopeAwareService {
                 subjectMigration.setNewSyncConcept2Value(newObservations.getStringValue(syncConcept2));
             }
             subjectMigrationRepository.save(subjectMigration);
-            individualRepository.updateSyncAttributesForIndividual(individual.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
             encounterRepository.updateSyncAttributesForIndividual(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
             programEnrolmentRepository.updateSyncAttributesForIndividual(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
             programEncounterRepository.updateSyncAttributes(individual.getId(), newAddressLevel.getId(), newObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept2));
