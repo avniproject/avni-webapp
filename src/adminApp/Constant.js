@@ -16,7 +16,8 @@ export const encounterTypeInitialState = {
 export const subjectTypeInitialState = {
   name: "",
   groupRoles: [],
-  subjectSummaryRule: ""
+  subjectSummaryRule: "",
+  shouldSyncByLocation: true
 };
 
 export const colorPickerCSS = {

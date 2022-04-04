@@ -2,8 +2,8 @@ import FormLabel from "@material-ui/core/FormLabel";
 import React, { useState, useEffect } from "react";
 import _, { isEmpty } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
-import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
 import http from "../../common/utils/httpClient";
+import { ConceptSyncAttributesShow } from "./ConceptSyncAttributeShow";
 
 export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
   const [concept1Name, setConcept1Name] = useState("");
@@ -45,19 +45,19 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         label={"Sync By Direct Assignment"}
       />
       {subjectType.syncRegistrationConcept1 && (
-        <ShowLabelValue label={"Sync Concept 1"} value={concept1Name} />
+        <ConceptSyncAttributesShow
+          header1={"Sync Concept 1"}
+          header1Value={concept1Name}
+          isUsable={subjectType.syncRegistrationConcept1Usable}
+        />
       )}
-      <BooleanStatusInShow
-        status={subjectType.syncRegistrationConcept1Usable}
-        label={"Sync Concept 1 Usable"}
-      />
       {subjectType.syncRegistrationConcept2 && (
-        <ShowLabelValue label={"Sync Concept 2"} value={concept2Name} />
+        <ConceptSyncAttributesShow
+          header1={"Sync Concept 2"}
+          header1Value={concept2Name}
+          isUsable={subjectType.syncRegistrationConcept2Usable}
+        />
       )}
-      <BooleanStatusInShow
-        status={subjectType.syncRegistrationConcept2Usable}
-        label={"Sync Concept 2 Usable"}
-      />
     </div>
   );
 };
