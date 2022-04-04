@@ -2,6 +2,7 @@ package org.avni.web;
 
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.SubjectTypeRepository;
+import org.avni.dao.SyncParameters;
 import org.avni.dao.individualRelationship.IndividualRelationshipRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.avni.domain.CHSEntity;
@@ -95,7 +96,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
         if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(individualRelationshipRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
+        return wrap(scopeBasedSyncService.getSyncResult(individualRelationshipRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.IndividualRelationShip));
     }
 
     @Override

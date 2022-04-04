@@ -4,6 +4,7 @@ import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramEncounterRepository;
+import org.avni.dao.SyncParameters;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.EncounterType;
@@ -106,7 +107,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
                 .orElse(null);
         if (formMapping == null)
             throw new Exception(String.format("No form mapping found for program encounter %s", encounterType.getName()));
-        return wrap(scopeBasedSyncService.getSyncResult(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType()));
+        return wrap(scopeBasedSyncService.getSyncResult(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.ProgramEncounter));
     }
 
     @DeleteMapping("/web/programEncounter/{uuid}")

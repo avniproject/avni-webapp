@@ -80,7 +80,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     default Page<ProgramEnrolment> getSyncResults(SyncParameters syncParameters) {
         return findAll(syncAuditSpecification(syncParameters)
                         .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                        .and(syncStrategySpecification(syncParameters, false, true)),
+                        .and(syncStrategySpecification(syncParameters)),
                 syncParameters.getPageable());
     }
 
@@ -88,7 +88,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
         return count(syncEntityChangedAuditSpecification(syncParameters)
                 .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                .and(syncStrategySpecification(syncParameters, false, true))
+                .and(syncStrategySpecification(syncParameters))
         ) > 0;
     }
 

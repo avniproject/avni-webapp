@@ -1,9 +1,6 @@
 package org.avni.web;
 
-import org.avni.dao.CommentRepository;
-import org.avni.dao.CommentThreadRepository;
-import org.avni.dao.IndividualRepository;
-import org.avni.dao.SubjectTypeRepository;
+import org.avni.dao.*;
 import org.avni.domain.Comment;
 import org.avni.domain.CommentThread;
 import org.avni.domain.Individual;
@@ -125,7 +122,7 @@ public class CommentController extends AbstractController<Comment> implements Re
         if (subjectType == null) {
             return wrap(new PageImpl<>(Collections.emptyList()));
         }
-        return wrap(scopeBasedSyncService.getSyncResult(commentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
+        return wrap(scopeBasedSyncService.getSyncResult(commentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.Comment));
     }
 
     @Override

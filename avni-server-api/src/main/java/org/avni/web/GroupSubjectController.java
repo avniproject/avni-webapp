@@ -1,9 +1,6 @@
 package org.avni.web;
 
-import org.avni.dao.GroupRoleRepository;
-import org.avni.dao.GroupSubjectRepository;
-import org.avni.dao.IndividualRepository;
-import org.avni.dao.SubjectTypeRepository;
+import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.service.GroupSubjectService;
 import org.avni.service.IndividualService;
@@ -68,7 +65,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
             return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
         if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
+        return wrap(scopeBasedSyncService.getSyncResult(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.GroupSubject));
     }
 
     @RequestMapping(value = "/groupSubjects", method = RequestMethod.POST)

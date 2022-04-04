@@ -48,7 +48,7 @@ public class ChecklistService implements ScopeAwareService {
         Checklist checklist = checklistRepository.findFirstByChecklistDetail(checklistDetail);
         return checklistDetail != null &&
                 checklist != null &&
-                isChanged(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType());
+                isChanged(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType(), SyncParameters.SyncEntityName.Checklist);
     }
 
     @Override

@@ -37,7 +37,7 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     default Page<ProgramEncounter> getSyncResults(SyncParameters syncParameters) {
         return findAll(syncAuditSpecification(syncParameters)
                         .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                        .and(syncStrategySpecification(syncParameters, false, false)),
+                        .and(syncStrategySpecification(syncParameters)),
                 syncParameters.getPageable());
     }
 
@@ -45,7 +45,7 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
         return count(syncEntityChangedAuditSpecification(syncParameters)
                 .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                .and(syncStrategySpecification(syncParameters, false, false))
+                .and(syncStrategySpecification(syncParameters))
         ) > 0;
     }
 

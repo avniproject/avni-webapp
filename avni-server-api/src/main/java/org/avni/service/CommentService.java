@@ -65,7 +65,7 @@ public class CommentService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType, SyncParameters.SyncEntityName.Comment);
     }
 
     @Override

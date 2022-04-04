@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.avni.dao.SyncParameters;
 import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.avni.dao.GroupSubjectRepository;
@@ -8,8 +9,6 @@ import org.avni.dao.SubjectTypeRepository;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import org.joda.time.DateTime;
 
 @Service
 public class GroupSubjectService implements ScopeAwareService {
@@ -27,7 +26,7 @@ public class GroupSubjectService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String groupSubjectTypeUuid) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType, SyncParameters.SyncEntityName.GroupSubject);
     }
 
     @Override

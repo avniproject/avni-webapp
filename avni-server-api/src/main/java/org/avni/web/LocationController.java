@@ -3,6 +3,7 @@ package org.avni.web;
 
 import org.avni.builder.BuilderException;
 import org.avni.dao.LocationRepository;
+import org.avni.dao.SyncParameters;
 import org.avni.domain.AddressLevel;
 import org.avni.service.LocationService;
 import org.avni.service.ScopeBasedSyncService;
@@ -86,7 +87,7 @@ public class LocationController implements RestControllerResourceProcessor<Addre
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(scopeBasedSyncService.getSyncResult(locationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable, null));
+        return wrap(scopeBasedSyncService.getSyncResult(locationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable, null, SyncParameters.SyncEntityName.Location));
     }
 
     @PutMapping(value = "/locations/{id}")

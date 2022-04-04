@@ -76,7 +76,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
                     .orElse(null);
             if (formMapping == null)
                 throw new Exception(String.format("No form mapping found for program %s", program.getName()));
-            return wrap(scopeBasedSyncService.getSyncResult(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable, formMapping.getSubjectType()));
+            return wrap(scopeBasedSyncService.getSyncResult(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Enrolment));
         }
     }
 

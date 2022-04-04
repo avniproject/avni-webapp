@@ -30,7 +30,7 @@ public interface CommentThreadRepository extends TransactionalDataRepository<Com
             Join<CommentThread, Comment> commentJoin = root.join("comments", JoinType.LEFT);
             Join<Comment, Individual> individualJoin = commentJoin.join("subject", JoinType.LEFT);
             predicates.add(cb.equal(individualJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
-            addSyncStrategyPredicates(syncParameters, cb, predicates, individualJoin, true, false);
+            addSyncStrategyPredicates(syncParameters, cb, predicates, individualJoin);
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -143,7 +143,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
+        return wrap(scopeBasedSyncService.getSyncResult(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.Individual));
     }
 
     @GetMapping(value = "/individual/search")

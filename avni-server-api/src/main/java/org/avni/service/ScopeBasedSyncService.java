@@ -18,8 +18,8 @@ public class ScopeBasedSyncService<T extends CHSEntity> {
         this.addressLevelService = addressLevelService;
     }
 
-    public Page<T> getSyncResult(OperatingIndividualScopeAwareRepository<T> repository, User user, DateTime lastModifiedDateTime, DateTime now, Long typeId, Pageable pageable, SubjectType subjectType) {
+    public Page<T> getSyncResult(OperatingIndividualScopeAwareRepository<T> repository, User user, DateTime lastModifiedDateTime, DateTime now, Long typeId, Pageable pageable, SubjectType subjectType, SyncParameters.SyncEntityName syncEntityName) {
         List<Long> addressLevels = addressLevelService.getAllAddressLevelIdsForCatchment(user.getCatchment());
-        return repository.getSyncResults(new SyncParameters(lastModifiedDateTime, now, typeId, pageable, addressLevels, subjectType, user.getSyncSettings()));
+        return repository.getSyncResults(new SyncParameters(lastModifiedDateTime, now, typeId, pageable, addressLevels, subjectType, user.getSyncSettings(), syncEntityName));
     }
 }

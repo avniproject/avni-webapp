@@ -1,13 +1,13 @@
 package org.avni.service;
 
 import org.avni.application.Subject;
+import org.avni.dao.AvniJobRepository;
 import org.avni.dao.OperationalSubjectTypeRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.web.request.OperationalSubjectTypeContract;
 import org.avni.web.request.SubjectTypeContract;
-import org.avni.web.request.webapp.SubjectTypeContractWeb;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,6 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -34,16 +33,19 @@ public class SubjectTypeService implements NonScopeAwareService {
     private SubjectTypeRepository subjectTypeRepository;
     private Job syncAttributesJob;
     private JobLauncher syncAttributesJobLauncher;
+    private AvniJobRepository avniJobRepository;
 
     @Autowired
     public SubjectTypeService(SubjectTypeRepository subjectTypeRepository,
                               OperationalSubjectTypeRepository operationalSubjectTypeRepository,
                               Job syncAttributesJob,
-                              JobLauncher syncAttributesJobLauncher) {
+                              JobLauncher syncAttributesJobLauncher,
+                              AvniJobRepository avniJobRepository) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.syncAttributesJob = syncAttributesJob;
         this.syncAttributesJobLauncher = syncAttributesJobLauncher;
+        this.avniJobRepository = avniJobRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -116,24 +118,28 @@ public class SubjectTypeService implements NonScopeAwareService {
         return operationalSubjectTypeRepository.findAllByIsVoidedFalse().stream().map(OperationalSubjectType::getSubjectType);
     }
 
-    public void updateSyncAttributesIfRequired(SubjectType subjectType, Boolean isSyncConcept1Changed, Boolean isSyncConcept2Changed) {
-        UserContext userContext = UserContextHolder.getUserContext();
-        User user = userContext.getUser();
-        Organisation organisation = userContext.getOrganisation();
-        String jobUUID = UUID.randomUUID().toString();
-        JobParameters jobParameters =
-                new JobParametersBuilder()
-                        .addString("uuid", jobUUID)
-                        .addString("organisationUUID", organisation.getUuid())
-                        .addLong("userId", user.getId(), false)
-                        .addLong("subjectTypeId", subjectType.getId())
-                        .addString("syncConcept1Changed", isSyncConcept1Changed.toString())
-                        .addString("syncConcept2Changed", isSyncConcept2Changed.toString())
-                        .toJobParameters();
-        try {
-            syncAttributesJobLauncher.run(syncAttributesJob, jobParameters);
-        } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
-            throw new RuntimeException(String.format("Error while starting the sync attribute job, %s", e.getMessage()));
+    public void updateSyncAttributesIfRequired(SubjectType subjectType) {
+        Boolean isSyncAttribute1Usable = subjectType.isSyncRegistrationConcept1Usable();
+        Boolean isSyncAttribute2Usable = subjectType.isSyncRegistrationConcept2Usable();
+        boolean isSyncAttributeChanged = (isSyncAttribute1Usable != null && !isSyncAttribute1Usable) || (isSyncAttribute2Usable != null && !isSyncAttribute2Usable);
+        String lastJobStatus = avniJobRepository.getLastJobStatusForSubjectType(subjectType);
+        if (isSyncAttributeChanged || (lastJobStatus != null && avniJobRepository.getLastJobStatusForSubjectType(subjectType).equals("FAILED"))) {
+            UserContext userContext = UserContextHolder.getUserContext();
+            User user = userContext.getUser();
+            Organisation organisation = userContext.getOrganisation();
+            String jobUUID = UUID.randomUUID().toString();
+            JobParameters jobParameters =
+                    new JobParametersBuilder()
+                            .addString("uuid", jobUUID)
+                            .addString("organisationUUID", organisation.getUuid())
+                            .addLong("userId", user.getId(), false)
+                            .addLong("subjectTypeId", subjectType.getId())
+                            .toJobParameters();
+            try {
+                syncAttributesJobLauncher.run(syncAttributesJob, jobParameters);
+            } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
+                throw new RuntimeException(String.format("Error while starting the sync attribute job, %s", e.getMessage()));
+            }
         }
     }
 }

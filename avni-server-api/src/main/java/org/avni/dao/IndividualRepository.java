@@ -32,7 +32,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     default Page<Individual> getSyncResults(SyncParameters syncParameters) {
         return findAll(syncAuditSpecification(syncParameters)
                         .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                        .and(syncStrategySpecification(syncParameters, true, false)),
+                        .and(syncStrategySpecification(syncParameters)),
                 syncParameters.getPageable());
     }
 
@@ -40,7 +40,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
         return count(syncEntityChangedAuditSpecification(syncParameters)
                 .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                .and(syncStrategySpecification(syncParameters, true, false))
+                .and(syncStrategySpecification(syncParameters))
         ) > 0;
     }
 

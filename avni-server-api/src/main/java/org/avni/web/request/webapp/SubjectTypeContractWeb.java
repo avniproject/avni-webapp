@@ -42,8 +42,8 @@ public class SubjectTypeContractWeb {
     private boolean shouldSyncByLocation;
     private String syncRegistrationConcept1;
     private String syncRegistrationConcept2;
-    private boolean isSyncRegistrationConcept1Usable;
-    private boolean isSyncRegistrationConcept2Usable;
+    private Boolean isSyncRegistrationConcept1Usable;
+    private Boolean isSyncRegistrationConcept2Usable;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -294,19 +294,19 @@ public class SubjectTypeContractWeb {
         this.syncRegistrationConcept2 = syncRegistrationConcept2;
     }
 
-    public boolean isSyncRegistrationConcept1Usable() {
+    public Boolean isSyncRegistrationConcept1Usable() {
         return isSyncRegistrationConcept1Usable;
     }
 
-    public void setSyncRegistrationConcept1Usable(boolean syncRegistrationConcept1Usable) {
+    public void setSyncRegistrationConcept1Usable(Boolean syncRegistrationConcept1Usable) {
         isSyncRegistrationConcept1Usable = syncRegistrationConcept1Usable;
     }
 
-    public boolean isSyncRegistrationConcept2Usable() {
+    public Boolean isSyncRegistrationConcept2Usable() {
         return isSyncRegistrationConcept2Usable;
     }
 
-    public void setSyncRegistrationConcept2Usable(boolean syncRegistrationConcept2Usable) {
+    public void setSyncRegistrationConcept2Usable(Boolean syncRegistrationConcept2Usable) {
         isSyncRegistrationConcept2Usable = syncRegistrationConcept2Usable;
     }
 }

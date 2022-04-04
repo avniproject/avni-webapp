@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.avni.dao.SyncParameters;
 import org.avni.domain.Individual;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.joda.time.DateTime;
@@ -31,7 +32,7 @@ public class IndividualRelationshipService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType, SyncParameters.SyncEntityName.IndividualRelationShip);
     }
 
     @Override

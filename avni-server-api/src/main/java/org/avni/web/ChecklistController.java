@@ -3,6 +3,7 @@ package org.avni.web;
 import org.avni.dao.ChecklistDetailRepository;
 import org.avni.dao.ChecklistRepository;
 import org.avni.dao.ProgramEnrolmentRepository;
+import org.avni.dao.SyncParameters;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.Checklist;
 import org.avni.domain.ChecklistDetail;
@@ -83,7 +84,7 @@ public class ChecklistController extends AbstractController<Checklist> implement
         if (checklistDetail == null) return wrap(new PageImpl<>(Collections.emptyList()));
         Checklist checklist = checklistRepository.findFirstByChecklistDetail(checklistDetail);
         if(checklist == null || checklist.getProgramEnrolment() == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(checklistRepository, userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable, checklist.getProgramEnrolment().getIndividual().getSubjectType()));
+        return wrap(scopeBasedSyncService.getSyncResult(checklistRepository, userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetail.getId(), pageable, checklist.getProgramEnrolment().getIndividual().getSubjectType(), SyncParameters.SyncEntityName.Checklist));
     }
 
     @Override

@@ -43,10 +43,10 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
         };
     }
 
-    default <A extends CHSEntity> Specification<A> syncStrategySpecification(SyncParameters syncParameters, boolean isIndividual, boolean isEnrolmentOrEncounter) {
+    default <A extends CHSEntity> Specification<A> syncStrategySpecification(SyncParameters syncParameters) {
         return (Root<A> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            addSyncStrategyPredicates(syncParameters, cb, predicates, root, isIndividual, isEnrolmentOrEncounter);
+            addSyncStrategyPredicates(syncParameters, cb, predicates, root);
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
@@ -54,16 +54,14 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
     default <A extends CHSEntity, B extends CHSEntity> void addSyncStrategyPredicates(SyncParameters syncParameters,
                                                                                       CriteriaBuilder cb,
                                                                                       List<Predicate> predicates,
-                                                                                      From<A, B> from,
-                                                                                      boolean isIndividual,
-                                                                                      boolean isEnrolmentOrEncounter) {
+                                                                                      From<A, B> from) {
         SubjectType subjectType = syncParameters.getSubjectType();
         JsonObject syncSettings = syncParameters.getSyncSettings();
         if (subjectType.isShouldSyncByLocation()) {
             List<Long> addressLevels = syncParameters.getAddressLevels();
             if (addressLevels.size() > 0) {
                 CriteriaBuilder.In<Long> inClause;
-                if (isIndividual) {
+                if (syncParameters.isParentOrSelfIndividual()) {
                     inClause = cb.in(from.get("addressLevel").get("id"));
                 } else {
                     inClause = cb.in(from.get("addressId"));
@@ -80,9 +78,9 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
             List<Integer> subjectIds = (List<Integer>) syncSettings.getOrDefault(User.SyncSettingKeys.subjectIds.name(), Collections.EMPTY_LIST);
             if (subjectIds.size() > 0) {
                 CriteriaBuilder.In<Integer> inClause;
-                if (isIndividual) {
+                if (syncParameters.isParentOrSelfIndividual()) {
                     inClause = cb.in(from.get("id"));
-                } else if (isEnrolmentOrEncounter) {
+                } else if (syncParameters.isEncounter() || syncParameters.isParentOrSelfEnrolment()) {
                     inClause = cb.in(from.get("individual").get("id"));
                 } else {
                     inClause = cb.in(from.get("individualId"));

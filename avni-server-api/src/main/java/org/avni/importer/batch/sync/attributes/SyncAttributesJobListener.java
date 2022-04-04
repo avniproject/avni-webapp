@@ -25,12 +25,6 @@ public class SyncAttributesJobListener extends JobExecutionListenerSupport {
     @Value("#{jobParameters['uuid']}")
     private String uuid;
 
-    @Value("#{jobParameters['syncConcept1Changed']}")
-    private String syncConcept1Changed;
-
-    @Value("#{jobParameters['syncConcept2Changed']}")
-    private String syncConcept2Changed;
-
     @Value("#{jobParameters['subjectTypeId']}")
     private Long subjectTypeId;
 
@@ -51,10 +45,10 @@ public class SyncAttributesJobListener extends JobExecutionListenerSupport {
     public void afterJob(JobExecution jobExecution) {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             SubjectType subjectType = subjectTypeRepository.findOne(subjectTypeId);
-            if (Boolean.parseBoolean(syncConcept1Changed) && subjectType.getSyncRegistrationConcept1() != null) {
+            if (subjectType.getSyncRegistrationConcept1() != null) {
                 subjectType.setSyncRegistrationConcept1Usable(true);
             }
-            if (Boolean.parseBoolean(syncConcept2Changed) && subjectType.getSyncRegistrationConcept2() != null) {
+            if (subjectType.getSyncRegistrationConcept2() != null) {
                 subjectType.setSyncRegistrationConcept2Usable(true);
             }
             subjectTypeRepository.save(subjectType);

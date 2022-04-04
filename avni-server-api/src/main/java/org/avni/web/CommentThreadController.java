@@ -3,6 +3,7 @@ package org.avni.web;
 import org.avni.dao.CommentThreadRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.SubjectTypeRepository;
+import org.avni.dao.SyncParameters;
 import org.avni.domain.CommentThread;
 import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
@@ -65,7 +66,7 @@ public class CommentThreadController extends AbstractController<CommentThread> i
         if (subjectType == null) {
             return wrap(new PageImpl<>(Collections.emptyList()));
         }
-        return wrap(scopeBasedSyncService.getSyncResult(commentThreadRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType));
+        return wrap(scopeBasedSyncService.getSyncResult(commentThreadRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.CommentThread));
     }
 
     @RequestMapping(value = "/commentThreads", method = RequestMethod.POST)

@@ -178,14 +178,14 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
             return ResponseEntity.badRequest()
                     .body(ReactAdminUtil.generateJsonError(String.format("Subject Type with id '%d' not found", id)));
         SubjectType subjectType = operationalSubjectType.getSubjectType();
-        Boolean isSyncConcept1Changed = !Objects.equals(request.getSyncRegistrationConcept1(), subjectType.getSyncRegistrationConcept1());
-        Boolean isSyncConcept2Changed = !Objects.equals(request.getSyncRegistrationConcept2(), subjectType.getSyncRegistrationConcept2());
+        boolean isSyncConcept1Changed = !Objects.equals(request.getSyncRegistrationConcept1(), subjectType.getSyncRegistrationConcept1());
+        boolean isSyncConcept2Changed = !Objects.equals(request.getSyncRegistrationConcept2(), subjectType.getSyncRegistrationConcept2());
             if (isSyncConcept1Changed)
                 subjectType.setSyncRegistrationConcept1Usable(false);
             if (isSyncConcept2Changed)
                 subjectType.setSyncRegistrationConcept2Usable(false);
         updateSubjectType(request, operationalSubjectType);
-        subjectTypeService.updateSyncAttributesIfRequired(subjectType, isSyncConcept1Changed, isSyncConcept2Changed);
+        subjectTypeService.updateSyncAttributesIfRequired(subjectType);
         SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
         subjectTypeContractWeb.setLocationTypeUUIDs(request.getLocationTypeUUIDs());
         return ResponseEntity.ok(subjectTypeContractWeb);

@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import org.avni.domain.SubjectType;
 import org.avni.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,5 +70,24 @@ public class AvniJobRepository {
         Long count = jdbcTemplate.queryForObject(countQuery, countParams, Long.class);
 
         return new PageImpl<>(jobStatuses, pageable, count);
+    }
+
+    public String getLastJobStatusForSubjectType(SubjectType subjectType) {
+        String baseQuery = "select status\n" +
+                "from batch_job_instance i\n" +
+                "         left join batch_job_execution bje on i.job_instance_id = bje.job_instance_id\n" +
+                "         left join batch_job_execution_params bjep on bje.job_execution_id = bjep.job_execution_id\n" +
+                "where i.job_name = 'syncAttributesJob'\n" +
+                "  and key_name = 'subjectTypeId'\n" +
+                "  and long_val = :subjectTypeId\n" +
+                "order by start_time desc\n" +
+                "limit 1;";
+        Map<String, Object> params = new HashMap<>();
+        params.put("subjectTypeId", subjectType.getId());
+        List<String> statuses = jdbcTemplate.query(baseQuery, params, (rs, rowNum) -> rs.getString(1));
+        if (statuses.isEmpty()) {
+            return null;
+        }
+        return statuses.get(0);
     }
 }

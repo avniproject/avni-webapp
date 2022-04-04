@@ -1,11 +1,8 @@
 package org.avni.service;
 
-import org.avni.dao.ChecklistRepository;
+import org.avni.dao.*;
 import org.avni.domain.*;
 import org.joda.time.DateTime;
-import org.avni.dao.ChecklistDetailRepository;
-import org.avni.dao.ChecklistItemRepository;
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +29,7 @@ public class ChecklistItemService implements ScopeAwareService {
         User user = UserContextHolder.getUserContext().getUser();
         return checklistDetail != null &&
                 checklist != null &&
-                isChanged(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType());
+                isChanged(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType(), SyncParameters.SyncEntityName.ChecklistItem);
     }
 
     @Override

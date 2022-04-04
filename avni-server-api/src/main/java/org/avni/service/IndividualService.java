@@ -39,9 +39,9 @@ public class IndividualService implements ScopeAwareService {
         this.subjectTypeRepository = subjectTypeRepository;
     }
 
-    public  IndividualContract getSubjectEncounters(String individualUuid){
+    public IndividualContract getSubjectEncounters(String individualUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
-        if (individual == null)  {
+        if (individual == null) {
             return null;
         }
         Set<EncounterContract> encountersContractList = constructEncounters(individual.nonVoidedEncounters());
@@ -50,9 +50,9 @@ public class IndividualService implements ScopeAwareService {
         return individualContract;
     }
 
-    public  IndividualContract getSubjectProgramEnrollment(String individualUuid){
+    public IndividualContract getSubjectProgramEnrollment(String individualUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
-        if (individual == null)  {
+        if (individual == null) {
             return null;
         }
         List<EnrolmentContract> enrolmentContractList = constructEnrolmentsMetadata(individual);
@@ -67,7 +67,7 @@ public class IndividualService implements ScopeAwareService {
     public IndividualContract getSubjectInfo(String individualUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
         IndividualContract individualContract = new IndividualContract();
-        if (individual == null)  {
+        if (individual == null) {
             return null;
         }
 
@@ -84,9 +84,9 @@ public class IndividualService implements ScopeAwareService {
         individualContract.setUuid(individual.getUuid());
         individualContract.setFirstName(individual.getFirstName());
         individualContract.setLastName(individual.getLastName());
-        if(null!=individual.getDateOfBirth())
+        if (null != individual.getDateOfBirth())
             individualContract.setDateOfBirth(individual.getDateOfBirth());
-        if(null!=individual.getGender()) {
+        if (null != individual.getGender()) {
             individualContract.setGender(individual.getGender().getName());
             individualContract.setGenderUUID(individual.getGender().getUuid());
         }
@@ -162,7 +162,7 @@ public class IndividualService implements ScopeAwareService {
     }
 
 
-    public Set <ProgramEncountersContract> constructProgramEncounters(Stream<ProgramEncounter> programEncounters) {
+    public Set<ProgramEncountersContract> constructProgramEncounters(Stream<ProgramEncounter> programEncounters) {
         return programEncounters.map(programEncounter -> {
             ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
             EncounterTypeContract encounterTypeContract =
@@ -176,7 +176,7 @@ public class IndividualService implements ScopeAwareService {
             programEncountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());
             programEncountersContract.setMaxVisitDateTime(programEncounter.getMaxVisitDateTime());
             programEncountersContract.setVoided(programEncounter.isVoided());
-            return  programEncountersContract;
+            return programEncountersContract;
         }).collect(Collectors.toSet());
     }
 
@@ -198,19 +198,19 @@ public class IndividualService implements ScopeAwareService {
         List<RelationshipContract> relationshipContractFromSelfToOthers = individual.getRelationshipsFromSelfToOthers().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
             Individual individualB = individualRelationship.getIndividualB();
             IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualBIsToA();
-            return constructCommonRelationship(individualRelationship,individualB,individualRelation,individualRelationship.getRelationship().getIndividualAIsToB());
+            return constructCommonRelationship(individualRelationship, individualB, individualRelation, individualRelationship.getRelationship().getIndividualAIsToB());
         }).collect(Collectors.toList());
 
         List<RelationshipContract> relationshipContractFromOthersToSelf = individual.getRelationshipsFromOthersToSelf().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
             Individual individualA = individualRelationship.getIndividuala();
             IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualAIsToB();
-            return constructCommonRelationship(individualRelationship,individualA,individualRelation,individualRelationship.getRelationship().getIndividualBIsToA());
+            return constructCommonRelationship(individualRelationship, individualA, individualRelation, individualRelationship.getRelationship().getIndividualBIsToA());
         }).collect(Collectors.toList());
         relationshipContractFromSelfToOthers.addAll(relationshipContractFromOthersToSelf);
         return relationshipContractFromSelfToOthers;
     }
 
-    private RelationshipContract constructCommonRelationship(IndividualRelationship individualRelationship,Individual individual,IndividualRelation individualRelation,IndividualRelation individualAIsToBRelation) {
+    private RelationshipContract constructCommonRelationship(IndividualRelationship individualRelationship, Individual individual, IndividualRelation individualRelation, IndividualRelation individualAIsToBRelation) {
         RelationshipContract relationshipContract = new RelationshipContract();
         IndividualContract individualBContract = new IndividualContract();
         individualBContract.setUuid(individual.getUuid());
@@ -232,10 +232,10 @@ public class IndividualService implements ScopeAwareService {
         if (individualRelationship.getExitObservations() != null) {
             relationshipContract.setExitObservations(observationService.constructObservations(individualRelationship.getExitObservations()));
         }
-        if(null!=individualRelationship && null!=individualRelationship.getId()) {
+        if (null != individualRelationship && null != individualRelationship.getId()) {
             relationshipContract.setId(individualRelationship.getId());
         }
-        if(null!=individualRelationship && null!=individualRelationship.getId())
+        if (null != individualRelationship && null != individualRelationship.getId())
             individualRelationshipTypeContract.setId(individualRelationship.getRelationship().getId());
         return relationshipContract;
     }
@@ -257,7 +257,8 @@ public class IndividualService implements ScopeAwareService {
         individualContractWeb.setLastName(individual.getLastName());
         individualContractWeb.setDateOfBirth(individual.getDateOfBirth());
         individualContractWeb.setSubjectType(SubjectTypeContract.fromSubjectType(individual.getSubjectType()));
-        if (individual.getSubjectType().getType().equals(Subject.Person)) individualContractWeb.setGender(individual.getGender().getName());
+        if (individual.getSubjectType().getType().equals(Subject.Person))
+            individualContractWeb.setGender(individual.getGender().getName());
 
         return individualContractWeb;
     }
@@ -301,7 +302,7 @@ public class IndividualService implements ScopeAwareService {
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         User user = UserContextHolder.getUserContext().getUser();
-        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType);
+        return subjectType != null && isChanged(user, lastModifiedDateTime, subjectType.getId(), subjectType, SyncParameters.SyncEntityName.Individual);
     }
 
     @Override
