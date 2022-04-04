@@ -22,9 +22,10 @@ import { isNil } from "lodash";
 import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
-import { Paper } from "@material-ui/core";
+import { Box, Paper } from "@material-ui/core";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
+import { ToolTipContainer } from "../common/components/ToolTipContainer";
 
 export const LocationTypeList = props => (
   <List
@@ -49,20 +50,25 @@ export const LocationTypeList = props => (
   </List>
 );
 
-const ParentReferenceField = ({ Field, ...props }) => {
+const ParentReferenceField = ({ showToolTip, ...props }) => {
+  const Container = showToolTip ? ToolTipContainer : Box;
   return isNil(props.record.parentId) ? (
     <None />
   ) : (
-    <Field
-      {...props}
-      source="parentId"
-      linkType="show"
-      reference="addressLevelType"
-      allowEmpty
+    <Container
       toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
+      styles={{ paddingTop: 10, marginRight: "10px" }}
     >
-      <FunctionField render={record => record.name} {...props} />
-    </Field>
+      <ReferenceField
+        {...props}
+        source="parentId"
+        linkType="show"
+        reference="addressLevelType"
+        allowEmpty
+      >
+        <FunctionField render={record => record.name} />
+      </ReferenceField>
+    </Container>
   );
 };
 
@@ -75,7 +81,7 @@ export const LocationTypeDetail = props => (
     <SimpleShowLayout>
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
-      <ParentReferenceField label="Parent Type" Field={ReferenceField} />
+      <ParentReferenceField label="Parent Type" showToolTip={false} />
       <FunctionField label="Created" render={audit => createdAudit(audit)} />
       <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
     </SimpleShowLayout>
@@ -111,7 +117,7 @@ const LocationTypeForm = ({ edit, ...props }) => {
         toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"}
       />
       {edit ? (
-        <ParentReferenceField label="Parent Type" Field={AvniReferenceInput} {...props} />
+        <ParentReferenceField label="Parent Type" showToolTip={true} />
       ) : (
         <AvniReferenceInput
           source="parentId"
