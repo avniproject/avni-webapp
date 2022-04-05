@@ -250,6 +250,7 @@ const SubjectTypeEdit = props => {
             dispatch={dispatch}
             locationTypes={locationTypes}
             formMappings={formMappings}
+            isEdit={true}
           />
           <div />
           {nameValidation && (

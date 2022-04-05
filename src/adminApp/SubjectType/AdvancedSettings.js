@@ -32,7 +32,13 @@ const ExpansionPanelDetails = withStyles(theme => ({
   }
 }))(MuiExpansionPanelDetails);
 
-export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMappings }) => {
+export const AdvancedSettings = ({
+  subjectType,
+  dispatch,
+  locationTypes,
+  formMappings,
+  isEdit
+}) => {
   const [expanded, setExpanded] = React.useState(false);
   const [syncAttributes, setSyncAttributes] = React.useState([]);
   const formUuid = findFormUuidForSubjectType(subjectType, formMappings);
@@ -42,10 +48,10 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
   const onSyncConceptChange = (name, value) => {
     const syncAttributeChangeMessage =
       "After changing the sync concept check the usability status on details page. Once this attribute is usable ask users to perform fresh sync.";
-    if (window.confirm(syncAttributeChangeMessage)) {
+    if (!isEdit) {
       changeSyncAttribute(name, value);
-    } else {
-      changeSyncAttribute(name, subjectType[name]);
+    } else if (window.confirm(syncAttributeChangeMessage)) {
+      changeSyncAttribute(name, value);
     }
   };
 

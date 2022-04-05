@@ -141,6 +141,8 @@ class OrgManager extends Component {
           options={{ label: "Languages" }}
           list={WithProps({ organisation }, customConfig)}
         />
+        <Resource name="individual" />
+        <Resource name="concept" />
         <Resource
           name="addressLevelType"
           options={{ label: "Location Types" }}
