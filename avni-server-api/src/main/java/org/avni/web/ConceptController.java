@@ -1,27 +1,27 @@
 package org.avni.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.avni.dao.ConceptAnswerRepository;
 import org.avni.dao.ConceptRepository;
-import org.avni.dao.OrganisationConfigRepository;
 import org.avni.domain.Concept;
+import org.avni.domain.ConceptAnswer;
 import org.avni.domain.ConceptDataType;
-import org.avni.domain.Organisation;
-import org.avni.domain.OrganisationConfig;
-import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.CodedConceptProjection;
 import org.avni.projection.ConceptProjection;
 import org.avni.service.ConceptService;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.util.ReactAdminUtil;
+import org.avni.util.S;
 import org.avni.web.request.ConceptContract;
+import org.avni.web.request.ConceptSyncAttributeContract;
+import org.avni.web.request.SubjectSearchContract;
 import org.avni.web.request.application.ConceptUsageContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,12 +44,14 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     private ConceptService conceptService;
     private ProjectionFactory projectionFactory;
     ObjectMapper objectMapper;
+    private ConceptAnswerRepository conceptAnswerRepository;
 
     @Autowired
-    public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService, ProjectionFactory projectionFactory) {
+    public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService, ProjectionFactory projectionFactory, ConceptAnswerRepository conceptAnswerRepository) {
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.projectionFactory = projectionFactory;
+        this.conceptAnswerRepository = conceptAnswerRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
@@ -139,6 +142,24 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/concept/answerConcepts",  "/concept/answerConcepts/search/find"})
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public Page<ConceptSyncAttributeContract> getAnswerConcept(@RequestParam(value = "conceptUUID", required = false) String conceptUUID, Pageable pageable) {
+        if(S.isEmpty(conceptUUID)) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+        Concept concept = conceptRepository.findByUuid(conceptUUID);
+        Page<ConceptAnswer> conceptAnswers = conceptAnswerRepository.findByConceptAndIsVoidedFalse(concept, pageable);
+        return conceptAnswers.map(ca -> ConceptSyncAttributeContract.fromConcept(ca.getAnswerConcept()));
+    }
+
+    @GetMapping(value = "/concept/answerConcepts/search/findAllById")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @ResponseBody
+    public Page<ConceptSyncAttributeContract> findByIds(@Param("ids") String[] ids, Pageable pageable) {
+        return this.conceptRepository.findAllByUuidIn(ids, pageable).map(ConceptSyncAttributeContract::fromConcept);
     }
 
 }

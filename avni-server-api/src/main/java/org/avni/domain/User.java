@@ -245,7 +245,6 @@ public class User {
         return lastModifiedDateTime;
     }
 
-    @JsonIgnore
     public JsonObject getSyncSettings() {
         return syncSettings;
     }

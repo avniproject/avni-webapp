@@ -5,10 +5,7 @@ import org.avni.domain.*;
 import org.avni.geo.Point;
 import org.avni.projection.IndividualWebProjection;
 import org.avni.service.*;
-import org.avni.web.request.EncounterContract;
-import org.avni.web.request.IndividualContract;
-import org.avni.web.request.IndividualRequest;
-import org.avni.web.request.PointRequest;
+import org.avni.web.request.*;
 import org.avni.web.request.rules.RulesContractWrapper.Decisions;
 import org.avni.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.avni.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
@@ -20,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
@@ -247,6 +245,24 @@ public class IndividualController extends AbstractController<Individual> impleme
         SubjectType subjectType = subjectTypeRepository.findByName(subjectTypeName);
         List<Individual> individuals = individualRepository.findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(addressLevel, subjectType);
         return individuals.stream().map(programEnrolmentConstructionService::getSubjectInfo).collect(Collectors.toList());
+    }
+
+    @GetMapping(value = {"/subjects", "/subjects/search/find"})
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @ResponseBody
+    public Page<?> searchByName(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
+        if (name == null || name.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+        return this.individualRepository.findByName(name, pageable)
+                .map(SubjectSearchContract::fromSubject);
+    }
+
+    @GetMapping(value = "/subjects/search/findAllById")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @ResponseBody
+    public Page<SubjectSearchContract> findByIds(@Param("ids") Long[] ids, Pageable pageable) {
+        return this.individualRepository.findByIdIn(ids, pageable).map(SubjectSearchContract::fromSubject);
     }
 
     @Override

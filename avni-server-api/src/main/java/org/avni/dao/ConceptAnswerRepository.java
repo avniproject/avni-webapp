@@ -2,6 +2,8 @@ package org.avni.dao;
 
 import org.avni.domain.Concept;
 import org.avni.domain.ConceptAnswer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -28,4 +30,6 @@ public interface ConceptAnswerRepository extends ReferenceDataRepository<Concept
     List<String> getAllNames();
 
     List<ConceptAnswer> findByAnswerConcept(Concept answerConcept);
+
+    Page<ConceptAnswer> findByConceptAndIsVoidedFalse(Concept concept, Pageable pageable);
 }

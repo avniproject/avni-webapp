@@ -2,10 +2,12 @@ package org.avni.service;
 
 import org.avni.application.Subject;
 import org.avni.dao.AvniJobRepository;
+import org.avni.dao.ConceptRepository;
 import org.avni.dao.OperationalSubjectTypeRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
+import org.avni.web.request.ConceptSyncAttributeContract;
 import org.avni.web.request.OperationalSubjectTypeContract;
 import org.avni.web.request.SubjectTypeContract;
 import org.joda.time.DateTime;
@@ -22,6 +24,8 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -34,18 +38,21 @@ public class SubjectTypeService implements NonScopeAwareService {
     private Job syncAttributesJob;
     private JobLauncher syncAttributesJobLauncher;
     private AvniJobRepository avniJobRepository;
+    private ConceptRepository conceptRepository;
 
     @Autowired
     public SubjectTypeService(SubjectTypeRepository subjectTypeRepository,
                               OperationalSubjectTypeRepository operationalSubjectTypeRepository,
                               Job syncAttributesJob,
                               JobLauncher syncAttributesJobLauncher,
-                              AvniJobRepository avniJobRepository) {
+                              AvniJobRepository avniJobRepository,
+                              ConceptRepository conceptRepository) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.syncAttributesJob = syncAttributesJob;
         this.syncAttributesJobLauncher = syncAttributesJobLauncher;
         this.avniJobRepository = avniJobRepository;
+        this.conceptRepository = conceptRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -112,6 +119,29 @@ public class SubjectTypeService implements NonScopeAwareService {
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         return subjectTypeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    public JsonObject getSyncAttributeData() {
+        List<ConceptSyncAttributeContract> syncRegistrationConcept1List = new ArrayList<>();
+        List<ConceptSyncAttributeContract> syncRegistrationConcept2List = new ArrayList<>();
+        List<SubjectType> subjectTypes = subjectTypeRepository.findAllByIsVoidedFalse();
+        subjectTypes.forEach(subjectType -> {
+            if (subjectType.getSyncRegistrationConcept1() != null) {
+                Concept concept = conceptRepository.findByUuid(subjectType.getSyncRegistrationConcept1());
+                syncRegistrationConcept1List.add(ConceptSyncAttributeContract.fromConcept(concept));
+            }
+            if (subjectType.getSyncRegistrationConcept2() != null) {
+                Concept concept = conceptRepository.findByUuid(subjectType.getSyncRegistrationConcept2());
+                syncRegistrationConcept2List.add(ConceptSyncAttributeContract.fromConcept(concept));
+            }
+        });
+        boolean isAnySyncByLocation = subjectTypes.stream().anyMatch(SubjectType::isShouldSyncByLocation);
+        boolean isAnyDirectlyAssignable = subjectTypes.stream().anyMatch(SubjectType::isDirectlyAssignable);
+        return new JsonObject()
+                .with("syncConcept1", syncRegistrationConcept1List)
+                .with("syncConcept2", syncRegistrationConcept2List)
+                .with("isAnySubjectTypeSyncByLocation", isAnySyncByLocation)
+                .with("isAnySubjectTypeDirectlyAssignable", isAnyDirectlyAssignable);
     }
 
     public Stream<SubjectType> getAll() {

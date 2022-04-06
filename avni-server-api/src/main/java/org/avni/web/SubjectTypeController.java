@@ -9,6 +9,7 @@ import org.avni.dao.GroupRoleRepository;
 import org.avni.dao.OperationalSubjectTypeRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.GroupRole;
+import org.avni.domain.JsonObject;
 import org.avni.domain.OperationalSubjectType;
 import org.avni.domain.SubjectType;
 import org.avni.service.*;
@@ -232,6 +233,12 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         formMappingService.voidExistingFormMappings(new FormMappingParameterObject(subjectType.getUuid(), null, null), null);
 
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping(value = "/subjectType/syncAttributesData")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public JsonObject getAllConceptSyncAttributes() {
+       return subjectTypeService.getSyncAttributeData();
     }
 
     private void voidAllGroupRoles(SubjectType subjectType) {

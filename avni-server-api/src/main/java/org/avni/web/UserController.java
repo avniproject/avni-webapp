@@ -156,7 +156,8 @@ public class UserController {
         user.setOrgAdmin(userContract.isOrgAdmin());
         user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
         user.setSettings(userContract.getSettings());
-
+        JsonObject syncSettings = userContract.getSyncSettings();
+        user.setSyncSettings(syncSettings == null ? new JsonObject() : syncSettings);
         User currentUser = userService.getCurrentUser();
         Long organisationId = null;
         if (!userContract.isAdmin()) {

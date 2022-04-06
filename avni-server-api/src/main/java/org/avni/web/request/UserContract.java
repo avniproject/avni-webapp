@@ -23,6 +23,7 @@ public class UserContract extends ReferenceDataContract {
     private boolean disabledInCognito;
     private String[] roles;
     private String password;
+    private JsonObject syncSettings;
 
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
@@ -140,5 +141,13 @@ public class UserContract extends ReferenceDataContract {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public JsonObject getSyncSettings() {
+        return syncSettings;
+    }
+
+    public void setSyncSettings(JsonObject syncSettings) {
+        this.syncSettings = syncSettings;
     }
 }

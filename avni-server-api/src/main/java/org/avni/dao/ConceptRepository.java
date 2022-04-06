@@ -34,4 +34,5 @@ public interface ConceptRepository extends ReferenceDataRepository<Concept>, Fin
             "            ) obs ON obs.conecpt_uuid @> to_jsonb(c.uuid)", nativeQuery = true)
     List<Map<String, String>> getConceptUuidToNameMapList(String observations);
 
+    Page<Concept> findAllByUuidIn(String [] uuids, Pageable pageable);
 }

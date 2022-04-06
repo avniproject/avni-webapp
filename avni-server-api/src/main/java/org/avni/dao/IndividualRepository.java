@@ -49,6 +49,12 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
                 includeVoided == null || includeVoided ? cb.and() : cb.isFalse(root.get("isVoided"));
     }
 
+    default Page<Individual> findByName(String name, Pageable pageable) {
+        return findAll(getFilterSpecForName(name), pageable);
+    }
+
+    Page<Individual> findByIdIn(Long[] ids, Pageable pageable);
+
     default Specification<Individual> getFilterSpecForName(String value) {
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             if (value != null && !value.isEmpty()) {
