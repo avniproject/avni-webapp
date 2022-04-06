@@ -104,11 +104,13 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                                                                                              String syncConcept2Column) {
         SubjectType subjectType = syncParameters.getSubjectType();
         JsonObject syncSettings = syncParameters.getSyncSettings();
-        if (subjectType.isSyncRegistrationConcept1Usable()) {
+        Boolean isSyncRegistrationConcept1Usable = subjectType.isSyncRegistrationConcept1Usable();
+        Boolean isSyncRegistrationConcept2Usable = subjectType.isSyncRegistrationConcept2Usable();
+        if (isSyncRegistrationConcept1Usable != null && isSyncRegistrationConcept1Usable) {
             List<String> syncConcept1Values = (List<String>) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST);
             addPredicate(cb, predicates, from, syncConcept1Values, syncConcept1Column);
         }
-        if (subjectType.isSyncRegistrationConcept2Usable()) {
+        if (isSyncRegistrationConcept2Usable != null && isSyncRegistrationConcept2Usable) {
             List<String> syncConcept2Values = (List<String>) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST);
             addPredicate(cb, predicates, from, syncConcept2Values, syncConcept2Column);
         }
