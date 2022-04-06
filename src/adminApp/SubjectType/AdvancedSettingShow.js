@@ -44,20 +44,11 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         status={subjectType.directlyAssignable}
         label={"Sync By Direct Assignment"}
       />
-      {subjectType.syncRegistrationConcept1 && (
-        <ConceptSyncAttributesShow
-          header1={"Sync Concept 1"}
-          header1Value={concept1Name}
-          isUsable={subjectType.syncRegistrationConcept1Usable}
-        />
-      )}
-      {subjectType.syncRegistrationConcept2 && (
-        <ConceptSyncAttributesShow
-          header1={"Sync Concept 2"}
-          header1Value={concept2Name}
-          isUsable={subjectType.syncRegistrationConcept2Usable}
-        />
-      )}
+      <ConceptSyncAttributesShow
+        subjectType={subjectType}
+        concept1Name={concept1Name}
+        concept2Name={concept2Name}
+      />
     </div>
   );
 };
