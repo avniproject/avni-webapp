@@ -96,6 +96,8 @@ public class User {
        subjectIds,
        syncConcept1Values,
        syncConcept2Values,
+       syncConcept1,
+       syncConcept2,
     }
 
     public static final String USER = "user";
