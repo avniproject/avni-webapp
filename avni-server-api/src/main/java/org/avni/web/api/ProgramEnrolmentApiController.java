@@ -88,8 +88,7 @@ public class ProgramEnrolmentApiController {
         enrolment.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         enrolment.setProgramExitObservations(RequestUtils.createObservations(request.getExitObservations(), conceptRepository));
         enrolment.setVoided(request.isVoided());
-        programEnrolmentService.addSyncAttributes(enrolment, subject);
-        programEnrolmentRepository.save(enrolment);
+        programEnrolmentService.save(enrolment);
     }
 
     @RequestMapping(value = "/api/programEnrolments", method = RequestMethod.GET)

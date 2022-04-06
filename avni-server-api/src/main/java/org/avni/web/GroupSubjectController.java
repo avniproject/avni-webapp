@@ -83,8 +83,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
         existingOrNewGroupSubject.setMembershipStartDate(request.getMembershipStartDate() != null ? request.getMembershipStartDate() : new DateTime());
         existingOrNewGroupSubject.setMembershipEndDate(request.getMembershipEndDate());
         existingOrNewGroupSubject.setVoided(request.isVoided());
-        groupSubjectService.addSyncAttributes(existingOrNewGroupSubject);
-        groupSubjectRepository.save(existingOrNewGroupSubject);
+        groupSubjectService.save(existingOrNewGroupSubject);
     }
 
     @RequestMapping(value = "/groupSubjects/{groupSubjectUuid}", method = RequestMethod.DELETE)

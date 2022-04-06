@@ -114,14 +114,12 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         Individual savedIndividual;
         if (skipUploadValidations) {
             individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
-            individualService.addSyncAttributes(individual);
-            savedIndividual = individualRepository.save(individual);
+            savedIndividual = individualService.save(individual);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
             individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
             decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
-            individualService.addSyncAttributes(individual);
-            savedIndividual = individualRepository.save(individual);
+            savedIndividual = individualService.save(individual);
             visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         }
 

@@ -104,8 +104,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         }
 
         groupSubject.assignUUIDIfRequired();
-        groupSubjectService.addSyncAttributes(groupSubject);
-        groupSubjectRepository.save(groupSubject);
+        groupSubjectService.save(groupSubject);
         saveRelationshipWithHeadOfHousehold(individualRelationship);
     }
 

@@ -94,8 +94,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observations);
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
-        individualService.addSyncAttributes(individual);
-        individualRepository.save(individual);
+        individualService.save(individual);
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));

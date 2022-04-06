@@ -144,8 +144,7 @@ public class SubjectApiController {
         subject.setVoided(request.isVoided());
 
         subject.validate();
-        individualService.addSyncAttributes(subject);
-        individualRepository.save(subject);
+        individualService.save(subject);
     }
 
     private List<GroupSubject> findGroupAffiliation(Individual subject, List<GroupSubject> groupSubjects) {

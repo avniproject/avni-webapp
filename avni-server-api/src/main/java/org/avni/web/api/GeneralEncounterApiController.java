@@ -136,7 +136,6 @@ public class GeneralEncounterApiController {
         encounter.setVoided(request.isVoided());
 
         encounter.validate();
-        encounterService.addSyncAttributes(encounter, individual);
-        encounterRepository.save(encounter);
+        encounterService.save(encounter);
     }
 }

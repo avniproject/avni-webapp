@@ -1,6 +1,6 @@
 package org.avni.web.api;
 
-import org.avni.service.EncounterService;
+import org.avni.service.ProgramEncounterService;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.*;
@@ -30,16 +30,16 @@ public class ProgramEncounterApiController {
     private final ConceptService conceptService;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final EncounterTypeRepository encounterTypeRepository;
-    private final EncounterService encounterService;
+    private final ProgramEncounterService programEncounterService;
 
     @Autowired
-    public ProgramEncounterApiController(ProgramEncounterRepository programEncounterRepository, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEnrolmentRepository programEnrolmentRepository, EncounterTypeRepository encounterTypeRepository, EncounterService encounterService) {
+    public ProgramEncounterApiController(ProgramEncounterRepository programEncounterRepository, ConceptRepository conceptRepository, ConceptService conceptService, ProgramEnrolmentRepository programEnrolmentRepository, EncounterTypeRepository encounterTypeRepository, ProgramEncounterService programEncounterService) {
         this.programEncounterRepository = programEncounterRepository;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.encounterTypeRepository = encounterTypeRepository;
-        this.encounterService = encounterService;
+        this.programEncounterService = programEncounterService;
     }
 
     @RequestMapping(value = "/api/programEncounters", method = RequestMethod.GET)
@@ -142,7 +142,6 @@ public class ProgramEncounterApiController {
         encounter.setVoided(request.isVoided());
 
         encounter.validate();
-        encounterService.addSyncAttributes(encounter, programEnrolment.getIndividual());
-        return programEncounterRepository.save(encounter);
+        return programEncounterService.save(encounter);
     }
 }

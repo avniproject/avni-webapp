@@ -323,14 +323,8 @@ public class IndividualService implements ScopeAwareService {
         }
     }
 
-    public void addSyncAttributes(Individual individual) {
-        SubjectType subjectType = individual.getSubjectType();
-        ObservationCollection observations = individual.getObservations();
-        if (subjectType.getSyncRegistrationConcept1() != null) {
-            individual.setSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
-        }
-        if (subjectType.getSyncRegistrationConcept2() != null) {
-            individual.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
-        }
+    public Individual save(Individual individual) {
+        individual.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
+        return individualRepository.save(individual);
     }
 }

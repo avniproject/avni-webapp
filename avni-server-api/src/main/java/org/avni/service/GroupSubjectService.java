@@ -1,12 +1,12 @@
 package org.avni.service;
 
-import org.avni.dao.SyncParameters;
-import org.avni.domain.*;
-import org.joda.time.DateTime;
 import org.avni.dao.GroupSubjectRepository;
 import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SubjectTypeRepository;
+import org.avni.dao.SyncParameters;
+import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,12 @@ public class GroupSubjectService implements ScopeAwareService {
         return groupSubjectRepository;
     }
 
-    public void addSyncAttributes(GroupSubject groupSubject) {
+    public GroupSubject save(GroupSubject groupSubject) {
+        this.addSyncAttributes(groupSubject);
+        return groupSubjectRepository.save(groupSubject);
+    }
+
+    private void addSyncAttributes(GroupSubject groupSubject) {
         Individual groupIndividual = groupSubject.getGroupSubject();
         SubjectType subjectType = groupIndividual.getSubjectType();
         ObservationCollection observations = groupIndividual.getObservations();

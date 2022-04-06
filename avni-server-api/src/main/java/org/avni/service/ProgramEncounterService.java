@@ -111,8 +111,8 @@ public class ProgramEncounterService implements ScopeAwareService {
         }
         allScheduleEncountersByType.stream().forEach(programEncounter -> {
             updateProgramEncounterWithVisitSchedule(programEncounter, visitSchedule);
-            encounterService.addSyncAttributes(programEncounter, programEnrolment.getIndividual());
-            programEncounterRepository.save(programEncounter);
+            programEncounter.setProgramEnrolment(programEnrolment);
+            this.save(programEncounter);
         });
     }
 
@@ -176,8 +176,7 @@ public class ProgramEncounterService implements ScopeAwareService {
             }
 
         }
-        encounterService.addSyncAttributes(encounter, programEnrolment.getIndividual());
-        programEncounterRepository.save(encounter);
+        this.save(encounter);
         logger.info(String.format("Saved programEncounter with uuid %s", request.getUuid()));
     }
 
@@ -208,6 +207,17 @@ public class ProgramEncounterService implements ScopeAwareService {
     @Override
     public OperatingIndividualScopeAwareRepository repository() {
         return programEncounterRepository;
+    }
+
+    public ProgramEncounter save(ProgramEncounter programEncounter) {
+        ProgramEnrolment programEnrolment = programEncounter.getProgramEnrolment();
+        Individual individual = programEnrolment.getIndividual();
+        programEncounter.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
+        programEncounter.setIndividualId(individual.getId());
+        if (individual.getAddressLevel() != null) {
+            programEncounter.setAddressId(individual.getAddressLevel().getId());
+        }
+        return programEncounterRepository.save(programEncounter);
     }
 
 }

@@ -108,14 +108,12 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         ProgramEnrolment savedEnrolment;
         if (skipUploadValidations) {
             programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
-            programEnrolmentService.addSyncAttributes(programEnrolment, individual);
-            savedEnrolment = programEnrolmentRepository.save(programEnrolment);
+            savedEnrolment = programEnrolmentService.save(programEnrolment);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEnrolment, allErrorMsgs);
             programEnrolment.setObservations(observationService.createObservations(ruleResponse.getObservations()));
             decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
-            programEnrolmentService.addSyncAttributes(programEnrolment, individual);
-            savedEnrolment = programEnrolmentRepository.save(programEnrolment);
+            savedEnrolment = programEnrolmentService.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
         }
         if (formMapping.isEnableApproval()) {

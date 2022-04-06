@@ -122,8 +122,8 @@ public class EncounterService implements ScopeAwareService {
         }
         allScheduleEncountersByType.stream().forEach(encounter -> {
             updateEncounterWithVisitSchedule(encounter, visitSchedule);
-            addSyncAttributes(encounter, individual);
-            encounterRepository.save(encounter);
+            encounter.setIndividual(individual);
+            this.save(encounter);
         });
     }
 
@@ -165,21 +165,12 @@ public class EncounterService implements ScopeAwareService {
         return encounterRepository;
     }
 
-    public void addSyncAttributes(AbstractEncounter encounter, Individual individual) {
-        SubjectType subjectType = individual.getSubjectType();
-        ObservationCollection observations = individual.getObservations();
+    public Encounter save(Encounter encounter) {
+        Individual individual = encounter.getIndividual();
+        encounter.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
         if (individual.getAddressLevel() != null) {
             encounter.setAddressId(individual.getAddressLevel().getId());
         }
-        if (subjectType.getSyncRegistrationConcept1() != null) {
-            encounter.setSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
-        }
-        if (subjectType.getSyncRegistrationConcept2() != null) {
-            encounter.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
-        }
-        if(encounter instanceof ProgramEncounter) {
-            ProgramEncounter programEncounter = (ProgramEncounter) encounter;
-            programEncounter.setIndividualId(individual.getId());
-        }
+        return encounterRepository.save(encounter);
     }
 }

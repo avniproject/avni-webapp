@@ -13,9 +13,9 @@ import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.ProgramEncounterHeaders;
 import org.avni.importer.batch.model.Row;
-import org.avni.service.EncounterService;
 import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
+import org.avni.service.ProgramEncounterService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +41,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private DecisionCreator decisionCreator;
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private ObservationCreator observationCreator;
-    private EncounterService encounterService;
+    private ProgramEncounterService programEncounterService;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -58,7 +58,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
                                   DecisionCreator decisionCreator,
                                   ProgramEnrolmentRepository programEnrolmentRepository,
                                   ObservationCreator observationCreator,
-                                  EncounterService encounterService) {
+                                  ProgramEncounterService programEncounterService) {
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentCreator = programEnrolmentCreator;
         this.basicEncounterCreator = basicEncounterCreator;
@@ -70,7 +70,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         this.decisionCreator = decisionCreator;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationCreator = observationCreator;
-        this.encounterService = encounterService;
+        this.programEncounterService = programEncounterService;
     }
 
     @Override
@@ -93,15 +93,13 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         ProgramEncounter savedEncounter;
         if (skipUploadValidations) {
             programEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEncounter, programEncounter.getObservations()));
-            encounterService.addSyncAttributes(programEncounter, programEnrolment.getIndividual());
-            savedEncounter = programEncounterRepository.save(programEncounter);
+            savedEncounter = programEncounterService.save(programEncounter);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEncounter, allErrorMsgs);
             programEncounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
             decisionCreator.addEncounterDecisions(programEncounter.getObservations(), ruleResponse.getDecisions());
             decisionCreator.addEnrolmentDecisions(programEnrolment.getObservations(), ruleResponse.getDecisions());
-            encounterService.addSyncAttributes(programEncounter, programEnrolment.getIndividual());
-            savedEncounter = programEncounterRepository.save(programEncounter);
+            savedEncounter = programEncounterService.save(programEncounter);
             programEnrolmentRepository.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, programEnrolment.getUuid(), ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
         }

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @Table(name = "program_enrolment")
 @JsonIgnoreProperties({"programEncounters", "individual"})
 @BatchSize(size = 100)
-public class ProgramEnrolment extends OrganisationAwareEntity {
+public class ProgramEnrolment extends SyncAttributeEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id")
@@ -63,12 +63,6 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
 
     @Column(name = "address_id")
     private Long addressId;
-
-    @Column(name = "sync_concept_1_value")
-    private String syncConcept1Value;
-
-    @Column(name = "sync_concept_2_value")
-    private String syncConcept2Value;
 
     public Program getProgram() {
         return program;
@@ -199,21 +193,4 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
         this.addressId = addressId;
     }
 
-    @JsonIgnore
-    public String getSyncConcept1Value() {
-        return syncConcept1Value;
-    }
-
-    public void setSyncConcept1Value(String syncConcept1Value) {
-        this.syncConcept1Value = syncConcept1Value;
-    }
-
-    @JsonIgnore
-    public String getSyncConcept2Value() {
-        return syncConcept2Value;
-    }
-
-    public void setSyncConcept2Value(String syncConcept2Value) {
-        this.syncConcept2Value = syncConcept2Value;
-    }
 }

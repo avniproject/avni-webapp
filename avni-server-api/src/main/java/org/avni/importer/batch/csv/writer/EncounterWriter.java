@@ -90,15 +90,13 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         Encounter savedEncounter;
         if (skipUploadValidations) {
             encounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Encounter, encounter.getObservations()));
-            encounterService.addSyncAttributes(encounter, subject);
-            savedEncounter = encounterRepository.save(encounter);
+            savedEncounter = encounterService.save(encounter);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), encounter, allErrorMsgs);
             encounter.setObservations(observationService.createObservations(ruleResponse.getObservations()));
             decisionCreator.addEncounterDecisions(encounter.getObservations(), ruleResponse.getDecisions());
             decisionCreator.addRegistrationDecisions(subject.getObservations(), ruleResponse.getDecisions());
-            encounterService.addSyncAttributes(encounter, subject);
-            savedEncounter = encounterRepository.save(encounter);
+            savedEncounter = encounterService.save(encounter);
             individualRepository.save(subject);
             visitCreator.saveScheduledVisits(formMapping.getType(), subject.getUuid(), null, ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
         }

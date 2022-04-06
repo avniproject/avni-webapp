@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Table(name = "individual")
 @JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf"})
 @BatchSize(size = 100)
-public class Individual extends OrganisationAwareEntity {
+public class Individual extends SyncAttributeEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -71,12 +71,6 @@ public class Individual extends OrganisationAwareEntity {
     @Type(type = "org.avni.geo.PointType")
     @Column
     private Point registrationLocation;
-
-    @Column(name = "sync_concept_1_value")
-    private String syncConcept1Value;
-
-    @Column(name = "sync_concept_2_value")
-    private String syncConcept2Value;
 
     public static Individual create(String firstName, String lastName, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
         Individual individual = new Individual();
@@ -271,24 +265,6 @@ public class Individual extends OrganisationAwareEntity {
         HashSet<ProgramEncounter> programEncounters = new HashSet<>();
         this.programEnrolments.forEach(programEnrolment -> programEncounters.addAll(programEnrolment.getProgramEncounters()));
         return programEncounters;
-    }
-
-    @JsonIgnore
-    public String getSyncConcept1Value() {
-        return syncConcept1Value;
-    }
-
-    public void setSyncConcept1Value(String syncConcept1Value) {
-        this.syncConcept1Value = syncConcept1Value;
-    }
-
-    @JsonIgnore
-    public String getSyncConcept2Value() {
-        return syncConcept2Value;
-    }
-
-    public void setSyncConcept2Value(String syncConcept2Value) {
-        this.syncConcept2Value = syncConcept2Value;
     }
 
 }

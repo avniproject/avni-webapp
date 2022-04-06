@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @MappedSuperclass
-public class AbstractEncounter extends OrganisationAwareEntity {
+public class AbstractEncounter extends SyncAttributeEntity {
     @Column
     private String name;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,12 +42,6 @@ public class AbstractEncounter extends OrganisationAwareEntity {
 
     @Column(name = "address_id")
     private Long addressId;
-
-    @Column(name = "sync_concept_1_value")
-    private String syncConcept1Value;
-
-    @Column(name = "sync_concept_2_value")
-    private String syncConcept2Value;
 
     public EncounterType getEncounterType() {
         return encounterType;
@@ -177,21 +171,4 @@ public class AbstractEncounter extends OrganisationAwareEntity {
         this.addressId = addressId;
     }
 
-    @JsonIgnore
-    public String getSyncConcept1Value() {
-        return syncConcept1Value;
-    }
-
-    public void setSyncConcept1Value(String syncConcept1Value) {
-        this.syncConcept1Value = syncConcept1Value;
-    }
-
-    @JsonIgnore
-    public String getSyncConcept2Value() {
-        return syncConcept2Value;
-    }
-
-    public void setSyncConcept2Value(String syncConcept2Value) {
-        this.syncConcept2Value = syncConcept2Value;
-    }
 }

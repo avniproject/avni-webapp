@@ -131,9 +131,7 @@ public class EncounterController extends AbstractController<Encounter> implement
                 encounter.getObservations().putAll(observationsFromDecisions);
             }
         }
-        encounterService.addSyncAttributes(encounter, individual);
-
-        encounterRepository.save(encounter);
+        encounterService.save(encounter);
         if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
             encounterService.saveVisitSchedules(individual.getUuid(), request.getVisitSchedules(), request.getUuid());
         }

@@ -1,17 +1,15 @@
 package org.avni.service;
 
-import org.avni.application.FormMapping;
-import org.avni.dao.application.FormMappingRepository;
-import org.avni.framework.security.UserContextHolder;
-import org.joda.time.DateTime;
 import org.avni.common.EntityHelper;
 import org.avni.dao.*;
+import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.*;
 import org.avni.geo.Point;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.*;
 import org.avni.web.request.rules.RulesContractWrapper.ChecklistContract;
 import org.avni.web.request.rules.RulesContractWrapper.Decisions;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -167,9 +165,9 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         }
 
         Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
-        this.addSyncAttributes(programEnrolment, individual);
+        programEnrolment.setIndividual(individual);
+        this.addSyncAttributes(programEnrolment);
         if (programEnrolment.isNew()) {
-            programEnrolment.setIndividual(individual);
             individual.addEnrolment(programEnrolment);
             saveIdentifierAssignments(programEnrolment, request);
             individualRepository.save(individual);
@@ -189,17 +187,16 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
     }
 
-    public void addSyncAttributes(ProgramEnrolment enrolment, Individual individual) {
-        SubjectType subjectType = individual.getSubjectType();
-        ObservationCollection observations = individual.getObservations();
+    public ProgramEnrolment save(ProgramEnrolment programEnrolment) {
+        this.addSyncAttributes(programEnrolment);
+       return programEnrolmentRepository.save(programEnrolment);
+    }
+
+    private void addSyncAttributes(ProgramEnrolment enrolment) {
+        Individual individual = enrolment.getIndividual();
+        enrolment.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
         if (individual.getAddressLevel() != null) {
             enrolment.setAddressId(individual.getAddressLevel().getId());
-        }
-        if (subjectType.getSyncRegistrationConcept1() != null) {
-            enrolment.setSyncConcept1Value(observations.getStringValue(subjectType.getSyncRegistrationConcept1()));
-        }
-        if (subjectType.getSyncRegistrationConcept2() != null) {
-            enrolment.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
         }
     }
 
