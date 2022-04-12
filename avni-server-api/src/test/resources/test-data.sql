@@ -12,6 +12,7 @@ DELETE FROM program;
 DELETE FROM encounter_type;
 DELETE FROM program_outcome;
 DELETE FROM concept_answer;
+DELETE FROM answer_concept_migration;
 DELETE FROM concept;
 DELETE FROM individual_relationship;
 DELETE FROM individual_relationship_type;

@@ -3,6 +3,7 @@ package org.avni.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.application.FormElement;
+import org.avni.dao.AnswerConceptMigrationRepository;
 import org.avni.dao.ConceptAnswerRepository;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.OrganisationRepository;
@@ -18,6 +19,7 @@ import org.avni.web.request.ReferenceDataContract;
 import org.avni.web.request.application.ConceptUsageContract;
 import org.avni.web.request.application.FormUsageContract;
 import org.avni.web.validation.ValidationException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +28,9 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import org.joda.time.DateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -38,14 +40,26 @@ public class ConceptService implements NonScopeAwareService {
     private ConceptAnswerRepository conceptAnswerRepository;
     private OrganisationRepository organisationRepository;
     private FormElementRepository formElementRepository;
+    private AnswerConceptMigrationRepository answerConceptMigrationRepository;
 
     @Autowired
-    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository) {
+    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository, AnswerConceptMigrationRepository answerConceptMigrationRepository) {
         this.formElementRepository = formElementRepository;
+        this.answerConceptMigrationRepository = answerConceptMigrationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
         this.organisationRepository = organisationRepository;
+    }
+
+    private static Map<String, String> readMap(String concepts) throws IOException {
+        Map<String, String> jsonMap = new HashMap<>();
+        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
+        if (!S.isEmpty(concepts)) {
+            jsonMap = objectMapper.readValue(concepts, new TypeReference<Map<String, String>>() {
+            });
+        }
+        return jsonMap;
     }
 
     private Concept fetchOrCreateConcept(String uuid) {
@@ -166,8 +180,26 @@ public class ConceptService implements NonScopeAwareService {
         }
         logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
 
+        addToMigrationIfRequired(conceptRequest);
         Concept concept = map(conceptRequest);
         return conceptRepository.save(concept);
+    }
+
+    private void addToMigrationIfRequired(ConceptContract conceptRequest) {
+        Concept concept = conceptRepository.findByUuid(conceptRequest.getUuid());
+        boolean isNa = conceptRequest.getDataType() == null || conceptRequest.getDataType().equals(ConceptDataType.NA.name());
+        if ( isNa && concept != null && !concept.getName().equals(conceptRequest.getName())) {
+            List<ConceptAnswer> conceptAnswers = conceptAnswerRepository.findByAnswerConcept(concept);
+            List<AnswerConceptMigration> answerConceptMigrations = conceptAnswers.stream().map(ca -> {
+                AnswerConceptMigration answerConceptMigration = new AnswerConceptMigration();
+                answerConceptMigration.setConcept(ca.getConcept());
+                answerConceptMigration.setOldAnswerConceptName(concept.getName());
+                answerConceptMigration.setNewAnswerConceptName(conceptRequest.getName());
+                answerConceptMigration.assignUUID();
+                return answerConceptMigration;
+            }).collect(Collectors.toList());
+            answerConceptMigrationRepository.saveAll(answerConceptMigrations);
+        }
     }
 
     public void saveOrUpdateConcepts(List<ConceptContract> conceptRequests) {
@@ -246,7 +278,7 @@ public class ConceptService implements NonScopeAwareService {
                 String conceptName = entry.getKey();
                 String value = entry.getValue();
                 Concept concept = conceptRepository.findByName(conceptName);
-                if(concept == null)
+                if (concept == null)
                     throw new BadRequestError("Bad Request: One of the specified concept(%s) does not exist", conceptName);
                 jsonMap.put(concept, value);
             }
@@ -254,16 +286,6 @@ public class ConceptService implements NonScopeAwareService {
         } catch (IOException e) {
             throw new BadRequestError("Bad Request: concepts parameter is not a valid json object");
         }
-    }
-
-    private static Map<String, String> readMap(String concepts) throws IOException {
-        Map<String, String> jsonMap = new HashMap<>();
-        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
-        if (!S.isEmpty(concepts)) {
-            jsonMap = objectMapper.readValue(concepts, new TypeReference<Map<String, String>>() {
-            });
-        }
-        return jsonMap;
     }
 
     @Override
