@@ -88,3 +88,31 @@ FROM concept
 WHERE uuid = $1;
 $$;
 
+create or replace function get_coded_string_value(obs jsonb, obs_store hstore)
+    returns character varying
+    language plpgsql
+    SECURITY INVOKER
+    stable
+as
+$$
+DECLARE
+    result VARCHAR;
+BEGIN
+    BEGIN
+        IF JSONB_TYPEOF(obs) = 'array'
+        THEN
+            select STRING_AGG(obs_store -> OB.UUID, ', ') from JSONB_ARRAY_ELEMENTS_TEXT(obs) AS OB (UUID)
+            INTO RESULT;
+        ELSE
+            SELECT obs_store -> (obs ->> 0) INTO RESULT;
+        END IF;
+        RETURN RESULT;
+    EXCEPTION
+        WHEN OTHERS
+            THEN
+                RAISE NOTICE 'Failed while processing get_coded_string_value(''%'')', obs :: TEXT;
+                RAISE NOTICE '% %', SQLERRM, SQLSTATE;
+    END;
+END
+$$;
+

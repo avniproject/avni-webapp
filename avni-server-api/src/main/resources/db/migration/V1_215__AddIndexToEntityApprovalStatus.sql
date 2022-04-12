@@ -1,0 +1,3 @@
+create index entity_approval_status_entity_id_index on entity_approval_status(entity_id);
+create index entity_approval_status_approval_status_id_index on entity_approval_status(approval_status_id);
+create index entity_approval_status_entity_type_index on entity_approval_status(entity_type);
