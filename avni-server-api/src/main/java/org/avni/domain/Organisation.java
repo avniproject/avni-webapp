@@ -11,21 +11,12 @@ import java.util.UUID;
 @Entity
 @Table(name = "organisation")
 @BatchSize(size = 100)
-public class Organisation {
+public class Organisation extends ETLEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
-
-    @Column
-    private String name;
-
-    @Column
-    private String dbUser;
-
-    @Column
-    private String schemaName;
 
     @Column
     private String mediaDirectory;
@@ -51,7 +42,7 @@ public class Organisation {
     }
 
     public Organisation(String name) {
-        this.name = name;
+        this.setName(name);
     }
 
     public Account getAccount() {
@@ -68,22 +59,6 @@ public class Organisation {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
     }
 
     public String getUuid() {
@@ -154,11 +129,4 @@ public class Organisation {
         isVoided = voided;
     }
 
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
 }

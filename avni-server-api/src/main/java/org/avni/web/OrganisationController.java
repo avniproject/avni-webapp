@@ -169,6 +169,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         }
         organisation.setMediaDirectory(request.getMediaDirectory());
         organisation.setVoided(request.isVoided());
+        organisation.setHasAnalyticsDb(request.isHasAnalyticsDb());
     }
 
     private void setOrgAccountByIdOrDefault(Organisation organisation, Long accountId) {

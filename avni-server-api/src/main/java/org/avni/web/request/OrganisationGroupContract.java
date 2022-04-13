@@ -6,10 +6,7 @@ import org.avni.domain.OrganisationGroupOrganisation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OrganisationGroupContract {
-    private Long id;
-    private String name;
-    private String dbUser;
+public class OrganisationGroupContract extends ETLContract {
     private Long accountId;
     private List<Long> organisationIds;
 
@@ -22,15 +19,8 @@ public class OrganisationGroupContract {
         List<Long> orgIds = organisationGroup.getOrganisationGroupOrganisations().stream()
                 .map(OrganisationGroupOrganisation::getOrganisationId).collect(Collectors.toList());
         organisationGroupContract.setOrganisationIds(orgIds);
+        ETLContract.mapEntity(organisationGroupContract, organisationGroup);
         return organisationGroupContract;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public List<Long> getOrganisationIds() {
@@ -41,14 +31,6 @@ public class OrganisationGroupContract {
         this.organisationIds = organisationIds;
     }
 
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -57,11 +39,4 @@ public class OrganisationGroupContract {
         this.accountId = accountId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

@@ -2,11 +2,8 @@ package org.avni.web.request;
 
 import org.avni.domain.Organisation;
 
-public class OrganisationContract extends CHSRequest {
+public class OrganisationContract extends ETLContract {
     private Long parentOrganisationId;
-    private String name;
-    private String dbUser;
-    private String schemaName;
     private String mediaDirectory;
     private String usernameSuffix;
     private Long accountId;
@@ -16,12 +13,10 @@ public class OrganisationContract extends CHSRequest {
         organisationContract.setId(organisation.getId());
         organisationContract.setUuid(organisation.getUuid());
         organisationContract.setParentOrganisationId(organisation.getParentOrganisationId());
-        organisationContract.setName(organisation.getName());
-        organisationContract.setDbUser(organisation.getDbUser());
-        organisationContract.setSchemaName(organisation.getSchemaName());
         organisationContract.setMediaDirectory(organisation.getMediaDirectory());
         organisationContract.setUsernameSuffix(organisation.getUsernameSuffix());
         organisationContract.setAccountId(organisation.getAccount() == null ? null : organisation.getAccount().getId());
+        ETLContract.mapEntity(organisationContract, organisation);
         return organisationContract;
     }
 
@@ -49,22 +44,6 @@ public class OrganisationContract extends CHSRequest {
         this.usernameSuffix = usernameSuffix;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
     public String getMediaDirectory() {
         return mediaDirectory;
     }
@@ -73,11 +52,4 @@ public class OrganisationContract extends CHSRequest {
         this.mediaDirectory = mediaDirectory;
     }
 
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
 }

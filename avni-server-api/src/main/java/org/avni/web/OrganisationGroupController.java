@@ -55,12 +55,8 @@ public class OrganisationGroupController implements RestControllerResourceProces
         String tempPassword = "password";
         implementationRepository.createDBUser(request.getDbUser(), tempPassword);
         OrganisationGroup organisationGroup = new OrganisationGroup();
-        organisationGroup.setName(request.getName());
         organisationGroup.setDbUser(request.getDbUser());
-        organisationGroup.setAccount(accountRepository.findOne(request.getAccountId()));
-        addOrganisationGroupOrganisations(request, organisationGroup, new HashSet<>());
-        logger.info("Saving organisation group {}", request.getName());
-        organisationGroupRepository.save(organisationGroup);
+        saveOrganisationGroup(request, organisationGroup);
         return new ResponseEntity<>(organisationGroup, HttpStatus.CREATED);
     }
 
@@ -71,10 +67,7 @@ public class OrganisationGroupController implements RestControllerResourceProces
         User user = UserContextHolder.getUserContext().getUser();
         OrganisationGroup organisationGroup = organisationGroupRepository.findByIdAndAccount_AccountAdmin_User_Id(id, user.getId());;
         //disable changing dbUser
-        organisationGroup.setName(request.getName());
-        organisationGroup.setAccount(accountRepository.findOne(request.getAccountId()));
-        addOrganisationGroupOrganisations(request, organisationGroup, new HashSet<>());
-        organisationGroupRepository.save(organisationGroup);
+        saveOrganisationGroup(request, organisationGroup);
         return new ResponseEntity<>(organisationGroup, HttpStatus.OK);
     }
 
@@ -106,6 +99,16 @@ public class OrganisationGroupController implements RestControllerResourceProces
         logger.info("Deleting organisation group {}", organisationGroup.getName());
         organisationGroupRepository.delete(organisationGroup);
         return new ResponseEntity<>(OrganisationGroupContract.fromEntity(organisationGroup), HttpStatus.OK);
+    }
+
+    private void saveOrganisationGroup(@RequestBody OrganisationGroupContract request, OrganisationGroup organisationGroup) throws Exception {
+        organisationGroup.setName(request.getName());
+        organisationGroup.setHasAnalyticsDb(request.isHasAnalyticsDb());
+        organisationGroup.setSchemaName(request.getSchemaName());
+        organisationGroup.setAccount(accountRepository.findOne(request.getAccountId()));
+        addOrganisationGroupOrganisations(request, organisationGroup, new HashSet<>());
+        logger.info("Saving organisation group {}", request.getName());
+        organisationGroupRepository.save(organisationGroup);
     }
 
     private void addOrganisationGroupOrganisations(@RequestBody OrganisationGroupContract request, OrganisationGroup organisationGroup, Set<OrganisationGroupOrganisation> organisationGroupOrganisations) throws Exception {
