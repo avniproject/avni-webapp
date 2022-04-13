@@ -16,7 +16,9 @@ import {
   TextField,
   TextInput,
   Edit,
-  DisabledInput
+  DisabledInput,
+  BooleanInput,
+  BooleanField
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
@@ -27,6 +29,8 @@ export const OrganisationGroupList = props => (
     <Datagrid rowClick="show">
       <TextField label="Name" source="name" />
       <TextField label="DB User" source="dbUser" />
+      <TextField source="schemaName" label="Schema name" />
+      <BooleanField source="hasAnalyticsDb" label="Has analytics DB" />
       <ReferenceField
         resource="account"
         source="accountId"
@@ -50,6 +54,8 @@ export const OrganisationGroupShow = props => (
     <SimpleShowLayout>
       <TextField source="name" label="Name" />
       <TextField source="dbUser" label="DB User" />
+      <TextField source="schemaName" label="Schema name" />
+      <BooleanField source="hasAnalyticsDb" label="Has analytics DB" />
       <ReferenceField
         resource="account"
         source="accountId"
@@ -73,6 +79,8 @@ export const organisationGroupCreate = props => (
     <SimpleForm redirect="list">
       <TextInput source="name" validate={required("Name cannot be empty")} />
       <TextInput source="dbUser" validate={required("db user cannot be empty")} />
+      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} />
+      <BooleanInput source="hasAnalyticsDb" />
       <ReferenceInput
         resource="account"
         source="accountId"
@@ -101,6 +109,8 @@ export const organisationGroupEdit = props => (
     <SimpleForm redirect="list">
       <TextInput source="name" validate={required("Name cannot be empty")} />
       <DisabledInput source="dbUser" />
+      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} />
+      <BooleanInput source="hasAnalyticsDb" />
       <ReferenceInput
         resource="account"
         source="accountId"

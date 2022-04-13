@@ -16,7 +16,9 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
-  Toolbar
+  Toolbar,
+  BooleanField,
+  BooleanInput
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
@@ -51,6 +53,7 @@ export const OrganisationList = ({ history, ...props }) => {
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
+        <BooleanField source="hasAnalyticsDb" label="Has analytics DB" />
         <ShowButton />
         <OpenOrganisation porps={props} />
       </Datagrid>
@@ -86,6 +89,7 @@ export const OrganisationDetails = props => {
         >
           <TextField source="name" />
         </ReferenceField>
+        <BooleanField source="hasAnalyticsDb" label="Has analytics DB" />
       </SimpleShowLayout>
     </Show>
   );
@@ -106,6 +110,7 @@ export const OrganisationEdit = props => {
         <DisabledInput source="schemaName" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <BooleanInput source="hasAnalyticsDb" />
         <ReferenceInput
           resource="account"
           source="accountId"
@@ -136,6 +141,7 @@ export const OrganisationCreate = props => {
         <TextInput source="schemaName" validate={isRequired} />
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <BooleanInput source="hasAnalyticsDb" />
         <ReferenceInput
           resource="account"
           source="accountId"
