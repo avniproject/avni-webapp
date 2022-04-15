@@ -57,7 +57,7 @@ from address_level al
          inner join list_of_orgs loo on loo.id = al.organisation_id
 where alt.is_voided is not true;
 
-CREATE OR REPLACE function title_lineage_locations_function()
+CREATE OR REPLACE function title_lineage_locations_function(addressId bigint)
     RETURNS TABLE
             (
                 lowestpoint_id integer,
@@ -71,12 +71,13 @@ select al.id lowestpoint_id, string_agg(alevel_in_lineage.title, ', ' order by l
 from address_level al
          join regexp_split_to_table(al.lineage :: text, '[.]') with ordinality lineage (point_id, level) ON TRUE
          join address_level alevel_in_lineage on alevel_in_lineage.id = lineage.point_id :: int
+where case when addressId isnull then true else al.id = addressId end
 group by al.id
 $$;
 
 CREATE OR REPLACE VIEW title_lineage_locations_view AS
 select *
-from title_lineage_locations_function();
+from title_lineage_locations_function(null);
 
 CREATE OR REPLACE VIEW individual_program_enrolment_search_view AS
 SELECT progralalise.individual_id,

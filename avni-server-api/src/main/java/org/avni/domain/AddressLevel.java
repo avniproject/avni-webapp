@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
         "parentLocationMappings", "type", "catchments", "virtualCatchments",
         "parent", "subLocations"
 })
-@SecondaryTable(name="title_lineage_locations_view",
-    pkJoinColumns = @PrimaryKeyJoinColumn(name = "lowestpoint_id", referencedColumnName = "id"))
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
@@ -59,9 +57,6 @@ public class AddressLevel extends OrganisationAwareEntity {
     @Immutable
     @JoinTable(name = "virtual_catchment_address_mapping_table", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
     private Set<Catchment> virtualCatchments = new HashSet<>();
-
-    @Column(table = "title_lineage_locations_view", name = "title_lineage")
-    private String titleLineage;
 
     @Column
     @Type(type = "observations")
@@ -220,14 +215,6 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.lineage = lineage;
     }
 
-    public String getTitleLineage() {
-        return titleLineage;
-    }
-
-    public void setTitleLineage(String titleLineage) {
-        this.titleLineage = titleLineage;
-    }
-
     public Long getParentTypeId() {
         return this.parent != null ? this.parent.getType().getId() : null;
     }
@@ -258,6 +245,5 @@ public class AddressLevel extends OrganisationAwareEntity {
 
         AddressLevelProjection getParentLocation();
 
-        String getTitleLineage();
     }
 }

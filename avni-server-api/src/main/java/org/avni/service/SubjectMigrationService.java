@@ -23,6 +23,7 @@ public class SubjectMigrationService implements ScopeAwareService {
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private GroupSubjectRepository groupSubjectRepository;
+    private AddressLevelService addressLevelService;
 
     @Autowired
     public SubjectMigrationService(SubjectMigrationRepository subjectMigrationRepository,
@@ -31,7 +32,7 @@ public class SubjectMigrationService implements ScopeAwareService {
                                    EncounterRepository encounterRepository,
                                    ProgramEnrolmentRepository programEnrolmentRepository,
                                    ProgramEncounterRepository programEncounterRepository,
-                                   GroupSubjectRepository groupSubjectRepository) {
+                                   GroupSubjectRepository groupSubjectRepository, AddressLevelService addressLevelService) {
         this.subjectMigrationRepository = subjectMigrationRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.individualRepository = individualRepository;
@@ -39,6 +40,7 @@ public class SubjectMigrationService implements ScopeAwareService {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.groupSubjectRepository = groupSubjectRepository;
+        this.addressLevelService = addressLevelService;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class SubjectMigrationService implements ScopeAwareService {
         if (!Objects.equals(individual.getAddressLevel().getId(), newAddressLevel.getId()) ||
                 !Objects.equals(oldObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept1)) ||
                 !Objects.equals(oldObservations.getStringValue(syncConcept2), newObservations.getStringValue(syncConcept2))) {
-            logger.info(String.format("Migrating subject with UUID %s from %s to %s", individualUuid, individual.getAddressLevel().getTitleLineage(), newAddressLevel.getTitleLineage()));
+            logger.info(String.format("Migrating subject with UUID %s from %s to %s", individualUuid, addressLevelService.getTitleLineage(individual.getAddressLevel()), addressLevelService.getTitleLineage(newAddressLevel)));
             SubjectMigration subjectMigration = new SubjectMigration();
             subjectMigration.assignUUID();
             subjectMigration.setIndividual(individual);

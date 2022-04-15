@@ -65,4 +65,8 @@ public class AddressLevelService {
     public List<Long> getAllAddressLevelIdsForCatchment(Catchment catchment) {
         return addressLevelCache.get().getAddressLevelsForCatchment(catchment);
     }
+
+    public String getTitleLineage(AddressLevel location) {
+        return locationRepository.getTitleLineageById(location.getId());
+    }
 }

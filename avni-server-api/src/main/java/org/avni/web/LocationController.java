@@ -1,6 +1,7 @@
 package org.avni.web;
 
 
+import org.avni.application.projections.LocationProjection;
 import org.avni.builder.BuilderException;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.SyncParameters;
@@ -16,6 +17,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -67,8 +69,8 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @GetMapping(value = "/locations")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
-    public PagedResources<Resource<AddressLevel>> getAll(Pageable pageable) {
-        return wrap(locationRepository.findPageByIsVoidedFalse(pageable));
+    public Page<LocationProjection> getAll(Pageable pageable) {
+        return locationRepository.findNonVoidedLocations(pageable);
     }
 
     @GetMapping(value = "locations/search/find")
@@ -131,7 +133,7 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @PreAuthorize(value = "hasAnyAuthority('admin','user')")
     @ResponseBody
     public List<AddressLevelContractWeb> getAllLocations() {
-        return locationRepository.getAllByIsVoidedFalse().stream()
+        return locationRepository.findAllNonVoided().stream()
                 .map(AddressLevelContractWeb::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -140,7 +142,7 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @ResponseBody
     public List<AddressLevelContractWeb> getLocationsByTypeId(@PathVariable("typeId") Long typeId) {
-        return locationRepository.findByType_IdAndIsVoidedFalseOrderByTitleAsc(typeId).stream()
+        return locationRepository.findNonVoidedLocationsByTypeId(typeId).stream()
                 .map(AddressLevelContractWeb::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -149,7 +151,7 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity getLocationByParam(@RequestParam("uuid") String uuid) {
-        AddressLevel addressLevel = locationRepository.findByUuid(uuid);
+        LocationProjection addressLevel = locationRepository.findNonVoidedLocationsByUuid(uuid);
         if(addressLevel == null) {
             return ResponseEntity.notFound().build();
         }

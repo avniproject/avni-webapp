@@ -13,6 +13,7 @@ import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.SubjectHeaders;
 import org.avni.importer.batch.model.Row;
+import org.avni.service.AddressLevelService;
 import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.IndividualService;
 import org.avni.service.ObservationService;
@@ -48,6 +49,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
     private final IndividualService individualService;
+    private final AddressLevelService addressLevelService;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -64,7 +66,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          RuleServerInvoker ruleServerInvoker,
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
-                         ObservationCreator observationCreator, IndividualService individualService) {
+                         ObservationCreator observationCreator, IndividualService individualService, AddressLevelService addressLevelService) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -78,6 +80,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
         this.individualService = individualService;
+        this.addressLevelService = addressLevelService;
         this.locationCreator = new LocationCreator();
     }
 
@@ -223,7 +226,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         String lineage = String.join(", ", inputLocations);
         return locations.stream()
                 .filter(location ->
-                        location.getTitleLineage()
+                        addressLevelService.getTitleLineage(location)
                                 .toLowerCase()
                                 .endsWith(lineage.toLowerCase()))
                 .findFirst()

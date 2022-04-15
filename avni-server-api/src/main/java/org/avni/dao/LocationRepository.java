@@ -1,6 +1,8 @@
 package org.avni.dao;
 
 import java.util.Date;
+
+import org.avni.application.projections.LocationProjection;
 import org.avni.application.projections.VirtualCatchmentProjection;
 import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
@@ -96,12 +98,17 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     List<AddressLevel> findByType_IdAndTitleIgnoreCaseStartingWithAndIsVoidedFalseOrderByTitleAsc(@Param("typeId") Long typeId,
                                                                                   @Param("title") String title);
 
-    List<AddressLevel> findByType_IdAndIsVoidedFalseOrderByTitleAsc(Long typeId);
-
     @Query("select a.title from AddressLevel a where a.isVoided = false")
     List<String> getAllNames();
 
-    Optional<AddressLevel> findByTitleLineageIgnoreCase(String locationTitleLineage);
+    @Query(value = "select lowestpoint_id from title_lineage_locations_view where lower(title_lineage) = lower(:locationTitleLineage)", nativeQuery = true)
+    Long getAddressIdByLineage(String locationTitleLineage);
+
+    default Optional<AddressLevel> findByTitleLineageIgnoreCase(String locationTitleLineage) {
+        Long addressId = getAddressIdByLineage(locationTitleLineage);
+        return addressId != null ? findById(addressId) : Optional.empty();
+    }
+
     List<AddressLevel> getAllByIsVoidedFalse();
 
     List<AddressLevel> findAllByParent(AddressLevel parent);
@@ -118,5 +125,47 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Query(value="select * from virtual_catchment_address_mapping_table where addresslevel_id in (:addressLevelIds)", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForAddressLevelIds(@Param("addressLevelIds") List<Long> addressLevelIds);
+
+    @Query(value = "select title_lineage from title_lineage_locations_function(:addressId)", nativeQuery = true)
+    String getTitleLineageById(Long addressId);
+
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where al.is_voided = false",
+            nativeQuery = true)
+    Page<LocationProjection> findNonVoidedLocations(Pageable pageable);
+
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where al.is_voided = false " +
+            "and al.type_id = :typeId " +
+            "order by al.title ",
+            nativeQuery = true)
+    List<LocationProjection> findNonVoidedLocationsByTypeId(Long typeId);
+
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where al.is_voided = false ",
+            nativeQuery = true)
+    List<LocationProjection> findAllNonVoided();
+
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where al.is_voided = false " +
+            "and al.uuid = :uuid ",
+            nativeQuery = true)
+    LocationProjection findNonVoidedLocationsByUuid(String uuid);
 
 }

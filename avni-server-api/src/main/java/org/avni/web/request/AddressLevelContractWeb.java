@@ -1,5 +1,6 @@
 package org.avni.web.request;
 
+import org.avni.application.projections.LocationProjection;
 import org.avni.domain.AddressLevel;
 
 public class AddressLevelContractWeb {
@@ -23,8 +24,21 @@ public class AddressLevelContractWeb {
         addressLevelContractWeb.setLevel(addressLevel.getLevel());
         addressLevelContractWeb.setParentId(addressLevel.getParentId());
         addressLevelContractWeb.setLineage(addressLevel.getLineage());
-        addressLevelContractWeb.setTitleLineage(addressLevel.getTitleLineage());
         addressLevelContractWeb.setUuid(addressLevel.getUuid());
+        return addressLevelContractWeb;
+    }
+
+    public static AddressLevelContractWeb fromEntity(LocationProjection locationProjection) {
+        AddressLevelContractWeb addressLevelContractWeb = new AddressLevelContractWeb();
+        addressLevelContractWeb.setId(locationProjection.getId());
+        addressLevelContractWeb.setName(locationProjection.getTitle());
+        addressLevelContractWeb.setType(locationProjection.getTypeString());
+        addressLevelContractWeb.setTypeId(locationProjection.getTypeId());
+        addressLevelContractWeb.setLevel(locationProjection.getLevel());
+        addressLevelContractWeb.setParentId(locationProjection.getParentId());
+        addressLevelContractWeb.setLineage(locationProjection.getLineage());
+        addressLevelContractWeb.setTitleLineage(locationProjection.getTitleLineage());
+        addressLevelContractWeb.setUuid(locationProjection.getUuid());
         return addressLevelContractWeb;
     }
 

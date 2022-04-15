@@ -29,14 +29,16 @@ public class IndividualService implements ScopeAwareService {
     private final GroupSubjectRepository groupSubjectRepository;
     private final GroupRoleRepository groupRoleRepository;
     private final SubjectTypeRepository subjectTypeRepository;
+    private final AddressLevelService addressLevelService;
 
     @Autowired
-    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository) {
+    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService) {
         this.individualRepository = individualRepository;
         this.observationService = observationService;
         this.groupSubjectRepository = groupSubjectRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.subjectTypeRepository = subjectTypeRepository;
+        this.addressLevelService = addressLevelService;
     }
 
     public IndividualContract getSubjectEncounters(String individualUuid) {
@@ -101,7 +103,7 @@ public class IndividualService implements ScopeAwareService {
         AddressLevel addressLevel = individual.getAddressLevel();
         if (addressLevel != null) {
             individualContract.setAddressLevel(addressLevel.getTitle());
-            individualContract.setAddressLevelLineage(addressLevel.getTitleLineage());
+            individualContract.setAddressLevelLineage(addressLevelService.getTitleLineage(addressLevel));
             individualContract.setAddressLevelUUID(addressLevel.getUuid());
             individualContract.setAddressLevelTypeName(addressLevel.getType().getName());
             individualContract.setAddressLevelTypeId(addressLevel.getType().getId());
