@@ -227,19 +227,19 @@ INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_
 VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 2,
         (select id from subject_type where name = 'Individual'), 1, 1, now(), now());
 
-INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, now(), now());
+INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, address_id)
+VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, now(), now(), 1);
 
-INSERT INTO program_encounter (program_enrolment_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (1, 1, '{"95c4b174-6ce6-4d9a-b223-1f9000b60006":98.9}' :: JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, now(), now());
+INSERT INTO program_encounter (program_enrolment_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, individual_id, address_id)
+VALUES (1, 1, '{"95c4b174-6ce6-4d9a-b223-1f9000b60006":98.9}' :: JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, now(), now(), 1, 1);
 
-INSERT INTO encounter (individual_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO encounter (individual_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, address_id)
 VALUES (1, 1, '
 {
   "conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006",
   "valuePrimitive": 98.9
 }
-' :: JSONB, current_timestamp, '63a7d615-b965-4830-9dd2-e8f533d9a4e9', 1, 1, 1, now(), now());
+' :: JSONB, current_timestamp, '63a7d615-b965-4830-9dd2-e8f533d9a4e9', 1, 1, 1, now(), now(), 1);
 
 INSERT INTO program (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Nutrition', 'ac8cfbcb-39d2-4fcb-b02f-4ef80335f553', 1, 1, 1, now(), now());
@@ -250,11 +250,11 @@ VALUES
 (1, '1950-09-17', FALSE, 'Ramesh', 'Kumar', 2, '8d3d49af-f776-4cca-8413-ee571d9042fd', 1,
  (select id from subject_type where name = 'Individual'), 1, 1, now(), now());
 
-INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (2, 1, current_timestamp, '0ae41288-78c5-4ed4-af60-68d4ad2af1d0', 1, 1, 1, now(), now());
+INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, address_id)
+VALUES (2, 1, current_timestamp, '0ae41288-78c5-4ed4-af60-68d4ad2af1d0', 1, 1, 1, now(), now(), 1);
 
-INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (2, 2, current_timestamp, '529aa9ed-46bc-4530-9768-6ec941c0e2e0', 1, 1, 1, now(), now());
+INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, address_id)
+VALUES (2, 2, current_timestamp, '529aa9ed-46bc-4530-9768-6ec941c0e2e0', 1, 1, 1, now(), now(), 1);
 
 INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version,
                         subject_type_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
