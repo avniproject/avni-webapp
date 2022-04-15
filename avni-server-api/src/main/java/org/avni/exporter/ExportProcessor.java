@@ -1,10 +1,12 @@
 package org.avni.exporter;
 
+import org.avni.dao.EncounterTypeRepository;
 import org.joda.time.DateTime;
 import org.avni.domain.*;
 import org.avni.web.request.ReportType;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,10 +41,20 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
 
     private DateTime endDateTime;
 
+    private EncounterType encounterType;
+
+    private EncounterTypeRepository encounterTypeRepository;
+
     @PostConstruct
     public void init() {
         this.startDateTime = new DateTime(startDate);
         this.endDateTime = new DateTime(endDate);
+        this.encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
+    }
+
+    @Autowired
+    public ExportProcessor(EncounterTypeRepository encounterTypeRepository) {
+        this.encounterTypeRepository = encounterTypeRepository;
     }
 
     public ExportItemRow process(Object exportItem) {
@@ -84,7 +96,7 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
     private <T extends AbstractEncounter> Stream<T> getFilteredEncounters(Set<T> programEncounters) {
         return programEncounters.stream()
                 .filter(enc -> !enc.isVoided() &&
-                        enc.getEncounterType().getUuid().equals(encounterTypeUUID) &&
+                        enc.getEncounterType().getId().equals(encounterType.getId()) &&
                         enc.isEncounteredOrCancelledBetween(startDateTime, endDateTime))
                 .sorted((enc1, enc2) -> {
                     DateTime t1 = Optional.ofNullable(enc1.getEncounterDateTime()).orElse(enc1.getCancelDateTime());

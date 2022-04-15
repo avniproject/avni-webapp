@@ -99,21 +99,21 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     @Query("select ind from Individual ind " +
             "where ind.isVoided = false " +
-            "and ind.subjectType.uuid = :subjectTypeUUID " +
+            "and ind.subjectType.id = :subjectTypeId " +
             "and ind.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds,NULL) is null OR ind.addressLevel.id in :locationIds)")
-    Page<Individual> findIndividuals(String subjectTypeUUID, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+    Page<Individual> findIndividuals(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
 
     //group by is added for distinct ind records
     @Query("select i from Individual i " +
             "join i.encounters enc " +
-            "where enc.encounterType.uuid = :encounterTypeUUID " +
+            "where enc.encounterType.id = :encounterTypeId " +
             "and enc.isVoided = false " +
             "and i.isVoided = false " +
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)" +
             "group by i.id")
-    Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID, Pageable pageable);
+    Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Pageable pageable);
 
 
     @Query("select i from Individual i where i.uuid =:id or i.legacyId = :id")

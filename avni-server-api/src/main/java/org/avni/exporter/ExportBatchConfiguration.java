@@ -1,10 +1,9 @@
 package org.avni.exporter;
 
+import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.avni.dao.*;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.CHSBaseEntity;
 import org.avni.framework.security.AuthService;
 import org.avni.service.ExportS3Service;
 import org.avni.web.request.ReportType;
@@ -46,6 +45,9 @@ public class ExportBatchConfiguration {
     private AuthService authService;
     private ExportS3Service exportS3Service;
     private LocationRepository locationRepository;
+    private SubjectTypeRepository subjectTypeRepository;
+    private EncounterTypeRepository encounterTypeRepository;
+    private ProgramRepository programRepository;
 
     @Autowired
     public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory,
@@ -55,7 +57,10 @@ public class ExportBatchConfiguration {
                                     GroupSubjectRepository groupSubjectRepository,
                                     AuthService authService,
                                     ExportS3Service exportS3Service,
-                                    LocationRepository locationRepository) {
+                                    LocationRepository locationRepository,
+                                    SubjectTypeRepository subjectTypeRepository,
+                                    EncounterTypeRepository encounterTypeRepository,
+                                    ProgramRepository programRepository) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.programEnrolmentRepository = programEnrolmentRepository;
@@ -64,6 +69,9 @@ public class ExportBatchConfiguration {
         this.authService = authService;
         this.exportS3Service = exportS3Service;
         this.locationRepository = locationRepository;
+        this.subjectTypeRepository = subjectTypeRepository;
+        this.encounterTypeRepository = encounterTypeRepository;
+        this.programRepository = programRepository;
     }
 
     @Bean
@@ -133,8 +141,9 @@ public class ExportBatchConfiguration {
     }
 
     private RepositoryItemReader<Object> getGroupSubjectData(String subjectTypeUUID, List<Long> addressParam, LocalDate startDate, LocalDate endDate, Map<String, Sort.Direction> sorts) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         List<Object> params = new ArrayList<>();
-        params.add(subjectTypeUUID);
+        params.add(subjectType.getId());
         params.add(addressParam);
         params.add(startDate);
         params.add(endDate);
@@ -149,11 +158,12 @@ public class ExportBatchConfiguration {
     }
 
     private RepositoryItemReader<Object> getEncounterData(String programUUID, String encounterTypeUUID, List<Long> addressParam, DateTime startDateTime, DateTime endDateTime, Map<String, Sort.Direction> sorts) {
+        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
         List<Object> params = new ArrayList<>();
         params.add(addressParam);
         params.add(startDateTime);
         params.add(endDateTime);
-        params.add(encounterTypeUUID);
+        params.add(encounterType.getId());
         if (programUUID == null) {
             return new RepositoryItemReaderBuilder<Object>()
                     .name("individualRepositoryReader")
@@ -164,7 +174,8 @@ public class ExportBatchConfiguration {
                     .sorts(sorts)
                     .build();
         } else {
-            params.add(programUUID);
+            Program program = programRepository.findByUuid(programUUID);
+            params.add(program.getId());
             return new RepositoryItemReaderBuilder<Object>()
                     .name("programEnrolmentRepositoryReader")
                     .repository(programEnrolmentRepository)
@@ -177,8 +188,9 @@ public class ExportBatchConfiguration {
     }
 
     private RepositoryItemReader<Object> getEnrolmentData(String programUUID, List<Long> addressParam, DateTime startDateTime, DateTime endDateTime, Map<String, Sort.Direction> sorts) {
+        Program program = programRepository.findByUuid(programUUID);
         List<Object> params = new ArrayList<>();
-        params.add(programUUID);
+        params.add(program.getId());
         params.add(addressParam);
         params.add(startDateTime);
         params.add(endDateTime);
@@ -193,8 +205,9 @@ public class ExportBatchConfiguration {
     }
 
     private RepositoryItemReader<Object> getRegistrationData(String subjectTypeUUID, List<Long> addressParam, LocalDate startDateTime, LocalDate endDateTime, Map<String, Sort.Direction> sorts) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         List<Object> params = new ArrayList<>();
-        params.add(subjectTypeUUID);
+        params.add(subjectType.getId());
         params.add(addressParam);
         params.add(startDateTime);
         params.add(endDateTime);

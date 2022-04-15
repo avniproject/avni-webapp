@@ -1,6 +1,7 @@
 package org.avni.dao;
 
 import org.avni.domain.*;
+import org.joda.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -48,6 +49,17 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             String memberSubjectUUID,
             Pageable pageable
     );
+
+    @Query("select gs from GroupSubject gs " +
+            "join gs.groupSubject g " +
+            "join gs.memberSubject m " +
+            "where g.subjectType.id = :subjectTypeId " +
+            "and g.isVoided = false " +
+            "and m.isVoided = false " +
+            "and g.registrationDate between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
+    Page<GroupSubject> findGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+
 
     default Specification<GroupSubject> syncStrategySpecification(SyncParameters syncParameters) {
         return (Root<GroupSubject> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {

@@ -30,26 +30,26 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
 
     @Query("select enl from ProgramEnrolment enl " +
             "join enl.individual i " +
-            "where enl.program.uuid = :programUUID " +
+            "where enl.program.id = :programId " +
             "and enl.isVoided = false " +
             "and i.isVoided = false " +
             "and coalesce(enl.enrolmentDateTime, enl.programExitDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)")
-    Page<ProgramEnrolment> findEnrolments(String programUUID, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Pageable pageable);
+    Page<ProgramEnrolment> findEnrolments(Long programId, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Pageable pageable);
 
     //group by is added for distinct enl records
     @Query("select enl from ProgramEnrolment enl " +
             "join enl.programEncounters enc " +
             "join enl.individual i " +
-            "where enc.encounterType.uuid = :encounterTypeUUID " +
-            "and enl.program.uuid = :programUUID " +
+            "where enc.encounterType.id = :encounterTypeId " +
+            "and enl.program.id = :programId " +
             "and enc.isVoided = false " +
             "and enl.isVoided = false " +
             "and i.isVoided = false " +
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds) " +
             "group by enl.id")
-    Page<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, String encounterTypeUUID, String programUUID, Pageable pageable);
+    Page<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Long programId, Pageable pageable);
 
 
     Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanAndProgramNameOrderByLastModifiedDateTimeAscIdAsc(
