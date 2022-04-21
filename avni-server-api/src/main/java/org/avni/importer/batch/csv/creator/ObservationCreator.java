@@ -98,7 +98,11 @@ public class ObservationCreator {
     public ObservationCollection getObservations(Row row,
                                                  Headers headers,
                                                  List<String> errorMsgs, FormType formType, ObservationCollection oldObservations) throws Exception {
-        return constructObservations(row, headers, errorMsgs, formType, oldObservations);
+        ObservationCollection observationCollection = constructObservations(row, headers, errorMsgs, formType, oldObservations);
+        if (errorMsgs.size() > 0) {
+            throw new Exception(String.join(", ", errorMsgs));
+        }
+        return observationCollection;
     }
 
     private boolean isNonEmptyQuestionGroup(FormElement formElement, Row row) {
@@ -213,7 +217,7 @@ public class ObservationCreator {
                 return (answerValue.trim().equals("")) ? null : toISODateFormat(answerValue);
             case Image:
             case Video:
-                return s3Service.getObservationValueForUpload(answerValue, oldValue);
+                return getMediaObservationValue(answerValue, errorMsgs, oldValue);
             case Subject:
                 return individualService.getObservationValueForUpload(formElement, answerValue);
             case Location:
@@ -224,6 +228,15 @@ public class ObservationCreator {
                 return this.constructChildObservations(row, headers, errorMsgs, formElement, formType, null);
             default:
                 return answerValue;
+        }
+    }
+
+    private Object getMediaObservationValue(String answerValue, List<String> errorMsgs, Object oldValue) {
+        try {
+            return s3Service.getObservationValueForUpload(answerValue, oldValue);
+        } catch (Exception e) {
+            errorMsgs.add(e.getMessage());
+            return null;
         }
     }
 
