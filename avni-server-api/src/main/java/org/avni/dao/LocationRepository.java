@@ -28,8 +28,14 @@ import java.util.stream.Collectors;
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepository<AddressLevel> {
 
-    @RestResource(path = "findAllById", rel = "findAllById")
-    List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where al.id in (:ids)",
+            nativeQuery = true)
+    List<LocationProjection> findByIdIn(Long[] ids);
 
     Page<AddressLevel> findByVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId,
@@ -49,10 +55,15 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
-    @Query(value = "SELECT a FROM AddressLevel a " +
-            "where (:title is null or lower(a.title) like lower(concat('%', :title,'%'))) " +
-            "and a.isVoided = false order by a.title ")
-    Page<AddressLevel> findByIsVoidedFalseAndTitleIgnoreCaseStartingWithOrderByTitleAsc(String title, Pageable pageable);
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where (:title is null or lower(al.title) like lower(concat('%', :title,'%'))) " +
+            "and al.is_voided = false order by al.title ",
+            nativeQuery = true)
+    Page<LocationProjection> findByIsVoidedFalseAndTitleIgnoreCaseStartingWithOrderByTitleAsc(String title, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
 
