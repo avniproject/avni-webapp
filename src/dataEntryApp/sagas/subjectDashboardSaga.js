@@ -74,7 +74,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
         !isEmpty(programUUID) &&
         includes(programUUIDs, programUUID)
     ).length > 0;
-  const showGeneralTab =
+  const hasAnyGeneralEncounters =
     filter(
       operationalModules.formMappings,
       ({ subjectTypeUUID, formType, encounterTypeUUID }) =>
@@ -82,6 +82,8 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
         formType === "Encounter" &&
         includes(encounterTypeUUIDs, encounterTypeUUID)
     ).length > 0;
+  const showGeneralTab = showProgramTab && hasAnyGeneralEncounters;
+  const displayGeneralInfoInProfileTab = hasAnyGeneralEncounters && !showGeneralTab;
   const showRelatives = filter(operationalModules.relations).length > 0;
   const showGroupMembers = subjectType.isGroup();
   const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
@@ -97,7 +99,8 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
       registrationTabIndex,
       generalTabIndex,
       showGroupMembers,
-      hideDOB
+      hideDOB,
+      displayGeneralInfoInProfileTab
     })
   );
 

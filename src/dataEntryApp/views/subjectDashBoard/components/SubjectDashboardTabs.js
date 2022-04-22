@@ -91,7 +91,8 @@ export default ({
     registrationTabIndex,
     generalTabIndex,
     showGroupMembers,
-    hideDOB
+    hideDOB,
+    displayGeneralInfoInProfileTab
   } = tabsStatus;
 
   const [value, setValue] = React.useState(
@@ -111,36 +112,38 @@ export default ({
   return (
     <Fragment>
       <MUAppBar className={classes.tabView} position="static" color="default">
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-          aria-label="scrollable auto tabs example"
-          className={classes.wrapper}
-        >
-          {showProgramTab && (
+        {showProgramTab && (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+            className={classes.wrapper}
+          >
+            {showProgramTab && (
+              <Tab
+                label={t("programs")}
+                icon={<AssessmentIcon id={"program-tab"} />}
+                {...a11yProps(0)}
+              />
+            )}
             <Tab
-              label={t("programs")}
-              icon={<AssessmentIcon id={"program-tab"} />}
-              {...a11yProps(0)}
+              label={t("profile")}
+              icon={<DescriptionIcon id={"profile-tab"} />}
+              {...a11yProps(registrationTabIndex)}
             />
-          )}
-          <Tab
-            label={t("profile")}
-            icon={<DescriptionIcon id={"profile-tab"} />}
-            {...a11yProps(registrationTabIndex)}
-          />
-          {showGeneralTab && (
-            <Tab
-              label={t("General")}
-              icon={<ListIcon id={"general-tab"} />}
-              {...a11yProps(generalTabIndex)}
-            />
-          )}
-        </Tabs>
+            {showGeneralTab && (
+              <Tab
+                label={t("General")}
+                icon={<ListIcon id={"general-tab"} />}
+                {...a11yProps(generalTabIndex)}
+              />
+            )}
+          </Tabs>
+        )}
       </MUAppBar>
       {showProgramTab && (
         <TabContent value={value} index={0}>
@@ -168,6 +171,8 @@ export default ({
             getGroupMembers={getGroupMembers}
             groupMembers={groupMembers}
             hideDOB={hideDOB}
+            displayGeneralInfoInProfileTab={displayGeneralInfoInProfileTab}
+            general={general}
           />
         </Paper>
       </TabContent>

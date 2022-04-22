@@ -55,7 +55,8 @@ const useStyles = makeStyles(theme => ({
   tableView: {
     flexGrow: 1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginBottom: "20px"
   },
   mainHeading: {
     fontSize: "20px",

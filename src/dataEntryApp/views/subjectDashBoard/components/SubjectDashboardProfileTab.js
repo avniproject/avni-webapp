@@ -29,6 +29,8 @@ import {
   selectSubjectSummary
 } from "../../../reducers/serverSideRulesReducer";
 import { RuleSummary } from "./RuleSummary";
+import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
+import { NewFormButton } from "./NewFormButton";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -103,7 +105,9 @@ const SubjectDashboardProfileTab = ({
   groupMembers,
   voidError,
   clearVoidServerError,
-  hideDOB
+  hideDOB,
+  general,
+  displayGeneralInfoInProfileTab
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -341,6 +345,13 @@ const SubjectDashboardProfileTab = ({
         </Paper>
       ) : (
         <Paper className={classes.root}>
+          <NewFormButton
+            general={general}
+            subjectTypeUuid={profile.subjectType.uuid}
+            subjectUuid={profile.uuid}
+            subjectVoided={profile.voided}
+            display={displayGeneralInfoInProfileTab}
+          />
           <RuleSummary
             title={"subjectSummary"}
             isFetching={isFetchingSummary}
@@ -356,6 +367,15 @@ const SubjectDashboardProfileTab = ({
             setVoidConfirmation,
             t("SubjectVoidAlertMessage"),
             voidSubject
+          )}
+          {displayGeneralInfoInProfileTab && (
+            <SubjectDashboardGeneralTab
+              subjectUuid={profile.uuid}
+              general={general}
+              subjectTypeUuid={profile.subjectType.uuid}
+              subjectVoided={profile.voided}
+              displayGeneralInfoInProfileTab={displayGeneralInfoInProfileTab}
+            />
           )}
         </Paper>
       )}
