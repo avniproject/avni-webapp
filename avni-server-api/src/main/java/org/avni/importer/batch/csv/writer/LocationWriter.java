@@ -77,9 +77,6 @@ public class LocationWriter implements ItemWriter<Row> {
                 locationRepository.save(location);
             }
         }
-        if (allErrorMsgs.size() > 0) {
-            throw new Exception(String.join(", ", allErrorMsgs));
-        }
     }
 
     private void checkIfHeaderHasLocationTypes(List<String> locationTypeNames, String[] headers, List<String> allErrorMsgs) throws Exception {

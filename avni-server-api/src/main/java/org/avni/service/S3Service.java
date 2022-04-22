@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.avni.util.S;
 import org.joda.time.DateTime;
 import org.avni.domain.Extension;
@@ -403,10 +404,24 @@ public class S3Service {
         if (oldValue != null) {
             this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
         }
-        String extension = mediaURL.contains(".") ? S.getLastStringAfter(mediaURL, ".") : "";
-        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString().concat(format(".%s", extension))));
+        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), getUploadFileName(mediaURL)));
         downloadMediaToFile(mediaURL, file);
         return this.uploadFileToS3(file);
+    }
+
+    private String getUploadFileName(String mediaURL) throws Exception {
+        URL url = new URL(mediaURL);
+        URLConnection con = url.openConnection();
+        String contentDisposition = con.getHeaderField("Content-Disposition");
+        if (contentDisposition == null || !contentDisposition.contains("filename=\"")) {
+            throw new Exception(format("Can not extract file name from the URL '%s'. Make sure media download URL is correct.", mediaURL));
+        }
+        String fileName = contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
+        String extension = FilenameUtils.getExtension(fileName);
+        if (extension.isEmpty()) {
+            throw new Exception(format("No file extension found in the file name. Make sure media download URL '%s' is correct.", mediaURL));
+        }
+        return UUID.randomUUID().toString().concat(format(".%s", extension));
     }
 
     private void downloadMediaToFile(String mediaURL, File file) throws Exception {
