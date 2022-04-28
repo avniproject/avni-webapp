@@ -1,9 +1,9 @@
 import UploadTypes from "./UploadTypes";
 
 const types = Object.freeze({
-  locations: "Locations",
-  usersAndCatchments: "Users & Catchments",
-  metadataZip: "Metadata Zip"
+  locations: { name: "Locations" },
+  usersAndCatchments: { name: "Users & Catchments" },
+  metadataZip: { name: "Metadata Zip" }
 });
 
 export default new UploadTypes(types);

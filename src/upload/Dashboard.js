@@ -16,6 +16,8 @@ import { getStatuses, getUploadTypes } from "./reducers";
 import UploadTypes from "./UploadTypes";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -32,12 +34,13 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [uploadType, setUploadType] = React.useState("");
   const [entityForDownload, setEntityForDownload] = React.useState("");
   const [file, setFile] = React.useState();
+  const [autoApprove, setAutoApprove] = React.useState(false);
 
   const selectFile = (content, userfile) => setFile(userfile);
   const getUploadTypeCode = name => Types.getCode(name) || uploadTypes.getCode(name);
 
   const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file);
+    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove);
     if (!ok && error) {
       alert(error);
     }
@@ -130,6 +133,19 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                 </Grid>
               </Grid>
             </Grid>
+            {uploadTypes.isApprovalEnabled(uploadType) && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={autoApprove}
+                    onChange={event => setAutoApprove(event.target.checked)}
+                    name="autoApprove"
+                    color="primary"
+                  />
+                }
+                label={"Approve automatically"}
+              />
+            )}
           </DocumentationContainer>
         </Paper>
       </Grid>

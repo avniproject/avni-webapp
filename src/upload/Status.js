@@ -18,6 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import TablePagination from "@material-ui/core/TablePagination";
 import Button from "@material-ui/core/Button";
+import UploadTypes from "./UploadTypes";
 
 const createStyles = makeStyles(theme => ({
   filename: {
@@ -28,7 +29,7 @@ const createStyles = makeStyles(theme => ({
   }
 }));
 
-const Status = ({ viewVersion, statuses, getStatuses, page }) => {
+const Status = ({ viewVersion, statuses, getStatuses, page, uploadTypes = new UploadTypes() }) => {
   const classes = createStyles();
   React.useEffect(() => {
     getStatuses(0);
@@ -85,7 +86,9 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
                   {jobStatus.fileName}
                 </TableCell>
               </Tooltip>
-              <TableCell align="right">{Types.getName(jobStatus.type)}</TableCell>
+              <TableCell align="right">
+                {Types.getName(jobStatus.type) || uploadTypes.getName(jobStatus.type)}
+              </TableCell>
               <TableCell align="right">{formatDate(jobStatus.createTime)}</TableCell>
               <TableCell align="right">{formatDate(jobStatus.startTime)}</TableCell>
               <TableCell align="right">{formatDate(jobStatus.endTime)}</TableCell>
@@ -131,7 +134,8 @@ const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
   page: state.bulkUpload.page,
-  viewVersion: state.admin.ui.viewVersion
+  viewVersion: state.admin.ui.viewVersion,
+  uploadTypes: state.bulkUpload.uploadTypes
 });
 
 export default withRouter(
