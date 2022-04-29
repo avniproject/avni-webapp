@@ -9,7 +9,7 @@ import { ValidFormat } from "./ValidFormat";
 import { CustomisedExpansionPanelSummary } from "../components/CustomisedExpansionPanelSummary";
 import { findFormUuidForSubjectType } from "../domain/formMapping";
 import http from "../../common/utils/httpClient";
-import { forEach } from "lodash";
+import { forEach, includes } from "lodash";
 import { OptionSelect } from "./OptionSelect";
 import { Box } from "@material-ui/core";
 
@@ -32,6 +32,7 @@ const ExpansionPanelDetails = withStyles(theme => ({
   }
 }))(MuiExpansionPanelDetails);
 
+const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
 export const AdvancedSettings = ({
   subjectType,
   dispatch,
@@ -64,8 +65,13 @@ export const AdvancedSettings = ({
           const syncAttributes = [];
           forEach(form.formElementGroups, feg => {
             forEach(feg.formElements, fe => {
-              if (!feg.voided && !fe.voided) {
-                const concept = fe.concept;
+              const concept = fe.concept;
+              if (
+                !feg.voided &&
+                !fe.voided &&
+                fe.mandatory &&
+                includes(syncAttributeDataTypes, concept.dataType)
+              ) {
                 syncAttributes.push({ label: concept.name, value: concept.uuid });
               }
             });
