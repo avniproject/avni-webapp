@@ -44,7 +44,6 @@ public class UserController {
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
-    private final ProjectionFactory projectionFactory;
 
     @Value("${avni.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -55,7 +54,7 @@ public class UserController {
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           CognitoIdpService cognitoService,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ProjectionFactory projectionFactory) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
@@ -64,7 +63,6 @@ public class UserController {
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
-        this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -81,7 +79,7 @@ public class UserController {
     @RequestMapping(value = {"/user", "/user/accountOrgAdmin"}, method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity createUser(@RequestBody UserContract userContract) {
+    public ResponseEntity createUser(@RequestBody UserContract userContract) throws Exception {
         try {
             if (usernameExists(userContract.getUsername()))
                 throw new ValidationException(String.format("Username %s already exists", userContract.getUsername()));
@@ -93,7 +91,7 @@ public class UserController {
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
             cognitoService.createUserWithPassword(user, userContract.getPassword());
-            userService.save(user);
+            userService.save(user, userContract.getDirectAssignmentIds());
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             userService.addToDefaultUserGroup(user);
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
@@ -110,7 +108,7 @@ public class UserController {
     @PutMapping(value = {"/user/{id}", "/user/accountOrgAdmin/{id}"})
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) {
+    public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) throws Exception {
         try {
             User user = userRepository.findByUsername(userContract.getUsername());
             if (user == null)
@@ -120,7 +118,7 @@ public class UserController {
             user = setUserAttributes(user, userContract);
 
             cognitoService.updateUser(user);
-            userService.save(user);
+            userService.save(user, userContract.getDirectAssignmentIds());
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);

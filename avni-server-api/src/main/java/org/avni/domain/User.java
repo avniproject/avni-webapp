@@ -9,8 +9,8 @@ import org.avni.web.validation.ValidationException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -92,8 +92,10 @@ public class User {
     @Type(type = "jsonObject")
     private JsonObject syncSettings;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    private Set<UserSubjectAssignment> userSubjectAssignments = new HashSet<>();
+
     public enum SyncSettingKeys {
-       subjectIds,
        syncConcept1Values,
        syncConcept2Values,
        syncConcept1,
@@ -205,6 +207,16 @@ public class User {
     public boolean isNew() {
         Long id = this.getId();
         return (id == null || id == 0);
+    }
+
+    public List<Long> getDirectAssignmentIds() {
+        return this.userSubjectAssignments.stream()
+                .map(assignments -> assignments.getSubject().getId())
+                .collect(Collectors.toList());
+    }
+
+    public void setUserSubjectAssignments(Set<UserSubjectAssignment> userSubjectAssignments) {
+        this.userSubjectAssignments = userSubjectAssignments;
     }
 
     public void setCreatedBy(User createdBy) {

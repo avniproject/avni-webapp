@@ -7,6 +7,7 @@ import org.avni.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserContract extends ReferenceDataContract {
@@ -24,6 +25,7 @@ public class UserContract extends ReferenceDataContract {
     private String[] roles;
     private String password;
     private JsonObject syncSettings;
+    private Set<Long> directAssignmentIds;
 
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
@@ -149,5 +151,13 @@ public class UserContract extends ReferenceDataContract {
 
     public void setSyncSettings(JsonObject syncSettings) {
         this.syncSettings = syncSettings;
+    }
+
+    public Set<Long> getDirectAssignmentIds() {
+        return directAssignmentIds;
+    }
+
+    public void setDirectAssignmentIds(Set<Long> directAssignmentIds) {
+        this.directAssignmentIds = directAssignmentIds;
     }
 }

@@ -16,7 +16,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,17 +30,17 @@ public class IndividualService implements ScopeAwareService {
     private final GroupRoleRepository groupRoleRepository;
     private final SubjectTypeRepository subjectTypeRepository;
     private final AddressLevelService addressLevelService;
-    private final UserRepository userRepository;
+    private final UserSubjectAssignmentRepository userSubjectAssignmentRepository;
 
     @Autowired
-    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService, UserRepository userRepository) {
+    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService, UserSubjectAssignmentRepository userSubjectAssignmentRepository) {
         this.individualRepository = individualRepository;
         this.observationService = observationService;
         this.groupSubjectRepository = groupSubjectRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.addressLevelService = addressLevelService;
-        this.userRepository = userRepository;
+        this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
     }
 
     public IndividualContract getSubjectEncounters(String individualUuid) {
@@ -338,13 +337,11 @@ public class IndividualService implements ScopeAwareService {
     private void assignSubjectToUserIfRequired(Individual individual) {
         SubjectType subjectType = individual.getSubjectType();
         User user = UserContextHolder.getUserContext().getUser();
-        JsonObject syncSettings = user.getSyncSettings();
-        List<Long> subjectIds = (List<Long>) syncSettings.getOrDefault(User.SyncSettingKeys.subjectIds.name(), Collections.EMPTY_LIST);
+        List<Long> subjectIds = user.getDirectAssignmentIds();
         if (subjectType.isDirectlyAssignable() && !subjectIds.contains(individual.getId())) {
-            subjectIds.add(individual.getId());
-            syncSettings.put(User.SyncSettingKeys.subjectIds.name(), subjectIds);
-            user.setSyncSettings(syncSettings);
-            userRepository.save(user);
+            UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment(user, individual);
+            userSubjectAssignment.assignUUID();
+            userSubjectAssignmentRepository.save(userSubjectAssignment);
         }
     }
 }

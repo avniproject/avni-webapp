@@ -1,9 +1,6 @@
 package org.avni.service;
 
-import org.avni.dao.GroupRepository;
-import org.avni.dao.OrganisationRepository;
-import org.avni.dao.UserGroupRepository;
-import org.avni.dao.UserRepository;
+import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.slf4j.Logger;
@@ -12,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.joda.time.DateTime;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -21,13 +21,17 @@ public class UserService implements NonScopeAwareService {
     private OrganisationRepository organisationRepository;
     private GroupRepository groupRepository;
     private UserGroupRepository userGroupRepository;
+    private UserSubjectAssignmentRepository userSubjectAssignmentRepository;
+    private IndividualRepository individualRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository) {
+    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, UserSubjectAssignmentRepository userSubjectAssignmentRepository, IndividualRepository individualRepository) {
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
+        this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
+        this.individualRepository = individualRepository;
     }
 
     public User getCurrentUser() {
@@ -45,6 +49,29 @@ public class UserService implements NonScopeAwareService {
             }
         }
         return userRepository.save(user);
+    }
+
+    public User save(User user, Set<Long> directAssignmentIds) throws Exception {
+        User savedUser = this.save(user);
+        userSubjectAssignmentRepository.deleteAllByUser(savedUser.getId());
+        if (directAssignmentIds != null) {
+            saveDirectAssignment(user, directAssignmentIds);
+        }
+        return savedUser;
+    }
+
+    private void saveDirectAssignment(User user, Set<Long> directAssignmentIds) throws Exception {
+        Set<UserSubjectAssignment> userSubjectAssignments = new HashSet<>();
+        for (Long subjectId : directAssignmentIds) {
+            Individual individual = individualRepository.findOne(subjectId);
+            if (individual == null) {
+                throw new Exception(String.format("Subject id %d not found", subjectId));
+            }
+            UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment(user, individual);
+            userSubjectAssignment.assignUUID();
+            userSubjectAssignments.add(userSubjectAssignment);
+        }
+        userSubjectAssignmentRepository.saveAll(userSubjectAssignments);
     }
 
     public void addToDefaultUserGroup(User user) {
