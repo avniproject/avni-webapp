@@ -153,9 +153,7 @@ const ConceptSyncAttributeShow = ({
   ...props
 }) => {
   const syncSettings = get(props.record, "syncSettings", {});
-  console.log("syncSettings =>>", syncSettings);
   const conceptUUID = get(syncSettings, conceptProperty);
-  console.log("conceptUUID =>>", conceptUUID);
   if (isEmpty(conceptUUID)) return null;
   const isCoded =
     get(find(syncAttributesData[conceptProperty], sad => sad.id === conceptUUID), "dataType") ===
@@ -221,7 +219,7 @@ export const UserDetail = ({ user, ...props }) => {
         <ReferenceArrayField
           label={"Direct assignment"}
           reference="individual"
-          source={`syncSettings.subjectIds`}
+          source={`directAssignmentIds`}
         >
           <SingleFieldList linkType={false}>
             <TitleChip source="name" />
@@ -324,7 +322,7 @@ const ConceptSyncAttribute = ({ syncAttributesData, syncAttributeName, edit, ...
               {...defaultValue}
             />
             {!isEmpty(syncAttributeConceptUUID) ? (
-              syncAttributeConcept.dataType === "Coded" ? (
+              get(syncAttributeConcept, "dataType") === "Coded" ? (
                 <ReferenceArrayInput
                   resettable
                   source={`syncSettings.${syncAttributeName}Values`}
@@ -632,7 +630,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
             {syncAttributesData.isAnySubjectTypeDirectlyAssignable && (
               <ReferenceArrayInput
                 reference="individual"
-                source="syncSettings.subjectIds"
+                source="directAssignmentIds"
                 label="Subjects to sync"
                 filterToQuery={searchText => ({ name: searchText })}
               >
