@@ -24,6 +24,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private boolean allowEmptyLocation;
 
+    private boolean allowProfilePicture;
+
     private boolean uniqueName;
 
     private FormatContract validFirstNameFormat;
@@ -41,6 +43,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setType(subjectType.getType().name());
         contract.setSubjectSummaryRule(subjectType.getSubjectSummaryRule());
         contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
+        contract.setAllowProfilePicture(subjectType.isAllowProfilePicture());
         contract.setUniqueName(subjectType.isUniqueName());
         contract.setValidFirstNameFormat(FormatContract.fromFormat(subjectType.getValidFirstNameFormat()));
         contract.setValidLastNameFormat(FormatContract.fromFormat(subjectType.getValidLastNameFormat()));
@@ -93,6 +96,14 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setAllowEmptyLocation(boolean allowEmptyLocation) {
         this.allowEmptyLocation = allowEmptyLocation;
+    }
+
+    public boolean isAllowProfilePicture() {
+        return allowProfilePicture;
+    }
+
+    public void setAllowProfilePicture(boolean allowProfilePicture) {
+        this.allowProfilePicture = allowProfilePicture;
     }
 
     public boolean isUniqueName() {

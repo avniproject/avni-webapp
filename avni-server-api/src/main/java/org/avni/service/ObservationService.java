@@ -291,6 +291,8 @@ public class ObservationService {
         individualContract.setUuid(individual.getUuid());
         individualContract.setFirstName(individual.getFirstName());
         individualContract.setLastName(individual.getLastName());
+        if (null != individual.getProfilePicture())
+            individualContract.setProfilePicture(individual.getProfilePicture());
         if (null != individual.getDateOfBirth())
             individualContract.setDateOfBirth(individual.getDateOfBirth());
         if (null != individual.getGender()) {

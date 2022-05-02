@@ -13,10 +13,8 @@ import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.SubjectHeaders;
 import org.avni.importer.batch.model.Row;
-import org.avni.service.AddressLevelService;
-import org.avni.service.EntityApprovalStatusService;
-import org.avni.service.IndividualService;
-import org.avni.service.ObservationService;
+import org.avni.service.*;
+import org.jadira.usertype.spi.utils.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +48,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private ObservationCreator observationCreator;
     private final IndividualService individualService;
     private final AddressLevelService addressLevelService;
+    private final S3Service s3Service;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -66,7 +65,8 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          RuleServerInvoker ruleServerInvoker,
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
-                         ObservationCreator observationCreator, IndividualService individualService, AddressLevelService addressLevelService) {
+                         ObservationCreator observationCreator, IndividualService individualService,
+                         AddressLevelService addressLevelService, S3Service s3Service) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -82,6 +82,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         this.individualService = individualService;
         this.addressLevelService = addressLevelService;
         this.locationCreator = new LocationCreator();
+        this.s3Service = s3Service;
     }
 
     @Override
@@ -102,6 +103,13 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setSubjectType(subjectType);
         individual.setFirstName(row.get(headers.firstName));
         individual.setLastName(row.get(headers.lastName));
+        if (individual.getSubjectType().isAllowProfilePicture()) {
+            String profilePicture = row.get(headers.profilePicture);
+            if(StringUtils.isNotEmpty(profilePicture)) {
+                individual.setProfilePicture(s3Service
+                        .uploadProfilePic(profilePicture.trim(), null));
+            }
+        }
         setDateOfBirth(individual, row, allErrorMsgs);
         individual.setDateOfBirthVerified(row.getBool(headers.dobVerified));
         setRegistrationDate(individual, row, allErrorMsgs);

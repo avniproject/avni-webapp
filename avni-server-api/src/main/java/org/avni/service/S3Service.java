@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -63,6 +64,8 @@ public class S3Service {
     private final Logger logger;
     private final Boolean isDev;
     private final String EXTENSION_DIR = "extensions";
+    private final String PROFILE_PIC_DIR = "profile_pic";
+
 
     @Autowired
     public S3Service(Boolean isDev) {
@@ -101,8 +104,16 @@ public class S3Service {
     }
 
     private String getS3KeyForMediaUpload(String fileName) {
+        return getS3KeyForMediaUpload(null, fileName);
+    }
+
+    private String getS3KeyForMediaUpload(String parentFolder, String fileName) {
         String mediaDirectory = getOrgDirectoryName();
-        return format("%s/%s", mediaDirectory, fileName);
+        if (StringUtils.isEmpty(parentFolder)) {
+            return format("%s/%s", mediaDirectory, fileName);
+        } else {
+            return format("%s/%s/%s", mediaDirectory, parentFolder, fileName);
+        }
     }
 
     public boolean fileExists(String fileName) {
@@ -261,11 +272,15 @@ public class S3Service {
     }
 
     public String uploadFileToS3(File file) throws IOException {
+        return uploadFileToS3(null, file);
+    }
+
+    public String uploadFileToS3(String parentFolder, File file) throws IOException {
 //        if (!file.exists() || isDev) {
 //            logger.info("Skipping media upload to S3");
 //            return null;
 //        }
-        String s3Key = getS3KeyForMediaUpload(file.getName());
+        String s3Key = getS3KeyForMediaUpload(parentFolder, file.getName());
         s3Client.putObject(new PutObjectRequest(bucketName, s3Key, file));
         Files.delete(file.toPath());
         return getObjectURL(file);
@@ -407,6 +422,19 @@ public class S3Service {
         File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), getUploadFileName(mediaURL)));
         downloadMediaToFile(mediaURL, file);
         return this.uploadFileToS3(file);
+    }
+
+    public String uploadProfilePic(String profilePicURL, Object oldValue) throws Exception {
+        return this.uploadMediaFileInDir(PROFILE_PIC_DIR, profilePicURL, oldValue);
+    }
+
+    private String uploadMediaFileInDir(String parentFolder, String mediaUrl, Object oldValue) throws Exception {
+        if (oldValue != null) {
+            this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
+        }
+        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), getUploadFileName(mediaUrl)));
+        downloadMediaToFile(mediaUrl, file);
+        return this.uploadFileToS3(parentFolder, file);
     }
 
     private String getUploadFileName(String mediaURL) throws Exception {

@@ -19,6 +19,8 @@ public class IndividualContractWrapper {
 
     private String lastName;
 
+    private String profilePicture;
+
     private LocalDate dateOfBirth;
 
     private GenderContract gender;
@@ -101,6 +103,14 @@ public class IndividualContractWrapper {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public LocalDate getDateOfBirth() {

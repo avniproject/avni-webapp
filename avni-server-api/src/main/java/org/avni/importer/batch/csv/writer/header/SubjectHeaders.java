@@ -5,6 +5,7 @@ public class SubjectHeaders implements Headers {
     public final String subjectType = "Subject Type";
     public final String firstName = "First Name";
     public final String lastName = "Last Name";
+    public final String profilePicture = "Profile Picture";
     public final String dateOfBirth = "Date Of Birth";
     public final String dobVerified = "Date Of Birth Verified";
     public final String registrationDate = "Date Of Registration";

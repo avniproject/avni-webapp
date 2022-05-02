@@ -11,6 +11,8 @@ public class IndividualRequestEntity {
 
     private String lastName;
 
+    private String profilePicture;
+
     private boolean voided;
 
     private LocalDate dateOfBirth;
@@ -43,6 +45,15 @@ public class IndividualRequestEntity {
     public String getLastName(){
         return this.lastName;
     }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
     public void setVoided(boolean voided){
         this.voided = voided;
     }

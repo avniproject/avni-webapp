@@ -86,6 +86,9 @@ public class IndividualService implements ScopeAwareService {
         individualContract.setUuid(individual.getUuid());
         individualContract.setFirstName(individual.getFirstName());
         individualContract.setLastName(individual.getLastName());
+        if (null != individual.getProfilePicture()
+                && individual.getSubjectType().isAllowProfilePicture())
+            individualContract.setProfilePicture(individual.getProfilePicture());
         if (null != individual.getDateOfBirth())
             individualContract.setDateOfBirth(individual.getDateOfBirth());
         if (null != individual.getGender()) {
@@ -218,6 +221,9 @@ public class IndividualService implements ScopeAwareService {
         individualBContract.setUuid(individual.getUuid());
         individualBContract.setFirstName(individual.getFirstName());
         individualBContract.setLastName(individual.getLastName());
+        if (individual.getSubjectType().isAllowProfilePicture()) {
+            individualBContract.setProfilePicture(individual.getProfilePicture());
+        }
         individualBContract.setDateOfBirth(individual.getDateOfBirth());
         individualBContract.setSubjectType(SubjectTypeContract.fromSubjectType(individual.getSubjectType()));
         relationshipContract.setIndividualB(individualBContract);
@@ -257,10 +263,14 @@ public class IndividualService implements ScopeAwareService {
         individualContractWeb.setUuid(individual.getUuid());
         individualContractWeb.setFirstName(individual.getFirstName());
         individualContractWeb.setLastName(individual.getLastName());
+        if (individual.getSubjectType().isAllowProfilePicture()) {
+            individualContractWeb.setProfilePicture(individual.getProfilePicture());
+        }
         individualContractWeb.setDateOfBirth(individual.getDateOfBirth());
         individualContractWeb.setSubjectType(SubjectTypeContract.fromSubjectType(individual.getSubjectType()));
-        if (individual.getSubjectType().getType().equals(Subject.Person))
+        if (individual.getSubjectType().getType().equals(Subject.Person)) {
             individualContractWeb.setGender(individual.getGender().getName());
+        }
 
         return individualContractWeb;
     }

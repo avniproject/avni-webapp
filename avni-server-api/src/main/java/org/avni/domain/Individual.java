@@ -34,6 +34,8 @@ public class Individual extends SyncAttributeEntity {
 
     private String lastName;
 
+    private String profilePicture;
+
     private LocalDate dateOfBirth;
 
     private boolean dateOfBirthVerified;
@@ -72,10 +74,11 @@ public class Individual extends SyncAttributeEntity {
     @Column
     private Point registrationLocation;
 
-    public static Individual create(String firstName, String lastName, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
+    public static Individual create(String firstName, String lastName, String profilePicture, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
         Individual individual = new Individual();
         individual.firstName = firstName;
         individual.lastName = lastName;
+        individual.profilePicture = profilePicture;
         individual.dateOfBirth = dateOfBirth;
         individual.dateOfBirthVerified = dateOfBirthVerified;
         individual.gender = gender;
@@ -166,6 +169,14 @@ public class Individual extends SyncAttributeEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public Point getRegistrationLocation() {

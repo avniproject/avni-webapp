@@ -288,6 +288,9 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setSubjectType(subjectType);
         individual.setFirstName(individualRequest.getFirstName());
         individual.setLastName(individualRequest.getLastName());
+        if(subjectType.isAllowProfilePicture()) {
+            individual.setProfilePicture(individualRequest.getProfilePicture());
+        }
         individual.setDateOfBirth(individualRequest.getDateOfBirth());
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);

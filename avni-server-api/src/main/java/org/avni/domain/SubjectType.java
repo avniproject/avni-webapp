@@ -50,6 +50,8 @@ public class SubjectType extends OrganisationAwareEntity {
 
     private boolean uniqueName;
 
+    private boolean allowProfilePicture;
+
     @Column(name = "icon_file_s3_key")
     private String iconFileS3Key;
 
@@ -186,6 +188,14 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setAllowEmptyLocation(boolean allowEmptyLocation) {
         this.allowEmptyLocation = allowEmptyLocation;
+    }
+
+    public boolean isAllowProfilePicture() {
+        return allowProfilePicture;
+    }
+
+    public void setAllowProfilePicture(boolean allowProfilePicture) {
+        this.allowProfilePicture = allowProfilePicture;
     }
 
     public boolean isUniqueName() {

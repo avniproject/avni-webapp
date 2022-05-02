@@ -56,6 +56,9 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     String lastName = importField.getTextValue(row, header, importSheetMetaData);
                     individualRequest.setLastName(StringUtils.isEmpty(lastName) ? "" : lastName);
                     break;
+                case "Profile Picture":
+                    //Do nothing, as we do not Want to upload image here due to performance considerations
+                    break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, header, importSheetMetaData);
                     if (ageInYearsOrMonths != null) {
