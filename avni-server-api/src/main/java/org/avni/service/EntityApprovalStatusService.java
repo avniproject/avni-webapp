@@ -72,9 +72,9 @@ public class EntityApprovalStatusService implements NonScopeAwareService {
         return entity.getUuid();
     }
 
-    public void createDefaultStatus(EntityApprovalStatus.EntityType entityType, Long entityId) {
-        ApprovalStatus pendingStatus = approvalStatusRepository.findByStatus(ApprovalStatus.Status.Pending);
-        List<EntityApprovalStatus> entityApprovalStatuses = entityApprovalStatusRepository.findByEntityIdAndEntityTypeAndApprovalStatusAndIsVoidedFalse(entityId, entityType, pendingStatus);
+    public void createStatus(EntityApprovalStatus.EntityType entityType, Long entityId, ApprovalStatus.Status status) {
+        ApprovalStatus approvalStatus = approvalStatusRepository.findByStatus(status);
+        List<EntityApprovalStatus> entityApprovalStatuses = entityApprovalStatusRepository.findByEntityIdAndEntityTypeAndApprovalStatusAndIsVoidedFalse(entityId, entityType, approvalStatus);
         if (!entityApprovalStatuses.isEmpty()) {
             return;
         }
@@ -82,7 +82,7 @@ public class EntityApprovalStatusService implements NonScopeAwareService {
         entityApprovalStatus.assignUUID();
         entityApprovalStatus.setEntityType(entityType);
         entityApprovalStatus.setEntityId(entityId);
-        entityApprovalStatus.setApprovalStatus(pendingStatus);
+        entityApprovalStatus.setApprovalStatus(approvalStatus);
         entityApprovalStatus.setStatusDateTime(new DateTime());
         entityApprovalStatus.setAutoApproved(false);
         entityApprovalStatusRepository.save(entityApprovalStatus);

@@ -1,6 +1,7 @@
 package org.avni.dao;
 
 import org.avni.domain.*;
+import org.avni.framework.security.UserContextHolder;
 import org.joda.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -84,11 +85,11 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
                 }
             }
             if (subjectType.isDirectlyAssignable()) {
-                List<Integer> subjectIds = (List<Integer>) syncSettings.getOrDefault(User.SyncSettingKeys.subjectIds.name(), Collections.EMPTY_LIST);
+                List<Long> subjectIds = UserContextHolder.getUserContext().getUser().getDirectAssignmentIds();
                 if (subjectIds.size() > 0) {
-                    CriteriaBuilder.In<Integer> inClause1 = cb.in(root.get("groupSubject").get("id"));
-                    CriteriaBuilder.In<Integer> inClause2 = cb.in(root.get("memberSubject").get("id"));
-                    for (Integer id : subjectIds) {
+                    CriteriaBuilder.In<Long> inClause1 = cb.in(root.get("groupSubject").get("id"));
+                    CriteriaBuilder.In<Long> inClause2 = cb.in(root.get("memberSubject").get("id"));
+                    for (Long id : subjectIds) {
                         inClause1.value(id);
                         inClause2.value(id);
                     }

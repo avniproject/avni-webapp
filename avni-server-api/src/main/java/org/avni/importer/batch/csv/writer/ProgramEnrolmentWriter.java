@@ -11,7 +11,6 @@ import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.avni.importer.batch.model.Row;
-import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
 import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.LocalDate;
@@ -34,7 +33,6 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private SubjectCreator subjectCreator;
     private DateCreator dateCreator;
     private ProgramCreator programCreator;
-    private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
     private ObservationService observationService;
     private RuleServerInvoker ruleServerInvoker;
@@ -42,6 +40,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
     private ProgramEnrolmentService programEnrolmentService;
+    private EntityApprovalStatusWriter entityApprovalStatusWriter;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -50,18 +49,16 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     public ProgramEnrolmentWriter(ProgramEnrolmentRepository programEnrolmentRepository,
                                   SubjectCreator subjectCreator,
                                   ProgramCreator programCreator,
-                                  EntityApprovalStatusService entityApprovalStatusService,
                                   FormMappingRepository formMappingRepository,
                                   ObservationService observationService,
                                   RuleServerInvoker ruleServerInvoker,
                                   VisitCreator visitCreator,
                                   DecisionCreator decisionCreator,
                                   ObservationCreator observationCreator,
-                                  ProgramEnrolmentService programEnrolmentService) {
+                                  ProgramEnrolmentService programEnrolmentService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.subjectCreator = subjectCreator;
         this.programCreator = programCreator;
-        this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
         this.observationService = observationService;
         this.ruleServerInvoker = ruleServerInvoker;
@@ -69,6 +66,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
         this.programEnrolmentService = programEnrolmentService;
+        this.entityApprovalStatusWriter = entityApprovalStatusWriter;
         this.locationCreator = new LocationCreator();
         this.dateCreator = new DateCreator();
     }
@@ -116,9 +114,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
             savedEnrolment = programEnrolmentService.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
         }
-        if (formMapping.isEnableApproval()) {
-            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEnrolment, savedEnrolment.getId());
-        }
+        entityApprovalStatusWriter.saveStatus(formMapping, savedEnrolment.getId(), EntityApprovalStatus.EntityType.ProgramEnrolment);
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {

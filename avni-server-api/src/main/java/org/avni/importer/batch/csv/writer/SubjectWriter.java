@@ -3,6 +3,7 @@ package org.avni.importer.batch.csv.writer;
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.application.Subject;
+import org.avni.application.projections.LocationProjection;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.GenderRepository;
 import org.avni.dao.IndividualRepository;
@@ -49,7 +50,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
     private final IndividualService individualService;
-    private final AddressLevelService addressLevelService;
+    private final EntityApprovalStatusWriter entityApprovalStatusWriter;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -66,7 +67,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          RuleServerInvoker ruleServerInvoker,
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
-                         ObservationCreator observationCreator, IndividualService individualService, AddressLevelService addressLevelService) {
+                         ObservationCreator observationCreator, IndividualService individualService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -80,7 +81,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
         this.individualService = individualService;
-        this.addressLevelService = addressLevelService;
+        this.entityApprovalStatusWriter = entityApprovalStatusWriter;
         this.locationCreator = new LocationCreator();
     }
 
@@ -93,7 +94,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAllByIsVoidedFalse();
         locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
 
-        List<AddressLevel> locations = locationRepository.findAllByIsVoidedFalse();
+        List<LocationProjection> locations = locationRepository.findAllNonVoided();
 
         Individual individual = getOrCreateIndividual(row);
         List<String> allErrorMsgs = new ArrayList<>();
@@ -125,10 +126,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             savedIndividual = individualService.save(individual);
             visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         }
-
-        if (formMapping.isEnableApproval()) {
-            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Subject, savedIndividual.getId());
-        }
+        entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
     }
 
     private Individual getOrCreateIndividual(Row row) {
@@ -181,21 +179,21 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private void setAddressLevel(Individual individual,
                                  Row row,
                                  List<AddressLevelType> locationTypes,
-                                 List<AddressLevel> locations,
+                                 List<LocationProjection> locations,
                                  List<String> errorMsgs) {
         try {
-            AddressLevel addressLevel;
+            LocationProjection addressLevel;
             AddressLevelType lowestAddressLevelType = locationTypes.get(locationTypes.size() - 1);
 
             String lowestInputAddressLevel = row.get(lowestAddressLevelType.getName());
             if (lowestInputAddressLevel == null)
                 throw new Exception(String.format("Missing '%s'", lowestAddressLevelType.getName()));
 
-            Supplier<Stream<AddressLevel>> addressMatches = () ->
+            Supplier<Stream<LocationProjection>> addressMatches = () ->
                     locations.stream()
                             .filter(location ->
                                     location.getTitle().toLowerCase().equals(lowestInputAddressLevel.toLowerCase()) &&
-                                            location.getType().getName().equals(lowestAddressLevelType.getName()));
+                                            location.getTypeString().equals(lowestAddressLevelType.getName()));
 
             if (addressMatches.get().count() > 1) {
                 // filter by lineage if more than one location with same name present
@@ -204,15 +202,15 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                 // exactly 1 or no match
                 addressLevel = addressMatches.get().findFirst().orElseThrow(() -> new Exception("'Address' not found"));
             }
-            individual.setAddressLevel(addressLevel);
+            individual.setAddressLevel(locationRepository.findByUuid(addressLevel.getUuid()));
         } catch (Exception ex) {
             errorMsgs.add(ex.getMessage());
         }
     }
 
-    private AddressLevel getAddressLevelByLineage(Row row,
+    private LocationProjection getAddressLevelByLineage(Row row,
                                                   List<AddressLevelType> locationTypes,
-                                                  List<AddressLevel> locations) throws Exception {
+                                                  List<LocationProjection> locations) throws Exception {
         List<String> inputLocations = new ArrayList<>();
         for (AddressLevelType addressLevelType : locationTypes) {
             String _location = row.get(addressLevelType.getName());
@@ -226,7 +224,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         String lineage = String.join(", ", inputLocations);
         return locations.stream()
                 .filter(location ->
-                        addressLevelService.getTitleLineage(location)
+                        location.getTitleLineage()
                                 .toLowerCase()
                                 .endsWith(lineage.toLowerCase()))
                 .findFirst()

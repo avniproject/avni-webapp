@@ -33,7 +33,6 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private final ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentCreator programEnrolmentCreator;
     private BasicEncounterCreator basicEncounterCreator;
-    private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
     private RuleServerInvoker ruleServerInvoker;
     private ObservationService observationService;
@@ -42,6 +41,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private ObservationCreator observationCreator;
     private ProgramEncounterService programEncounterService;
+    private EntityApprovalStatusWriter entityApprovalStatusWriter;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -50,7 +50,6 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     public ProgramEncounterWriter(ProgramEncounterRepository programEncounterRepository,
                                   ProgramEnrolmentCreator programEnrolmentCreator,
                                   BasicEncounterCreator basicEncounterCreator,
-                                  EntityApprovalStatusService entityApprovalStatusService,
                                   FormMappingRepository formMappingRepository,
                                   RuleServerInvoker ruleServerInvoker,
                                   ObservationService observationService,
@@ -58,11 +57,10 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
                                   DecisionCreator decisionCreator,
                                   ProgramEnrolmentRepository programEnrolmentRepository,
                                   ObservationCreator observationCreator,
-                                  ProgramEncounterService programEncounterService) {
+                                  ProgramEncounterService programEncounterService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentCreator = programEnrolmentCreator;
         this.basicEncounterCreator = basicEncounterCreator;
-        this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
         this.ruleServerInvoker = ruleServerInvoker;
         this.observationService = observationService;
@@ -71,6 +69,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationCreator = observationCreator;
         this.programEncounterService = programEncounterService;
+        this.entityApprovalStatusWriter = entityApprovalStatusWriter;
     }
 
     @Override
@@ -103,9 +102,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
             programEnrolmentRepository.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, programEnrolment.getUuid(), ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
         }
-        if (formMapping.isEnableApproval()) {
-            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.ProgramEncounter, savedEncounter.getId());
-        }
+        entityApprovalStatusWriter.saveStatus(formMapping, savedEncounter.getId(), EntityApprovalStatus.EntityType.ProgramEncounter);
     }
 
     private ProgramEncounter getOrCreateProgramEncounter(Row row) {
