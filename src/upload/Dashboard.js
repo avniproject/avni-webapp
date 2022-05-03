@@ -69,6 +69,11 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const downloadOptions = () =>
     filter(uploadOptions(), ({ name }) => name !== Types.getName("metadataZip"));
 
+  const dropdownHandler = option => {
+    setAutoApprove(false);
+    setUploadType(option);
+  };
+
   return (
     <Grid container spacing={2} className={classes.root}>
       <Title title={"Upload"} />
@@ -85,7 +90,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     <DropDown
                       name="Type"
                       value={uploadType}
-                      onChange={setUploadType}
+                      onChange={dropdownHandler}
                       options={uploadOptions()}
                     />
                   </Grid>
