@@ -74,8 +74,8 @@ public class EntityApprovalStatusService implements NonScopeAwareService {
 
     public void createStatus(EntityApprovalStatus.EntityType entityType, Long entityId, ApprovalStatus.Status status) {
         ApprovalStatus approvalStatus = approvalStatusRepository.findByStatus(status);
-        List<EntityApprovalStatus> entityApprovalStatuses = entityApprovalStatusRepository.findByEntityIdAndEntityTypeAndApprovalStatusAndIsVoidedFalse(entityId, entityType, approvalStatus);
-        if (!entityApprovalStatuses.isEmpty()) {
+        EntityApprovalStatus entityApprovalStatuses = entityApprovalStatusRepository.findFirstByEntityIdAndEntityTypeAndIsVoidedFalseOrderByStatusDateTimeDesc(entityId, entityType);
+        if (entityApprovalStatuses != null && entityApprovalStatuses.getApprovalStatus().getStatus().equals(status)) {
             return;
         }
         EntityApprovalStatus entityApprovalStatus = new EntityApprovalStatus();
