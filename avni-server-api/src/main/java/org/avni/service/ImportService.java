@@ -44,20 +44,20 @@ public class ImportService {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
     }
 
-    public HashMap<String, String> getImportTypes() {
+    public HashMap<String, FormMappingInfo> getImportTypes() {
         List<FormMapping> formMappings = formMappingRepository.findAllOperational();
         Stream<FormMapping> subjectProfileFormMappings = formMappings.stream().filter(formMapping -> formMapping.getForm().getFormType() == FormType.IndividualProfile);
-        HashMap<String, String> uploadTypes = new HashMap<>();
+        HashMap<String, FormMappingInfo> uploadTypes = new HashMap<>();
         subjectProfileFormMappings.forEach(formMapping -> {
             String subjectName = formMapping.getSubjectType().getName();
-            uploadTypes.put(String.format("Subject---%s", subjectName), String.format("%s registration", subjectName));
+            uploadTypes.put(String.format("Subject---%s", subjectName), new FormMappingInfo(String.format("%s registration", subjectName), formMapping.isEnableApproval()));
         });
 
         Stream<FormMapping> programEnrolmentForms = formMappings.stream().filter(formMapping -> formMapping.getForm().getFormType() == FormType.ProgramEnrolment);
         programEnrolmentForms.forEach(formMapping -> {
             String subjectTypeName = formMapping.getSubjectType().getName();
             String programName = formMapping.getProgram().getName();
-            uploadTypes.put(String.format("ProgramEnrolment---%s---%s", programName, subjectTypeName), String.format("%s enrolment", programName));
+            uploadTypes.put(String.format("ProgramEnrolment---%s---%s", programName, subjectTypeName), new FormMappingInfo(String.format("%s enrolment", programName), formMapping.isEnableApproval()));
         });
 
         Stream<FormMapping> programEncounterForms = formMappings.stream().filter(formMapping -> formMapping.getForm().getFormType() == FormType.ProgramEncounter);
@@ -65,7 +65,7 @@ public class ImportService {
             String subjectTypeName = formMapping.getSubjectType().getName();
             String encounterType = formMapping.getEncounterType().getName();
             String formName = formMapping.getFormName();
-            uploadTypes.put(String.format("ProgramEncounter---%s---%s", encounterType, subjectTypeName), String.format("%s", formName));
+            uploadTypes.put(String.format("ProgramEncounter---%s---%s", encounterType, subjectTypeName), new FormMappingInfo(String.format("%s", formName), formMapping.isEnableApproval()));
         });
 
         Stream<FormMapping> encounterForms = formMappings.stream().filter(formMapping -> formMapping.getForm().getFormType() == FormType.Encounter);
@@ -73,16 +73,34 @@ public class ImportService {
             String subjectTypeName = formMapping.getSubjectType().getName();
             String encounterType = formMapping.getEncounterType().getName();
             String formName = formMapping.getFormName();
-            uploadTypes.put(String.format("Encounter---%s---%s", encounterType, subjectTypeName), String.format("%s", formName));
+            uploadTypes.put(String.format("Encounter---%s---%s", encounterType, subjectTypeName), new FormMappingInfo(String.format("%s", formName), formMapping.isEnableApproval()));
         });
 
         Stream<SubjectType.SubjectTypeProjection> groupSubjectTypes = subjectTypeRepository.findAllOperational().stream().filter(subjectType -> subjectType.isGroup());
         groupSubjectTypes.forEach(groupSubjectType -> {
             String groupSubjectTypeName = groupSubjectType.getName();
-            uploadTypes.put(String.format("GroupMembers---%s", groupSubjectTypeName), String.format("%s members", groupSubjectTypeName));
+            uploadTypes.put(String.format("GroupMembers---%s", groupSubjectTypeName), new FormMappingInfo(String.format("%s members", groupSubjectTypeName), false));
         });
 
         return uploadTypes;
+    }
+
+    class FormMappingInfo {
+        private String name;
+        private boolean isApprovalEnabled;
+
+        public FormMappingInfo(String name, boolean isApprovalEnabled) {
+            this.name = name;
+            this.isApprovalEnabled = isApprovalEnabled;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isApprovalEnabled() {
+            return isApprovalEnabled;
+        }
     }
 
     /**

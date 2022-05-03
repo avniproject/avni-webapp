@@ -4,6 +4,7 @@ import org.avni.domain.CHSEntity;
 import org.avni.domain.JsonObject;
 import org.avni.domain.SubjectType;
 import org.avni.domain.User;
+import org.avni.framework.security.UserContextHolder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -75,9 +76,9 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
             }
         }
         if (subjectType.isDirectlyAssignable()) {
-            List<Integer> subjectIds = (List<Integer>) syncSettings.getOrDefault(User.SyncSettingKeys.subjectIds.name(), Collections.EMPTY_LIST);
+            List<Long> subjectIds = UserContextHolder.getUserContext().getUser().getDirectAssignmentIds();
             if (subjectIds.size() > 0) {
-                CriteriaBuilder.In<Integer> inClause;
+                CriteriaBuilder.In<Long> inClause;
                 if (syncParameters.isParentOrSelfIndividual()) {
                     inClause = cb.in(from.get("id"));
                 } else if (syncParameters.isEncounter() || syncParameters.isParentOrSelfEnrolment()) {
@@ -85,7 +86,7 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                 } else {
                     inClause = cb.in(from.get("individualId"));
                 }
-                for (Integer id : subjectIds) {
+                for (Long id : subjectIds) {
                     inClause.value(id);
                 }
                 predicates.add(inClause);

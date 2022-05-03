@@ -5,6 +5,7 @@ import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.UserRepository;
 import org.avni.domain.*;
+import org.avni.domain.Locale;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.CatchmentService;
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -83,13 +82,13 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
             syncSettings.with(User.SyncSettingKeys.syncConcept2.name(), conceptRepository.findByName(syncConcept2Name));
             syncSettings.with(User.SyncSettingKeys.syncConcept2Values.name(), Arrays.asList(syncConcept2Values.split(",")));
         }
+        Set<Long> subjectIds = null;
         if (subjectUUIDs != null) {
-            List<Long> subjectIds = Arrays.stream(subjectUUIDs.split(","))
+            subjectIds = Arrays.stream(subjectUUIDs.split(","))
                     .map(individualRepository::findByUuid)
                     .filter(Objects::nonNull)
                     .map(CHSBaseEntity::getId)
-                    .collect(Collectors.toList());
-            syncSettings.with(User.SyncSettingKeys.subjectIds.name(), subjectIds);
+                    .collect(Collectors.toSet());
         }
 
         AddressLevel location = locationRepository.findByTitleLineageIgnoreCase(fullAddress)
@@ -125,7 +124,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setAuditInfo(currentUser);
         user.setSyncSettings(syncSettings);
         cognitoService.createUser(user);
-        userService.save(user);
+        userService.save(user, subjectIds);
         userService.addToDefaultUserGroup(user);
     }
 }

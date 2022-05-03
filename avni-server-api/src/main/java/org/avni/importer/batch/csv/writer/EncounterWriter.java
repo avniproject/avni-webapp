@@ -32,7 +32,6 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     private EncounterRepository encounterRepository;
     private IndividualRepository individualRepository;
     private BasicEncounterCreator basicEncounterCreator;
-    private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
     private ObservationService observationService;
     private RuleServerInvoker ruleServerInvoker;
@@ -40,6 +39,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
     private EncounterService encounterService;
+    private EntityApprovalStatusWriter entityApprovalStatusWriter;
 
     @Value("${avni.skipUploadValidations}")
     private boolean skipUploadValidations;
@@ -48,18 +48,16 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     public EncounterWriter(EncounterRepository encounterRepository,
                            IndividualRepository individualRepository,
                            BasicEncounterCreator basicEncounterCreator,
-                           EntityApprovalStatusService entityApprovalStatusService,
                            FormMappingRepository formMappingRepository,
                            ObservationService observationService,
                            RuleServerInvoker ruleServerInvoker,
                            VisitCreator visitCreator,
                            DecisionCreator decisionCreator,
                            ObservationCreator observationCreator,
-                           EncounterService encounterService) {
+                           EncounterService encounterService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
         this.basicEncounterCreator = basicEncounterCreator;
-        this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
         this.observationService = observationService;
         this.ruleServerInvoker = ruleServerInvoker;
@@ -67,6 +65,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
         this.encounterService = encounterService;
+        this.entityApprovalStatusWriter = entityApprovalStatusWriter;
     }
 
     @Override
@@ -100,9 +99,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
             individualRepository.save(subject);
             visitCreator.saveScheduledVisits(formMapping.getType(), subject.getUuid(), null, ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
         }
-        if (formMapping.isEnableApproval()) {
-            entityApprovalStatusService.createDefaultStatus(EntityApprovalStatus.EntityType.Encounter, savedEncounter.getId());
-        }
+        entityApprovalStatusWriter.saveStatus(formMapping, savedEncounter.getId(), EntityApprovalStatus.EntityType.Encounter);
     }
 
     private Individual getSubject(Row row) throws Exception {
