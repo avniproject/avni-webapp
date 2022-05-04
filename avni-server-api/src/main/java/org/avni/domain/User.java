@@ -211,6 +211,7 @@ public class User {
 
     public List<Long> getDirectAssignmentIds() {
         return this.userSubjectAssignments.stream()
+                .filter(assignment -> !assignment.isVoided())
                 .map(assignments -> assignments.getSubject().getId())
                 .collect(Collectors.toList());
     }

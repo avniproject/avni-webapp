@@ -3,14 +3,16 @@ package org.avni.dao;
 import org.avni.domain.User;
 import org.avni.domain.UserSubjectAssignment;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Set;
 
 
 @Repository
 public interface UserSubjectAssignmentRepository extends JpaRepository<UserSubjectAssignment, Long> {
-    @Modifying
-    @Query(value = "delete from user_subject_assignment where user_id = :userId", nativeQuery = true)
-    void deleteAllByUser(Long userId);
+
+    List<UserSubjectAssignment> findAllByUserAndSubjectIdNotInAndIsVoidedFalse(User user, Set<Long> subjectIds);
+
+    List<UserSubjectAssignment> findAllByUserAndSubjectIdInAndIsVoidedFalse(User user, Set<Long> subjectIds);
 }

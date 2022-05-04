@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.joda.time.DateTime;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements NonScopeAwareService {
@@ -53,7 +55,10 @@ public class UserService implements NonScopeAwareService {
 
     public User save(User user, Set<Long> directAssignmentIds) throws Exception {
         User savedUser = this.save(user);
-        userSubjectAssignmentRepository.deleteAllByUser(savedUser.getId());
+        List<UserSubjectAssignment> removedAssignments = userSubjectAssignmentRepository.findAllByUserAndSubjectIdNotInAndIsVoidedFalse(savedUser, directAssignmentIds)
+                .stream().peek(userSubjectAssignment -> userSubjectAssignment.setVoided(true))
+                .collect(Collectors.toList());
+        userSubjectAssignmentRepository.saveAll(removedAssignments);
         if (directAssignmentIds != null) {
             saveDirectAssignment(user, directAssignmentIds);
         }
@@ -61,15 +66,20 @@ public class UserService implements NonScopeAwareService {
     }
 
     private void saveDirectAssignment(User user, Set<Long> directAssignmentIds) throws Exception {
+        List<Long> savedAssignmentIds = userSubjectAssignmentRepository.findAllByUserAndSubjectIdInAndIsVoidedFalse(user, directAssignmentIds)
+                .stream().map(userSubjectAssignment -> userSubjectAssignment.getSubject().getId())
+                .collect(Collectors.toList());
         Set<UserSubjectAssignment> userSubjectAssignments = new HashSet<>();
         for (Long subjectId : directAssignmentIds) {
-            Individual individual = individualRepository.findOne(subjectId);
-            if (individual == null) {
-                throw new Exception(String.format("Subject id %d not found", subjectId));
+            if (!savedAssignmentIds.contains(subjectId)) {
+                Individual individual = individualRepository.findOne(subjectId);
+                if (individual == null) {
+                    throw new Exception(String.format("Subject id %d not found", subjectId));
+                }
+                UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment(user, individual);
+                userSubjectAssignment.assignUUID();
+                userSubjectAssignments.add(userSubjectAssignment);
             }
-            UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment(user, individual);
-            userSubjectAssignment.assignUUID();
-            userSubjectAssignments.add(userSubjectAssignment);
         }
         userSubjectAssignmentRepository.saveAll(userSubjectAssignments);
     }
