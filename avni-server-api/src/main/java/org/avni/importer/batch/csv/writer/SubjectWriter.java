@@ -106,6 +106,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setSubjectType(subjectType);
         individual.setFirstName(row.get(headers.firstName));
         individual.setLastName(row.get(headers.lastName));
+        setProfilePicture(individual, row, allErrorMsgs);
         setDateOfBirth(individual, row, allErrorMsgs);
         individual.setDateOfBirthVerified(row.getBool(headers.dobVerified));
         setRegistrationDate(individual, row, allErrorMsgs);
@@ -130,6 +131,18 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         }
         entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
+    }
+
+    private void setProfilePicture(Individual individual, Row row, List<String> errorMsgs) {
+        try {
+            String profilePicUrl = row.get(headers.profilePicture);
+            if(StringUtils.isNotEmpty(profilePicUrl)) {
+                individual.setProfilePicture(s3Service
+                        .uploadProfilePic(profilePicUrl, null));
+            }
+        } catch (Exception e) {
+            errorMsgs.add(String.format("Invalid '%s'", headers.profilePicture));
+        }
     }
 
     private Individual getOrCreateIndividual(Row row) {

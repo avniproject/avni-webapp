@@ -64,7 +64,7 @@ public class S3Service {
     private final Logger logger;
     private final Boolean isDev;
     private final String EXTENSION_DIR = "extensions";
-    private final String PROFILE_PIC_DIR = "profile_pic";
+    private final String PROFILE_PIC_DIR = "profile-pics";
 
 
     @Autowired

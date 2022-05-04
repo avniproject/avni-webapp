@@ -125,6 +125,8 @@ public class IndividualService implements ScopeAwareService {
         subjectTypeContract.setIsGroup(subjectType.isGroup());
         subjectTypeContract.setHousehold(subjectType.isHousehold());
         subjectTypeContract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
+        subjectTypeContract.setIconFileS3Key(subjectType.getIconFileS3Key());
+        subjectTypeContract.setAllowProfilePicture(subjectType.isAllowProfilePicture());
         return subjectTypeContract;
     }
 
