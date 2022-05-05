@@ -73,10 +73,8 @@ public class SubjectMigrationService implements ScopeAwareService {
             subjectMigration.assignUUID();
             subjectMigration.setIndividual(individual);
             subjectMigration.setSubjectType(individual.getSubjectType());
-            if (!Objects.equals(individual.getAddressLevel().getId(), newAddressLevel.getId())) {
-                subjectMigration.setOldAddressLevel(individual.getAddressLevel());
-                subjectMigration.setNewAddressLevel(newAddressLevel);
-            }
+            subjectMigration.setOldAddressLevel(individual.getAddressLevel());
+            subjectMigration.setNewAddressLevel(newAddressLevel);
             if (!Objects.equals(oldObservations.getStringValue(syncConcept1), newObservations.getStringValue(syncConcept1))) {
                 subjectMigration.setOldSyncConcept1Value(oldObservations.getStringValue(syncConcept1));
                 subjectMigration.setNewSyncConcept1Value(newObservations.getStringValue(syncConcept1));
