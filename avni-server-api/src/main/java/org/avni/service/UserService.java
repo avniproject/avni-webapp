@@ -55,11 +55,11 @@ public class UserService implements NonScopeAwareService {
 
     public User save(User user, Set<Long> directAssignmentIds) throws Exception {
         User savedUser = this.save(user);
-        List<UserSubjectAssignment> removedAssignments = userSubjectAssignmentRepository.findAllByUserAndSubjectIdNotInAndIsVoidedFalse(savedUser, directAssignmentIds)
-                .stream().peek(userSubjectAssignment -> userSubjectAssignment.setVoided(true))
-                .collect(Collectors.toList());
-        userSubjectAssignmentRepository.saveAll(removedAssignments);
         if (directAssignmentIds != null) {
+            List<UserSubjectAssignment> removedAssignments = userSubjectAssignmentRepository.findAllByUserAndSubjectIdNotInAndIsVoidedFalse(savedUser, directAssignmentIds)
+                    .stream().peek(userSubjectAssignment -> userSubjectAssignment.setVoided(true))
+                    .collect(Collectors.toList());
+            userSubjectAssignmentRepository.saveAll(removedAssignments);
             saveDirectAssignment(user, directAssignmentIds);
         }
         return savedUser;
