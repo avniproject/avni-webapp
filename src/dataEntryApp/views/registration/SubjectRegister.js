@@ -18,6 +18,8 @@ import {
   setRegistrationDate,
   setFirstName,
   setLastName,
+  setProfilePictureFile,
+  setRemoveProfilePicture,
   setDateOfBirth,
   setGender,
   setAddress
@@ -38,6 +40,7 @@ import { DateFormElement } from "dataEntryApp/components/DateFormElement";
 import TextFormElement from "dataEntryApp/components/TextFormElement";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
+import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -286,7 +289,22 @@ const SubjectRegister = props => {
                     {renderAddress()}
                   </>
                 )}
-
+                {props.subject.subjectType.allowProfilePicture && (
+                  <>
+                    <AvniImageUpload
+                      onSelect={props.setProfilePictureFile}
+                      label={"Profile Picture Icon"}
+                      toolTipKey={"APP_DESIGNER_PROFILE_PICTURE_ICON"}
+                      width={75}
+                      height={75}
+                      oldImgUrl={props.subject.profilePicture}
+                      allowUpload={true}
+                      onDelete={() => props.setRemoveProfilePicture(true)}
+                      displayDelete={true}
+                    />
+                    <LineBreak num={2} />
+                  </>
+                )}
                 {!props.subject.subjectType.isPerson() && (
                   <>
                     <TextFormElement
@@ -342,6 +360,8 @@ const mapDispatchToProps = {
   setRegistrationDate,
   setFirstName,
   setLastName,
+  setProfilePictureFile,
+  setRemoveProfilePicture,
   setDateOfBirth,
   setGender,
   setAddress

@@ -27,6 +27,8 @@ export const types = {
   SET_REGISTRATION_DATE: `${prefix}SET_REGISTRATION_DATE`,
   SET_FIRST_NAME: `${prefix}SET_FIRST_NAME`,
   SET_LAST_NAME: `${prefix}SET_LAST_NAME`,
+  SET_PROFILE_PICTURE_FILE: `${prefix}SET_PROFILE_PICTURE_FILE`,
+  SET_REMOVE_PROFILE_PICTURE: `${prefix}SET_REMOVE_PROFILE_PICTURE`,
   SET_DATE_OF_BIRTH: `${prefix}SET_DATE_OF_BIRTH`,
   SET_GENDER: `${prefix}SET_GENDER`,
   SET_ADDRESS: `${prefix}SET_ADDRESS`
@@ -158,6 +160,16 @@ export const setLastName = lastName => ({
   lastName
 });
 
+export const setProfilePictureFile = profilePictureFile => ({
+  type: types.SET_PROFILE_PICTURE_FILE,
+  profilePictureFile
+});
+
+export const setRemoveProfilePicture = removeProfilePicture => ({
+  type: types.SET_REMOVE_PROFILE_PICTURE,
+  removeProfilePicture
+});
+
 export const setDateOfBirth = dateOfBirth => ({
   type: types.SET_DATE_OF_BIRTH,
   dateOfBirth
@@ -198,7 +210,9 @@ const initialState = {
   saved: false,
   validationResults: [],
   selectedAddressLevelType: { id: -1, name: "" },
-  loaded: false
+  loaded: false,
+  profilePictureFile: null,
+  removeProfilePicture: false
 };
 
 // reducer
@@ -318,6 +332,22 @@ export default (state = initialState, action) => {
         ...state,
         subject,
         validationResults
+      };
+    }
+    case types.SET_PROFILE_PICTURE_FILE: {
+      return {
+        ...state,
+        profilePictureFile: action.profilePictureFile,
+        removeProfilePicture: false,
+        validationResults: []
+      };
+    }
+    case types.SET_REMOVE_PROFILE_PICTURE: {
+      return {
+        ...state,
+        profilePictureFile: action.removeProfilePicture ? null : state.profilePictureFile,
+        removeProfilePicture: action.removeProfilePicture,
+        validationResults: []
       };
     }
     case types.SET_DATE_OF_BIRTH: {

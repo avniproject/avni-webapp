@@ -12,6 +12,7 @@ export const uploadImage = async (existingURL, file, bucketName) => {
 };
 
 export const bucketName = Object.freeze({
+  PROFILE_PICS: "profile-pics",
   ICONS: "icons",
   NEWS: "news"
 });

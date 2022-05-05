@@ -28,7 +28,7 @@ export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
     individualDetails,
     new Individual(),
-    ["uuid", "firstName", "lastName", "voided"],
+    ["uuid", "firstName", "lastName", "profilePicture", "voided"],
     ["dateOfBirth", "registrationDate"]
   );
   individual.name = `${individualDetails.firstName} ${individualDetails.lastName}`;

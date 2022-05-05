@@ -110,6 +110,15 @@ export const AdvancedSettings = ({
             name="Unique Name"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_UNIQUE_NAME"}
           />
+          <AvniSwitch
+            switchFirst
+            checked={!!subjectType.allowProfilePicture}
+            onChange={event =>
+              dispatch({ type: "allowProfilePicture", payload: event.target.checked })
+            }
+            name="Allow Profile Picture"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_PROFILE_PICTURE"}
+          />
           <p />
           <ValidFormat
             subjectType={subjectType}

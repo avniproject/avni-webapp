@@ -79,6 +79,11 @@ const SubjectTypeShow = props => {
             )}
             <p />
             <BooleanStatusInShow status={subjectType.active} label={"Active"} />
+            <p />
+            <BooleanStatusInShow
+              status={subjectType.allowProfilePicture}
+              label={"Allow Profile Picture"}
+            />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Registration Form</FormLabel>
               <br />

@@ -128,6 +128,8 @@ export function subjectTypeReducer(subjectType, action) {
       return { ...subjectType, locationTypeUUIDs: action.payload };
     case "allowEmptyLocation":
       return { ...subjectType, allowEmptyLocation: action.payload };
+    case "allowProfilePicture":
+      return { ...subjectType, allowProfilePicture: action.payload };
     case "uniqueName":
       return { ...subjectType, uniqueName: action.payload };
     case "validFirstNameRegex":

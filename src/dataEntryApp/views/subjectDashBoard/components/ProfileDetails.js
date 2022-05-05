@@ -25,7 +25,7 @@ import { get } from "lodash";
 import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
-import SubjectTypeIcon from "../../../components/SubjectTypeIcon";
+import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
 import { getDisplayAge } from "../../../utils/AgeUtil";
 
 const useStyles = makeStyles(theme => ({
@@ -204,7 +204,10 @@ const ProfileDetails = ({
       <Grid alignItems="center" container spacing={1}>
         <Grid item container xs={4} alignItems="center">
           <Grid item>
-            <SubjectTypeIcon
+            <SubjectProfilePicture
+              firstName={profileDetails.firstName}
+              profilePicture={profileDetails.profilePicture}
+              subjectType={profileDetails.subjectType}
               subjectTypeName={profileDetails.subjectType.name}
               size={45}
               style={{ marginTop: "10px" }}

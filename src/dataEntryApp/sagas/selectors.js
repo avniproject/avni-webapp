@@ -21,6 +21,12 @@ export const selectRegistrationFormMappingForSubjectType = subjectTypeName => st
 
 export const selectRegistrationSubject = state => get(state, "dataEntry.registration.subject");
 
+export const selectRegistrationProfilePictureFile = state =>
+  get(state, "dataEntry.registration.profilePictureFile");
+
+export const selectRegistrationRemoveProfilePicture = state =>
+  get(state, "dataEntry.registration.removeProfilePicture");
+
 export const selectSubjectProfile = state => get(state, "dataEntry.subjectProfile.subjectProfile");
 
 export const selectsSubjectProgram = state => get(state, "dataEntry.subjectProgram.subjectProgram");
