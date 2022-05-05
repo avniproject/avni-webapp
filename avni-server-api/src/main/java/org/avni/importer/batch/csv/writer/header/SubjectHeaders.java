@@ -14,6 +14,6 @@ public class SubjectHeaders implements Headers {
 
     @Override
     public String[] getAllHeaders() {
-        return new String[]{id, subjectType, firstName, lastName, dateOfBirth, dobVerified, registrationDate, registrationLocation, gender};
+        return new String[]{id, subjectType, firstName, lastName, profilePicture, dateOfBirth, dobVerified, registrationDate, registrationLocation, gender};
     }
 }

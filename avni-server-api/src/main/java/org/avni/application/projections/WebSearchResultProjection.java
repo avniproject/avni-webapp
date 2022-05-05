@@ -7,6 +7,8 @@ public interface WebSearchResultProjection {
 
     String getFullname();
 
+    String getProfilepicture();
+
     String getId();
 
     String getUuid();
