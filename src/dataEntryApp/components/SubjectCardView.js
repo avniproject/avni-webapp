@@ -3,7 +3,7 @@ import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { InternalLink } from "../../common/components/utils";
 import { useTranslation } from "react-i18next";
-import SubjectTypeIcon from "./SubjectTypeIcon";
+import SubjectProfilePicture from "./SubjectProfilePicture";
 
 const useStyles = () =>
   makeStyles(() => ({
@@ -21,7 +21,16 @@ const useStyles = () =>
     }
   }));
 
-const SubjectCardView = ({ uuid, name, gender, age, location, subjectTypeName, ...props }) => {
+const SubjectCardView = ({
+  uuid,
+  name,
+  gender,
+  age,
+  location,
+  profilePicture,
+  subjectTypeName,
+  ...props
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -30,7 +39,14 @@ const SubjectCardView = ({ uuid, name, gender, age, location, subjectTypeName, .
       <CardContent className={classes.cardContent}>
         <Grid container justify="center" direction="row" spacing={1} alignItems="center">
           <Grid item>
-            <SubjectTypeIcon subjectTypeName={subjectTypeName} size={25} />
+            <SubjectProfilePicture
+              firstName={name}
+              profilePicture={profilePicture}
+              subjectType={null}
+              subjectTypeName={subjectTypeName}
+              size={25}
+              style={{ margin: "0px" }}
+            />
           </Grid>
           <Grid item>
             <InternalLink to={`/app/subject?uuid=${uuid}`}>{name}</InternalLink>

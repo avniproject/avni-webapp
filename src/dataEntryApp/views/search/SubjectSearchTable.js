@@ -41,7 +41,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               subjectType={null}
               subjectTypeName={subjectTypeName}
               size={20}
-              style={{ marginTop: "10px" }}
+              style={{ margin: "0px" }}
             />
           </Grid>
           <Grid item>

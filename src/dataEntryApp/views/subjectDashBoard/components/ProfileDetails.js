@@ -210,7 +210,7 @@ const ProfileDetails = ({
               subjectType={profileDetails.subjectType}
               subjectTypeName={profileDetails.subjectType.name}
               size={45}
-              style={{ marginTop: "10px" }}
+              style={{ margin: "0px" }}
             />
           </Grid>
           <Grid item>

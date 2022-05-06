@@ -84,6 +84,7 @@ const GroupSubjectMemberCardView = ({
       <SubjectCardView
         uuid={memberSubject.uuid}
         name={memberSubject.nameString}
+        profilePicture={memberSubject.profilePicture}
         gender={memberSubject.gender && memberSubject.gender.name}
         age={memberSubject.dateOfBirth && memberSubject.getAgeInYears() + " " + t("years")}
         location={memberSubject.lowestAddressLevel && memberSubject.lowestAddressLevel.name}
