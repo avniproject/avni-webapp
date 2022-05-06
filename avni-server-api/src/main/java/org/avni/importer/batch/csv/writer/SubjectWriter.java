@@ -106,7 +106,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setSubjectType(subjectType);
         individual.setFirstName(row.get(headers.firstName));
         individual.setLastName(row.get(headers.lastName));
-        setProfilePicture(individual, row, allErrorMsgs);
+        setProfilePicture(subjectType, individual, row, allErrorMsgs);
         setDateOfBirth(individual, row, allErrorMsgs);
         individual.setDateOfBirthVerified(row.getBool(headers.dobVerified));
         setRegistrationDate(individual, row, allErrorMsgs);
@@ -133,12 +133,14 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
     }
 
-    private void setProfilePicture(Individual individual, Row row, List<String> errorMsgs) {
+    private void setProfilePicture(SubjectType subjectType, Individual individual, Row row, List<String> errorMsgs) {
         try {
             String profilePicUrl = row.get(headers.profilePicture);
-            if(StringUtils.isNotEmpty(profilePicUrl)) {
+            if(StringUtils.isNotEmpty(profilePicUrl) && subjectType.isAllowProfilePicture()) {
                 individual.setProfilePicture(s3Service
                         .uploadProfilePic(profilePicUrl, null));
+            } else if(StringUtils.isNotEmpty(profilePicUrl)) {
+                errorMsgs.add(String.format("Not allowed to set '%s'", headers.profilePicture));
             }
         } catch (Exception e) {
             errorMsgs.add(String.format("Invalid '%s'", headers.profilePicture));
