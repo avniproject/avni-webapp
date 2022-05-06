@@ -123,7 +123,7 @@ public class ProgramEnrolmentConstructionService {
         individualContractWrapper.setUuid(individual.getUuid());
         individualContractWrapper.setFirstName(individual.getFirstName());
         individualContractWrapper.setLastName(individual.getLastName());
-        if (individualContractWrapper.getSubjectType().isAllowProfilePicture()) {
+        if (individual.getSubjectType().isAllowProfilePicture()) {
             individualContractWrapper.setProfilePicture(individual.getProfilePicture());
         }
         individualContractWrapper.setDateOfBirth(individual.getDateOfBirth());
