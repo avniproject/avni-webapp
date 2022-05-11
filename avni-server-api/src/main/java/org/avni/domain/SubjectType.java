@@ -297,5 +297,7 @@ public class SubjectType extends OrganisationAwareEntity {
         boolean isAllowEmptyLocation();
 
         String getIconFileS3Key();
+
+        String getNameHelpText();
     }
 }
