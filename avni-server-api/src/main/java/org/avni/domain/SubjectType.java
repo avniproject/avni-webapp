@@ -89,6 +89,8 @@ public class SubjectType extends OrganisationAwareEntity {
     @Column(name = "sync_registration_concept_2_usable")
     private Boolean isSyncRegistrationConcept2Usable;
 
+    private String nameHelpText;
+
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
     }
@@ -270,6 +272,14 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setSyncRegistrationConcept2Usable(Boolean syncRegistrationConcept2Usable) {
         isSyncRegistrationConcept2Usable = syncRegistrationConcept2Usable;
+    }
+
+    public String getNameHelpText() {
+        return nameHelpText;
+    }
+
+    public void setNameHelpText(String nameHelpText) {
+        this.nameHelpText = nameHelpText;
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})

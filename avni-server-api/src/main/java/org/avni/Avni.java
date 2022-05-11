@@ -64,6 +64,9 @@ public class Avni {
                 if (operationalSubjectType.getSubjectType().getSyncRegistrationConcept2() != null) {
                     resource.add(new Link(operationalSubjectType.getSubjectType().getSyncRegistrationConcept2(), "syncRegistrationConcept2"));
                 }
+                if (operationalSubjectType.getSubjectType().getNameHelpText() != null) {
+                    resource.add(new Link(operationalSubjectType.getSubjectType().getNameHelpText(), "nameHelpText"));
+                }
                 return resource;
             }
         };

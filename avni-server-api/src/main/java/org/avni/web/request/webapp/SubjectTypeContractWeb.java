@@ -44,6 +44,7 @@ public class SubjectTypeContractWeb {
     private String syncRegistrationConcept2;
     private Boolean isSyncRegistrationConcept1Usable;
     private Boolean isSyncRegistrationConcept2Usable;
+    private String nameHelpText;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -75,6 +76,7 @@ public class SubjectTypeContractWeb {
         contract.setSyncRegistrationConcept2(subjectType.getSyncRegistrationConcept2());
         contract.setSyncRegistrationConcept1Usable(subjectType.isSyncRegistrationConcept1Usable());
         contract.setSyncRegistrationConcept2Usable(subjectType.isSyncRegistrationConcept2Usable());
+        contract.setNameHelpText(subjectType.getNameHelpText());
         return contract;
     }
 
@@ -308,5 +310,13 @@ public class SubjectTypeContractWeb {
 
     public void setSyncRegistrationConcept2Usable(Boolean syncRegistrationConcept2Usable) {
         isSyncRegistrationConcept2Usable = syncRegistrationConcept2Usable;
+    }
+
+    public String getNameHelpText() {
+        return nameHelpText;
+    }
+
+    public void setNameHelpText(String nameHelpText) {
+        this.nameHelpText = nameHelpText;
     }
 }

@@ -153,6 +153,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setDirectlyAssignable(request.isDirectlyAssignable());
         subjectType.setSyncRegistrationConcept1(request.getSyncRegistrationConcept1());
         subjectType.setSyncRegistrationConcept2(request.getSyncRegistrationConcept2());
+        subjectType.setNameHelpText(request.getNameHelpText());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
         if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);
