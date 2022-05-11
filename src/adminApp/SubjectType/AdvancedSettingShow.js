@@ -4,6 +4,7 @@ import _, { isEmpty } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import http from "../../common/utils/httpClient";
 import { ConceptSyncAttributesShow } from "./ConceptSyncAttributeShow";
+import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
 
 export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
   const [concept1Name, setConcept1Name] = useState("");
@@ -39,6 +40,9 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
       )}
       <BooleanStatusInShow status={subjectType.allowEmptyLocation} label={"Allow Empty Location"} />
       <BooleanStatusInShow status={subjectType.uniqueName} label={"Unique Name"} />
+      {subjectType.nameHelpText && (
+        <ShowLabelValue label={"Name help text"} value={subjectType.nameHelpText} />
+      )}
       <BooleanStatusInShow status={subjectType.shouldSyncByLocation} label={"Sync By Location"} />
       <BooleanStatusInShow
         status={subjectType.directlyAssignable}

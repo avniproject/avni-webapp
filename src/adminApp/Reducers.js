@@ -168,6 +168,11 @@ export function subjectTypeReducer(subjectType, action) {
         ...subjectType,
         [name]: value
       };
+    case "nameHelpText":
+      return {
+        ...subjectType,
+        nameHelpText: action.payload
+      };
     default:
       return subjectType;
   }

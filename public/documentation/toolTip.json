@@ -12,6 +12,7 @@
   "APP_DESIGNER_FIRST_NAME_DESCRIPTION_KEY": "Regular expression description key for the first name",
   "APP_DESIGNER_LAST_NAME_REGEX": "Regular expression for the last name",
   "APP_DESIGNER_LAST_NAME_DESCRIPTION_KEY": "Regular expression description key for the last name",
+  "APP_DESIGNER_NAME_HELP_TEXT": "Help text will be displayed on the first name field.",
   "APP_DESIGNER_SUBJECT_TYPE_GROUP_ROLES": "Member roles that you can choose from while adding members to this group",
   "APP_DESIGNER_SUBJECT_TYPE_SYC_BY_LOCATION": "This will sync the subjects by their registered locations and catchment assigned to the users",
   "APP_DESIGNER_SUBJECT_TYPE_SYNC_BY_DIRECT_ASSIGNMENT": "This will sync the subjects which are sirectly assigned to the users",

@@ -9,9 +9,10 @@ import { ValidFormat } from "./ValidFormat";
 import { CustomisedExpansionPanelSummary } from "../components/CustomisedExpansionPanelSummary";
 import { findFormUuidForSubjectType } from "../domain/formMapping";
 import http from "../../common/utils/httpClient";
-import { forEach, includes } from "lodash";
+import { forEach, get, includes } from "lodash";
 import { OptionSelect } from "./OptionSelect";
-import { Box } from "@material-ui/core";
+import { Box, Input } from "@material-ui/core";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 const ExpansionPanel = withStyles({
   root: {
@@ -139,6 +140,14 @@ export const AdvancedSettings = ({
               propertyName={"validLastNameFormat"}
             />
           )}
+          <AvniFormLabel label={"Name help text"} toolTipKey={"APP_DESIGNER_NAME_HELP_TEXT"} />
+          <Input
+            multiline
+            style={{ width: "100%" }}
+            id={"nameHelpText"}
+            value={get(subjectType, `nameHelpText`, "")}
+            onChange={event => dispatch({ type: "nameHelpText", payload: event.target.value })}
+          />
           <Box component={"div"} mt={3} mb={2} p={2} border={1} borderColor={"#e1e1e1"}>
             <Typography gutterBottom variant={"subtitle1"}>
               {"Sync Settings"}
