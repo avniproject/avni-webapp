@@ -3,6 +3,7 @@ import { TextField, Typography } from "@material-ui/core";
 import { find, isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
+import { HelpText } from "../../common/components/HelpText";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default ({ formElement: fe, value, update, validationResults, uuid, isGrid }) => {
+export default ({ formElement: fe, value, update, validationResults, uuid, isGrid, helpText }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const validationResult = find(
@@ -38,12 +39,13 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
     <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
       <Typography
         variant="body1"
-        gutterBottom={!isGrid}
+        gutterBottom={!isGrid && isEmpty(helpText)}
         className={isGrid ? classes.gridLabelStyle : classes.labelStyle}
       >
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>
+      <HelpText text={helpText} t={t} />
       <TextField
         id={fe.name.replaceAll(" ", "-")}
         type={"text"}

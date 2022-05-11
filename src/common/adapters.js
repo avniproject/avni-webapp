@@ -114,6 +114,7 @@ export const mapSubjectType = json => {
   subjectType.group = json.group;
   subjectType.household = json.household;
   subjectType.iconFileS3Key = json.iconFileS3Key;
+  subjectType.nameHelpText = json.nameHelpText;
   return subjectType;
 };
 

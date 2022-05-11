@@ -253,6 +253,7 @@ const SubjectRegister = props => {
                       value={props.subject.firstName}
                       validationResults={props.validationResults}
                       update={props.setFirstName}
+                      helpText={get(props.subject, "subjectType.nameHelpText")}
                     />
                     <LineBreak num={2} />
                     <TextFormElement
@@ -295,6 +296,7 @@ const SubjectRegister = props => {
                       value={props.subject.firstName}
                       validationResults={props.validationResults}
                       update={props.setFirstName}
+                      helpText={get(props.subject, "subjectType.nameHelpText")}
                     />
                     <LineBreak num={1} />
                     {renderAddress()}
