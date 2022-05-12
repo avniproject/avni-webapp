@@ -29,6 +29,16 @@ public class SubjectTypeContract extends ReferenceDataContract {
     private FormatContract validFirstNameFormat;
     private FormatContract validLastNameFormat;
     private String iconFileS3Key;
+    @JsonProperty(value = "directlyAssignable")
+    private boolean isDirectlyAssignable;
+    private boolean shouldSyncByLocation;
+    private String syncRegistrationConcept1;
+    private String syncRegistrationConcept2;
+    @JsonProperty(value = "syncRegistrationConcept1Usable")
+    private Boolean isSyncRegistrationConcept1Usable;
+    @JsonProperty(value = "syncRegistrationConcept2Usable")
+    private Boolean isSyncRegistrationConcept2Usable;
+    private String nameHelpText;
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -44,6 +54,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setUniqueName(subjectType.isUniqueName());
         contract.setValidFirstNameFormat(FormatContract.fromFormat(subjectType.getValidFirstNameFormat()));
         contract.setValidLastNameFormat(FormatContract.fromFormat(subjectType.getValidLastNameFormat()));
+        contract.setDirectlyAssignable(subjectType.isDirectlyAssignable());
+        contract.setShouldSyncByLocation(subjectType.isShouldSyncByLocation());
+        contract.setSyncRegistrationConcept1(subjectType.getSyncRegistrationConcept1());
+        contract.setSyncRegistrationConcept1Usable(subjectType.isSyncRegistrationConcept1Usable());
+        contract.setSyncRegistrationConcept2(subjectType.getSyncRegistrationConcept2());
+        contract.setSyncRegistrationConcept2Usable(subjectType.isSyncRegistrationConcept2Usable());
+        contract.setNameHelpText(subjectType.getNameHelpText());
         return contract;
     }
 
@@ -125,5 +142,61 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setIconFileS3Key(String iconFileS3Key) {
         this.iconFileS3Key = iconFileS3Key;
+    }
+
+    public boolean isDirectlyAssignable() {
+        return isDirectlyAssignable;
+    }
+
+    public void setDirectlyAssignable(boolean directlyAssignable) {
+        isDirectlyAssignable = directlyAssignable;
+    }
+
+    public boolean isShouldSyncByLocation() {
+        return shouldSyncByLocation;
+    }
+
+    public void setShouldSyncByLocation(boolean shouldSyncByLocation) {
+        this.shouldSyncByLocation = shouldSyncByLocation;
+    }
+
+    public String getSyncRegistrationConcept1() {
+        return syncRegistrationConcept1;
+    }
+
+    public void setSyncRegistrationConcept1(String syncRegistrationConcept1) {
+        this.syncRegistrationConcept1 = syncRegistrationConcept1;
+    }
+
+    public String getSyncRegistrationConcept2() {
+        return syncRegistrationConcept2;
+    }
+
+    public void setSyncRegistrationConcept2(String syncRegistrationConcept2) {
+        this.syncRegistrationConcept2 = syncRegistrationConcept2;
+    }
+
+    public Boolean getSyncRegistrationConcept1Usable() {
+        return isSyncRegistrationConcept1Usable;
+    }
+
+    public void setSyncRegistrationConcept1Usable(Boolean syncRegistrationConcept1Usable) {
+        isSyncRegistrationConcept1Usable = syncRegistrationConcept1Usable;
+    }
+
+    public Boolean getSyncRegistrationConcept2Usable() {
+        return isSyncRegistrationConcept2Usable;
+    }
+
+    public void setSyncRegistrationConcept2Usable(Boolean syncRegistrationConcept2Usable) {
+        isSyncRegistrationConcept2Usable = syncRegistrationConcept2Usable;
+    }
+
+    public String getNameHelpText() {
+        return nameHelpText;
+    }
+
+    public void setNameHelpText(String nameHelpText) {
+        this.nameHelpText = nameHelpText;
     }
 }

@@ -75,6 +75,13 @@ public class SubjectTypeService implements NonScopeAwareService {
         subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
         subjectType.setSubjectSummaryRule(subjectTypeRequest.getSubjectSummaryRule());
         subjectType.setIconFileS3Key(subjectTypeRequest.getIconFileS3Key());
+        subjectType.setShouldSyncByLocation(subjectTypeRequest.isShouldSyncByLocation());
+        subjectType.setDirectlyAssignable(subjectTypeRequest.isDirectlyAssignable());
+        subjectType.setSyncRegistrationConcept1(subjectTypeRequest.getSyncRegistrationConcept1());
+        subjectType.setSyncRegistrationConcept1Usable(subjectTypeRequest.getSyncRegistrationConcept1Usable());
+        subjectType.setSyncRegistrationConcept2(subjectTypeRequest.getSyncRegistrationConcept2());
+        subjectType.setSyncRegistrationConcept2Usable(subjectTypeRequest.getSyncRegistrationConcept2Usable());
+        subjectType.setNameHelpText(subjectTypeRequest.getNameHelpText());
         subjectTypeRepository.save(subjectType);
     }
 
