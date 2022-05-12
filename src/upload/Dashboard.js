@@ -18,6 +18,7 @@ import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { LocationModes } from "./LocationModes";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -35,12 +36,18 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [entityForDownload, setEntityForDownload] = React.useState("");
   const [file, setFile] = React.useState();
   const [autoApprove, setAutoApprove] = React.useState(false);
+  const [mode, setMode] = React.useState("relaxed");
 
   const selectFile = (content, userfile) => setFile(userfile);
   const getUploadTypeCode = name => Types.getCode(name) || uploadTypes.getCode(name);
 
   const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove);
+    const [ok, error] = await api.bulkUpload(
+      getUploadTypeCode(uploadType),
+      file,
+      autoApprove,
+      mode
+    );
     if (!ok && error) {
       alert(error);
     }
@@ -71,6 +78,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 
   const dropdownHandler = option => {
     setAutoApprove(false);
+    setMode("relaxed");
     setUploadType(option);
   };
 
@@ -151,6 +159,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                 label={"Approve automatically"}
               />
             )}
+            {uploadType === "Locations" && <LocationModes mode={mode} setMode={setMode} />}
           </DocumentationContainer>
         </Paper>
       </Grid>
