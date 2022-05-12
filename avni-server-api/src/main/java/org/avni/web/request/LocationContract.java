@@ -14,6 +14,7 @@ public class LocationContract extends ReferenceDataContract {
     private String type;
     private String organisationUUID;
     private String addressLevelTypeUUID;
+    private String legacyId;
 
     public LocationContract() {
     }
@@ -77,14 +78,24 @@ public class LocationContract extends ReferenceDataContract {
         this.addressLevelTypeUUID = addressLevelTypeUUID;
     }
 
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
+    }
+
     public static LocationContract fromAddressLevel(AddressLevel addressLevel) {
         LocationContract contract = new LocationContract();
+        if (addressLevel == null) return contract;
         contract.setUuid(addressLevel.getUuid());
         contract.setName(addressLevel.getTitle());
         contract.setType(addressLevel.getTypeString());
         contract.setLevel(addressLevel.getLevel());
         contract.setAddressLevelTypeUUID(addressLevel.getType().getUuid());
         contract.setVoided(addressLevel.isVoided());
+        contract.setLegacyId(addressLevel.getLegacyId());
         AddressLevel parent = addressLevel.getParent();
         if (parent != null) {
             ReferenceDataContract parentContract = new ReferenceDataContract();

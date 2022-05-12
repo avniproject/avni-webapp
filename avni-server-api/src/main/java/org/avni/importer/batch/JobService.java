@@ -72,7 +72,7 @@ public class JobService {
         }
     }
 
-    public JobExecution create(String uuid, String type, String fileName, S3Service.ObjectInfo s3FileInfo, Long userId, String organisationUUID, boolean autoApprove) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+    public JobExecution create(String uuid, String type, String fileName, S3Service.ObjectInfo s3FileInfo, Long userId, String organisationUUID, boolean autoApprove, String locationUploadMode) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         JobParameters parameters = new JobParametersBuilder()
                 .addString("organisationUUID", organisationUUID)
                 .addString("uuid", uuid)
@@ -82,6 +82,7 @@ public class JobService {
                 .addLong("userId", userId, false)
                 .addString("type", type, false)
                 .addString("autoApprove", String.valueOf(autoApprove))
+                .addString("locationUploadMode", locationUploadMode)
                 .toJobParameters();
         logger.info(format("Bulkupload initiated! Job{type='%s',uuid='%s',fileName='%s'}", type, uuid, fileName));
 

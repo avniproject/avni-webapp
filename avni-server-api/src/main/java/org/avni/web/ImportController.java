@@ -100,13 +100,14 @@ public class ImportController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public ResponseEntity<?> doit(@RequestParam MultipartFile file,
                                   @RequestParam String type,
-                                  @RequestParam boolean autoApprove) {
+                                  @RequestParam boolean autoApprove,
+                                  @RequestParam String locationUploadMode) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         try {
             ObjectInfo storedFileInfo = type.equals("metadataZip") ? bulkUploadS3Service.uploadZip(file, uuid) : bulkUploadS3Service.uploadFile(file, uuid);
-            jobService.create(uuid, type, file.getOriginalFilename(), storedFileInfo, user.getId(), organisation.getUuid(), autoApprove);
+            jobService.create(uuid, type, file.getOriginalFilename(), storedFileInfo, user.getId(), organisation.getUuid(), autoApprove, locationUploadMode);
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();

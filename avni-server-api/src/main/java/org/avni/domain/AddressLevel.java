@@ -66,6 +66,8 @@ public class AddressLevel extends OrganisationAwareEntity {
     @Column
     private Point gpsCoordinates;
 
+    private String legacyId;
+
     public String getTitle() {
         return title;
     }
@@ -237,6 +239,14 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public void setGpsCoordinates(Point gpsCoordinates) {
         this.gpsCoordinates = gpsCoordinates;
+    }
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
     }
 
     @Projection(name = "AddressLevelProjection", types = {AddressLevel.class})

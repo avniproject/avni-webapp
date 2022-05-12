@@ -27,6 +27,7 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
         get().setUuid(locationRequest.getUuid() == null ? UUID.randomUUID().toString() : locationRequest.getUuid());
         get().setTitle(locationRequest.getName());
         get().setType(type);
+        get().setLegacyId(locationRequest.getLegacyId());
         get().setVoided(locationRequest.isVoided());
         withParentLocation(locationRequest);
         return this;

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.avni.application.projections.LocationProjection;
 import org.avni.application.projections.VirtualCatchmentProjection;
+import org.avni.domain.Individual;
 import org.joda.time.DateTime;
 import org.avni.domain.AddressLevel;
 import org.avni.domain.AddressLevelType;
@@ -101,6 +102,20 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     Page<AddressLevel> getAddressLevelsByLquery(@Param("lquery") String lquery, Pageable pageable);
 
     AddressLevel findByParentAndTitleIgnoreCaseAndIsVoidedFalse(AddressLevel parent, String title);
+
+    @Query("select a from AddressLevel a where a.uuid =:id or a.legacyId = :id")
+    AddressLevel findByLegacyIdOrUuid(String id);
+
+    @Query(value = "select al.*\n" +
+            "from address_level al\n" +
+            "         join address_level_type alt on al.type_id = alt.id\n" +
+            "         left join address_level parent on parent.id = al.parent_id\n" +
+            "where al.title = cast(:title as text)\n" +
+            "and alt.name = cast(:type as text)\n" +
+            "and case when :parentName isnull then true else parent.title = cast(:parentName as text) end;", nativeQuery = true)
+    AddressLevel findLocationByTitleTypeAndParentName(String title, String type, String parentName);
+
+    AddressLevel findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(String title, String typeString);
 
     @RestResource(path = "findByParent", rel = "findByParent")
     Page<AddressLevel> findByIsVoidedFalseAndParent_Id(@Param("parentId") Long parentId, Pageable pageable);
