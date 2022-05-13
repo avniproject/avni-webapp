@@ -175,3 +175,21 @@ a.black {
 .token.entity {
   cursor: help;
 }
+.circular_image {
+  border-radius: 50%;
+  overflow: hidden;
+  /*float: left;*/
+}
+.circular_image:hover {
+  opacity: 0.7;
+}
+.circular_image img {
+  width: 100%;
+}
+.modal_dialog {
+  top: 150px;
+  display: inline;
+  z-index: 2; /* Sit on top */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+}

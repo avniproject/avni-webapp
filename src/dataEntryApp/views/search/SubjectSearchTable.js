@@ -32,23 +32,23 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
 
   const renderNameWithIcon = ({ uuid, fullName, firstName, profilePicture, subjectTypeName }) => {
     return (
-      <a href={`/#/app/subject?uuid=${uuid}`}>
-        <Grid container spacing={1} direction={"row"} alignItems={"center"}>
-          <Grid item>
-            <SubjectProfilePicture
-              firstName={firstName}
-              profilePicture={profilePicture}
-              subjectType={null}
-              subjectTypeName={subjectTypeName}
-              size={20}
-              style={{ margin: "0px" }}
-            />
-          </Grid>
-          <Grid item>
-            <div>{fullName}</div>
-          </Grid>
+      <Grid container spacing={1} direction={"row"} alignItems={"center"}>
+        <Grid item>
+          <SubjectProfilePicture
+            firstName={firstName}
+            profilePicture={profilePicture}
+            subjectType={null}
+            subjectTypeName={subjectTypeName}
+            size={20}
+            style={{ margin: "0px" }}
+          />
         </Grid>
-      </a>
+        <Grid item>
+          <div>
+            <a href={`/#/app/subject?uuid=${uuid}`}>{fullName}</a>
+          </div>
+        </Grid>
+      </Grid>
     );
   };
 

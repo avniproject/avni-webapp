@@ -20,6 +20,12 @@ const SubjectProfilePicture = ({
   const isSubjectProfileIconSetup = isProfilePictureAllowed && !isEmpty(profilePicture);
   const label = isSubjectProfileIconSetup ? firstName : subjectTypeName;
   const [signedURL, setSignedURL] = React.useState();
+  const [modalState, setModalState] = React.useState(false);
+
+  const handleShowDialog = () => {
+    setModalState(!modalState);
+    console.log("clicked");
+  };
 
   React.useEffect(() => {
     let urlToUse = isSubjectProfileIconSetup ? profilePicture : subjectType.iconFileS3Key;
@@ -32,7 +38,31 @@ const SubjectProfilePicture = ({
   }, [isSubjectProfileIconSetup, subjectType]);
 
   const renderIcon = url => {
-    return <img src={url} height={size} width={size} alt={label} style={style} />;
+    return (
+      <div>
+        <img
+          className="circular_image"
+          onClick={handleShowDialog}
+          src={url}
+          height={size}
+          width={size}
+          alt={label}
+          style={style}
+        />
+        {modalState && isSubjectProfileIconSetup && (
+          <dialog className="modal_dialog" open onClick={handleShowDialog}>
+            <img
+              onClick={handleShowDialog}
+              src={url}
+              height={300}
+              width={300}
+              alt={label}
+              style={style}
+            />
+          </dialog>
+        )}
+      </div>
+    );
   };
 
   return renderIcon(!isEmpty(signedURL) ? signedURL : defaultIconUrl);
