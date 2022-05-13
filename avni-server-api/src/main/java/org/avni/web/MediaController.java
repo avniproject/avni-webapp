@@ -154,9 +154,6 @@ public class MediaController {
             if (bucketName.equals("icons") && isInvalidDimension(tempSourceFile, imageType)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 75 X 75 or smaller.");
             }
-            if (bucketName.equals("profile-pics") && isInvalidDimension(tempSourceFile, imageType)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 75 X 75 or smaller.");
-            }
             if (bucketName.equals("news") && isInvalidImageSize(file)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_PLAIN).body("Unsupported file. Use image of size 500KB or smaller.");
             }
