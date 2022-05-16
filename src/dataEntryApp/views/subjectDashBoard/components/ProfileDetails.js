@@ -205,6 +205,7 @@ const ProfileDetails = ({
         <Grid item container xs={4} alignItems="center">
           <Grid item>
             <SubjectProfilePicture
+              allowEnlargementOnClick={false}
               firstName={profileDetails.firstName}
               profilePicture={profileDetails.profilePicture}
               subjectType={profileDetails.subjectType}

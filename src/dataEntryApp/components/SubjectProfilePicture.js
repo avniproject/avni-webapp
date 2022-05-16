@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
 
 const SubjectProfilePicture = ({
+  allowEnlargementOnClick,
   firstName,
   profilePicture,
   subjectType,
@@ -23,8 +24,7 @@ const SubjectProfilePicture = ({
   const [modalState, setModalState] = React.useState(false);
 
   const handleShowDialog = () => {
-    setModalState(!modalState);
-    console.log("clicked");
+    allowEnlargementOnClick && setModalState(!modalState);
   };
 
   React.useEffect(() => {
@@ -49,9 +49,10 @@ const SubjectProfilePicture = ({
           alt={label}
           style={style}
         />
-        {modalState && isSubjectProfileIconSetup && (
+        {allowEnlargementOnClick && modalState && isSubjectProfileIconSetup && (
           <dialog className="modal_dialog" open onClick={handleShowDialog}>
             <img
+              className="modal_dialog_image"
               onClick={handleShowDialog}
               src={url}
               height={300}

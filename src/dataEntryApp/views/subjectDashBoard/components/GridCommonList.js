@@ -51,6 +51,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                       <Grid container direction={"row"} spacing={1}>
                         <Grid item>
                           <SubjectProfilePicture
+                            allowEnlargementOnClick={true}
                             firstName={relative.individualB.name}
                             profilePicture={relative.individualB.profilePicture}
                             subjectType={relative.individualB.subjectType}

@@ -35,6 +35,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       <Grid container spacing={1} direction={"row"} alignItems={"center"}>
         <Grid item>
           <SubjectProfilePicture
+            allowEnlargementOnClick={true}
             firstName={firstName}
             profilePicture={profilePicture}
             subjectType={null}

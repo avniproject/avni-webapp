@@ -40,6 +40,7 @@ const SubjectCardView = ({
         <Grid container justify="center" direction="row" spacing={1} alignItems="center">
           <Grid item>
             <SubjectProfilePicture
+              allowEnlargementOnClick={true}
               firstName={name}
               profilePicture={profilePicture}
               subjectType={null}
