@@ -70,18 +70,12 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String idPrefix = row.get("Beneficiary ID Prefix");
         String syncConcept1Name = row.get("Sync concept 1 name");
         String syncConcept1Values = row.get("Sync concept 1 values");
-        String syncConcept2Values = row.get("Sync concept 2 name");
-        String syncConcept2Name = row.get("Sync concept 2 values");
+        String syncConcept2Name = row.get("Sync concept 2 name");
+        String syncConcept2Values = row.get("Sync concept 2 values");
         String subjectUUIDs = row.get("Sync subject UUIDs");
         JsonObject syncSettings = new JsonObject();
-        if (syncConcept1Name != null && syncConcept1Values != null) {
-            syncSettings.with(User.SyncSettingKeys.syncConcept1.name(), conceptRepository.findByName(syncConcept1Name));
-            syncSettings.with(User.SyncSettingKeys.syncConcept1Values.name(), Arrays.asList(syncConcept1Values.split(",")));
-        }
-        if (syncConcept2Name != null && syncConcept2Values != null) {
-            syncSettings.with(User.SyncSettingKeys.syncConcept2.name(), conceptRepository.findByName(syncConcept2Name));
-            syncSettings.with(User.SyncSettingKeys.syncConcept2Values.name(), Arrays.asList(syncConcept2Values.split(",")));
-        }
+        populateSyncConcepts(syncSettings, syncConcept1Name, syncConcept1Values, User.SyncSettingKeys.syncConcept1, User.SyncSettingKeys.syncConcept1Values);
+        populateSyncConcepts(syncSettings, syncConcept2Name, syncConcept2Values, User.SyncSettingKeys.syncConcept2, User.SyncSettingKeys.syncConcept2Values);
         Set<Long> subjectIds = null;
         if (subjectUUIDs != null) {
             subjectIds = Arrays.stream(subjectUUIDs.split(","))
@@ -126,5 +120,17 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         cognitoService.createUser(user);
         userService.save(user, subjectIds);
         userService.addToDefaultUserGroup(user);
+    }
+
+    private void populateSyncConcepts(JsonObject syncSettings, String conceptName, String conceptValues, User.SyncSettingKeys key, User.SyncSettingKeys values) {
+        Concept concept = conceptRepository.findByName(conceptName);
+        if (concept != null && conceptValues != null) {
+            syncSettings.with(key.name(), concept.getUuid());
+            syncSettings.with(values.name(),
+                    Arrays.asList(conceptValues.split(","))
+                            .stream()
+                            .map(answer -> concept.getDbValue(answer, true))
+                            .collect(Collectors.toList()));
+        }
     }
 }
