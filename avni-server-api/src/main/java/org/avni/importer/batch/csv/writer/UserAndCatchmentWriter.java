@@ -94,7 +94,13 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String userSuffix = "@".concat(organisation.getUsernameSuffix());
         User.validateUsername(username, userSuffix);
         User user = userRepository.findByUsername(username);
-        if (user != null) return;
+        User currentUser = userService.getCurrentUser();
+        if (user != null) {
+            user.setAuditInfo(currentUser);
+            user.setSyncSettings(syncSettings);
+            userService.save(user, subjectIds);
+            return;
+        }
         user = new User();
         user.assignUUIDIfRequired();
         user.setUsername(username);
@@ -113,7 +119,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
                 .with("showBeneficiaryMode", beneficiaryMode)
                 .withEmptyCheck("idPrefix", idPrefix));
 
-        User currentUser = userService.getCurrentUser();
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
         user.setSyncSettings(syncSettings);
