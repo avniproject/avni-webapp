@@ -54,6 +54,7 @@
     "name": "Name",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "profilePicture": "Profile Picture",
     "value": "Value",
     "age": "Age",
     "searchAll": "All registration and enrolment text fields",
