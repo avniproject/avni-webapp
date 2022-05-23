@@ -69,6 +69,7 @@ public class SubjectTypeService implements NonScopeAwareService {
         subjectType.setHousehold(subjectTypeRequest.isHousehold());
         subjectType.setActive(subjectTypeRequest.getActive());
         subjectType.setAllowEmptyLocation(subjectTypeRequest.isAllowEmptyLocation());
+        subjectType.setAllowProfilePicture(subjectTypeRequest.isAllowProfilePicture());
         subjectType.setUniqueName(subjectTypeRequest.isUniqueName());
         subjectType.setValidFirstNameFormat(subjectTypeRequest.getValidFirstNameFormat());
         subjectType.setValidLastNameFormat(subjectTypeRequest.getValidLastNameFormat());

@@ -143,6 +143,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setName(request.getName());
         subjectType.setActive(request.getActive());
         subjectType.setAllowEmptyLocation(request.isAllowEmptyLocation());
+        subjectType.setAllowProfilePicture(request.isAllowProfilePicture());
         subjectType.setUniqueName(request.isUniqueName());
         subjectType.setType(Subject.valueOf(request.getType()));
         subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());

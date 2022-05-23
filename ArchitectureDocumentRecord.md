@@ -20,7 +20,7 @@ set of address levels sync, at that time there can be a discrepancy between the
 data pulled by one device from a given last_modified_date_time, the actual data 
 which belongs in that bracket, because of delay of flush of certain entities with applicable timestamp
 being pushed into the database by the other device. This will cause those entities to 
-remain unsynced for ever on the other device forever.
+remain unsynced forever on the other device forever.
 
 
 #### Resolution

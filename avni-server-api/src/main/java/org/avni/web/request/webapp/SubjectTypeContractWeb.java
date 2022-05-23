@@ -34,6 +34,7 @@ public class SubjectTypeContractWeb {
     private String subjectSummaryRule;
     private List<String> locationTypeUUIDs;
     private boolean allowEmptyLocation;
+    private boolean allowProfilePicture;
     private boolean uniqueName;
     private FormatContract validFirstNameFormat;
     private FormatContract validLastNameFormat;
@@ -64,6 +65,7 @@ public class SubjectTypeContractWeb {
         contract.setGroupRoles(subjectType.getGroupRolesContract());
         contract.setActive(subjectType.getActive());
         contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
+        contract.setAllowProfilePicture(subjectType.isAllowProfilePicture());
         contract.setUniqueName(subjectType.isUniqueName());
         contract.setType(operationalSubjectType.getType().name());
         contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
@@ -230,6 +232,14 @@ public class SubjectTypeContractWeb {
 
     public void setAllowEmptyLocation(boolean allowEmptyLocation) {
         this.allowEmptyLocation = allowEmptyLocation;
+    }
+
+    public boolean isAllowProfilePicture() {
+        return allowProfilePicture;
+    }
+
+    public void setAllowProfilePicture(boolean allowProfilePicture) {
+        this.allowProfilePicture = allowProfilePicture;
     }
 
     public boolean isUniqueName() {

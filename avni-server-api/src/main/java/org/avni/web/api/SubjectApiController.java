@@ -2,10 +2,7 @@ package org.avni.web.api;
 
 import org.avni.dao.*;
 import org.avni.domain.*;
-import org.avni.service.ConceptService;
-import org.avni.service.IndividualService;
-import org.avni.service.LocationService;
-import org.avni.service.SubjectMigrationService;
+import org.avni.service.*;
 import org.avni.util.S;
 import org.avni.web.request.api.ApiSubjectRequest;
 import org.avni.web.request.api.RequestUtils;
@@ -84,6 +81,7 @@ public class SubjectApiController {
         if (subject == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(Collections.singletonList(subject));
+
         return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, groupsOfAllMemberSubjects), HttpStatus.OK);
     }
 
@@ -131,6 +129,9 @@ public class SubjectApiController {
         subject.setSubjectType(subjectType);
         subject.setFirstName(request.getFirstName());
         subject.setLastName(request.getLastName());
+        if(subjectType.isAllowProfilePicture()) {
+            subject.setProfilePicture(request.getProfilePicture());
+        }
         subject.setRegistrationDate(request.getRegistrationDate());
         ObservationCollection observations = RequestUtils.createObservations(request.getObservations(), conceptRepository);
         subjectMigrationService.markSubjectMigrationIfRequired(subject.getUuid(), addressLevel.get(), observations);

@@ -24,6 +24,7 @@ public class SubjectSearchQueryBuilder {
     private final String baseQuery = "select distinct i.id as \"id\",\n" +
             "                i.first_name as \"firstName\",\n" +
             "                i.last_name as \"lastName\",\n" +
+            "                i.profile_picture as \"profilePicture\",\n" +
             "                cast(concat_ws(' ',i.first_name,i.last_name)as text) as \"fullName\",\n" +
             "                i.uuid as \"uuid\",\n" +
             "                cast(tllv.title_lineage as text) as \"addressLevel\",\n" +

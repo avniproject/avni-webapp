@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -63,6 +64,8 @@ public class S3Service {
     private final Logger logger;
     private final Boolean isDev;
     private final String EXTENSION_DIR = "extensions";
+    private final String PROFILE_PIC_DIR = "profile-pics";
+
 
     @Autowired
     public S3Service(Boolean isDev) {
@@ -101,8 +104,16 @@ public class S3Service {
     }
 
     private String getS3KeyForMediaUpload(String fileName) {
+        return getS3KeyForMediaUpload(null, fileName);
+    }
+
+    private String getS3KeyForMediaUpload(String parentFolder, String fileName) {
         String mediaDirectory = getOrgDirectoryName();
-        return format("%s/%s", mediaDirectory, fileName);
+        if (StringUtils.isEmpty(parentFolder)) {
+            return format("%s/%s", mediaDirectory, fileName);
+        } else {
+            return format("%s/%s/%s", mediaDirectory, parentFolder, fileName);
+        }
     }
 
     public boolean fileExists(String fileName) {
@@ -261,14 +272,18 @@ public class S3Service {
     }
 
     public String uploadFileToS3(File file) throws IOException {
+        return uploadFileToS3(null, file);
+    }
+
+    public String uploadFileToS3(String parentFolder, File file) throws IOException {
 //        if (!file.exists() || isDev) {
 //            logger.info("Skipping media upload to S3");
 //            return null;
 //        }
-        String s3Key = getS3KeyForMediaUpload(file.getName());
+        String s3Key = getS3KeyForMediaUpload(parentFolder, file.getName());
         s3Client.putObject(new PutObjectRequest(bucketName, s3Key, file));
         Files.delete(file.toPath());
-        return getObjectURL(file);
+        return getObjectURL(parentFolder, file);
     }
 
     public void deleteObject(String objectName) {
@@ -391,8 +406,8 @@ public class S3Service {
         return s3Client.getUrl(bucketName, objectKey).toString();
     }
 
-    private String getObjectURL(File file) {
-        String s3Key = getS3KeyForMediaUpload(file.getName());
+    private String getObjectURL(String parentFolder, File file) {
+        String s3Key = getS3KeyForMediaUpload(parentFolder, file.getName());
         return s3Client.getUrl(bucketName, s3Key).toString();
     }
 
@@ -404,24 +419,51 @@ public class S3Service {
         if (oldValue != null) {
             this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
         }
-        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), getUploadFileName(mediaURL)));
+        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"),
+                getUploadFileName(mediaURL, true)));
         downloadMediaToFile(mediaURL, file);
         return this.uploadFileToS3(file);
     }
 
-    private String getUploadFileName(String mediaURL) throws Exception {
+    public String uploadProfilePic(String profilePicURL, Object oldValue) throws Exception {
+        return this.uploadMediaFileInDir(PROFILE_PIC_DIR, profilePicURL, oldValue);
+    }
+
+    private String uploadMediaFileInDir(String parentFolder, String mediaUrl, Object oldValue) throws Exception {
+        if (oldValue != null) {
+            this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
+        }
+        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"),
+                getUploadFileName(mediaUrl, false)));
+        downloadMediaToFile(mediaUrl, file);
+        return this.uploadFileToS3(parentFolder, file);
+    }
+
+    private String getUploadFileName(String mediaURL, boolean strictCheck) throws Exception {
+        String fileName = extractFileName(mediaURL, strictCheck);
+        String extension = extractFileExtension(mediaURL, fileName);
+        return UUID.randomUUID().toString().concat(format(".%s", extension));
+    }
+
+    private String extractFileName(String mediaURL, boolean strictCheck) throws Exception {
+        String fileName = mediaURL.substring(mediaURL.lastIndexOf("/"));
         URL url = new URL(mediaURL);
         URLConnection con = url.openConnection();
         String contentDisposition = con.getHeaderField("Content-Disposition");
-        if (contentDisposition == null || !contentDisposition.contains("filename=\"")) {
+        if (contentDisposition != null && contentDisposition.contains("filename=\"")) {
+            fileName = contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
+        } else if(strictCheck) {
             throw new Exception(format("Can not extract file name from the URL '%s'. Make sure media download URL is correct.", mediaURL));
         }
-        String fileName = contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
+        return fileName;
+    }
+
+    private String extractFileExtension(String mediaURL, String fileName) throws Exception {
         String extension = FilenameUtils.getExtension(fileName);
         if (extension.isEmpty()) {
             throw new Exception(format("No file extension found in the file name. Make sure media download URL '%s' is correct.", mediaURL));
         }
-        return UUID.randomUUID().toString().concat(format(".%s", extension));
+        return extension;
     }
 
     private void downloadMediaToFile(String mediaURL, File file) throws Exception {

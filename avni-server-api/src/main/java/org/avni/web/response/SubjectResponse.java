@@ -5,8 +5,11 @@ import org.avni.domain.AddressLevel;
 import org.avni.domain.GroupSubject;
 import org.avni.domain.Individual;
 import org.avni.service.ConceptService;
+import org.jadira.usertype.spi.utils.lang.StringUtils;
 
 import java.util.*;
+
+import static java.lang.String.format;
 
 public class SubjectResponse extends LinkedHashMap<String, Object> {
     public static SubjectResponse fromSubject(Individual subject, boolean includeSubjectType, ConceptRepository conceptRepository, ConceptService conceptService) {
@@ -22,6 +25,11 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         LinkedHashMap<String, Object> observations = new LinkedHashMap<>();
         Response.putIfPresent(observations, "First name", subject.getFirstName());
         Response.putIfPresent(observations, "Last name", subject.getLastName());
+        if (subject.getSubjectType().isAllowProfilePicture()
+                && StringUtils.isNotEmpty(subject.getProfilePicture())) {
+            String originalUrl = format("/web/media?url=%s", subject.getProfilePicture());
+            observations.put("Profile picture", originalUrl);
+        }
         Response.putIfPresent(observations, "Date of birth", subject.getDateOfBirth());
         if (subject.getGender() != null) observations.put("Gender", subject.getGender().getName());
         Response.putObservations(conceptRepository, conceptService, subjectResponse, observations, subject.getObservations());

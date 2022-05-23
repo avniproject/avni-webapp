@@ -14,10 +14,8 @@ import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.SubjectHeaders;
 import org.avni.importer.batch.model.Row;
-import org.avni.service.AddressLevelService;
-import org.avni.service.EntityApprovalStatusService;
-import org.avni.service.IndividualService;
-import org.avni.service.ObservationService;
+import org.avni.service.*;
+import org.jadira.usertype.spi.utils.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +48,8 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private DecisionCreator decisionCreator;
     private ObservationCreator observationCreator;
     private final IndividualService individualService;
+    private final AddressLevelService addressLevelService;
+    private final S3Service s3Service;
     private final EntityApprovalStatusWriter entityApprovalStatusWriter;
 
     @Value("${avni.skipUploadValidations}")
@@ -67,7 +67,8 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          RuleServerInvoker ruleServerInvoker,
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
-                         ObservationCreator observationCreator, IndividualService individualService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
+                         ObservationCreator observationCreator, IndividualService individualService, EntityApprovalStatusWriter entityApprovalStatusWriter,
+                         AddressLevelService addressLevelService, S3Service s3Service) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -81,8 +82,10 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
         this.individualService = individualService;
+        this.addressLevelService = addressLevelService;
         this.entityApprovalStatusWriter = entityApprovalStatusWriter;
         this.locationCreator = new LocationCreator();
+        this.s3Service = s3Service;
     }
 
     @Override
@@ -103,6 +106,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setSubjectType(subjectType);
         individual.setFirstName(row.get(headers.firstName));
         individual.setLastName(row.get(headers.lastName));
+        setProfilePicture(subjectType, individual, row, allErrorMsgs);
         setDateOfBirth(individual, row, allErrorMsgs);
         individual.setDateOfBirthVerified(row.getBool(headers.dobVerified));
         setRegistrationDate(individual, row, allErrorMsgs);
@@ -127,6 +131,20 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         }
         entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
+    }
+
+    private void setProfilePicture(SubjectType subjectType, Individual individual, Row row, List<String> errorMsgs) {
+        try {
+            String profilePicUrl = row.get(headers.profilePicture);
+            if(StringUtils.isNotEmpty(profilePicUrl) && subjectType.isAllowProfilePicture()) {
+                individual.setProfilePicture(s3Service
+                        .uploadProfilePic(profilePicUrl, null));
+            } else if(StringUtils.isNotEmpty(profilePicUrl)) {
+                errorMsgs.add(String.format("Not allowed to set '%s'", headers.profilePicture));
+            }
+        } catch (Exception e) {
+            errorMsgs.add(String.format("Invalid '%s'", headers.profilePicture));
+        }
     }
 
     private Individual getOrCreateIndividual(Row row) {

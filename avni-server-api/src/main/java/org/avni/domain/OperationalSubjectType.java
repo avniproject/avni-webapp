@@ -85,6 +85,8 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
         return subjectType.getIconFileS3Key();
     }
 
+    public boolean isAllowProfilePicture() { return subjectType.isAllowProfilePicture(); }
+
     public DateTime getLastModifiedDateTime() {
         return getSubjectType().getLastModifiedDateTime().isAfter(super.getLastModifiedDateTime()) ?
                 getSubjectType().getLastModifiedDateTime() : super.getLastModifiedDateTime();

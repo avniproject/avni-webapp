@@ -31,6 +31,9 @@ public class ApiSubjectRequest {
     @JsonProperty("Last name")
     private String lastName;
 
+    @JsonProperty("Profile picture")
+    private String profilePicture;
+
     @JsonProperty("Registration location")
     private Point registrationLocation;
 
@@ -94,6 +97,14 @@ public class ApiSubjectRequest {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public Point getRegistrationLocation() {

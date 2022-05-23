@@ -13,6 +13,8 @@ public class CommonIndividualRequest extends CHSRequest {
 
     private String lastName;
 
+    private String profilePicture;
+
     private PeriodRequest age;
 
     private LocalDate dateOfBirth;
@@ -59,6 +61,14 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public LocalDate getDateOfBirth() {
