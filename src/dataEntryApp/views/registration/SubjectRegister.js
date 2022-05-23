@@ -227,6 +227,27 @@ const SubjectRegister = props => {
     );
   }
 
+  function renderProfilePicture() {
+    return (
+      props.subject.subjectType.allowProfilePicture && (
+        <Fragment>
+          <AvniImageUpload
+            onSelect={props.setProfilePictureFile}
+            label={t("profilePicture")}
+            toolTipKey={"APP_DESIGNER_PROFILE_PICTURE_ICON"}
+            width={75}
+            height={75}
+            oldImgUrl={props.subject.profilePicture}
+            allowUpload={true}
+            onDelete={() => props.setRemoveProfilePicture(true)}
+            displayDelete={true}
+          />
+          <LineBreak num={2} />
+        </Fragment>
+      )
+    );
+  }
+
   return loaded ? (
     <Fragment>
       <Breadcrumbs path={props.match.path} />
@@ -267,6 +288,7 @@ const SubjectRegister = props => {
                       update={props.setLastName}
                     />
                     <LineBreak num={2} />
+                    {renderProfilePicture()}
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || null}
                       dobErrorMsg={dobError ? dobError.messageKey : ""}
@@ -290,22 +312,6 @@ const SubjectRegister = props => {
                     {renderAddress()}
                   </>
                 )}
-                {props.subject.subjectType.allowProfilePicture && (
-                  <>
-                    <AvniImageUpload
-                      onSelect={props.setProfilePictureFile}
-                      label={"Profile Picture Icon"}
-                      toolTipKey={"APP_DESIGNER_PROFILE_PICTURE_ICON"}
-                      width={75}
-                      height={75}
-                      oldImgUrl={props.subject.profilePicture}
-                      allowUpload={true}
-                      onDelete={() => props.setRemoveProfilePicture(true)}
-                      displayDelete={true}
-                    />
-                    <LineBreak num={2} />
-                  </>
-                )}
                 {!props.subject.subjectType.isPerson() && (
                   <>
                     <TextFormElement
@@ -317,6 +323,7 @@ const SubjectRegister = props => {
                       helpText={get(props.subject, "subjectType.nameHelpText")}
                     />
                     <LineBreak num={1} />
+                    {renderProfilePicture()}
                     {renderAddress()}
                   </>
                 )}
