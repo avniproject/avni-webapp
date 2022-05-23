@@ -73,7 +73,7 @@ export function* saveSubjectWorker() {
   const identifierAssignments = yield select(selectIdentifierAssignments);
   const profilePictureFile = yield select(selectRegistrationProfilePictureFile);
   const removeProfilePicFile = yield select(selectRegistrationRemoveProfilePicture);
-  const [profilePicKey, error] = yield call(
+  const [profilePicKey] = yield call(
     uploadImage,
     subject.profilePicture,
     profilePictureFile,
