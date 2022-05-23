@@ -87,6 +87,7 @@ const SubjectFormElement = props => {
         firstName: subject.firstName,
         lastName: subject.lastName,
         fullName: subject.fullName,
+        profilePicture: subject.profilePicture,
         addressLevel: subject.addressLevel
       }
     }));

@@ -8,6 +8,7 @@ const GroupMembershipCardView = ({ groupMembership: { groupSubject, groupRole } 
       <SubjectCardView
         uuid={groupSubject.uuid}
         name={groupSubject.name}
+        profilePicture={groupSubject.profilePicture}
         subjectTypeName={groupSubject.subjectType.name}
       >
         <Typography component={"div"} color="textSecondary" gutterBottom align={"center"}>

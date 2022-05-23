@@ -17,6 +17,7 @@
   "APP_DESIGNER_SUBJECT_TYPE_SYC_BY_LOCATION": "This will sync the subjects by their registered locations and catchment assigned to the users",
   "APP_DESIGNER_SUBJECT_TYPE_SYNC_BY_DIRECT_ASSIGNMENT": "This will sync the subjects which are sirectly assigned to the users",
   "APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE": "Person subject type that can be added as member to the household",
+  "APP_DESIGNER_PROFILE_PICTURE_ICON": "Profile picture of an individual",
   "APP_DESIGNER_PROGRAM_NAME": "Name of the program.",
   "APP_DESIGNER_PROGRAM_SUBJECT_TYPE": "Subject type to which this program will be linked.",
   "APP_DESIGNER_PROGRAM_COLOR": "This colour will be used on labels showing program enrolment. Choose a colour that resonates with the program",

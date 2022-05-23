@@ -6,11 +6,11 @@ import { useTranslation } from "react-i18next";
 import { filter, get, isEmpty, join, map, flatten, find, reject, isNil, size } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
-import SubjectTypeIcon from "../../components/SubjectTypeIcon";
 import { Grid } from "@material-ui/core";
 import { getDisplayAge } from "../../utils/AgeUtil";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
+import SubjectProfilePicture from "../../components/SubjectProfilePicture";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { t } = useTranslation();
@@ -30,18 +30,26 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid)
       );
 
-  const renderNameWithIcon = ({ uuid, fullName, subjectTypeName }) => {
+  const renderNameWithIcon = ({ uuid, fullName, firstName, profilePicture, subjectTypeName }) => {
     return (
-      <a href={`/#/app/subject?uuid=${uuid}`}>
-        <Grid container spacing={1} direction={"row"} alignItems={"center"}>
-          <Grid item>
-            <SubjectTypeIcon subjectTypeName={subjectTypeName} size={20} />
-          </Grid>
-          <Grid item>
-            <div>{fullName}</div>
-          </Grid>
+      <Grid container spacing={1} direction={"row"} alignItems={"center"}>
+        <Grid item>
+          <SubjectProfilePicture
+            allowEnlargementOnClick={true}
+            firstName={firstName}
+            profilePicture={profilePicture}
+            subjectType={null}
+            subjectTypeName={subjectTypeName}
+            size={20}
+            style={{ margin: "0px" }}
+          />
         </Grid>
-      </a>
+        <Grid item>
+          <div>
+            <a href={`/#/app/subject?uuid=${uuid}`}>{fullName}</a>
+          </div>
+        </Grid>
+      </Grid>
     );
   };
 

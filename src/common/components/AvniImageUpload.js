@@ -63,7 +63,7 @@ export const AvniImageUpload = ({
     fileReader.onloadend = event => {
       setFile(file);
       const error = onSelect(file);
-      error && alert(error);
+      error && !error.type && alert(error);
     };
   };
 

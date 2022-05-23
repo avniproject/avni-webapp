@@ -16,6 +16,8 @@ import api from "../api";
 import { getGenders } from "../reducers/metadataReducer";
 import {
   selectRegistrationFormMappingForSubjectType,
+  selectRegistrationProfilePictureFile,
+  selectRegistrationRemoveProfilePicture,
   selectRegistrationSubject,
   selectSubjectTypeFromName
 } from "./selectors";
@@ -36,6 +38,7 @@ import {
   setInitialSubjectState
 } from "dataEntryApp/reducers/registrationReducer";
 import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
+import { bucketName, uploadImage } from "../../common/utils/S3Client";
 
 export function* dataEntryLoadRegistrationFormWatcher() {
   yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
@@ -68,7 +71,15 @@ export function* saveSubjectWorker() {
   const decisions = yield select(selectDecisions);
   const registrationForm = yield select(selectRegistrationForm);
   const identifierAssignments = yield select(selectIdentifierAssignments);
-
+  const profilePictureFile = yield select(selectRegistrationProfilePictureFile);
+  const removeProfilePicFile = yield select(selectRegistrationRemoveProfilePicture);
+  const [profilePicKey, error] = yield call(
+    uploadImage,
+    subject.profilePicture,
+    profilePictureFile,
+    bucketName.PROFILE_PICS
+  );
+  subject.profilePicture = removeProfilePicFile ? null : profilePicKey;
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
   resource.decisions = decisions;

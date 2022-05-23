@@ -9,7 +9,7 @@ import { bold } from "ansi-colors";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import RemoveRelative from "../components/RemoveRelative";
-import SubjectTypeIcon from "../../../components/SubjectTypeIcon";
+import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -50,9 +50,14 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                     <CardContent>
                       <Grid container direction={"row"} spacing={1}>
                         <Grid item>
-                          <SubjectTypeIcon
+                          <SubjectProfilePicture
+                            allowEnlargementOnClick={true}
+                            firstName={relative.individualB.name}
+                            profilePicture={relative.individualB.profilePicture}
+                            subjectType={relative.individualB.subjectType}
                             subjectTypeName={relative.individualB.subjectType.name}
                             size={25}
+                            style={{ margin: "0px" }}
                           />
                         </Grid>
                         <Grid item>

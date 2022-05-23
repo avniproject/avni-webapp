@@ -111,6 +111,7 @@ export const mapSubjectType = json => {
   subjectType.voided = !!json.voided;
   subjectType.type = json.type;
   subjectType.allowEmptyLocation = json.allowEmptyLocation;
+  subjectType.allowProfilePicture = json.allowProfilePicture;
   subjectType.group = json.group;
   subjectType.household = json.household;
   subjectType.iconFileS3Key = json.iconFileS3Key;
