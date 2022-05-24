@@ -35,7 +35,7 @@
     "lodash": "^4.17.19",
     "material-table": "1.43.0",
     "material-ui-rc-color-picker": "^1.0.4",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "openchs-idi": "github:openchs/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
     "openchs-models": "1.15.0",
     "popper.js": "^1.14.3",
