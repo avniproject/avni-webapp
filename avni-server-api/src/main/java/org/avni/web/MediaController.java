@@ -140,10 +140,13 @@ public class MediaController {
     }
 
     @PostMapping("/media/saveImage")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin', 'user')")
     public ResponseEntity<?> saveImage(@RequestParam MultipartFile file, @RequestParam String bucketName) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
+        if(!(user.isAdmin() || user.isOrgAdmin()) && !(bucketName.equals("profile-pics"))) {
+            throw new AccessDeniedException(String.format("User is not allowed to upload images to this bucket %s", bucketName));
+        }
         File tempSourceFile;
         try {
             tempSourceFile = AvniFiles.convertMultiPartToFile(file, "");
