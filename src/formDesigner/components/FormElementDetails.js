@@ -17,7 +17,7 @@ import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { capitalize, get, isEqual, toNumber } from "lodash";
+import _, { capitalize, get, isEqual, toNumber, includes } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -461,8 +461,10 @@ function FormElementDetails(props) {
             </div>
           )}
         </Paper>
-        {(props.formElementData.concept.dataType === "Coded" ||
-          props.formElementData.concept.dataType === "Subject") && (
+        {includes(
+          ["Coded", "Subject", "Image", "Video", "File"],
+          props.formElementData.concept.dataType
+        ) && (
           <>
             <Grid item sm={6}>
               {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
