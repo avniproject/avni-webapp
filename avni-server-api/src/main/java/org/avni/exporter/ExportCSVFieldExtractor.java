@@ -214,8 +214,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             Gender gender = individual.getGender();
             row.add(individual.getId());
             row.add(individual.getUuid());
-            row.add(massageStringValue(individual.getFirstName()));
-            row.add(massageStringValue(individual.getLastName()));
+            row.add(QuotedStringValue(individual.getFirstName()));
+            row.add(QuotedStringValue(individual.getLastName()));
             row.add(individual.getDateOfBirth());
             row.add(individual.getRegistrationDate());
             row.add(gender == null ? "" : gender.getName());
@@ -294,7 +294,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private <T extends AbstractEncounter> void addEncounter(List<Object> row, T encounter, LinkedHashMap<String, FormElement> map, LinkedHashMap<String, FormElement> cancelMap) {
         row.add(encounter.getId());
         row.add(encounter.getUuid());
-        row.add(massageStringValue(encounter.getName()));
+        row.add(QuotedStringValue(encounter.getName()));
         row.add(getDateForTimeZone(encounter.getEarliestVisitDateTime()));
         row.add(getDateForTimeZone(encounter.getMaxVisitDateTime()));
         row.add(getDateForTimeZone(encounter.getEncounterDateTime()));
@@ -328,7 +328,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         });
     }
 
-    private String massageStringValue(String text) {
+    private String QuotedStringValue(String text) {
         if (StringUtils.isEmpty(text))
             return text;
         return "\"".concat(text).concat("\"");
@@ -351,8 +351,10 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
             } else if(dataType.equals(ConceptDataType.DateTime.toString()) || dataType.equals(ConceptDataType.Date.toString())){
                 values.add(processDateObs(val));
+            } else if (ConceptDataType.isMedia(dataType)) {
+                values.add(processMediaObs(val));
             } else {
-                values.add(massageStringValue(String.valueOf(Optional.ofNullable(val).orElse(""))));
+                values.add(QuotedStringValue(String.valueOf(Optional.ofNullable(val).orElse(""))));
             }
         });
         return values;
@@ -370,9 +372,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private List<Object> processCodedObs(String formType, Object val, FormElement formElement) {
         List<Object> values = new ArrayList<>();
         if (formType.equals(FormElementType.MultiSelect.toString())) {
-            List<Object> codedObs = val == null ?
-                    Collections.emptyList() :
-                    val instanceof List ? (List<Object>) val : Collections.singletonList(val);
+            List<Object> codedObs = getObservationValueList(val);
             values.addAll(getAns(formElement.getConcept(), codedObs));
         } else {
             values.add(val == null ? "" : getAnsName(formElement.getConcept(), val));
@@ -380,10 +380,21 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         return values;
     }
 
+    private List<Object> getObservationValueList(Object val) {
+        return val == null ?
+                Collections.emptyList() :
+                val instanceof List ? (List<Object>) val : Collections.singletonList(val);
+    }
+
+    private String processMediaObs(Object val) {
+        List<String> imageURIs = getObservationValueList(val).stream().map(t -> (String) t).collect(Collectors.toList());
+        return QuotedStringValue(String.join(",", imageURIs));
+    }
+
     private String getAnsName(Concept concept, Object val) {
         return concept.getSortedAnswers()
                 .filter(ca -> ca.getAnswerConcept().getUuid().equals(val))
-                .map(ca -> massageStringValue(ca.getAnswerConcept().getName()))
+                .map(ca -> QuotedStringValue(ca.getAnswerConcept().getName()))
                 .findFirst().orElse("");
     }
 
@@ -394,13 +405,13 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     }
 
     private void addAddressLevelColumns(StringBuilder sb) {
-        this.addressLevelTypes.forEach(level -> sb.append(",").append(massageStringValue(level)));
+        this.addressLevelTypes.forEach(level -> sb.append(",").append(QuotedStringValue(level)));
     }
 
     private void addAddressLevels(List<Object> row, AddressLevel addressLevel) {
         Map<String, String> addressLevelMap = addressLevel != null ?
                 getAddressTypeAddressLevelMap(addressLevel, addressLevel.getParentLocationMapping()) : new HashMap<>();
-        this.addressLevelTypes.forEach(level -> row.add(massageStringValue(addressLevelMap.getOrDefault(level, ""))));
+        this.addressLevelTypes.forEach(level -> row.add(QuotedStringValue(addressLevelMap.getOrDefault(level, ""))));
     }
 
     private Map<String, String> getAddressTypeAddressLevelMap(AddressLevel addressLevel, ParentLocationMapping parentLocationMapping) {
