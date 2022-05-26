@@ -132,6 +132,7 @@ workflows:
           requires:
             - app_build
       - cypress/run:
+          type: approval
           yarn: true
           store_artifacts: true
           requires:
