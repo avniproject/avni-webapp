@@ -53,4 +53,8 @@ public enum ConceptDataType {
     public static boolean isGroupQuestion(String dataType) {
         return ConceptDataType.valueOf(dataType).equals(QuestionGroup);
     }
+
+    public static boolean isMedia(String dataType) {
+        return Arrays.asList(Image, Video, File, Audio).contains(ConceptDataType.valueOf(dataType));
+    }
 }

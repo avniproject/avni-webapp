@@ -217,7 +217,14 @@ public class ObservationCreator {
                 return (answerValue.trim().equals("")) ? null : toISODateFormat(answerValue);
             case Image:
             case Video:
-                return getMediaObservationValue(answerValue, errorMsgs, oldValue);
+                if (formElement.getType().equals(FormElementType.MultiSelect.name())) {
+                    String[] providedURLs = S.splitMultiSelectAnswer(answerValue);
+                    return Stream.of(providedURLs)
+                            .map(url -> getMediaObservationValue(url, errorMsgs, null))
+                            .collect(Collectors.toList());
+                } else {
+                    return getMediaObservationValue(answerValue, errorMsgs, oldValue);
+                }
             case Subject:
                 return individualService.getObservationValueForUpload(formElement, answerValue);
             case Location:
