@@ -3,22 +3,11 @@ import Grid from "@material-ui/core/Grid";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import http from "../../common/utils/httpClient";
+import { get } from "lodash";
 
 export const SubjectConcept = props => {
+  const subjectTypeOptions = get(props.operationalModules, "subjectTypes", []);
   const [subjectType, setSubjectType] = React.useState("");
-  const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
-
-  React.useEffect(() => {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        setSubjectTypeOptions(response.data.subjectTypes);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, []);
 
   React.useEffect(() => {
     if (props.isCreatePage || props.keyValues === undefined || props.keyValues.length === 0) {

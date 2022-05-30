@@ -278,7 +278,10 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
   let absoluteValidation = false,
     normalValidation = false,
     locationValidation = false,
-    subjectValidation = false;
+    subjectValidation = false,
+    encounterTypeUUIDValidation = false,
+    encounterScopeValidation = false,
+    encounterIdentifierValidation = false;
 
   const inlineConceptObject = {
     name: clonedFormElement.inlineConceptName,
@@ -335,6 +338,24 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
     }
   }
 
+  if (inlineConceptObject.dataType === "Encounter") {
+    const getValue = key => clonedFormElement["inlineEncounterDataTypeKeyValues"][key];
+    const isKeyEmpty = key => isEmpty(getValue(key));
+    if (isKeyEmpty("encounterTypeUUID")) {
+      encounterTypeUUIDValidation = true;
+    } else if (isKeyEmpty("encounterScope")) {
+      encounterScopeValidation = true;
+    } else if (isKeyEmpty("encounterIdentifier")) {
+      encounterIdentifierValidation = true;
+    } else {
+      const keyValues = [];
+      keyValues[0] = { key: "encounterTypeUUID", value: getValue("encounterTypeUUID") };
+      keyValues[1] = { key: "encounterScope", value: getValue("encounterScope") };
+      keyValues[2] = { key: "encounterIdentifier", value: getValue("encounterIdentifier") };
+      inlineConceptObject.keyValues = keyValues;
+    }
+  }
+
   if (inlineConceptObject.dataType === "PhoneNumber") {
     const keyValues = [];
     keyValues.push({
@@ -376,7 +397,10 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
     normalValidation === false &&
     absoluteValidation === false &&
     locationValidation === false &&
-    subjectValidation === false
+    subjectValidation === false &&
+    encounterTypeUUIDValidation === false &&
+    encounterScopeValidation === false &&
+    encounterIdentifierValidation === false
   ) {
     clonedFormElement.inlineConceptErrorMessage["name"] = "";
     clonedFormElement.inlineConceptErrorMessage["dataType"] = "";
@@ -471,6 +495,15 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
     clonedFormElement.inlineSubjectDataTypeKeyValues.error[
       "subjectTypeRequired"
     ] = subjectValidation;
+    clonedFormElement.inlineEncounterDataTypeKeyValues.error[
+      "encounterTypeRequired"
+    ] = encounterTypeUUIDValidation;
+    clonedFormElement.inlineEncounterDataTypeKeyValues.error[
+      "encounterScopeRequired"
+    ] = encounterScopeValidation;
+    clonedFormElement.inlineEncounterDataTypeKeyValues.error[
+      "encounterIdentifierRequired"
+    ] = encounterIdentifierValidation;
 
     updateState();
   }
@@ -569,6 +602,12 @@ export const formDesignerGetEmptyFormElement = () => {
     inlineSubjectDataTypeKeyValues: {
       subjectTypeUUID: "",
       error: {}
+    },
+    inlineEncounterDataTypeKeyValues: {
+      error: {},
+      encounterTypeUUID: "",
+      encounterScope: "",
+      encounterIdentifier: ""
     },
     inlinePhoneNumberDataTypeKeyValues: {
       verifyPhoneNumber: false

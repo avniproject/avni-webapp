@@ -13,8 +13,22 @@ import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import Box from "@material-ui/core/Box";
 import { size, filter, includes } from "lodash";
+import http from "../../common/utils/httpClient";
+import { EncounterConcept } from "./EncounterConcept";
 
 function InlineConcept(props) {
+  const [operationalModules, setOperationalModules] = React.useState({});
+  React.useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        setOperationalModules(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
   const renderInlinePhoneNumber = () => {
     const onKeyValueChange = ({ key, value }) =>
       props.handleInlinePhoneNumberAttributes(props.groupIndex, key, value, props.index);
@@ -161,6 +175,22 @@ function InlineConcept(props) {
             inlineConcept={true}
             groupIndex={props.groupIndex}
             index={props.index}
+            operationalModules={operationalModules}
+          />
+          <br />
+        </>
+      )}
+
+      {props.formElementData.inlineConceptDataType === "Encounter" && (
+        <>
+          <EncounterConcept
+            updateKeyValues={props.handleInlineEncounterAttributes}
+            error={props.formElementData.inlineEncounterDataTypeKeyValues.error}
+            isCreatePage={true}
+            inlineConcept={true}
+            groupIndex={props.groupIndex}
+            index={props.index}
+            operationalModules={operationalModules}
           />
           <br />
         </>

@@ -185,7 +185,8 @@ function FormElementGroup(props) {
           entityName: props.entityName,
           disableFormElement: props.disableGroup,
           subjectType: props.subjectType,
-          form: props.form
+          form: props.form,
+          handleInlineEncounterAttributes: props.handleInlineEncounterAttributes
         };
         formElements.push(
           <Draggable

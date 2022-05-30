@@ -277,6 +277,7 @@ function FormElementDetails(props) {
                 handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
                 handleInlineLocationAttributes={props.handleInlineLocationAttributes}
                 handleInlineSubjectAttributes={props.handleInlineSubjectAttributes}
+                handleInlineEncounterAttributes={props.handleInlineEncounterAttributes}
                 handleInlinePhoneNumberAttributes={props.handleInlinePhoneNumberAttributes}
                 handleConceptFormLibrary={props.handleConceptFormLibrary}
                 dataTypesToIgnore={dataTypesToIgnore}
@@ -462,7 +463,7 @@ function FormElementDetails(props) {
           )}
         </Paper>
         {includes(
-          ["Coded", "Subject", "Image", "Video", "File"],
+          ["Coded", "Subject", "Image", "Video", "File", "Encounter"],
           props.formElementData.concept.dataType
         ) && (
           <>

@@ -107,6 +107,7 @@ class FormDetails extends Component {
     this.handleInlineNumericAttributes = this.handleInlineNumericAttributes.bind(this);
     this.handleInlineLocationAttributes = this.handleInlineLocationAttributes.bind(this);
     this.handleInlineSubjectAttributes = this.handleInlineSubjectAttributes.bind(this);
+    this.handleInlineEncounterAttributes = this.handleInlineEncounterAttributes.bind(this);
     this.handleInlinePhoneNumberAttributes = this.handleInlinePhoneNumberAttributes.bind(this);
   }
 
@@ -464,6 +465,7 @@ class FormDetails extends Component {
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
           handleInlineLocationAttributes: this.handleInlineLocationAttributes,
           handleInlineSubjectAttributes: this.handleInlineSubjectAttributes,
+          handleInlineEncounterAttributes: this.handleInlineEncounterAttributes,
           handleInlinePhoneNumberAttributes: this.handleInlinePhoneNumberAttributes,
           updateFormElementGroupRule: this.updateFormElementGroupRule,
           entityName: this.getEntityNameForRules(),
@@ -642,6 +644,19 @@ class FormDetails extends Component {
         formDesignerHandleInlineConceptAttributes(
           draft.form.formElementGroups[index].formElements[elementIndex],
           "inlineSubjectDataTypeKeyValues",
+          propertyName,
+          value
+        );
+      })
+    );
+  }
+
+  handleInlineEncounterAttributes(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        formDesignerHandleInlineConceptAttributes(
+          draft.form.formElementGroups[index].formElements[elementIndex],
+          "inlineEncounterDataTypeKeyValues",
           propertyName,
           value
         );

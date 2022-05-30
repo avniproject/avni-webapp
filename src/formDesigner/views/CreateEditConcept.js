@@ -27,6 +27,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
 import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
+import { EncounterConcept } from "../components/EncounterConcept";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -91,7 +92,10 @@ class CreateEditConcept extends Component {
         "lowestAddressLevelTypeUUIDs",
         "highestAddressLevelTypeUUID",
         "subjectTypeUUID",
-        "verifyPhoneNumber"
+        "verifyPhoneNumber",
+        "encounterTypeUUID",
+        "encounterScope",
+        "encounterIdentifier"
       ]
     };
   }
@@ -149,6 +153,15 @@ class CreateEditConcept extends Component {
           console.log(error);
         });
     }
+
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        this.setState(state => ({ ...state, operationalModules: response.data }));
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
@@ -301,6 +314,13 @@ class CreateEditConcept extends Component {
     );
   }
 
+  validateKeyValues = (error, key, errorKey) => {
+    const keyValue = this.state.keyValues.find(keyValue => keyValue.key === key);
+    if (keyValue === undefined || keyValue.value === "") {
+      error[errorKey] = true;
+    }
+  };
+
   formValidation = () => {
     const conceptName = this.state.name;
     let error = {};
@@ -373,12 +393,13 @@ class CreateEditConcept extends Component {
         }
 
         if (this.state.dataType === "Subject") {
-          const subjectType = this.state.keyValues.find(
-            keyValue => keyValue.key === "subjectTypeUUID"
-          );
-          if (subjectType === undefined || subjectType.value === "") {
-            error["subjectTypeRequired"] = true;
-          }
+          this.validateKeyValues(error, "subjectTypeUUID", "subjectTypeRequired");
+        }
+
+        if (this.state.dataType === "Encounter") {
+          this.validateKeyValues(error, "encounterTypeUUID", "encounterTypeRequired");
+          this.validateKeyValues(error, "encounterScope", "encounterScopeRequired");
+          this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
         }
 
         const emptyKeyValues = filter(
@@ -634,6 +655,20 @@ class CreateEditConcept extends Component {
           error={this.state.error}
           isCreatePage={this.props.isCreatePage}
           inlineConcept={false}
+          operationalModules={this.state.operationalModules}
+        />
+      );
+    }
+
+    if (this.state.dataType === "Encounter") {
+      dataType = (
+        <EncounterConcept
+          updateKeyValues={this.onKeyValueChange}
+          keyValues={this.state.keyValues}
+          error={this.state.error}
+          isCreatePage={this.props.isCreatePage}
+          inlineConcept={false}
+          operationalModules={this.state.operationalModules}
         />
       );
     }
