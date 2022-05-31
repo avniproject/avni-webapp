@@ -17,7 +17,7 @@ import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { capitalize, get, isEqual, toNumber, includes } from "lodash";
+import _, { capitalize, get, includes, isEqual, toNumber } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -917,7 +917,28 @@ function FormElementDetails(props) {
         )}
       </Grid>
       {props.formElementData.concept.dataType === "QuestionGroup" && (
-        <QuestionGroup parentFormElementUUID={props.formElementData.uuid} {...props} />
+        <Fragment>
+          <QuestionGroup parentFormElementUUID={props.formElementData.uuid} {...props} />
+          <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_REPEATABLE"}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  id="repeatable"
+                  checked={!!props.formElementData.keyValues.repeatable}
+                  onChange={event =>
+                    props.handleGroupElementKeyValueChange(
+                      props.groupIndex,
+                      "repeatable",
+                      event.target.checked,
+                      props.index
+                    )
+                  }
+                />
+              }
+              label="Repeatable"
+            />
+          </AvniFormControl>
+        </Fragment>
       )}
     </Fragment>
   );
