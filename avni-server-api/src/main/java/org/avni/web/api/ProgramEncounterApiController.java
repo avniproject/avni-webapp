@@ -91,8 +91,7 @@ public class ProgramEncounterApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiProgramEncounterRequest request) {
-        ProgramEncounter encounter = new ProgramEncounter();
-        encounter.assignUUID();
+        ProgramEncounter encounter = getEncounter(request.getExternalId());
         try {
             updateEncounter(encounter, request);
         } catch (ValidationException ve) {
@@ -143,5 +142,18 @@ public class ProgramEncounterApiController {
 
         encounter.validate();
         return programEncounterService.save(encounter);
+    }
+
+    private ProgramEncounter getEncounter(String externalId) {
+        ProgramEncounter encounter = null;
+        if (externalId != null && !externalId.isEmpty()) {
+            encounter = programEncounterRepository.findByLegacyIdOrUuid(externalId);
+        }
+        if (encounter == null) {
+            encounter = new ProgramEncounter();
+            encounter.assignUUID();
+            encounter.setLegacyId(externalId);
+        }
+        return encounter;
     }
 }

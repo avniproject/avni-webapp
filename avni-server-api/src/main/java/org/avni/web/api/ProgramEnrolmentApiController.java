@@ -49,8 +49,7 @@ public class ProgramEnrolmentApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity<ProgramEnrolmentResponse> post(@RequestBody ApiProgramEnrolmentRequest request) {
-        ProgramEnrolment encounter = new ProgramEnrolment();
-        encounter.assignUUID();
+        ProgramEnrolment encounter = getProgramEnrolment(request.getExternalId());
         updateEnrolment(encounter, request);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
@@ -122,5 +121,18 @@ public class ProgramEnrolmentApiController {
         if (programEnrolment == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
+    private ProgramEnrolment getProgramEnrolment(String externalId) {
+        ProgramEnrolment programEnrolment = null;
+        if (externalId != null && !externalId.isEmpty()) {
+            programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(externalId);
+        }
+        if (programEnrolment == null) {
+            programEnrolment = new ProgramEnrolment();
+            programEnrolment.assignUUID();
+            programEnrolment.setLegacyId(externalId);
+        }
+        return programEnrolment;
     }
 }

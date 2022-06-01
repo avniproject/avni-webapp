@@ -85,8 +85,7 @@ public class GeneralEncounterApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiEncounterRequest request) {
-        Encounter encounter = new Encounter();
-        encounter.assignUUID();
+        Encounter encounter = getEncounter(request.getExternalId());
         try {
             updateEncounter(encounter, request);
         } catch (ValidationException ve) {
@@ -137,5 +136,18 @@ public class GeneralEncounterApiController {
 
         encounter.validate();
         encounterService.save(encounter);
+    }
+
+    private Encounter getEncounter(String externalId) {
+        Encounter encounter = null;
+        if (externalId != null && !externalId.isEmpty()) {
+            encounter = encounterRepository.findByLegacyIdOrUuid(externalId);
+        }
+        if (encounter == null) {
+            encounter = new Encounter();
+            encounter.assignUUID();
+            encounter.setLegacyId(externalId);
+        }
+        return encounter;
     }
 }

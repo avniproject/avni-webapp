@@ -90,8 +90,7 @@ public class SubjectApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiSubjectRequest request) {
-        Individual subject = new Individual();
-        subject.assignUUID();
+        Individual subject = getIndividual(request.getExternalId());
         try {
             updateSubject(subject, request);
         } catch (ValidationException ve) {
@@ -150,5 +149,18 @@ public class SubjectApiController {
 
     private List<GroupSubject> findGroupAffiliation(Individual subject, List<GroupSubject> groupSubjects) {
         return groupSubjects.stream().filter(groupSubject -> groupSubject.getMemberSubject().equals(subject)).collect(Collectors.toList());
+    }
+
+    private Individual getIndividual(String externalId) {
+        Individual subject = null;
+        if (externalId != null && !externalId.isEmpty()) {
+            subject = individualRepository.findByLegacyIdOrUuid(externalId);
+        }
+        if (subject == null) {
+            subject = new Individual();
+            subject.assignUUID();
+            subject.setLegacyId(externalId);
+        }
+        return subject;
     }
 }
