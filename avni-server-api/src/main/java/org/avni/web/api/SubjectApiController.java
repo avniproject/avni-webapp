@@ -33,11 +33,12 @@ public class SubjectApiController {
     private final  GenderRepository genderRepository;
     private final SubjectMigrationService subjectMigrationService;
     private final IndividualService individualService;
+    private final S3Service s3Service;
 
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
                                 ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
-                                LocationRepository locationRepository, GenderRepository genderRepository, SubjectMigrationService subjectMigrationService, IndividualService individualService) {
+                                LocationRepository locationRepository, GenderRepository genderRepository, SubjectMigrationService subjectMigrationService, IndividualService individualService, S3Service s3Service) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
@@ -48,6 +49,7 @@ public class SubjectApiController {
         this.genderRepository = genderRepository;
         this.subjectMigrationService = subjectMigrationService;
         this.individualService = individualService;
+        this.s3Service = s3Service;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -68,7 +70,7 @@ public class SubjectApiController {
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(subjects.getContent());
         ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
         subjects.forEach(subject -> {
-            subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService, findGroupAffiliation(subject, groupsOfAllMemberSubjects)));
+            subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService, findGroupAffiliation(subject, groupsOfAllMemberSubjects), s3Service));
         });
         return new ResponsePage(subjectResponses, subjects.getNumberOfElements(), subjects.getTotalPages(), subjects.getSize());
     }
@@ -82,7 +84,7 @@ public class SubjectApiController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(Collections.singletonList(subject));
 
-        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, groupsOfAllMemberSubjects), HttpStatus.OK);
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, groupsOfAllMemberSubjects, s3Service), HttpStatus.OK);
     }
 
     @PostMapping(value = "/api/subject")
@@ -96,7 +98,7 @@ public class SubjectApiController {
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
-        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService), HttpStatus.OK);
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, s3Service), HttpStatus.OK);
     }
 
     @PutMapping(value = "/api/subject/{id}")
@@ -113,7 +115,7 @@ public class SubjectApiController {
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
-        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService), HttpStatus.OK);
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, s3Service), HttpStatus.OK);
     }
 
     private void updateSubject(Individual subject, ApiSubjectRequest request) throws ValidationException {

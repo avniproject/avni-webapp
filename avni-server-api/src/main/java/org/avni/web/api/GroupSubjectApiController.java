@@ -1,5 +1,6 @@
 package org.avni.web.api;
 
+import org.avni.service.S3Service;
 import org.joda.time.DateTime;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.GroupSubjectRepository;
@@ -28,12 +29,14 @@ public class GroupSubjectApiController {
     private final GroupSubjectRepository groupSubjectRepository;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
+    private final S3Service s3Service;
 
     @Autowired
-    public GroupSubjectApiController(GroupSubjectRepository groupSubjectRepository, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public GroupSubjectApiController(GroupSubjectRepository groupSubjectRepository, ConceptRepository conceptRepository, ConceptService conceptService, S3Service s3Service) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.s3Service = s3Service;
     }
 
     @RequestMapping(value = "/api/groupSubjects", method = RequestMethod.GET)
@@ -54,7 +57,7 @@ public class GroupSubjectApiController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ArrayList<GroupSubjectResponse> groupSubjectResponses = new ArrayList<>();
-        groupSubjects.forEach(groupSubject -> groupSubjectResponses.add(GroupSubjectResponse.fromGroupSubject(groupSubject, conceptRepository, conceptService)));
+        groupSubjects.forEach(groupSubject -> groupSubjectResponses.add(GroupSubjectResponse.fromGroupSubject(groupSubject, conceptRepository, conceptService, s3Service)));
         return new ResponsePage(groupSubjectResponses, groupSubjects.getNumberOfElements(), groupSubjects.getTotalPages(), groupSubjects.getSize());
     }
 

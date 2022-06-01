@@ -5,14 +5,16 @@ import org.avni.domain.AddressLevel;
 import org.avni.domain.GroupSubject;
 import org.avni.domain.Individual;
 import org.avni.service.ConceptService;
+import org.avni.service.S3Service;
 import org.jadira.usertype.spi.utils.lang.StringUtils;
 
+import java.net.URL;
 import java.util.*;
 
 import static java.lang.String.format;
 
 public class SubjectResponse extends LinkedHashMap<String, Object> {
-    public static SubjectResponse fromSubject(Individual subject, boolean includeSubjectType, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public static SubjectResponse fromSubject(Individual subject, boolean includeSubjectType, ConceptRepository conceptRepository, ConceptService conceptService, S3Service s3Service) {
         SubjectResponse subjectResponse = new SubjectResponse();
         if (includeSubjectType) subjectResponse.put("Subject type", subject.getSubjectType().getName());
         subjectResponse.put("ID", subject.getUuid());
@@ -27,8 +29,8 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         Response.putIfPresent(observations, "Last name", subject.getLastName());
         if (subject.getSubjectType().isAllowProfilePicture()
                 && StringUtils.isNotEmpty(subject.getProfilePicture())) {
-            String originalUrl = format("/web/media?url=%s", subject.getProfilePicture());
-            observations.put("Profile picture", originalUrl);
+            URL url = s3Service.generateMediaDownloadUrl(subject.getProfilePicture());
+            observations.put("Profile picture", url.toString());
         }
         Response.putIfPresent(observations, "Date of birth", subject.getDateOfBirth());
         if (subject.getGender() != null) observations.put("Gender", subject.getGender().getName());
@@ -65,8 +67,8 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         map.put(addressLevel.getTypeString(), addressLevel.getTitle());
     }
 
-    public static SubjectResponse fromSubject(Individual subject, boolean subjectTypeRequested, ConceptRepository conceptRepository, ConceptService conceptService, List<GroupSubject> groups) {
-        SubjectResponse subjectResponse = fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService);
+    public static SubjectResponse fromSubject(Individual subject, boolean subjectTypeRequested, ConceptRepository conceptRepository, ConceptService conceptService, List<GroupSubject> groups, S3Service s3Service) {
+        SubjectResponse subjectResponse = fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService, s3Service);
         subjectResponse.put("Groups", groups.stream().map(groupSubject -> groupSubject.getGroupSubjectUUID()));
         return subjectResponse;
     }
