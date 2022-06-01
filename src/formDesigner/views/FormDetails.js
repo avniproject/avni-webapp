@@ -142,16 +142,14 @@ class FormDetails extends Component {
       });
     });
 
-    http.get(`/web/subjectType`).then(response => {
-      let subjectTypes = _.get(response, "data._embedded.subjectType", []);
-      const groupSubjectTypes = _.filter(subjectTypes, st => !!st.group);
-      this.setState({ groupSubjectTypes });
-    });
-
-    http.get("/web/encounterType").then(res => {
-      const encounterTypes = _.get(res, "data._embedded.encounterType", []);
-      this.setState({ encounterTypes });
-    });
+    http
+      .fetchJson("/web/operationalModules/")
+      .then(response => response.json)
+      .then(({ subjectTypes, encounterTypes }) => {
+        const groupSubjectTypes = _.filter(subjectTypes, st => !!st.group);
+        this.setState({ groupSubjectTypes });
+        this.setState({ encounterTypes });
+      });
 
     return this.getForm();
   }
