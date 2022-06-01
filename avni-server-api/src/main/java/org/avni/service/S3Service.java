@@ -419,9 +419,7 @@ public class S3Service {
         if (oldValue != null) {
             this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
         }
-        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"),
-                getUploadFileName(mediaURL, true)));
-        downloadMediaToFile(mediaURL, file);
+        File file = downloadMediaToFile(mediaURL);
         return this.uploadFileToS3(file);
     }
 
@@ -433,29 +431,8 @@ public class S3Service {
         if (oldValue != null) {
             this.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
         }
-        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"),
-                getUploadFileName(mediaUrl, false)));
-        downloadMediaToFile(mediaUrl, file);
+        File file = downloadMediaToFile(mediaUrl);
         return this.uploadFileToS3(parentFolder, file);
-    }
-
-    private String getUploadFileName(String mediaURL, boolean strictCheck) throws Exception {
-        String fileName = extractFileName(mediaURL, strictCheck);
-        String extension = extractFileExtension(mediaURL, fileName);
-        return UUID.randomUUID().toString().concat(format(".%s", extension));
-    }
-
-    private String extractFileName(String mediaURL, boolean strictCheck) throws Exception {
-        String fileName = mediaURL.substring(mediaURL.lastIndexOf("/"));
-        URL url = new URL(mediaURL);
-        URLConnection con = url.openConnection();
-        String contentDisposition = con.getHeaderField("Content-Disposition");
-        if (contentDisposition != null && contentDisposition.contains("filename=\"")) {
-            fileName = contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1");
-        } else if(strictCheck) {
-            throw new Exception(format("Can not extract file name from the URL '%s'. Make sure media download URL is correct.", mediaURL));
-        }
-        return fileName;
     }
 
     private String extractFileExtension(String mediaURL, String fileName) throws Exception {
@@ -466,9 +443,24 @@ public class S3Service {
         return extension;
     }
 
-    private void downloadMediaToFile(String mediaURL, File file) throws Exception {
+    private File downloadMediaToFile(String mediaURL) throws Exception {
         try {
-            FileUtils.copyURLToFile(new URL(mediaURL), file, 5000, 5000);
+            URLConnection connection = new URL(mediaURL).openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            InputStream input = connection.getInputStream();
+
+            String contentDisposition = connection.getHeaderField("Content-Disposition");
+            String fileName = contentDisposition != null && contentDisposition.contains("filename=\"") ?
+                    contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1") :
+                    mediaURL.substring(mediaURL.lastIndexOf("/"));
+
+            File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"),
+                    UUID.randomUUID().toString().concat(format(".%s", extractFileExtension(mediaURL, fileName)))));
+
+            FileUtils.copyInputStreamToFile(input, file);
+
+            return file;
         } catch (IOException e) {
             String message = format("Error while downloading media '%s' ", mediaURL);
             logger.error(message, e);
