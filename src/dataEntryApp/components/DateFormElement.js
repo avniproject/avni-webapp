@@ -117,6 +117,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
           color: "primary"
         }}
         disabled={!fe.editable}
+        InputProps={{ disableUnderline: !fe.editable }}
       />
     </MuiPickersUtilsProvider>
   );
@@ -186,6 +187,7 @@ export const DateAndDurationFormElement = ({
             color: "primary"
           }}
           disabled={!fe.editable}
+          InputProps={{ disableUnderline: !fe.editable }}
         />
       </MuiPickersUtilsProvider>
       <div>

@@ -82,7 +82,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
         style={{ width: "30%" }}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={error()}
-        inputProps={{ style: { color: textColor } }}
+        InputProps={{ style: { color: textColor }, disableUnderline: !fe.editable }}
         onChange={e => {
           const v = e.target.value;
           isEmpty(v) ? update(null) : update(v.replace(/[^0-9.]/g, ""));

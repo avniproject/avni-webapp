@@ -27,6 +27,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         isEmpty(v) ? update() : update(v);
       }}
       disabled={!fe.editable}
+      InputProps={{ disableUnderline: !fe.editable }}
     />
   );
 };

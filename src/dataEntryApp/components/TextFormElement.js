@@ -60,6 +60,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
           const v = e.target.value;
           isEmpty(v) ? update() : update(v);
         }}
+        InputProps={{ disableUnderline: !fe.editable }}
         disabled={!fe.editable}
       />
     </div>
