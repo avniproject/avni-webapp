@@ -50,13 +50,7 @@ public class ObservationService {
                     } else {
                         concept = conceptRepository.findByUuid(observationRequest.getConceptUUID());
                     }
-                    if(ConceptDataType.isGroupQuestion(concept.getDataType())) {
-                        List<ObservationRequest> groupQuestionObservations = objectMapper.convertValue(observationRequest.getValue(), new TypeReference<List<ObservationRequest>>() {});
-                        ObservationCollection observationValues = this.createObservations(groupQuestionObservations);
-                        return new SimpleEntry<Concept, Object>(concept, observationValues);
-                    } else {
-                        return new SimpleEntry<>(concept, observationRequest.getValue());
-                    }
+                    return new SimpleEntry<>(concept, observationRequest.getValue());
                 })
                 .filter(obsReqAsMap -> null != obsReqAsMap.getKey()
                         && !"null".equalsIgnoreCase(String.valueOf(obsReqAsMap.getValue())))
