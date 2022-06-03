@@ -16,8 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityExistsException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,7 +94,7 @@ public class SubjectApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiSubjectRequest request) {
-        Individual subject = getIndividual(request.getExternalId());
+        Individual subject = createIndividual(request.getExternalId());
         try {
             updateSubject(subject, request);
         } catch (ValidationException ve) {
@@ -107,6 +109,10 @@ public class SubjectApiController {
     @ResponseBody
     public ResponseEntity put(@PathVariable String id, @RequestBody ApiSubjectRequest request) {
         Individual subject = individualRepository.findByUuid(id);
+        String externalId = request.getExternalId();
+        if (subject == null && StringUtils.hasLength(externalId)) {
+            subject = individualRepository.findByLegacyId(externalId.trim());
+        }
         if (subject == null) {
             throw new IllegalArgumentException(String.format("Subject not found with id '%s'", id));
         }
@@ -126,6 +132,9 @@ public class SubjectApiController {
         Optional<AddressLevel> addressLevel = locationRepository.findByTitleLineageIgnoreCase(request.getAddress());
         if (!addressLevel.isPresent()) {
             throw new IllegalArgumentException(String.format("Address '%s' not found", request.getAddress()));
+        }
+        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(subject.getLegacyId())) {
+            subject.setLegacyId(request.getExternalId().trim());
         }
         subject.setSubjectType(subjectType);
         subject.setFirstName(request.getFirstName());
@@ -153,16 +162,13 @@ public class SubjectApiController {
         return groupSubjects.stream().filter(groupSubject -> groupSubject.getMemberSubject().equals(subject)).collect(Collectors.toList());
     }
 
-    private Individual getIndividual(String externalId) {
-        Individual subject = null;
-        if (externalId != null && !externalId.isEmpty()) {
-            subject = individualRepository.findByLegacyIdOrUuid(externalId);
+    private Individual createIndividual(String externalId) {
+        if (StringUtils.hasLength(externalId) && individualRepository.findByLegacyId(externalId.trim()) != null) {
+            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
         }
-        if (subject == null) {
-            subject = new Individual();
-            subject.assignUUID();
-            subject.setLegacyId(externalId);
-        }
+        Individual subject =  new Individual();
+        subject.assignUUID();
+        subject.setLegacyId(externalId.trim());
         return subject;
     }
 }

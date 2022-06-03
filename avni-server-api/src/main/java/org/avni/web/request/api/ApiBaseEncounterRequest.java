@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import static org.avni.web.api.CommonFieldNames.VOIDED;
 
 public abstract class ApiBaseEncounterRequest {
-    @JsonProperty("EXTERNAL_ID")
-    protected String externalId;
+    @JsonProperty("External Id")
+    private String externalId;
 
     @JsonProperty("Encounter type")
     private String encounterType;

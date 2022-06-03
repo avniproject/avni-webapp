@@ -119,6 +119,9 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     @Query("select i from Individual i where i.uuid =:id or i.legacyId = :id")
     Individual findByLegacyIdOrUuid(String id);
 
+    @Query("select i from Individual i where i.legacyId = :id")
+    Individual findByLegacyId(String id);
+
     @Query("select i from Individual i where (i.uuid =:id or i.legacyId = :id) and i.subjectType = :subjectType")
     Individual findByLegacyIdOrUuidAndSubjectType(String id, SubjectType subjectType);
 

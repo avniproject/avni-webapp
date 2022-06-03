@@ -1,12 +1,9 @@
 package org.avni.web.api;
 
-import org.avni.domain.CHSEntity;
+import org.avni.domain.*;
 import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
-import org.avni.domain.Individual;
-import org.avni.domain.Program;
-import org.avni.domain.ProgramEnrolment;
 import org.avni.service.ConceptService;
 import org.avni.util.S;
 import org.avni.web.request.api.ApiProgramEnrolmentRequest;
@@ -20,8 +17,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 
@@ -48,10 +47,18 @@ public class ProgramEnrolmentApiController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     @ResponseBody
-    public ResponseEntity<ProgramEnrolmentResponse> post(@RequestBody ApiProgramEnrolmentRequest request) {
-        ProgramEnrolment encounter = getProgramEnrolment(request.getExternalId());
-        updateEnrolment(encounter, request);
-        return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(encounter, conceptRepository, conceptService), HttpStatus.OK);
+    public ResponseEntity post(@RequestBody ApiProgramEnrolmentRequest request) {
+        ProgramEnrolment programEnrolment = createProgramEnrolment(request.getExternalId());
+        Individual individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectUuid());
+        if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
+            individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
+        }
+        if (individual == null) {
+            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectUuid()));
+        }
+        programEnrolment.setIndividual(individual);
+        updateEnrolment(programEnrolment, request);
+        return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @PutMapping(value = "/api/programEnrolment/{id}")
@@ -59,31 +66,30 @@ public class ProgramEnrolmentApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity<ProgramEnrolmentResponse> put(@PathVariable String id, @RequestBody ApiProgramEnrolmentRequest request) {
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(id);
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(id);
+        if (programEnrolment == null && StringUtils.hasLength(request.getExternalId())) {
+            programEnrolment = programEnrolmentRepository.findByLegacyId(request.getExternalId().trim());
+        }
         if (programEnrolment == null) {
-            throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
+            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with id '%s'", id));
         }
         updateEnrolment(programEnrolment, request);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     private void updateEnrolment(ProgramEnrolment enrolment, ApiProgramEnrolmentRequest request) {
-        Individual subject = individualRepository.findByUuid(request.getSubjectUuid());
-        if (subject == null) {
-            throw new IllegalArgumentException(String.format("Subject not found with UUID '%s'", request.getSubjectUuid()));
-        }
-
         Program program = programRepository.findByName(request.getProgram());
         if (program == null) {
             throw new IllegalArgumentException(String.format("Program not found with name '%s'", request.getProgram()));
         }
-
+        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(enrolment.getLegacyId())) {
+            enrolment.setLegacyId(request.getExternalId().trim());
+        }
         enrolment.setProgram(program);
         enrolment.setEnrolmentLocation(request.getEnrolmentLocation());
         enrolment.setExitLocation(request.getExitLocation());
         enrolment.setEnrolmentDateTime(request.getEnrolmentDateTime());
         enrolment.setProgramExitDateTime(request.getExitDateTime());
-        enrolment.setIndividual(subject);
         enrolment.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         enrolment.setProgramExitObservations(RequestUtils.createObservations(request.getExitObservations(), conceptRepository));
         enrolment.setVoided(request.isVoided());
@@ -123,16 +129,13 @@ public class ProgramEnrolmentApiController {
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
-    private ProgramEnrolment getProgramEnrolment(String externalId) {
-        ProgramEnrolment programEnrolment = null;
-        if (externalId != null && !externalId.isEmpty()) {
-            programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(externalId);
+    private ProgramEnrolment createProgramEnrolment(String externalId) {
+        if (StringUtils.hasLength(externalId) && programEnrolmentRepository.findByLegacyId(externalId.trim()) != null) {
+            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
         }
-        if (programEnrolment == null) {
-            programEnrolment = new ProgramEnrolment();
-            programEnrolment.assignUUID();
-            programEnrolment.setLegacyId(externalId);
-        }
+        ProgramEnrolment programEnrolment = new ProgramEnrolment();
+        programEnrolment.assignUUID();
+        programEnrolment.setLegacyId(externalId.trim());
         return programEnrolment;
     }
 }

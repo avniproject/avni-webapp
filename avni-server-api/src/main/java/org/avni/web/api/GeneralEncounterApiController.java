@@ -20,8 +20,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Map;
@@ -85,8 +87,16 @@ public class GeneralEncounterApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiEncounterRequest request) {
-        Encounter encounter = getEncounter(request.getExternalId());
+        Encounter encounter = createEncounter(request.getExternalId());
         try {
+            Individual individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectId());
+            if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
+                individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
+            }
+            if (individual == null) {
+                throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
+            }
+            encounter.setIndividual(individual);
             updateEncounter(encounter, request);
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
@@ -99,7 +109,10 @@ public class GeneralEncounterApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity put(@PathVariable String id, @RequestBody ApiEncounterRequest request) {
-        Encounter encounter = encounterRepository.findByUuid(id);
+        Encounter encounter = encounterRepository.findByLegacyIdOrUuid(id);
+        if (encounter == null && StringUtils.hasLength(request.getExternalId())) {
+            encounter = encounterRepository.findByLegacyId(request.getExternalId().trim());
+        }
         if (encounter == null) {
             throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
         }
@@ -112,16 +125,13 @@ public class GeneralEncounterApiController {
     }
 
     private void updateEncounter(Encounter encounter, ApiEncounterRequest request) throws ValidationException {
-        Individual individual = individualRepository.findByUuid(request.getSubjectId());
-        if (individual == null) {
-            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
-        }
-
         EncounterType encounterType = encounterTypeRepository.findByName(request.getEncounterType());
         if (encounterType == null) {
             throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
         }
-
+        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(encounter.getLegacyId())) {
+            encounter.setLegacyId(request.getExternalId().trim());
+        }
         encounter.setEncounterType(encounterType);
         encounter.setEncounterLocation(request.getEncounterLocation());
         encounter.setCancelLocation(request.getCancelLocation());
@@ -129,7 +139,6 @@ public class GeneralEncounterApiController {
         encounter.setEarliestVisitDateTime(request.getEarliestScheduledDate());
         encounter.setMaxVisitDateTime(request.getMaxScheduledDate());
         encounter.setCancelDateTime(request.getCancelDateTime());
-        encounter.setIndividual(individual);
         encounter.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         encounter.setCancelObservations(RequestUtils.createObservations(request.getCancelObservations(), conceptRepository));
         encounter.setVoided(request.isVoided());
@@ -138,16 +147,13 @@ public class GeneralEncounterApiController {
         encounterService.save(encounter);
     }
 
-    private Encounter getEncounter(String externalId) {
-        Encounter encounter = null;
-        if (externalId != null && !externalId.isEmpty()) {
-            encounter = encounterRepository.findByLegacyIdOrUuid(externalId);
+    private Encounter createEncounter(String externalId) {
+        if (StringUtils.hasLength(externalId) && encounterRepository.findByLegacyId(externalId.trim()) != null) {
+            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
         }
-        if (encounter == null) {
-            encounter = new Encounter();
-            encounter.assignUUID();
-            encounter.setLegacyId(externalId);
-        }
+        Encounter encounter = new Encounter();
+        encounter.assignUUID();
+        encounter.setLegacyId(externalId.trim());
         return encounter;
     }
 }

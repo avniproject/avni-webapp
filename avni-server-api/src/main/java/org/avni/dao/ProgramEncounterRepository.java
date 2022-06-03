@@ -62,6 +62,9 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     @Query("select pe from ProgramEncounter pe where pe.uuid =:id or pe.legacyId = :id")
     ProgramEncounter findByLegacyIdOrUuid(String id);
 
+    @Query("select pe from ProgramEncounter pe where pe.legacyId = :id")
+    ProgramEncounter findByLegacyId(String id);
+
     default Specification<ProgramEncounter> withProgramEncounterId(Long id) {
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
         {
