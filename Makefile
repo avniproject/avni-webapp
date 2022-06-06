@@ -142,8 +142,12 @@ log_live:
 
 # STAGING
 # I have setup the environment variables in my bash_profile so that I can just run it whenever I want in live mode. You could do that too (Vivek).
+tunnel_staging_db:
+	ssh avni-server-staging -L 6015:stagingdb.openchs.org:5432
+
 start_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
+	OPENCHS_DATABASE_URL=jdbc:postgresql://localhost:6015/openchs
 	OPENCHS_MODE=live \
 	OPENCHS_COGNITO_IN_DEV=false \
 	OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) \

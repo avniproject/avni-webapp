@@ -27,7 +27,8 @@ import java.security.interfaces.RSAPublicKey;
 @Profile({"default", "live", "dev", "test"})
 public class CognitoAuthServiceImpl implements CognitoAuthService {
 
-    private static final String COGNITO_URL = "https://cognito-idp.ap-south-1.amazonaws.com/";
+//    private static final String COGNITO_URL = "https://cognito-idp.ap-south-1.amazonaws.com/";
+    private static final String COGNITO_URL = "http://localhost:8080/realms/Amrit/";
     private final Logger logger;
 
     @Value("${cognito.poolid}")
@@ -110,11 +111,12 @@ public class CognitoAuthServiceImpl implements CognitoAuthService {
     }
 
     private String getJwkProviderUrl() {
-        return this.getIssuer() + "/.well-known/jwks.json";
+        return this.getIssuer() + ".well-known/openid-configuration";
     }
 
     private String getIssuer() {
-        return COGNITO_URL + this.poolId;
+        return COGNITO_URL;
+//        return COGNITO_URL + this.poolId;
     }
 
     private String getValueInToken(DecodedJWT jwt, String name) {
