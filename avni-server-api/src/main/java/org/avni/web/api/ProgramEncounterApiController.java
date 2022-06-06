@@ -95,19 +95,27 @@ public class ProgramEncounterApiController {
     public ResponseEntity post(@RequestBody ApiProgramEncounterRequest request) {
         ProgramEncounter encounter = createEncounter(request.getExternalId());
         try {
-            ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(request.getEnrolmentId());
-            if (programEnrolment == null && StringUtils.hasLength(request.getProgramEnrolmentExternalId())) {
-                programEnrolment = programEnrolmentRepository.findByLegacyId(request.getProgramEnrolmentExternalId().trim());
-            }
-            if (programEnrolment == null) {
-                throw new IllegalArgumentException(String.format("ProgramEnrolment not found with UUID '%s'", request.getProgramEnrolmentExternalId()));
-            }
+            ProgramEnrolment programEnrolment = getProgramEnrolment(request);
             encounter.setProgramEnrolment(programEnrolment);
             updateEncounter(encounter, request);
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
         return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
+    private ProgramEnrolment getProgramEnrolment(ApiProgramEncounterRequest request) {
+        ProgramEnrolment programEnrolment = null;
+        if (programEnrolment == null && StringUtils.hasLength(request.getEnrolmentId())) {
+            programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(request.getEnrolmentId());
+        }
+        if (programEnrolment == null && StringUtils.hasLength(request.getProgramEnrolmentExternalId())) {
+            programEnrolment = programEnrolmentRepository.findByLegacyId(request.getProgramEnrolmentExternalId().trim());
+        }
+        if (programEnrolment == null) {
+            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with UUID '%s'", request.getProgramEnrolmentExternalId()));
+        }
+        return programEnrolment;
     }
 
     @PutMapping(value = "/api/programEncounter/{id}")
@@ -136,9 +144,7 @@ public class ProgramEncounterApiController {
             throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
         }
 
-        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(encounter.getLegacyId())) {
-            encounter.setLegacyId(request.getExternalId().trim());
-        }
+        encounter.setLegacyId(request.getExternalId().trim());
         encounter.setEncounterType(encounterType);
         encounter.setEncounterLocation(request.getEncounterLocation());
         encounter.setCancelLocation(request.getCancelLocation());

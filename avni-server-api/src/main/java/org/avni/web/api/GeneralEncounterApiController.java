@@ -89,7 +89,10 @@ public class GeneralEncounterApiController {
     public ResponseEntity post(@RequestBody ApiEncounterRequest request) {
         Encounter encounter = createEncounter(request.getExternalId());
         try {
-            Individual individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectId());
+            Individual individual = null;
+            if (individual == null && StringUtils.hasLength(request.getSubjectId())) {
+                individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectId());
+            }
             if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
                 individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
             }
@@ -129,9 +132,7 @@ public class GeneralEncounterApiController {
         if (encounterType == null) {
             throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
         }
-        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(encounter.getLegacyId())) {
-            encounter.setLegacyId(request.getExternalId().trim());
-        }
+        encounter.setLegacyId(request.getExternalId().trim());
         encounter.setEncounterType(encounterType);
         encounter.setEncounterLocation(request.getEncounterLocation());
         encounter.setCancelLocation(request.getCancelLocation());

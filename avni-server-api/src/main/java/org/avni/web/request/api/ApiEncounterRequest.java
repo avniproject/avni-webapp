@@ -3,7 +3,7 @@ package org.avni.web.request.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ApiEncounterRequest extends ApiBaseEncounterRequest {
-    @JsonProperty("Subject external Id")
+    @JsonProperty("Subject external ID")
     private String subjectExternalId;
     @JsonProperty("Subject ID")
     private String subjectId;

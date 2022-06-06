@@ -10,6 +10,6 @@ public class ProgramEnrolmentFieldNames {
     public static final String EXIT_DATETIME = "Exit datetime";
     public static final String EXIT_LOCATION = "Exit location";
     public static final String EXIT_OBS = "exitObservations";
-    public static final String EXTERNAL_ID = "External Id";
-    public static final String SUBJECT_EXTERNAL_ID = "Subject external Id";
+    public static final String EXTERNAL_ID = "External ID";
+    public static final String SUBJECT_EXTERNAL_ID = "Subject external ID";
 }

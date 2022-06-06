@@ -49,7 +49,10 @@ public class ProgramEnrolmentApiController {
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiProgramEnrolmentRequest request) {
         ProgramEnrolment programEnrolment = createProgramEnrolment(request.getExternalId());
-        Individual individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectUuid());
+        Individual individual = null;
+        if (individual == null && StringUtils.hasLength(request.getSubjectUuid())) {
+            individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectUuid());
+        }
         if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
             individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
         }
@@ -82,9 +85,7 @@ public class ProgramEnrolmentApiController {
         if (program == null) {
             throw new IllegalArgumentException(String.format("Program not found with name '%s'", request.getProgram()));
         }
-        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(enrolment.getLegacyId())) {
-            enrolment.setLegacyId(request.getExternalId().trim());
-        }
+        enrolment.setLegacyId(request.getExternalId().trim());
         enrolment.setProgram(program);
         enrolment.setEnrolmentLocation(request.getEnrolmentLocation());
         enrolment.setExitLocation(request.getExitLocation());

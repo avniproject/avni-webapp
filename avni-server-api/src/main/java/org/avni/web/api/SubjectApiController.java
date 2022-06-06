@@ -133,9 +133,7 @@ public class SubjectApiController {
         if (!addressLevel.isPresent()) {
             throw new IllegalArgumentException(String.format("Address '%s' not found", request.getAddress()));
         }
-        if (StringUtils.hasLength(request.getExternalId()) && !StringUtils.hasLength(subject.getLegacyId())) {
-            subject.setLegacyId(request.getExternalId().trim());
-        }
+        subject.setLegacyId(request.getExternalId().trim());
         subject.setSubjectType(subjectType);
         subject.setFirstName(request.getFirstName());
         subject.setLastName(request.getLastName());
