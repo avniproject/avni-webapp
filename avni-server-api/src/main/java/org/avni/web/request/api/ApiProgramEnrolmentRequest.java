@@ -11,8 +11,14 @@ import static org.avni.web.api.CommonFieldNames.VOIDED;
 import static org.avni.web.api.ProgramEnrolmentFieldNames.*;
 
 public class ApiProgramEnrolmentRequest {
+    @JsonProperty("External ID")
+    private String externalId;
+
     @JsonProperty("Program")
     private String program;
+
+    @JsonProperty("Subject external ID")
+    private String subjectExternalId;
 
     @JsonProperty(SUBJECT_ID)
     private String subjectUuid;
@@ -72,5 +78,13 @@ public class ApiProgramEnrolmentRequest {
 
     public boolean isVoided() {
         return isVoided;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public String getSubjectExternalId() {
+        return subjectExternalId;
     }
 }

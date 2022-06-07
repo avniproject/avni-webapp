@@ -17,12 +17,15 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
         encounterResponse.put("Subject ID", encounter.getProgramEnrolment().getIndividual().getUuid());
         encounterResponse.put("Subject type", encounter.getProgramEnrolment().getIndividual().getSubjectType().getName());
         encounterResponse.put("Enrolment ID", encounter.getProgramEnrolment().getUuid());
+        encounterResponse.put("Subject external ID", encounter.getProgramEnrolment().getIndividual().getLegacyId());
+        encounterResponse.put("Enrolment external ID", encounter.getProgramEnrolment().getLegacyId());
         encounterResponse.put("Program", encounter.getProgramEnrolment().getProgram().getName());
         return fromBaseEncounter(encounterResponse, encounter, conceptRepository, conceptService);
     }
 
     private static EncounterResponse fromBaseEncounter(EncounterResponse encounterResponse, AbstractEncounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
         encounterResponse.put(VOIDED, encounter.isVoided());
+        encounterResponse.put("External ID", encounter.getLegacyId());
         encounterResponse.put("Encounter type", encounter.getEncounterType().getName());
         Response.putIfPresent(encounterResponse, "Encounter location", encounter.getEncounterLocation());
         encounterResponse.put("Encounter date time", encounter.getEncounterDateTime());
@@ -40,6 +43,7 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
         EncounterResponse encounterResponse = new EncounterResponse();
         encounterResponse.put(ID, encounter.getUuid());
         encounterResponse.put("Subject ID", encounter.getIndividual().getUuid());
+        encounterResponse.put("Subject external ID", encounter.getIndividual().getLegacyId());
         encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
         return fromBaseEncounter(encounterResponse, encounter, conceptRepository, conceptService);
     }

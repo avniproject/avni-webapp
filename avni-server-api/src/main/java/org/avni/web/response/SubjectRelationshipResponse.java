@@ -11,6 +11,7 @@ public class SubjectRelationshipResponse extends HashMap<String, Object> {
         subjectRelationshipResponse.put("Voided", individualRelationship.isVoided());
         subjectRelationshipResponse.put("Relationship type", individualRelationship.getRelationship().getName());
         subjectRelationshipResponse.put("Relative ID", individualRelationship.getIndividualB().getUuid());
+        subjectRelationshipResponse.put("Relative external ID", individualRelationship.getIndividualB().getLegacyId());
         subjectRelationshipResponse.put("Enter date", individualRelationship.getEnterDateTime());
         subjectRelationshipResponse.put("Exit date", individualRelationship.getExitDateTime());
         return subjectRelationshipResponse;

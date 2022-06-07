@@ -3,9 +3,11 @@ package org.avni.web.request.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ApiProgramEncounterRequest extends ApiBaseEncounterRequest {
+
+    @JsonProperty("Enrolment external ID")
+    private String programEnrolmentExternalId;
     @JsonProperty("Enrolment ID")
     private String enrolmentId;
-
     @JsonProperty("Program")
     private String program;
 
@@ -15,5 +17,9 @@ public class ApiProgramEncounterRequest extends ApiBaseEncounterRequest {
 
     public String getEnrolmentId() {
         return enrolmentId;
+    }
+
+    public String getProgramEnrolmentExternalId() {
+        return programEnrolmentExternalId;
     }
 }

@@ -21,6 +21,7 @@ endef
 su:=$(shell id -un)
 DB=openchs
 dbServer=localhost
+dbPort=5432
 
 # <postgres>
 clean_db_server: _clean_db_server _clean_test_server _drop_roles
@@ -32,26 +33,26 @@ _clean_test_server:
 	make _clean_db database=openchs_test
 
 _drop_roles:
-	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role openchs';
-	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role demo';
-	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role openchs_impl';
-	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop role organisation_user';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c 'drop role openchs';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c 'drop role demo';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c 'drop role openchs_impl';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c 'drop role organisation_user';
 
 _clean_db:
-	-psql -h $(dbServer) -U $(su) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
-	-psql -h $(dbServer) -U $(su) -d postgres -c 'drop database $(database)';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c 'drop database $(database)';
 
 _build_db:
-	-psql -h $(dbServer) -U $(su) -d postgres -c "create user openchs with password 'password' createrole";
-	psql -h $(dbServer) -U $(su) -d postgres -c 'create database $(database) with owner openchs';
-	-psql -h $(dbServer) -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
-	-psql -h $(dbServer) -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
-	-psql -h $(dbServer) -U $(su) -d $(database) -c 'create extension if not exists "hstore"';
-	-psql -h $(dbServer) -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
-	-psql -h $(dbServer) -U $(su) -d postgres  -c 'grant demo to openchs';
-	-psql -h $(dbServer) -U $(su) -d postgres  -c 'create role openchs_impl';
-	-psql -h $(dbServer) -U $(su) -d postgres  -c 'grant openchs_impl to openchs';
-	-psql -h $(dbServer) -U $(su) -d postgres  -c 'create role organisation_user createrole admin openchs_impl';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c "create user openchs with password 'password' createrole";
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres -c 'create database $(database) with owner openchs';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d $(database) -c 'create extension if not exists "hstore"';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres  -c 'grant demo to openchs';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres  -c 'create role openchs_impl';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres  -c 'grant openchs_impl to openchs';
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d postgres  -c 'create role organisation_user createrole admin openchs_impl';
 # </postgres>
 
 # <db>
@@ -64,18 +65,18 @@ build_db: ## Creates new empty database
 orgId:= $(if $(orgId),$(orgId),0)
 
 delete_org_meta_data:
-	psql -h localhost -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
+	psql -h $(dbServer) -p $(dbPort) -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
 
 delete_org_data:
 	@echo 'Delete for Organisation ID = $(orgId)'
-	psql -h localhost -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
+	psql -h $(dbServer) -p $(dbPort) -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
 
 rebuild_db: clean_db build_db ## clean + build db
 
 rebuild_dev_db: rebuild_db deploy_schema
 
 restore_db:
-	psql -Uopenchs $(DB) -f $(sqlfile)
+	psql -U openchs $(DB) -f $(sqlfile)
 
 # </db>
 
@@ -87,7 +88,7 @@ clean_testdb: ## Drops the test database
 	make _clean_db database=openchs_test
 
 _create_demo_organisation:
-	-psql -h localhost -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
+	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
 
 build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
@@ -178,9 +179,9 @@ debug_server_live: build_server
 # <server>
 
 ci-test:
-	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
-	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
-	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "hstore"';
+	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
+	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
+	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "hstore"';
 
 	./gradlew clean test --stacktrace
 

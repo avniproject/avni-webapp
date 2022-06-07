@@ -11,12 +11,15 @@ import static org.avni.web.api.CommonFieldNames.*;
 import static org.avni.web.api.ProgramEnrolmentFieldNames.*;
 
 public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
+
     public static ProgramEnrolmentResponse fromProgramEnrolment(ProgramEnrolment programEnrolment, ConceptRepository conceptRepository, ConceptService conceptService) {
         ProgramEnrolmentResponse programEnrolmentResponse = new ProgramEnrolmentResponse();
         programEnrolmentResponse.put(ID, programEnrolment.getUuid());
         programEnrolmentResponse.put(VOIDED, programEnrolment.isVoided());
         programEnrolmentResponse.put(SUBJECT_TYPE, programEnrolment.getIndividual().getSubjectType().getName());
         programEnrolmentResponse.put(SUBJECT_ID, programEnrolment.getIndividual().getUuid());
+        programEnrolmentResponse.put(EXTERNAL_ID, programEnrolment.getLegacyId());
+        programEnrolmentResponse.put(SUBJECT_EXTERNAL_ID, programEnrolment.getIndividual().getLegacyId());
         programEnrolmentResponse.put(PROGRAM, programEnrolment.getProgram().getName());
         programEnrolmentResponse.put(ENROLMENT_DATETIME, programEnrolment.getEnrolmentDateTime());
         Response.putIfPresent(programEnrolmentResponse, ENROLMENT_LOCATION, programEnrolment.getEnrolmentLocation());

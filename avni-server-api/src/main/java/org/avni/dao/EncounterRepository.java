@@ -62,6 +62,9 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     @Query("select e from Encounter e where e.uuid =:id or e.legacyId = :id")
     Encounter findByLegacyIdOrUuid(String id);
 
+    @Query("select e from Encounter e where e.legacyId = :id")
+    Encounter findByLegacyId(String id);
+
     default Specification<Encounter> withIndividualId(Long id) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
         {
@@ -144,4 +147,5 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
             "from individual i " +
             "where e.individual_id = i.id and i.subject_type_id = :subjectTypeId", nativeQuery = true)
     void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
+
 }
