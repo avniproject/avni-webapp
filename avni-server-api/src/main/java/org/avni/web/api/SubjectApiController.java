@@ -108,8 +108,8 @@ public class SubjectApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity put(@PathVariable String id, @RequestBody ApiSubjectRequest request) {
-        Individual subject = individualRepository.findByUuid(id);
         String externalId = request.getExternalId();
+        Individual subject = individualRepository.findByUuid(id);
         if (subject == null && StringUtils.hasLength(externalId)) {
             subject = individualRepository.findByLegacyId(externalId.trim());
         }

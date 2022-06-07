@@ -49,6 +49,12 @@ public class ProgramEnrolmentApiController {
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiProgramEnrolmentRequest request) {
         ProgramEnrolment programEnrolment = createProgramEnrolment(request.getExternalId());
+        initializeIndividual(request, programEnrolment);
+        updateEnrolment(programEnrolment, request);
+        return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
+    private void initializeIndividual(ApiProgramEnrolmentRequest request, ProgramEnrolment programEnrolment) {
         Individual individual = null;
         if (individual == null && StringUtils.hasLength(request.getSubjectUuid())) {
             individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectUuid());
@@ -60,8 +66,6 @@ public class ProgramEnrolmentApiController {
             throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectUuid()));
         }
         programEnrolment.setIndividual(individual);
-        updateEnrolment(programEnrolment, request);
-        return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @PutMapping(value = "/api/programEnrolment/{id}")

@@ -89,22 +89,26 @@ public class GeneralEncounterApiController {
     public ResponseEntity post(@RequestBody ApiEncounterRequest request) {
         Encounter encounter = createEncounter(request.getExternalId());
         try {
-            Individual individual = null;
-            if (individual == null && StringUtils.hasLength(request.getSubjectId())) {
-                individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectId());
-            }
-            if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
-                individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
-            }
-            if (individual == null) {
-                throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
-            }
-            encounter.setIndividual(individual);
+            initializeIndividual(request, encounter);
             updateEncounter(encounter, request);
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
         return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
+    private void initializeIndividual(ApiEncounterRequest request, Encounter encounter) {
+        Individual individual = null;
+        if (individual == null && StringUtils.hasLength(request.getSubjectId())) {
+            individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectId());
+        }
+        if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
+            individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
+        }
+        if (individual == null) {
+            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
+        }
+        encounter.setIndividual(individual);
     }
 
     @PutMapping(value = "/api/encounter/{id}")
