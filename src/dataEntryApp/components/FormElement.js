@@ -37,8 +37,8 @@ const elements = {
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
   Subject: LandingSubjectFormElement,
-  Location: LocationFormElement,
-  QuestionGroup: QuestionGroupFormElement
+  Location: LocationFormElement
+  // QuestionGroup: QuestionGroupFormElement
 };
 
 export const FormElement = ({
