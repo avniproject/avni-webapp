@@ -13,7 +13,7 @@ import MediaFormElement from "./MediaFormElement";
 import PhoneNumberFormElement from "./PhoneNumberFormElement";
 import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
-import QuestionGroupFormElement from "./QuestionGroupFormElement";
+// import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { isNil } from "lodash";
 
 const div = () => <div />;
