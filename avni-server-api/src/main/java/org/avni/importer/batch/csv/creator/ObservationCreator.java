@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -110,7 +111,8 @@ public class ObservationCreator {
         if (ConceptDataType.isGroupQuestion(concept.getDataType())) {
             List<FormElement> allChildQuestions = formElementRepository.findAllByGroupId(formElement.getId());
             return allChildQuestions.stream().anyMatch(fe -> {
-                String headerName = concept.getName() + "|" + fe.getConcept().getName();
+                String parentChildName = concept.getName() + "|" + fe.getConcept().getName();
+                String headerName = formElement.isRepeatable() ? String.format("%s|1", parentChildName) : parentChildName;
                 String rowValue = row.get(headerName);
                 return !(rowValue == null || rowValue.trim().equals(""));
             });
@@ -118,11 +120,12 @@ public class ObservationCreator {
         return false;
     }
 
-    private String getRowValue(FormElement formElement, Row row) {
+    private String getRowValue(FormElement formElement, Row row, Integer questionGroupIndex) {
         Concept concept = formElement.getConcept();
         if(formElement.getGroup() != null) {
             Concept parentConcept = formElement.getGroup().getConcept();
-            String headerName = parentConcept.getName() + "|" + concept.getName();
+            String parentChildName = parentConcept.getName() + "|" + concept.getName();
+            String headerName = questionGroupIndex == null ? parentChildName : String.format("%s|%d", parentChildName, questionGroupIndex);
             return row.get(headerName);
         }
         return row.get(concept.getName());
@@ -132,7 +135,7 @@ public class ObservationCreator {
         List<ObservationRequest> observationRequests = new ArrayList<>();
         for (Concept concept : getConceptHeaders(headers, row.getHeaders())) {
             FormElement formElement = getFormElementForObservationConcept(concept, formType);
-            String rowValue = getRowValue(formElement, row);
+            String rowValue = getRowValue(formElement, row, null);
             if (!isNonEmptyQuestionGroup(formElement, row) && (rowValue == null || rowValue.trim().equals("")))
                 continue;
             ObservationRequest observationRequest = new ObservationRequest();
@@ -149,12 +152,34 @@ public class ObservationCreator {
         return observationService.createObservations(observationRequests);
     }
 
-    private List<ObservationRequest> constructChildObservations(Row row, Headers headers, List<String> errorMsgs, FormElement parentFormElement, FormType formType, ObservationCollection oldObservations) {
+    // For the repeatable question group columns should be "Question group concept"|"Child concept"|"order(1,2,3...)"
+    private Object constructChildObservations(Row row, Headers headers, List<String> errorMsgs, FormElement parentFormElement, FormType formType, ObservationCollection oldObservations) {
         List<FormElement> allChildQuestions = formElementRepository.findAllByGroupId(parentFormElement.getId());
+        if (parentFormElement.isRepeatable()) {
+            Pattern repeatableQuestionGroupPattern = Pattern.compile(String.format("%s\\|.*\\|\\d", parentFormElement.getConcept().getName()));
+            List<String> repeatableQuestionGroupHeaders = Stream.of(row.getHeaders())
+                    .filter(repeatableQuestionGroupPattern.asPredicate())
+                    .collect(Collectors.toList());
+            int maxIndex = repeatableQuestionGroupHeaders.stream().map(fen -> Integer.valueOf(fen.split("\\|")[2]))
+                    .mapToInt(v -> v)
+                    .max().orElse(1);
+            List<ObservationCollection> repeatableObservationRequest = new ArrayList<>();
+            for (int i = 1; i <= maxIndex; i++) {
+                ObservationCollection questionGroupObservations = getQuestionGroupObservations(row, headers, errorMsgs, formType, oldObservations, allChildQuestions, i);
+                if(!questionGroupObservations.isEmpty()) {
+                    repeatableObservationRequest.add(questionGroupObservations);
+                }
+            }
+            return repeatableObservationRequest;
+        }
+        return getQuestionGroupObservations(row, headers, errorMsgs, formType, oldObservations, allChildQuestions, null);
+    }
+
+    private ObservationCollection getQuestionGroupObservations(Row row, Headers headers, List<String> errorMsgs, FormType formType, ObservationCollection oldObservations, List<FormElement> allChildQuestions, Integer questionGroupIndex) {
         List<ObservationRequest> observationRequests = new ArrayList<>();
         for (FormElement formElement : allChildQuestions) {
             Concept concept = formElement.getConcept();
-            String rowValue = getRowValue(formElement, row);
+            String rowValue = getRowValue(formElement, row, questionGroupIndex);
             if (rowValue == null || rowValue.trim().equals(""))
                 continue;
             ObservationRequest observationRequest = new ObservationRequest();
@@ -168,7 +193,7 @@ public class ObservationCreator {
             }
             observationRequests.add(observationRequest);
         }
-        return observationRequests;
+        return observationService.createObservations(observationRequests);
     }
 
     private List<FormElement> createDecisionFormElement(Set<Concept> concepts) {

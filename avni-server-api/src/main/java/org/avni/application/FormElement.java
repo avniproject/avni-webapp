@@ -1,5 +1,6 @@
 package org.avni.application;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.avni.domain.DeclarativeRule;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
@@ -139,6 +140,15 @@ public class FormElement extends OrganisationAwareEntity {
 
     public boolean isSingleSelect() {
         return SINGLE_SELECT.equals(this.type);
+    }
+
+    @JsonIgnore
+    public boolean isRepeatable() {
+        KeyValues keyValues = this.getKeyValues();
+        if (keyValues.containsKey(KeyType.repeatable)) {
+            return (boolean) keyValues.get(KeyType.repeatable).getValue();
+        }
+        return false;
     }
 
     public DateTime getLastModifiedDateTime() {

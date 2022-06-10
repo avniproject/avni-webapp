@@ -222,7 +222,9 @@ public class ImportService {
     private String getHeaderName(FormElement formElement) {
         String conceptName = formElement.getConcept().getName();
         if (formElement.getGroup() != null) {
-            return "\"" + formElement.getGroup().getConcept().getName() + "|" + conceptName + "\"";
+            FormElement parentFormElement = formElement.getGroup();
+            String parentChildName = parentFormElement.getConcept().getName() + "|" + conceptName;
+            return parentFormElement.isRepeatable() ? String.format("\"%s|1\"", parentChildName) : String.format("\"%s\"", parentChildName);
         }
         return "\"" + conceptName + "\"";
     }

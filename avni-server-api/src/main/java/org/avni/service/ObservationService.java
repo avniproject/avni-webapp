@@ -271,8 +271,16 @@ public class ObservationService {
         }
         observationContract.setConcept(conceptContract);
         if (ConceptDataType.isGroupQuestion(conceptDataType)) {
-            HashMap<String, Object> values = (HashMap<String, Object>) entry.getValue();
-            observationContract.setValue(this.constructObservations(new ObservationCollection(values)));
+            if (entry.getValue() instanceof Collection) {
+                List<Object> repeatableQuestionGroup = (List<Object>) ((Collection) entry.getValue()).stream().map(value -> {
+                    HashMap<String, Object> values = (HashMap<String, Object>) value;
+                    return this.constructObservations(new ObservationCollection(values));
+                }).collect(Collectors.toList());
+                observationContract.setValue(repeatableQuestionGroup);
+            } else {
+                HashMap<String, Object> values = (HashMap<String, Object>) entry.getValue();
+                observationContract.setValue(this.constructObservations(new ObservationCollection(values)));
+            }
         } else {
             observationContract.setValue(entry.getValue());
         }
