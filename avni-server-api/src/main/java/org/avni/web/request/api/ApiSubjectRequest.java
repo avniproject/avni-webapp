@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import static org.avni.web.api.CommonFieldNames.VOIDED;
 
 public class ApiSubjectRequest {
-    @JsonProperty("EXTERNAL_ID")
+    @JsonProperty("External ID")
     private String externalId;
 
     @JsonProperty("Subject type")
