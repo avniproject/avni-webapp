@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, sortBy, trim, toLower } from "lodash";
+import { filter, find, sortBy, trim, toLower, replace } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -255,7 +255,7 @@ class CreateEditConcept extends Component {
 
   handleChange = stateHandler => e => {
     this.setState({
-      [stateHandler]: e.target.value
+      [stateHandler]: replace(e.target.value, "|", "")
     });
     this.resetKeyValuesIfNeeded(stateHandler, e);
   };

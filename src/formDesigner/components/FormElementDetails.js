@@ -17,7 +17,7 @@ import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { capitalize, get, includes, isEqual, toNumber } from "lodash";
+import _, { capitalize, get, includes, isEqual, replace, toNumber } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -198,7 +198,7 @@ function FormElementDetails(props) {
               props.handleGroupElementChange(
                 props.groupIndex,
                 "name",
-                event.target.value,
+                replace(event.target.value, "|", ""),
                 props.index
               )
             }

@@ -12,7 +12,7 @@ import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import Box from "@material-ui/core/Box";
-import { size, filter, includes } from "lodash";
+import { size, filter, includes, replace } from "lodash";
 import http from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";
 
@@ -58,7 +58,7 @@ function InlineConcept(props) {
               props.handleGroupElementChange(
                 props.groupIndex,
                 "inlineConceptName",
-                event.target.value,
+                replace(event.target.value, "|", ""),
                 props.index
               )
             }
