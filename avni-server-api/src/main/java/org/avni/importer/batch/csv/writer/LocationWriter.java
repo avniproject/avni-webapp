@@ -100,16 +100,16 @@ public class LocationWriter implements ItemWriter<Row> {
                 location = createAddressLevel(row, parent, header);
                 parent = location;
             } //This will get called only when location have extra properties
-            updateLocationProperties(row, allErrorMsgs, location, header);
+            if (location != null && !this.locationTypeNames.contains(header)) {
+                updateLocationProperties(row, allErrorMsgs, location, header);
+            }
         }
     }
 
     private void updateLocationProperties(Row row, List<String> allErrorMsgs, AddressLevel location, String header) throws Exception {
-        if (location != null && !this.locationTypeNames.contains(header)) {
-            location.setGpsCoordinates(locationCreator.getLocation(row, headers.gpsCoordinates, allErrorMsgs));
-            location.setLocationProperties(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Location, location.getLocationProperties()));
-            locationRepository.save(location);
-        }
+        location.setGpsCoordinates(locationCreator.getLocation(row, headers.gpsCoordinates, allErrorMsgs));
+        location.setLocationProperties(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Location, location.getLocationProperties()));
+        locationRepository.save(location);
     }
 
     private void checkIfHeaderHasLocationTypes(List<String> locationTypeNames, String[] headers, List<String> allErrorMsgs) throws Exception {

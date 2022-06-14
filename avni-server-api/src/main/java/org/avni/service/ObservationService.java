@@ -50,13 +50,7 @@ public class ObservationService {
                     } else {
                         concept = conceptRepository.findByUuid(observationRequest.getConceptUUID());
                     }
-                    if(ConceptDataType.isGroupQuestion(concept.getDataType())) {
-                        List<ObservationRequest> groupQuestionObservations = objectMapper.convertValue(observationRequest.getValue(), new TypeReference<List<ObservationRequest>>() {});
-                        ObservationCollection observationValues = this.createObservations(groupQuestionObservations);
-                        return new SimpleEntry<Concept, Object>(concept, observationValues);
-                    } else {
-                        return new SimpleEntry<>(concept, observationRequest.getValue());
-                    }
+                    return new SimpleEntry<>(concept, observationRequest.getValue());
                 })
                 .filter(obsReqAsMap -> null != obsReqAsMap.getKey()
                         && !"null".equalsIgnoreCase(String.valueOf(obsReqAsMap.getValue())))
@@ -277,8 +271,16 @@ public class ObservationService {
         }
         observationContract.setConcept(conceptContract);
         if (ConceptDataType.isGroupQuestion(conceptDataType)) {
-            HashMap<String, Object> values = (HashMap<String, Object>) entry.getValue();
-            observationContract.setValue(this.constructObservations(new ObservationCollection(values)));
+            if (entry.getValue() instanceof Collection) {
+                List<Object> repeatableQuestionGroup = (List<Object>) ((Collection) entry.getValue()).stream().map(value -> {
+                    HashMap<String, Object> values = (HashMap<String, Object>) value;
+                    return this.constructObservations(new ObservationCollection(values));
+                }).collect(Collectors.toList());
+                observationContract.setValue(repeatableQuestionGroup);
+            } else {
+                HashMap<String, Object> values = (HashMap<String, Object>) entry.getValue();
+                observationContract.setValue(this.constructObservations(new ObservationCollection(values)));
+            }
         } else {
             observationContract.setValue(entry.getValue());
         }
