@@ -113,7 +113,7 @@ public class ProgramEncounterApiController {
             programEnrolment = programEnrolmentRepository.findByLegacyId(request.getProgramEnrolmentExternalId().trim());
         }
         if (programEnrolment == null) {
-            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with UUID '%s'", request.getProgramEnrolmentExternalId()));
+            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with UUID '%s' or External ID '%s'", request.getEnrolmentId(), request.getProgramEnrolmentExternalId()));
         }
         return programEnrolment;
     }
@@ -128,7 +128,7 @@ public class ProgramEncounterApiController {
             encounter = programEncounterRepository.findByLegacyId(request.getExternalId().trim());
         }
         if (encounter == null) {
-            throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
+            throw new IllegalArgumentException(String.format("Encounter not found with id '%s' or External ID '%s'", id, request.getExternalId()));
         }
         try {
             updateEncounter(encounter, request);
