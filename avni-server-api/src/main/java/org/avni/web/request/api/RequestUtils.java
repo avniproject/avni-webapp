@@ -6,10 +6,7 @@ import org.avni.domain.ConceptDataType;
 import org.avni.domain.ObservationCollection;
 import org.avni.util.BadRequestError;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RequestUtils {
@@ -28,31 +25,51 @@ public class RequestUtils {
 
             if (entryValue == null) continue; //Ignore null values as in Avni there is no difference between null value and non-existence of an observation
 
-            switch (ConceptDataType.valueOf(conceptDataType)) {
-                case Coded: {
-                    if (entryValue instanceof Collection<?>) {
-                        obsValue = ((List<String>) entryValue).stream().map(answerConceptName -> {
-                            Concept answerConcept = conceptRepository.findByName(answerConceptName);
-                            if (answerConcept == null)
-                                throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
-                            return answerConcept.getUuid();
-                        }).collect(Collectors.toList());
-                    } else {
-                        String answerConceptName = (String) entryValue;
-                        Concept answerConcept = conceptRepository.findByName(answerConceptName);
-                        if (answerConcept == null)
-                            throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
-                        obsValue = answerConcept.getUuid();
-                    }
-                    break;
-                }
-                default: {
-                    obsValue = entryValue;
-                    break;
-                }
-            }
+            obsValue = getObsValue(conceptRepository, conceptDataType, entryValue);
             observations.put(conceptUUID, obsValue);
         }
         return new ObservationCollection(observations);
+    }
+
+    private static Object getObsValue(ConceptRepository conceptRepository, String conceptDataType, Object entryValue) {
+        Object obsValue;
+        switch (ConceptDataType.valueOf(conceptDataType)) {
+            case Coded: {
+                if (entryValue instanceof Collection<?>) {
+                    obsValue = ((List<String>) entryValue).stream().map(answerConceptName -> {
+                        Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                        if (answerConcept == null)
+                            throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
+                        return answerConcept.getUuid();
+                    }).collect(Collectors.toList());
+                } else {
+                    String answerConceptName = (String) entryValue;
+                    Concept answerConcept = conceptRepository.findByName(answerConceptName);
+                    if (answerConcept == null)
+                        throw new BadRequestError(String.format("Answer concept with name=%s not found", answerConceptName));
+                    obsValue = answerConcept.getUuid();
+                }
+                break;
+            }
+            case QuestionGroup: {
+                if (entryValue instanceof Collection<?>) {
+                    List<ObservationCollection> groupOfChildObservations = new ArrayList<>();
+                    for (Object o : ((Collection<?>) entryValue)) {
+                        Map<String, Object> childObsCollection = (Map<String, Object>) o;
+                        ObservationCollection childObservations = createObservations(childObsCollection, conceptRepository);
+                        groupOfChildObservations.add(childObservations);
+                    }
+                    obsValue = groupOfChildObservations;
+                } else {
+                    obsValue = entryValue;
+                }
+                break;
+            }
+            default: {
+                obsValue = entryValue;
+                break;
+            }
+        }
+        return obsValue;
     }
 }
