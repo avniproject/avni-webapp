@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import org.avni.domain.Catchment;
 import org.avni.domain.User;
 import org.avni.projection.UserWebProjection;
 import org.springframework.data.domain.Page;
@@ -58,4 +59,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     boolean existsByLastModifiedDateTimeGreaterThan(DateTime lastModifiedDateTime);
 
     List<User> findByCatchment_IdInAndIsVoidedFalse(List<Long> catchmentIds);
+
+    List<User> findByCatchmentAndIsVoidedFalse(Catchment catchment);
 }

@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import org.avni.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.util.List;
 
+@Repository
 public interface SubjectMigrationRepository extends TransactionalDataRepository<SubjectMigration>, OperatingIndividualScopeAwareRepository<SubjectMigration> {
 
     default Specification<SubjectMigration> syncStrategySpecification(SyncParameters syncParameters) {

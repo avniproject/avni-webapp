@@ -42,6 +42,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
     private final SubjectTypeService subjectTypeService;
     private final GroupRoleRepository groupRoleRepository;
+    private final ResetSyncService resetSyncService;
     private SubjectTypeRepository subjectTypeRepository;
     private FormService formService;
     private FormMappingService formMappingService;
@@ -53,12 +54,13 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
                                  OperationalSubjectTypeRepository operationalSubjectTypeRepository,
                                  SubjectTypeService subjectTypeService,
                                  GroupRoleRepository groupRoleRepository,
-                                 FormService formService, FormMappingService formMappingService,
+                                 ResetSyncService resetSyncService, FormService formService, FormMappingService formMappingService,
                                  OrganisationConfigService organisationConfigService) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.subjectTypeService = subjectTypeService;
         this.groupRoleRepository = groupRoleRepository;
+        this.resetSyncService = resetSyncService;
         this.formService = formService;
         this.formMappingService = formMappingService;
         this.organisationConfigService = organisationConfigService;
@@ -187,6 +189,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
                 subjectType.setSyncRegistrationConcept1Usable(false);
             if (isSyncConcept2Changed)
                 subjectType.setSyncRegistrationConcept2Usable(false);
+        resetSyncService.recordSyncAttributeChange(operationalSubjectType.getSubjectType(), request);
         updateSubjectType(request, operationalSubjectType);
         subjectTypeService.updateSyncAttributesIfRequired(subjectType);
         SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
