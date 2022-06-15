@@ -18,6 +18,7 @@ import org.avni.web.request.ConceptContract;
 import org.avni.web.request.ReferenceDataContract;
 import org.avni.web.request.application.ConceptUsageContract;
 import org.avni.web.request.application.FormUsageContract;
+import org.avni.web.response.Response;
 import org.avni.web.validation.ValidationException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -244,8 +245,22 @@ public class ConceptService implements NonScopeAwareService {
 
     public Object getObservationValue(Map<String, String> conceptMap, Object value) {
         if (value instanceof ArrayList) {
-            List<String> answerUUIDs = (List<String>) value;
-            return answerUUIDs.stream().map(answerUUID -> conceptMap.getOrDefault(answerUUID, answerUUID)).toArray();
+            List<Object> elements = (List<Object>) value;
+            return elements.stream().map(element -> {
+                if (element != null && element instanceof String) {
+                    return conceptMap.getOrDefault(element, (String) element);
+                } else if( element != null && element instanceof LinkedHashMap) {
+                    LinkedHashMap<String, Object> observationResponse = new LinkedHashMap<>();
+                    Response.mapObservations(conceptRepository, this, observationResponse, new ObservationCollection((LinkedHashMap) element));
+                    return observationResponse;
+                } else {
+                    return conceptMap.getOrDefault(element, element.toString());
+                }
+            }).toArray();
+        } else if( value instanceof LinkedHashMap) {
+            LinkedHashMap<String, Object> observationResponse = new LinkedHashMap<>();
+            Response.mapObservations(conceptRepository, this, observationResponse, new ObservationCollection((LinkedHashMap) value));
+            return observationResponse;
         } else {
             String conceptName = conceptMap.get(value);
             return conceptName == null ? value : conceptName;
