@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.avni.dao.IndividualRepository;
 import org.avni.dao.ResetSyncRepository;
 import org.avni.dao.UserRepository;
 import org.avni.domain.*;
@@ -12,26 +13,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ResetSyncService {
     private final ResetSyncRepository resetSyncRepository;
     private final UserRepository userRepository;
+    private final IndividualRepository individualRepository;
 
     @Autowired
-    public ResetSyncService(ResetSyncRepository resetSyncRepository, UserRepository userRepository) {
+    public ResetSyncService(ResetSyncRepository resetSyncRepository, UserRepository userRepository, IndividualRepository individualRepository) {
         this.resetSyncRepository = resetSyncRepository;
         this.userRepository = userRepository;
+        this.individualRepository = individualRepository;
     }
 
     public void recordCatchmentChange(Catchment savedCatchment, CatchmentContract request) {
         List<User> usersAssignedThisCatchment = userRepository.findByCatchmentAndIsVoidedFalse(savedCatchment);
-        if (!usersAssignedThisCatchment.isEmpty() && isCatchmentChanged(savedCatchment.getAddressLevels(), request.getLocationIds())) {
+        List<Long> savedLocationIds = savedCatchment.getAddressLevels().stream().map(AddressLevel::getId).collect(Collectors.toList());
+        if (!usersAssignedThisCatchment.isEmpty() &&
+                isCatchmentChanged(savedLocationIds, request.getLocationIds()) &&
+                hasSubjectsInNewLocation(savedLocationIds, request.getLocationIds())) {
             List<ResetSync> resetSyncList = usersAssignedThisCatchment.stream().map(user -> {
                 ResetSync resetSync = buildNewResetSync();
                 resetSync.setUser(user);
@@ -54,7 +57,8 @@ public class ResetSyncService {
 
     public void recordSyncAttributeValueChangeForUser(User savedUser, UserContract userContract) {
         JsonObject newSyncSettings = userContract.getSyncSettings() == null ? new JsonObject() : userContract.getSyncSettings();
-        if (isSyncSettingsChanged(savedUser.getSyncSettings(), newSyncSettings)) {
+        Long savedCatchmentId = savedUser.getCatchmentId().orElse(null);
+        if (isSyncSettingsChanged(savedUser.getSyncSettings(), newSyncSettings) || isChanged(savedCatchmentId, userContract.getCatchmentId())) {
             ResetSync resetSync = buildNewResetSync();
             resetSync.setUser(savedUser);
             resetSyncRepository.save(resetSync);
@@ -68,9 +72,14 @@ public class ResetSyncService {
                 isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST));
     }
 
-    private boolean isCatchmentChanged(Set<AddressLevel> addressLevels, List<Long> newLocationIds) {
-        List<Long> savedLocationIds = addressLevels.stream().map(AddressLevel::getId).collect(Collectors.toList());
-        return !(savedLocationIds.containsAll(newLocationIds) && newLocationIds.containsAll(savedLocationIds));
+    private boolean isCatchmentChanged(List<Long> savedLocationIds, List<Long> locationIdsPassedInRequest) {
+        return !(savedLocationIds.containsAll(locationIdsPassedInRequest) && locationIdsPassedInRequest.containsAll(savedLocationIds));
+    }
+
+    private boolean hasSubjectsInNewLocation(List<Long> savedLocationIds, List<Long> locationIdsPassedInRequest) {
+        List<Long> newlyAddedIds = new ArrayList<>(locationIdsPassedInRequest);
+        newlyAddedIds.removeAll(savedLocationIds);
+        return individualRepository.existsByAddressLevelIdIn(newlyAddedIds.isEmpty() ? locationIdsPassedInRequest : newlyAddedIds);
     }
 
     private ResetSync buildNewResetSync() {

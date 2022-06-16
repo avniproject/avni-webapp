@@ -165,4 +165,5 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "where i.subject_type_id = :subjectTypeId", nativeQuery = true)
     void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
 
+    boolean existsByAddressLevelIdIn(List<Long> addressIds);
 }
