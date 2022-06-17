@@ -110,6 +110,9 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 start_server: build_server
 	OPENCHS_DATABASE=$(DB) java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
+start_server_keycloak: build_server
+	OPENCHS_MODE=on-premise OPENCHS_DATABASE=$(DB) java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
+
 start_server_remote_db: build_server
 	OPENCHS_DATABASE_URL=jdbc:postgresql://192.168.33.11:5432/openchs java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
 
@@ -147,8 +150,8 @@ tunnel_staging_db:
 
 start_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
-	OPENCHS_DATABASE_URL=jdbc:postgresql://localhost:6015/openchs
-	OPENCHS_MODE=live \
+	#OPENCHS_DATABASE_URL=jdbc:postgresql://localhost:6015/openchs
+	OPENCHS_MODE=staging \
 	OPENCHS_COGNITO_IN_DEV=false \
 	OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) \
 	OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) \
@@ -160,7 +163,8 @@ start_server_staging: build_server
 
 debug_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
-	OPENCHS_MODE=live \
+	#OPENCHS_DATABASE_URL=jdbc:postgresql://localhost:6015/openchs
+	OPENCHS_MODE=staging \
 	OPENCHS_COGNITO_IN_DEV=false \
 	OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) \
 	OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) \

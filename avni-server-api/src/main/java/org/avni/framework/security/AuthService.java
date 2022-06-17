@@ -27,14 +27,14 @@ public class AuthService {
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ADMIN);
     public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ORGANISATION_ADMIN);
     public final static List<SimpleGrantedAuthority> ALL_AUTHORITIES = Arrays.asList(USER_AUTHORITY, ADMIN_AUTHORITY, ORGANISATION_ADMIN_AUTHORITY);
-    private IAMAuthService cognitoAuthService;
+    private IAMAuthService iamAuthService;
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
     private AccountAdminRepository accountAdminRepository;
 
     @Autowired
-    public AuthService(IAMAuthService cognitoAuthService, UserRepository userRepository, OrganisationRepository organisationRepository, AccountAdminRepository accountAdminRepository) {
-        this.cognitoAuthService = cognitoAuthService;
+    public AuthService(IAMAuthService iamAuthService, UserRepository userRepository, OrganisationRepository organisationRepository, AccountAdminRepository accountAdminRepository) {
+        this.iamAuthService = iamAuthService;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.accountAdminRepository = accountAdminRepository;
@@ -47,7 +47,7 @@ public class AuthService {
 
     public UserContext authenticateByToken(String authToken, String organisationUUID) {
         becomeSuperUser();
-        UserContext userContext = changeUser(cognitoAuthService.getUserFromToken(authToken), organisationUUID);
+        UserContext userContext = changeUser(iamAuthService.getUserFromToken(authToken), organisationUUID);
         userContext.setAuthToken(authToken);
         return userContext;
     }

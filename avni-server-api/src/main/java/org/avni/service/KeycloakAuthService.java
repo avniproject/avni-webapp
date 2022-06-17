@@ -1,35 +1,35 @@
 package org.avni.service;
 
 import com.auth0.jwt.interfaces.Verification;
+import org.avni.config.KeycloakConfig;
 import org.avni.dao.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Service
-@Profile({"default", "live", "dev", "test"})
-@ConditionalOnProperty(prefix = "avni", name = "iam", havingValue = "keycloak")
 public class KeycloakAuthService extends BaseIAMService {
     private final Logger logger = LoggerFactory.getLogger(KeycloakAuthService.class);
+    private final KeycloakConfig keycloakConfig;
     private final Boolean isDev;
 
-    @Autowired
-    public KeycloakAuthService(UserRepository userRepository, Boolean isDev) {
+    public KeycloakAuthService(UserRepository userRepository, KeycloakConfig keycloakConfig, Boolean isDev) {
         super(userRepository);
+        this.keycloakConfig = keycloakConfig;
         this.isDev = isDev;
     }
 
     @Override
     protected String getUserUuidField() {
-        return "preferred_username";
+        return null;
     }
 
     @Override
     protected String getUsernameField() {
-        return null;
+        return "preferred_username";
     }
 
     @Override
@@ -39,7 +39,7 @@ public class KeycloakAuthService extends BaseIAMService {
 
     @Override
     protected String getAudience() {
-        return "avni-web-app";
+        return keycloakConfig.getAudience();
     }
 
     protected String getJwkProviderUrl() {
@@ -47,14 +47,15 @@ public class KeycloakAuthService extends BaseIAMService {
     }
 
     protected String getIssuer() {
-        return "http://localhost:8080/realms/Amrit";
+        return String.format("%s/realms/%s", keycloakConfig.getServer(), keycloakConfig.getRealm());
     }
 
     @Override
     public void logConfiguration() {
         logger.debug("Keycloak configuration");
-        logger.debug(String.format("Realm Name: %s", poolId));
-        logger.debug(String.format("Client Id: %s", clientId));
+        logger.debug(String.format("Keycloak server: %s", keycloakConfig.getServer()));
+        logger.debug(String.format("Realm name: %s", keycloakConfig.getRealm()));
+        logger.debug(String.format("Audience name: %s", keycloakConfig.getAudience()));
         logger.debug(String.format("Dev mode: %s", isDev));
     }
 }
