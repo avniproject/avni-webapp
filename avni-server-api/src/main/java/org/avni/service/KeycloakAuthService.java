@@ -3,6 +3,7 @@ package org.avni.service;
 import com.auth0.jwt.interfaces.Verification;
 import org.avni.config.KeycloakConfig;
 import org.avni.dao.UserRepository;
+import org.avni.framework.context.SpringProfiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,10 @@ import org.springframework.stereotype.Service;
 public class KeycloakAuthService extends BaseIAMService {
     private final Logger logger = LoggerFactory.getLogger(KeycloakAuthService.class);
     private final KeycloakConfig keycloakConfig;
-    private final Boolean isDev;
 
-    public KeycloakAuthService(UserRepository userRepository, KeycloakConfig keycloakConfig, Boolean isDev) {
-        super(userRepository);
+    public KeycloakAuthService(UserRepository userRepository, KeycloakConfig keycloakConfig, SpringProfiles springProfiles) {
+        super(userRepository, springProfiles, null);
         this.keycloakConfig = keycloakConfig;
-        this.isDev = isDev;
     }
 
     @Override
@@ -56,6 +55,6 @@ public class KeycloakAuthService extends BaseIAMService {
         logger.debug(String.format("Keycloak server: %s", keycloakConfig.getServer()));
         logger.debug(String.format("Realm name: %s", keycloakConfig.getRealm()));
         logger.debug(String.format("Audience name: %s", keycloakConfig.getAudience()));
-        logger.debug(String.format("Dev mode: %s", isDev));
+        logger.debug(String.format("Spring profile: %s", springProfiles.getProfiles()));
     }
 }

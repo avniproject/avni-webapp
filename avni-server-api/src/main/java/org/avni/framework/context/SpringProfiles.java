@@ -5,6 +5,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Component
 public class SpringProfiles {
@@ -34,5 +35,9 @@ public class SpringProfiles {
 
     public boolean isLive() {
         return isProfile(SpringProfiles.LIVE);
+    }
+
+    public String getProfiles() {
+        return Arrays.stream(environment.getActiveProfiles()).map(s -> s).collect(Collectors.joining(","));
     }
 }

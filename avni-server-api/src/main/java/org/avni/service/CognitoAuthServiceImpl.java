@@ -3,19 +3,19 @@ package org.avni.service;
 import com.auth0.jwt.interfaces.Verification;
 import org.avni.config.CognitoConfig;
 import org.avni.dao.UserRepository;
+import org.avni.framework.context.SpringProfiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//Not defined as bean because it is dynamically loaded based on the spring profile
 public class CognitoAuthServiceImpl extends BaseIAMService {
     private static final String COGNITO_URL = "https://cognito-idp.ap-south-1.amazonaws.com/";
     private final Logger logger = LoggerFactory.getLogger(CognitoAuthServiceImpl.class);
 
-    private final Boolean isDev;
     private final CognitoConfig cognitoConfig;
 
-    public CognitoAuthServiceImpl(UserRepository userRepository, Boolean isDev, CognitoConfig cognitoConfig) {
-        super(userRepository);
-        this.isDev = isDev;
+    public CognitoAuthServiceImpl(UserRepository userRepository, CognitoConfig cognitoConfig, SpringProfiles springProfiles, BaseIAMService alternateIAMService) {
+        super(userRepository, springProfiles, alternateIAMService);
         this.cognitoConfig = cognitoConfig;
     }
 
@@ -23,11 +23,11 @@ public class CognitoAuthServiceImpl extends BaseIAMService {
         logger.debug("Cognito configuration");
         logger.debug(String.format("Pool Id: %s", cognitoConfig.getPoolId()));
         logger.debug(String.format("Client Id: %s", cognitoConfig.getClientId()));
-        logger.debug(String.format("Dev mode: %s", isDev));
+        logger.debug(String.format("Spring Profile: %s", springProfiles.getProfiles()));
     }
 
     protected String getJwkProviderUrl() {
-        return this.getIssuer() + "/.well-known/openid-configuration";
+        return this.getIssuer() + "/.well-known/jwks.json";
     }
 
     protected String getIssuer() {

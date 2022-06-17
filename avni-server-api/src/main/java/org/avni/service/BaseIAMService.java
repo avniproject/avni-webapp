@@ -12,6 +12,7 @@ import com.auth0.jwt.interfaces.Verification;
 import com.google.common.base.Strings;
 import org.avni.dao.UserRepository;
 import org.avni.domain.User;
+import org.avni.framework.context.SpringProfiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -23,9 +24,13 @@ import java.security.interfaces.RSAPublicKey;
 public abstract class BaseIAMService implements IAMAuthService {
     private final Logger logger = LoggerFactory.getLogger(BaseIAMService.class);
     private final UserRepository userRepository;
+    protected final SpringProfiles springProfiles;
+    private final BaseIAMService alternateIAMService;
 
-    protected BaseIAMService(UserRepository userRepository) {
+    protected BaseIAMService(UserRepository userRepository, SpringProfiles springProfiles, BaseIAMService alternateIAMService) {
         this.userRepository = userRepository;
+        this.springProfiles = springProfiles;
+        this.alternateIAMService = alternateIAMService;
     }
 
     private String getValueInToken(DecodedJWT jwt, String name) {
@@ -39,7 +44,7 @@ public abstract class BaseIAMService implements IAMAuthService {
         logConfiguration();
         if (StringUtils.isEmpty(token)) return null;
 
-        DecodedJWT jwt = verifyAndDecodeToken(token, true);
+        DecodedJWT jwt = verifyAndDecodeToken(token);
         if (jwt == null) return null;
 
         String username = getValueInToken(jwt, getUsernameField());
@@ -53,13 +58,20 @@ public abstract class BaseIAMService implements IAMAuthService {
 
     protected abstract String getUsernameField();
 
-    private DecodedJWT verifyAndDecodeToken(String token, boolean verify) {
+    private DecodedJWT verifyAndDecodeToken(String token) {
         try {
             DecodedJWT unverifiedJwt = JWT.decode(token);
-            if (!verify) return unverifiedJwt;
 
-            JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getJwkProviderUrl())));
-            Jwk jwk = provider.get(unverifiedJwt.getKeyId());
+            Jwk jwk;
+            try {
+                JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getJwkProviderUrl())));
+                jwk = provider.get(unverifiedJwt.getKeyId());
+            } catch (SigningKeyNotFoundException e) {
+                if (springProfiles.isStaging() && alternateIAMService != null)
+                    return alternateIAMService.verifyAndDecodeToken(token);
+                else
+                    throw e;
+            }
             RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
             Verification verification = JWT.require(algorithm)

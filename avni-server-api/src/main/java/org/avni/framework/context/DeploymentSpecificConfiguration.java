@@ -13,25 +13,30 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DeploymentSpecificConfiguration {
     private final UserRepository userRepository;
-    private final Boolean isDev;
     private final SpringProfiles springProfiles;
     private final CognitoConfig cognitoConfig;
     private final KeycloakConfig keycloakConfig;
 
     @Autowired
-    public DeploymentSpecificConfiguration(CognitoConfig cognitoConfig, KeycloakConfig keycloakConfig, UserRepository userRepository, Boolean isDev, SpringProfiles springProfiles) {
+    public DeploymentSpecificConfiguration(CognitoConfig cognitoConfig, KeycloakConfig keycloakConfig, UserRepository userRepository, SpringProfiles springProfiles) {
         this.cognitoConfig = cognitoConfig;
         this.keycloakConfig = keycloakConfig;
         this.userRepository = userRepository;
-        this.isDev = isDev;
         this.springProfiles = springProfiles;
     }
 
     @Bean
     public IAMAuthService getAuthService() {
         if (springProfiles.isOnPremise())
-            return new KeycloakAuthService(userRepository, keycloakConfig, isDev);
+            return getKeycloakAuthService();
 
-        return new CognitoAuthServiceImpl(userRepository, isDev, cognitoConfig);
+        if (springProfiles.isStaging())
+            return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, getKeycloakAuthService());
+
+        return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, null);
+    }
+
+    private KeycloakAuthService getKeycloakAuthService() {
+        return new KeycloakAuthService(userRepository, keycloakConfig, springProfiles);
     }
 }
