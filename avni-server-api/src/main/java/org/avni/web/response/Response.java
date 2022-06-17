@@ -43,8 +43,8 @@ public class Response {
         LinkedHashMap<String, Object> audit = new LinkedHashMap<>();
         audit.put("Created at", avniEntity.getCreatedDateTime());
         audit.put("Last modified at", avniEntity.getLastModifiedDateTime());
-        audit.put("Created by", avniEntity.getCreatedBy());
-        audit.put("Last modified by", avniEntity.getLastModifiedBy());
+        audit.put("Created by", avniEntity.getCreatedByName());
+        audit.put("Last modified by", avniEntity.getLastModifiedByName());
         objectMap.put("audit", audit);
     }
 
