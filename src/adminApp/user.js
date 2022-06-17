@@ -276,7 +276,8 @@ const operatingScopes = Object.freeze({
 });
 
 const catchmentChangeMessage = `Please ensure that the user has already synced all 
-data for their previous sync attributes, and has deleted all local data from their app`;
+data for their previous sync attributes. Changing sync attributes will ask the users to reset their sync. 
+This might take time depending on the data.`;
 
 const ConceptSyncAttribute = ({ syncAttributesData, syncAttributeName, edit, ...props }) =>
   syncAttributesData[syncAttributeName].length > 0 && (

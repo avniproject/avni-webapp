@@ -49,7 +49,7 @@ export const AdvancedSettings = ({
 
   const onSyncConceptChange = (name, value) => {
     const syncAttributeChangeMessage =
-      "After changing the sync concept check the usability status on details page. Once this attribute is usable ask users to perform fresh sync.";
+      "Changing sync attributes will ask the users to reset their sync. This might take time depending on the data.";
     if (!isEdit) {
       changeSyncAttribute(name, value);
     } else if (window.confirm(syncAttributeChangeMessage)) {
