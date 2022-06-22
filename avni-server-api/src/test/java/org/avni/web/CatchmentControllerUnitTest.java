@@ -1,5 +1,6 @@
 package org.avni.web;
 
+import org.avni.service.ResetSyncService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,12 +21,14 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class CatchmentControllerUnitTest {
     @Mock
     private CatchmentRepository catchmentRepository;
+    @Mock
+    private ResetSyncService resetSyncService;
     private CatchmentController catchmentController;
 
     @Before
     public void setup() {
         initMocks(this);
-        catchmentController = new CatchmentController(catchmentRepository, null, null, null);
+        catchmentController = new CatchmentController(catchmentRepository, null, null, null, resetSyncService);
     }
 
     @Test()

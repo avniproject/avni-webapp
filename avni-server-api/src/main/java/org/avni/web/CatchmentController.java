@@ -8,6 +8,7 @@ import org.avni.domain.Catchment;
 import org.avni.domain.Organisation;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.CatchmentService;
+import org.avni.service.ResetSyncService;
 import org.avni.service.S3Service;
 import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.CatchmentContract;
@@ -34,13 +35,19 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     private LocationRepository locationRepository;
     private final CatchmentService catchmentService;
     private final S3Service s3Service;
+    private final ResetSyncService resetSyncService;
 
     @Autowired
-    public CatchmentController(CatchmentRepository catchmentRepository, LocationRepository locationRepository, CatchmentService catchmentService, S3Service s3Service) {
+    public CatchmentController(CatchmentRepository catchmentRepository,
+                               LocationRepository locationRepository,
+                               CatchmentService catchmentService,
+                               S3Service s3Service,
+                               ResetSyncService resetSyncService) {
         this.catchmentRepository = catchmentRepository;
         this.locationRepository = locationRepository;
         this.catchmentService = catchmentService;
         this.s3Service = s3Service;
+        this.resetSyncService = resetSyncService;
     }
 
     @GetMapping(value = "catchment")
@@ -107,7 +114,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         //Do not allow to change catchment name when there is already another catchment with the same name
         if (catchmentWithSameName != null && catchmentWithSameName.getId() != catchment.getId())
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Catchment with name %s already exists", catchmentContract.getName())));
-
+        resetSyncService.recordCatchmentChange(catchment, catchmentContract);
         catchment.setName(catchmentContract.getName());
         catchment.clearAddressLevels();
         for (Long locationId : catchmentContract.getLocationIds()) {
