@@ -16,7 +16,13 @@ public class Response {
         if (value != null) map.put(name, value);
     }
 
-    static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap, LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations, String observationsResponseKeyName) {
+    static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap,
+                                LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations, String observationsResponseKeyName) {
+        mapObservations(conceptRepository, conceptService, observationsResponse, observations);
+        parentMap.put(observationsResponseKeyName, observationsResponse);
+    }
+
+    public static void mapObservations(ConceptRepository conceptRepository, ConceptService conceptService, LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations) {
         ObservationCollection obs = Optional.ofNullable(observations).orElse(new ObservationCollection());
         String stringObservations;
         try {
@@ -27,7 +33,6 @@ public class Response {
         List<Map<String, String>> conceptMaps = conceptRepository.getConceptUuidToNameMapList(stringObservations);
         Map<String, String> conceptMap = conceptMaps.stream().collect(Collectors.toMap(s -> s.get("uuid"), s -> s.get("name")));
         obs.forEach((key, value) -> observationsResponse.put(conceptMap.get(key), conceptService.getObservationValue(conceptMap, value)));
-        parentMap.put(observationsResponseKeyName, observationsResponse);
     }
 
     static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap, LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations) {
@@ -38,8 +43,8 @@ public class Response {
         LinkedHashMap<String, Object> audit = new LinkedHashMap<>();
         audit.put("Created at", avniEntity.getCreatedDateTime());
         audit.put("Last modified at", avniEntity.getLastModifiedDateTime());
-        audit.put("Created by", avniEntity.getCreatedBy());
-        audit.put("Last modified by", avniEntity.getLastModifiedBy());
+        audit.put("Created by", avniEntity.getCreatedByName());
+        audit.put("Last modified by", avniEntity.getLastModifiedByName());
         objectMap.put("audit", audit);
     }
 

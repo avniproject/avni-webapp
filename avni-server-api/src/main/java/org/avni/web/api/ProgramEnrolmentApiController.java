@@ -63,7 +63,8 @@ public class ProgramEnrolmentApiController {
             individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
         }
         if (individual == null) {
-            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectUuid()));
+            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s' or External ID '%s'",
+                    request.getSubjectUuid(), request.getSubjectExternalId()));
         }
         programEnrolment.setIndividual(individual);
     }
@@ -78,7 +79,7 @@ public class ProgramEnrolmentApiController {
             programEnrolment = programEnrolmentRepository.findByLegacyId(request.getExternalId().trim());
         }
         if (programEnrolment == null) {
-            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with id '%s'", id));
+            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with id '%s' or External ID '%s'", id, request.getExternalId()));
         }
         updateEnrolment(programEnrolment, request);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);

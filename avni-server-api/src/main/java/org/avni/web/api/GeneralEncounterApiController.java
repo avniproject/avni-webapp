@@ -106,7 +106,7 @@ public class GeneralEncounterApiController {
             individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
         }
         if (individual == null) {
-            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getSubjectId()));
+            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s' or External ID '%s'", request.getSubjectId(), request.getSubjectExternalId()));
         }
         encounter.setIndividual(individual);
     }
@@ -121,7 +121,7 @@ public class GeneralEncounterApiController {
             encounter = encounterRepository.findByLegacyId(request.getExternalId().trim());
         }
         if (encounter == null) {
-            throw new IllegalArgumentException(String.format("Encounter not found with id '%s'", id));
+            throw new IllegalArgumentException(String.format("Encounter not found with id '%s' or External ID '%s'", id, request.getExternalId()));
         }
         try {
             updateEncounter(encounter, request);

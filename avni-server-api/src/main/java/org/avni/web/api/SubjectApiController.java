@@ -114,7 +114,7 @@ public class SubjectApiController {
             subject = individualRepository.findByLegacyId(externalId.trim());
         }
         if (subject == null) {
-            throw new IllegalArgumentException(String.format("Subject not found with id '%s'", id));
+            throw new IllegalArgumentException(String.format("Subject not found with id '%s' or External ID '%s'", id, externalId));
         }
         try {
             updateSubject(subject, request);
