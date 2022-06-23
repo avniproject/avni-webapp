@@ -43,8 +43,8 @@ import static java.lang.String.format;
 
 @Service
 @ConditionalOnProperty(
-        value="s3.type",
-        havingValue = "minio")
+        value="minio.s3.enable",
+        havingValue = "true")
 public class MinioService implements S3Service {
     public static final int MAX_KEYS = 100;
     @Value("${avni.bucketName}")

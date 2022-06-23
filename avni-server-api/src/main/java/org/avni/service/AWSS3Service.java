@@ -45,8 +45,8 @@ import static java.lang.String.format;
 
 @Service
 @ConditionalOnProperty(
-        value="s3.type",
-        havingValue = "aws",
+        value="aws.s3.enable",
+        havingValue = "true",
         matchIfMissing = true)
 public class AWSS3Service implements S3Service {
     @Value("${avni.bucketName}")
