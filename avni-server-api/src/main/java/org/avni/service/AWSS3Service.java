@@ -92,7 +92,7 @@ public class AWSS3Service implements S3Service {
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    public GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName, HttpMethod method) {
+    private GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName, HttpMethod method) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
         return new GeneratePresignedUrlRequest(bucketName, objectKey)

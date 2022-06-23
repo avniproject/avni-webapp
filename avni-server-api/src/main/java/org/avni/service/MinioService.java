@@ -1,7 +1,6 @@
 package org.avni.service;
 
 import com.amazonaws.HttpMethod;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3URI;
 import io.minio.*;
 import io.minio.http.Method;
@@ -48,7 +47,6 @@ public class MinioService implements S3Service {
     private final String bucketName;
     private final boolean s3InDev;
     private final int MAX_KEYS = 100;
-    private final Regions REGION = Regions.AP_SOUTH_1;
     private final int EXPIRY_DURATION = 60 * 60; //1 hour in seconds
     private final int DOWNLOAD_EXPIRY_DURATION = 2 * 60; //2 minutes in seconds
     private final MinioClient minioClient;
@@ -87,7 +85,7 @@ public class MinioService implements S3Service {
         return getUrl(generatePresignedUrlRequest);
     }
 
-    public GetPresignedObjectUrlArgs getPresignedObjectUrlArgsRequest(String fileName, HttpMethod method) {
+    private GetPresignedObjectUrlArgs getPresignedObjectUrlArgsRequest(String fileName, HttpMethod method) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
         Map<String, String> reqParams = new HashMap<String, String>();
@@ -158,7 +156,11 @@ public class MinioService implements S3Service {
 
     @Override
     public String getS3Key(String destFileName, String directory) {
-        return format("%s/%s/%s", directory, getOrgDirectoryName(), destFileName.replace(" ", "_"));
+        return format("%s/%s/%s",
+                directory,
+                getOrgDirectoryName(),
+                destFileName.replace(" ", "_")
+        );
     }
 
     @Override
@@ -360,7 +362,9 @@ public class MinioService implements S3Service {
         } else {
             List<String> metadataDirs = Arrays.asList("icons/", "extensions/");
             String[] allKeys = getAllKeysWithPrefix(mediaDirectory);
-            String[] txKeys = Arrays.stream(allKeys).filter(key -> metadataDirs.stream().noneMatch(key::contains)).toArray(String[]::new);
+            String [] txKeys = Arrays.stream(allKeys)
+                    .filter(key -> metadataDirs.stream().noneMatch(key::contains))
+                    .toArray(String[]::new);
             deleteKeys(txKeys);
         }
     }
@@ -470,9 +474,12 @@ public class MinioService implements S3Service {
             InputStream input = connection.getInputStream();
 
             String contentDisposition = connection.getHeaderField("Content-Disposition");
-            String fileName = contentDisposition != null && contentDisposition.contains("filename=\"") ? contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1") : mediaURL.substring(mediaURL.lastIndexOf("/"));
+            String fileName = contentDisposition != null && contentDisposition.contains("filename=\"") ?
+                    contentDisposition.replaceFirst("(?i)^.*filename=\"?([^\"]+)\"?.*$", "$1") :
+                    mediaURL.substring(mediaURL.lastIndexOf("/"));
 
-            File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString().concat(format(".%s", extractFileExtension(mediaURL, fileName)))));
+            File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"),
+                    UUID.randomUUID().toString().concat(format(".%s", extractFileExtension(mediaURL, fileName)))));
 
             FileUtils.copyInputStreamToFile(input, file);
 
