@@ -15,6 +15,7 @@ import Tutorials from "../tutorials/Tutorials";
 import SelfServiceReports from "../reports/SelfServiceReports";
 import CannedReport from "../reports/cannedReport/CannedReport";
 import News from "../news/News";
+import Documentation from "../documentation/Documentation";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -71,6 +72,13 @@ const Routes = ({ user, organisation }) => (
         component={WithProps({ user, organisation }, OrgManagerAppDesigner)}
       />
     </Route>
+    <RestrictedRoute
+      exact
+      path="/documentation"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, Documentation)}
+    />
     <RestrictedRoute
       exact
       path="/translations"
