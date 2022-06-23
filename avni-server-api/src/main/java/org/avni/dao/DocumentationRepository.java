@@ -1,0 +1,12 @@
+package org.avni.dao;
+
+import org.avni.domain.Documentation;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RepositoryRestResource(collectionResourceRel = "documentation", path = "documentation")
+@PreAuthorize("hasAnyAuthority('user')")
+public interface DocumentationRepository extends ReferenceDataRepository<Documentation>, FindByLastModifiedDateTime<Documentation> {
+}
