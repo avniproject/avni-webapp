@@ -9,6 +9,7 @@ import org.avni.service.S3Service;
 import org.avni.util.S;
 import org.avni.web.request.NewsContract;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -31,7 +32,8 @@ public class NewsController extends AbstractController<News> implements RestCont
     private final S3Service s3Service;
 
     @Autowired
-    public NewsController(NewsService newsService, NewsRepository newsRepository, S3Service s3Service) {
+    public NewsController(NewsService newsService, NewsRepository newsRepository,
+                          @Qualifier("StorageService") S3Service s3Service) {
         this.newsService = newsService;
         this.newsRepository = newsRepository;
         this.s3Service = s3Service;

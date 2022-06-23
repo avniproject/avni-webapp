@@ -19,6 +19,7 @@ import org.jadira.usertype.spi.utils.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +69,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
                          ObservationCreator observationCreator, IndividualService individualService, EntityApprovalStatusWriter entityApprovalStatusWriter,
-                         AddressLevelService addressLevelService, S3Service s3Service) {
+                         AddressLevelService addressLevelService, @Qualifier("StorageService") S3Service s3Service) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;

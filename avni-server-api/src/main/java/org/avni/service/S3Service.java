@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface S3Service {
-    @PostConstruct
-    void init();
 
     String getContentType(String fileName);
 

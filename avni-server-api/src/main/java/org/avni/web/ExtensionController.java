@@ -11,6 +11,7 @@ import org.avni.web.request.ExtensionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -49,7 +50,7 @@ public class ExtensionController implements RestControllerResourceProcessor<Exte
     private final ImplementationRepository implementationRepository;
 
     @Autowired
-    public ExtensionController(S3Service s3Service, OrganisationConfigService organisationConfigService,
+    public ExtensionController(@Qualifier("StorageService") S3Service s3Service, OrganisationConfigService organisationConfigService,
                                ImplementationRepository implementationRepository) {
         this.s3Service = s3Service;
         this.organisationConfigService = organisationConfigService;

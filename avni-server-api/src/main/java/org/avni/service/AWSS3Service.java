@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -43,24 +42,14 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
-@Service
+@Service("AWSS3Service")
 @ConditionalOnProperty(
         value="aws.s3.enable",
         havingValue = "true",
         matchIfMissing = true)
 public class AWSS3Service implements S3Service {
-    @Value("${avni.bucketName}")
-    private String bucketName;
-
-    @Value("${aws.accessKeyId}")
-    private String accessKeyId;
-
-    @Value("${aws.secretAccessKey}")
-    private String secretAccessKey;
-
-    @Value("${avni.connectToS3InDev}")
-    private boolean s3InDev;
-
+    private final String bucketName;
+    private final boolean s3InDev;
     private final Regions REGION = Regions.AP_SOUTH_1;
     private final long EXPIRY_DURATION = Duration.ofHours(1).toMillis();
     private final long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
@@ -73,19 +62,19 @@ public class AWSS3Service implements S3Service {
 
 
     @Autowired
-    public AWSS3Service(Boolean isDev) {
+    public AWSS3Service(@Value("${avni.bucketName}") String bucketName,
+            @Value("${aws.accessKeyId}") String accessKeyId,
+            @Value("${aws.secretAccessKey}") String secretAccessKey,
+            @Value("${avni.connectToS3InDev}") boolean s3InDev, Boolean isDev) {
+        this.bucketName = bucketName;
+        this.s3InDev = s3InDev;
         this.isDev = isDev;
         logger = LoggerFactory.getLogger(AWSS3Service.class);
-    }
-
-    @Override
-    @PostConstruct
-    public void init() {
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(REGION)
                 .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey)))
                 .build();
-        if (bucketName == null) {
+        if (this.bucketName == null) {
             logger.error("Setup error. avni.bucketName should be present in properties file");
             throw new IllegalStateException("Configuration missing. S3 Bucket name not configured.");
         }

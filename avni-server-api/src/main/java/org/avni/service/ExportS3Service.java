@@ -1,5 +1,6 @@
 package org.avni.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -14,7 +15,7 @@ public class ExportS3Service {
     public static final String FILE_NAME_EXTENSION = ".csv";
     private S3Service s3Service;
 
-    public ExportS3Service(S3Service s3Service) {
+    public ExportS3Service(@Qualifier("StorageService") S3Service s3Service) {
         this.s3Service = s3Service;
     }
 

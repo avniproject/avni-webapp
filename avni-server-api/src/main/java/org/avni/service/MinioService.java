@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -41,30 +40,18 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
-@Service
+@Service(value = "MinioService")
 @ConditionalOnProperty(
         value="minio.s3.enable",
         havingValue = "true")
 public class MinioService implements S3Service {
-    public static final int MAX_KEYS = 100;
-    @Value("${avni.bucketName}")
-    private String bucketName;
-    @Value("${minio.url}")
-    private String minioUrl;
-
-    @Value("${minio.accessKey}")
-    private String minioAccessKey;
-
-    @Value("${minio.secretAccessKey}")
-    private String minioSecretAccessKey;
-
-    @Value("${avni.connectToS3InDev}")
-    private boolean s3InDev;
-
+    private final String bucketName;
+    private final boolean s3InDev;
+    private final int MAX_KEYS = 100;
     private final Regions REGION = Regions.AP_SOUTH_1;
     private final int EXPIRY_DURATION = 60 * 60; //1 hour in seconds
     private final int DOWNLOAD_EXPIRY_DURATION = 2 * 60; //2 minutes in seconds
-    private MinioClient minioClient;
+    private final MinioClient minioClient;
     private final Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
     private final Logger logger;
     private final Boolean isDev;
@@ -73,16 +60,17 @@ public class MinioService implements S3Service {
 
 
     @Autowired
-    public MinioService(Boolean isDev) {
+    public MinioService(@Value("${avni.bucketName}") String bucketName,
+                        @Value("${minio.url}") String minioUrl,
+                        @Value("${minio.accessKey}") String minioAccessKey,
+                        @Value("${minio.secretAccessKey}") String minioSecretAccessKey,
+                        @Value("${avni.connectToS3InDev}") boolean s3InDev, Boolean isDev) {
+        this.bucketName = bucketName;
+        this.s3InDev = s3InDev;
         this.isDev = isDev;
         logger = LoggerFactory.getLogger(MinioService.class);
-    }
-
-    @Override
-    @PostConstruct
-    public void init() {
         minioClient = MinioClient.builder().endpoint(minioUrl).credentials(minioAccessKey, minioSecretAccessKey).build();
-        if (bucketName == null) {
+        if (this.bucketName == null) {
             logger.error("Setup error. avni.bucketName should be present in properties file");
             throw new IllegalStateException("Configuration missing. S3 Bucket name not configured.");
         }

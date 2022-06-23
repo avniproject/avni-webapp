@@ -18,6 +18,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +57,7 @@ public class ImportController {
                             JobService jobService,
                             BulkUploadS3Service bulkUploadS3Service,
                             ImportService importService,
-                            S3Service s3Service,
+                            @Qualifier("StorageService") S3Service s3Service,
                             IndividualService individualService,
                             LocationService locationService,
                             FormElementRepository formElementRepository) {
