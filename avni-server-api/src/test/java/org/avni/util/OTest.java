@@ -23,4 +23,37 @@ public class OTest {
         assertEquals(1, some.size());
     }
 
+    @Test
+    public void testStringFormatWithNull() {
+        Request request = new Request("123", null);
+        System.out.println(
+                String.format("Individual not found with UUID '%s' or External ID '%s'", request.getSubjectId(), request.getSubjectExternalId()));
+
+    }
+
+    class Request {
+        String subjectId, subjectExternalId;
+
+        public Request(String subjectId, String subjectExternalId) {
+            this.subjectId = subjectId;
+            this.subjectExternalId = subjectExternalId;
+        }
+
+        public String getSubjectId() {
+            return subjectId;
+        }
+
+        public void setSubjectId(String subjectId) {
+            this.subjectId = subjectId;
+        }
+
+        public String getSubjectExternalId() {
+            return subjectExternalId;
+        }
+
+        public void setSubjectExternalId(String subjectExternalId) {
+            this.subjectExternalId = subjectExternalId;
+        }
+    }
+
 }

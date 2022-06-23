@@ -9,6 +9,7 @@ import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.UserWebProjection;
 import org.avni.service.AccountAdminService;
 import org.avni.service.CognitoIdpService;
+import org.avni.service.ResetSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.UserContract;
 import org.avni.web.validation.ValidationException;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +44,7 @@ public class UserController {
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
+    private ResetSyncService resetSyncService;
 
     @Value("${avni.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -54,7 +55,7 @@ public class UserController {
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           CognitoIdpService cognitoService,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ResetSyncService resetSyncService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
@@ -63,6 +64,7 @@ public class UserController {
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
+        this.resetSyncService = resetSyncService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -114,7 +116,7 @@ public class UserController {
             if (user == null)
                 return ResponseEntity.badRequest()
                         .body(String.format("User with username '%s' not found", userContract.getUsername()));
-
+            resetSyncService.recordSyncAttributeValueChangeForUser(user, userContract);
             user = setUserAttributes(user, userContract);
 
             cognitoService.updateUser(user);

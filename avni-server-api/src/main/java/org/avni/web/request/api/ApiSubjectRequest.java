@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import static org.avni.web.api.CommonFieldNames.VOIDED;
 
 public class ApiSubjectRequest {
+    @JsonProperty("External ID")
+    private String externalId;
 
     @JsonProperty("Subject type")
     private String subjectType;
@@ -129,5 +131,13 @@ public class ApiSubjectRequest {
 
     public void setVoided(boolean voided) {
         this.voided = voided;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 }

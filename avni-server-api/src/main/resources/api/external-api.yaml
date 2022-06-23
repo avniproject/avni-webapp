@@ -593,6 +593,9 @@ components:
         ID:
           type: string
           format: uuid
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Voided:
           type: boolean
         Subject type:
@@ -635,6 +638,9 @@ components:
     SubjectBody:
       type: object
       properties:
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Subject type:
           type: string
           example: Individual
@@ -677,6 +683,9 @@ components:
           type: string
           format: uuid
           example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        Relative external ID:
+          type: string
+          description: Relative's Legacy ID set by the external integrating system
         Enter date:
           type: string
           format: date-time
@@ -691,11 +700,17 @@ components:
         ID:
           type: string
           format: uuid
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Voided:
           type: boolean
         Subject ID:
           type: string
           format: uuid
+        Subject external ID:
+          type: string
+          description: Subject's Legacy ID set by the external integrating system
         Subject type:
           type: string
         Program:
@@ -730,12 +745,18 @@ components:
         ID:
           type: string
           format: uuid
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Voided:
           type: boolean
         Subject ID:
           type: string
           format: uuid
           description: id of the subject
+        Subject external ID:
+          type: string
+          description: Subject's Legacy ID set by the external integrating system
         Subject type:
           type: string
           description: name of the subject type to which this encounter belongs, same as subject type in the subject resource
@@ -743,6 +764,9 @@ components:
           type: string
           format: uuid
           description: id of the program enrolment
+        Enrolment external ID:
+          type: string
+          description: Enrolment's Legacy ID set by the external integrating system
         Program:
           type: string
           description: name of the program of the enrolment to which this encounter belongs, same as program in the program enrolment resource
@@ -779,10 +803,16 @@ components:
     ProgramEncounterBody:
       type: object
       properties:
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Enrolment ID:
           type: string
           format: uuid
           description: id of the program enrolment
+        Enrolment external ID:
+          type: string
+          description: Enrolment's Legacy ID set by the external integrating system
         Program:
           type: string
           description: name of the program of the enrolment to which this encounter belongs, same as program in the program enrolment resource
@@ -822,6 +852,9 @@ components:
         ID:
           type: string
           format: uuid
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Voided:
           type: boolean
         Encounter type:
@@ -831,6 +864,9 @@ components:
           type: string
           format: uuid
           description: id of the subject
+        Subject external ID:
+          type: string
+          description: Subject's Legacy ID set by the external integrating system
         Subject type:
           type: string
           description: name of the subject type to which this encounter belongs, same as subject type in the subject resource
@@ -864,6 +900,9 @@ components:
     ProgramEnrolmentBody:
       type: object
       properties:
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Program:
           type: string
           example: ANC program
@@ -871,6 +910,9 @@ components:
           type: string
           format: uuid
           description: id of the subject
+        Subject external ID:
+          type: string
+          description: Subject's Legacy ID set by the external integrating system
         Enrolment location:
           $ref: '#/components/schemas/GeoLocation'
         Exit location:
@@ -892,6 +934,9 @@ components:
     EncounterBody:
       type: object
       properties:
+        External ID:
+          type: string
+          description: Legacy ID set by the external integrating system
         Encounter type:
           type: string
           example: Monthly Visit
@@ -899,6 +944,9 @@ components:
           type: string
           format: uuid
           description: id of the subject
+        Subject external ID:
+          type: string
+          description: Subject's Legacy ID set by the external integrating system
         Encounter location:
           $ref: '#/components/schemas/GeoLocation'
         Encounter datetime:
