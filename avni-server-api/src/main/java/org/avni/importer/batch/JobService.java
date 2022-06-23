@@ -1,10 +1,10 @@
 package org.avni.importer.batch;
 
+import org.avni.service.ObjectInfo;
 import org.joda.time.DateTime;
 import org.avni.dao.AvniJobRepository;
 import org.avni.dao.JobStatus;
 import org.avni.framework.security.UserContextHolder;
-import org.avni.service.S3Service;
 import org.avni.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class JobService {
         }
     }
 
-    public JobExecution create(String uuid, String type, String fileName, S3Service.ObjectInfo s3FileInfo, Long userId, String organisationUUID, boolean autoApprove, String locationUploadMode) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+    public JobExecution create(String uuid, String type, String fileName, ObjectInfo s3FileInfo, Long userId, String organisationUUID, boolean autoApprove, String locationUploadMode) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         JobParameters parameters = new JobParametersBuilder()
                 .addString("organisationUUID", organisationUUID)
                 .addString("uuid", uuid)
