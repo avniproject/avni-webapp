@@ -29,6 +29,7 @@ import { pickers } from "../../common/constants";
 import { FileOptions } from "./FileOptions";
 import SubjectFormElementKeyValues from "./SubjectFormElementKeyValues";
 import QuestionGroup from "./QuestionGroup";
+import DocumentationSearch from "../../documentation/components/DocumentationSearch";
 
 export const FormControl = withStyles({
   root: {
@@ -493,6 +494,23 @@ function FormElementDetails(props) {
             </Grid>
           </>
         )}
+        <FormControl fullWidth>
+          <AvniFormLabel
+            label={t("Documentation")}
+            toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DOCUMENTATION"}
+          />
+          <DocumentationSearch
+            value={props.formElementData.documentation}
+            onChange={documentation => {
+              props.handleGroupElementChange(
+                props.groupIndex,
+                "documentation",
+                documentation,
+                props.index
+              );
+            }}
+          />
+        </FormControl>
         {props.formElementData.concept.dataType === "Coded" && (
           <>
             <br />

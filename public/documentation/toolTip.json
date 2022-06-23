@@ -101,6 +101,7 @@
   "APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE": "Date picker mode",
   "APP_DESIGNER_FORM_ELEMENT_TIME_PICKER_MODE": "Time picker mode",
   "APP_DESIGNER_FORM_ELEMENT_NAME": "Form element name",
+  "APP_DESIGNER_FORM_ELEMENT_DOCUMENTATION": "Documentation for form element",
   "APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE": "Values lower than this won't be allowed",
   "APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE": "Values higher than this won't be allowed",
   "APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL": "App highlights (in red) if the value is lower than this",
