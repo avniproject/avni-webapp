@@ -3,17 +3,17 @@ package org.avni.builder;
 import org.avni.application.Form;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementGroup;
-import org.avni.domain.Concept;
-import org.avni.domain.DeclarativeRule;
-import org.avni.domain.Organisation;
+import org.avni.domain.*;
 import org.avni.framework.ApplicationContextProvider;
 import org.avni.service.ConceptService;
+import org.avni.service.DocumentationService;
 import org.avni.web.request.application.FormElementContract;
 
 import java.util.List;
 
 public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormElementGroupBuilder> {
     private final ConceptService conceptService;
+    private final DocumentationService documentationService;
 
     public FormElementGroupBuilder(Form form, FormElementGroup existingFormElementGroup, FormElementGroup newFormElementGroup) {
         super(existingFormElementGroup, newFormElementGroup);
@@ -21,6 +21,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         if (existingFormElementGroup == null)
             form.addFormElementGroup(newFormElementGroup);
         conceptService = ApplicationContextProvider.getContext().getBean(ConceptService.class);
+        documentationService = ApplicationContextProvider.getContext().getBean(DocumentationService.class);
     }
 
     public FormElementGroupBuilder withName(String name) {
@@ -74,6 +75,11 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return this;
     }
 
+    private Documentation getDocumentation(JsonObject documentationOption) {
+        if (documentationOption == null) return null;
+        return documentationService.get((String) documentationOption.get("value"));
+    }
+
     private FormElement makeFormElement(FormElementContract formElementContract) throws FormBuilderException {
         FormElement existingFormElement = getExistingFormElement(formElementContract.getUuid());
         FormElement newFormElement = new FormElement();
@@ -91,6 +97,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
                 .withRule(formElementContract.getRule())
                 .withDeclarativeRule(formElementContract.getDeclarativeRule())
                 .withGroup(this.getQuestionGroup(formElementContract))
+                .withDocumentation(getDocumentation(formElementContract.getDocumentation()))
                 .withConcept(existingConcept) //Concept should be in the end otherwise it may cause a flush on incomplete object causing JPA errors
                 .build();
         formElementBuilder.linkWithFormElementGroup();

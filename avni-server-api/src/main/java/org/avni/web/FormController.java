@@ -312,6 +312,13 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 if(formElement.getGroup() != null) {
                     formElementContract.setParentFormElementUuid(formElement.getGroup().getUuid());
                 }
+                if (formElement.getDocumentation() != null) {
+                    Documentation documentation = formElement.getDocumentation();
+                    JsonObject documentationOption = new JsonObject()
+                            .with("label", documentation.getName())
+                            .with("value", documentation.getUuid());
+                    formElementContract.setDocumentation(documentationOption);
+                }
 
 
                 formElementGroupContract.addFormElement(formElementContract);

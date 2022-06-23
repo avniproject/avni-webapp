@@ -7,6 +7,7 @@ import org.avni.application.KeyValues;
 import org.avni.common.ValidationResult;
 import org.avni.domain.Concept;
 import org.avni.domain.DeclarativeRule;
+import org.avni.domain.Documentation;
 import org.avni.web.request.ConceptContract;
 import org.avni.web.validation.ValidationException;
 
@@ -72,6 +73,11 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
 
     public FormElementBuilder withGroup(FormElement group) {
         this.get().setGroup(group);
+        return this;
+    }
+
+    public FormElementBuilder withDocumentation(Documentation documentation) {
+        this.get().setDocumentation(documentation);
         return this;
     }
 

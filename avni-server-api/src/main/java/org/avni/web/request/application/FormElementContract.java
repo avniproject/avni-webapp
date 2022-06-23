@@ -7,6 +7,8 @@ import org.avni.application.FormElement;
 import org.avni.application.Format;
 import org.avni.application.KeyValues;
 import org.avni.domain.DeclarativeRule;
+import org.avni.domain.Documentation;
+import org.avni.domain.JsonObject;
 import org.avni.web.request.ConceptContract;
 import org.avni.web.request.ReferenceDataContract;
 import org.avni.web.request.FormatContract;
@@ -26,6 +28,7 @@ public class FormElementContract extends ReferenceDataContract {
     private String rule;
     private DeclarativeRule declarativeRule;
     private String parentFormElementUuid;
+    private JsonObject documentation;
 
     public FormElementContract() {
     }
@@ -135,6 +138,13 @@ public class FormElementContract extends ReferenceDataContract {
         if(group != null) {
             feContract.setParentFormElementUuid(group.getUuid());
         }
+        if (formElement.getDocumentation() != null) {
+            Documentation documentation = formElement.getDocumentation();
+            JsonObject documentationOption = new JsonObject()
+                    .with("label", documentation.getName())
+                    .with("value", documentation.getUuid());
+            feContract.setDocumentation(documentationOption);
+        }
         return feContract;
     }
 
@@ -160,6 +170,14 @@ public class FormElementContract extends ReferenceDataContract {
 
     public void setParentFormElementUuid(String parentFormElementUuid) {
         this.parentFormElementUuid = parentFormElementUuid;
+    }
+
+    public JsonObject getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(JsonObject documentation) {
+        this.documentation = documentation;
     }
 
     public boolean isChildFormElement() {
