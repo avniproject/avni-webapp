@@ -191,10 +191,11 @@ public class MinioService implements S3Service {
 
     @Override
     /**
-     * We are fetching a max of only 100 objects, which is different from s3 implementation,
-     * which fetches all the items tll the end. This is due to the fact that,
-     * Min.io does not expose a listNextBatchOfObjects() similar to what S3 does
-     */ public List<Extension> listExtensionFiles(Optional<DateTime> modifiedSince) {
+     * We are fetching a max of only MAX_KEYS number of objects, which is different from s3 implementation,
+     * which fetches all the items till the end. This is due to the fact that,
+     * Min.io does not expose a listNextBatchOfObjects() similar to what S3 does.
+     */
+    public List<Extension> listExtensionFiles(Optional<DateTime> modifiedSince) {
         if (isDev && !s3InDev) {
             return new ArrayList<>();
         }
@@ -331,6 +332,12 @@ public class MinioService implements S3Service {
     }
 
     @Override
+    /**
+     * We are fetching a max of only MAX_KEYS number of objects, which is different from s3 implementation,
+     * which fetches all the items till the end. This is due to the fact that,
+     * Min.io does not expose a listNextBatchOfObjects() similar to what S3 does.
+     */
+
     public String[] getAllKeysWithPrefix(String filePrefix) {
         List keysList = new ArrayList<String>();
         Iterable<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName)
