@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "documentationNode", path = "documentationNode")
 @PreAuthorize("hasAnyAuthority('user')")
 public interface DocumentationNodeRepository extends ReferenceDataRepository<DocumentationNode>, FindByLastModifiedDateTime<DocumentationNode> {
 }

@@ -160,6 +160,9 @@ public class Avni {
                 if (formElement.getGroup() != null) {
                     resource.add(new Link(formElement.getGroup().getUuid(), "groupQuestionUUID"));
                 }
+                if (formElement.getDocumentation() != null) {
+                    resource.add(new Link(formElement.getDocumentation().getUuid(), "documentationUUID"));
+                }
                 return resource;
             }
         };

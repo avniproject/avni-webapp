@@ -1,9 +1,7 @@
 package org.avni.service;
 
 import org.avni.common.EntityHelper;
-import org.avni.dao.DocumentationItemRepository;
 import org.avni.dao.DocumentationNodeRepository;
-import org.avni.dao.DocumentationRepository;
 import org.avni.domain.*;
 import org.avni.web.request.CHSRequest;
 import org.avni.web.request.webapp.documentation.DocumentationContract;
@@ -17,19 +15,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class DocumentationNodeService/* implements NonScopeAwareService*/ {
+public class DocumentationNodeService {
 
     private final DocumentationNodeRepository documentationNodeRepository;
-    private final DocumentationRepository documentationRepository;
-    private final DocumentationItemRepository documentationItemRepository;
 
     @Autowired
-    public DocumentationNodeService(DocumentationNodeRepository documentationNodeRepository,
-                                    DocumentationRepository documentationRepository,
-                                    DocumentationItemRepository documentationItemRepository) {
+    public DocumentationNodeService(DocumentationNodeRepository documentationNodeRepository) {
         this.documentationNodeRepository = documentationNodeRepository;
-        this.documentationRepository = documentationRepository;
-        this.documentationItemRepository = documentationItemRepository;
     }
 
     public List<DocumentationNodeContract> getAll() {
@@ -87,7 +79,7 @@ public class DocumentationNodeService/* implements NonScopeAwareService*/ {
     }
 
     private void assignUUIDIfNull(CHSEntity chsEntity, CHSRequest request) {
-        if(chsEntity.getUuid() == null) {
+        if (chsEntity.getUuid() == null) {
             chsEntity.setUuid(request.getUuid());
         }
     }
