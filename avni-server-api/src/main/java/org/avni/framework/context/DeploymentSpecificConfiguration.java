@@ -19,9 +19,9 @@ public class DeploymentSpecificConfiguration {
     @Autowired(required = false)
     private AWSS3Service awss3Service;
 
-    @Qualifier("MinioService")
+    @Qualifier("AWSMinioService")
     @Autowired(required = false)
-    private MinioService minioService;
+    private AWSMinioService awsMinioService;
 
     private final UserRepository userRepository;
     private final SpringProfiles springProfiles;
@@ -48,7 +48,7 @@ public class DeploymentSpecificConfiguration {
         return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, null);
     }
 
-    @Profile("staging")
+    @Profile({"dev","staging"})
     @Bean("S3Service")
     @Primary
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -58,20 +58,20 @@ public class DeploymentSpecificConfiguration {
         boolean isMinioConfiguredOrgUser = false;
         if(user != null && organisation != null) {
             //TODO use User settings to init this variable
-            isMinioConfiguredOrgUser = springProfiles.isStaging();
+            isMinioConfiguredOrgUser = true;
         }
 
-        if (springProfiles.isOnPremise() && minioService != null)
-            return minioService;
+        if (springProfiles.isOnPremise() && awsMinioService != null)
+            return awsMinioService;
 
-        if (springProfiles.isStaging() && isMinioConfiguredOrgUser && minioService != null)
-            return minioService;
+        if (isMinioConfiguredOrgUser && awsMinioService != null)
+            return awsMinioService;
 
         if(awss3Service != null)
             return awss3Service;
 
-        if(minioService != null)
-            return minioService;
+        if(awsMinioService != null)
+            return awsMinioService;
 
         throw new NoSuchBeanDefinitionException("S3Service", "Storage service bean of type S3Service not found");
     }

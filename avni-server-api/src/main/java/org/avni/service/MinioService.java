@@ -1,7 +1,7 @@
 package org.avni.service;
 
 import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3URI;
+import com.amazonaws.regions.Regions;
 import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.DeleteObject;
@@ -13,6 +13,7 @@ import org.avni.domain.Organisation;
 import org.avni.domain.UserContext;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.util.AvniFiles;
+import org.avni.util.MinioUri;
 import org.avni.util.S;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -44,11 +45,13 @@ import static java.lang.String.format;
         value="minio.s3.enable",
         havingValue = "true")
 public class MinioService implements S3Service {
+    private final String minioBucketUrlPath;
     private final String bucketName;
     private final boolean s3InDev;
     private final int MAX_KEYS = 100;
     private final int EXPIRY_DURATION = 60 * 60; //1 hour in seconds
     private final int DOWNLOAD_EXPIRY_DURATION = 2 * 60; //2 minutes in seconds
+    private final Regions REGION = Regions.AP_SOUTH_1;
     private final MinioClient minioClient;
     private final Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
     private final Logger logger;
@@ -67,11 +70,15 @@ public class MinioService implements S3Service {
         this.s3InDev = s3InDev;
         this.isDev = isDev;
         logger = LoggerFactory.getLogger(MinioService.class);
-        minioClient = MinioClient.builder().endpoint(minioUrl).credentials(minioAccessKey, minioSecretAccessKey).build();
+        minioClient = MinioClient.builder()
+                .region(REGION.getName())
+                .endpoint(minioUrl)
+                .credentials(minioAccessKey, minioSecretAccessKey).build();
         if (this.bucketName == null) {
             logger.error("Setup error. avni.bucketName should be present in properties file");
             throw new IllegalStateException("Configuration missing. S3 Bucket name not configured.");
         }
+        minioBucketUrlPath = minioUrl+"/"+bucketName+"/";
     }
 
     @Override
@@ -130,14 +137,14 @@ public class MinioService implements S3Service {
         UserContext userContext = authorizeUser();
         String mediaDirectory = getOrgDirectoryName();
 
-        AmazonS3URI amazonS3URI = new AmazonS3URI(url);
-        String objectKey = amazonS3URI.getKey();
+        MinioUri minioUri = new MinioUri(url);
+        String objectKey = minioUri.getKey();
         Matcher matcher = mediaDirPattern.matcher(objectKey);
         String mediaDirectoryFromUrl = null;
         if (matcher.find()) {
             mediaDirectoryFromUrl = matcher.group("mediaDir");
         }
-        if (!mediaDirectory.equals(mediaDirectoryFromUrl) || !(bucketName.equals(amazonS3URI.getBucket()))) {
+        if (!mediaDirectory.equals(mediaDirectoryFromUrl) || !(bucketName.equals(minioUri.getBucket()))) {
             String message = format("User '%s' not authorized to access '%s'", userContext.getUserName(), url);
             throw new AccessDeniedException(message);
         }
@@ -410,7 +417,8 @@ public class MinioService implements S3Service {
             return tempFile.getAbsolutePath();
         }
         try {
-            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectKey).stream(new FileInputStream(tempFile), -1, -1).build());
+            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectKey)
+                    .stream(new FileInputStream(tempFile), -1, PutObjectArgs.MIN_MULTIPART_SIZE).build());
             tempFile.delete();
             return objectKey;
         } catch (Exception e) {
@@ -503,7 +511,7 @@ public class MinioService implements S3Service {
     @NotNull
     private URL getUrl(String url) {
         try {
-            return new URL(url);
+            return new URL( minioBucketUrlPath + url);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

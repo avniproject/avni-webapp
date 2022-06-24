@@ -8,7 +8,6 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
@@ -20,6 +19,7 @@ import org.avni.domain.Organisation;
 import org.avni.domain.UserContext;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.util.AvniFiles;
+import org.avni.util.MinioUri;
 import org.avni.util.S;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -44,12 +44,12 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
-@Service("AWSS3Service")
+@Service("AWSMinioService")
 @ConditionalOnProperty(
         value="aws.s3.enable",
         havingValue = "true",
         matchIfMissing = true)
-public class AWSS3Service implements S3Service {
+public class AWSMinioService implements S3Service {
     private final String bucketName;
     private final boolean s3InDev;
     private final Regions REGION = Regions.AP_SOUTH_1;
@@ -64,20 +64,23 @@ public class AWSS3Service implements S3Service {
 
 
     @Autowired
-    public AWSS3Service(@Value("${avni.bucketName}") String bucketName,
-            @Value("${aws.s3.url}") String awsS3Url,
-            @Value("${aws.accessKeyId}") String accessKeyId,
-            @Value("${aws.secretAccessKey}") String secretAccessKey,
-            @Value("${avni.connectToS3InDev}") boolean s3InDev, Boolean isDev) {
+    public AWSMinioService(@Value("${avni.bucketName}") String bucketName,
+                           @Value("${minio.url}") String minioUrl,
+                           @Value("${minio.accessKey}") String minioAccessKey,
+                           @Value("${minio.secretAccessKey}") String minioSecretAccessKey,
+                           @Value("${avni.connectToS3InDev}") boolean s3InDev, Boolean isDev) {
         this.bucketName = bucketName;
         this.s3InDev = s3InDev;
         this.isDev = isDev;
-        logger = LoggerFactory.getLogger(AWSS3Service.class);
+        logger = LoggerFactory.getLogger(AWSMinioService.class);
+        ClientConfiguration clientConfiguration = new ClientConfiguration();
+        clientConfiguration.setSignerOverride("AWSS3V4SignerType");
         s3Client = AmazonS3ClientBuilder.standard()
                 .withEndpointConfiguration(new AwsClientBuilder
-                        .EndpointConfiguration(awsS3Url, REGION.getName()))
+                        .EndpointConfiguration(minioUrl, REGION.getName()))
                 .withPathStyleAccessEnabled(true)
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey)))
+                .withClientConfiguration(clientConfiguration)
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(minioAccessKey, minioSecretAccessKey)))
                 .build();
         if (this.bucketName == null) {
             logger.error("Setup error. avni.bucketName should be present in properties file");
@@ -140,14 +143,14 @@ public class AWSS3Service implements S3Service {
         UserContext userContext = authorizeUser();
         String mediaDirectory = getOrgDirectoryName();
 
-        AmazonS3URI amazonS3URI = new AmazonS3URI(url);
-        String objectKey = amazonS3URI.getKey();
+        MinioUri minioUri = new MinioUri(url);
+        String objectKey = minioUri.getKey();
         Matcher matcher = mediaDirPattern.matcher(objectKey);
         String mediaDirectoryFromUrl = null;
         if (matcher.find()) {
             mediaDirectoryFromUrl = matcher.group("mediaDir");
         }
-        if (!mediaDirectory.equals(mediaDirectoryFromUrl) || !(bucketName.equals(amazonS3URI.getBucket()))) {
+        if (!mediaDirectory.equals(mediaDirectoryFromUrl) || !(bucketName.equals(minioUri.getBucket()))) {
             String message = format("User '%s' not authorized to access '%s'", userContext.getUserName(), url);
             throw new AccessDeniedException(message);
         }
