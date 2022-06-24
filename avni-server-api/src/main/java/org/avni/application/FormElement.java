@@ -2,6 +2,7 @@ package org.avni.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.avni.domain.DeclarativeRule;
+import org.avni.domain.Documentation;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
@@ -69,6 +70,10 @@ public class FormElement extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private FormElement group;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documentation_id")
+    private Documentation documentation;
 
     public String getName() {
         return name;
@@ -225,5 +230,13 @@ public class FormElement extends OrganisationAwareEntity {
 
     public void setGroup(FormElement group) {
         this.group = group;
+    }
+
+    public Documentation getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(Documentation documentation) {
+        this.documentation = documentation;
     }
 }
