@@ -10,7 +10,6 @@ import org.avni.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +36,7 @@ public class MediaController {
     private final S3Service s3Service;
 
     @Autowired
-    public MediaController(@Qualifier("StorageService") S3Service s3Service) {
+    public MediaController(S3Service s3Service) {
         this.s3Service = s3Service;
         logger = LoggerFactory.getLogger(this.getClass());
     }

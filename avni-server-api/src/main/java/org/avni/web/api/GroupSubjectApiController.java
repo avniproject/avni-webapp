@@ -1,16 +1,15 @@
 package org.avni.web.api;
 
-import org.avni.service.S3Service;
-import org.joda.time.DateTime;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.GroupSubjectRepository;
 import org.avni.domain.GroupSubject;
 import org.avni.service.ConceptService;
+import org.avni.service.S3Service;
 import org.avni.util.S;
 import org.avni.web.response.GroupSubjectResponse;
 import org.avni.web.response.ResponsePage;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,7 +34,7 @@ public class GroupSubjectApiController {
     @Autowired
     public GroupSubjectApiController(GroupSubjectRepository groupSubjectRepository,
                                      ConceptRepository conceptRepository, ConceptService conceptService,
-                                     @Qualifier("StorageService") S3Service s3Service) {
+                                     S3Service s3Service) {
         this.groupSubjectRepository = groupSubjectRepository;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;

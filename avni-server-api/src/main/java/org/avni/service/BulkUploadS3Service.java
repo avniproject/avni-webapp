@@ -1,7 +1,6 @@
 package org.avni.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +16,7 @@ public class BulkUploadS3Service {
     private S3Service s3Service;
 
     @Autowired
-    public BulkUploadS3Service(@Qualifier("StorageService") S3Service s3Service) {
+    public BulkUploadS3Service(S3Service s3Service) {
         this.s3Service = s3Service;
     }
 

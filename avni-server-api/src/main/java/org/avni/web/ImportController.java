@@ -10,7 +10,6 @@ import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.JobService;
 import org.avni.service.*;
-import org.avni.service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -18,7 +17,6 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +55,7 @@ public class ImportController {
                             JobService jobService,
                             BulkUploadS3Service bulkUploadS3Service,
                             ImportService importService,
-                            @Qualifier("StorageService") S3Service s3Service,
+                            S3Service s3Service,
                             IndividualService individualService,
                             LocationService locationService,
                             FormElementRepository formElementRepository) {

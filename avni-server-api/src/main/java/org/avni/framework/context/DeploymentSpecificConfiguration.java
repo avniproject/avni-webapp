@@ -48,10 +48,10 @@ public class DeploymentSpecificConfiguration {
         return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, null);
     }
 
-    @Bean("StorageService")
+    @Bean("S3Service")
     @Primary
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public S3Service getStorageService() {
+    public S3Service getS3Service() {
         User user = UserContextHolder.getUser();
         Organisation organisation = UserContextHolder.getOrganisation();
         boolean isMinioConfiguredOrgUser = false;

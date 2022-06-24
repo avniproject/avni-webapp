@@ -8,10 +8,10 @@ import org.avni.service.OrganisationConfigService;
 import org.avni.service.S3Service;
 import org.avni.util.AvniFiles;
 import org.avni.web.request.ExtensionRequest;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +49,7 @@ public class ExtensionController implements RestControllerResourceProcessor<Exte
     private final ImplementationRepository implementationRepository;
 
     @Autowired
-    public ExtensionController(@Qualifier("StorageService") S3Service s3Service, OrganisationConfigService organisationConfigService,
+    public ExtensionController(S3Service s3Service, OrganisationConfigService organisationConfigService,
                                ImplementationRepository implementationRepository) {
         this.s3Service = s3Service;
         this.organisationConfigService = organisationConfigService;

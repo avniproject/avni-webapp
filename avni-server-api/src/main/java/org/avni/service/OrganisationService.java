@@ -28,7 +28,6 @@ import org.avni.web.request.webapp.IdentifierSourceContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -151,7 +150,7 @@ public class OrganisationService {
                                DashboardSectionRepository dashboardSectionRepository,
                                GroupDashboardRepository groupDashboardRepository,
                                Msg91ConfigRepository msg91ConfigRepository,
-                               @Qualifier("StorageService") S3Service s3Service, RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
+                               S3Service s3Service, RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
                                IdentifierAssignmentRepository identifierAssignmentRepository,
                                SyncTelemetryRepository syncTelemetryRepository,
                                VideoTelemetricRepository videoTelemetricRepository,

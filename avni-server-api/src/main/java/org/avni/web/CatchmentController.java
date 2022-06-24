@@ -14,7 +14,6 @@ import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.CatchmentContract;
 import org.avni.web.request.CatchmentsContract;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -42,7 +41,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     public CatchmentController(CatchmentRepository catchmentRepository,
                                LocationRepository locationRepository,
                                CatchmentService catchmentService,
-                               @Qualifier("StorageService") S3Service s3Service,
+                               S3Service s3Service,
                                ResetSyncService resetSyncService) {
         this.catchmentRepository = catchmentRepository;
         this.locationRepository = locationRepository;

@@ -10,7 +10,6 @@ import org.avni.web.response.ResponsePage;
 import org.avni.web.response.SubjectResponse;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,7 +44,7 @@ public class SubjectApiController {
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
                                 LocationRepository locationRepository, GenderRepository genderRepository,
                                 SubjectMigrationService subjectMigrationService, IndividualService individualService,
-                                @Qualifier("StorageService") S3Service s3Service) {
+                                S3Service s3Service) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;

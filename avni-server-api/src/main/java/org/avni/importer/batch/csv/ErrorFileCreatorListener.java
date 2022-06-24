@@ -2,15 +2,14 @@ package org.avni.importer.batch.csv;
 
 import org.avni.framework.security.AuthService;
 import org.avni.service.BulkUploadS3Service;
-import org.avni.service.S3Service;
 import org.avni.service.ObjectInfo;
+import org.avni.service.S3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +43,7 @@ public class ErrorFileCreatorListener implements JobExecutionListener {
     private AuthService authService;
 
     @Autowired
-    public ErrorFileCreatorListener(@Qualifier("StorageService") S3Service s3Service, BulkUploadS3Service bulkUploadS3Service, AuthService authService) {
+    public ErrorFileCreatorListener(S3Service s3Service, BulkUploadS3Service bulkUploadS3Service, AuthService authService) {
         this.s3Service = s3Service;
         this.bulkUploadS3Service = bulkUploadS3Service;
         this.authService = authService;
