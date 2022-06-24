@@ -48,6 +48,7 @@ public class DeploymentSpecificConfiguration {
         return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, null);
     }
 
+    @Profile("staging")
     @Bean("S3Service")
     @Primary
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
