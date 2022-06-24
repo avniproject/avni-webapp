@@ -2,10 +2,11 @@ package org.avni.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.regions.Regions;
-import io.minio.*;
-import io.minio.http.Method;
-import io.minio.messages.DeleteObject;
-import io.minio.messages.Item;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.avni.domain.Extension;
@@ -13,73 +14,48 @@ import org.avni.domain.Organisation;
 import org.avni.domain.UserContext;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.util.AvniFiles;
-import org.avni.util.MinioUri;
 import org.avni.util.S;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotNull;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
-@Service(value = "MinioService")
-@ConditionalOnProperty(
-        value="minio.s3.enable",
-        havingValue = "true")
-public class MinioService implements S3Service {
-    private final String minioBucketUrlPath;
-    private final String bucketName;
-    private final boolean s3InDev;
-    private final int MAX_KEYS = 100;
-    private final int EXPIRY_DURATION = 60 * 60; //1 hour in seconds
-    private final int DOWNLOAD_EXPIRY_DURATION = 2 * 60; //2 minutes in seconds
-    private final Regions REGION = Regions.AP_SOUTH_1;
-    private final MinioClient minioClient;
-    private final Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
-    private final Logger logger;
-    private final Boolean isDev;
-    private final String EXTENSION_DIR = "extensions";
-    private final String PROFILE_PIC_DIR = "profile-pics";
+public abstract class StorageService implements S3Service {
+    protected final String bucketName;
+    protected final boolean s3InDev;
+    protected final Regions REGION = Regions.AP_SOUTH_1;
+    protected final long EXPIRY_DURATION = Duration.ofHours(1).toMillis();
+    protected final long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
+    protected AmazonS3 s3Client;
+    protected final Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
+    protected final Logger logger;
+    protected final Boolean isDev;
+    protected final String EXTENSION_DIR = "extensions";
+    protected final String PROFILE_PIC_DIR = "profile-pics";
 
-
-    @Autowired
-    public MinioService(@Value("${avni.bucketName}") String bucketName,
-                        @Value("${minio.url}") String minioUrl,
-                        @Value("${minio.accessKey}") String minioAccessKey,
-                        @Value("${minio.secretAccessKey}") String minioSecretAccessKey,
-                        @Value("${avni.connectToS3InDev}") boolean s3InDev, Boolean isDev) {
+    protected StorageService(String bucketName, boolean s3InDev, Logger logger, Boolean isDev) {
         this.bucketName = bucketName;
         this.s3InDev = s3InDev;
+        this.logger = logger;
         this.isDev = isDev;
-        logger = LoggerFactory.getLogger(MinioService.class);
-        minioClient = MinioClient.builder()
-                .region(REGION.getName())
-                .endpoint(minioUrl)
-                .credentials(minioAccessKey, minioSecretAccessKey).build();
         if (this.bucketName == null) {
             logger.error("Setup error. avni.bucketName should be present in properties file");
             throw new IllegalStateException("Configuration missing. S3 Bucket name not configured.");
         }
-        minioBucketUrlPath = minioUrl+"/"+bucketName+"/";
     }
+
 
     @Override
     public String getContentType(String fileName) {
@@ -88,16 +64,18 @@ public class MinioService implements S3Service {
 
     @Override
     public URL generateMediaUploadUrl(String fileName, HttpMethod method) {
-        GetPresignedObjectUrlArgs generatePresignedUrlRequest = getPresignedObjectUrlArgsRequest(fileName, method);
-        return getUrl(generatePresignedUrlRequest);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePresignedUrlRequest(fileName, method);
+        generatePresignedUrlRequest.withContentType(getContentType(fileName));
+        return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    private GetPresignedObjectUrlArgs getPresignedObjectUrlArgsRequest(String fileName, HttpMethod method) {
+    @Override
+    public GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName, HttpMethod method) {
         authorizeUser();
         String objectKey = getS3KeyForMediaUpload(fileName);
-        Map<String, String> reqParams = new HashMap<String, String>();
-        reqParams.put("content-type", getContentType(fileName));
-        return GetPresignedObjectUrlArgs.builder().bucket(bucketName).object(objectKey).method(Method.valueOf(method.name())).extraQueryParams(reqParams).expiry(EXPIRY_DURATION).build();
+        return new GeneratePresignedUrlRequest(bucketName, objectKey)
+                .withMethod(method)
+                .withExpiration(getExpireDate(EXPIRY_DURATION));
     }
 
     @Override
@@ -121,36 +99,13 @@ public class MinioService implements S3Service {
         String objectKey = getS3KeyForMediaUpload(fileName);
         boolean exists = false;
         try {
-            if (minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(objectKey).build()).available() > 0) {
-                exists = true;
-            }
+            exists = s3Client.doesObjectExist(bucketName, objectKey);
+            logger.info(String.format("Checking for file: %s resulted in %b", objectKey, exists));
         } catch (Exception e) {
             logger.error(String.format("Error while accessing file %s", objectKey));
             e.printStackTrace();
         }
-        logger.info(String.format("Checking for file: %s resulted in %b", objectKey, exists));
         return exists;
-    }
-
-    @Override
-    public URL generateMediaDownloadUrl(String url) {
-        UserContext userContext = authorizeUser();
-        String mediaDirectory = getOrgDirectoryName();
-
-        MinioUri minioUri = new MinioUri(url);
-        String objectKey = minioUri.getKey();
-        Matcher matcher = mediaDirPattern.matcher(objectKey);
-        String mediaDirectoryFromUrl = null;
-        if (matcher.find()) {
-            mediaDirectoryFromUrl = matcher.group("mediaDir");
-        }
-        if (!mediaDirectory.equals(mediaDirectoryFromUrl) || !(bucketName.equals(minioUri.getBucket()))) {
-            String message = format("User '%s' not authorized to access '%s'", userContext.getUserName(), url);
-            throw new AccessDeniedException(message);
-        }
-
-        GetPresignedObjectUrlArgs getPresignedObjectUrlArgs = GetPresignedObjectUrlArgs.builder().method(Method.DELETE).bucket(bucketName).object(objectKey).expiry(DOWNLOAD_EXPIRY_DURATION).build();
-        return getUrl(getPresignedObjectUrlArgs);
     }
 
     @Override
@@ -183,33 +138,39 @@ public class MinioService implements S3Service {
     @Override
     public URL uploadImageFile(File tempSourceFile, String targetFilePath) {
         String s3KeyForMediaUpload = getS3KeyForMediaUpload(targetFilePath);
-        return getUrl(putObject(s3KeyForMediaUpload, tempSourceFile));
+        putObject(s3KeyForMediaUpload, tempSourceFile);
+        return s3Client.getUrl(bucketName, s3KeyForMediaUpload);
     }
 
     @Override
-    /**
-     * We are fetching a max of only MAX_KEYS number of objects, which is different from s3 implementation,
-     * which fetches all the items till the end. This is due to the fact that,
-     * Min.io does not expose a listNextBatchOfObjects() similar to what S3 does.
-     */
     public List<Extension> listExtensionFiles(Optional<DateTime> modifiedSince) {
         if (isDev && !s3InDev) {
             return new ArrayList<>();
         }
         DateTime latestDate = modifiedSince.orElse(new DateTime(0));
         String filePrefix = getOrgDirectoryName() + "/" + EXTENSION_DIR + "/";
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+                .withBucketName(bucketName)
+                .withPrefix(filePrefix);
+
         List<Extension> keys = new ArrayList<>();
-        Iterable<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName).prefix(filePrefix).maxKeys(100).build());
-        while (objects.iterator().hasNext()) {
-            try {
-                Item item = objects.iterator().next().get();
-                if (latestDate.isBefore(item.lastModified().toEpochSecond())) {
-                    keys.add(new Extension(item.objectName().replace(filePrefix, ""), new DateTime(item.lastModified().toEpochSecond())));
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+
+        ObjectListing objects = s3Client.listObjects(listObjectsRequest);
+
+        for (; ; ) {
+            List<S3ObjectSummary> summaries = objects.getObjectSummaries();
+            if (summaries.size() < 1) {
+                break;
             }
+
+            summaries.forEach(s -> {
+                if (latestDate.isBefore(s.getLastModified().getTime())) {
+                    keys.add(new Extension(s.getKey().replace(filePrefix, ""), new DateTime(s.getLastModified())));
+                }
+            });
+            objects = s3Client.listNextBatchOfObjects(objects);
         }
+
         return keys;
     }
 
@@ -218,16 +179,12 @@ public class MinioService implements S3Service {
         if (isDev && !s3InDev) {
             return;
         }
-
-        try {
-            String s3KeyForMediaUpload = getS3KeyForMediaUpload(targetFilePath);
-            deleteDirectory(s3KeyForMediaUpload);
-            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(s3KeyForMediaUpload).stream(
-                    new FileInputStream(tempDirectory), 0, -1).build());
-            FileUtils.forceDelete(tempDirectory);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        String s3KeyForMediaUpload = getS3KeyForMediaUpload(targetFilePath);
+        deleteDirectory(s3KeyForMediaUpload);
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(s3Client).build();
+        MultipleFileUpload multipleFileUpload = transferManager.uploadDirectory(bucketName, s3KeyForMediaUpload, tempDirectory, true);
+        multipleFileUpload.waitForCompletion();
+        FileUtils.forceDelete(tempDirectory);
     }
 
     @Override
@@ -242,13 +199,7 @@ public class MinioService implements S3Service {
                 return new ByteArrayInputStream(new byte[]{});
             }
         }
-        try {
-            return minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(s3Key).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(format("File get content failed for  '%s'", s3Key), e);
-            throw new RuntimeException(e);
-        }
+        return s3Client.getObject(bucketName, s3Key).getObjectContent();
     }
 
     @Override
@@ -260,8 +211,10 @@ public class MinioService implements S3Service {
     @Override
     public URL getURLForExtensions(String fileName, Organisation organisation) {
         String objectKey = format("%s/%s", organisation.getMediaDirectory(), fileName);
-        GetPresignedObjectUrlArgs getPresignedObjectUrlArgs = GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(objectKey).expiry(EXPIRY_DURATION).build();
-        return getUrl(getPresignedObjectUrlArgs);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, objectKey)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(getExpireDate(EXPIRY_DURATION));
+        return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
     @Override
@@ -276,14 +229,12 @@ public class MinioService implements S3Service {
                 return new ByteArrayInputStream(new byte[]{});
             }
         }
-        String s3Key = format("%s/%s/%s", directory, getOrgDirectoryName(), fileName);
-        try {
-            return minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(s3Key).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(format("File get content failed for  '%s'", s3Key), e);
-            throw new RuntimeException(e);
-        }
+        String s3Key = format("%s/%s/%s",
+                directory,
+                getOrgDirectoryName(),
+                fileName
+        );
+        return s3Client.getObject(bucketName, s3Key).getObjectContent();
     }
 
     @Override
@@ -292,10 +243,15 @@ public class MinioService implements S3Service {
     }
 
     @Override
-    public String uploadFileToS3(String parentFolder, File tempSourceFile) throws IOException {
-        String suggestedS3Key = getS3KeyForMediaUpload(parentFolder, tempSourceFile.getName());
-        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
-        return actualS3Key;
+    public String uploadFileToS3(String parentFolder, File file) throws IOException {
+//        if (!file.exists() || isDev) {
+//            logger.info("Skipping media upload to S3");
+//            return null;
+//        }
+        String s3Key = getS3KeyForMediaUpload(parentFolder, file.getName());
+        s3Client.putObject(new PutObjectRequest(bucketName, s3Key, file));
+        Files.delete(file.toPath());
+        return getObjectURL(parentFolder, file);
     }
 
     @Override
@@ -304,50 +260,28 @@ public class MinioService implements S3Service {
             return;
         }
         String s3Key = getS3KeyForMediaUpload(objectName);
-        try {
-            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(s3Key).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(format("File deletion failed for '%s'", s3Key), e);
-            throw new RuntimeException(e);
-        }
+        s3Client.deleteObject(new DeleteObjectRequest(bucketName, s3Key));
     }
 
     @Override
     public void deleteKeys(String[] keysList) {
-        if (keysList == null || keysList.length == 0) {
-            return;
-        }
-        List delObjs = Arrays.stream(keysList).map(key -> new DeleteObject(key)).collect(Collectors.toList());
-        try {
-            minioClient.removeObjects(RemoveObjectsArgs.builder().bucket(bucketName).objects(delObjs).build());
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(format("Files deletion failed for '%s'", keysList.toString()), e);
-            throw new RuntimeException(e);
-        }
+        DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName).withKeys(keysList);
+        s3Client.deleteObjects(deleteObjectsRequest);
     }
 
     @Override
-    /**
-     * We are fetching a max of only MAX_KEYS number of objects, which is different from s3 implementation,
-     * which fetches all the items till the end. This is due to the fact that,
-     * Min.io does not expose a listNextBatchOfObjects() similar to what S3 does.
-     */
-
-    public String[] getAllKeysWithPrefix(String filePrefix) {
-        List keysList = new ArrayList<String>();
-        Iterable<Result<Item>> objects = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucketName)
-                .prefix(filePrefix).maxKeys(MAX_KEYS).build());
-        while (objects.iterator().hasNext()) {
-            try {
-                Item item = objects.iterator().next().get();
-                keysList.add(item.objectName());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+    public String[] getAllKeysWithPrefix(String prefix) {
+        ListObjectsV2Result objectList = this.s3Client.listObjectsV2(bucketName, prefix);
+        if (objectList.getKeyCount() > 0) {
+            List<S3ObjectSummary> objectSummeryList = objectList.getObjectSummaries();
+            String[] keysList = new String[objectSummeryList.size()];
+            int count = 0;
+            for (S3ObjectSummary summery : objectSummeryList) {
+                keysList[count++] = summery.getKey();
             }
+            return keysList;
         }
-        return (String[]) keysList.toArray();
+        return new String[0];
     }
 
     /**
@@ -369,7 +303,7 @@ public class MinioService implements S3Service {
         } else {
             List<String> metadataDirs = Arrays.asList("icons/", "extensions/");
             String[] allKeys = getAllKeysWithPrefix(mediaDirectory);
-            String [] txKeys = Arrays.stream(allKeys)
+            String[] txKeys = Arrays.stream(allKeys)
                     .filter(key -> metadataDirs.stream().noneMatch(key::contains))
                     .toArray(String[]::new);
             deleteKeys(txKeys);
@@ -416,14 +350,9 @@ public class MinioService implements S3Service {
             logger.info(format("[dev] Save file locally. '%s'", objectKey));
             return tempFile.getAbsolutePath();
         }
-        try {
-            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectKey)
-                    .stream(new FileInputStream(tempFile), -1, PutObjectArgs.MIN_MULTIPART_SIZE).build());
-            tempFile.delete();
-            return objectKey;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        s3Client.putObject(new PutObjectRequest(bucketName, objectKey, tempFile));
+        tempFile.delete();
+        return objectKey;
     }
 
     @Override
@@ -433,7 +362,14 @@ public class MinioService implements S3Service {
         File tempFile = File.createTempFile(fileName, extension);
         FileOutputStream fos = new FileOutputStream(tempFile);
         fos.write(content);
-        return putObject(objectKey, tempFile);
+        putObject(objectKey, tempFile);
+        return s3Client.getUrl(bucketName, objectKey).toString();
+    }
+
+    @Override
+    public String getObjectURL(String parentFolder, File file) {
+        String s3Key = getS3KeyForMediaUpload(parentFolder, file.getName());
+        return s3Client.getUrl(bucketName, s3Key).toString();
     }
 
     @Override
@@ -496,24 +432,6 @@ public class MinioService implements S3Service {
             String message = format("Error while downloading media '%s' ", mediaURL);
             logger.error(message, e);
             throw new Exception(message);
-        }
-    }
-
-    @NotNull
-    private URL getUrl(GetPresignedObjectUrlArgs generatePresignedUrlRequest) {
-        try {
-            return new URL(minioClient.getPresignedObjectUrl(generatePresignedUrlRequest));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @NotNull
-    private URL getUrl(String url) {
-        try {
-            return new URL( minioBucketUrlPath + url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

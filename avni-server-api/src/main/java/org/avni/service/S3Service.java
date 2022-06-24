@@ -1,6 +1,7 @@
 package org.avni.service;
 
 import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import org.avni.domain.Extension;
 import org.avni.domain.Organisation;
 import org.avni.domain.UserContext;
@@ -20,6 +21,8 @@ public interface S3Service {
     String getContentType(String fileName);
 
     URL generateMediaUploadUrl(String fileName, HttpMethod method);
+
+    GeneratePresignedUrlRequest getGeneratePresignedUrlRequest(String fileName, HttpMethod method);
 
     String getS3KeyForMediaUpload(String fileName);
 
@@ -76,6 +79,8 @@ public interface S3Service {
     String putObject(String objectKey, File tempFile);
 
     String uploadByteArray(String fileName, String extension, String objectPath, byte[] content) throws IOException;
+
+    String getObjectURL(String parentFolder, File file);
 
     String getObservationValueForUpload(String mediaURL, Object oldValue) throws Exception;
 
