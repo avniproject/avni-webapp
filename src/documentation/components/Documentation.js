@@ -52,7 +52,6 @@ export const Documentation = () => {
       }
     });
   };
-
   const onSave = async () => {
     dispatch({ type: "saving", payload: true });
     const payload = cloneForSave(selectedDocumentation);

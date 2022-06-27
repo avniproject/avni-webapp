@@ -1,5 +1,5 @@
 import { ModelGeneral as General } from "avni-models";
-import { filter, find, findIndex, forEach, isEmpty, map } from "lodash";
+import { filter, find, findIndex, forEach, isEmpty, isNil, map } from "lodash";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import DOMPurify from "dompurify";
 import draftToHtml from "draftjs-to-html";
@@ -35,6 +35,9 @@ export const DocumentationReducer = (state, action) => {
       const { language, documentationUUID } = action.payload;
       const currentDocumentation = find(documentations, d => d.uuid === documentationUUID);
       const newItem = createNewDocumentationItem(documentationUUID, language);
+      if (isNil(currentDocumentation.documentationItems)) {
+        currentDocumentation.documentationItems = [];
+      }
       currentDocumentation.documentationItems.push(newItem);
       return newState;
     }
@@ -119,10 +122,7 @@ export const cloneForSave = documentation => {
     const newDocumentation = {};
     newDocumentation.uuid = documentation.uuid;
     newDocumentation.name = documentation.name;
-    const validItems = filter(
-      documentation.documentationItems,
-      item => item.contentHtml !== `<p></p>`
-    );
+    const validItems = filter(documentation.documentationItems, item => !isEmpty(item.editorState));
     newDocumentation.documentationItems = map(validItems, cloneItemWithoutEditorState);
     newDocumentation.parent = cloneForSave(documentation.parent);
     return newDocumentation;
