@@ -1,6 +1,5 @@
 package org.avni.service;
 
-import org.avni.service.S3Service.ObjectInfo;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

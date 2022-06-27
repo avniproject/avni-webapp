@@ -3,7 +3,7 @@ package org.avni.importer.batch.zip;
 
 import org.avni.framework.security.AuthService;
 import org.avni.service.BulkUploadS3Service;
-import org.avni.service.S3Service;
+import org.avni.service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
@@ -46,7 +46,7 @@ public class ZipJobCompletionNotificationListener extends JobExecutionListenerSu
         File errorFile = bulkUploadS3Service.getLocalErrorFile(uuid);
         if (errorFile.exists() && errorFile.length() != 0) {
             try {
-                S3Service.ObjectInfo metadata = bulkUploadS3Service.uploadErrorFile(bulkUploadS3Service.getLocalErrorFile(uuid), uuid);
+                ObjectInfo metadata = bulkUploadS3Service.uploadErrorFile(bulkUploadS3Service.getLocalErrorFile(uuid), uuid);
                 logger.info(format("BulkUpload '%s'! Check for errors at '%s'", jobExecution.getStatus(), metadata.getKey()));
             } catch (IOException e) {
                 e.printStackTrace();

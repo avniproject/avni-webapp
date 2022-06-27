@@ -28,6 +28,7 @@ public class UserContextHolder {
     }
 
     public static Organisation getOrganisation() {
-        return getUserContext().getOrganisation();
+        UserContext context = getUserContext();
+        return context != null ? context.getOrganisation() : null;
     }
 }

@@ -9,6 +9,7 @@ import org.avni.web.request.api.RequestUtils;
 import org.avni.web.response.ResponsePage;
 import org.avni.web.response.SubjectResponse;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,10 +38,13 @@ public class SubjectApiController {
     private final IndividualService individualService;
     private final S3Service s3Service;
 
+    @Autowired
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
                                 ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
-                                LocationRepository locationRepository, GenderRepository genderRepository, SubjectMigrationService subjectMigrationService, IndividualService individualService, S3Service s3Service) {
+                                LocationRepository locationRepository, GenderRepository genderRepository,
+                                SubjectMigrationService subjectMigrationService, IndividualService individualService,
+                                S3Service s3Service) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;

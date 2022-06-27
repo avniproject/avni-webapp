@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 @Service
-@Profile({"default", "live", "dev", "test"})
 public class CognitoIdpService {
     private final Logger logger;
 

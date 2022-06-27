@@ -10,7 +10,6 @@ import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.JobService;
 import org.avni.service.*;
-import org.avni.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;

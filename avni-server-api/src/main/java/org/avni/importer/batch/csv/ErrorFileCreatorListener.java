@@ -2,8 +2,8 @@ package org.avni.importer.batch.csv;
 
 import org.avni.framework.security.AuthService;
 import org.avni.service.BulkUploadS3Service;
+import org.avni.service.ObjectInfo;
 import org.avni.service.S3Service;
-import org.avni.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;

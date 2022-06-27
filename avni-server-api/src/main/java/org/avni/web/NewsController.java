@@ -1,13 +1,13 @@
 package org.avni.web;
 
-import org.avni.domain.CHSEntity;
-import org.joda.time.DateTime;
 import org.avni.dao.NewsRepository;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.News;
 import org.avni.service.NewsService;
 import org.avni.service.S3Service;
 import org.avni.util.S;
 import org.avni.web.request.NewsContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,7 +31,8 @@ public class NewsController extends AbstractController<News> implements RestCont
     private final S3Service s3Service;
 
     @Autowired
-    public NewsController(NewsService newsService, NewsRepository newsRepository, S3Service s3Service) {
+    public NewsController(NewsService newsService, NewsRepository newsRepository,
+                          S3Service s3Service) {
         this.newsService = newsService;
         this.newsRepository = newsRepository;
         this.s3Service = s3Service;
