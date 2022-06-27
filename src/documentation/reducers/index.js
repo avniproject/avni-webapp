@@ -12,12 +12,11 @@ function setEditorState(documentationItems) {
 
 export const DocumentationReducer = (state, action) => {
   const newState = { ...state };
-  const { documentations, expandedNodeUUIDs, languages } = newState;
+  const { documentations, languages } = newState;
   switch (action.type) {
     case "setData": {
       const { documentations, languages } = action.payload;
       forEach(documentations, ({ uuid, documentationItems }) => {
-        expandedNodeUUIDs.push(uuid);
         setEditorState(documentationItems);
       });
       newState.documentations = documentations;
@@ -28,7 +27,6 @@ export const DocumentationReducer = (state, action) => {
       const { parent } = action.payload;
       const newDocumentation = createNewDocumentation(languages, parent);
       documentations.push(newDocumentation);
-      expandedNodeUUIDs.push(newDocumentation.uuid);
       return newState;
     }
     case "newDocumentationItem": {
@@ -80,7 +78,6 @@ export const DocumentationReducer = (state, action) => {
 
 export const initialState = {
   languages: [],
-  expandedNodeUUIDs: ["Top-documentation"],
   selectedDocumentation: {},
   documentations: [],
   saving: false

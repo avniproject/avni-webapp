@@ -3,18 +3,6 @@ import { connect } from "react-redux";
 import Routes from "./Routes";
 import { getUserInfo } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "rgb(51,151,243)"
-    },
-    secondary: {
-      main: "rgba(0, 0, 0, 1)"
-    }
-  }
-});
 
 class App extends Component {
   componentDidMount() {
@@ -26,11 +14,9 @@ class App extends Component {
   render() {
     return (
       this.props.appInitialised && (
-        <MuiThemeProvider theme={theme}>
-          <div>
-            <Routes />
-          </div>
-        </MuiThemeProvider>
+        <div>
+          <Routes />
+        </div>
       )
     );
   }

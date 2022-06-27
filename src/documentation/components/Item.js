@@ -5,10 +5,17 @@ import DeleteIcon from "@material-ui/icons/Close";
 import { IconButton } from "@material-ui/core";
 import Colors from "../../dataEntryApp/Colors";
 
-export const Item = ({ name, onAdd, onDelete }) => {
+export const Item = ({ name, onAdd, onDelete, level, disabled }) => {
+  const marginLeft = level * 10;
   return (
     <div
-      style={{ display: "flex", flexDirection: "row", alignItems: "center", whiteSpace: "nowrap" }}
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        whiteSpace: "nowrap",
+        marginLeft
+      }}
     >
       <div style={{ flexWrap: "no-wrap" }}>{name}</div>
       <div style={{ marginRight: 10 }} />
