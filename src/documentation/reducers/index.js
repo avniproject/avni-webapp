@@ -1,58 +1,40 @@
 import { ModelGeneral as General } from "avni-models";
-import { find, forEach, isEmpty, map, findIndex } from "lodash";
+import { filter, find, findIndex, forEach, isEmpty, map } from "lodash";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import DOMPurify from "dompurify";
 import draftToHtml from "draftjs-to-html";
 
-function setEditorState(documentations) {
-  return forEach(documentations, ({ documentationItems }) =>
-    forEach(documentationItems, item => {
-      item.editorState = convertRawToEditorState(item.content);
-    })
-  );
+function setEditorState(documentationItems) {
+  return forEach(documentationItems, item => {
+    item.editorState = convertRawToEditorState(item.content);
+  });
 }
 
 export const DocumentationReducer = (state, action) => {
   const newState = { ...state };
-  const { documentationNodes, expandedNodeUUIDs, languages } = newState;
+  const { documentations, expandedNodeUUIDs, languages } = newState;
   switch (action.type) {
     case "setData": {
-      const { documentationNodes, languages } = action.payload;
-      forEach(documentationNodes, ({ documentations, uuid }) => {
+      const { documentations, languages } = action.payload;
+      forEach(documentations, ({ uuid, documentationItems }) => {
         expandedNodeUUIDs.push(uuid);
-        setEditorState(documentations);
+        setEditorState(documentationItems);
       });
-      newState.documentationNodes = documentationNodes;
+      newState.documentations = documentations;
       newState.languages = languages;
       return newState;
     }
     case "newDocumentation": {
-      const { nodeUUID } = action.payload;
-      const selectedNode = find(documentationNodes, ({ uuid }) => uuid === nodeUUID);
-      selectedNode.documentations.push(createNewDocumentation(nodeUUID, languages));
-      return newState;
-    }
-    case "newNode": {
-      const newNode = createNewNode(null, languages);
-      expandedNodeUUIDs.push(newNode.uuid);
-      documentationNodes.push(newNode);
-      return newState;
-    }
-    case "nodeToggle": {
-      newState.expandedNodeUUIDs = action.payload;
+      const { parent } = action.payload;
+      const newDocumentation = createNewDocumentation(languages, parent);
+      documentations.push(newDocumentation);
+      expandedNodeUUIDs.push(newDocumentation.uuid);
       return newState;
     }
     case "newDocumentationItem": {
-      const { language, selectedDocumentation } = action.payload;
-      const currentNode = find(
-        documentationNodes,
-        n => n.uuid === selectedDocumentation.documentationNodeUUID
-      );
-      const currentDocumentation = find(
-        currentNode.documentations,
-        d => d.uuid === selectedDocumentation.uuid
-      );
-      const newItem = createNewDocumentationItem(selectedDocumentation.uuid, language);
+      const { language, documentationUUID } = action.payload;
+      const currentDocumentation = find(documentations, d => d.uuid === documentationUUID);
+      const newItem = createNewDocumentationItem(documentationUUID, language);
       currentDocumentation.documentationItems.push(newItem);
       return newState;
     }
@@ -60,29 +42,15 @@ export const DocumentationReducer = (state, action) => {
       newState.selectedDocumentation = action.payload;
       return newState;
     }
-    case "changeNodeName": {
-      const { uuid, name } = action.payload;
-      const currentNode = find(documentationNodes, n => n.uuid === uuid);
-      currentNode.name = name;
-      return newState;
-    }
     case "changeDocumentationName": {
-      const { uuid, name, nodeUUID } = action.payload;
-      const currentNode = find(documentationNodes, n => n.uuid === nodeUUID);
-      const currentDocumentation = find(currentNode.documentations, d => d.uuid === uuid);
+      const { uuid, name } = action.payload;
+      const currentDocumentation = find(documentations, d => d.uuid === uuid);
       currentDocumentation.name = name;
       return newState;
     }
     case "editorState": {
       const { language, selectedDocumentation, editorState, documentationItem } = action.payload;
-      const currentNode = find(
-        documentationNodes,
-        n => n.uuid === selectedDocumentation.documentationNodeUUID
-      );
-      const currentDocumentation = find(
-        currentNode.documentations,
-        d => d.uuid === selectedDocumentation.uuid
-      );
+      const currentDocumentation = find(documentations, d => d.uuid === selectedDocumentation.uuid);
       const currentDocumentationItem = find(
         currentDocumentation.documentationItems,
         i => i.uuid === documentationItem.uuid
@@ -96,16 +64,10 @@ export const DocumentationReducer = (state, action) => {
       return newState;
     }
     case "delete": {
-      const { selectedDocumentation } = action.payload;
-      const currentNode = find(
-        documentationNodes,
-        n => n.uuid === selectedDocumentation.documentationNodeUUID
-      );
-      const index = findIndex(
-        currentNode.documentations,
-        d => d.uuid === selectedDocumentation.uuid
-      );
-      currentNode.documentations.splice(index, 1);
+      const { uuid } = action.payload;
+      const index = findIndex(documentations, d => d.uuid === uuid);
+      documentations.splice(index, 1);
+      newState.selectedDocumentation = {};
       return newState;
     }
     default:
@@ -115,28 +77,20 @@ export const DocumentationReducer = (state, action) => {
 
 export const initialState = {
   languages: [],
-  expandedNodeUUIDs: [],
+  expandedNodeUUIDs: ["Top-documentation"],
   selectedDocumentation: {},
   documentations: [],
   saving: false
 };
-const createNewNode = (parent, languages) => {
-  const nodeUUID = General.randomUUID();
-  return {
-    uuid: nodeUUID,
-    name: "New node",
-    documentations: [createNewDocumentation(nodeUUID, languages)],
-    parent: parent
-  };
-};
-const createNewDocumentation = (nodeUUID, languages) => {
+
+const createNewDocumentation = (languages, parent) => {
   const documentationUUID = General.randomUUID();
   const items = map(languages, l => createNewDocumentationItem(documentationUUID, l));
   return {
     uuid: documentationUUID,
     name: "New Documentation",
     documentationItems: items,
-    documentationNodeUUID: nodeUUID
+    parent: parent
   };
 };
 const createNewDocumentationItem = (documentationUUID, language) => ({
@@ -153,9 +107,35 @@ const convertRawToEditorState = raw =>
     ? EditorState.createEmpty()
     : EditorState.createWithContent(convertFromRaw(JSON.parse(raw)));
 
-export const convertEditorStateToRaw = editorState => {
+const convertEditorStateToRaw = editorState => {
   const rawContent = convertToRaw(editorState.getCurrentContent());
   const content = JSON.stringify(rawContent);
   const contentHtml = DOMPurify.sanitize(draftToHtml(rawContent));
   return { content, contentHtml };
+};
+
+export const cloneForSave = documentation => {
+  if (documentation) {
+    const newDocumentation = {};
+    newDocumentation.uuid = documentation.uuid;
+    newDocumentation.name = documentation.name;
+    const validItems = filter(
+      documentation.documentationItems,
+      item => item.contentHtml !== `<p></p>`
+    );
+    newDocumentation.documentationItems = map(validItems, cloneItemWithoutEditorState);
+    newDocumentation.parent = cloneForSave(documentation.parent);
+    return newDocumentation;
+  }
+};
+
+const cloneItemWithoutEditorState = (item = {}) => {
+  const newItem = {};
+  const { content, contentHtml } = convertEditorStateToRaw(item.editorState);
+  newItem.uuid = item.uuid;
+  newItem.content = content;
+  newItem.contentHtml = contentHtml;
+  newItem.language = item.language;
+  newItem.documentationUUID = item.documentationUUID;
+  return newItem;
 };

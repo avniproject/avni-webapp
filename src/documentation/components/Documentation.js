@@ -3,16 +3,12 @@ import { getDocumentationState, useDocumentationDispatch } from "../hooks";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
-import { find, forEach, isEmpty, map } from "lodash";
+import { find, isEmpty, map } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import { DocumentationItem } from "./DocumentationItem";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import api from "../api";
-import { convertEditorStateToRaw } from "../reducers";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Button from "@material-ui/core/Button";
-import Colors from "../../dataEntryApp/Colors";
-import { Grid } from "@material-ui/core";
+import { cloneForSave } from "../reducers";
 import { Audit } from "../../formDesigner/components/Audit";
 
 function renderDocumentItem(value, index, selectedDocumentation, locale) {
@@ -32,34 +28,26 @@ function renderDocumentItem(value, index, selectedDocumentation, locale) {
 }
 
 export const Documentation = () => {
-  const { selectedDocumentation, languages, documentationNodes } = getDocumentationState();
+  const { selectedDocumentation, languages } = getDocumentationState();
   const dispatch = useDocumentationDispatch();
   const [value, setValue] = React.useState(0);
 
   if (isEmpty(selectedDocumentation)) return null;
-  const selectedNode = find(
-    documentationNodes,
-    ({ uuid }) => uuid === selectedDocumentation.documentationNodeUUID
-  );
+
   const {
     name,
+    uuid,
     createdBy,
     createdDateTime,
     lastModifiedBy,
     lastModifiedDateTime
   } = selectedDocumentation;
-  const onNodeNameChange = event =>
-    dispatch({
-      type: "changeNodeName",
-      payload: { uuid: selectedNode.uuid, name: event.target.value }
-    });
 
   const onDocumentationNameChange = event => {
     dispatch({
       type: "changeDocumentationName",
       payload: {
-        uuid: selectedDocumentation.uuid,
-        nodeUUID: selectedNode.uuid,
+        uuid: uuid,
         name: event.target.value
       }
     });
@@ -67,14 +55,11 @@ export const Documentation = () => {
 
   const onSave = async () => {
     dispatch({ type: "saving", payload: true });
-    forEach(selectedNode.documentations, ({ documentationItems }) =>
-      forEach(documentationItems, item => {
-        const { content, contentHtml } = convertEditorStateToRaw(item.editorState);
-        item.content = content;
-        item.contentHtml = contentHtml;
-      })
-    );
-    const [response, error] = await api.saveDocumentation(selectedNode);
+    const payload = cloneForSave(selectedDocumentation);
+    if (isEmpty(payload.name)) {
+      alert("No name provided for the documentation");
+    }
+    const [response, error] = await api.saveDocumentation(payload);
     if (error) {
       dispatch({ type: "saving", payload: false });
       alert(error);
@@ -83,36 +68,8 @@ export const Documentation = () => {
     dispatch({ type: "saving", payload: false });
   };
 
-  const onDelete = async () => {
-    if (window.confirm("Do you really want to delete this documentation?")) {
-      dispatch({ type: "saving", payload: true });
-      const error = await api.deleteDocumentation(selectedDocumentation.uuid);
-      if (error) {
-        dispatch({ type: "saving", payload: false });
-        alert(error);
-      } else {
-        dispatch({ type: "delete", payload: { selectedDocumentation } });
-        dispatch({ type: "saving", payload: false });
-      }
-    }
-  };
-
   return (
     <Box border={1} borderColor={"#ddd"} p={2}>
-      <Grid container item justify={"flex-end"}>
-        <Button size="small" onClick={onDelete}>
-          <DeleteIcon style={{ color: Colors.ValidationError }} />
-        </Button>
-      </Grid>
-      <TextField
-        id="node-name"
-        variant="outlined"
-        label={"Node Name"}
-        onChange={onNodeNameChange}
-        value={selectedNode.name}
-        fullWidth
-      />
-      <Box mt={2} />
       <TextField
         id="doc-name"
         variant="outlined"

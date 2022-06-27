@@ -10,7 +10,10 @@ export const DocumentationItem = ({ documentationItem, language }) => {
 
   useEffect(() => {
     if (isEmpty(documentationItem)) {
-      dispatch({ type: "newDocumentationItem", payload: { language, selectedDocumentation } });
+      dispatch({
+        type: "newDocumentationItem",
+        payload: { language, documentationUUID: selectedDocumentation.uuid }
+      });
     }
   }, []);
 
