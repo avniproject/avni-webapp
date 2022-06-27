@@ -52,7 +52,7 @@ public class DeploymentSpecificConfiguration {
     @Bean("S3Service")
     @Primary
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public S3Service getS3Service() {
+    public S3Service getProxiedS3Service() {
         User user = UserContextHolder.getUser();
         Organisation organisation = UserContextHolder.getOrganisation();
         boolean isMinioConfiguredOrgUser = false;
@@ -74,6 +74,27 @@ public class DeploymentSpecificConfiguration {
             return awsMinioService;
 
         throw new NoSuchBeanDefinitionException("S3Service", "Storage service bean of type S3Service not found");
+    }
+
+    @Profile({"!dev","!staging"})
+    @Bean("S3Service")
+    @Primary
+    public S3Service getRegularS3Service() {
+        return getBatchS3Service();
+    }
+
+    @Bean("BatchS3Service")
+    public S3Service getBatchS3Service() {
+        if (springProfiles.isOnPremise() && awsMinioService != null)
+            return awsMinioService;
+
+        if(awss3Service != null)
+            return awss3Service;
+
+        if(awsMinioService != null)
+            return awsMinioService;
+
+        throw new NoSuchBeanDefinitionException("BatchS3Service", "Batch Storage service bean of type BatchS3Service not found");
     }
 
     private KeycloakAuthService getKeycloakAuthService() {
