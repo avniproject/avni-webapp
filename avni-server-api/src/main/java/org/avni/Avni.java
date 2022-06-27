@@ -182,6 +182,19 @@ public class Avni {
     }
 
     @Bean
+    public ResourceProcessor<Resource<DocumentationItem>> documentationItemsProcessor() {
+        return new ResourceProcessor<Resource<DocumentationItem>>() {
+            @Override
+            public Resource<DocumentationItem> process(Resource<DocumentationItem> resource) {
+                DocumentationItem documentationItem = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(documentationItem.getDocumentation().getUuid(), "documentationUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
     public ResourceProcessor<Resource<ProgramOrganisationConfig>> programOrganisationConfig() {
         return new ResourceProcessor<Resource<ProgramOrganisationConfig>>() {
             @Override

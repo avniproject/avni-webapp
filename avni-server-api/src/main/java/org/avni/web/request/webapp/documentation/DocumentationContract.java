@@ -11,17 +11,16 @@ import java.util.stream.Collectors;
 public class DocumentationContract extends ReferenceDataContract {
 
     private Set<DocumentationItemContract> documentationItems = new HashSet<>();
-    private String documentationNodeUUID;
     private String createdBy;
     private DateTime createdDateTime;
     private String lastModifiedBy;
     private DateTime lastModifiedDateTime;
+    private DocumentationContract parent;
 
     public static DocumentationContract fromDocumentation(Documentation documentation) {
         DocumentationContract documentationContract = new DocumentationContract();
         documentationContract.setUuid(documentation.getUuid());
         documentationContract.setName(documentation.getName());
-        documentationContract.setDocumentationNodeUUID(documentation.getDocumentationNode().getUuid());
         Set<DocumentationItemContract> documentationItemRequests = documentation.getDocumentationItems()
                 .stream()
                 .map(DocumentationItemContract::fromDocumentationItem)
@@ -32,6 +31,9 @@ public class DocumentationContract extends ReferenceDataContract {
         documentationContract.setCreatedDateTime(documentation.getCreatedDateTime());
         documentationContract.setLastModifiedBy(documentation.getLastModifiedByName());
         documentationContract.setLastModifiedDateTime(documentation.getLastModifiedDateTime());
+        if (documentation.getParent() != null) {
+            documentationContract.setParent(DocumentationContract.fromDocumentation(documentation.getParent()));
+        }
         return documentationContract;
     }
 
@@ -41,14 +43,6 @@ public class DocumentationContract extends ReferenceDataContract {
 
     public void setDocumentationItems(Set<DocumentationItemContract> documentationItems) {
         this.documentationItems = documentationItems;
-    }
-
-    public String getDocumentationNodeUUID() {
-        return documentationNodeUUID;
-    }
-
-    public void setDocumentationNodeUUID(String documentationNodeUUID) {
-        this.documentationNodeUUID = documentationNodeUUID;
     }
 
     public String getCreatedBy() {
@@ -81,5 +75,13 @@ public class DocumentationContract extends ReferenceDataContract {
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public DocumentationContract getParent() {
+        return parent;
+    }
+
+    public void setParent(DocumentationContract parent) {
+        this.parent = parent;
     }
 }

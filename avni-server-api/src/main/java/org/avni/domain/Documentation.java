@@ -16,10 +16,9 @@ public class Documentation extends OrganisationAwareEntity {
     @Column
     private String name;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "documentation_node_id")
-    private DocumentationNode documentationNode;
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "parent_id")
+    private Documentation parent;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "documentation")
     private Set<DocumentationItem> documentationItems = new HashSet<>();
@@ -32,20 +31,20 @@ public class Documentation extends OrganisationAwareEntity {
         this.name = name;
     }
 
-    public DocumentationNode getDocumentationNode() {
-        return documentationNode;
-    }
-
-    public void setDocumentationNode(DocumentationNode documentationNode) {
-        this.documentationNode = documentationNode;
-    }
-
     public Set<DocumentationItem> getDocumentationItems() {
         return documentationItems;
     }
 
     public void setDocumentationItems(Set<DocumentationItem> documentationItems) {
         this.documentationItems = documentationItems;
+    }
+
+    public Documentation getParent() {
+        return parent;
+    }
+
+    public void setParent(Documentation parent) {
+        this.parent = parent;
     }
 
     public DocumentationItem findDocumentationItem(String uuid) {
