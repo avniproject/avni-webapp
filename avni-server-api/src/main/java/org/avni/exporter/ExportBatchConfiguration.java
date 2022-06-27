@@ -36,7 +36,7 @@ import static java.lang.String.format;
 @EnableBatchProcessing
 public class ExportBatchConfiguration {
 
-    private final int CHUNK_SIZE = 100;
+    private final int CHUNK_SIZE = 5000;
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
     private ProgramEnrolmentRepository programEnrolmentRepository;
