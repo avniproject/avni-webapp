@@ -119,7 +119,10 @@ export const cloneForSave = documentation => {
     const newDocumentation = {};
     newDocumentation.uuid = documentation.uuid;
     newDocumentation.name = documentation.name;
-    const validItems = filter(documentation.documentationItems, item => !isEmpty(item.editorState));
+    const validItems = filter(
+      documentation.documentationItems,
+      item => !isEmpty(item.editorState) && item.editorState.getCurrentContent().hasText()
+    );
     newDocumentation.documentationItems = map(validItems, cloneItemWithoutEditorState);
     newDocumentation.parent = cloneForSave(documentation.parent);
     return newDocumentation;

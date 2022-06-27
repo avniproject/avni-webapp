@@ -27,6 +27,7 @@ function createDocumentationNode(
           onAdd={() => onDocumentationAdd(documentation)}
           onDelete={() => onRemoveDocumentation(uuid)}
           level={level}
+          onToggle={() => onDocumentationToggle(documentation)}
         />
         {createDocumentationNode(
           childrenDocumentations,
@@ -86,12 +87,18 @@ const DocumentationList = ({ history, ...props }) => {
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Box
             border={1}
+            pt={2}
+            pb={2}
             borderColor={"#ddd"}
-            p={2}
             bgcolor={"rgba(248,248,248,0.37)"}
-            style={{ flex: 0.3, overflowX: "auto" }}
+            style={{ flex: 0.2 }}
           >
-            <Item name={"Documentation"} onAdd={() => onDocumentationAdd()} level={1} />
+            <Item
+              name={"Documentation"}
+              onAdd={() => onDocumentationAdd()}
+              level={1}
+              disabled={true}
+            />
             {createDocumentationNode(
               rootNodes,
               onDocumentationToggle,
@@ -101,7 +108,7 @@ const DocumentationList = ({ history, ...props }) => {
               1
             )}
           </Box>
-          <div style={{ flex: 0.7 }}>
+          <div style={{ flex: 0.8 }}>
             <Documentation />
           </div>
         </div>
