@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -117,7 +118,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                          GroupPrivilegeService groupPrivilegeService,
                          VideoService videoService,
                          CardService cardService,
-                         DashboardService dashboardService, S3Service s3Service) {
+                         DashboardService dashboardService, @Qualifier("BatchS3Service") S3Service s3Service) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
