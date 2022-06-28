@@ -2,6 +2,10 @@ import React from "react";
 import { get, isEmpty, isNil, map } from "lodash";
 import http from "common/utils/httpClient";
 import CommonSearch from "../../formDesigner/common/CommonSearch";
+import { Link } from "react-router-dom";
+import DeleteIcon from "@material-ui/icons/HighlightOff";
+import { IconButton } from "@material-ui/core";
+import Colors from "../../dataEntryApp/Colors";
 
 const getAllParents = (documentation, parents) => {
   if (isNil(documentation)) return parents;
@@ -24,15 +28,32 @@ const DocumentationSearch = ({ value, onChange, isMulti, placeholder }) => {
     });
   };
 
-  return (
-    <CommonSearch
-      value={value}
-      onChange={onChange}
-      isMulti={isMulti}
-      placeholder={placeholder || "Type to search Documentation"}
-      loadOptionsByValue={loadDocumentation}
-    />
-  );
+  const renderEdit = () => {
+    return (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Link to={{ pathname: "/documentation", state: { documentationUUID: value.value } }}>
+          {value.label}
+        </Link>
+        <IconButton size={"small"} onClick={() => onChange(null)}>
+          <DeleteIcon style={{ color: Colors.ValidationError }} />
+        </IconButton>
+      </div>
+    );
+  };
+
+  const renderSearch = () => {
+    return (
+      <CommonSearch
+        value={value}
+        onChange={onChange}
+        isMulti={isMulti}
+        placeholder={placeholder || "Type to search Documentation"}
+        loadOptionsByValue={loadDocumentation}
+      />
+    );
+  };
+
+  return isNil(value) ? renderSearch() : renderEdit();
 };
 
 export default DocumentationSearch;

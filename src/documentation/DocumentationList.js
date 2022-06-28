@@ -8,6 +8,7 @@ import { Documentation } from "./components/Documentation";
 import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import Box from "@material-ui/core/Box";
 import { Item } from "./components/Item";
+import { useLocation } from "react-router-dom";
 
 function createDocumentationNode(
   documentations,
@@ -15,19 +16,21 @@ function createDocumentationNode(
   allDocumentations,
   onDocumentationAdd,
   onRemoveDocumentation,
-  level
+  level,
+  selectedDocumentationUUID
 ) {
   return map(documentations, (documentation, idx) => {
     const { uuid, name } = documentation;
     const childrenDocumentations = filter(allDocumentations, ad => uuid === get(ad, "parent.uuid"));
     return (
-      <React.Fragment>
+      <React.Fragment key={uuid}>
         <Item
           name={name}
           onAdd={() => onDocumentationAdd(documentation)}
           onDelete={() => onRemoveDocumentation(uuid)}
           level={level}
           onToggle={() => onDocumentationToggle(documentation)}
+          isSelected={selectedDocumentationUUID === uuid}
         />
         {createDocumentationNode(
           childrenDocumentations,
@@ -35,7 +38,8 @@ function createDocumentationNode(
           allDocumentations,
           onDocumentationAdd,
           onRemoveDocumentation,
-          level + 1
+          level + 1,
+          selectedDocumentationUUID
         )}
       </React.Fragment>
     );
@@ -43,8 +47,10 @@ function createDocumentationNode(
 }
 
 const DocumentationList = ({ history, ...props }) => {
+  const location = useLocation();
+  const documentationUUID = get(location, "state.documentationUUID");
   const [state, dispatch] = React.useReducer(DocumentationReducer, initialState);
-  const { documentations, saving } = state;
+  const { documentations, saving, selectedDocumentation } = state;
   const rootNodes = filter(documentations, d => isNil(d.parent));
 
   useEffect(() => {
@@ -55,7 +61,7 @@ const DocumentationList = ({ history, ...props }) => {
       const languages = get(orgConfig, "organisationConfig.languages", []);
       dispatch({
         type: "setData",
-        payload: { documentations: nonVoidedDocumentations, languages }
+        payload: { documentations: nonVoidedDocumentations, languages, documentationUUID }
       });
     };
     fetchData();
@@ -105,7 +111,8 @@ const DocumentationList = ({ history, ...props }) => {
               documentations,
               onDocumentationAdd,
               onRemoveDocumentation,
-              1
+              1,
+              get(selectedDocumentation, "uuid")
             )}
           </Box>
           <div style={{ flex: 0.8 }}>

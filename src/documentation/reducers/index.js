@@ -15,12 +15,18 @@ export const DocumentationReducer = (state, action) => {
   const { documentations, languages } = newState;
   switch (action.type) {
     case "setData": {
-      const { documentations, languages } = action.payload;
+      const { documentations, languages, documentationUUID } = action.payload;
       forEach(documentations, ({ uuid, documentationItems }) => {
         setEditorState(documentationItems);
       });
       newState.documentations = documentations;
       newState.languages = languages;
+      if (documentationUUID) {
+        newState.selectedDocumentation = find(
+          newState.documentations,
+          ({ uuid }) => uuid === documentationUUID
+        );
+      }
       return newState;
     }
     case "newDocumentation": {

@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const Item = ({ name, onAdd, onDelete, level, disabled, onToggle }) => {
+export const Item = ({ name, onAdd, onDelete, level, disabled, onToggle, isSelected }) => {
   const [showIcons, setShowIcons] = useState(false);
   const classes = useStyles();
   const paddingLeft = level * 15;
@@ -47,7 +47,8 @@ export const Item = ({ name, onAdd, onDelete, level, disabled, onToggle }) => {
         height: 30,
         paddingLeft,
         position: "relative",
-        backgroundColor: showIcons ? "rgba(145,145,145,0.37)" : "rgba(248,248,248,0.37)",
+        backgroundColor:
+          showIcons || isSelected ? "rgba(145,145,145,0.37)" : "rgba(248,248,248,0.37)",
         whiteSpace: "nowrap",
         width: window.innerWidth / 5
       }}
