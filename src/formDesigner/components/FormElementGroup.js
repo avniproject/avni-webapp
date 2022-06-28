@@ -24,6 +24,7 @@ import Tab from "@material-ui/core/Tab";
 import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import Tooltip from "@material-ui/core/Tooltip";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -290,7 +291,47 @@ function FormElementGroup(props) {
                         </FormControl>
                       </Typography>
                     </Grid>
-                    <Grid item sm={4}>
+                    <Grid item sm={3}>
+                      <Grid item container direction={"row"}>
+                        <Grid item sm={6}>
+                          <TextField
+                            type="number"
+                            label="Start time (Seconds)"
+                            value={props.groupData.startTime}
+                            InputProps={{ disableUnderline: true }}
+                            onClick={stopPropagation}
+                            onChange={event =>
+                              props.handleGroupElementChange(
+                                props.index,
+                                "startTime",
+                                event.target.value
+                              )
+                            }
+                            autoComplete="off"
+                            disabled={disableGroup}
+                          />
+                        </Grid>
+                        <Grid item sm={6}>
+                          <TextField
+                            type="number"
+                            label="Stay time (Seconds)"
+                            value={props.groupData.stayTime}
+                            InputProps={{ disableUnderline: true }}
+                            onClick={stopPropagation}
+                            onChange={event =>
+                              props.handleGroupElementChange(
+                                props.index,
+                                "stayTime",
+                                event.target.value
+                              )
+                            }
+                            autoComplete="off"
+                            disabled={disableGroup}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item sm={1}>
                       <Typography component={"div"} className={classes.questionCount}>
                         {questionCount} questions
                       </Typography>

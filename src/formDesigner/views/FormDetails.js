@@ -9,7 +9,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
-import { FormControl } from "@material-ui/core";
+import { Checkbox, FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
 import Box from "@material-ui/core/Box";
@@ -48,6 +48,7 @@ import {
   formDesignerUpdateConceptElementData,
   formDesignerUpdateDragDropOrderForFirstGroup
 } from "../common/FormDesignerHandlers";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -82,6 +83,7 @@ class FormDetails extends Component {
       identifierSources: [],
       groupSubjectTypes: [],
       name: "",
+      timed: false,
       errorMsg: "",
       saveCall: false,
       createFlag: true,
@@ -115,6 +117,8 @@ class FormDetails extends Component {
     // this function is because of we are using name in this component.
     this.setState({ name: name, detectBrowserCloseEvent: true });
   };
+
+  onIsTimedUpdate = event => this.setState({ timed: event.target.checked });
 
   onTabHandleChange = (event, value) => {
     this.setState({ activeTabIndex: value });
@@ -213,6 +217,7 @@ class FormDetails extends Component {
         this.setState({
           form: form,
           name: form.name,
+          timed: form.timed,
           createFlag: dataGroupFlag,
           formType: form.formType,
           subjectType: form.subjectType,
@@ -844,6 +849,7 @@ class FormDetails extends Component {
     // });
     let dataSend = cloneDeep(this.state.form);
     dataSend.name = this.state.name;
+    dataSend.timed = this.state.timed;
     _.forEach(dataSend.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
@@ -1116,6 +1122,12 @@ class FormDetails extends Component {
                 )}
               </Droppable>
             </DragDropContext>
+            <FormControlLabel
+              control={
+                <Checkbox id="isTimed" checked={this.state.timed} onChange={this.onIsTimedUpdate} />
+              }
+              label="Timed form"
+            />
             <Audit {...this.state.form} direction={"row"} />
             {/* </div> */}
           </TabContainer>
