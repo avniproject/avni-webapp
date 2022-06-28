@@ -43,6 +43,8 @@ public class FormContract extends ReferenceDataContract {
     private DeclarativeRule validationDeclarativeRule;
     private DeclarativeRule decisionDeclarativeRule;
     private DeclarativeRule visitScheduleDeclarativeRule;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private boolean isTimed = false;
 
     public FormContract() {
     }
@@ -136,6 +138,7 @@ public class FormContract extends ReferenceDataContract {
         FormContract formContract = new FormContract();
         formContract.setFormType(form.getFormType().name());
         formContract.setName(form.getName());
+        formContract.setTimed(form.isTimed());
         formContract.setUuid(form.getUuid());
         formContract.setVoided(form.isVoided());
         formContract.setDecisionRule(form.getDecisionRule());
@@ -260,5 +263,13 @@ public class FormContract extends ReferenceDataContract {
 
     public void setVisitScheduleDeclarativeRule(DeclarativeRule visitScheduleDeclarativeRule) {
         this.visitScheduleDeclarativeRule = visitScheduleDeclarativeRule;
+    }
+
+    public boolean isTimed() {
+        return isTimed;
+    }
+
+    public void setTimed(boolean timed) {
+        isTimed = timed;
     }
 }

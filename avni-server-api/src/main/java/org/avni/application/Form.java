@@ -51,6 +51,9 @@ public class Form extends OrganisationAwareEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
     private Set<DecisionConcept> decisionConcepts = new HashSet<>();
 
+    @Column
+    private boolean isTimed;
+
     public Form() {
     }
 
@@ -192,5 +195,13 @@ public class Form extends OrganisationAwareEntity {
     public void removeDecisionConcept(Concept concept) {
         DecisionConcept decisionConcept = getDecisionConcept(concept.getUuid());
         this.decisionConcepts.remove(decisionConcept);
+    }
+
+    public boolean isTimed() {
+        return isTimed;
+    }
+
+    public void setTimed(boolean timed) {
+        isTimed = timed;
     }
 }
