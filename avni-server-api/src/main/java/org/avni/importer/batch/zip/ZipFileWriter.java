@@ -15,6 +15,7 @@ import org.avni.web.request.*;
 import org.avni.web.request.application.ChecklistDetailRequest;
 import org.avni.web.request.application.FormContract;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
+import org.avni.web.request.webapp.documentation.DocumentationContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -63,6 +64,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
     private CardService cardService;
     private DashboardService dashboardService;
     private S3Service s3Service;
+    private DocumentationService documentationService;
     private static final String SUBJECT_ICON_DIRECTORY = "subjectTypeIcons";
 
     @Value("#{jobParameters['userId']}")
@@ -81,6 +83,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         add("operationalPrograms.json");
         add("encounterTypes.json");
         add("operationalEncounterTypes.json");
+        add("documentations.json");
         add("concepts.json");
         add("forms");
         add("formMappings.json");
@@ -118,7 +121,8 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                          GroupPrivilegeService groupPrivilegeService,
                          VideoService videoService,
                          CardService cardService,
-                         DashboardService dashboardService, @Qualifier("BatchS3Service") S3Service s3Service) {
+                         DashboardService dashboardService, @Qualifier("BatchS3Service") S3Service s3Service,
+                         DocumentationService documentationService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -141,6 +145,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         this.cardService = cardService;
         this.dashboardService = dashboardService;
         this.s3Service = s3Service;
+        this.documentationService = documentationService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -238,6 +243,12 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                 OperationalEncounterTypesContract operationalEncounterTypesContract = convertString(fileData, OperationalEncounterTypesContract.class);
                 for (OperationalEncounterTypeContract oetc : operationalEncounterTypesContract.getOperationalEncounterTypes()) {
                     encounterTypeService.createOperationalEncounterType(oetc, organisation);
+                }
+                break;
+            case "documentations.json":
+                DocumentationContract[] documentationContracts = convertString(fileData, DocumentationContract[].class);
+                for (DocumentationContract documentationContract : documentationContracts) {
+                    documentationService.saveDocumentation(documentationContract);
                 }
                 break;
             case "concepts.json":

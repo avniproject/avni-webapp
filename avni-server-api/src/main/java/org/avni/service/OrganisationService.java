@@ -25,6 +25,7 @@ import org.avni.web.request.webapp.CatchmentExport;
 import org.avni.web.request.webapp.CatchmentsExport;
 import org.avni.web.request.webapp.ConceptExport;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
+import org.avni.web.request.webapp.documentation.DocumentationContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,7 @@ public class OrganisationService {
     private final CommentThreadRepository commentThreadRepository;
     private final NewsRepository newsRepository;
     private final SubjectMigrationRepository subjectMigrationRepository;
+    private final DocumentationService documentationService;
     private final Logger logger;
 
     @Autowired
@@ -166,7 +168,8 @@ public class OrganisationService {
                                CommentRepository commentRepository,
                                CommentThreadRepository commentThreadRepository,
                                NewsRepository newsRepository,
-                               SubjectMigrationRepository subjectMigrationRepository) {
+                               SubjectMigrationRepository subjectMigrationRepository,
+                               DocumentationService documentationService) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -226,6 +229,7 @@ public class OrganisationService {
         this.commentThreadRepository = commentThreadRepository;
         this.newsRepository = newsRepository;
         this.subjectMigrationRepository = subjectMigrationRepository;
+        this.documentationService = documentationService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -475,6 +479,13 @@ public class OrganisationService {
         List<DashboardContract> dashboardContracts = dashboardService.getAll();
         if (!dashboardContracts.isEmpty()) {
             addFileToZip(zos, "reportDashboard.json", dashboardContracts);
+        }
+    }
+
+    public void addDocumentation(ZipOutputStream zos) throws IOException {
+        List<DocumentationContract> documentationContracts = documentationService.getAll();
+        if (!documentationContracts.isEmpty()) {
+            addFileToZip(zos, "documentations.json", documentationContracts);
         }
     }
 
