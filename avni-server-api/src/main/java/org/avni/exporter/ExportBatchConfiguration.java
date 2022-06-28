@@ -36,7 +36,7 @@ import static java.lang.String.format;
 @EnableBatchProcessing
 public class ExportBatchConfiguration {
 
-    private final int CHUNK_SIZE = 5000;
+    private final int CHUNK_SIZE = 1000;
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -88,6 +88,7 @@ public class ExportBatchConfiguration {
     public Step step1(RepositoryItemReader<Object> reader,
                       ExportProcessor exportProcessor,
                       FlatFileItemWriter<ExportItemRow> fileWriter) {
+        reader.setPageSize(CHUNK_SIZE);
         return stepBuilderFactory.get("step1").<Object, ExportItemRow>chunk(CHUNK_SIZE)
                 .reader(reader)
                 .processor(exportProcessor)
