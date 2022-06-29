@@ -12,6 +12,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.QueryHint;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +32,10 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
 
-    List<GroupSubject> findAllByGroupSubjectOrMemberSubject(Individual groupSubject, Individual memberSubject);
+    @Query("select gs from Individual i " +
+            "join GroupSubject gs on i = gs.memberSubject or i = gs.groupSubject " +
+            "where i = :groupSubject")
+    List<GroupSubject> findAllByGroupSubjectOrMemberSubject(Individual groupSubject);
 
     GroupSubject findByGroupSubjectAndGroupRoleAndIsVoidedFalse(Individual groupSubject, GroupRole headOfHousehold);
 
