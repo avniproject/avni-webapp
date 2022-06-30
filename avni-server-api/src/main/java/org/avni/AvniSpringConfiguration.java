@@ -2,6 +2,7 @@ package org.avni;
 
 import org.avni.domain.User;
 import org.avni.framework.jpa.CHSAuditorAware;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -37,5 +38,10 @@ public class AvniSpringConfiguration extends WebMvcAutoConfiguration {
     public Boolean isDev() {
         String[] activeProfiles = environment.getActiveProfiles();
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
+    }
+
+    @Bean
+    public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
     }
 }

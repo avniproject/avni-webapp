@@ -1,12 +1,12 @@
 package org.avni.framework.context;
 
 import org.avni.config.CognitoConfig;
-import org.avni.config.KeycloakConfig;
 import org.avni.dao.UserRepository;
 import org.avni.domain.Organisation;
 import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.*;
+import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,13 +26,13 @@ public class DeploymentSpecificConfiguration {
     private final UserRepository userRepository;
     private final SpringProfiles springProfiles;
     private final CognitoConfig cognitoConfig;
-    private final KeycloakConfig keycloakConfig;
+    private final AdapterConfig adapterConfig;
 
     @Autowired
-    public DeploymentSpecificConfiguration(CognitoConfig cognitoConfig, KeycloakConfig keycloakConfig,
+    public DeploymentSpecificConfiguration(CognitoConfig cognitoConfig, AdapterConfig adapterConfig,
                                            UserRepository userRepository, SpringProfiles springProfiles) {
         this.cognitoConfig = cognitoConfig;
-        this.keycloakConfig = keycloakConfig;
+        this.adapterConfig = adapterConfig;
         this.userRepository = userRepository;
         this.springProfiles = springProfiles;
     }
@@ -46,6 +46,11 @@ public class DeploymentSpecificConfiguration {
             return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, getKeycloakAuthService());
 
         return new CognitoAuthServiceImpl(userRepository, cognitoConfig, springProfiles, null);
+    }
+
+
+    private KeycloakAuthService getKeycloakAuthService() {
+        return new KeycloakAuthService(userRepository, adapterConfig, springProfiles);
     }
 
     @Profile({"dev","staging"})
@@ -95,9 +100,5 @@ public class DeploymentSpecificConfiguration {
             return awsMinioService;
 
         throw new NoSuchBeanDefinitionException("BatchS3Service", "Batch Storage service bean of type BatchS3Service not found");
-    }
-
-    private KeycloakAuthService getKeycloakAuthService() {
-        return new KeycloakAuthService(userRepository, keycloakConfig, springProfiles);
     }
 }
