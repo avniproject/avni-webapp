@@ -65,7 +65,7 @@ const SubjectSearch = ({ searchRequest, getOrganisationConfig, organisationConfi
 
   const { t } = useTranslation();
   const resetClick = () => {
-    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: {} });
+    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: { includeVoided: false } });
   };
 
   return (

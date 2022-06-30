@@ -3,7 +3,7 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import { filter, get, isEmpty, join, map, flatten, find, reject, isNil, size } from "lodash";
+import { filter, get, isEmpty, join, map, flatten, find, reject, isNil, size, head } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import { Grid } from "@material-ui/core";
@@ -118,6 +118,10 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     new Promise(resolve => {
       let apiUrl = "/web/searchAPI/v2";
       const pageElement = {};
+      const firstSubjectTypeUUID = get(head(subjectTypes), "uuid");
+      if (isNil(searchRequest.subjectType) && !isNil(firstSubjectTypeUUID)) {
+        searchRequest.subjectType = firstSubjectTypeUUID;
+      }
       pageElement.pageNumber = query.page;
       pageElement.numberOfRecordPerPage = query.pageSize;
       pageElement.sortColumn = query.orderBy.field;
