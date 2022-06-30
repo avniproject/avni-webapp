@@ -291,47 +291,49 @@ function FormElementGroup(props) {
                         </FormControl>
                       </Typography>
                     </Grid>
-                    <Grid item sm={3}>
-                      <Grid item container direction={"row"}>
-                        <Grid item sm={6}>
-                          <TextField
-                            type="number"
-                            label="Start time (Seconds)"
-                            value={props.groupData.startTime}
-                            InputProps={{ disableUnderline: true }}
-                            onClick={stopPropagation}
-                            onChange={event =>
-                              props.handleGroupElementChange(
-                                props.index,
-                                "startTime",
-                                event.target.value
-                              )
-                            }
-                            autoComplete="off"
-                            disabled={disableGroup}
-                          />
-                        </Grid>
-                        <Grid item sm={6}>
-                          <TextField
-                            type="number"
-                            label="Stay time (Seconds)"
-                            value={props.groupData.stayTime}
-                            InputProps={{ disableUnderline: true }}
-                            onClick={stopPropagation}
-                            onChange={event =>
-                              props.handleGroupElementChange(
-                                props.index,
-                                "stayTime",
-                                event.target.value
-                              )
-                            }
-                            autoComplete="off"
-                            disabled={disableGroup}
-                          />
+                    {props.timed && (
+                      <Grid item sm={3}>
+                        <Grid item container direction={"row"}>
+                          <Grid item sm={6}>
+                            <TextField
+                              type="number"
+                              label="Start time (Seconds)"
+                              value={props.groupData.startTime}
+                              InputProps={{ disableUnderline: true }}
+                              onClick={stopPropagation}
+                              onChange={event =>
+                                props.handleGroupElementChange(
+                                  props.index,
+                                  "startTime",
+                                  event.target.value
+                                )
+                              }
+                              autoComplete="off"
+                              disabled={disableGroup}
+                            />
+                          </Grid>
+                          <Grid item sm={6}>
+                            <TextField
+                              type="number"
+                              label="Stay time (Seconds)"
+                              value={props.groupData.stayTime}
+                              InputProps={{ disableUnderline: true }}
+                              onClick={stopPropagation}
+                              onChange={event =>
+                                props.handleGroupElementChange(
+                                  props.index,
+                                  "stayTime",
+                                  event.target.value
+                                )
+                              }
+                              autoComplete="off"
+                              disabled={disableGroup}
+                            />
+                          </Grid>
                         </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid item sm={1}>
+                    )}
+                    <Grid item sm={props.timed ? 1 : 3}>
                       <Typography component={"div"} className={classes.questionCount}>
                         {questionCount} questions
                       </Typography>
