@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import java.util.stream.Stream;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.joda.time.LocalDate;
@@ -63,7 +64,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             "and m.isVoided = false " +
             "and g.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
-    Page<GroupSubject> findGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+    Stream<GroupSubject> findGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
 
 
     default Specification<GroupSubject> syncStrategySpecification(SyncParameters syncParameters) {

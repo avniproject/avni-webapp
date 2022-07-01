@@ -1,6 +1,7 @@
 package org.avni.dao;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import org.avni.domain.*;
 import org.avni.projection.IndividualWebProjection;
@@ -102,7 +103,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "and ind.subjectType.id = :subjectTypeId " +
             "and ind.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds,NULL) is null OR ind.addressLevel.id in :locationIds)")
-    Page<Individual> findIndividuals(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+    Stream<Individual> findIndividuals(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
 
     //group by is added for distinct ind records
     @Query("select i from Individual i " +
@@ -113,7 +114,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)" +
             "group by i.id")
-    Page<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Pageable pageable);
+    Stream<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId);
 
 
     @Query("select i from Individual i where i.uuid =:id or i.legacyId = :id")

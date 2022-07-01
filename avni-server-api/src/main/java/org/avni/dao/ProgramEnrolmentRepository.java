@@ -1,6 +1,7 @@
 package org.avni.dao;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.avni.domain.Program;
 import org.joda.time.DateTime;
@@ -35,7 +36,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             "and i.isVoided = false " +
             "and coalesce(enl.enrolmentDateTime, enl.programExitDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)")
-    Page<ProgramEnrolment> findEnrolments(Long programId, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Pageable pageable);
+    Stream<ProgramEnrolment> findEnrolments(Long programId, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime);
 
     //group by is added for distinct enl records
     @Query("select enl from ProgramEnrolment enl " +
@@ -49,7 +50,7 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds) " +
             "group by enl.id")
-    Page<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Long programId, Pageable pageable);
+    Stream<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Long programId);
 
 
     Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanAndProgramNameOrderByLastModifiedDateTimeAscIdAsc(
