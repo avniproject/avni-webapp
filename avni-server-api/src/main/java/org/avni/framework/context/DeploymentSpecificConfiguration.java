@@ -83,19 +83,10 @@ public class DeploymentSpecificConfiguration {
             }
         }
 
-        if (springProfiles.isOnPremise() && awsMinioService != null)
-            return awsMinioService;
-
         if (isMinioConfiguredOrgUser && awsMinioService != null)
             return awsMinioService;
 
-        if(awss3Service != null)
-            return awss3Service;
-
-        if(awsMinioService != null)
-            return awsMinioService;
-
-        throw new NoSuchBeanDefinitionException("S3Service", "Storage service bean of type S3Service not found");
+        return getBatchS3Service();
     }
 
     @Profile({"!dev","!staging"})
