@@ -10,11 +10,13 @@ import org.avni.domain.User;
 import org.avni.util.S;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-@Service
+@Service("CognitoIdpService")
+@ConditionalOnProperty(value = "aws.cognito.enable", havingValue = "true", matchIfMissing = true)
 public class CognitoIdpService extends IdpService {
 
     @Value("${aws.accessKeyId}")

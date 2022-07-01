@@ -71,6 +71,10 @@ dependencies {
     compile 'commons-validator:commons-validator:1.4.1'
     implementation 'org.keycloak:keycloak-spring-boot-starter:18.0.2'
     implementation 'org.keycloak:keycloak-admin-client:18.0.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.6'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.6'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.6'
+    implementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.12.6'
     dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
     testCompile "org.mockito:mockito-core:2.23.4"
     runtime("org.springframework.boot:spring-boot-properties-migrator")

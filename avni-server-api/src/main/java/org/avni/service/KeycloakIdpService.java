@@ -6,21 +6,22 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+@Service("KeycloakIdpService")
+@ConditionalOnProperty(value = "keycloak.enabled", havingValue = "true")
 public class KeycloakIdpService extends IdpService {
 
     public static final String KEYCLOAK_ADMIN_API_CLIENT_ID = "admin-api";
@@ -43,7 +44,7 @@ public class KeycloakIdpService extends IdpService {
     public void init() {
         if (!isDev || this.idpInDev()) {
             //Is the appending "/auth" required, we cannot set getAuthServerUrl() property with the auth, as its used in KeycloakAuthService without to get certs
-            keycloak = KeycloakBuilder.builder().serverUrl(adapterConfig.getAuthServerUrl()+"/auth")
+            keycloak = KeycloakBuilder.builder().serverUrl(adapterConfig.getAuthServerUrl())
                     .grantType(OAuth2Constants.CLIENT_CREDENTIALS).realm(adapterConfig.getRealm())
                     .clientId(KEYCLOAK_ADMIN_API_CLIENT_ID)
                     .clientSecret((String) adapterConfig.getCredentials().get("secret"))
