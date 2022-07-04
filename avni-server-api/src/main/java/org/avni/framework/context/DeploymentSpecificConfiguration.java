@@ -128,8 +128,8 @@ public class DeploymentSpecificConfiguration {
         boolean isKeycloakConfiguredOrgUser = false;
         if(user != null && organisation != null) {
             JsonObject organisationSettings = organisationConfigService.getOrganisationSettingsJson(organisation.getId());
-            Object useMinioForStorage = organisationSettings.get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
-            isKeycloakConfiguredOrgUser=(useMinioForStorage != null && Boolean.parseBoolean((String)useMinioForStorage));
+            Object useKeycloakAsIDP = organisationSettings.get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
+            isKeycloakConfiguredOrgUser=(useKeycloakAsIDP != null && Boolean.parseBoolean((String)useKeycloakAsIDP));
         }
 
         if (isKeycloakConfiguredOrgUser && keycloakIdpService != null)
