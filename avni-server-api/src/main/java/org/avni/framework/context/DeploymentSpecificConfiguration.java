@@ -123,13 +123,9 @@ public class DeploymentSpecificConfiguration {
     public IdpService getIdpService(User user, Organisation organisation) {
         boolean isKeycloakConfiguredOrgUser = false;
         if(user != null && organisation != null) {
-            JsonObject organisationSettings = organisationConfigService
-                    .getOrganisationSettingsJson(organisation.getId());
-            Object useKeycloakAsIDP = organisationSettings
-                    .get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
-            if(useKeycloakAsIDP != null && Boolean.parseBoolean((String)useKeycloakAsIDP)) {
-                isKeycloakConfiguredOrgUser = true;
-            }
+            JsonObject organisationSettings = organisationConfigService.getOrganisationSettingsJson(organisation.getId());
+            Object useMinioForStorage = organisationSettings.get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
+            isKeycloakConfiguredOrgUser=(useMinioForStorage != null && Boolean.parseBoolean((String)useMinioForStorage));
         }
 
         if (isKeycloakConfiguredOrgUser && keycloakIdpService != null)
