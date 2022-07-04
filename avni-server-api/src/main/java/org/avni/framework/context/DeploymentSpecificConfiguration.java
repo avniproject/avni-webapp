@@ -1,6 +1,7 @@
 package org.avni.framework.context;
 
 import org.avni.application.OrganisationConfigSettingKeys;
+import org.avni.config.AvniKeycloakConfig;
 import org.avni.config.CognitoConfig;
 import org.avni.dao.UserRepository;
 import org.avni.domain.JsonObject;
@@ -35,17 +36,20 @@ public class DeploymentSpecificConfiguration {
 
     private final UserRepository userRepository;
     private final SpringProfiles springProfiles;
+    private final AvniKeycloakConfig avniKeycloakConfig;
     private final CognitoConfig cognitoConfig;
     private final AdapterConfig adapterConfig;
     private final OrganisationConfigService organisationConfigService;
 
     @Autowired
     public DeploymentSpecificConfiguration(CognitoConfig cognitoConfig, AdapterConfig adapterConfig,
-                                           UserRepository userRepository, SpringProfiles springProfiles, OrganisationConfigService organisationConfigService) {
+                                           UserRepository userRepository, SpringProfiles springProfiles,
+                                           AvniKeycloakConfig avniKeycloakConfig, OrganisationConfigService organisationConfigService) {
         this.cognitoConfig = cognitoConfig;
         this.adapterConfig = adapterConfig;
         this.userRepository = userRepository;
         this.springProfiles = springProfiles;
+        this.avniKeycloakConfig = avniKeycloakConfig;
         this.organisationConfigService = organisationConfigService;
     }
 
@@ -62,7 +66,7 @@ public class DeploymentSpecificConfiguration {
 
 
     private KeycloakAuthService getKeycloakAuthService() {
-        return new KeycloakAuthService(userRepository, adapterConfig, springProfiles);
+        return new KeycloakAuthService(userRepository, adapterConfig, springProfiles, avniKeycloakConfig);
     }
 
     @Profile({"dev","staging"})
