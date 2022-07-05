@@ -2,11 +2,11 @@ package org.avni.dao.search;
 
 import java.util.Map;
 
-public class SubjectSearchQuery {
+public class SqlQuery {
     private String query;
     private Map<String, Object> parameters;
 
-    public SubjectSearchQuery(String query, Map<String, Object> parameters) {
+    public SqlQuery(String query, Map<String, Object> parameters) {
         this.query = query;
         this.parameters = parameters;
     }

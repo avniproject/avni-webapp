@@ -14,14 +14,14 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldBuildBaseQueryWhenRunWithoutParameters() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder().build();
+        SqlQuery query = new SubjectSearchQueryBuilder().build();
         System.out.println(query.getSql());
         assertThat(query.getSql()).isNotEmpty();
     }
 
     @Test
     public void shouldBeAbleToSearchByName() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withNameFilter("name")
                 .build();
         assertThat(query.getSql()).isNotEmpty();
@@ -29,7 +29,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldNotAddNameFiltersForNullOrEmptyNames() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withNameFilter("    ")
                 .build();
         assertThat(query.getSql().contains("i.last_name ilike")).isFalse();
@@ -42,7 +42,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldBreakNameStringIntoTokensInTheQuery() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withNameFilter("two tokens  andAnother")
                 .build();
         assertThat(query.getParameters().values().contains("%two%")).isTrue();
@@ -53,7 +53,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldAddAgeFilter() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withAgeFilter(new IntegerRange(1, null))
                 .build();
         assertThat(query.getParameters().size()).isEqualTo(3);
@@ -61,7 +61,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldAddGenderFilter() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withGenderFilter(null)
                 .build();
         assertThat(query.getParameters().size()).isEqualTo(2);
@@ -76,7 +76,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldAddEncounterJoinWhtnAddingEncounterDateFilter() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withEncounterDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .build();
         assertThat(query.getParameters().size()).isEqualTo(4);
@@ -84,7 +84,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldNotAddTheSameJoinsMultipleTimes() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withProgramEncounterDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .withProgramEnrolmentDateFilter(new DateRange("2021-01-01", "2022-01-01"))
                 .build();
@@ -93,7 +93,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldAddConditionsForConcepts() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withConceptsFilter(Arrays.asList(
                         new Concept[]{new Concept("uuid", "registration", "CODED", Arrays.asList(new String[]{"asdf", "qwer"}), null)}))
                 .build();
@@ -101,7 +101,7 @@ public class SubjectSearchQueryBuilderTest {
 
     @Test
     public void shouldMakeQueryForCount() {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder().forCount()
+        SqlQuery query = new SubjectSearchQueryBuilder().forCount()
                 .build();
     }
 

@@ -1,9 +1,8 @@
 package org.avni.service;
 
 import com.bugsnag.Bugsnag;
-import org.avni.application.FormMapping;
 import org.avni.dao.application.FormMappingRepository;
-import org.avni.framework.security.UserContextHolder;
+import org.avni.web.api.EncounterSearchRequest;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.dao.individualRelationship.RuleFailureLogRepository;
@@ -14,6 +13,7 @@ import org.avni.web.request.rules.RulesContractWrapper.VisitSchedule;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -38,15 +38,17 @@ public class EncounterService implements ScopeAwareService {
     private RuleFailureLogRepository ruleFailureLogRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private FormMappingRepository formMappingRepository;
+    private EncounterSearchRepository encounterSearchRepository;
 
     @Autowired
-    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository, RuleFailureLogRepository ruleFailureLogRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository) {
+    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository, RuleFailureLogRepository ruleFailureLogRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, EncounterSearchRepository encounterSearchRepository) {
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.individualRepository = individualRepository;
         this.ruleFailureLogRepository = ruleFailureLogRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
+        this.encounterSearchRepository = encounterSearchRepository;
     }
 
     public EncounterContract getEncounterByUuid(String uuid) {
@@ -148,16 +150,6 @@ public class EncounterService implements ScopeAwareService {
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUuid) {
         return true;
-//        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
-//        FormMapping formMapping = formMappingRepository.getAllGeneralEncounterFormMappings()
-//                .stream()
-//                .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
-//                .findFirst()
-//                .orElse(null);
-//        User user = UserContextHolder.getUserContext().getUser();
-//        return encounterType != null &&
-//                formMapping != null &&
-//                isChanged(user, lastModifiedDateTime, encounterType.getId(), formMapping.getSubjectType());
     }
 
     @Override
@@ -172,5 +164,11 @@ public class EncounterService implements ScopeAwareService {
             encounter.setAddressId(individual.getAddressLevel().getId());
         }
         return encounterRepository.save(encounter);
+    }
+
+    public Page<Encounter> search(EncounterSearchRequest encounterSearchRequest) {
+        List<Encounter> results = encounterSearchRepository.search(encounterSearchRequest);
+        long total = encounterSearchRepository.getCount(encounterSearchRequest);
+        return new PageImpl<>(results, encounterSearchRequest.getPageable(), total);
     }
 }

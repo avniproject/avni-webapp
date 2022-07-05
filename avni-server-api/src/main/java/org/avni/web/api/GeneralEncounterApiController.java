@@ -57,13 +57,10 @@ public class GeneralEncounterApiController {
                                       Pageable pageable) {
         Page<Encounter> encounters;
         Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(concepts);
-        if (S.isEmpty(encounterType)) {
-            encounters = encounterRepository.findByConcepts(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, pageable);
-        } else if (S.isEmpty(subjectUUID)) {
-            encounters = encounterRepository.findByConceptsAndEncounterType(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, encounterType, pageable);
-        } else {
-            encounters = encounterRepository.findByConceptsAndEncounterTypeAndSubject(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), conceptsMap, encounterType, subjectUUID, pageable);
-        }
+
+        EncounterSearchRequest encounterSearchRequest = new EncounterSearchRequest(CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), encounterType, subjectUUID, conceptsMap, pageable);
+
+        encounters = encounterService.search(encounterSearchRequest);
 
         ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();
         encounters.forEach(encounter -> {
