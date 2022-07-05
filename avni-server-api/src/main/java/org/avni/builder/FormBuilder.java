@@ -50,11 +50,6 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
-    public FormBuilder withTimed(boolean isTimed) {
-        this.get().setTimed(isTimed);
-        return this;
-    }
-
     public FormBuilder withVoided(boolean voided) {
         this.get().setVoided(voided);
         return this;
@@ -82,6 +77,7 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
             new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
                         .withName(formElementGroupContract.getName())
                         .withUUID(formElementGroupContract.getUuid())
+                        .withTimed(formElementGroupContract.isTimed())
                         .withStartTime(formElementGroupContract.getStartTime())
                         .withStayTime(formElementGroupContract.getStayTime())
                         .withDisplay(formElementGroupContract.getDisplay())

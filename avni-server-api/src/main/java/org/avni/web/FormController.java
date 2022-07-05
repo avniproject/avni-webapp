@@ -271,7 +271,6 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         formContract.setValidationRule(form.getValidationRule());
         formContract.setChecklistsRule(form.getChecklistsRule());
         formContract.setOrganisationId(form.getOrganisationId());
-        formContract.setTimed(form.isTimed());
         form.getDecisionConcepts().forEach(concept -> {
             ConceptContract conceptContract = new ConceptContract();
             BeanUtils.copyProperties(concept, conceptContract);
@@ -291,6 +290,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             formElementGroupContract.setOrganisationId(formElementGroup.getOrganisationId());
             formElementGroupContract.setRule(formElementGroup.getRule());
             formElementGroupContract.setDeclarativeRule(formElementGroup.getDeclarativeRule());
+            formElementGroupContract.setTimed(formElementGroup.isTimed());
             formElementGroupContract.setStartTime(formElementGroup.getStartTime());
             formElementGroupContract.setStayTime(formElementGroup.getStayTime());
             formContract.addFormElementGroup(formElementGroupContract);

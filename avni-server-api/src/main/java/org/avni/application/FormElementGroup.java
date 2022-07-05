@@ -41,6 +41,9 @@ public class FormElementGroup extends OrganisationAwareEntity {
     private DeclarativeRule declarativeRule;
 
     @Column
+    private boolean isTimed;
+
+    @Column
     private Long startTime;
 
     @Column
@@ -138,5 +141,13 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     public void setStayTime(Long stayTime) {
         this.stayTime = stayTime;
+    }
+
+    public boolean isTimed() {
+        return isTimed;
+    }
+
+    public void setTimed(boolean timed) {
+        isTimed = timed;
     }
 }

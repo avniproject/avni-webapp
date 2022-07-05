@@ -49,6 +49,11 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return this;
     }
 
+    public FormElementGroupBuilder withTimed(boolean isTimed) {
+        this.get().setTimed(isTimed);
+        return this;
+    }
+
     public FormElementGroupBuilder withStartTime(Long startTime) {
         this.get().setStartTime(startTime);
         return this;
