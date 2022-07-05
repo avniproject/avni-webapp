@@ -141,7 +141,9 @@ public class ProgramEnrolmentApiController {
         }
         ProgramEnrolment programEnrolment = new ProgramEnrolment();
         programEnrolment.assignUUID();
-        programEnrolment.setLegacyId(externalId.trim());
+        if (StringUtils.hasLength(externalId)) {
+            programEnrolment.setLegacyId(externalId.trim());
+        }
         return programEnrolment;
     }
 }

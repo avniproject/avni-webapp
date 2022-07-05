@@ -166,7 +166,9 @@ public class ProgramEncounterApiController {
         }
         ProgramEncounter programEncounter = new ProgramEncounter();
         programEncounter.assignUUID();
-        programEncounter.setLegacyId(externalId.trim());
+        if (StringUtils.hasLength(externalId)) {
+            programEncounter.setLegacyId(externalId.trim());
+        }
         return programEncounter;
     }
 }
