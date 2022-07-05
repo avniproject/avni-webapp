@@ -19,7 +19,6 @@ public class KeycloakConnectivityTest {
     public static final String KEYCLOAK_ADMIN_API_CLIENT_ID = "admin-api";
     private static final Logger logger = LoggerFactory.getLogger(KeycloakConnectivityTest.class);
 
-    @Mock
     private AdapterConfig adapterConfig;
     private Keycloak keycloak;
     private RealmResource realmResource;
