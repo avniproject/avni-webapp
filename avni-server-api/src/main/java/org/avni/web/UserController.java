@@ -8,7 +8,7 @@ import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.UserWebProjection;
 import org.avni.service.AccountAdminService;
-import org.avni.service.CognitoIdpService;
+import org.avni.service.IdpService;
 import org.avni.service.ResetSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.UserContract;
@@ -40,7 +40,7 @@ public class UserController {
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
-    private CognitoIdpService cognitoService;
+    private IdpService idpService;
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
@@ -54,13 +54,13 @@ public class UserController {
                           UserRepository userRepository,
                           OrganisationRepository organisationRepository,
                           UserService userService,
-                          CognitoIdpService cognitoService,
+                          IdpService idpService,
                           AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ResetSyncService resetSyncService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
-        this.cognitoService = cognitoService;
+        this.idpService = idpService;
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
@@ -92,7 +92,7 @@ public class UserController {
 
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
-            cognitoService.createUserWithPassword(user, userContract.getPassword());
+            idpService.createUserWithPassword(user, userContract.getPassword());
             userService.save(user, userContract.getDirectAssignmentIds());
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             userService.addToDefaultUserGroup(user);
@@ -119,7 +119,7 @@ public class UserController {
             resetSyncService.recordSyncAttributeValueChangeForUser(user, userContract);
             user = setUserAttributes(user, userContract);
 
-            cognitoService.updateUser(user);
+            idpService.updateUser(user);
             userService.save(user, userContract.getDirectAssignmentIds());
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
@@ -174,7 +174,7 @@ public class UserController {
     public ResponseEntity deleteUser(@PathVariable("id") Long id) {
         try {
             User user = userRepository.findOne(id);
-            cognitoService.deleteUser(user);
+            idpService.deleteUser(user);
             user.setVoided(true);
             user.setDisabledInCognito(true);
             userRepository.save(user);
@@ -194,13 +194,13 @@ public class UserController {
         try {
             User user = userRepository.findOne(id);
             if (disable) {
-                cognitoService.disableUser(user);
+                idpService.disableUser(user);
                 user.setDisabledInCognito(true);
                 userRepository.save(user);
                 logger.info(String.format("Disabled user '%s', UUID '%s'", user.getUsername(), user.getUuid()));
             } else {
                 if (user.isDisabledInCognito()) {
-                    cognitoService.enableUser(user);
+                    idpService.enableUser(user);
                     user.setDisabledInCognito(false);
                     userRepository.save(user);
                     logger.info(String.format("Enabled previously disabled user '%s', UUID '%s'", user.getUsername(), user.getUuid()));
@@ -221,7 +221,7 @@ public class UserController {
     public ResponseEntity resetPassword(@PathVariable("id") Long id, @RequestParam() String password) {
         try {
             User user = userRepository.findOne(id);
-            cognitoService.resetPassword(user, password);
+            idpService.resetPassword(user, password);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());

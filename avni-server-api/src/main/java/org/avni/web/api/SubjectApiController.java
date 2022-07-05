@@ -170,7 +170,9 @@ public class SubjectApiController {
         }
         Individual subject =  new Individual();
         subject.assignUUID();
-        subject.setLegacyId(externalId.trim());
+        if (StringUtils.hasLength(externalId)) {
+            subject.setLegacyId(externalId.trim());
+        }
         return subject;
     }
 }

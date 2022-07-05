@@ -158,7 +158,9 @@ public class GeneralEncounterApiController {
         }
         Encounter encounter = new Encounter();
         encounter.assignUUID();
-        encounter.setLegacyId(externalId.trim());
+        if (StringUtils.hasLength(externalId)) {
+            encounter.setLegacyId(externalId.trim());
+        }
         return encounter;
     }
 }

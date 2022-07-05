@@ -21,6 +21,9 @@ public class SpringProfiles {
         this.environment = environment;
     }
 
+    public boolean isDev() {
+        return isProfile(SpringProfiles.DEV);
+    }
     public boolean isStaging() {
         return isProfile(SpringProfiles.STAGING);
     }
