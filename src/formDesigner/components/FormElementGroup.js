@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import Grid from "@material-ui/core/Grid";
-import { FormControl, Input } from "@material-ui/core";
+import { Checkbox, FormControl, Input } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
@@ -25,6 +25,7 @@ import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import Tooltip from "@material-ui/core/Tooltip";
 import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -291,7 +292,7 @@ function FormElementGroup(props) {
                         </FormControl>
                       </Typography>
                     </Grid>
-                    {props.timed && (
+                    {props.groupData.timed && (
                       <Grid item sm={3}>
                         <Grid item container direction={"row"}>
                           <Grid item sm={6}>
@@ -333,7 +334,7 @@ function FormElementGroup(props) {
                         </Grid>
                       </Grid>
                     )}
-                    <Grid item sm={props.timed ? 1 : 3}>
+                    <Grid item sm={props.groupData.timed ? 1 : 3}>
                       <Typography component={"div"} className={classes.questionCount}>
                         {questionCount} questions
                       </Typography>
@@ -398,6 +399,23 @@ function FormElementGroup(props) {
                           </Button>
                         </FormControl>
                       )}
+                      <FormControlLabel
+                        style={{ marginLeft: 10 }}
+                        control={
+                          <Checkbox
+                            id="isTimed"
+                            checked={props.groupData.timed}
+                            onChange={event =>
+                              props.handleGroupElementChange(
+                                props.index,
+                                "timed",
+                                event.target.checked
+                              )
+                            }
+                          />
+                        }
+                        label="Timed Page"
+                      />
                     </Typography>
                   </Grid>
                   <Grid hidden={tabIndex !== 1}>
