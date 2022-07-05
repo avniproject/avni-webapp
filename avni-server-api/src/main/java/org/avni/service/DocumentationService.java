@@ -36,10 +36,17 @@ public class DocumentationService implements NonScopeAwareService {
         return documentationRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
-    public List<DocumentationContract> getAll() {
+    public List<DocumentationContract> getAllNonVoided() {
         return documentationRepository.findAllByIsVoidedFalse()
                 .stream()
                 .map(DocumentationContract::fromDocumentation)
+                .collect(Collectors.toList());
+    }
+
+    public List<DocumentationContract> getAll() {
+        return documentationRepository.findAll()
+                .stream()
+                .map(DocumentationContract::fromDocumentationWithoutAudit)
                 .collect(Collectors.toList());
     }
 

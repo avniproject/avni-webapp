@@ -40,6 +40,15 @@ public class FormElementGroup extends OrganisationAwareEntity {
     @Type(type = "declarativeRule")
     private DeclarativeRule declarativeRule;
 
+    @Column
+    private boolean isTimed;
+
+    @Column
+    private Long startTime;
+
+    @Column
+    private Long stayTime;
+
     public String getRule() {
         return rule;
     }
@@ -116,5 +125,29 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     public void setDeclarativeRule(DeclarativeRule declarativeRule) {
         this.declarativeRule = declarativeRule;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getStayTime() {
+        return stayTime;
+    }
+
+    public void setStayTime(Long stayTime) {
+        this.stayTime = stayTime;
+    }
+
+    public boolean isTimed() {
+        return isTimed;
+    }
+
+    public void setTimed(boolean timed) {
+        isTimed = timed;
     }
 }

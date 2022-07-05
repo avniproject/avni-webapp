@@ -18,6 +18,15 @@ public class DocumentationContract extends ReferenceDataContract {
     private DocumentationContract parent;
 
     public static DocumentationContract fromDocumentation(Documentation documentation) {
+        DocumentationContract documentationContract = DocumentationContract.fromDocumentationWithoutAudit(documentation);
+        documentationContract.setCreatedBy(documentation.getCreatedByName());
+        documentationContract.setCreatedDateTime(documentation.getCreatedDateTime());
+        documentationContract.setLastModifiedBy(documentation.getLastModifiedByName());
+        documentationContract.setLastModifiedDateTime(documentation.getLastModifiedDateTime());
+        return documentationContract;
+    }
+
+    public static DocumentationContract fromDocumentationWithoutAudit(Documentation documentation) {
         DocumentationContract documentationContract = new DocumentationContract();
         documentationContract.setUuid(documentation.getUuid());
         documentationContract.setName(documentation.getName());
@@ -27,12 +36,8 @@ public class DocumentationContract extends ReferenceDataContract {
                 .collect(Collectors.toSet());
         documentationContract.setDocumentationItems(documentationItemRequests);
         documentationContract.setVoided(documentation.isVoided());
-        documentationContract.setCreatedBy(documentation.getCreatedByName());
-        documentationContract.setCreatedDateTime(documentation.getCreatedDateTime());
-        documentationContract.setLastModifiedBy(documentation.getLastModifiedByName());
-        documentationContract.setLastModifiedDateTime(documentation.getLastModifiedDateTime());
         if (documentation.getParent() != null) {
-            documentationContract.setParent(DocumentationContract.fromDocumentation(documentation.getParent()));
+            documentationContract.setParent(DocumentationContract.fromDocumentationWithoutAudit(documentation.getParent()));
         }
         return documentationContract;
     }

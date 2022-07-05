@@ -1,6 +1,7 @@
 package org.avni.exporter;
 
 
+import org.avni.framework.security.AuthService;
 import org.avni.service.ExportS3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,19 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
     @Value("#{jobParameters['uuid']}")
     private String uuid;
 
+    @Value("#{jobParameters['userId']}")
+    private Long userId;
+
+    @Value("#{jobParameters['organisationUUID']}")
+    private String organisationUUID;
+
     private ExportS3Service exportS3Service;
+    private final AuthService authService;
 
     @Autowired
-    public JobCompletionNotificationListener(ExportS3Service exportS3Service) {
+    public JobCompletionNotificationListener(ExportS3Service exportS3Service, AuthService authService) {
         this.exportS3Service = exportS3Service;
+        this.authService = authService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -54,5 +63,6 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
     @Override
     public void beforeJob(JobExecution jobExecution) {
         logger.info("starting export job with uuid {}", jobExecution.getJobParameters().getString("uuid"));
+        authService.authenticateByUserId(userId, organisationUUID);
     }
 }

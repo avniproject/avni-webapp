@@ -49,6 +49,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private Date endDate;
     @Value("#{jobParameters['timeZone']}")
     private String timeZone;
+
     private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private EncounterRepository encounterRepository;
