@@ -13,16 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service("KeycloakIdpService")
 @ConditionalOnProperty(value = "keycloak.enabled", havingValue = "true")
-public class KeycloakIdpService extends IdpService {
+public class KeycloakIdpService extends IdpServiceImpl {
 
     public static final String KEYCLOAK_ADMIN_API_CLIENT_ID = "admin-api";
     @Autowired
@@ -128,21 +131,24 @@ public class KeycloakIdpService extends IdpService {
     }
 
     @Override
-    protected boolean idpInDev() {
+    public boolean idpInDev() {
         return isDev && keycloakInDevProperty;
     }
 
     @Override
-    protected Boolean existsInIDP(User user) {
+    public Boolean existsInIDP(User user) {
         return !realmResource.users().search(user.getUsername(), true).isEmpty();
     }
 
     private CredentialRepresentation getCredentialRepresentation(String password) {
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setType(CredentialRepresentation.PASSWORD);
+        cred.setTemporary(false);
+        if(password == null || !StringUtils.hasLength(password)) {
+            password = TEMPORARY_PASSWORD;
+            cred.setTemporary(true);
+        }
         cred.setValue(password);
-        Boolean isTemp = TEMPORARY_PASSWORD.equalsIgnoreCase(password);
-        cred.setTemporary(isTemp);
         return cred;
     }
 
@@ -155,10 +161,10 @@ public class KeycloakIdpService extends IdpService {
 
     private void updateUserRepresentation(User user, UserRepresentation userRep) {
         userRep.setUsername(user.getUsername());
-        Map attrs = new HashMap<String, String>();
-        attrs.put("phone_number", user.getPhoneNumber());
-        attrs.put("phone_number_verified", "true");
-        attrs.put("custom:userUUID", user.getUuid());
+        Map attrs = new HashMap<String, List<String>>();
+        attrs.put("phone_number", Arrays.asList(user.getPhoneNumber()));
+        attrs.put("phone_number_verified", Arrays.asList("true"));
+        attrs.put("custom:userUUID", Arrays.asList(user.getUuid()));
         userRep.setAttributes(attrs);
         userRep.setEmail(user.getEmail());
         userRep.setEnabled(!user.isVoided());

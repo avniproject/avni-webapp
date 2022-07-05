@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct;
 
 @Service("CognitoIdpService")
 @ConditionalOnProperty(value = "aws.cognito.enable", havingValue = "true", matchIfMissing = true)
-public class CognitoIdpService extends IdpService {
+public class CognitoIdpService extends IdpServiceImpl {
 
     @Value("${aws.accessKeyId}")
     private String accessKeyId;
@@ -129,11 +129,11 @@ public class CognitoIdpService extends IdpService {
         logger.info(String.format("password reset for cognito-user | username '%s'", user.getUsername()));
     }
     @Override
-    protected boolean idpInDev() {
+    public boolean idpInDev() {
         return isDev && cognitoInDevProperty;
     }
     @Override
-    protected Boolean existsInIDP(User user) {
+    public Boolean existsInIDP(User user) {
         try {
             cognitoClient.adminGetUser(new AdminGetUserRequest().withUserPoolId(userPoolId).withUsername(user.getUsername()));
             return true;
