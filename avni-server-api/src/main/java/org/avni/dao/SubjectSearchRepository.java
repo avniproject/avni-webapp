@@ -1,6 +1,6 @@
 package org.avni.dao;
 
-import org.avni.dao.search.SubjectSearchQuery;
+import org.avni.dao.search.SqlQuery;
 import org.avni.dao.search.SubjectSearchQueryBuilder;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.hibernate.query.internal.NativeQueryImpl;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-@Transactional
 public class SubjectSearchRepository {
 
     @PersistenceContext
@@ -24,7 +23,7 @@ public class SubjectSearchRepository {
 
     @Transactional
     public List<Map<String,Object>> search(SubjectSearchRequest searchRequest) {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withSubjectSearchFilter(searchRequest)
                 .build();
         Query sql = entityManager.createNativeQuery(query.getSql());
@@ -37,7 +36,7 @@ public class SubjectSearchRepository {
     }
 
     public BigInteger getTotalCount(SubjectSearchRequest searchRequest) {
-        SubjectSearchQuery query = new SubjectSearchQueryBuilder()
+        SqlQuery query = new SubjectSearchQueryBuilder()
                 .withSubjectSearchFilter(searchRequest)
                 .forCount()
                 .build();

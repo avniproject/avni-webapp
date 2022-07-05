@@ -2,12 +2,9 @@ package org.avni.service;
 
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.ProgramEnrolmentRepository;
-import org.avni.domain.Program;
-import org.avni.domain.ProgramEnrolment;
-import org.joda.time.LocalDate;
 import org.avni.dao.SubjectSearchRepository;
+import org.avni.domain.Program;
 import org.avni.web.request.EnrolmentContract;
-import org.avni.web.request.IndividualContract;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

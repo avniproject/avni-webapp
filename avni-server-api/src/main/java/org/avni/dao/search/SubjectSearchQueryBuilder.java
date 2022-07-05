@@ -59,7 +59,7 @@ public class SubjectSearchQueryBuilder {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public SubjectSearchQuery build() {
+    public SqlQuery build() {
         StringBuffer query = new StringBuffer();
         query.append(baseQuery);
         query.append(String.join(" \n ", joinClauses));
@@ -87,7 +87,7 @@ public class SubjectSearchQueryBuilder {
         String queryWithCustomFields = finalQuery.replace(" $CUSTOM_FIELDS", customFieldString);
         logger.debug(queryWithCustomFields);
         logger.debug(parameters.toString());
-        return new SubjectSearchQuery(queryWithCustomFields, parameters);
+        return new SqlQuery(queryWithCustomFields, parameters);
     }
 
     public SubjectSearchQueryBuilder withSubjectSearchFilter(SubjectSearchRequest request) {
