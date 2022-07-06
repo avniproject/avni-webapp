@@ -35,9 +35,6 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     private RealmResource realmResource;
 
-    @Value("${avni.connectToKeycloakInDev}")
-    private boolean keycloakInDevProperty;
-
     @Autowired
     public KeycloakIdpService(Boolean isDev) {
         super(isDev);
@@ -132,7 +129,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     @Override
     public boolean idpInDev() {
-        return isDev && keycloakInDevProperty;
+        return isDev;
     }
 
     @Override
