@@ -22,6 +22,8 @@ public class FormElementGroupContract extends ReferenceDataContract {
     private Long stayTime;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private boolean isTimed = false;
+    private String textColour;
+    private String backgroundColour;
 
     public FormElementGroupContract() {
     }
@@ -100,6 +102,22 @@ public class FormElementGroupContract extends ReferenceDataContract {
         isTimed = timed;
     }
 
+    public String getTextColour() {
+        return textColour;
+    }
+
+    public void setTextColour(String textColour) {
+        this.textColour = textColour;
+    }
+
+    public String getBackgroundColour() {
+        return backgroundColour;
+    }
+
+    public void setBackgroundColour(String backgroundColour) {
+        this.backgroundColour = backgroundColour;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -129,6 +147,8 @@ public class FormElementGroupContract extends ReferenceDataContract {
         fegContract.setTimed(feg.isTimed());
         fegContract.setStartTime(feg.getStartTime());
         fegContract.setStayTime(feg.getStayTime());
+        fegContract.setTextColour(feg.getTextColour());
+        fegContract.setBackgroundColour(feg.getBackgroundColour());
         List<FormElementContract> feContracts = feg.getFormElements().stream()
                 .map(FormElementContract::fromFormElement)
                 .sorted(Comparator.comparingDouble(FormElementContract::getDisplayOrder))

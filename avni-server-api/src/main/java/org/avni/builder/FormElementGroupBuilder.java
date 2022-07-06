@@ -54,6 +54,17 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return this;
     }
 
+    public FormElementGroupBuilder withTextColour(String textColour) {
+        this.get().setTextColour(textColour);
+        return this;
+    }
+
+    public FormElementGroupBuilder withBackgroundColour(String backgroundColour) {
+        this.get().setBackgroundColour(backgroundColour);
+        return this;
+    }
+
+
     public FormElementGroupBuilder withStartTime(Long startTime) {
         this.get().setStartTime(startTime);
         return this;

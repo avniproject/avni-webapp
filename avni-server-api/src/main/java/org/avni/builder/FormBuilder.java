@@ -78,6 +78,8 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
                         .withName(formElementGroupContract.getName())
                         .withUUID(formElementGroupContract.getUuid())
                         .withTimed(formElementGroupContract.isTimed())
+                        .withTextColour(formElementGroupContract.getTextColour())
+                        .withBackgroundColour(formElementGroupContract.getBackgroundColour())
                         .withStartTime(formElementGroupContract.getStartTime())
                         .withStayTime(formElementGroupContract.getStayTime())
                         .withDisplay(formElementGroupContract.getDisplay())
