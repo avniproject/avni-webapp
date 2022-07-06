@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service("KeycloakIdpService")
-@ConditionalOnProperty(value = "keycloak.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "avni.connectToKeycloak", havingValue = "true")
 public class KeycloakIdpService extends IdpServiceImpl {
 
     public static final String KEYCLOAK_ADMIN_API_CLIENT_ID = "admin-api";
