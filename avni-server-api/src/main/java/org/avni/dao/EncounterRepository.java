@@ -3,6 +3,7 @@ package org.avni.dao;
 import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.*;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
@@ -29,9 +31,10 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     @Override
     default Page<Encounter> getSyncResults(SyncParameters syncParameters) {
         return findAll(syncAuditSpecification(syncParameters)
-                        .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                        .and(syncStrategySpecification(syncParameters)),
-                syncParameters.getPageable());
+                .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                .and(syncStrategySpecification(syncParameters, false, true)),
+                .and(syncStrategySpecification(syncParameters)),
+        syncParameters.getPageable());
     }
 
     default Specification<Encounter> syncTypeIdSpecification(Long typeId) {
@@ -40,9 +43,10 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
         return count(syncEntityChangedAuditSpecification(syncParameters)
                 .and(syncTypeIdSpecification(syncParameters.getTypeId()))
+                .and(syncStrategySpecification(syncParameters, false, true))
                 .and(syncStrategySpecification(syncParameters))
         ) > 0;
     }
@@ -94,6 +98,39 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
     }
 
+    default Specification<Encounter> findByEncounterTypeSpec(String encounterType) {
+        Specification<Encounter> spec = (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Encounter, EncounterType> encounterTypeJoin = root.join("encounterType", JoinType.LEFT);
+            return cb.and(cb.equal(encounterTypeJoin.get("name"), encounterType));
+        };
+        return spec;
+    }
+
+    default Specification<Encounter> findBySubjectUUIDSpec(String subjectUUID) {
+        return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            Join<Encounter, Individual> individualJoin = root.join("individual", JoinType.LEFT);
+            return cb.and(cb.equal(individualJoin.get("uuid"), subjectUUID));
+        };
+    }
+
+    default Page<Encounter> findByConcepts(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, Pageable pageable) {
+        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
+                .and(withConceptValues(concepts)), pageable);
+    }
+
+    default Page<Encounter> findByConceptsAndEncounterType(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
+        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
+                .and(withConceptValues(concepts))
+                .and(findByEncounterTypeSpec(encounterType)), pageable);
+    }
+
+    default Page<Encounter> findByConceptsAndEncounterTypeAndSubject(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String encounterType, String subjectUUID, Pageable pageable) {
+        return findAll(lastModifiedBetween(lastModifiedDateTime, now)
+                .and(withConceptValues(concepts))
+                .and(findByEncounterTypeSpec(encounterType))
+                .and(findBySubjectUUIDSpec(subjectUUID)), pageable);
+    }
+
     @Modifying(clearAutomatically = true)
     @Query(value = "update encounter e set " +
             "address_id = :addressId, " +
@@ -110,3 +147,4 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
             "where e.individual_id = i.id and i.subject_type_id = :subjectTypeId", nativeQuery = true)
     void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
 }
+
