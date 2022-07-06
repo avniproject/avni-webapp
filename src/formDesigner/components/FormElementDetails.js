@@ -30,6 +30,7 @@ import { FileOptions } from "./FileOptions";
 import SubjectFormElementKeyValues from "./SubjectFormElementKeyValues";
 import QuestionGroup from "./QuestionGroup";
 import DocumentationSearch from "../../documentation/components/DocumentationSearch";
+import { ColourStyle } from "./ColourStyle";
 
 export const FormControl = withStyles({
   root: {
@@ -937,25 +938,59 @@ function FormElementDetails(props) {
       {props.formElementData.concept.dataType === "QuestionGroup" && (
         <Fragment>
           <QuestionGroup parentFormElementUUID={props.formElementData.uuid} {...props} />
-          <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_REPEATABLE"}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id="repeatable"
-                  checked={!!props.formElementData.keyValues.repeatable}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(
-                      props.groupIndex,
-                      "repeatable",
-                      event.target.checked,
-                      props.index
-                    )
+          <Grid container direction={"row"} spacing={10}>
+            <Grid item>
+              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_REPEATABLE"}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      id="repeatable"
+                      checked={!!props.formElementData.keyValues.repeatable}
+                      onChange={event =>
+                        props.handleGroupElementKeyValueChange(
+                          props.groupIndex,
+                          "repeatable",
+                          event.target.checked,
+                          props.index
+                        )
+                      }
+                    />
                   }
+                  label="Repeatable"
                 />
-              }
-              label="Repeatable"
-            />
-          </AvniFormControl>
+              </AvniFormControl>
+            </Grid>
+            <Grid item>
+              <ColourStyle
+                label={"Text colour"}
+                colour={props.formElementData.keyValues.textColour}
+                onChange={colour =>
+                  props.handleGroupElementKeyValueChange(
+                    props.groupIndex,
+                    "textColour",
+                    colour,
+                    props.index
+                  )
+                }
+                toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
+              />
+            </Grid>
+            <Grid item>
+              <ColourStyle
+                label={"Background colour"}
+                colour={props.formElementData.keyValues.backgroundColour}
+                onChange={colour =>
+                  props.handleGroupElementKeyValueChange(
+                    props.groupIndex,
+                    "backgroundColour",
+                    colour,
+                    props.index
+                  )
+                }
+                toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
+              />
+            </Grid>
+          </Grid>
         </Fragment>
       )}
     </Fragment>

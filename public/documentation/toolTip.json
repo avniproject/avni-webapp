@@ -122,6 +122,8 @@
   "APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE": "Choose from already created group subject types",
   "APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE": "Select the role for the chosen group subject type",
   "APP_DESIGNER_FORM_ELEMENT_REPEATABLE": "Check this to repeat this group multiple times.",
+  "APP_DESIGNER_GROUP_TEXT_COLOUR": "Text colour for the name of the group",
+  "APP_DESIGNER_GROUP_BACKGROUND_COLOUR": "Background colour for the name of the group",
   "ADMIN_USER_SETTINGS_TRACK_LOCATION": "Switches on visit location tracking on the Field App",
   "ADMIN_USER_SETTINGS_HIDE_EXIT": "Removes the Exit button on the Field App",
   "ADMIN_USER_SETTINGS_HIDE_ENROL": "Hides the Enrol button on the Field App",

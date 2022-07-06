@@ -26,6 +26,7 @@ import { ToolTip } from "../../common/components/ToolTip";
 import Tooltip from "@material-ui/core/Tooltip";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { ColourStyle } from "./ColourStyle";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -399,23 +400,51 @@ function FormElementGroup(props) {
                           </Button>
                         </FormControl>
                       )}
-                      <FormControlLabel
-                        style={{ marginLeft: 10 }}
-                        control={
-                          <Checkbox
-                            id="isTimed"
-                            checked={props.groupData.timed}
-                            onChange={event =>
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        <div style={{ flex: 0.2 }}>
+                          <FormControlLabel
+                            style={{ marginLeft: 10 }}
+                            control={
+                              <Checkbox
+                                id="isTimed"
+                                checked={props.groupData.timed}
+                                onChange={event =>
+                                  props.handleGroupElementChange(
+                                    props.index,
+                                    "timed",
+                                    event.target.checked
+                                  )
+                                }
+                              />
+                            }
+                            label="Timed Page"
+                          />
+                        </div>
+                        <div style={{ flex: 0.2 }}>
+                          <ColourStyle
+                            label={"Text colour"}
+                            colour={props.groupData.textColour}
+                            onChange={colour =>
+                              props.handleGroupElementChange(props.index, "textColour", colour)
+                            }
+                            toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
+                          />
+                        </div>
+                        <div style={{ flex: 0.2 }}>
+                          <ColourStyle
+                            label={"Background colour"}
+                            colour={props.groupData.backgroundColour}
+                            onChange={colour =>
                               props.handleGroupElementChange(
                                 props.index,
-                                "timed",
-                                event.target.checked
+                                "backgroundColour",
+                                colour
                               )
                             }
+                            toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
                           />
-                        }
-                        label="Timed Page"
-                      />
+                        </div>
+                      </div>
                     </Typography>
                   </Grid>
                   <Grid hidden={tabIndex !== 1}>
