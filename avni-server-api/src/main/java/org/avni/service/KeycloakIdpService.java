@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service("KeycloakIdpService")
-@ConditionalOnProperty(value = "keycloak.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "avni.connectToKeycloak", havingValue = "true")
 public class KeycloakIdpService extends IdpServiceImpl {
 
     public static final String KEYCLOAK_ADMIN_API_CLIENT_ID = "admin-api";
@@ -34,9 +34,6 @@ public class KeycloakIdpService extends IdpServiceImpl {
     private Keycloak keycloak;
 
     private RealmResource realmResource;
-
-    @Value("${avni.connectToKeycloakInDev}")
-    private boolean keycloakInDevProperty;
 
     @Autowired
     public KeycloakIdpService(Boolean isDev) {
@@ -132,7 +129,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     @Override
     public boolean idpInDev() {
-        return isDev && keycloakInDevProperty;
+        return isDev;
     }
 
     @Override
