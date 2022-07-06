@@ -2,6 +2,7 @@ package org.avni.service;
 
 import com.bugsnag.Bugsnag;
 import org.avni.dao.application.FormMappingRepository;
+import org.avni.util.S;
 import org.avni.web.api.EncounterSearchRequest;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
@@ -167,8 +168,20 @@ public class EncounterService implements ScopeAwareService {
     }
 
     public Page<Encounter> search(EncounterSearchRequest encounterSearchRequest) {
-        List<Encounter> results = encounterSearchRepository.search(encounterSearchRequest);
-        long total = encounterSearchRepository.getCount(encounterSearchRequest);
-        return new PageImpl<>(results, encounterSearchRequest.getPageable(), total);
+        List<Encounter> results;
+        //Use sql when concepts are required.
+        if (!encounterSearchRequest.getConceptsMap().isEmpty()) {
+            results = encounterSearchRepository.search(encounterSearchRequest);
+            long total = encounterSearchRepository.getCount(encounterSearchRequest);
+            return new PageImpl<>(results, encounterSearchRequest.getPageable(), total);
+        }
+
+        if (S.isEmpty(encounterSearchRequest.getEncounterType())) {
+            return encounterRepository.findByConcepts(encounterSearchRequest.getLastModifiedDateTime(), encounterSearchRequest.getNow(), encounterSearchRequest.getConceptsMap(), encounterSearchRequest.getPageable());
+        } else if (S.isEmpty(encounterSearchRequest.getSubjectUUID())) {
+            return encounterRepository.findByConceptsAndEncounterType(encounterSearchRequest.getLastModifiedDateTime(), encounterSearchRequest.getNow(), encounterSearchRequest.getConceptsMap(), encounterSearchRequest.getEncounterType(), encounterSearchRequest.getPageable());
+        } else {
+            return encounterRepository.findByConceptsAndEncounterTypeAndSubject(encounterSearchRequest.getLastModifiedDateTime(), encounterSearchRequest.getNow(), encounterSearchRequest.getConceptsMap(), encounterSearchRequest.getEncounterType(), encounterSearchRequest.getSubjectUUID(), encounterSearchRequest.getPageable());
+        }
     }
 }

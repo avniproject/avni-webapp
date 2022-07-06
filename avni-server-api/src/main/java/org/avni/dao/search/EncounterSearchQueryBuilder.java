@@ -18,6 +18,7 @@ public class EncounterSearchQueryBuilder {
 
     private Set<String> whereClauses = new HashSet<>();
     private Set<String> joinClauses = new HashSet<>();
+    private String orderByString = "order by e.last_modified_date_time asc, e.id asc";
     private Map<String, Object> parameters = new HashMap<>();
     private boolean forCount;
 
@@ -45,6 +46,8 @@ public class EncounterSearchQueryBuilder {
             removePaginationFilters();
         } else {
             finalQuery = query.append("\n")
+                    .append("\n")
+                    .append(orderByString)
                     .append("\n")
                     .append(offsetLimitClause)
                     .toString();
@@ -104,7 +107,7 @@ public class EncounterSearchQueryBuilder {
 
         withJoin("inner join individual i on e.individual_id = i.id");
         addParameter("subject", subjectUuid);
-        whereClauses.add("s.uuid = :subject");
+        whereClauses.add("i.uuid = :subject");
         return this;
     }
 
