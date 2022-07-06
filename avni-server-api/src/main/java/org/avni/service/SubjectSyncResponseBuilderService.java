@@ -78,7 +78,7 @@ public class SubjectSyncResponseBuilderService {
                                 groupPrivileges.hasViewPrivilege(individualRelationship.getIndividualB())
                 )
                 .collect(Collectors.toSet()));
-        List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubjectOrMemberSubject(individual, individual);
+        List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByGroupSubjectOrMemberSubject(individual);
         syncSubjectResponse.setGroupSubjects(groupSubjects
                 .stream()
                 .filter(groupSubject ->

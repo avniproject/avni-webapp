@@ -1,5 +1,8 @@
 package org.avni.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,8 +16,9 @@ public class ExportS3Service {
 
     public static final String FILE_NAME_EXTENSION = ".csv";
     private S3Service s3Service;
+    private static Logger logger = LoggerFactory.getLogger(ExportS3Service.class);
 
-    public ExportS3Service(S3Service s3Service) {
+    public ExportS3Service(@Qualifier("BatchS3Service") S3Service s3Service) {
         this.s3Service = s3Service;
     }
 
@@ -25,6 +29,7 @@ public class ExportS3Service {
     }
 
     public ObjectInfo uploadFile(File tempSourceFile, String uuid) throws IOException {
+        logger.info(String.format("Uploading %s file to S3", tempSourceFile.getAbsolutePath()));
         return s3Service.uploadFile(tempSourceFile, format("%s%s", uuid, FILE_NAME_EXTENSION), "exports");
     }
 

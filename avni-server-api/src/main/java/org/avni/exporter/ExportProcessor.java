@@ -1,9 +1,12 @@
 package org.avni.exporter;
 
 import org.avni.dao.EncounterTypeRepository;
+import org.avni.service.ExportS3Service;
 import org.joda.time.DateTime;
 import org.avni.domain.*;
 import org.avni.web.request.ReportType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,8 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
     private EncounterType encounterType;
 
     private EncounterTypeRepository encounterTypeRepository;
+
+    private static Logger logger = LoggerFactory.getLogger(ExportProcessor.class);
 
     @PostConstruct
     public void init() {
@@ -90,6 +95,7 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
                 break;
             }
         }
+
         return exportItemRow;
     }
 

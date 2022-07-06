@@ -261,4 +261,5 @@ public class FormContract extends ReferenceDataContract {
     public void setVisitScheduleDeclarativeRule(DeclarativeRule visitScheduleDeclarativeRule) {
         this.visitScheduleDeclarativeRule = visitScheduleDeclarativeRule;
     }
+
 }

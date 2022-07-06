@@ -1,12 +1,12 @@
 package org.avni.exporter;
 
-import org.avni.domain.*;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.avni.dao.*;
+import org.avni.domain.*;
 import org.avni.framework.security.AuthService;
 import org.avni.service.ExportS3Service;
 import org.avni.web.request.ReportType;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -14,18 +14,16 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 
-import java.io.File;
+import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +33,6 @@ import static java.lang.String.format;
 @Configuration
 @EnableBatchProcessing
 public class ExportBatchConfiguration {
-
     private final int CHUNK_SIZE = 100;
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
@@ -48,6 +45,7 @@ public class ExportBatchConfiguration {
     private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramRepository programRepository;
+    private final EntityManager entityManager;
 
     @Autowired
     public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory,
@@ -60,7 +58,8 @@ public class ExportBatchConfiguration {
                                     LocationRepository locationRepository,
                                     SubjectTypeRepository subjectTypeRepository,
                                     EncounterTypeRepository encounterTypeRepository,
-                                    ProgramRepository programRepository) {
+                                    ProgramRepository programRepository,
+                                    EntityManager entityManager) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.programEnrolmentRepository = programEnrolmentRepository;
@@ -72,6 +71,7 @@ public class ExportBatchConfiguration {
         this.subjectTypeRepository = subjectTypeRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.programRepository = programRepository;
+        this.entityManager = entityManager;
     }
 
     @Bean
@@ -85,140 +85,80 @@ public class ExportBatchConfiguration {
     }
 
     @Bean
-    public Step step1(RepositoryItemReader<Object> reader,
-                      ExportProcessor exportProcessor,
-                      FlatFileItemWriter<ExportItemRow> fileWriter) {
-        return stepBuilderFactory.get("step1").<Object, ExportItemRow>chunk(CHUNK_SIZE)
-                .reader(reader)
-                .processor(exportProcessor)
-                .writer(fileWriter)
+    public Step step1(Tasklet tasklet,
+                      LongitudinalExportJobStepListener listener) {
+        return stepBuilderFactory.get("step1")
+                .tasklet(tasklet)
+                .listener(listener)
                 .build();
     }
 
     @Bean
     @StepScope
-    public FlatFileItemWriter<ExportItemRow> fileWriter(@Value("#{jobParameters['uuid']}") String uuid,
-                                                        ExportCSVFieldExtractor exportCSVFieldExtractor) {
-        FlatFileItemWriter<ExportItemRow> writer = new FlatFileItemWriter<>();
-        File outputFile = exportS3Service.getLocalExportFile(uuid);
-        writer.setResource(new FileSystemResource(outputFile));
-        DelimitedLineAggregator<ExportItemRow> delimitedLineAggregator = new DelimitedLineAggregator<>();
-        delimitedLineAggregator.setDelimiter(",");
-        delimitedLineAggregator.setFieldExtractor(exportCSVFieldExtractor);
-        writer.setLineAggregator(delimitedLineAggregator);
-        writer.setHeaderCallback(exportCSVFieldExtractor);
-        return writer;
-    }
-
-    @Bean
-    @StepScope
-    public RepositoryItemReader<Object> reader(@Value("#{jobParameters['userId']}") Long userId,
-                                               @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
-                                               @Value("#{jobParameters['programUUID']}") String programUUID,
-                                               @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID,
-                                               @Value("#{jobParameters['encounterTypeUUID']}") String encounterTypeUUID,
-                                               @Value("#{jobParameters['startDate']}") Date startDate,
-                                               @Value("#{jobParameters['endDate']}") Date endDate,
-                                               @Value("#{jobParameters['reportType']}") String reportType,
-                                               @Value("#{jobParameters['addressIds']}") String addressIds) {
+    public Tasklet tasklet(@Value("#{jobParameters['uuid']}") String uuid,
+                        @Value("#{jobParameters['userId']}") Long userId,
+                           @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
+                           @Value("#{jobParameters['programUUID']}") String programUUID,
+                           @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID,
+                           @Value("#{jobParameters['encounterTypeUUID']}") String encounterTypeUUID,
+                           @Value("#{jobParameters['startDate']}") Date startDate,
+                           @Value("#{jobParameters['endDate']}") Date endDate,
+                           @Value("#{jobParameters['reportType']}") String reportType,
+                           @Value("#{jobParameters['addressIds']}") String addressIds,
+                           LongitudinalExportJobStepListener listener,
+                           ExportCSVFieldExtractor exportCSVFieldExtractor,
+                           ExportProcessor exportProcessor) {
         authService.authenticateByUserId(userId, organisationUUID);
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
         List<Long> selectedAddressIds = getLocations(addressIds);
         List<Long> addressParam = selectedAddressIds.isEmpty() ? null : selectedAddressIds;
+        Stream stream;
         switch (ReportType.valueOf(reportType)) {
             case Registration:
-                return getRegistrationData(subjectTypeUUID, addressParam, new LocalDate(startDate), new LocalDate(endDate), sorts);
+                stream = getRegistrationStream(subjectTypeUUID, addressParam, new LocalDate(startDate), new LocalDate(endDate));
+                break;
             case Enrolment:
-                return getEnrolmentData(programUUID, addressParam, new DateTime(startDate), new DateTime(endDate), sorts);
+                stream = getEnrolmentStream(programUUID, addressParam, new DateTime(startDate), new DateTime(endDate));
+                break;
             case Encounter:
-                return getEncounterData(programUUID, encounterTypeUUID, addressParam, new DateTime(startDate), new DateTime(endDate), sorts);
+                stream = getEncounterStream(programUUID, encounterTypeUUID, addressParam, new DateTime(startDate), new DateTime(endDate));
+                break;
             case GroupSubject:
-                return getGroupSubjectData(subjectTypeUUID, addressParam, new LocalDate(startDate), new LocalDate(endDate), sorts);
+                stream = getGroupSubjectStream(subjectTypeUUID, addressParam, new LocalDate(startDate), new LocalDate(endDate), sorts);
+                break;
             default:
                 throw new RuntimeException(format("Unknown report type: '%s'", reportType));
         }
+
+        LongitudinalExportTasklet encounterTasklet = new LongitudinalExportTaskletImpl(CHUNK_SIZE, entityManager, exportCSVFieldExtractor, exportProcessor, exportS3Service, uuid, stream);
+        listener.setItemReaderCleaner(encounterTasklet);
+        return encounterTasklet;
     }
 
-    private RepositoryItemReader<Object> getGroupSubjectData(String subjectTypeUUID, List<Long> addressParam, LocalDate startDate, LocalDate endDate, Map<String, Sort.Direction> sorts) {
+    private Stream getGroupSubjectStream(String subjectTypeUUID, List<Long> addressParam, LocalDate startDate, LocalDate endDate, Map<String, Sort.Direction> sorts) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
-        List<Object> params = new ArrayList<>();
-        params.add(subjectType.getId());
-        params.add(addressParam);
-        params.add(startDate);
-        params.add(endDate);
-        return new RepositoryItemReaderBuilder<Object>()
-                .name("groupSubjectRepositoryReader")
-                .repository(groupSubjectRepository)
-                .methodName("findGroupSubjects")
-                .arguments(params)
-                .pageSize(CHUNK_SIZE)
-                .sorts(sorts)
-                .build();
+        return groupSubjectRepository.findGroupSubjects(subjectType.getId(), addressParam, startDate, endDate);
     }
 
-    private RepositoryItemReader<Object> getEncounterData(String programUUID, String encounterTypeUUID, List<Long> addressParam, DateTime startDateTime, DateTime endDateTime, Map<String, Sort.Direction> sorts) {
+    private Stream getEncounterStream(String programUUID, String encounterTypeUUID, List<Long> addressParam, DateTime startDateTime, DateTime endDateTime) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
-        List<Object> params = new ArrayList<>();
-        params.add(addressParam);
-        params.add(startDateTime);
-        params.add(endDateTime);
-        params.add(encounterType.getId());
         if (programUUID == null) {
-            return new RepositoryItemReaderBuilder<Object>()
-                    .name("individualRepositoryReader")
-                    .repository(individualRepository)
-                    .methodName("findEncounters")
-                    .arguments(params)
-                    .pageSize(CHUNK_SIZE)
-                    .sorts(sorts)
-                    .build();
+            return individualRepository.findEncounters(addressParam, startDateTime, endDateTime, encounterType.getId());
         } else {
             Program program = programRepository.findByUuid(programUUID);
-            params.add(program.getId());
-            return new RepositoryItemReaderBuilder<Object>()
-                    .name("programEnrolmentRepositoryReader")
-                    .repository(programEnrolmentRepository)
-                    .methodName("findProgramEncounters")
-                    .arguments(params)
-                    .pageSize(CHUNK_SIZE)
-                    .sorts(sorts)
-                    .build();
+            return programEnrolmentRepository.findProgramEncounters(addressParam, startDateTime, endDateTime, encounterType.getId(), program.getId());
         }
     }
 
-    private RepositoryItemReader<Object> getEnrolmentData(String programUUID, List<Long> addressParam, DateTime startDateTime, DateTime endDateTime, Map<String, Sort.Direction> sorts) {
+    private Stream getEnrolmentStream(String programUUID, List<Long> addressParam, DateTime startDateTime, DateTime endDateTime) {
         Program program = programRepository.findByUuid(programUUID);
-        List<Object> params = new ArrayList<>();
-        params.add(program.getId());
-        params.add(addressParam);
-        params.add(startDateTime);
-        params.add(endDateTime);
-        return new RepositoryItemReaderBuilder<Object>()
-                .name("programEnrolmentRepositoryReader")
-                .repository(programEnrolmentRepository)
-                .methodName("findEnrolments")
-                .arguments(params)
-                .pageSize(CHUNK_SIZE)
-                .sorts(sorts)
-                .build();
+        return programEnrolmentRepository.findEnrolments(program.getId(), addressParam, startDateTime, endDateTime);
     }
 
-    private RepositoryItemReader<Object> getRegistrationData(String subjectTypeUUID, List<Long> addressParam, LocalDate startDateTime, LocalDate endDateTime, Map<String, Sort.Direction> sorts) {
+    private Stream getRegistrationStream(String subjectTypeUUID, List<Long> addressParam, LocalDate startDateTime, LocalDate endDateTime) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
-        List<Object> params = new ArrayList<>();
-        params.add(subjectType.getId());
-        params.add(addressParam);
-        params.add(startDateTime);
-        params.add(endDateTime);
-        return new RepositoryItemReaderBuilder<Object>()
-                .name("individualRepositoryReader")
-                .repository(individualRepository)
-                .methodName("findIndividuals")
-                .arguments(params)
-                .pageSize(CHUNK_SIZE)
-                .sorts(sorts)
-                .build();
+        return individualRepository.findIndividuals(subjectType.getId(), addressParam, startDateTime, endDateTime);
     }
 
     private List<Long> getLocations(@Value("#{jobParameters['addressIds']}") String addressIds) {

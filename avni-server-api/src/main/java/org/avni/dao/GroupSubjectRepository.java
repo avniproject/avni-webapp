@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import java.util.stream.Stream;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.joda.time.LocalDate;
@@ -12,6 +13,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.QueryHint;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +33,10 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
 
-    List<GroupSubject> findAllByGroupSubjectOrMemberSubject(Individual groupSubject, Individual memberSubject);
+    @Query("select gs from Individual i " +
+            "join GroupSubject gs on i = gs.memberSubject or i = gs.groupSubject " +
+            "where i = :groupSubject")
+    List<GroupSubject> findAllByGroupSubjectOrMemberSubject(Individual groupSubject);
 
     GroupSubject findByGroupSubjectAndGroupRoleAndIsVoidedFalse(Individual groupSubject, GroupRole headOfHousehold);
 
@@ -59,7 +64,7 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             "and m.isVoided = false " +
             "and g.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
-    Page<GroupSubject> findGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime, Pageable pageable);
+    Stream<GroupSubject> findGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
 
 
     default Specification<GroupSubject> syncStrategySpecification(SyncParameters syncParameters) {

@@ -34,10 +34,12 @@ public class CognitoAuthServiceImpl extends BaseIAMService {
         return COGNITO_URL + cognitoConfig.getPoolId();
     }
 
+    @Override
     protected String getUserUuidField() {
         return "custom:userUUID";
     }
 
+    @Override
     protected String getUsernameField() {
         return "cognito:username";
     }

@@ -160,6 +160,9 @@ public class Avni {
                 if (formElement.getGroup() != null) {
                     resource.add(new Link(formElement.getGroup().getUuid(), "groupQuestionUUID"));
                 }
+                if (formElement.getDocumentation() != null) {
+                    resource.add(new Link(formElement.getDocumentation().getUuid(), "documentationUUID"));
+                }
                 return resource;
             }
         };
@@ -173,6 +176,19 @@ public class Avni {
                 FormElementGroup formElementGroup = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(formElementGroup.getForm().getUuid(), "formUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<DocumentationItem>> documentationItemsProcessor() {
+        return new ResourceProcessor<Resource<DocumentationItem>>() {
+            @Override
+            public Resource<DocumentationItem> process(Resource<DocumentationItem> resource) {
+                DocumentationItem documentationItem = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(documentationItem.getDocumentation().getUuid(), "documentationUUID"));
                 return resource;
             }
         };

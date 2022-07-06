@@ -96,7 +96,7 @@ public class SyncDetailsService {
                 "IdentifierSource", "OrganisationConfig", "PlatformTranslation", "Translation", "Groups",
                 "MyGroups", "GroupPrivileges", "Extension", "GroupRole", "LocationHierarchy", "ReportCard",
                 "Dashboard", "DashboardSection", "DashboardSectionCardMapping", "ApprovalStatus", "GroupDashboard",
-                "EntityApprovalStatus", "News", "UserInfo", "Privilege", "StandardReportCardType"));
+                "EntityApprovalStatus", "News", "UserInfo", "Privilege", "StandardReportCardType", "Documentation", "DocumentationItem"));
 
         return syncableItems;
     }

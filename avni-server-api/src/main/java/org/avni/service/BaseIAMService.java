@@ -67,9 +67,10 @@ public abstract class BaseIAMService implements IAMAuthService {
                 JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getJwkProviderUrl())));
                 jwk = provider.get(unverifiedJwt.getKeyId());
             } catch (SigningKeyNotFoundException e) {
-                if (springProfiles.isStaging() && alternateIAMService != null)
+                if (springProfiles.isStaging() && alternateIAMService != null) {
+                    logger.info("Signing key not found with Cognito. Trying with Keycloak as it is staging profile.", e);
                     return alternateIAMService.verifyAndDecodeToken(token);
-                else
+                } else
                     throw e;
             }
             RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
@@ -103,6 +104,8 @@ public abstract class BaseIAMService implements IAMAuthService {
     protected abstract String getAudience();
 
     protected abstract String getJwkProviderUrl();
+
     protected abstract String getIssuer();
+
     public abstract void logConfiguration();
 }

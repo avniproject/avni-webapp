@@ -18,6 +18,10 @@ public class FormElementGroupContract extends ReferenceDataContract {
     private Long organisationId;
     private String rule;
     private DeclarativeRule declarativeRule;
+    private Long startTime;
+    private Long stayTime;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private boolean isTimed = false;
 
     public FormElementGroupContract() {
     }
@@ -72,6 +76,30 @@ public class FormElementGroupContract extends ReferenceDataContract {
         this.declarativeRule = declarativeRule;
     }
 
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getStayTime() {
+        return stayTime;
+    }
+
+    public void setStayTime(Long stayTime) {
+        this.stayTime = stayTime;
+    }
+
+    public boolean isTimed() {
+        return isTimed;
+    }
+
+    public void setTimed(boolean timed) {
+        isTimed = timed;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -98,6 +126,9 @@ public class FormElementGroupContract extends ReferenceDataContract {
         fegContract.setVoided(feg.isVoided());
         fegContract.setRule(feg.getRule());
         fegContract.setDeclarativeRule(feg.getDeclarativeRule());
+        fegContract.setTimed(feg.isTimed());
+        fegContract.setStartTime(feg.getStartTime());
+        fegContract.setStayTime(feg.getStayTime());
         List<FormElementContract> feContracts = feg.getFormElements().stream()
                 .map(FormElementContract::fromFormElement)
                 .sorted(Comparator.comparingDouble(FormElementContract::getDisplayOrder))

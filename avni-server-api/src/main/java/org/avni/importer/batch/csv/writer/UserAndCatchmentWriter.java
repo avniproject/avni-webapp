@@ -5,11 +5,10 @@ import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.UserRepository;
 import org.avni.domain.*;
-import org.avni.domain.Locale;
+import org.avni.framework.context.DeploymentSpecificConfiguration;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.CatchmentService;
-import org.avni.service.CognitoIdpService;
 import org.avni.service.UserService;
 import org.avni.util.S;
 import org.springframework.batch.item.ItemWriter;
@@ -17,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -29,7 +31,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
     private final CatchmentService catchmentService;
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
-    private final CognitoIdpService cognitoService;
+    private final DeploymentSpecificConfiguration deploymentSpecificConfiguration;
     private final IndividualRepository individualRepository;
     private final ConceptRepository conceptRepository;
 
@@ -38,14 +40,14 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
                                   LocationRepository locationRepository,
                                   UserService userService,
                                   UserRepository userRepository,
-                                  CognitoIdpService cognitoService,
+                                  DeploymentSpecificConfiguration deploymentSpecificConfiguration,
                                   IndividualRepository individualRepository,
                                   ConceptRepository conceptRepository) {
         this.catchmentService = catchmentService;
         this.locationRepository = locationRepository;
         this.userService = userService;
         this.userRepository = userRepository;
-        this.cognitoService = cognitoService;
+        this.deploymentSpecificConfiguration = deploymentSpecificConfiguration;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
     }
@@ -122,7 +124,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
         user.setSyncSettings(syncSettings);
-        cognitoService.createUser(user);
+        deploymentSpecificConfiguration.getIdpService(user, organisation).createUser(user);
         userService.save(user, subjectIds);
         userService.addToDefaultUserGroup(user);
     }

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
-import org.joda.time.DateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,6 +84,8 @@ public class SyncController {
     private final SubjectMigrationService subjectMigrationService;
     private SyncDetailsService syncDetailService;
     private final Logger logger;
+    private final DocumentationService documentationService;
+    private final DocumentationItemService documentationItemService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -111,8 +112,10 @@ public class SyncController {
                           ApprovalStatusService approvalStatusService, GroupDashboardService groupDashboardService,
                           EntityApprovalStatusService entityApprovalStatusService, NewsService newsService,
                           UserService userService, PrivilegeService privilegeService,
-                          StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService, LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
-                          SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService) {
+                          StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService,
+                          LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
+                          SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService,
+                          DocumentationService documentationService, DocumentationItemService documentationItemService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -168,6 +171,8 @@ public class SyncController {
         this.extensionService = extensionService;
         this.subjectMigrationService = subjectMigrationService;
         this.syncDetailService = syncDetailService;
+        this.documentationService = documentationService;
+        this.documentationItemService = documentationItemService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -233,6 +238,8 @@ public class SyncController {
         nonScopeAwareServiceMap.put("GroupDashboard", groupDashboardService);
         nonScopeAwareServiceMap.put("EntityApprovalStatus", entityApprovalStatusService);
         nonScopeAwareServiceMap.put("News", newsService);
+        nonScopeAwareServiceMap.put("Documentation", documentationService);
+        nonScopeAwareServiceMap.put("DocumentationItem", documentationItemService);
         nonScopeAwareServiceMap.put("UserInfo", userService);
         nonScopeAwareServiceMap.put("Privilege", privilegeService);
         nonScopeAwareServiceMap.put("StandardReportCardType", standardReportCardTypeService);

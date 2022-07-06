@@ -1,13 +1,15 @@
 package org.avni.web;
 
-import org.joda.time.DateTime;
-import org.avni.dao.*;
+import org.avni.dao.CatchmentRepository;
+import org.avni.dao.OrganisationRepository;
+import org.avni.dao.UserRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
-import org.avni.service.CognitoIdpService;
+import org.avni.service.IdpService;
 import org.avni.service.UserService;
 import org.avni.web.request.UserBulkUploadContract;
 import org.avni.web.request.UserInfo;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
-import org.joda.time.DateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 public class UserInfoController implements RestControllerResourceProcessor<UserInfo> {
@@ -36,15 +35,15 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
-    private CognitoIdpService cognitoService;
+    private IdpService idpService;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, OrganisationRepository organisationRepository, UserService userService, CognitoIdpService cognitoService) {
+    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, OrganisationRepository organisationRepository, UserService userService, IdpService idpService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
-        this.cognitoService = cognitoService;
+        this.idpService = idpService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -149,7 +148,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             User savedUser = userService.save(user);
             if (newUser) userService.addToDefaultUserGroup(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
-            cognitoService.createUserIfNotExists(savedUser);
+            idpService.createUserIfNotExists(savedUser);
         });
     }
 
