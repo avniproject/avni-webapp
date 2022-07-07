@@ -49,6 +49,12 @@ public class FormElementGroup extends OrganisationAwareEntity {
     @Column
     private Long stayTime;
 
+    @Column
+    private String textColour;
+
+    @Column
+    private String backgroundColour;
+
     public String getRule() {
         return rule;
     }
@@ -149,5 +155,21 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     public void setTimed(boolean timed) {
         isTimed = timed;
+    }
+
+    public String getTextColour() {
+        return textColour;
+    }
+
+    public void setTextColour(String textColour) {
+        this.textColour = textColour;
+    }
+
+    public String getBackgroundColour() {
+        return backgroundColour;
+    }
+
+    public void setBackgroundColour(String backgroundColour) {
+        this.backgroundColour = backgroundColour;
     }
 }

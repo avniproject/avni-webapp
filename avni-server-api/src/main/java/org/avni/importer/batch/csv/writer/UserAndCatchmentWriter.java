@@ -124,7 +124,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
         user.setSyncSettings(syncSettings);
-        deploymentSpecificConfiguration.getIdpService(user, organisation).createUser(user);
+        deploymentSpecificConfiguration.getIdpService(organisation).createUser(user);
         userService.save(user, subjectIds);
         userService.addToDefaultUserGroup(user);
     }

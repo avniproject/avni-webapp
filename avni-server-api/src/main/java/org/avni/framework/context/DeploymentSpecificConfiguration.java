@@ -121,12 +121,12 @@ public class DeploymentSpecificConfiguration {
     public IdpService getProxiedIdpService() {
         User user = UserContextHolder.getUser();
         Organisation organisation = UserContextHolder.getOrganisation();
-        return getIdpService(user, organisation);
+        return getIdpService(organisation);
     }
 
-    public IdpService getIdpService(User user, Organisation organisation) {
+    public IdpService getIdpService(Organisation organisation) {
         boolean isKeycloakConfiguredOrgUser = false;
-        if(user != null && organisation != null) {
+        if(organisation != null) {
             JsonObject organisationSettings = organisationConfigService.getOrganisationSettingsJson(organisation.getId());
             Object useKeycloakAsIDP = organisationSettings.get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
             isKeycloakConfiguredOrgUser=(useKeycloakAsIDP != null && Boolean.parseBoolean((String)useKeycloakAsIDP));

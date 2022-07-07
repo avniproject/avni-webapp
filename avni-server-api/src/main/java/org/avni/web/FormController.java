@@ -293,6 +293,8 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             formElementGroupContract.setTimed(formElementGroup.isTimed());
             formElementGroupContract.setStartTime(formElementGroup.getStartTime());
             formElementGroupContract.setStayTime(formElementGroup.getStayTime());
+            formElementGroupContract.setTextColour(formElementGroup.getTextColour());
+            formElementGroupContract.setBackgroundColour(formElementGroup.getBackgroundColour());
             formContract.addFormElementGroup(formElementGroupContract);
             formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();
