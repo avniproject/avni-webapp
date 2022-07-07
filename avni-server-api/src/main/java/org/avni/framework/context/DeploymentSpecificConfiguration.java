@@ -9,6 +9,8 @@ import org.avni.domain.Organisation;
 import org.avni.domain.User;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.*;
+import org.avni.web.AuthDetailsController;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.*;
 @Configuration
 public class DeploymentSpecificConfiguration {
 
+    public static final String SCOPE = "openid";
     @Qualifier("AWSS3Service")
     @Autowired(required = false)
     private AWSS3Service awss3Service;
@@ -158,5 +161,18 @@ public class DeploymentSpecificConfiguration {
             return keycloakIdpService;
 
         throw new NoSuchBeanDefinitionException("RegularIdpService", "Regular Idp service bean of type IdpService not found");
+    }
+
+    @Bean("CompositeIDPDetails")
+    public AuthDetailsController.CompositeIDPDetails getCompositeIDPDetails() {
+
+        String keycloakGrantType = OAuth2Constants.PASSWORD;
+        String keycloakScope = SCOPE;
+        String keycloakClientId = keycloakIdpService == null ? null : avniKeycloakConfig.getVerifyTokenAudience();
+        String keycloakAuthServerUrl = keycloakIdpService == null ? null : adapterConfig.getAuthServerUrl();
+        String cognitoConfigPoolId = cognitoIdpService == null ? null : cognitoConfig.getPoolId();
+        String cognitoConfigClientId = cognitoIdpService == null ? null : cognitoConfig.getClientId();
+        return new AuthDetailsController.CompositeIDPDetails(keycloakAuthServerUrl, keycloakClientId,
+                keycloakGrantType, keycloakScope, cognitoConfigPoolId, cognitoConfigClientId);
     }
 }
