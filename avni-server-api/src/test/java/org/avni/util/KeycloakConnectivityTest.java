@@ -2,6 +2,7 @@ package org.avni.util;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Before;
+import org.junit.Test;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -27,9 +28,9 @@ public class KeycloakConnectivityTest {
     public void beforeTest() {
         adapterConfig = new AdapterConfig();
         adapterConfig.setAuthServerUrl("http://localhost:8080");
-        adapterConfig.setRealm("Amrit");
+        adapterConfig.setRealm("On-premise");
         HashMap<String, Object> cred = new HashMap<>();
-        cred.put("secret", "Xd1O4cXD4PpZA1ROYpChNaBBdy1NuPP0");
+        cred.put("secret", "FeYJzLnwPZaOs21sezRBDDFmvP0vIQMK");
         adapterConfig.setCredentials(cred);
     }
 
