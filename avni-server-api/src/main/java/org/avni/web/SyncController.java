@@ -71,6 +71,8 @@ public class SyncController {
     private final GroupRoleService groupRoleService;
     private final CardService cardService;
     private final DashboardService dashboardService;
+    private final DashboardSectionService dashboardSectionService;
+    private final DashboardSectionCardMappingService dashboardSectionCardMappingService;
     private final ApprovalStatusService approvalStatusService;
     private final GroupDashboardService groupDashboardService;
     private final EntityApprovalStatusService entityApprovalStatusService;
@@ -109,7 +111,7 @@ public class SyncController {
                           PlatformTranslationService platformTranslationService, TranslationService translationService,
                           GroupsService groupsService, GroupPrivilegeService groupPrivilegeService,
                           GroupRoleService groupRoleService, CardService cardService, DashboardService dashboardService,
-                          ApprovalStatusService approvalStatusService, GroupDashboardService groupDashboardService,
+                          DashboardSectionService dashboardSectionService, DashboardSectionCardMappingService dashboardSectionCardMappingService, ApprovalStatusService approvalStatusService, GroupDashboardService groupDashboardService,
                           EntityApprovalStatusService entityApprovalStatusService, NewsService newsService,
                           UserService userService, PrivilegeService privilegeService,
                           StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService,
@@ -159,6 +161,8 @@ public class SyncController {
         this.groupRoleService = groupRoleService;
         this.cardService = cardService;
         this.dashboardService = dashboardService;
+        this.dashboardSectionService = dashboardSectionService;
+        this.dashboardSectionCardMappingService = dashboardSectionCardMappingService;
         this.approvalStatusService = approvalStatusService;
         this.groupDashboardService = groupDashboardService;
         this.entityApprovalStatusService = entityApprovalStatusService;
@@ -232,8 +236,8 @@ public class SyncController {
         nonScopeAwareServiceMap.put("LocationHierarchy", locationHierarchyService);
         nonScopeAwareServiceMap.put("ReportCard", cardService);
         nonScopeAwareServiceMap.put("Dashboard", dashboardService);
-        nonScopeAwareServiceMap.put("DashboardSection", dashboardService);
-        nonScopeAwareServiceMap.put("DashboardSectionCardMapping", dashboardService);
+        nonScopeAwareServiceMap.put("DashboardSection", dashboardSectionService);
+        nonScopeAwareServiceMap.put("DashboardSectionCardMapping", dashboardSectionCardMappingService);
         nonScopeAwareServiceMap.put("ApprovalStatus", approvalStatusService);
         nonScopeAwareServiceMap.put("GroupDashboard", groupDashboardService);
         nonScopeAwareServiceMap.put("EntityApprovalStatus", entityApprovalStatusService);
