@@ -161,5 +161,8 @@
   "ADMIN_SHOW_SUMMARY_BUTTON": "Display summary button in the forms on field app.",
   "ADMIN_ENABLE_RULE_DESIGNER": "Enable rule designer for writing the rules. Please contact administrator before enabling this as this is not fully developed yet.",
   "APP_DESIGNER_SUPPORTED_FILE_TYPES": "Only selected file types will be allowed in the form.",
-  "APP_DESIGNER_FILE_MAX_SIZE": "Max size of file in MB that can be selected in the form."
+  "APP_DESIGNER_FILE_MAX_SIZE": "Max size of file in MB that can be selected in the form.",
+  "USE_KEYCLOAK_AS_IDP": "Required for on-premise setup that use Keycloak instead of Cognito",
+  "USE_MINIO_FOR_STORAGE": "Required for on-premise setup that use MinIO instead of S3",
+  "SKIP_UPLOAD_VALIDATIONS": "Skip rule validations on csv file upload"
 }

@@ -51,12 +51,29 @@ export const OrgSettings = () => {
       .catch(error => console.error(error));
   };
 
+  function renderSimpleSetting(key, name, tooltip) {
+    return (
+      <Grid item>
+        <AvniSwitch
+          switchFirst
+          checked={orgSettings[key]}
+          onChange={event => onSettingsChange(key, event.target.checked)}
+          name={name}
+          toolTipKey={tooltip}
+        />
+      </Grid>
+    );
+  }
+
   const organisationConfigSettingKeys = {
     approvalWorkflow: "enableApprovalWorkflow",
     draftSave: "saveDrafts",
     hideDateOfBirth: "hideDateOfBirth",
     enableComments: "enableComments",
-    showSummaryButton: "showSummaryButton"
+    showSummaryButton: "showSummaryButton",
+    useKeycloakAsIDP: "useKeycloakAsIDP",
+    useMinioForStorage: "useMinioForStorage",
+    skipRuleValidationsOnUpload: "skipRuleValidationsOnUpload"
   };
 
   return orgSettings ? (
@@ -67,17 +84,11 @@ export const OrgSettings = () => {
         </Typography>
       </Grid>
       <Grid item container spacing={1} direction={"column"}>
-        <Grid item>
-          <AvniSwitch
-            switchFirst
-            checked={orgSettings[organisationConfigSettingKeys.approvalWorkflow]}
-            onChange={event =>
-              onSettingsChange(organisationConfigSettingKeys.approvalWorkflow, event.target.checked)
-            }
-            name="Approval workflow"
-            toolTipKey={"ADMIN_APPROVAL_WORKFLOW"}
-          />
-        </Grid>
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.approvalWorkflow,
+          "Approval workflow",
+          "ADMIN_APPROVAL_WORKFLOW"
+        )}
         {orgSettings[organisationConfigSettingKeys.approvalWorkflow] && (
           <Grid item>
             <Typography variant="body2" gutterBottom>
@@ -94,53 +105,41 @@ export const OrgSettings = () => {
             />
           </Grid>
         )}
-        <Grid item>
-          <AvniSwitch
-            switchFirst
-            checked={orgSettings[organisationConfigSettingKeys.draftSave]}
-            onChange={event =>
-              onSettingsChange(organisationConfigSettingKeys.draftSave, event.target.checked)
-            }
-            name="Draft save"
-            toolTipKey={"ADMIN_SAVE_DRAFT"}
-          />
-        </Grid>
-        <Grid item>
-          <AvniSwitch
-            switchFirst
-            checked={orgSettings[organisationConfigSettingKeys.hideDateOfBirth]}
-            onChange={event =>
-              onSettingsChange(organisationConfigSettingKeys.hideDateOfBirth, event.target.checked)
-            }
-            name="Hide Date of Birth on DEA"
-            toolTipKey={"ADMIN_HIDE_DOB"}
-          />
-        </Grid>
-        <Grid item>
-          <AvniSwitch
-            switchFirst
-            checked={orgSettings[organisationConfigSettingKeys.enableComments]}
-            onChange={event =>
-              onSettingsChange(organisationConfigSettingKeys.enableComments, event.target.checked)
-            }
-            name="Enable comments"
-            toolTipKey={"ADMIN_ENABLE_COMMENTS"}
-          />
-        </Grid>
-        <Grid item>
-          <AvniSwitch
-            switchFirst
-            checked={orgSettings[organisationConfigSettingKeys.showSummaryButton]}
-            onChange={event =>
-              onSettingsChange(
-                organisationConfigSettingKeys.showSummaryButton,
-                event.target.checked
-              )
-            }
-            name="Show summary button"
-            toolTipKey={"ADMIN_SHOW_SUMMARY_BUTTON"}
-          />
-        </Grid>
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.draftSave,
+          "Draft save",
+          "ADMIN_SAVE_DRAFT"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.hideDateOfBirth,
+          "Hide Date of Birth on DEA",
+          "ADMIN_HIDE_DOB"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.enableComments,
+          "Enable comments",
+          "ADMIN_ENABLE_COMMENTS"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.showSummaryButton,
+          "Show summary button",
+          "ADMIN_SHOW_SUMMARY_BUTTON"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.useKeycloakAsIDP,
+          "Use Keycloak as IDP",
+          "USE_KEYCLOAK_AS_IDP"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.useMinioForStorage,
+          "Use MinIO for Storage",
+          "USE_MINIO_FOR_STORAGE"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.skipRuleValidationsOnUpload,
+          "Skip rule validations on upload",
+          "SKIP_UPLOAD_VALIDATIONS"
+        )}
       </Grid>
     </Grid>
   ) : (
