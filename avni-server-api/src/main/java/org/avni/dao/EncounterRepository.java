@@ -32,7 +32,6 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     default Page<Encounter> getSyncResults(SyncParameters syncParameters) {
         return findAll(syncAuditSpecification(syncParameters)
                 .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                .and(syncStrategySpecification(syncParameters, false, true)),
                 .and(syncStrategySpecification(syncParameters)),
         syncParameters.getPageable());
     }
@@ -46,7 +45,6 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
         return count(syncEntityChangedAuditSpecification(syncParameters)
                 .and(syncTypeIdSpecification(syncParameters.getTypeId()))
-                .and(syncStrategySpecification(syncParameters, false, true))
                 .and(syncStrategySpecification(syncParameters))
         ) > 0;
     }
