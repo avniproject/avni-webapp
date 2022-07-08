@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 
 @Component
-public class SubjectWriter implements ItemWriter<Row>, Serializable {
+public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
 
     private static final SubjectHeaders headers = new SubjectHeaders();
     private final AddressLevelTypeRepository addressLevelTypeRepository;
@@ -52,9 +52,6 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private final S3Service s3Service;
     private final EntityApprovalStatusWriter entityApprovalStatusWriter;
 
-    @Value("${avni.skipUploadValidations}")
-    private boolean skipUploadValidations;
-
     @Autowired
     public SubjectWriter(AddressLevelTypeRepository addressLevelTypeRepository,
                          LocationRepository locationRepository,
@@ -68,7 +65,10 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          VisitCreator visitCreator,
                          DecisionCreator decisionCreator,
                          ObservationCreator observationCreator, IndividualService individualService, EntityApprovalStatusWriter entityApprovalStatusWriter,
-                         AddressLevelService addressLevelService, S3Service s3Service) {
+                         AddressLevelService addressLevelService,
+                         S3Service s3Service,
+                         OrganisationConfigService organisationConfigService) {
+        super(organisationConfigService);
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
@@ -120,7 +120,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             throw new Exception(String.format("No form found for the subject type %s", subjectType.getName()));
         }
         Individual savedIndividual;
-        if (skipUploadValidations) {
+        if (skipRuleExecution()) {
             individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
             savedIndividual = individualService.save(individual);
         } else {

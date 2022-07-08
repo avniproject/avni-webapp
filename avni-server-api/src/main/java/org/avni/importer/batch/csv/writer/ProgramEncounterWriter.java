@@ -15,6 +15,7 @@ import org.avni.importer.batch.csv.writer.header.ProgramEncounterHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
+import org.avni.service.OrganisationConfigService;
 import org.avni.service.ProgramEncounterService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import java.util.List;
 
 
 @Component
-public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
+public class ProgramEncounterWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
 
     private static ProgramEncounterHeaders headers = new ProgramEncounterHeaders();
     private final ProgramEncounterRepository programEncounterRepository;
@@ -43,9 +44,6 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private ProgramEncounterService programEncounterService;
     private EntityApprovalStatusWriter entityApprovalStatusWriter;
 
-    @Value("${avni.skipUploadValidations}")
-    private boolean skipUploadValidations;
-
     @Autowired
     public ProgramEncounterWriter(ProgramEncounterRepository programEncounterRepository,
                                   ProgramEnrolmentCreator programEnrolmentCreator,
@@ -57,7 +55,10 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
                                   DecisionCreator decisionCreator,
                                   ProgramEnrolmentRepository programEnrolmentRepository,
                                   ObservationCreator observationCreator,
-                                  ProgramEncounterService programEncounterService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
+                                  ProgramEncounterService programEncounterService,
+                                  EntityApprovalStatusWriter entityApprovalStatusWriter,
+                                  OrganisationConfigService organisationConfigService) {
+        super(organisationConfigService);
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentCreator = programEnrolmentCreator;
         this.basicEncounterCreator = basicEncounterCreator;
@@ -90,7 +91,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
             throw new Exception(String.format("No form found for the encounter type %s", programEncounter.getEncounterType().getName()));
         }
         ProgramEncounter savedEncounter;
-        if (skipUploadValidations) {
+        if (skipRuleExecution()) {
             programEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEncounter, programEncounter.getObservations()));
             savedEncounter = programEncounterService.save(programEncounter);
         } else {

@@ -111,6 +111,11 @@ public class OrganisationConfigService implements NonScopeAwareService {
         return organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
     }
 
+    public Object getOrganisationSettingsValue(Organisation organisation, OrganisationConfigSettingKeys settingKey) {
+        JsonObject jsonObject = this.getOrganisationSettingsJson(organisation.getId());
+        return jsonObject.get(settingKey.name());
+    }
+
     @Transactional
     public OrganisationConfig updateLowestAddressLevelTypeSetting(HashSet<String> locationConceptUuids) {
         try {

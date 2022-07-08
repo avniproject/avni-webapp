@@ -2,22 +2,24 @@ package org.avni.importer.batch.csv.writer;
 
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
+import org.avni.application.OrganisationConfigSettingKeys;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.Encounter;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.domain.Individual;
+import org.avni.domain.UserContext;
+import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.EncounterHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.EncounterService;
-import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
+import org.avni.service.OrganisationConfigService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -26,8 +28,7 @@ import java.util.List;
 
 
 @Component
-public class EncounterWriter implements ItemWriter<Row>, Serializable {
-
+public class EncounterWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
     private static EncounterHeaders headers = new EncounterHeaders();
     private EncounterRepository encounterRepository;
     private IndividualRepository individualRepository;
@@ -41,9 +42,6 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     private EncounterService encounterService;
     private EntityApprovalStatusWriter entityApprovalStatusWriter;
 
-    @Value("${avni.skipUploadValidations}")
-    private boolean skipUploadValidations;
-
     @Autowired
     public EncounterWriter(EncounterRepository encounterRepository,
                            IndividualRepository individualRepository,
@@ -54,7 +52,10 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
                            VisitCreator visitCreator,
                            DecisionCreator decisionCreator,
                            ObservationCreator observationCreator,
-                           EncounterService encounterService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
+                           EncounterService encounterService,
+                           EntityApprovalStatusWriter entityApprovalStatusWriter,
+                           OrganisationConfigService organisationConfigService) {
+        super(organisationConfigService);
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
         this.basicEncounterCreator = basicEncounterCreator;
@@ -87,7 +88,8 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
             throw new Exception(String.format("No form found for the encounter type %s", encounter.getEncounterType().getName()));
         }
         Encounter savedEncounter;
-        if (skipUploadValidations) {
+
+        if (skipRuleExecution()) {
             encounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Encounter, encounter.getObservations()));
             savedEncounter = encounterService.save(encounter);
         } else {

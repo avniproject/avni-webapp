@@ -12,6 +12,7 @@ import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.avni.importer.batch.model.Row;
 import org.avni.service.ObservationService;
+import org.avni.service.OrganisationConfigService;
 import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
@@ -25,7 +26,7 @@ import java.util.List;
 
 
 @Component
-public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
+public class ProgramEnrolmentWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
 
     private static final ProgramEnrolmentHeaders headers = new ProgramEnrolmentHeaders();
     private final ProgramEnrolmentRepository programEnrolmentRepository;
@@ -42,9 +43,6 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private ProgramEnrolmentService programEnrolmentService;
     private EntityApprovalStatusWriter entityApprovalStatusWriter;
 
-    @Value("${avni.skipUploadValidations}")
-    private boolean skipUploadValidations;
-
     @Autowired
     public ProgramEnrolmentWriter(ProgramEnrolmentRepository programEnrolmentRepository,
                                   SubjectCreator subjectCreator,
@@ -55,7 +53,10 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
                                   VisitCreator visitCreator,
                                   DecisionCreator decisionCreator,
                                   ObservationCreator observationCreator,
-                                  ProgramEnrolmentService programEnrolmentService, EntityApprovalStatusWriter entityApprovalStatusWriter) {
+                                  ProgramEnrolmentService programEnrolmentService,
+                                  EntityApprovalStatusWriter entityApprovalStatusWriter,
+                                  OrganisationConfigService organisationConfigService) {
+        super(organisationConfigService);
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.subjectCreator = subjectCreator;
         this.programCreator = programCreator;
@@ -104,7 +105,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
             throw new Exception(String.format("No form found for the subject type '%s' and program '%s'", individual.getSubjectType().getName(), program.getName()));
         }
         ProgramEnrolment savedEnrolment;
-        if (skipUploadValidations) {
+        if (skipRuleExecution()) {
             programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
             savedEnrolment = programEnrolmentService.save(programEnrolment);
         } else {

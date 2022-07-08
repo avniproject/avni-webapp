@@ -72,7 +72,7 @@ public class DeploymentSpecificConfiguration {
         return new KeycloakAuthService(userRepository, adapterConfig, springProfiles, avniKeycloakConfig);
     }
 
-    @Profile({"dev","staging"})
+    @Profile({"dev", "staging"})
     @Bean("S3Service")
     @Primary
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -80,12 +80,12 @@ public class DeploymentSpecificConfiguration {
         User user = UserContextHolder.getUser();
         Organisation organisation = UserContextHolder.getOrganisation();
         boolean isMinioConfiguredOrgUser = false;
-        if(user != null && organisation != null) {
+        if (user != null && organisation != null) {
             JsonObject organisationSettings = organisationConfigService
                     .getOrganisationSettingsJson(organisation.getId());
             Object useMinioForStorage = organisationSettings
                     .get(OrganisationConfigSettingKeys.useMinioForStorage.toString());
-            if(useMinioForStorage != null && Boolean.parseBoolean((String)useMinioForStorage)) {
+            if (useMinioForStorage != null && Boolean.parseBoolean((String) useMinioForStorage)) {
                 isMinioConfiguredOrgUser = true;
             }
         }
@@ -96,11 +96,18 @@ public class DeploymentSpecificConfiguration {
         return getBatchS3Service();
     }
 
-    @Profile({"!dev","!staging"})
+    @Profile({"!dev", "!staging"})
     @Bean("S3Service")
     @Primary
     public S3Service getRegularS3Service() {
         return getBatchS3Service();
+    }
+
+    @Profile({"dev"})
+    @Bean("IdpService")
+    @Primary
+    public IdpService getDevIdpService() {
+        return cognitoIdpService;
     }
 
     @Bean("BatchS3Service")
@@ -108,56 +115,55 @@ public class DeploymentSpecificConfiguration {
         if (springProfiles.isOnPremise() && awsMinioService != null)
             return awsMinioService;
 
-        if(awss3Service != null)
+        if (awss3Service != null)
             return awss3Service;
 
-        if(awsMinioService != null)
+        if (awsMinioService != null)
             return awsMinioService;
 
         throw new NoSuchBeanDefinitionException("BatchS3Service", "Batch Storage service bean of type BatchS3Service not found");
     }
 
-    @Profile({"dev","staging"})
+    @Profile({"staging"})
     @Bean("IdpService")
     @Primary
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public IdpService getProxiedIdpService() {
-        User user = UserContextHolder.getUser();
         Organisation organisation = UserContextHolder.getOrganisation();
         return getIdpService(organisation);
     }
 
     public IdpService getIdpService(Organisation organisation) {
         boolean isKeycloakConfiguredOrgUser = false;
-        if(organisation != null) {
+        if (organisation != null) {
             JsonObject organisationSettings = organisationConfigService.getOrganisationSettingsJson(organisation.getId());
             Object useKeycloakAsIDP = organisationSettings.get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
-            isKeycloakConfiguredOrgUser=(useKeycloakAsIDP != null && Boolean.parseBoolean((String)useKeycloakAsIDP));
+            isKeycloakConfiguredOrgUser = (useKeycloakAsIDP != null && Boolean.parseBoolean((String) useKeycloakAsIDP));
         }
 
         if (isKeycloakConfiguredOrgUser && keycloakIdpService != null)
             return keycloakIdpService;
 
-        if(cognitoIdpService != null)
+        if (cognitoIdpService != null)
             return cognitoIdpService;
 
-        if(keycloakIdpService != null)
+        if (keycloakIdpService != null)
             return keycloakIdpService;
 
         throw new NoSuchBeanDefinitionException("IdpService", "Bean of type IdpService not found");
     }
 
-    @Profile({"!dev","!staging"})
+    @Profile({"!dev", "!staging"})
     @Bean("IdpService")
     @Primary
     public IdpService getRegularIdpService() {
         if (springProfiles.isOnPremise() && keycloakIdpService != null)
             return keycloakIdpService;
 
-        if(cognitoIdpService != null)
+        if (cognitoIdpService != null)
             return cognitoIdpService;
 
-        if(keycloakIdpService != null)
+        if (keycloakIdpService != null)
             return keycloakIdpService;
 
         throw new NoSuchBeanDefinitionException("RegularIdpService", "Regular Idp service bean of type IdpService not found");

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -229,7 +230,9 @@ public class LocationService implements ScopeAwareService {
         addressLevelType.setName(contract.getName());
         addressLevelType.setLevel(contract.getLevel());
         AddressLevelType parent = null;
-        if (contract.getParent() != null) {
+        if (contract.getParent() != null && StringUtils.hasText(contract.getParent().getName())) {
+            parent = addressLevelTypeRepository.findByName(contract.getParent().getName());
+        } else if (contract.getParent() != null) {
             parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
         }
         if (contract.getParentId() != null) {
