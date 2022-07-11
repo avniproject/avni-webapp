@@ -9,11 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RuleResponseEntity {
-    private String status;
+public class RuleResponseEntity extends BaseRuleResponseEntity {
     private DecisionResponseEntity decisions = new DecisionResponseEntity();
     private List<VisitSchedule> visitSchedules = new ArrayList<>();
-    private RuleError error;
     private List<ChecklistContract> checklists = new ArrayList<>();
     private List<KeyValueResponse> summaries = new ArrayList<>();
     private List<ObservationContract> summaryObservations = new ArrayList<>();
@@ -43,28 +41,12 @@ public class RuleResponseEntity {
         this.checklists = checklists;
     }
 
-    public RuleError getError() {
-        return error;
-    }
-
-    public void setError(RuleError error) {
-        this.error = error;
-    }
-
     public List<VisitSchedule> getVisitSchedules() {
         return visitSchedules;
     }
 
     public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
         this.visitSchedules = visitSchedules;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public DecisionResponseEntity getDecisions() {

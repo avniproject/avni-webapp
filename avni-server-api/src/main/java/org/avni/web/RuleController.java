@@ -1,10 +1,16 @@
 package org.avni.web;
 
+import org.avni.application.FormMapping;
+import org.avni.dao.application.FormMappingRepository;
+import org.avni.domain.*;
+import org.avni.service.IndividualService;
+import org.avni.web.request.EncounterContract;
+import org.avni.web.request.ProgramEncountersContract;
+import org.avni.web.request.rules.response.EligibilityRuleEntity;
+import org.avni.web.request.rules.response.EligibilityRuleResponseEntity;
 import org.codehaus.jettison.json.JSONException;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.ProgramEnrolmentRepository;
-import org.avni.domain.Individual;
-import org.avni.domain.ProgramEnrolment;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.RuleService;
 import org.avni.web.request.RuleDependencyRequest;
@@ -21,7 +27,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class RuleController {
@@ -29,13 +39,18 @@ public class RuleController {
     private final RuleService ruleService;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final IndividualRepository individualRepository;
+    private final FormMappingRepository formMappingRepository;
+    private final IndividualService individualService;
 
     @Autowired
     public RuleController(RuleService ruleService,
                           ProgramEnrolmentRepository programEnrolmentRepository,
-                          IndividualRepository individualRepository) {
+                          IndividualRepository individualRepository,
+                          FormMappingRepository formMappingRepository, IndividualService individualService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.individualRepository = individualRepository;
+        this.formMappingRepository = formMappingRepository;
+        this.individualService = individualService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleService = ruleService;
     }
@@ -107,6 +122,52 @@ public class RuleController {
             return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
         } else {
             return ResponseEntity.badRequest().body(ruleResponseEntity);
+        }
+    }
+
+    @RequestMapping(value = "/web/eligibleGeneralEncounters", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    ResponseEntity<?> getEligibleGeneralEncounters(@RequestParam String subjectUUID) {
+        List<FormMapping> formMappings = formMappingRepository.getAllGeneralEncounterFormMappings();
+        List<EncounterType> encounterTypes = formMappings.stream().map(FormMapping::getEncounterType).collect(Collectors.toList());
+        Individual individual = individualRepository.findByUuid(subjectUUID);
+        Stream<Encounter> scheduledEncountersStream = individual
+                .getEncounters()
+                .stream()
+                .filter(enc -> !enc.isVoided() && enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
+        Set<EncounterContract> scheduledEncounters = individualService.constructEncounters(scheduledEncountersStream);
+        JsonObject response = new JsonObject().with("scheduledEncounters", scheduledEncounters);
+        EligibilityRuleResponseEntity ruleResponse = ruleService.executeEligibilityRule(individual, encounterTypes);
+        addEligibleEncounterUUIDsToResponse(response, ruleResponse);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @RequestMapping(value = "/web/eligibleProgramEncounters", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    ResponseEntity<?> getEligibleProgramEncounters(@RequestParam String enrolmentUUID) {
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(enrolmentUUID);
+        List<FormMapping> formMappings = formMappingRepository.getAllProgramEncounterFormMappings();
+        List<EncounterType> encounterTypes = formMappings.stream().map(FormMapping::getEncounterType).collect(Collectors.toList());
+        Stream<ProgramEncounter> scheduledEncountersStream = programEnrolment
+                .getEncounters(true)
+                .filter(enc -> !enc.isVoided() && enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
+        Set<ProgramEncountersContract> scheduledEncounters = individualService.constructProgramEncounters(scheduledEncountersStream);
+        JsonObject response = new JsonObject().with("scheduledEncounters", scheduledEncounters);
+        EligibilityRuleResponseEntity ruleResponse = ruleService.executeEligibilityRule(programEnrolment.getIndividual(), encounterTypes);
+        addEligibleEncounterUUIDsToResponse(response, ruleResponse);
+        return ResponseEntity.ok().body(response);
+    }
+
+    private void addEligibleEncounterUUIDsToResponse(JsonObject response, EligibilityRuleResponseEntity ruleResponse) {
+        if (ruleResponse.getStatus().equalsIgnoreCase("success")) {
+            List<String> eligibleEncounterTypeUUIDs = ruleResponse.getEligibilityRuleEntities()
+                    .stream()
+                    .filter(EligibilityRuleEntity::isEligible)
+                    .map(EligibilityRuleEntity::getTypeUUID)
+                    .collect(Collectors.toList());
+            response.with("eligibleEncounterTypeUUIDs", eligibleEncounterTypeUUIDs);
+        } else {
+            response.with("eligibleEncounterTypeUUIDs", Collections.EMPTY_LIST);
         }
     }
 }

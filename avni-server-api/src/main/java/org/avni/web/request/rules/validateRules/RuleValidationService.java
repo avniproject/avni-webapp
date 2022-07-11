@@ -6,6 +6,7 @@ import org.avni.dao.individualRelationship.RuleFailureLogRepository;
 import org.avni.domain.Concept;
 import org.avni.domain.ConceptDataType;
 import org.avni.domain.RuleFailureLog;
+import org.avni.web.request.rules.request.BaseRuleRequest;
 import org.avni.web.request.rules.request.RuleRequestEntity;
 import org.avni.web.request.rules.response.KeyValueResponse;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class RuleValidationService {
     }
 
 
-    public RuleFailureLog generateRuleFailureLog(RuleRequestEntity rule, String source, String entityType, String entityUuid) {
+    public RuleFailureLog generateRuleFailureLog(BaseRuleRequest rule, String source, String entityType, String entityUuid) {
         RuleFailureLog ruleFailureLog = new RuleFailureLog();
         ruleFailureLog.assignUUIDIfRequired();
         ruleFailureLog.setFormId(rule.getFormUuid());

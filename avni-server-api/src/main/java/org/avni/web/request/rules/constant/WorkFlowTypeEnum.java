@@ -8,7 +8,8 @@ public enum WorkFlowTypeEnum {
     PROGRAM_ENROLMENT("programenrolment"),
     INDIVIDUAL("individual"),
     PROGRAM_SUMMARY("ProgramSummary"),
-    SUBJECT_SUMMARY("SubjectSummary");
+    SUBJECT_SUMMARY("SubjectSummary"),
+    ENCOUNTER_ELIGIBILITY("ENCOUNTER_ELIGIBILITY");
     private String workFlowTypeName;
 
     public String getWorkFlowTypeName() {

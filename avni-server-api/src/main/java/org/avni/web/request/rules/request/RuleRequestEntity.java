@@ -1,8 +1,6 @@
 package org.avni.web.request.rules.request;
 
-public class RuleRequestEntity {
-    private String formUuid;
-    private String ruleType;
+public class RuleRequestEntity extends BaseRuleRequest {
     private String workFlowType;
     private String decisionCode;
     private String visitScheduleCode;
@@ -32,22 +30,6 @@ public class RuleRequestEntity {
 
     public void setChecklistCode(String checklistCode) {
         this.checklistCode = checklistCode;
-    }
-
-    public String getFormUuid() {
-        return formUuid;
-    }
-
-    public void setFormUuid(String formUuid) {
-        this.formUuid = formUuid;
-    }
-
-    public String getRuleType() {
-        return ruleType;
-    }
-
-    public void setRuleType(String ruleType) {
-        this.ruleType = ruleType;
     }
 
     public String getWorkFlowType() {

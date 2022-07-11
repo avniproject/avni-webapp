@@ -2,6 +2,8 @@ package org.avni.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import org.avni.web.request.EncounterTypeContract;
+import org.avni.web.request.rules.response.*;
 import org.codehaus.jettison.json.JSONException;
 import org.avni.application.Form;
 import org.avni.application.RuleType;
@@ -9,7 +11,6 @@ import org.avni.dao.*;
 import org.avni.dao.application.FormRepository;
 import org.avni.dao.individualRelationship.RuleFailureLogRepository;
 import org.avni.domain.*;
-import org.avni.framework.security.AuthenticationFilter;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.RestClient;
@@ -23,18 +24,12 @@ import org.avni.web.request.rules.constructWrappers.IndividualConstructionServic
 import org.avni.web.request.rules.constructWrappers.ProgramEncounterConstructionService;
 import org.avni.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.avni.web.request.rules.request.*;
-import org.avni.web.request.rules.response.DecisionResponseEntity;
-import org.avni.web.request.rules.response.KeyValueResponse;
-import org.avni.web.request.rules.response.RuleError;
-import org.avni.web.request.rules.response.RuleResponseEntity;
 import org.avni.web.request.rules.validateRules.RuleValidationService;
 import org.avni.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -184,7 +179,7 @@ public class RuleService implements NonScopeAwareService {
         programEnrolmentContractWrapper.setProgramEncounters(programEncountersContracts);
         programEnrolmentContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, programEnrolment.getUuid());
-        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", programEnrolmentContractWrapper, ruleFailureLog);
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", programEnrolmentContractWrapper, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
         return ruleResponseEntity;
     }
@@ -205,8 +200,17 @@ public class RuleService implements NonScopeAwareService {
         IndividualContractWrapper individualContractWrapper = programEnrolmentConstructionService.getSubjectInfo(individual);
         individualContractWrapper.setRule(rule);
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, individual.getUuid());
-        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", individualContractWrapper, ruleFailureLog);
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", individualContractWrapper, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
+        return ruleResponseEntity;
+    }
+
+    public EligibilityRuleResponseEntity executeEligibilityRule(Individual individual, List<EncounterType> encounterTypes) {
+        EligibilityRuleResponseEntity ruleResponseEntity = new EligibilityRuleResponseEntity();
+        IndividualContractWrapper individualContractWrapper = programEnrolmentConstructionService.getSubjectInfo(individual);
+        List<EncounterTypeContract> encounterTypeContracts = encounterTypes.stream().map(EncounterTypeContract::fromEncounterType).collect(Collectors.toList());
+        EncounterEligibilityRuleRequestEntity ruleRequest = new EncounterEligibilityRuleRequestEntity(individualContractWrapper, encounterTypeContracts);
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
         return ruleResponseEntity;
     }
 
@@ -257,7 +261,7 @@ public class RuleService implements NonScopeAwareService {
         }
 
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, entityUuid);
-        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/rules", entity, ruleFailureLog);
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/rules", entity, ruleFailureLog, RuleResponseEntity.class, new RuleResponseEntity());
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
         return ruleResponseEntity;
     }
@@ -297,12 +301,12 @@ public class RuleService implements NonScopeAwareService {
         return entity;
     }
 
-    private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog) {
+    private <R extends BaseRuleResponseEntity> R createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog, Class<R> responseType, R newInstance) {
         try {
             ObjectMapper mapper = ObjectMapperSingleton.getObjectMapper();
             mapper.registerModule(new JodaModule());
             String ruleResponse = restClient.post(url, contractObject);
-            RuleResponseEntity ruleResponseEntity = mapper.readValue(ruleResponse, RuleResponseEntity.class);
+            R ruleResponseEntity = mapper.readValue(ruleResponse, responseType);
             if (ruleResponseEntity.getStatus().equals("failure")) {
                 RuleError ruleError = ruleResponseEntity.getError();
                 saveRuleError(ruleFailureLog, ruleError.getMessage(), ruleError.getStack());
@@ -310,14 +314,13 @@ public class RuleService implements NonScopeAwareService {
             return ruleResponseEntity;
         } catch (Exception e) {
             saveRuleError(ruleFailureLog, e.getMessage(), getStackTrace(e));
-            return getFailureRuleResponseEntity(e);
+            return getFailureRuleResponseEntity(e, newInstance);
         }
     }
 
 
 
-    private RuleResponseEntity getFailureRuleResponseEntity(Exception e) {
-        RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
+    private <R extends BaseRuleResponseEntity> R getFailureRuleResponseEntity(Exception e, R ruleResponseEntity) {
         RuleError ruleError = new RuleError();
         ruleError.setMessage(e.getMessage());
         ruleError.setStack(getStackTrace(e));
@@ -334,9 +337,11 @@ public class RuleService implements NonScopeAwareService {
     }
 
     private void saveRuleError(RuleFailureLog ruleFailureLog, String message, String stack) {
-        ruleFailureLog.setErrorMessage(message);
-        ruleFailureLog.setStacktrace(stack);
-        ruleFailureLogRepository.save(ruleFailureLog);
+        if(ruleFailureLog != null) {
+            ruleFailureLog.setErrorMessage(message);
+            ruleFailureLog.setStacktrace(stack);
+            ruleFailureLogRepository.save(ruleFailureLog);
+        }
     }
 
     @Override
