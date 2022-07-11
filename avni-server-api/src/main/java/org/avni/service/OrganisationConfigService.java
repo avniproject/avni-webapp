@@ -111,9 +111,9 @@ public class OrganisationConfigService implements NonScopeAwareService {
         return organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
     }
 
-    public Object getOrganisationSettingsValue(Organisation organisation, OrganisationConfigSettingKeys settingKey) {
+    public Optional<Object> getOrganisationSettingsValue(Organisation organisation, OrganisationConfigSettingKeys settingKey) {
         JsonObject jsonObject = this.getOrganisationSettingsJson(organisation.getId());
-        return jsonObject.get(settingKey.name());
+        return Optional.ofNullable(jsonObject.get(settingKey.name()));
     }
 
     @Transactional

@@ -12,6 +12,6 @@ public abstract class EntityWriter {
     }
 
     protected boolean skipRuleExecution() {
-        return (Boolean) organisationConfigService.getOrganisationSettingsValue(UserContextHolder.getOrganisation(), OrganisationConfigSettingKeys.skipRuleExecution);
+        return (Boolean) organisationConfigService.getOrganisationSettingsValue(UserContextHolder.getOrganisation(), OrganisationConfigSettingKeys.skipRuleExecution).orElse(false);
     }
 }
