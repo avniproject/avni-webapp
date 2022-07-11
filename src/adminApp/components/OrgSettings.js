@@ -137,8 +137,8 @@ export const OrgSettings = () => {
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.skipRuleExecution,
-          "Skip rule validations on upload",
-          "SKIP_UPLOAD_VALIDATIONS"
+          "Skip rule executions on upload",
+          "SKIP_RULE_EXECUTION_ON_UPLOAD"
         )}
       </Grid>
     </Grid>

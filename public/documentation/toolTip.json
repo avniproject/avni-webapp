@@ -164,5 +164,5 @@
   "APP_DESIGNER_FILE_MAX_SIZE": "Max size of file in MB that can be selected in the form.",
   "USE_KEYCLOAK_AS_IDP": "Required for on-premise setup that use Keycloak instead of Cognito",
   "USE_MINIO_FOR_STORAGE": "Required for on-premise setup that use MinIO instead of S3",
-  "SKIP_UPLOAD_VALIDATIONS": "Skip rule validations on csv file upload"
+  "SKIP_RULE_EXECUTION_ON_UPLOAD": "Skip rule execution on csv file upload"
 }
