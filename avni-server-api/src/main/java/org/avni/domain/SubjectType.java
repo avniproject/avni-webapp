@@ -67,6 +67,15 @@ public class SubjectType extends OrganisationAwareEntity {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "regex",
+                    column = @Column(name = "valid_middle_name_regex")),
+            @AttributeOverride(name = "descriptionKey",
+                    column = @Column(name = "valid_middle_name_description_key"))
+    })
+    private Format validMiddleNameFormat;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "regex",
                     column = @Column(name = "valid_last_name_regex")),
             @AttributeOverride(name = "descriptionKey",
                     column = @Column(name = "valid_last_name_description_key"))
@@ -90,6 +99,9 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @Column(name = "sync_registration_concept_2_usable")
     private Boolean isSyncRegistrationConcept2Usable;
+
+    @Column(name = "allow_middle_name")
+    private boolean allowMiddleName;
 
     private String nameHelpText;
 
@@ -196,6 +208,14 @@ public class SubjectType extends OrganisationAwareEntity {
         return allowProfilePicture;
     }
 
+    public boolean isAllowMiddleName() {
+        return allowMiddleName;
+    }
+
+    public void setAllowMiddleName(boolean allowMiddleName) {
+        this.allowMiddleName = allowMiddleName;
+    }
+
     public void setAllowProfilePicture(boolean allowProfilePicture) {
         this.allowProfilePicture = allowProfilePicture;
     }
@@ -214,6 +234,14 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setValidFirstNameFormat(Format validFirstNameFormat) {
         this.validFirstNameFormat = validFirstNameFormat;
+    }
+
+    public Format getValidMiddleNameFormat() {
+        return validMiddleNameFormat;
+    }
+
+    public void setValidMiddleNameFormat(Format validMiddleNameFormat) {
+        this.validMiddleNameFormat = validMiddleNameFormat;
     }
 
     public Format getValidLastNameFormat() {
