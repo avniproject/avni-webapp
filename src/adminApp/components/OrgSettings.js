@@ -73,7 +73,7 @@ export const OrgSettings = () => {
     showSummaryButton: "showSummaryButton",
     useKeycloakAsIDP: "useKeycloakAsIDP",
     useMinioForStorage: "useMinioForStorage",
-    skipRuleValidationsOnUpload: "skipRuleValidationsOnUpload"
+    skipRuleExecution: "skipRuleExecution"
   };
 
   return orgSettings ? (
@@ -136,7 +136,7 @@ export const OrgSettings = () => {
           "USE_MINIO_FOR_STORAGE"
         )}
         {renderSimpleSetting(
-          organisationConfigSettingKeys.skipRuleValidationsOnUpload,
+          organisationConfigSettingKeys.skipRuleExecution,
           "Skip rule validations on upload",
           "SKIP_UPLOAD_VALIDATIONS"
         )}
