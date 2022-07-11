@@ -26,7 +26,9 @@ export const types = {
   ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
   SET_STATE: `${prefix}SET_STATE`,
   SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
-  SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`
+  SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`,
+  GET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}GET_ELIGIBLE_PROGRAM_ENCOUNTERS`,
+  SET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}SET_ELIGIBLE_PROGRAM_ENCOUNTERS`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -37,6 +39,16 @@ export const setUnplanProgramEncounters = unplanProgramEncounters => ({
 export const onLoad = enrolmentUuid => ({
   type: types.ON_LOAD,
   enrolmentUuid
+});
+
+export const getEligibleProgramEncounters = enrolmentUuid => ({
+  type: types.GET_ELIGIBLE_PROGRAM_ENCOUNTERS,
+  enrolmentUuid
+});
+
+export const setEligibleProgramEncounters = eligibleEncounters => ({
+  type: types.SET_ELIGIBLE_PROGRAM_ENCOUNTERS,
+  eligibleEncounters
 });
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -256,6 +268,12 @@ export default (state = initialState, action) => {
         validationResults
       };
     }
+    case types.SET_ELIGIBLE_PROGRAM_ENCOUNTERS: {
+      return {
+        ...state,
+        eligibleEncounters: action.eligibleEncounters
+      };
+    }
     case types.RESET_STATE: {
       return {
         ...state,
@@ -264,7 +282,8 @@ export default (state = initialState, action) => {
         programEncounter: null,
         programEncounterForm: null,
         programEnrolment: null,
-        unplanProgramEncounters: null
+        unplanProgramEncounters: null,
+        eligibleEncounters: { scheduledEncounters: [], eligibleEncounterTypeUUIDs: [] }
       };
     }
     case types.SET_STATE: {

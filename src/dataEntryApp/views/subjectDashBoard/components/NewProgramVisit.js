@@ -3,12 +3,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { isEmpty, isNil } from "lodash";
+import { get, isEmpty } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import { onLoad, resetState } from "../../../reducers/programEncounterReducer";
+import {
+  getEligibleProgramEncounters,
+  resetState
+} from "../../../reducers/programEncounterReducer";
 import { ProgramEncounter } from "avni-models";
 import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -31,14 +34,12 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   useEffect(() => {
     props.resetState();
-    //Get Plan & Unplan Encounters
-    props.onLoad(enrolmentUuid);
+    props.getEligibleProgramEncounters(enrolmentUuid);
   }, []);
 
   //Creating New programEncounter Object for Plan Encounter
-  const planEncounterList = props.planEncounters
-    .filter(pe => isNil(pe.encounterDateTime) && isNil(pe.cancelDateTime))
-    .map(planEncounter => {
+  const planEncounterList = get(props, "eligibleEncounters.scheduledEncounters", []).map(
+    planEncounter => {
       const planVisit = new ProgramEncounter();
       planVisit.encounterType = planEncounter.encounterType;
       planVisit.encounterDateTime = planEncounter.encounterDateTime;
@@ -47,18 +48,21 @@ const NewProgramVisit = ({ match, ...props }) => {
       planVisit.name = planEncounter.name;
       planVisit.uuid = planEncounter.uuid;
       return planVisit;
-    });
+    }
+  );
 
   //Creating New programEncounter Object for Unplan Encounter
-  const unplanEncounterList = props.unplanEncounters.map(unplanEncounter => {
-    const unplanVisit = new ProgramEncounter();
-    unplanVisit.encounterType = props.operationalModules.encounterTypes.find(
-      eT => eT.uuid === unplanEncounter.encounterTypeUUID
-    );
-    unplanVisit.name =
-      unplanVisit.encounterType && unplanVisit.encounterType.operationalEncounterTypeName;
-    return unplanVisit;
-  });
+  const unplanEncounterList = get(props, "eligibleEncounters.eligibleEncounterTypeUUIDs", []).map(
+    uuid => {
+      const unplanVisit = new ProgramEncounter();
+      unplanVisit.encounterType = props.operationalModules.encounterTypes.find(
+        eT => eT.uuid === uuid
+      );
+      unplanVisit.name =
+        unplanVisit.encounterType && unplanVisit.encounterType.operationalEncounterTypeName;
+      return unplanVisit;
+    }
+  );
 
   const sections = [];
   if (!isEmpty(planEncounterList)) {
@@ -98,18 +102,13 @@ const NewProgramVisit = ({ match, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  planEncounters: state.dataEntry.programEncounterReducer.programEnrolment
-    ? state.dataEntry.programEncounterReducer.programEnrolment.programEncounters
-    : [],
-  unplanEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters
-    ? state.dataEntry.programEncounterReducer.unplanProgramEncounters
-    : [],
+  eligibleEncounters: state.dataEntry.programEncounterReducer.eligibleEncounters,
   operationalModules: state.dataEntry.metadata.operationalModules,
   load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
-  onLoad,
+  getEligibleProgramEncounters,
   resetState
 };
 

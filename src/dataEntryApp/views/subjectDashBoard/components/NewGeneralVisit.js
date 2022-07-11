@@ -3,12 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, get } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import { onLoad, resetState } from "../../../reducers/encounterReducer";
+import { getEligibleEncounters, resetState } from "../../../reducers/encounterReducer";
 import { Encounter } from "avni-models";
 import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -31,38 +31,31 @@ const NewGeneralVisit = ({ match, ...props }) => {
 
   useEffect(() => {
     props.resetState();
-    // Get Plan & Unplan Encounters
-    props.onLoad(subjectUuid);
+    props.getEligibleEncounters(subjectUuid);
   }, []);
 
-  // Creating New Encounter Object for Plan Encounter
-  const scheduledEncounters =
-    props.subjectGeneral &&
-    props.subjectGeneral
-      .filter(e => isNil(e.encounterDateTime) && isNil(e.cancelDateTime))
-      .map(pe => {
-        const encounter = new Encounter();
-        encounter.encounterType = pe.encounterType;
-        encounter.encounterDateTime = pe.encounterDateTime;
-        encounter.earliestVisitDateTime = pe.earliestVisitDateTime;
-        encounter.maxVisitDateTime = pe.maxVisitDateTime;
-        encounter.name = pe.name;
-        encounter.uuid = pe.uuid;
-        return encounter;
-      });
+  const scheduledEncounters = get(props, "eligibleEncounters.scheduledEncounters", []).map(pe => {
+    const encounter = new Encounter();
+    encounter.encounterType = pe.encounterType;
+    encounter.encounterDateTime = pe.encounterDateTime;
+    encounter.earliestVisitDateTime = pe.earliestVisitDateTime;
+    encounter.maxVisitDateTime = pe.maxVisitDateTime;
+    encounter.name = pe.name;
+    encounter.uuid = pe.uuid;
+    return encounter;
+  });
 
-  //Creating New Encounter Object for Unplan Encounter
-  const actualEncounters =
-    props.encounterFormMappings &&
-    props.encounterFormMappings.map(fm => {
+  const actualEncounters = get(props, "eligibleEncounters.eligibleEncounterTypeUUIDs", []).map(
+    uuid => {
       const encounter = new Encounter();
       encounter.encounterType = props.operationalModules.encounterTypes.find(
-        eT => eT.uuid === fm.encounterTypeUUID
+        eT => eT.uuid === uuid
       );
       encounter.name =
         encounter.encounterType && encounter.encounterType.operationalEncounterTypeName;
       return encounter;
-    });
+    }
+  );
 
   const sections = [];
   if (!isEmpty(scheduledEncounters)) {
@@ -98,14 +91,13 @@ const NewGeneralVisit = ({ match, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   operationalModules: state.dataEntry.metadata.operationalModules,
-  encounterFormMappings: state.dataEntry.encounterReducer.encounterFormMappings,
+  eligibleEncounters: state.dataEntry.encounterReducer.eligibleEncounters,
   load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
-  onLoad,
+  getEligibleEncounters,
   resetState
 };
 

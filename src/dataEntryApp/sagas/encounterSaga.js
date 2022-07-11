@@ -5,7 +5,8 @@ import {
   setEncounterFormMappings,
   saveEncounterComplete,
   onLoadSuccess,
-  setFilteredFormElements
+  setFilteredFormElements,
+  setEligibleEncounters
 } from "../reducers/encounterReducer";
 import api from "../api";
 import {
@@ -41,7 +42,8 @@ export default function*() {
       createCancelEncounterWatcher,
       editCancelEncounterWatcher,
       nextWatcher,
-      previousWatcher
+      previousWatcher,
+      encounterEligibilityWatcher
     ].map(fork)
   );
 }
@@ -59,6 +61,17 @@ export function* encouterOnLoadWorker({ subjectUuid }) {
   );
   yield put.resolve(setEncounterFormMappings(encounterFormMappings));
   yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(setLoad(true));
+}
+
+export function* encounterEligibilityWatcher() {
+  yield takeLatest(types.GET_ELIGIBLE_ENCOUNTERS, encounterEligibilityWorker);
+}
+
+export function* encounterEligibilityWorker({ subjectUuid }) {
+  yield put.resolve(setLoad(false));
+  const eligibleEncounters = yield call(api.fetchEligibleEncounterTypes, subjectUuid);
+  yield put.resolve(setEligibleEncounters(eligibleEncounters));
   yield put.resolve(setLoad(true));
 }
 

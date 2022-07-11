@@ -25,7 +25,9 @@ export const types = {
   ON_PREVIOUS: `${prefix}ON_PREVIOUS`,
   SET_STATE: `${prefix}SET_STATE`,
   SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`,
-  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`
+  SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
+  GET_ELIGIBLE_ENCOUNTERS: `${prefix}GET_ELIGIBLE_ENCOUNTERS`,
+  SET_ELIGIBLE_ENCOUNTERS: `${prefix}SET_ELIGIBLE_ENCOUNTERS`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -36,6 +38,16 @@ export const setEncounterFormMappings = encounterFormMappings => ({
 export const onLoad = subjectUuid => ({
   type: types.ON_LOAD,
   subjectUuid
+});
+
+export const getEligibleEncounters = subjectUuid => ({
+  type: types.GET_ELIGIBLE_ENCOUNTERS,
+  subjectUuid
+});
+
+export const setEligibleEncounters = eligibleEncounters => ({
+  type: types.SET_ELIGIBLE_ENCOUNTERS,
+  eligibleEncounters
 });
 
 export const onLoadSuccess = (
@@ -216,6 +228,12 @@ export default (state = initialState, action) => {
         saved: true
       };
     }
+    case types.SET_ELIGIBLE_ENCOUNTERS: {
+      return {
+        ...state,
+        eligibleEncounters: action.eligibleEncounters
+      };
+    }
     case types.UPDATE_ENCOUNTER: {
       const encounter = state.encounter.cloneForEdit();
       encounter[action.field] = action.value;
@@ -251,7 +269,8 @@ export default (state = initialState, action) => {
         validationResults: [],
         encounter: null,
         encounterForm: null,
-        encounterFormMappings: null
+        encounterFormMappings: null,
+        eligibleEncounters: { scheduledEncounters: [], eligibleEncounterTypeUUIDs: [] }
       };
     }
     case types.SET_STATE: {

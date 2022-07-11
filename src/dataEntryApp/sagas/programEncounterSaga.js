@@ -32,6 +32,7 @@ import {
 } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
+import { setEligibleProgramEncounters } from "../reducers/programEncounterReducer";
 
 export default function*() {
   yield all(
@@ -46,7 +47,8 @@ export default function*() {
       createCancelProgramEncounterWatcher,
       editCancelProgramEncounterWatcher,
       nextWatcher,
-      previousWatcher
+      previousWatcher,
+      programEncounterEligibilityWatcher
     ].map(fork)
   );
 }
@@ -71,6 +73,17 @@ export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
     )
   );
   yield put(setUnplanProgramEncounters(programEncounterFormMapping));
+  yield put.resolve(setLoad(true));
+}
+
+export function* programEncounterEligibilityWatcher() {
+  yield takeLatest(types.GET_ELIGIBLE_PROGRAM_ENCOUNTERS, programEncounterEligibilityWorker);
+}
+
+export function* programEncounterEligibilityWorker({ enrolmentUuid }) {
+  yield put.resolve(setLoad(false));
+  const eligibleEncounters = yield call(api.fetchEligibleProgramEncounterTypes, enrolmentUuid);
+  yield put.resolve(setEligibleProgramEncounters(eligibleEncounters));
   yield put.resolve(setLoad(true));
 }
 

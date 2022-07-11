@@ -74,6 +74,20 @@ export default {
       return response.json;
     }),
 
+  fetchEligibleEncounterTypes: subjectUUID =>
+    httpClient
+      .fetchJson(`/web/eligibleGeneralEncounters?subjectUUID=${subjectUUID}`)
+      .then(response => {
+        return response.json;
+      }),
+
+  fetchEligibleProgramEncounterTypes: enrolmentUUID =>
+    httpClient
+      .fetchJson(`/web/eligibleProgramEncounters?enrolmentUUID=${enrolmentUUID}`)
+      .then(response => {
+        return response.json;
+      }),
+
   fetchSubjectProgram: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
   },
