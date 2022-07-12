@@ -134,6 +134,7 @@ public class EncounterContractWrapper {
     public static EncounterContractWrapper fromEncounter(Encounter encounter, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
         EncounterContractWrapper contract = new EncounterContractWrapper();
         contract.setUuid(encounter.getUuid());
+        contract.setVoided(encounter.isVoided());
         contract.setName(encounter.getName());
         contract.setEncounterDateTime(encounter.getEncounterDateTime());
         contract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());

@@ -137,6 +137,7 @@ public class ProgramEnrolmentContractWrapper {
     public static ProgramEnrolmentContractWrapper fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
         ProgramEnrolmentContractWrapper contract = new ProgramEnrolmentContractWrapper();
         contract.setUuid(enrolment.getUuid());
+        contract.setVoided(enrolment.isVoided());
         contract.setEnrolmentDateTime(enrolment.getEnrolmentDateTime());
         contract.setProgramExitDateTime(enrolment.getProgramExitDateTime());
         contract.setOperationalProgramName(enrolment.getProgram().getOperationalProgramName());
