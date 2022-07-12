@@ -128,17 +128,20 @@ public class RuleController {
     @RequestMapping(value = "/web/eligibleGeneralEncounters", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     ResponseEntity<?> getEligibleGeneralEncounters(@RequestParam String subjectUUID) {
-        List<FormMapping> formMappings = formMappingRepository.getAllGeneralEncounterFormMappings();
-        List<EncounterType> encounterTypes = formMappings.stream().map(FormMapping::getEncounterType).collect(Collectors.toList());
         Individual individual = individualRepository.findByUuid(subjectUUID);
+        List<FormMapping> formMappings = formMappingRepository.getAllGeneralEncounterFormMappings();
+        List<EncounterType> encounterTypes = formMappings.stream()
+                .filter(fm -> fm.getSubjectTypeUuid().equals(individual.getSubjectType().getUuid()))
+                .map(FormMapping::getEncounterType).collect(Collectors.toList());
         Stream<Encounter> scheduledEncountersStream = individual
                 .getEncounters()
                 .stream()
                 .filter(enc -> !enc.isVoided() && enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
         Set<EncounterContract> scheduledEncounters = individualService.constructEncounters(scheduledEncountersStream);
         JsonObject response = new JsonObject().with("scheduledEncounters", scheduledEncounters);
+        logger.info(String.format("Executing encounter Eligibility rule for the subject uuid %s", subjectUUID));
         EligibilityRuleResponseEntity ruleResponse = ruleService.executeEligibilityRule(individual, encounterTypes);
-        addEligibleEncounterUUIDsToResponse(response, ruleResponse);
+        addEligibleEncounterUUIDsToResponse(response, ruleResponse, encounterTypes);
         return ResponseEntity.ok().body(response);
     }
 
@@ -147,18 +150,21 @@ public class RuleController {
     ResponseEntity<?> getEligibleProgramEncounters(@RequestParam String enrolmentUUID) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(enrolmentUUID);
         List<FormMapping> formMappings = formMappingRepository.getAllProgramEncounterFormMappings();
-        List<EncounterType> encounterTypes = formMappings.stream().map(FormMapping::getEncounterType).collect(Collectors.toList());
+        List<EncounterType> encounterTypes = formMappings.stream()
+                .filter(fm -> fm.getProgramUuid().equals(programEnrolment.getProgram().getUuid()))
+                .map(FormMapping::getEncounterType).collect(Collectors.toList());
         Stream<ProgramEncounter> scheduledEncountersStream = programEnrolment
                 .getEncounters(true)
                 .filter(enc -> !enc.isVoided() && enc.getEncounterDateTime() == null && enc.getCancelDateTime() == null);
         Set<ProgramEncountersContract> scheduledEncounters = individualService.constructProgramEncounters(scheduledEncountersStream);
         JsonObject response = new JsonObject().with("scheduledEncounters", scheduledEncounters);
+        logger.info(String.format("Executing encounter Eligibility rule for the enrolment uuid %s", enrolmentUUID));
         EligibilityRuleResponseEntity ruleResponse = ruleService.executeEligibilityRule(programEnrolment.getIndividual(), encounterTypes);
-        addEligibleEncounterUUIDsToResponse(response, ruleResponse);
+        addEligibleEncounterUUIDsToResponse(response, ruleResponse, encounterTypes);
         return ResponseEntity.ok().body(response);
     }
 
-    private void addEligibleEncounterUUIDsToResponse(JsonObject response, EligibilityRuleResponseEntity ruleResponse) {
+    private void addEligibleEncounterUUIDsToResponse(JsonObject response, EligibilityRuleResponseEntity ruleResponse, List<EncounterType> encounterTypes) {
         if (ruleResponse.getStatus().equalsIgnoreCase("success")) {
             List<String> eligibleEncounterTypeUUIDs = ruleResponse.getEligibilityRuleEntities()
                     .stream()
@@ -167,7 +173,8 @@ public class RuleController {
                     .collect(Collectors.toList());
             response.with("eligibleEncounterTypeUUIDs", eligibleEncounterTypeUUIDs);
         } else {
-            response.with("eligibleEncounterTypeUUIDs", Collections.EMPTY_LIST);
+            List<String> encounterTypeUUIDS = encounterTypes.stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList());
+            response.with("eligibleEncounterTypeUUIDs", encounterTypeUUIDS);
         }
     }
 }
