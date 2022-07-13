@@ -45,14 +45,18 @@ public class ResetSyncService {
     }
 
     public void recordSyncAttributeChange(SubjectType savedSubjectType, SubjectTypeContractWeb request) {
-        if (isChanged(savedSubjectType.getSyncRegistrationConcept1(), request.getSyncRegistrationConcept1()) ||
-                isChanged(savedSubjectType.getSyncRegistrationConcept2(), request.getSyncRegistrationConcept2()) ||
-                isChanged(savedSubjectType.isShouldSyncByLocation(), request.isShouldSyncByLocation())
-        ) {
+        if (individualRepository.existsBySubjectType(savedSubjectType) &&
+                anySyncAttributeChanged(savedSubjectType, request)) {
             ResetSync resetSync = buildNewResetSync();
             resetSync.setSubjectType(savedSubjectType);
             resetSyncRepository.save(resetSync);
         }
+    }
+
+    private boolean anySyncAttributeChanged(SubjectType savedSubjectType, SubjectTypeContractWeb request) {
+        return  isChanged(savedSubjectType.getSyncRegistrationConcept1(), request.getSyncRegistrationConcept1()) ||
+                isChanged(savedSubjectType.getSyncRegistrationConcept2(), request.getSyncRegistrationConcept2()) ||
+                isChanged(savedSubjectType.isShouldSyncByLocation(), request.isShouldSyncByLocation());
     }
 
     public void recordSyncAttributeValueChangeForUser(User savedUser, UserContract userContract) {
@@ -79,7 +83,10 @@ public class ResetSyncService {
     private boolean hasSubjectsInNewLocation(List<Long> savedLocationIds, List<Long> locationIdsPassedInRequest) {
         List<Long> newlyAddedIds = new ArrayList<>(locationIdsPassedInRequest);
         newlyAddedIds.removeAll(savedLocationIds);
-        return individualRepository.existsByAddressLevelIdIn(newlyAddedIds.isEmpty() ? locationIdsPassedInRequest : newlyAddedIds);
+        List<Long> removedIds = new ArrayList<>(savedLocationIds);
+        removedIds.removeAll(locationIdsPassedInRequest);
+        return individualRepository.hasSubjectsInLocations(newlyAddedIds) ||
+                individualRepository.hasSubjectsInLocations(removedIds);
     }
 
     private ResetSync buildNewResetSync() {
