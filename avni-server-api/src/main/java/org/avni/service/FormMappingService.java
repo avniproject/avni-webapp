@@ -14,14 +14,15 @@ import org.avni.domain.Program;
 import org.avni.domain.SubjectType;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.FormMappingContract;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.joda.time.DateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,6 +209,15 @@ public class FormMappingService implements NonScopeAwareService {
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         return formMappingRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    public Set<SubjectType> getAllSubjectTypesHavingConceptUUID(String conceptUUID) {
+        return formMappingRepository.getAllRegistrationFormMappings()
+                .stream()
+                .filter(fm ->
+                        fm.getForm().getApplicableFormElements().stream().anyMatch(fe -> fe.getConcept().getUuid().equals(conceptUUID))
+                ).map(FormMapping::getSubjectType)
+                .collect(Collectors.toSet());
     }
 
 }
