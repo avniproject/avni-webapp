@@ -167,4 +167,8 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     void updateConceptSyncAttributesForSubjectType(Long subjectTypeId, String syncAttribute1, String syncAttribute2);
 
     boolean existsByAddressLevelIdIn(List<Long> addressIds);
+    default boolean hasSubjectsInLocations(List<Long> addressIds) {
+        return addressIds.isEmpty() ? false : existsByAddressLevelIdIn(addressIds);
+    }
+    boolean existsBySubjectType(SubjectType subjectType);
 }
