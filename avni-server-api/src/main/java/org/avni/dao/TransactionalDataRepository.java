@@ -1,9 +1,6 @@
 package org.avni.dao;
 
-import org.avni.domain.CHSEntity;
-import org.avni.domain.JsonObject;
-import org.avni.domain.SubjectType;
-import org.avni.domain.User;
+import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.*;
 
 @NoRepositoryBean
 @PreAuthorize(value = "hasAnyAuthority('user')")
@@ -57,7 +56,6 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                                                                                       List<Predicate> predicates,
                                                                                       From<A, B> from) {
         SubjectType subjectType = syncParameters.getSubjectType();
-        JsonObject syncSettings = syncParameters.getSyncSettings();
         if (subjectType.isShouldSyncByLocation()) {
             List<Long> addressLevels = syncParameters.getAddressLevels();
             if (addressLevels.size() > 0) {
@@ -75,24 +73,19 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                 predicates.add(cb.equal(from.get("id"), cb.literal(0)));
             }
         }
+        User user = UserContextHolder.getUserContext().getUser();
         if (subjectType.isDirectlyAssignable()) {
-            List<Long> subjectIds = UserContextHolder.getUserContext().getUser().getDirectAssignmentIds();
-            if (subjectIds.size() > 0) {
-                CriteriaBuilder.In<Long> inClause;
-                if (syncParameters.isParentOrSelfIndividual()) {
-                    inClause = cb.in(from.get("id"));
-                } else if (syncParameters.isEncounter() || syncParameters.isParentOrSelfEnrolment()) {
-                    inClause = cb.in(from.get("individual").get("id"));
-                } else {
-                    inClause = cb.in(from.get("individualId"));
-                }
-                for (Long id : subjectIds) {
-                    inClause.value(id);
-                }
-                predicates.add(inClause);
-            } else {
-                predicates.add(cb.equal(from.get("id"), cb.literal(0)));
+            Join<Object, Object> assignedUserJoin = null;
+            if (syncParameters.isParentOrSelfIndividual()) {
+                assignedUserJoin = joinAssignedUser(from);
+            } else if (syncParameters.isEncounter() || syncParameters.isParentOrSelfEnrolment()) {
+                assignedUserJoin = joinAssignedUserViaSubject(from);
+            } else if (syncParameters.isProgramEncounter()) {
+                assignedUserJoin = joinAssignedUserViaEnrolment(from);
             }
+
+            if (assignedUserJoin != null)
+                predicates.add(cb.equal(assignedUserJoin.get("id"), user.getId()));
         }
         addSyncAttributeConceptPredicate(cb, predicates, from, syncParameters, "syncConcept1Value", "syncConcept2Value");
     }

@@ -30,17 +30,15 @@ public class IndividualService implements ScopeAwareService {
     private final GroupRoleRepository groupRoleRepository;
     private final SubjectTypeRepository subjectTypeRepository;
     private final AddressLevelService addressLevelService;
-    private final UserSubjectAssignmentRepository userSubjectAssignmentRepository;
 
     @Autowired
-    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService, UserSubjectAssignmentRepository userSubjectAssignmentRepository) {
+    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService) {
         this.individualRepository = individualRepository;
         this.observationService = observationService;
         this.groupSubjectRepository = groupSubjectRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.addressLevelService = addressLevelService;
-        this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
     }
 
     public IndividualContract getSubjectEncounters(String individualUuid) {
@@ -349,11 +347,9 @@ public class IndividualService implements ScopeAwareService {
     private void assignSubjectToUserIfRequired(Individual individual) {
         SubjectType subjectType = individual.getSubjectType();
         User user = UserContextHolder.getUserContext().getUser();
-        List<Long> subjectIds = user.getDirectAssignmentIds();
-        if (subjectType.isDirectlyAssignable() && !subjectIds.contains(individual.getId())) {
-            UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment(user, individual);
-            userSubjectAssignment.assignUUID();
-            userSubjectAssignmentRepository.save(userSubjectAssignment);
+        if (subjectType.isDirectlyAssignable() && !individual.getAssignedUser().getId().equals(user.getId())) {
+            individual.setAssignedUser(user);
+            individualRepository.save(individual);
         }
     }
 }

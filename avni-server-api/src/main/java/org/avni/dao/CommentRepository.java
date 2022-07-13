@@ -29,7 +29,7 @@ public interface CommentRepository extends TransactionalDataRepository<Comment>,
     default Specification<Comment> syncStrategySpecification(SyncParameters syncParameters) {
         return (Root<Comment> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            Join<Comment, Individual> individualJoin = root.join("subject", JoinType.LEFT);
+            Join<Comment, Individual> individualJoin = root.join("subject");
             predicates.add(cb.equal(individualJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
             addSyncStrategyPredicates(syncParameters, cb, predicates, individualJoin);
             return cb.and(predicates.toArray(new Predicate[0]));

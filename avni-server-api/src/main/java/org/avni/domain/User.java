@@ -92,9 +92,6 @@ public class User {
     @Type(type = "jsonObject")
     private JsonObject syncSettings;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    private Set<UserSubjectAssignment> userSubjectAssignments = new HashSet<>();
-
     public enum SyncSettingKeys {
        syncConcept1Values,
        syncConcept2Values,
@@ -207,17 +204,6 @@ public class User {
     public boolean isNew() {
         Long id = this.getId();
         return (id == null || id == 0);
-    }
-
-    public List<Long> getDirectAssignmentIds() {
-        return this.userSubjectAssignments.stream()
-                .filter(assignment -> !assignment.isVoided())
-                .map(assignments -> assignments.getSubject().getId())
-                .collect(Collectors.toList());
-    }
-
-    public void setUserSubjectAssignments(Set<UserSubjectAssignment> userSubjectAssignments) {
-        this.userSubjectAssignments = userSubjectAssignments;
     }
 
     public void setCreatedBy(User createdBy) {

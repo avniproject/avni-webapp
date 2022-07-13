@@ -77,6 +77,10 @@ public class SyncParameters {
         return Arrays.asList(SyncEntityName.Enrolment, SyncEntityName.Checklist, SyncEntityName.ChecklistItem).contains(syncEntityName);
     }
 
+    public boolean isProgramEncounter() {
+        return syncEntityName.equals(SyncEntityName.ProgramEncounter);
+    }
+
     public enum SyncEntityName {
         Individual,
         Enrolment,

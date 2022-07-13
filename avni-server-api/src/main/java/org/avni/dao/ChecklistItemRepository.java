@@ -32,7 +32,7 @@ public interface ChecklistItemRepository extends TransactionalDataRepository<Che
         return (Root<ChecklistItem> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             Join<ChecklistItem, Checklist> checklistJoin = root.join("checklist", JoinType.LEFT);
-            Join<Checklist, ProgramEnrolment> programEnrolmentJoin = checklistJoin.join("programEnrolment", JoinType.LEFT);
+            Join<Checklist, ProgramEnrolment> programEnrolmentJoin = checklistJoin.join("programEnrolment");
             predicates.add(cb.equal(checklistJoin.get("checklistDetail").get("id"), syncParameters.getTypeId()));
             addSyncStrategyPredicates(syncParameters, cb, predicates, programEnrolmentJoin);
             return cb.and(predicates.toArray(new Predicate[0]));

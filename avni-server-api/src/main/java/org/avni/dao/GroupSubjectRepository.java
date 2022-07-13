@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinAssignedUser;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin')")
@@ -71,7 +73,6 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
         return (Root<GroupSubject> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             SubjectType subjectType = syncParameters.getSubjectType();
-            JsonObject syncSettings = syncParameters.getSyncSettings();
             Join<GroupSubject, GroupRole> groupRole = root.join("groupRole", JoinType.LEFT);
             predicates.add(cb.equal(groupRole.get("groupSubjectType").get("id"), syncParameters.getTypeId()));
             if (subjectType.isShouldSyncByLocation()) {
@@ -90,19 +91,9 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
                 }
             }
             if (subjectType.isDirectlyAssignable()) {
-                List<Long> subjectIds = UserContextHolder.getUserContext().getUser().getDirectAssignmentIds();
-                if (subjectIds.size() > 0) {
-                    CriteriaBuilder.In<Long> inClause1 = cb.in(root.get("groupSubject").get("id"));
-                    CriteriaBuilder.In<Long> inClause2 = cb.in(root.get("memberSubject").get("id"));
-                    for (Long id : subjectIds) {
-                        inClause1.value(id);
-                        inClause2.value(id);
-                    }
-                    predicates.add(inClause1);
-                    predicates.add(inClause2);
-                } else {
-                    predicates.add(cb.equal(root.get("id"), cb.literal(0)));
-                }
+                Long userId = UserContextHolder.getUserContext().getUser().getId();
+                predicates.add(cb.equal(joinAssignedUser(root.join("groupSubject")).get("id"), userId));
+                predicates.add(cb.equal(joinAssignedUser(root.join("memberSubject")).get("id"), userId));
             }
             addSyncAttributeConceptPredicate(cb, predicates, root, syncParameters, "groupSubjectSyncConcept1Value", "groupSubjectSyncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));

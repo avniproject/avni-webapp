@@ -17,7 +17,6 @@ public interface SubjectMigrationRepository extends TransactionalDataRepository<
         return (Root<SubjectMigration> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             SubjectType subjectType = syncParameters.getSubjectType();
-            JsonObject syncSettings = syncParameters.getSyncSettings();
             Join<SubjectMigration, Individual> individualJoin = root.join("individual", JoinType.LEFT);
             predicates.add(cb.equal(individualJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
             if (subjectType.isShouldSyncByLocation()) {

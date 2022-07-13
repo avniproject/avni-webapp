@@ -25,7 +25,7 @@ public class UserContract extends ReferenceDataContract {
     private String[] roles;
     private String password;
     private JsonObject syncSettings;
-    private Set<Long> directAssignmentIds;
+    private Long directAssignmentId;
 
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
@@ -153,11 +153,11 @@ public class UserContract extends ReferenceDataContract {
         this.syncSettings = syncSettings;
     }
 
-    public Set<Long> getDirectAssignmentIds() {
-        return directAssignmentIds;
+    public Long getDirectAssignmentId() {
+        return directAssignmentId;
     }
 
-    public void setDirectAssignmentIds(Set<Long> directAssignmentIds) {
-        this.directAssignmentIds = directAssignmentIds;
+    public void setDirectAssignmentId(Long directAssignmentId) {
+        this.directAssignmentId = directAssignmentId;
     }
 }

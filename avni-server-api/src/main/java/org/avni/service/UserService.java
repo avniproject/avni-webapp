@@ -23,16 +23,14 @@ public class UserService implements NonScopeAwareService {
     private OrganisationRepository organisationRepository;
     private GroupRepository groupRepository;
     private UserGroupRepository userGroupRepository;
-    private UserSubjectAssignmentRepository userSubjectAssignmentRepository;
     private IndividualRepository individualRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, UserSubjectAssignmentRepository userSubjectAssignmentRepository, IndividualRepository individualRepository) {
+    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, IndividualRepository individualRepository) {
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
-        this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
         this.individualRepository = individualRepository;
     }
 
@@ -53,35 +51,21 @@ public class UserService implements NonScopeAwareService {
         return userRepository.save(user);
     }
 
-    public User save(User user, Set<Long> directAssignmentIds) throws Exception {
+    public User save(User user, Long directAssignmentId) throws Exception {
         User savedUser = this.save(user);
-        if (directAssignmentIds != null) {
-            List<UserSubjectAssignment> removedAssignments = userSubjectAssignmentRepository.findAllByUserAndSubjectIdNotInAndIsVoidedFalse(savedUser, directAssignmentIds)
-                    .stream().peek(userSubjectAssignment -> userSubjectAssignment.setVoided(true))
-                    .collect(Collectors.toList());
-            userSubjectAssignmentRepository.saveAll(removedAssignments);
-            saveDirectAssignment(user, directAssignmentIds);
+        if (directAssignmentId != null) {
+            saveDirectAssignment(user, directAssignmentId);
         }
         return savedUser;
     }
 
-    private void saveDirectAssignment(User user, Set<Long> directAssignmentIds) throws Exception {
-        List<Long> savedAssignmentIds = userSubjectAssignmentRepository.findAllByUserAndSubjectIdInAndIsVoidedFalse(user, directAssignmentIds)
-                .stream().map(userSubjectAssignment -> userSubjectAssignment.getSubject().getId())
-                .collect(Collectors.toList());
-        Set<UserSubjectAssignment> userSubjectAssignments = new HashSet<>();
-        for (Long subjectId : directAssignmentIds) {
-            if (!savedAssignmentIds.contains(subjectId)) {
-                Individual individual = individualRepository.findOne(subjectId);
-                if (individual == null) {
-                    throw new Exception(String.format("Subject id %d not found", subjectId));
-                }
-                UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment(user, individual);
-                userSubjectAssignment.assignUUID();
-                userSubjectAssignments.add(userSubjectAssignment);
-            }
+    private void saveDirectAssignment(User user, Long assignedSubjectId) throws Exception {
+        Individual individual = individualRepository.findOne(assignedSubjectId);
+        if (individual == null) {
+            throw new Exception(String.format("Subject id %d not found", assignedSubjectId));
         }
-        userSubjectAssignmentRepository.saveAll(userSubjectAssignments);
+        individual.setAssignedUser(user);
+        individualRepository.save(individual);
     }
 
     public void addToDefaultUserGroup(User user) {

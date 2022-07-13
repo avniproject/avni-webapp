@@ -68,6 +68,10 @@ public class Individual extends SyncAttributeEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
     private Set<Encounter> encounters = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_user_id")
+    private User assignedUser;
+
     @Column
     @Type(type = "observations")
     private ObservationCollection observations;
@@ -288,4 +292,11 @@ public class Individual extends SyncAttributeEntity {
         return programEncounters;
     }
 
+    public User getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(User assignedUser) {
+        this.assignedUser = assignedUser;
+    }
 }

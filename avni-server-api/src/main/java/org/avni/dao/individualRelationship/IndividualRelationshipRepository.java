@@ -19,6 +19,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 
+import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinAssignedUser;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individualRelationship", path = "individualRelationship", exported = false)
 public interface IndividualRelationshipRepository extends TransactionalDataRepository<IndividualRelationship>, FindByLastModifiedDateTime<IndividualRelationship>, OperatingIndividualScopeAwareRepository<IndividualRelationship> {
@@ -32,9 +34,8 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
         return (Root<IndividualRelationship> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             SubjectType subjectType = syncParameters.getSubjectType();
-            JsonObject syncSettings = syncParameters.getSyncSettings();
-            Join<IndividualRelationship, Individual> individualAJoin = root.join("individuala", JoinType.LEFT);
-            Join<IndividualRelationship, Individual> individualBJoin = root.join("individualB", JoinType.LEFT);
+            Join<IndividualRelationship, Individual> individualAJoin = root.join("individuala");
+            Join<IndividualRelationship, Individual> individualBJoin = root.join("individualB");
             predicates.add(cb.equal(individualAJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
             if (subjectType.isShouldSyncByLocation()) {
                 List<Long> addressLevels = syncParameters.getAddressLevels();
@@ -52,19 +53,9 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
                 }
             }
             if (subjectType.isDirectlyAssignable()) {
-                List<Long> subjectIds = UserContextHolder.getUserContext().getUser().getDirectAssignmentIds();
-                if (subjectIds.size() > 0) {
-                    CriteriaBuilder.In<Long> inClause1 = cb.in(individualAJoin.get("id"));
-                    CriteriaBuilder.In<Long> inClause2 = cb.in(individualBJoin.get("id"));
-                    for (Long id : subjectIds) {
-                        inClause1.value(id);
-                        inClause2.value(id);
-                    }
-                    predicates.add(inClause1);
-                    predicates.add(inClause2);
-                } else {
-                    predicates.add(cb.equal(root.get("id"), cb.literal(0)));
-                }
+                Long userId = UserContextHolder.getUserContext().getUser().getId();
+                predicates.add(cb.equal(joinAssignedUser(individualAJoin).get("id"), userId));
+                predicates.add(cb.equal(joinAssignedUser(individualBJoin).get("id"), userId));
             }
             addSyncAttributeConceptPredicate(cb, predicates, individualAJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
             addSyncAttributeConceptPredicate(cb, predicates, individualBJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");

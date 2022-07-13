@@ -74,17 +74,13 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String syncConcept1Values = row.get("Sync concept 1 values");
         String syncConcept2Name = row.get("Sync concept 2 name");
         String syncConcept2Values = row.get("Sync concept 2 values");
-        String subjectUUIDs = row.get("Sync subject UUIDs");
+        String subjectUUID = row.get("Sync subject UUID");
         JsonObject syncSettings = new JsonObject();
         populateSyncConcepts(syncSettings, syncConcept1Name, syncConcept1Values, User.SyncSettingKeys.syncConcept1, User.SyncSettingKeys.syncConcept1Values);
         populateSyncConcepts(syncSettings, syncConcept2Name, syncConcept2Values, User.SyncSettingKeys.syncConcept2, User.SyncSettingKeys.syncConcept2Values);
-        Set<Long> subjectIds = null;
-        if (subjectUUIDs != null) {
-            subjectIds = Arrays.stream(subjectUUIDs.split(","))
-                    .map(individualRepository::findByUuid)
-                    .filter(Objects::nonNull)
-                    .map(CHSBaseEntity::getId)
-                    .collect(Collectors.toSet());
+        Long subjectId = null;
+        if (subjectUUID != null) {
+            subjectId = individualRepository.findByUuid(subjectUUID).getId();
         }
 
         AddressLevel location = locationRepository.findByTitleLineageIgnoreCase(fullAddress)
@@ -100,7 +96,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         if (user != null) {
             user.setAuditInfo(currentUser);
             user.setSyncSettings(syncSettings);
-            userService.save(user, subjectIds);
+            userService.save(user, subjectId);
             return;
         }
         user = new User();
@@ -125,7 +121,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setAuditInfo(currentUser);
         user.setSyncSettings(syncSettings);
         deploymentSpecificConfiguration.getIdpService(organisation).createUser(user);
-        userService.save(user, subjectIds);
+        userService.save(user, subjectId);
         userService.addToDefaultUserGroup(user);
     }
 

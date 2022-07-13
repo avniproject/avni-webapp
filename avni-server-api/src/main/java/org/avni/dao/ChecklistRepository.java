@@ -35,7 +35,7 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     default Specification<Checklist> syncStrategySpecification(SyncParameters syncParameters) {
         return (Root<Checklist> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            Join<Checklist, ProgramEnrolment> programEnrolmentJoin = root.join("programEnrolment", JoinType.LEFT);
+            Join<Checklist, ProgramEnrolment> programEnrolmentJoin = root.join("programEnrolment");
             predicates.add(cb.equal(root.get("checklistDetail").get("id"), syncParameters.getTypeId()));
             addSyncStrategyPredicates(syncParameters, cb, predicates, programEnrolmentJoin);
             return cb.and(predicates.toArray(new Predicate[0]));
