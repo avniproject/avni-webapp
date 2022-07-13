@@ -21,12 +21,14 @@ public class ResetSyncService {
     private final ResetSyncRepository resetSyncRepository;
     private final UserRepository userRepository;
     private final IndividualRepository individualRepository;
+    private final FormMappingService formMappingService;
 
     @Autowired
-    public ResetSyncService(ResetSyncRepository resetSyncRepository, UserRepository userRepository, IndividualRepository individualRepository) {
+    public ResetSyncService(ResetSyncRepository resetSyncRepository, UserRepository userRepository, IndividualRepository individualRepository, FormMappingService formMappingService) {
         this.resetSyncRepository = resetSyncRepository;
         this.userRepository = userRepository;
         this.individualRepository = individualRepository;
+        this.formMappingService = formMappingService;
     }
 
     public void recordCatchmentChange(Catchment savedCatchment, CatchmentContract request) {
@@ -54,7 +56,7 @@ public class ResetSyncService {
     }
 
     private boolean anySyncAttributeChanged(SubjectType savedSubjectType, SubjectTypeContractWeb request) {
-        return  isChanged(savedSubjectType.getSyncRegistrationConcept1(), request.getSyncRegistrationConcept1()) ||
+        return isChanged(savedSubjectType.getSyncRegistrationConcept1(), request.getSyncRegistrationConcept1()) ||
                 isChanged(savedSubjectType.getSyncRegistrationConcept2(), request.getSyncRegistrationConcept2()) ||
                 isChanged(savedSubjectType.isShouldSyncByLocation(), request.isShouldSyncByLocation());
     }
@@ -63,17 +65,49 @@ public class ResetSyncService {
         JsonObject newSyncSettings = userContract.getSyncSettings() == null ? new JsonObject() : userContract.getSyncSettings();
         Long savedCatchmentId = savedUser.getCatchmentId().orElse(null);
         if (isSyncSettingsChanged(savedUser.getSyncSettings(), newSyncSettings) || isChanged(savedCatchmentId, userContract.getCatchmentId())) {
-            ResetSync resetSync = buildNewResetSync();
-            resetSync.setUser(savedUser);
-            resetSyncRepository.save(resetSync);
+            Set<SubjectType> changedSubjectTypes = getChangedSubjectTypes(savedUser.getSyncSettings(), newSyncSettings);
+            if (changedSubjectTypes.isEmpty()) {
+                ResetSync resetSync = buildNewResetSync();
+                resetSync.setUser(savedUser);
+                resetSyncRepository.save(resetSync);
+            } else {
+                changedSubjectTypes.forEach(st -> {
+                    ResetSync resetSync = buildNewResetSync();
+                    resetSync.setUser(savedUser);
+                    resetSync.setSubjectType(st);
+                    resetSyncRepository.save(resetSync);
+                });
+            }
         }
     }
 
-    private boolean isSyncSettingsChanged(JsonObject olderSettings, JsonObject newSettings) {
+    private Set<SubjectType> getChangedSubjectTypes(JsonObject olderSettings, JsonObject newSettings) {
+        Set<SubjectType> changedSubjectTypes = new HashSet<>();
+        if (isSyncConcept1Changed(olderSettings, newSettings)) {
+            String conceptUUID = (String) newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), null));
+            Set<SubjectType> allSubjectTypes = formMappingService.getAllSubjectTypesHavingConceptUUID(conceptUUID);
+            changedSubjectTypes.addAll(allSubjectTypes);
+        }
+        if (isSyncConcept2Changed(olderSettings, newSettings)) {
+            String conceptUUID = (String) newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null));
+            Set<SubjectType> allSubjectTypes = formMappingService.getAllSubjectTypesHavingConceptUUID(conceptUUID);
+            changedSubjectTypes.addAll(allSubjectTypes);
+        }
+        return changedSubjectTypes;
+    }
+
+    private boolean isSyncConcept1Changed(JsonObject olderSettings, JsonObject newSettings) {
         return isChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), null), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), null)) ||
-                isChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null)) ||
-                isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST)) ||
+                isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST));
+    }
+
+    private boolean isSyncConcept2Changed(JsonObject olderSettings, JsonObject newSettings) {
+        return isChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null)) ||
                 isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST));
+    }
+
+    private boolean isSyncSettingsChanged(JsonObject olderSettings, JsonObject newSettings) {
+        return isSyncConcept1Changed(olderSettings, newSettings) || isSyncConcept2Changed(olderSettings, newSettings);
     }
 
     private boolean isCatchmentChanged(List<Long> savedLocationIds, List<Long> locationIdsPassedInRequest) {

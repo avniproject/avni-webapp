@@ -106,6 +106,12 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     List<FormMapping> findAllByProgramNullAndEncounterTypeNotNullAndIsVoidedFalseAndFormFormType(FormType formType);
 
+    List<FormMapping> findAllByProgramNullAndEncounterTypeNullAndIsVoidedFalseAndFormFormType(FormType formType);
+
+    default List<FormMapping> getAllRegistrationFormMappings() {
+        return findAllByProgramNullAndEncounterTypeNullAndIsVoidedFalseAndFormFormType(FormType.IndividualProfile);
+    }
+
 
     //left join to fetch eagerly in first select
     @Query("select fm from FormMapping fm " +
