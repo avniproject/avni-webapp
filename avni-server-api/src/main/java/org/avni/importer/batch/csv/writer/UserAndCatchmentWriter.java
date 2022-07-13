@@ -5,6 +5,7 @@ import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.UserRepository;
 import org.avni.domain.*;
+import org.avni.domain.Locale;
 import org.avni.framework.context.DeploymentSpecificConfiguration;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.model.Row;
@@ -16,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -74,13 +72,17 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String syncConcept1Values = row.get("Sync concept 1 values");
         String syncConcept2Name = row.get("Sync concept 2 name");
         String syncConcept2Values = row.get("Sync concept 2 values");
-        String subjectUUID = row.get("Sync subject UUID");
+        String subjectUUIDs = row.get("Sync subject UUIDs");
         JsonObject syncSettings = new JsonObject();
         populateSyncConcepts(syncSettings, syncConcept1Name, syncConcept1Values, User.SyncSettingKeys.syncConcept1, User.SyncSettingKeys.syncConcept1Values);
         populateSyncConcepts(syncSettings, syncConcept2Name, syncConcept2Values, User.SyncSettingKeys.syncConcept2, User.SyncSettingKeys.syncConcept2Values);
-        Long subjectId = null;
-        if (subjectUUID != null) {
-            subjectId = individualRepository.findByUuid(subjectUUID).getId();
+        Set<Long> subjectIds = new HashSet<>();
+        if (subjectUUIDs != null) {
+            subjectIds = Arrays.stream(subjectUUIDs.split(","))
+                    .map(individualRepository::findByUuid)
+                    .filter(Objects::nonNull)
+                    .map(CHSBaseEntity::getId)
+                    .collect(Collectors.toSet());
         }
 
         AddressLevel location = locationRepository.findByTitleLineageIgnoreCase(fullAddress)
@@ -96,7 +98,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         if (user != null) {
             user.setAuditInfo(currentUser);
             user.setSyncSettings(syncSettings);
-            userService.save(user, subjectId);
+            userService.save(user, subjectIds);
             return;
         }
         user = new User();
@@ -121,7 +123,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setAuditInfo(currentUser);
         user.setSyncSettings(syncSettings);
         deploymentSpecificConfiguration.getIdpService(organisation).createUser(user);
-        userService.save(user, subjectId);
+        userService.save(user, subjectIds);
         userService.addToDefaultUserGroup(user);
     }
 

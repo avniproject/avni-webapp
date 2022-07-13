@@ -10,6 +10,8 @@ import org.avni.web.request.rules.RulesContractWrapper.Decisions;
 import org.avni.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.avni.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
+import org.avni.web.response.AvniEntityResponse;
+import org.avni.web.response.SubjectResponse;
 import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +88,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public void save(@RequestBody IndividualRequest individualRequest) {
+    public AvniEntityResponse save(@RequestBody IndividualRequest individualRequest) {
         logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
         ObservationCollection observations = observationService.createObservations(individualRequest.getObservations());
         this.markSubjectMigrationIfRequired(individualRequest, observations);
@@ -98,6 +100,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
+        return new AvniEntityResponse(individual);
     }
 
     private void markSubjectMigrationIfRequired(IndividualRequest individualRequest, ObservationCollection newObservations) {

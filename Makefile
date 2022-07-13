@@ -15,7 +15,7 @@ help:
 
 
 define _deploy_schema
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../avni-server/avni-server-api/src/main/resources/db/migration/ -table=schema_version migrate
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:./avni-server-api/src/main/resources/db/migration/ -table=schema_version migrate
 endef
 
 su:=$(shell id -un)
@@ -70,6 +70,15 @@ delete_org_meta_data:
 delete_org_data:
 	@echo 'Delete for Organisation ID = $(orgId)'
 	psql -h $(dbServer) -p $(dbPort) -U $(su) $(DB) -f avni-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
+
+create_base_local_test_data:
+	@echo 'Creating base data'
+	psql -h $(dbServer) -p $(dbPort) -U $(su) $(DB) -f avni-server-api/src/main/resources/database/createBaseLocalTestData.sql
+
+create_local_test_data:
+	newman run postman/local_test_data_setup.json -e postman/localhost.postman_environment.json
+
+recreate_local_test_data: rebuild_db deploy_schema create_base_local_test_data create_local_test_data
 
 rebuild_db: clean_db build_db ## clean + build db
 

@@ -339,17 +339,6 @@ public class IndividualService implements ScopeAwareService {
 
     public Individual save(Individual individual) {
         individual.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
-        Individual savedIndividual = individualRepository.save(individual);
-        assignSubjectToUserIfRequired(savedIndividual);
-        return savedIndividual;
-    }
-
-    private void assignSubjectToUserIfRequired(Individual individual) {
-        SubjectType subjectType = individual.getSubjectType();
-        User user = UserContextHolder.getUserContext().getUser();
-        if (subjectType.isDirectlyAssignable() && !individual.getAssignedUser().getId().equals(user.getId())) {
-            individual.setAssignedUser(user);
-            individualRepository.save(individual);
-        }
+        return individualRepository.save(individual);
     }
 }

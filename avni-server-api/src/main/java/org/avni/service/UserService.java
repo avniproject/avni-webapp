@@ -51,10 +51,10 @@ public class UserService implements NonScopeAwareService {
         return userRepository.save(user);
     }
 
-    public User save(User user, Long directAssignmentId) throws Exception {
+    public User save(User user, Set<Long> subjectAssignmentIds) throws Exception {
         User savedUser = this.save(user);
-        if (directAssignmentId != null) {
-            saveDirectAssignment(user, directAssignmentId);
+        for (Long subjectId : subjectAssignmentIds) {
+            saveDirectAssignment(user, subjectId);
         }
         return savedUser;
     }

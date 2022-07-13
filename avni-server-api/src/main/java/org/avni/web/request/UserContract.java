@@ -6,6 +6,7 @@ import org.avni.domain.JsonObject;
 import org.avni.domain.User;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class UserContract extends ReferenceDataContract {
     private String[] roles;
     private String password;
     private JsonObject syncSettings;
-    private Long directAssignmentId;
+    private Set<Long> directAssignmentIds = new HashSet<>();
 
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
@@ -153,11 +154,11 @@ public class UserContract extends ReferenceDataContract {
         this.syncSettings = syncSettings;
     }
 
-    public Long getDirectAssignmentId() {
-        return directAssignmentId;
+    public Set<Long> getDirectAssignmentIds() {
+        return directAssignmentIds;
     }
 
-    public void setDirectAssignmentId(Long directAssignmentId) {
-        this.directAssignmentId = directAssignmentId;
+    public void setDirectAssignmentIds(Set<Long> directAssignmentIds) {
+        this.directAssignmentIds = directAssignmentIds;
     }
 }
