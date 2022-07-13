@@ -64,20 +64,18 @@ public class ResetSyncService {
     public void recordSyncAttributeValueChangeForUser(User savedUser, UserContract userContract) {
         JsonObject newSyncSettings = userContract.getSyncSettings() == null ? new JsonObject() : userContract.getSyncSettings();
         Long savedCatchmentId = savedUser.getCatchmentId().orElse(null);
-        if (isSyncSettingsChanged(savedUser.getSyncSettings(), newSyncSettings) || isChanged(savedCatchmentId, userContract.getCatchmentId())) {
+        if (isChanged(savedCatchmentId, userContract.getCatchmentId())) {
+            ResetSync resetSync = buildNewResetSync();
+            resetSync.setUser(savedUser);
+            resetSyncRepository.save(resetSync);
+        } else {
             Set<SubjectType> changedSubjectTypes = getChangedSubjectTypes(savedUser.getSyncSettings(), newSyncSettings);
-            if (changedSubjectTypes.isEmpty()) {
+            changedSubjectTypes.forEach(st -> {
                 ResetSync resetSync = buildNewResetSync();
                 resetSync.setUser(savedUser);
+                resetSync.setSubjectType(st);
                 resetSyncRepository.save(resetSync);
-            } else {
-                changedSubjectTypes.forEach(st -> {
-                    ResetSync resetSync = buildNewResetSync();
-                    resetSync.setUser(savedUser);
-                    resetSync.setSubjectType(st);
-                    resetSyncRepository.save(resetSync);
-                });
-            }
+            });
         }
     }
 
@@ -104,10 +102,6 @@ public class ResetSyncService {
     private boolean isSyncConcept2Changed(JsonObject olderSettings, JsonObject newSettings) {
         return isChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null)) ||
                 isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST));
-    }
-
-    private boolean isSyncSettingsChanged(JsonObject olderSettings, JsonObject newSettings) {
-        return isSyncConcept1Changed(olderSettings, newSettings) || isSyncConcept2Changed(olderSettings, newSettings);
     }
 
     private boolean isCatchmentChanged(List<Long> savedLocationIds, List<Long> locationIdsPassedInRequest) {
