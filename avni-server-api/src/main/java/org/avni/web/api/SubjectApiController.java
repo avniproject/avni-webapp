@@ -140,6 +140,8 @@ public class SubjectApiController {
         subject.setLegacyId(request.getExternalId().trim());
         subject.setSubjectType(subjectType);
         subject.setFirstName(request.getFirstName());
+        if (subjectType.isAllowMiddleName())
+            subject.setMiddleName(request.getMiddleName());
         subject.setLastName(request.getLastName());
         if(subjectType.isAllowProfilePicture()) {
             subject.setProfilePicture(request.getProfilePicture());

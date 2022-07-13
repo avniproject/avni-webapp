@@ -27,6 +27,8 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
 
         LinkedHashMap<String, Object> observations = new LinkedHashMap<>();
         Response.putIfPresent(observations, "First name", subject.getFirstName());
+        if (subject.getSubjectType().isAllowMiddleName())
+            Response.putIfPresent(observations, "Middle name", subject.getMiddleName());
         Response.putIfPresent(observations, "Last name", subject.getLastName());
         if (subject.getSubjectType().isAllowProfilePicture()
                 && StringUtils.isNotEmpty(subject.getProfilePicture())) {

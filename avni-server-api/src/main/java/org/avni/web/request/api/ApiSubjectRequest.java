@@ -30,6 +30,9 @@ public class ApiSubjectRequest {
     @JsonProperty("First name")
     private String firstName;
 
+    @JsonProperty("Middle name")
+    private String middleName;
+
     @JsonProperty("Last name")
     private String lastName;
 
@@ -91,6 +94,14 @@ public class ApiSubjectRequest {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
     public String getLastName() {
