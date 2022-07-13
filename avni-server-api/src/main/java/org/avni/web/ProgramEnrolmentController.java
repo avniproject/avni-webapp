@@ -3,6 +3,7 @@ package org.avni.web;
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
 import org.avni.dao.application.FormMappingRepository;
+import org.avni.web.response.AvniEntityResponse;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
 import org.avni.domain.Program;
@@ -54,8 +55,9 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
-    public void save(@RequestBody ProgramEnrolmentRequest request) {
-        programEnrolmentService.programEnrolmentSave(request);
+    public AvniEntityResponse save(@RequestBody ProgramEnrolmentRequest request) {
+        ProgramEnrolment programEnrolment = programEnrolmentService.programEnrolmentSave(request);
+        return new AvniEntityResponse(programEnrolment);
     }
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})

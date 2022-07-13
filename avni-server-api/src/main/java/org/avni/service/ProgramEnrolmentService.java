@@ -130,7 +130,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         return programEncountersContract;
     }
 
-    public void programEnrolmentSave(ProgramEnrolmentRequest request){
+    public ProgramEnrolment programEnrolmentSave(ProgramEnrolmentRequest request){
         logger.info(String.format("Saving programEnrolment with uuid %s", request.getUuid()));
         Program program;
         if (request.getProgramUUID() == null) {
@@ -185,6 +185,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
 
 
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
+        return programEnrolment;
     }
 
     public ProgramEnrolment save(ProgramEnrolment programEnrolment) {
