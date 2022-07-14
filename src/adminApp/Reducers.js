@@ -148,6 +148,24 @@ export function subjectTypeReducer(subjectType, action) {
           descriptionKey: _getNullOrValue(action.payload)
         }
       };
+    case "allowMiddleName":
+      return { ...subjectType, allowMiddleName: action.payload };
+    case "validMiddleNameRegex":
+      return {
+        ...subjectType,
+        validMiddleNameFormat: {
+          ...subjectType.validMiddleNameFormat,
+          regex: _getNullOrValue(action.payload)
+        }
+      };
+    case "validMiddleNameDescriptionKey":
+      return {
+        ...subjectType,
+        validMiddleNameFormat: {
+          ...subjectType.validMiddleNameFormat,
+          descriptionKey: _getNullOrValue(action.payload)
+        }
+      };
     case "validLastNameRegex":
       return {
         ...subjectType,

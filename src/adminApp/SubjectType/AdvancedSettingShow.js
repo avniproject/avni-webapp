@@ -5,6 +5,8 @@ import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow
 import http from "../../common/utils/httpClient";
 import { ConceptSyncAttributesShow } from "./ConceptSyncAttributeShow";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
+import { TextFieldInShow } from "../../common/components/TextFieldInShow";
+import { TextFormatFieldInShow } from "../../common/components/TextFormatFieldInShow";
 
 export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
   const [concept1Name, setConcept1Name] = useState("");
@@ -38,6 +40,24 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
           <span style={{ fontSize: "15px" }}>{addressLevelNames}</span>
         </div>
       )}
+
+      {subjectType.validFirstNameFormat && (
+        <TextFormatFieldInShow label="Valid First Name" format={subjectType.validFirstNameFormat} />
+      )}
+
+      <BooleanStatusInShow status={subjectType.allowMiddleName} label={"Allow Middle Name"} />
+
+      {subjectType.allowMiddleName && (
+        <TextFormatFieldInShow
+          label="Valid Middle Name"
+          format={subjectType.validMiddleNameFormat}
+        />
+      )}
+
+      {subjectType.validLastNameFormat && (
+        <TextFormatFieldInShow label="Valid Last Name" format={subjectType.validLastNameFormat} />
+      )}
+
       <BooleanStatusInShow status={subjectType.allowEmptyLocation} label={"Allow Empty Location"} />
       <BooleanStatusInShow status={subjectType.uniqueName} label={"Unique Name"} />
       {subjectType.nameHelpText && (

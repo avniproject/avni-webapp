@@ -194,7 +194,7 @@ const SubjectTypeEdit = props => {
           />
           <p />
           <AvniSwitch
-            checked={subjectType.active ? true : false}
+            checked={!!subjectType.active}
             onChange={event => dispatch({ type: "active", payload: event.target.checked })}
             name="Active"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ACTIVE"}

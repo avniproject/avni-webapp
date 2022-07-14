@@ -137,18 +137,49 @@ export const AdvancedSettings = ({
             propertyName={"validFirstNameFormat"}
           />
           {subjectType.type === "Person" && (
-            <ValidFormat
-              subjectType={subjectType}
-              dispatch={dispatch}
-              regexLabel={"Last Name Regex"}
-              regexToolTipKey={"APP_DESIGNER_LAST_NAME_REGEX"}
-              regexID={"validLastNameRegex"}
-              descKeyLabel={"Last Name Validation Description Key"}
-              descToolTipKey={"APP_DESIGNER_LAST_NAME_DESCRIPTION_KEY"}
-              descID={"validLastNameDescriptionKey"}
-              propertyName={"validLastNameFormat"}
-            />
+            <>
+              <p />
+              <AvniSwitch
+                checked={!!subjectType.allowMiddleName}
+                onChange={event =>
+                  dispatch({
+                    type: "allowMiddleName",
+                    payload: event.target.checked
+                  })
+                }
+                name="Allow middle name"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_MIDDLE_NAME"}
+              />
+              <p />
+              {subjectType.allowMiddleName && (
+                <>
+                  <ValidFormat
+                    subjectType={subjectType}
+                    dispatch={dispatch}
+                    regexLabel={"Middle Name Regex"}
+                    regexToolTipKey={"APP_DESIGNER_SUBJECT_TYPE_MIDDLE_NAME_REGEX"}
+                    regexID={"validMiddleNameRegex"}
+                    descKeyLabel={"Middle Name Validation Description Key"}
+                    descToolTipKey={"APP_DESIGNER_MIDDLE_NAME_DESCRIPTION_KEY"}
+                    descID={"validMiddleNameDescriptionKey"}
+                    propertyName={"validMiddleNameFormat"}
+                  />
+                </>
+              )}
+              <ValidFormat
+                subjectType={subjectType}
+                dispatch={dispatch}
+                regexLabel={"Last Name Regex"}
+                regexToolTipKey={"APP_DESIGNER_LAST_NAME_REGEX"}
+                regexID={"validLastNameRegex"}
+                descKeyLabel={"Last Name Validation Description Key"}
+                descToolTipKey={"APP_DESIGNER_LAST_NAME_DESCRIPTION_KEY"}
+                descID={"validLastNameDescriptionKey"}
+                propertyName={"validLastNameFormat"}
+              />
+            </>
           )}
+          <p />
           <AvniFormLabel label={"Name help text"} toolTipKey={"APP_DESIGNER_NAME_HELP_TEXT"} />
           <Input
             multiline
