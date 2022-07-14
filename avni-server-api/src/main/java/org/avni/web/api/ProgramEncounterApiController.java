@@ -20,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Map;
@@ -161,8 +160,11 @@ public class ProgramEncounterApiController {
     }
 
     private ProgramEncounter createEncounter(String externalId) {
-        if (StringUtils.hasLength(externalId) && programEncounterRepository.findByLegacyId(externalId.trim()) != null) {
-            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
+        if (StringUtils.hasLength(externalId)) {
+            ProgramEncounter encounter = programEncounterRepository.findByLegacyId(externalId.trim());
+            if (encounter != null) {
+                return encounter;
+            }
         }
         ProgramEncounter programEncounter = new ProgramEncounter();
         programEncounter.assignUUID();

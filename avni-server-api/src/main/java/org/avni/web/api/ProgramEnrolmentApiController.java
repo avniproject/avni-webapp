@@ -1,15 +1,21 @@
 package org.avni.web.api;
 
-import org.avni.domain.*;
-import org.avni.service.ProgramEnrolmentService;
-import org.joda.time.DateTime;
-import org.avni.dao.*;
+import org.avni.dao.ConceptRepository;
+import org.avni.dao.IndividualRepository;
+import org.avni.dao.ProgramEnrolmentRepository;
+import org.avni.dao.ProgramRepository;
+import org.avni.domain.CHSEntity;
+import org.avni.domain.Individual;
+import org.avni.domain.Program;
+import org.avni.domain.ProgramEnrolment;
 import org.avni.service.ConceptService;
+import org.avni.service.ProgramEnrolmentService;
 import org.avni.util.S;
 import org.avni.web.request.api.ApiProgramEnrolmentRequest;
 import org.avni.web.request.api.RequestUtils;
 import org.avni.web.response.ProgramEnrolmentResponse;
 import org.avni.web.response.ResponsePage;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +26,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 
@@ -136,8 +141,11 @@ public class ProgramEnrolmentApiController {
     }
 
     private ProgramEnrolment createProgramEnrolment(String externalId) {
-        if (StringUtils.hasLength(externalId) && programEnrolmentRepository.findByLegacyId(externalId.trim()) != null) {
-            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
+        if (StringUtils.hasLength(externalId)) {
+            ProgramEnrolment enrolment = programEnrolmentRepository.findByLegacyId(externalId.trim());
+            if (enrolment != null) {
+                return enrolment;
+            }
         }
         ProgramEnrolment programEnrolment = new ProgramEnrolment();
         programEnrolment.assignUUID();

@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityExistsException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -167,8 +166,11 @@ public class SubjectApiController {
     }
 
     private Individual createIndividual(String externalId) {
-        if (StringUtils.hasLength(externalId) && individualRepository.findByLegacyId(externalId.trim()) != null) {
-            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
+        if (StringUtils.hasLength(externalId)) {
+            Individual individual = individualRepository.findByLegacyId(externalId.trim());
+            if(individual != null) {
+                return individual;
+            }
         }
         Individual subject =  new Individual();
         subject.assignUUID();

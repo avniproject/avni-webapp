@@ -1,18 +1,17 @@
 package org.avni.web.api;
 
-import org.avni.service.EncounterService;
-import org.joda.time.DateTime;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.domain.*;
 import org.avni.service.ConceptService;
-import org.avni.util.S;
+import org.avni.service.EncounterService;
 import org.avni.web.request.api.ApiEncounterRequest;
 import org.avni.web.request.api.RequestUtils;
 import org.avni.web.response.EncounterResponse;
 import org.avni.web.response.ResponsePage;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +22,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Map;
@@ -150,8 +148,11 @@ public class GeneralEncounterApiController {
     }
 
     private Encounter createEncounter(String externalId) {
-        if (StringUtils.hasLength(externalId) && encounterRepository.findByLegacyId(externalId.trim()) != null) {
-            throw new EntityExistsException(String.format("Entity with external id '%s' already exists", externalId));
+        if (StringUtils.hasLength(externalId)) {
+            Encounter encounter = encounterRepository.findByLegacyId(externalId.trim());
+            if(encounter != null) {
+                return encounter;
+            }
         }
         Encounter encounter = new Encounter();
         encounter.assignUUID();
