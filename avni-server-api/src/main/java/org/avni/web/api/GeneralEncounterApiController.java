@@ -126,6 +126,18 @@ public class GeneralEncounterApiController {
         return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/api/encounter/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<EncounterResponse> delete(@PathVariable("id") String legacyIdOrUuid) {
+        Encounter encounter = encounterRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
+        if (encounter == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        encounter.setVoided(true);
+        encounter = encounterService.save(encounter);
+        return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
     private void updateEncounter(Encounter encounter, ApiEncounterRequest request) throws ValidationException {
         EncounterType encounterType = encounterTypeRepository.findByName(request.getEncounterType());
         if (encounterType == null) {

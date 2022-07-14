@@ -127,6 +127,20 @@ public class SubjectApiController {
         return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, s3Service), HttpStatus.OK);
     }
 
+    @DeleteMapping (value = "/api/subject/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<SubjectResponse> delete(@PathVariable("id") String legacyIdOrUuid) {
+        Individual subject = individualRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
+        if (subject == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(Collections.singletonList(subject));
+        subject.setVoided(true);
+        subject = individualService.save(subject);
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject,
+                true, conceptRepository, conceptService, groupsOfAllMemberSubjects, s3Service), HttpStatus.OK);
+    }
+
     private void updateSubject(Individual subject, ApiSubjectRequest request) throws ValidationException {
         SubjectType subjectType = subjectTypeRepository.findByName(request.getSubjectType());
         if (subjectType == null) {

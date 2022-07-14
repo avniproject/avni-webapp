@@ -140,6 +140,18 @@ public class ProgramEnrolmentApiController {
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/api/programEnrolment/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<ProgramEnrolmentResponse> delete(@PathVariable("id") String legacyIdOrUuid) {
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
+        if (programEnrolment == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        programEnrolment.setVoided(true);
+        programEnrolment = programEnrolmentService.save(programEnrolment);
+        return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
     private ProgramEnrolment createProgramEnrolment(String externalId) {
         if (StringUtils.hasLength(externalId)) {
             ProgramEnrolment enrolment = programEnrolmentRepository.findByLegacyId(externalId.trim());

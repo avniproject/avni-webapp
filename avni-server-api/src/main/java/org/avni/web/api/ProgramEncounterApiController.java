@@ -137,6 +137,18 @@ public class ProgramEncounterApiController {
         return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/api/programEncounter/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<EncounterResponse> delete(@PathVariable("id") String legacyIdOrUuid) {
+        ProgramEncounter programEncounter = programEncounterRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
+        if (programEncounter == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        programEncounter.setVoided(true);
+        programEncounter = programEncounterService.save(programEncounter);
+        return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
     private ProgramEncounter updateEncounter(ProgramEncounter encounter, ApiProgramEncounterRequest request) throws ValidationException {
         EncounterType encounterType = encounterTypeRepository.findByName(request.getEncounterType());
         if (encounterType == null) {
