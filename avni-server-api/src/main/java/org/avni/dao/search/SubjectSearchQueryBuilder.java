@@ -25,7 +25,7 @@ public class SubjectSearchQueryBuilder {
             "                i.first_name as \"firstName\",\n" +
             "                i.last_name as \"lastName\",\n" +
             "                i.profile_picture as \"profilePicture\",\n" +
-            "                cast(concat_ws(' ',i.first_name,i.last_name)as text) as \"fullName\",\n" +
+            "                cast(concat_ws(' ',i.first_name,i.middle_name,i.last_name)as text) as \"fullName\",\n" +
             "                i.uuid as \"uuid\",\n" +
             "                cast(tllv.title_lineage as text) as \"addressLevel\",\n" +
             "                st.name as \"subjectTypeName\",\n" +
@@ -139,7 +139,7 @@ public class SubjectSearchQueryBuilder {
             Map<String, String> columnsMap = new HashMap<String, String>() {
                 {
                     put("ID", "i.id");
-                    put("FULLNAME", "concat_ws(' ',i.first_name,i.last_name)");
+                    put("FULLNAME", "concat_ws(' ',i.first_name,i.middle_name,i.last_name)");
                     put("SUBJECTTYPE", "st.name");
                     put("GENDER", "gender.name");
                     put("DATEOFBIRTH", "i.date_of_birth");
@@ -199,8 +199,10 @@ public class SubjectSearchQueryBuilder {
                 String parameter = "subjectSearchToken" + i;
                 addParameter(parameter, token);
                 clauses.add("    (i.first_name ilike :" + parameter + "\n" +
+                        "        or i.middle_name ilike :" + parameter + "\n" +
                         "        or i.last_name ilike :" + parameter + "\n" +
-                        "        or i.first_name ilike :" + parameter + "\n" +
+                        "        or i.first_name like :" + parameter + "\n" +
+                        "        or i.middle_name like :" + parameter + "\n" +
                         "        or i.last_name like :" + parameter + ")");
             }
             whereClause.append(String.join(" and ", clauses));
