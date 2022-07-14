@@ -111,6 +111,10 @@ export const mapSubjectType = json => {
   subjectType.voided = !!json.voided;
   subjectType.type = json.type;
   subjectType.allowEmptyLocation = json.allowEmptyLocation;
+  subjectType.validFirstNameFormat = Format.fromResource(json.validFirstNameFormat);
+  subjectType.validMiddleNameFormat = Format.fromResource(json.validMiddleNameFormat);
+  subjectType.validLastNameFormat = Format.fromResource(json.validLastNameFormat);
+  subjectType.allowMiddleName = json.allowMiddleName;
   subjectType.allowProfilePicture = json.allowProfilePicture;
   subjectType.group = json.group;
   subjectType.household = json.household;

@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import RemoveRelative from "../components/RemoveRelative";
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
+import { Individual } from "avni-models";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -64,9 +65,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                           <Typography component={"div"} color="primary">
                             <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                               {" "}
-                              {relative.individualB.firstName +
-                                " " +
-                                relative.individualB.lastName}{" "}
+                              {Individual.getFullName(relative.individualB)}{" "}
                             </InternalLink>
                           </Typography>
                           <Typography
@@ -96,9 +95,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails }) => {
                         <RemoveRelative
                           relationAuuid={profileUUID}
                           relationAname={profileName}
-                          relationBname={
-                            relative.individualB.firstName + " " + relative.individualB.lastName
-                          }
+                          relationBname={Individual.getFullName(relative.individualB)}
                           relationBId={relative.id}
                           relationuuid={relative.uuid}
                           relationBuuid={relative.individualB.uuid}

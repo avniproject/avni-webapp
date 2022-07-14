@@ -4,7 +4,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import { Concept, Observation } from "avni-models";
+import { Concept, Observation, Individual } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
 import { subjectService } from "../services/SubjectService";
@@ -108,8 +108,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return (
       <div>
         <Link to={`/app/subject?uuid=${subject.entityObject.uuid}`}>
-          {subject.entityObject.firstName +
-            (isEmpty(subject.entityObject.lastName) ? "" : " " + subject.entityObject.lastName)}
+          {Individual.getFullName(subject.entityObject)}
         </Link>
         {addLineBreak && <br />}
       </div>

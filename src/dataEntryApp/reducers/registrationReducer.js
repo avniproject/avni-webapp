@@ -26,6 +26,7 @@ export const types = {
   SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
   SET_REGISTRATION_DATE: `${prefix}SET_REGISTRATION_DATE`,
   SET_FIRST_NAME: `${prefix}SET_FIRST_NAME`,
+  SET_MIDDLE_NAME: `${prefix}SET_MIDDLE_NAME`,
   SET_LAST_NAME: `${prefix}SET_LAST_NAME`,
   SET_PROFILE_PICTURE_FILE: `${prefix}SET_PROFILE_PICTURE_FILE`,
   SET_REMOVE_PROFILE_PICTURE: `${prefix}SET_REMOVE_PROFILE_PICTURE`,
@@ -153,6 +154,11 @@ export const setRegistrationDate = registrationDate => ({
 export const setFirstName = firstName => ({
   type: types.SET_FIRST_NAME,
   firstName
+});
+
+export const setMiddleName = middleName => ({
+  type: types.SET_MIDDLE_NAME,
+  middleName
 });
 
 export const setLastName = lastName => ({
@@ -313,6 +319,19 @@ export default (state = initialState, action) => {
       subject.firstName = action.firstName;
       const validationResults = commonFormUtil.handleValidationResult(
         [subject.validateFirstName()],
+        state.validationResults
+      );
+      return {
+        ...state,
+        subject,
+        validationResults
+      };
+    }
+    case types.SET_MIDDLE_NAME: {
+      const subject = state.subject.cloneForEdit();
+      subject.middleName = action.middleName;
+      const validationResults = commonFormUtil.handleValidationResult(
+        [subject.validateMiddleName()],
         state.validationResults
       );
       return {

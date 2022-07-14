@@ -4,8 +4,9 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import SubjectSearchService from "../services/SubjectSearchService";
 import { subjectService } from "../services/SubjectService";
-import { xor, first, find, isEmpty } from "lodash";
+import { find, first, isEmpty, xor } from "lodash";
 import { FormHelperText } from "@material-ui/core";
+import { Individual } from "avni-models";
 
 const SubjectFormElement = props => {
   const { t } = useTranslation();
@@ -21,12 +22,7 @@ const SubjectFormElement = props => {
     if (isSearchFlow) {
       return subject.fullName + " | " + subject.addressLevel;
     } else {
-      return (
-        subject.firstName +
-        (isEmpty(subject.lastName) ? "" : " " + subject.lastName) +
-        " | " +
-        subject.addressLevel
-      );
+      return Individual.getFullName(subject) + " | " + subject.addressLevel;
     }
   };
 
@@ -85,6 +81,7 @@ const SubjectFormElement = props => {
         id: subject.id,
         uuid: subject.uuid,
         firstName: subject.firstName,
+        middleName: subject.middleName,
         lastName: subject.lastName,
         fullName: subject.fullName,
         profilePicture: subject.profilePicture,

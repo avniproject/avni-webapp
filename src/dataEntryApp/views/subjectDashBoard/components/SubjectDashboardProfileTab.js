@@ -19,7 +19,7 @@ import ConfirmDialog from "../../../components/ConfirmDialog";
 import SubjectVoided from "../../../components/SubjectVoided";
 import GroupSubjectMemberCardView from "../../../components/GroupSubjectMemberCardView";
 import GridCardView from "../../../components/GridCardView";
-import { sortBy, isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
 import MessageDialog from "../../../components/MessageDialog";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ import {
 import { RuleSummary } from "./RuleSummary";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import { NewFormButton } from "./NewFormButton";
+import { Individual } from "avni-models";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -217,7 +218,7 @@ const SubjectDashboardProfileTab = ({
           {profile.relationships !== undefined && relativeList.length !== 0 ? (
             <GridCommonList
               profileUUID={profile.uuid}
-              profileName={profile.firstName + " " + profile.lastName}
+              profileName={Individual.getFullName(profile)}
               gridListDetails={profile.relationships}
             />
           ) : (

@@ -28,10 +28,10 @@ export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
     individualDetails,
     new Individual(),
-    ["uuid", "firstName", "lastName", "profilePicture", "voided"],
-    ["dateOfBirth", "registrationDate"]
+    Individual.directCopyFields,
+    Individual.dateFields
   );
-  individual.name = `${individualDetails.firstName} ${individualDetails.lastName}`;
+  individual.name = Individual.getFullName(individual);
   const gender = new Gender();
   gender.name = individualDetails.gender;
   gender.uuid = individualDetails.genderUUID;

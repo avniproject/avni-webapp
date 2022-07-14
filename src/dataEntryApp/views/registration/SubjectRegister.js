@@ -17,6 +17,7 @@ import {
   selectRegistrationState,
   setRegistrationDate,
   setFirstName,
+  setMiddleName,
   setLastName,
   setProfilePictureFile,
   setRemoveProfilePicture,
@@ -280,6 +281,18 @@ const SubjectRegister = props => {
                       helpText={get(props.subject, "subjectType.nameHelpText")}
                     />
                     <LineBreak num={2} />
+                    {props.subject.subjectType.allowMiddleName && (
+                      <>
+                        <TextFormElement
+                          uuid={Individual.validationKeys.MIDDLE_NAME}
+                          formElement={new StaticFormElement("middleName", false, true)}
+                          value={props.subject.middleName}
+                          validationResults={props.validationResults}
+                          update={props.setMiddleName}
+                        />
+                        <LineBreak num={2} />
+                      </>
+                    )}
                     <TextFormElement
                       uuid={Individual.validationKeys.LAST_NAME}
                       formElement={new StaticFormElement("lastName", true, true)}
@@ -368,6 +381,7 @@ const mapDispatchToProps = {
   onLoadEdit,
   setRegistrationDate,
   setFirstName,
+  setMiddleName,
   setLastName,
   setProfilePictureFile,
   setRemoveProfilePicture,
