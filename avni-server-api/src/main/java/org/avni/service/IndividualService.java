@@ -79,12 +79,13 @@ public class IndividualService implements ScopeAwareService {
         List<GroupSubject> groupSubjects = groupSubjectRepository.findAllByMemberSubjectAndGroupRoleIsVoidedFalseAndIsVoidedFalse(individual);
         List<GroupRole> groupRoles = groupRoleRepository.findByGroupSubjectType_IdAndIsVoidedFalse(individual.getSubjectType().getId());
         individualContract.setId(individual.getId());
-        individualContract.setSubjectType(constructSubjectType(individual.getSubjectType()));
+        individualContract.setSubjectType(SubjectTypeContract.fromSubjectType(individual.getSubjectType()));
         individualContract.setObservations(observationContractsList);
         individualContract.setRelationships(relationshipContractList);
         individualContract.setEnrolments(enrolmentContractList);
         individualContract.setUuid(individual.getUuid());
         individualContract.setFirstName(individual.getFirstName());
+        individualContract.setMiddleName(individual.getMiddleName());
         individualContract.setLastName(individual.getLastName());
         if (null != individual.getProfilePicture()
                 && individual.getSubjectType().isAllowProfilePicture())
@@ -112,20 +113,6 @@ public class IndividualService implements ScopeAwareService {
             individualContract.setAddressLevelTypeId(addressLevel.getType().getId());
         }
         return individualContract;
-    }
-
-    private SubjectTypeContract constructSubjectType(SubjectType subjectType) {
-        SubjectTypeContract subjectTypeContract = new SubjectTypeContract();
-        subjectTypeContract.setUuid(subjectType.getUuid());
-        subjectTypeContract.setName(subjectType.getName());
-        subjectTypeContract.setVoided(subjectType.isVoided());
-        subjectTypeContract.setType(subjectType.getType().toString());
-        subjectTypeContract.setIsGroup(subjectType.isGroup());
-        subjectTypeContract.setHousehold(subjectType.isHousehold());
-        subjectTypeContract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
-        subjectTypeContract.setIconFileS3Key(subjectType.getIconFileS3Key());
-        subjectTypeContract.setAllowProfilePicture(subjectType.isAllowProfilePicture());
-        return subjectTypeContract;
     }
 
     public List<EnrolmentContract> constructEnrolmentsMetadata(Individual individual) {

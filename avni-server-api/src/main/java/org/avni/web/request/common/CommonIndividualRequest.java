@@ -11,6 +11,8 @@ public class CommonIndividualRequest extends CHSRequest {
 
     private String firstName;
 
+    private String middleName;
+
     private String lastName;
 
     private String profilePicture;
@@ -167,5 +169,13 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setAddressLevelLineage(String addressLevelLineage) {
         this.addressLevelLineage = addressLevelLineage;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 }

@@ -39,7 +39,7 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual> {
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
     private final GenderRepository genderRepository;
@@ -52,8 +52,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualSearchService individualSearchService;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
-    private ScopeBasedSyncService<Individual> scopeBasedSyncService;
-    private SubjectMigrationService subjectMigrationService;
+    private final ScopeBasedSyncService<Individual> scopeBasedSyncService;
+    private final SubjectMigrationService subjectMigrationService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -290,6 +290,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setSubjectType(subjectType);
         individual.setFirstName(individualRequest.getFirstName());
+        individual.setMiddleName(individualRequest.getMiddleName());
         individual.setLastName(individualRequest.getLastName());
         if(subjectType.isAllowProfilePicture()) {
             individual.setProfilePicture(individualRequest.getProfilePicture());

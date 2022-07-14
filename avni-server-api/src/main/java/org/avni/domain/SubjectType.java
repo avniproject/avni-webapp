@@ -339,5 +339,11 @@ public class SubjectType extends OrganisationAwareEntity {
         String getIconFileS3Key();
 
         String getNameHelpText();
+
+        boolean isAllowMiddleName();
+
+        Format getValidFirstNameFormat();
+        Format getValidMiddleNameFormat();
+        Format getValidLastNameFormat();
     }
 }

@@ -24,11 +24,14 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private boolean allowEmptyLocation;
 
+    private boolean allowMiddleName;
+
     private boolean allowProfilePicture;
 
     private boolean uniqueName;
 
     private FormatContract validFirstNameFormat;
+    private FormatContract validMiddleNameFormat;
     private FormatContract validLastNameFormat;
     private String iconFileS3Key;
     @JsonProperty(value = "directlyAssignable")
@@ -56,6 +59,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setAllowProfilePicture(subjectType.isAllowProfilePicture());
         contract.setUniqueName(subjectType.isUniqueName());
         contract.setValidFirstNameFormat(FormatContract.fromFormat(subjectType.getValidFirstNameFormat()));
+        contract.setAllowMiddleName(subjectType.isAllowMiddleName());
+        contract.setValidMiddleNameFormat(FormatContract.fromFormat(subjectType.getValidMiddleNameFormat()));
         contract.setValidLastNameFormat(FormatContract.fromFormat(subjectType.getValidLastNameFormat()));
         contract.setDirectlyAssignable(subjectType.isDirectlyAssignable());
         contract.setShouldSyncByLocation(subjectType.isShouldSyncByLocation());
@@ -64,6 +69,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setSyncRegistrationConcept2(subjectType.getSyncRegistrationConcept2());
         contract.setSyncRegistrationConcept2Usable(subjectType.isSyncRegistrationConcept2Usable());
         contract.setNameHelpText(subjectType.getNameHelpText());
+        contract.setIconFileS3Key(subjectType.getIconFileS3Key());
         return contract;
     }
 
@@ -209,5 +215,21 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setNameHelpText(String nameHelpText) {
         this.nameHelpText = nameHelpText;
+    }
+
+    public boolean isAllowMiddleName() {
+        return allowMiddleName;
+    }
+
+    public void setAllowMiddleName(boolean allowMiddleName) {
+        this.allowMiddleName = allowMiddleName;
+    }
+
+    public FormatContract getValidMiddleNameFormat() {
+        return validMiddleNameFormat;
+    }
+
+    public void setValidMiddleNameFormat(FormatContract validMiddleNameFormat) {
+        this.validMiddleNameFormat = validMiddleNameFormat;
     }
 }

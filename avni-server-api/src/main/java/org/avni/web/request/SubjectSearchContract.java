@@ -10,6 +10,9 @@ public class SubjectSearchContract {
     public static SubjectSearchContract fromSubject(Individual individual) {
         SubjectSearchContract contract = new SubjectSearchContract();
         StringBuilder fullName = new StringBuilder(individual.getFirstName());
+        if (individual.getMiddleName() != null) {
+            fullName.append(" ").append(individual.getMiddleName());
+        }
         if (individual.getLastName() != null) {
             fullName.append(" ").append(individual.getLastName());
         }
