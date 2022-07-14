@@ -36,7 +36,9 @@ public class SubjectTypeContractWeb {
     private boolean allowEmptyLocation;
     private boolean allowProfilePicture;
     private boolean uniqueName;
+    private boolean allowMiddleName;
     private FormatContract validFirstNameFormat;
+    private FormatContract validMiddleNameFormat;
     private FormatContract validLastNameFormat;
     private String iconFileS3Key;
     private boolean isDirectlyAssignable;
@@ -70,6 +72,8 @@ public class SubjectTypeContractWeb {
         contract.setType(operationalSubjectType.getType().name());
         contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
         contract.setValidFirstNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidFirstNameFormat()));
+        contract.setAllowMiddleName(operationalSubjectType.getSubjectType().isAllowMiddleName());
+        contract.setValidMiddleNameFormat(FormatContract.fromFormat(operationalSubjectType.getSubjectType().getValidMiddleNameFormat()));
         contract.setValidLastNameFormat(FormatContract.fromFormat(operationalSubjectType.getValidLastNameFormat()));
         contract.setIconFileS3Key(subjectType.getIconFileS3Key());
         contract.setDirectlyAssignable(subjectType.isDirectlyAssignable());
@@ -328,5 +332,21 @@ public class SubjectTypeContractWeb {
 
     public void setNameHelpText(String nameHelpText) {
         this.nameHelpText = nameHelpText;
+    }
+
+    public boolean isAllowMiddleName() {
+        return allowMiddleName;
+    }
+
+    public void setAllowMiddleName(boolean allowMiddleName) {
+        this.allowMiddleName = allowMiddleName;
+    }
+
+    public Format getValidMiddleNameFormat() {
+        return validMiddleNameFormat == null ? null : validMiddleNameFormat.toFormat();
+    }
+
+    public void setValidMiddleNameFormat(FormatContract validMiddleNameFormat) {
+        this.validMiddleNameFormat = validMiddleNameFormat;
     }
 }
