@@ -200,10 +200,7 @@ public class SubjectSearchQueryBuilder {
                 addParameter(parameter, token);
                 clauses.add("    (i.first_name ilike :" + parameter + "\n" +
                         "        or i.middle_name ilike :" + parameter + "\n" +
-                        "        or i.last_name ilike :" + parameter + "\n" +
-                        "        or i.first_name like :" + parameter + "\n" +
-                        "        or i.middle_name like :" + parameter + "\n" +
-                        "        or i.last_name like :" + parameter + ")");
+                        "        or i.last_name ilike :" + parameter + ")");
             }
             whereClause.append(String.join(" and ", clauses));
             whereClause.append(")");

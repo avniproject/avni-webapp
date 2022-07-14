@@ -17,6 +17,8 @@ public class IndividualContractWrapper {
 
     private String firstName;
 
+    private String middleName;
+
     private String lastName;
 
     private String profilePicture;
@@ -95,6 +97,14 @@ public class IndividualContractWrapper {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
     public String getLastName() {

@@ -209,6 +209,7 @@ public class IndividualService implements ScopeAwareService {
         IndividualContract individualBContract = new IndividualContract();
         individualBContract.setUuid(individual.getUuid());
         individualBContract.setFirstName(individual.getFirstName());
+        individualBContract.setMiddleName(individual.getMiddleName());
         individualBContract.setLastName(individual.getLastName());
         if (individual.getSubjectType().isAllowProfilePicture()) {
             individualBContract.setProfilePicture(individual.getProfilePicture());
@@ -251,6 +252,7 @@ public class IndividualService implements ScopeAwareService {
         individualContractWeb.setId(individual.getId());
         individualContractWeb.setUuid(individual.getUuid());
         individualContractWeb.setFirstName(individual.getFirstName());
+        individualContractWeb.setMiddleName(individual.getMiddleName());
         individualContractWeb.setLastName(individual.getLastName());
         if (individual.getSubjectType().isAllowProfilePicture()) {
             individualContractWeb.setProfilePicture(individual.getProfilePicture());

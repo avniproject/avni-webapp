@@ -216,6 +216,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             row.add(individual.getId());
             row.add(individual.getUuid());
             row.add(QuotedStringValue(individual.getFirstName()));
+            if (individual.getSubjectType().isAllowMiddleName())
+                row.add(QuotedStringValue(individual.getMiddleName()));
             row.add(QuotedStringValue(individual.getLastName()));
             row.add(individual.getDateOfBirth());
             row.add(individual.getRegistrationDate());
@@ -255,6 +257,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(memberSubject.getId());
         row.add(memberSubject.getUuid());
         row.add(memberSubject.getFirstName());
+        if (memberSubject.getSubjectType().isAllowMiddleName())
+            row.add(memberSubject.getMiddleName());
         row.add(memberSubject.getLastName());
         row.add(group.getGroupRole().getRole());
         row.add(getDateForTimeZone(group.getMembershipStartDate()));

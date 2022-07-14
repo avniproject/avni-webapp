@@ -122,6 +122,7 @@ public class ProgramEnrolmentConstructionService {
         individualContractWrapper.setObservations(observationModelContracts);
         individualContractWrapper.setUuid(individual.getUuid());
         individualContractWrapper.setFirstName(individual.getFirstName());
+        individualContractWrapper.setMiddleName(individual.getMiddleName());
         individualContractWrapper.setLastName(individual.getLastName());
         if (individual.getSubjectType().isAllowProfilePicture()) {
             individualContractWrapper.setProfilePicture(individual.getProfilePicture());

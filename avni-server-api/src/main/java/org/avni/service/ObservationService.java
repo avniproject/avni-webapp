@@ -292,6 +292,7 @@ public class ObservationService {
         individualContract.setId(individual.getId());
         individualContract.setUuid(individual.getUuid());
         individualContract.setFirstName(individual.getFirstName());
+        individualContract.setMiddleName(individual.getMiddleName());
         individualContract.setLastName(individual.getLastName());
         if (null != individual.getProfilePicture())
             individualContract.setProfilePicture(individual.getProfilePicture());
