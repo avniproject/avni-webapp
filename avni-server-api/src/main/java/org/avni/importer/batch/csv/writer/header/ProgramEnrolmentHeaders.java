@@ -1,16 +1,23 @@
 package org.avni.importer.batch.csv.writer.header;
 
+import org.avni.domain.Program;
+
 public class ProgramEnrolmentHeaders implements Headers {
-    public final String id = "Id";
-    public final String subjectId = "Subject Id";
-    public final String program = "Program";
-    public final String enrolmentDate = "Enrolment Date";
-    public final String exitDate = "Exit Date";
-    public final String enrolmentLocation = "Enrolment Location";
-    public final String exitLocation = "Exit Location";
+    public final static  String id = "Id";
+    public final static String subjectId = "Subject Id";
+    public final static String programHeader = "Program";
+    public final static String enrolmentDate = "Enrolment Date";
+    public final static String exitDate = "Exit Date";
+    public final static String enrolmentLocation = "Enrolment Location";
+    public final static String exitLocation = "Exit Location";
+    private final Program program;
+
+    public ProgramEnrolmentHeaders(Program program) {
+        this.program = program;
+    }
 
     @Override
     public String[] getAllHeaders() {
-        return new String[]{id, subjectId, program, enrolmentDate, exitDate, enrolmentLocation, exitLocation};
+        return new String[]{id, subjectId, programHeader, enrolmentDate, exitDate, enrolmentLocation, exitLocation};
     }
 }

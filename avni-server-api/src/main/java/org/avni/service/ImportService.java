@@ -30,10 +30,10 @@ public class ImportService {
 
     private final SubjectTypeRepository subjectTypeRepository;
     private final FormMappingRepository formMappingRepository;
-    private static Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
-    private ProgramRepository programRepository;
-    private EncounterTypeRepository encounterTypeRepository;
-    private AddressLevelTypeRepository addressLevelTypeRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
+    private final ProgramRepository programRepository;
+    private final EncounterTypeRepository encounterTypeRepository;
+    private final AddressLevelTypeRepository addressLevelTypeRepository;
 
     @Autowired
     public ImportService(SubjectTypeRepository subjectTypeRepository, FormMappingRepository formMappingRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, AddressLevelTypeRepository addressLevelTypeRepository) {
@@ -120,59 +120,63 @@ public class ImportService {
         String response = "";
 
         if (uploadSpec[0].equals("Subject")) {
-            return getSubjectSampleFile(uploadSpec, response);
+            SubjectType subjectType = subjectTypeRepository.findByName(uploadSpec[1]);
+            return getSubjectSampleFile(uploadSpec, response, subjectType);
         }
 
         if (uploadSpec[0].equals("ProgramEnrolment")) {
-            return getProgramEnrolmentSampleFile(uploadSpec, response);
+            Program program = programRepository.findByName(uploadSpec[1]);
+            return getProgramEnrolmentSampleFile(uploadSpec, response, program);
         }
 
         if (uploadSpec[0].equals("ProgramEncounter")) {
-            return getProgramEncounterSampleFile(uploadSpec, response);
+            EncounterType encounterType = encounterTypeRepository.findByName(uploadSpec[1]);
+            return getProgramEncounterSampleFile(uploadSpec, response, encounterType);
         }
 
         if (uploadSpec[0].equals("Encounter")) {
-            return getEncounterSampleFile(uploadSpec, response);
+            EncounterType encounterType = encounterTypeRepository.findByName(uploadSpec[1]);
+            return getEncounterSampleFile(uploadSpec, response, encounterType);
         }
 
         if (uploadSpec[0].equals("GroupMembers")) {
-            return getGroupMembersSampleFile(uploadSpec, response);
+            return getGroupMembersSampleFile(uploadSpec, response, getSubjectType(uploadSpec[1]));
         }
 
         throw new UnsupportedOperationException(String.format("Sample file format for %s not supported", uploadType));
     }
 
-    private String getEncounterSampleFile(String[] uploadSpec, String response) {
-        response = addToResponse(response, Arrays.asList(new EncounterHeaders().getAllHeaders()));
+    private String getEncounterSampleFile(String[] uploadSpec, String response, EncounterType encounterType) {
+        response = addToResponse(response, Arrays.asList(new EncounterHeaders(encounterType).getAllHeaders()));
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[2]).getUuid(), null, getEncounterType(uploadSpec[1]).getUuid(), FormType.Encounter);
         return addToResponse(response, formMapping);
     }
 
-    private String getSubjectSampleFile(String[] uploadSpec, String response) {
-        response = addToResponse(response, Arrays.asList(new SubjectHeaders().getAllHeaders()));
+    private String getSubjectSampleFile(String[] uploadSpec, String response, SubjectType subjectType) {
+        SubjectHeaders subjectHeaders = new SubjectHeaders(subjectType);
+        response = addToResponse(response, Arrays.asList(subjectHeaders.getAllHeaders()));
         response = addToResponse(response, addressLevelTypeRepository.getAllNames());
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[1]).getUuid(), null, null, FormType.IndividualProfile);
         return addToResponse(response, formMapping);
     }
 
-    private String getProgramEnrolmentSampleFile(String[] uploadSpec, String response) {
-        response = addToResponse(response, Arrays.asList(new ProgramEnrolmentHeaders().getAllHeaders()));
+    private String getProgramEnrolmentSampleFile(String[] uploadSpec, String response, Program program) {
+        response = addToResponse(response, Arrays.asList(new ProgramEnrolmentHeaders(program).getAllHeaders()));
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[2]).getUuid(), getProgram(uploadSpec[1]).getUuid(), null, FormType.ProgramEnrolment);
         return addToResponse(response, formMapping);
     }
 
-    private String getProgramEncounterSampleFile(String[] uploadSpec, String response) {
-        response = addToResponse(response, Arrays.asList(new ProgramEncounterHeaders().getAllHeaders()));
+    private String getProgramEncounterSampleFile(String[] uploadSpec, String response, EncounterType encounterType) {
+        response = addToResponse(response, Arrays.asList(new ProgramEncounterHeaders(encounterType).getAllHeaders()));
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[2]).getUuid(), null, getEncounterType(uploadSpec[1]).getUuid(), FormType.ProgramEncounter);
         return addToResponse(response, formMapping);
     }
 
-    private String getGroupMembersSampleFile(String[] uploadSpec, String response) {
-        SubjectType subjectType = getSubjectType(uploadSpec[1]);
+    private String getGroupMembersSampleFile(String[] uploadSpec, String response, SubjectType subjectType) {
         if (subjectType.isHousehold()) {
-            response = addToResponse(response, Arrays.asList(new HouseholdMemberHeaders().getAllHeaders()));
+            response = addToResponse(response, Arrays.asList(new HouseholdMemberHeaders(subjectType).getAllHeaders()));
         } else {
-            GroupMemberHeaders groupMemberHeaders = new GroupMemberHeaders();
+            GroupMemberHeaders groupMemberHeaders = new GroupMemberHeaders(subjectType);
             groupMemberHeaders.groupId = uploadSpec[1] + " Id";
             response = addToResponse(response, Arrays.asList(groupMemberHeaders.getAllHeaders()));
         }

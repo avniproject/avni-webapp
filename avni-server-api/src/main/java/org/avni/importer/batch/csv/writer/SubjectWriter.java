@@ -10,6 +10,7 @@ import org.avni.dao.IndividualRepository;
 import org.avni.dao.LocationRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.*;
+import org.avni.exporter.LongitudinalExportTaskletImpl;
 import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.SubjectHeaders;
@@ -17,9 +18,10 @@ import org.avni.importer.batch.model.Row;
 import org.avni.service.*;
 import org.jadira.usertype.spi.utils.lang.StringUtils;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -32,25 +34,23 @@ import java.util.stream.Stream;
 
 @Component
 public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
-
-    private static final SubjectHeaders headers = new SubjectHeaders();
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final LocationRepository locationRepository;
     private final IndividualRepository individualRepository;
     private final GenderRepository genderRepository;
-    private SubjectTypeCreator subjectTypeCreator;
-    private LocationCreator locationCreator;
-    private EntityApprovalStatusService entityApprovalStatusService;
-    private FormMappingRepository formMappingRepository;
-    private ObservationService observationService;
-    private RuleServerInvoker ruleServerInvoker;
-    private VisitCreator visitCreator;
-    private DecisionCreator decisionCreator;
-    private ObservationCreator observationCreator;
+    private final SubjectTypeCreator subjectTypeCreator;
+    private final LocationCreator locationCreator;
+    private final FormMappingRepository formMappingRepository;
+    private final ObservationService observationService;
+    private final RuleServerInvoker ruleServerInvoker;
+    private final VisitCreator visitCreator;
+    private final DecisionCreator decisionCreator;
+    private final ObservationCreator observationCreator;
     private final IndividualService individualService;
-    private final AddressLevelService addressLevelService;
     private final S3Service s3Service;
     private final EntityApprovalStatusWriter entityApprovalStatusWriter;
+
+    private static final Logger logger = LoggerFactory.getLogger(SubjectWriter.class);
 
     @Autowired
     public SubjectWriter(AddressLevelTypeRepository addressLevelTypeRepository,
@@ -74,7 +74,6 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
         this.individualRepository = individualRepository;
         this.genderRepository = genderRepository;
         this.subjectTypeCreator = subjectTypeCreator;
-        this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
         this.observationService = observationService;
         this.ruleServerInvoker = ruleServerInvoker;
@@ -82,7 +81,6 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
         this.decisionCreator = decisionCreator;
         this.observationCreator = observationCreator;
         this.individualService = individualService;
-        this.addressLevelService = addressLevelService;
         this.entityApprovalStatusWriter = entityApprovalStatusWriter;
         this.locationCreator = new LocationCreator();
         this.s3Service = s3Service;
@@ -94,61 +92,69 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
     }
 
     private void write(Row row) throws Exception {
-        List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAllByIsVoidedFalse();
-        locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
+        try {
+            List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAllByIsVoidedFalse();
+            locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
 
-        List<LocationProjection> locations = locationRepository.findAllNonVoided();
+            List<LocationProjection> locations = locationRepository.findAllNonVoided();
 
-        Individual individual = getOrCreateIndividual(row);
-        List<String> allErrorMsgs = new ArrayList<>();
+            Individual individual = getOrCreateIndividual(row);
+            List<String> allErrorMsgs = new ArrayList<>();
 
-        SubjectType subjectType = subjectTypeCreator.getSubjectType(row.get(headers.subjectType), headers.subjectType);
-        individual.setSubjectType(subjectType);
-        individual.setFirstName(row.get(headers.firstName));
-        individual.setLastName(row.get(headers.lastName));
-        setProfilePicture(subjectType, individual, row, allErrorMsgs);
-        setDateOfBirth(individual, row, allErrorMsgs);
-        individual.setDateOfBirthVerified(row.getBool(headers.dobVerified));
-        setRegistrationDate(individual, row, allErrorMsgs);
-        individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
-        setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
-        if (individual.getSubjectType().getType().equals(Subject.Person)) setGender(individual, row);
-        FormMapping formMapping = formMappingRepository.getRegistrationFormMapping(subjectType);
-        individual.setVoided(false);
-        individual.assignUUIDIfRequired();
-        if (formMapping == null) {
-            throw new Exception(String.format("No form found for the subject type %s", subjectType.getName()));
+            SubjectType subjectType = subjectTypeCreator.getSubjectType(row.get(SubjectHeaders.subjectTypeHeader), SubjectHeaders.subjectTypeHeader);
+            individual.setSubjectType(subjectType);
+            individual.setFirstName(row.get(SubjectHeaders.firstName));
+            if (subjectType.isAllowMiddleName())
+                individual.setMiddleName(row.get(SubjectHeaders.middleName));
+            individual.setLastName(row.get(SubjectHeaders.lastName));
+            setProfilePicture(subjectType, individual, row, allErrorMsgs);
+            setDateOfBirth(individual, row, allErrorMsgs);
+            individual.setDateOfBirthVerified(row.getBool(SubjectHeaders.dobVerified));
+            setRegistrationDate(individual, row, allErrorMsgs);
+            individual.setRegistrationLocation(locationCreator.getLocation(row, SubjectHeaders.registrationLocation, allErrorMsgs));
+            setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
+            if (individual.getSubjectType().getType().equals(Subject.Person)) setGender(individual, row);
+            FormMapping formMapping = formMappingRepository.getRegistrationFormMapping(subjectType);
+            individual.setVoided(false);
+            individual.assignUUIDIfRequired();
+            if (formMapping == null) {
+                throw new Exception(String.format("No form found for the subject type %s", subjectType.getName()));
+            }
+            Individual savedIndividual;
+            if (skipRuleExecution()) {
+                SubjectHeaders subjectHeaders = new SubjectHeaders(subjectType);
+                individual.setObservations(observationCreator.getObservations(row, subjectHeaders, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
+                savedIndividual = individualService.save(individual);
+            } else {
+                UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
+                individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
+                decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
+                savedIndividual = individualService.save(individual);
+                visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
+            }
+            entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
+        } catch (Exception e) {
+            logger.warn("Error in writing row", e);
+            throw e;
         }
-        Individual savedIndividual;
-        if (skipRuleExecution()) {
-            individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
-            savedIndividual = individualService.save(individual);
-        } else {
-            UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), individual, allErrorMsgs);
-            individual.setObservations(observationService.createObservations(ruleResponse.getObservations()));
-            decisionCreator.addRegistrationDecisions(individual.getObservations(), ruleResponse.getDecisions());
-            savedIndividual = individualService.save(individual);
-            visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
-        }
-        entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
     }
 
     private void setProfilePicture(SubjectType subjectType, Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String profilePicUrl = row.get(headers.profilePicture);
+            String profilePicUrl = row.get(SubjectHeaders.profilePicture);
             if(StringUtils.isNotEmpty(profilePicUrl) && subjectType.isAllowProfilePicture()) {
                 individual.setProfilePicture(s3Service
                         .uploadProfilePic(profilePicUrl, null));
             } else if(StringUtils.isNotEmpty(profilePicUrl)) {
-                errorMsgs.add(String.format("Not allowed to set '%s'", headers.profilePicture));
+                errorMsgs.add(String.format("Not allowed to set '%s'", SubjectHeaders.profilePicture));
             }
         } catch (Exception e) {
-            errorMsgs.add(String.format("Invalid '%s'", headers.profilePicture));
+            errorMsgs.add(String.format("Invalid '%s'", SubjectHeaders.profilePicture));
         }
     }
 
     private Individual getOrCreateIndividual(Row row) {
-        String id = row.get(headers.id);
+        String id = row.get(SubjectHeaders.id);
         Individual existingIndividual = null;
         if (!(id == null || id.isEmpty())) {
             existingIndividual = individualRepository.findByLegacyIdOrUuid(id);
@@ -164,33 +170,33 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
 
     private void setDateOfBirth(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String dob = row.get(headers.dateOfBirth);
+            String dob = row.get(SubjectHeaders.dateOfBirth);
             if (dob != null && !dob.trim().isEmpty())
                 individual.setDateOfBirth(LocalDate.parse(dob));
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", headers.dateOfBirth));
+            errorMsgs.add(String.format("Invalid '%s'", SubjectHeaders.dateOfBirth));
         }
     }
 
     private void setRegistrationDate(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String registrationDate = row.get(headers.registrationDate);
+            String registrationDate = row.get(SubjectHeaders.registrationDate);
             individual.setRegistrationDate(registrationDate != null && !registrationDate.trim().isEmpty() ? LocalDate.parse(registrationDate) : LocalDate.now());
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", headers.registrationDate));
+            errorMsgs.add(String.format("Invalid '%s'", SubjectHeaders.registrationDate));
         }
     }
 
     private void setGender(Individual individual, Row row) throws Exception {
         try {
-            String genderName = row.get(headers.gender);
+            String genderName = row.get(SubjectHeaders.gender);
             Gender gender = genderRepository.findByNameIgnoreCase(genderName);
             if (gender == null) {
-                throw new Exception(String.format("Invalid '%s' - '%s'", headers.gender, genderName));
+                throw new Exception(String.format("Invalid '%s' - '%s'", SubjectHeaders.gender, genderName));
             }
             individual.setGender(gender);
         } catch (Exception ex) {
-            throw new Exception(String.format("Invalid '%s'", headers.gender));
+            throw new Exception(String.format("Invalid '%s'", SubjectHeaders.gender));
         }
     }
 

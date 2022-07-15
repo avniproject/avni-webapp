@@ -1,7 +1,7 @@
 package org.avni.importer.batch.csv.writer.header;
 
 public class LocationHeaders implements Headers {
-    public final String gpsCoordinates = "GPS coordinates";
+    public final static String gpsCoordinates = "GPS coordinates";
 
     @Override
     public String[] getAllHeaders() {

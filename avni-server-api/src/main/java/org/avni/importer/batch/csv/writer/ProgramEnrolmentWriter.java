@@ -6,6 +6,7 @@ import org.avni.dao.ProgramEnrolmentRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.domain.Individual;
+import org.avni.domain.Program;
 import org.avni.domain.ProgramEnrolment;
 import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
@@ -17,7 +18,6 @@ import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -27,8 +27,6 @@ import java.util.List;
 
 @Component
 public class ProgramEnrolmentWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
-
-    private static final ProgramEnrolmentHeaders headers = new ProgramEnrolmentHeaders();
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private LocationCreator locationCreator;
     private SubjectCreator subjectCreator;
@@ -81,24 +79,24 @@ public class ProgramEnrolmentWriter extends EntityWriter implements ItemWriter<R
         ProgramEnrolment programEnrolment = getOrCreateProgramEnrolment(row);
 
         List<String> allErrorMsgs = new ArrayList<>();
-        Individual individual = subjectCreator.getSubject(row.get(headers.subjectId), allErrorMsgs, headers.subjectId);
+        Individual individual = subjectCreator.getSubject(row.get(ProgramEnrolmentHeaders.subjectId), allErrorMsgs, ProgramEnrolmentHeaders.subjectId);
         programEnrolment.setIndividual(individual);
-        org.avni.domain.Program program = programCreator.getProgram(row.get(headers.program), headers.program);
+        Program program = programCreator.getProgram(row.get(ProgramEnrolmentHeaders.programHeader), ProgramEnrolmentHeaders.programHeader);
         LocalDate enrolmentDate = dateCreator.getDate(
                 row,
-                headers.enrolmentDate,
-                allErrorMsgs, String.format("%s is mandatory", headers.enrolmentDate)
+                ProgramEnrolmentHeaders.enrolmentDate,
+                allErrorMsgs, String.format("%s is mandatory", ProgramEnrolmentHeaders.enrolmentDate)
         );
         if (enrolmentDate != null) programEnrolment.setEnrolmentDateTime(enrolmentDate.toDateTimeAtStartOfDay());
         LocalDate exitDate = dateCreator.getDate(
                 row,
-                headers.exitDate,
+                ProgramEnrolmentHeaders.exitDate,
                 allErrorMsgs, null
         );
         if (exitDate != null) programEnrolment.setProgramExitDateTime(exitDate.toDateTimeAtStartOfDay());
 
-        programEnrolment.setEnrolmentLocation(locationCreator.getLocation(row, headers.enrolmentLocation, allErrorMsgs));
-        programEnrolment.setExitLocation(locationCreator.getLocation(row, headers.exitLocation, allErrorMsgs));
+        programEnrolment.setEnrolmentLocation(locationCreator.getLocation(row, ProgramEnrolmentHeaders.enrolmentLocation, allErrorMsgs));
+        programEnrolment.setExitLocation(locationCreator.getLocation(row, ProgramEnrolmentHeaders.exitLocation, allErrorMsgs));
         programEnrolment.setProgram(program);
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(individual.getSubjectType().getUuid(), program.getUuid(), null, FormType.ProgramEnrolment);
         if (formMapping == null) {
@@ -106,7 +104,8 @@ public class ProgramEnrolmentWriter extends EntityWriter implements ItemWriter<R
         }
         ProgramEnrolment savedEnrolment;
         if (skipRuleExecution()) {
-            programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
+            ProgramEnrolmentHeaders programEnrolmentHeaders = new ProgramEnrolmentHeaders(program);
+            programEnrolment.setObservations(observationCreator.getObservations(row, programEnrolmentHeaders, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
             savedEnrolment = programEnrolmentService.save(programEnrolment);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), programEnrolment, allErrorMsgs);
@@ -119,7 +118,7 @@ public class ProgramEnrolmentWriter extends EntityWriter implements ItemWriter<R
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {
-        String id = row.get(headers.id);
+        String id = row.get(ProgramEnrolmentHeaders.id);
         ProgramEnrolment existingEnrolment = null;
         if (id != null && !id.isEmpty()) {
             existingEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(id);

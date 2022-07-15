@@ -1,14 +1,10 @@
 package org.avni.importer.batch.csv.writer;
 
-import org.avni.service.GroupSubjectService;
-import org.joda.time.LocalDate;
 import org.avni.dao.GroupRoleRepository;
 import org.avni.dao.GroupSubjectRepository;
 import org.avni.dao.IndividualRepository;
-import org.avni.dao.individualRelationship.IndividualRelationGenderMappingRepository;
 import org.avni.dao.individualRelationship.IndividualRelationRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipRepository;
-import org.avni.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.avni.domain.GroupRole;
 import org.avni.domain.GroupSubject;
 import org.avni.domain.Individual;
@@ -18,7 +14,9 @@ import org.avni.importer.batch.csv.creator.DateCreator;
 import org.avni.importer.batch.csv.writer.header.GroupMemberHeaders;
 import org.avni.importer.batch.csv.writer.header.HouseholdMemberHeaders;
 import org.avni.importer.batch.model.Row;
+import org.avni.service.GroupSubjectService;
 import org.avni.service.HouseholdService;
+import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,8 +35,6 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
     private final HouseholdService householdService;
     private final GroupSubjectService groupSubjectService;
 
-    private final GroupMemberHeaders groupMemberHeaders = new GroupMemberHeaders();
-    private final HouseholdMemberHeaders householdMemberHeaders = new HouseholdMemberHeaders();
     private DateCreator dateCreator;
 
     @Autowired
@@ -76,12 +72,12 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
 
         if (isHousehold) {
             Individual existingHeadOfHousehold = householdService.getHeadOfHouseholdForGroupSubject(groupSubject);
-            groupSubject.setGroupRole(getHouseholdGroupRole(row.getBool(householdMemberHeaders.isHeadOfHousehold),
+            groupSubject.setGroupRole(getHouseholdGroupRole(row.getBool(HouseholdMemberHeaders.isHeadOfHousehold),
                     allErrorMsgs,
-                    householdMemberHeaders.isHeadOfHousehold,
+                    HouseholdMemberHeaders.isHeadOfHousehold,
                     groupSubject.getGroupSubject().getSubjectType().getId()));
             if (groupSubject.getGroupRole().getRole().equals("Member")) {
-                individualRelation = getRelationWithHeadOfHousehold(row.get(householdMemberHeaders.relationshipWithHeadOfHousehold), allErrorMsgs);
+                individualRelation = getRelationWithHeadOfHousehold(row.get(HouseholdMemberHeaders.relationshipWithHeadOfHousehold), allErrorMsgs);
                 if (individualRelation != null) {
                     individualRelationship = householdService.determineRelationshipWithHeadOfHousehold(groupSubject, individualRelation, allErrorMsgs);
                 }
@@ -91,9 +87,9 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
                 }
             }
         } else {
-            groupSubject.setGroupRole(getGroupRole(row.get(groupMemberHeaders.role),
+            groupSubject.setGroupRole(getGroupRole(row.get(GroupMemberHeaders.role),
                     allErrorMsgs,
-                    groupMemberHeaders.role,
+                    GroupMemberHeaders.role,
                     groupSubject.getGroupSubject().getSubjectType().getId()));
         }
 
@@ -113,7 +109,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
 //        String groupIdIdentifier = isHouseholdUpload ? householdMemberHeaders.groupId : groupMemberHeaders.groupId;
         String groupIdIdentifier = row.getHeaders()[0];  //hack assumes group id/household id is the first element. Added to handle dynamic group id header values.
         String groupId = row.get(groupIdIdentifier);
-        String memberId = row.get(groupMemberHeaders.memberId);
+        String memberId = row.get(GroupMemberHeaders.memberId);
 
         Individual existingGroup;
         Individual existingMember;
@@ -124,7 +120,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
             return null;
         }
         if (memberId == null || memberId.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is mandatory", groupMemberHeaders.memberId));
+            errorMsgs.add(String.format("'%s' is mandatory", GroupMemberHeaders.memberId));
             return null;
         }
 
@@ -135,7 +131,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         }
         existingMember = individualRepository.findByLegacyIdOrUuid(memberId);
         if (existingMember == null) {
-            errorMsgs.add(String.format("Could not find '%s' - '%s'", groupMemberHeaders.memberId, memberId));
+            errorMsgs.add(String.format("Could not find '%s' - '%s'", GroupMemberHeaders.memberId, memberId));
             return null;
         }
         existingGroupSubject = groupSubjectRepository.findByGroupSubjectAndMemberSubject(existingGroup, existingMember);
@@ -180,7 +176,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
 
     private IndividualRelation getRelationWithHeadOfHousehold(String relationshipWithHeadOfHousehold, List<String> errorMsgs) {
         if (relationshipWithHeadOfHousehold == null || relationshipWithHeadOfHousehold.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is mandatory for household members", householdMemberHeaders.relationshipWithHeadOfHousehold));
+            errorMsgs.add(String.format("'%s' is mandatory for household members", HouseholdMemberHeaders.relationshipWithHeadOfHousehold));
             return null;
         }
         IndividualRelation individualRelation = individualRelationRepository.findByNameIgnoreCase(relationshipWithHeadOfHousehold);
@@ -202,10 +198,10 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
     }
 
     private void saveMembershipDates(Row row, GroupSubject groupSubject, List<String> errorMsgs) {
-        LocalDate membershipStartDate = dateCreator.getDate(row, groupMemberHeaders.membershipStartDate, errorMsgs, null);
+        LocalDate membershipStartDate = dateCreator.getDate(row, GroupMemberHeaders.membershipStartDate, errorMsgs, null);
         groupSubject.setMembershipStartDate(membershipStartDate != null ? membershipStartDate.toDateTimeAtStartOfDay() : LocalDate.now().toDateTimeAtCurrentTime());
 
-        LocalDate membershipEndDate = dateCreator.getDate(row, groupMemberHeaders.membershipEndDate, errorMsgs, null);
+        LocalDate membershipEndDate = dateCreator.getDate(row, GroupMemberHeaders.membershipEndDate, errorMsgs, null);
         if (membershipEndDate != null) {
             groupSubject.setMembershipEndDate(membershipEndDate.toDateTimeAtStartOfDay());
         }

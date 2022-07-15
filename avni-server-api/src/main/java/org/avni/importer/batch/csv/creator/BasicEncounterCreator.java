@@ -13,8 +13,6 @@ import java.util.List;
 
 @Component
 public class BasicEncounterCreator {
-
-    private static CommonEncounterHeaders headers = new CommonEncounterHeaders();
     private final LocationCreator locationCreator;
     private DateCreator dateCreator;
     private EncounterTypeCreator encounterTypeCreator;
@@ -30,7 +28,7 @@ public class BasicEncounterCreator {
 
         LocalDate earliestVisitDate = dateCreator.getDate(
                 row,
-                headers.earliestVisitDate,
+                CommonEncounterHeaders.earliestVisitDate,
                 allErrorMsgs, null
         );
         if (earliestVisitDate != null)
@@ -38,21 +36,21 @@ public class BasicEncounterCreator {
 
         LocalDate maxVisitDate = dateCreator.getDate(
                 row,
-                headers.maxVisitDate,
+                CommonEncounterHeaders.maxVisitDate,
                 allErrorMsgs, null
         );
         if (maxVisitDate != null) basicEncounter.setMaxVisitDateTime(maxVisitDate.toDateTimeAtStartOfDay());
 
         LocalDate visitDate = dateCreator.getDate(
                 row,
-                headers.visitDate,
-                allErrorMsgs, String.format("%s is mandatory", headers.visitDate
+                CommonEncounterHeaders.visitDate,
+                allErrorMsgs, String.format("%s is mandatory", CommonEncounterHeaders.visitDate
                 ));
         if (visitDate != null) basicEncounter.setEncounterDateTime(visitDate.toDateTimeAtStartOfDay());
 
-        basicEncounter.setEncounterLocation(locationCreator.getLocation(row, headers.encounterLocation, allErrorMsgs));
-        basicEncounter.setCancelLocation(locationCreator.getLocation(row, headers.cancelLocation, allErrorMsgs));
-        EncounterType encounterType = encounterTypeCreator.getEncounterType(row.get(headers.encounterType), headers.encounterType);
+        basicEncounter.setEncounterLocation(locationCreator.getLocation(row, CommonEncounterHeaders.encounterLocation, allErrorMsgs));
+        basicEncounter.setCancelLocation(locationCreator.getLocation(row, CommonEncounterHeaders.cancelLocation, allErrorMsgs));
+        EncounterType encounterType = encounterTypeCreator.getEncounterType(row.get(CommonEncounterHeaders.encounterTypeHeaderName), CommonEncounterHeaders.encounterTypeHeaderName);
         basicEncounter.setEncounterType(encounterType);
         return basicEncounter;
     }

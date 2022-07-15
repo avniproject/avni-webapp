@@ -2,15 +2,12 @@ package org.avni.importer.batch.csv.writer;
 
 import org.avni.application.FormMapping;
 import org.avni.application.FormType;
-import org.avni.application.OrganisationConfigSettingKeys;
 import org.avni.dao.EncounterRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.Encounter;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.domain.Individual;
-import org.avni.domain.UserContext;
-import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.EncounterHeaders;
@@ -29,7 +26,6 @@ import java.util.List;
 
 @Component
 public class EncounterWriter extends EntityWriter implements ItemWriter<Row>, Serializable {
-    private static EncounterHeaders headers = new EncounterHeaders();
     private EncounterRepository encounterRepository;
     private IndividualRepository individualRepository;
     private BasicEncounterCreator basicEncounterCreator;
@@ -90,7 +86,8 @@ public class EncounterWriter extends EntityWriter implements ItemWriter<Row>, Se
         Encounter savedEncounter;
 
         if (skipRuleExecution()) {
-            encounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.Encounter, encounter.getObservations()));
+            EncounterHeaders encounterHeaders = new EncounterHeaders(encounter.getEncounterType());
+            encounter.setObservations(observationCreator.getObservations(row, encounterHeaders, allErrorMsgs, FormType.Encounter, encounter.getObservations()));
             savedEncounter = encounterService.save(encounter);
         } else {
             UploadRuleServerResponseContract ruleResponse = ruleServerInvoker.getRuleServerResult(row, formMapping.getForm(), encounter, allErrorMsgs);
@@ -105,19 +102,19 @@ public class EncounterWriter extends EntityWriter implements ItemWriter<Row>, Se
     }
 
     private Individual getSubject(Row row) throws Exception {
-        String subjectExternalId = row.get(headers.subjectId);
+        String subjectExternalId = row.get(EncounterHeaders.subjectId);
         if (subjectExternalId == null || subjectExternalId.isEmpty()) {
-            throw new Exception(String.format("'%s' is required", headers.subjectId));
+            throw new Exception(String.format("'%s' is required", EncounterHeaders.subjectId));
         }
         Individual individual = individualRepository.findByLegacyIdOrUuid(subjectExternalId);
         if (individual == null) {
-            throw new Exception(String.format("'%s' '%s' not found in database", headers.subjectId, subjectExternalId));
+            throw new Exception(String.format("'%s' '%s' not found in database", EncounterHeaders.subjectId, subjectExternalId));
         }
         return individual;
     }
 
     private Encounter getOrCreateEncounter(Row row) {
-        String id = row.get(headers.id);
+        String id = row.get(EncounterHeaders.id);
         Encounter existingEncounter = null;
         if (id != null && !id.isEmpty()) {
             existingEncounter = encounterRepository.findByLegacyIdOrUuid(id);
