@@ -94,6 +94,36 @@ paths:
                 $ref: '#/components/schemas/Subject'
         '400':
           description: bad input parameter
+    delete:
+      tags:
+        - Subject
+      summary: Delete a specific subject by ID or External ID
+      description: |
+        Provide the ID of the subject. The ID is in UUID format, the external id used by Avni.
+        OR provide the ExternalID of the Subject. Legacy ID set by the external integrating system.
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+        '400':
+          description: bad input parameter
+        '404':
+          description: entity not found
     put:
       tags:
         - Subject
@@ -221,6 +251,36 @@ paths:
                 $ref: '#/components/schemas/ProgramEnrolment'
         '400':
           description: bad input parameter
+    delete:
+      tags:
+        - Program Enrolment
+      summary: Delete a specific program enrolment by ID
+      description: |
+        Provide the ID of the program enrolment. The ID is in UUID format, the external id used by Avni
+        OR provide the ExternalID of the Program Enrolment. Legacy ID set by the external integrating system.
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEnrolment'
+        '400':
+          description: bad input parameter
+        '404':
+          description: entity not found
     put:
       tags:
         - Program Enrolment
@@ -349,6 +409,36 @@ paths:
                 $ref: '#/components/schemas/ProgramEncounter'
         '400':
           description: bad input parameter
+    delete:
+      tags:
+        - Program Encounter
+        summary: Delete a specific program encounter by ID
+        description: |
+          Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
+          OR provide the ExternalID of the program encounter. Legacy ID set by the external integrating system.
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgramEncounter'
+        '400':
+          description: bad input parameter
+        '404':
+          description: entity not found
     put:
       tags:
         - Program Encounter
@@ -484,6 +574,36 @@ paths:
                 $ref: '#/components/schemas/Encounter'
         '400':
           description: bad input parameter
+    delete:
+      tags:
+        - Subject Encounter
+      summary: Delete a specific subject encounter by ID
+      description: |
+        Provide the ID of the subject encounter. The ID is in UUID format, the external id used by Avni
+        OR provide the ExternalID of the Subject Encounter. Legacy ID set by the external integrating system.
+      parameters:
+        - in: path
+          name: ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Encounter'
+        '400':
+          description: bad input parameter
+        '404':
+          description: entity not found
     put:
       tags:
         - Subject Encounter
