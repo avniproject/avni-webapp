@@ -5,7 +5,7 @@ import React from "react";
 import http from "common/utils/httpClient";
 import { getOperationalModules, selectOperationalModules } from "../../reports/reducers";
 import { useDispatch, useSelector } from "react-redux";
-import { isNil, map, set, sortBy } from "lodash";
+import { isNil, map, set, sortBy, toNumber } from "lodash";
 import { FormMappingEnableApproval } from "./FormMappingEnableApproval";
 import { AvniTextField } from "../../common/components/AvniTextField";
 
@@ -153,7 +153,7 @@ export const OrgSettings = () => {
           onChange={event =>
             onSettingsChange(
               organisationConfigSettingKeys.maxAddressDisplayInlineCount,
-              event.target.value
+              toNumber(event.target.value)
             )
           }
           toolTipKey={"MAX_ADDRESS_DISPLAY_INLINE_COUNT"}
