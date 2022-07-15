@@ -5,7 +5,6 @@ import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow
 import http from "../../common/utils/httpClient";
 import { ConceptSyncAttributesShow } from "./ConceptSyncAttributeShow";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
-import { TextFieldInShow } from "../../common/components/TextFieldInShow";
 import { TextFormatFieldInShow } from "../../common/components/TextFormatFieldInShow";
 
 export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
