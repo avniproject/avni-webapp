@@ -7,6 +7,7 @@ import { getOperationalModules, selectOperationalModules } from "../../reports/r
 import { useDispatch, useSelector } from "react-redux";
 import { isNil, map, set, sortBy } from "lodash";
 import { FormMappingEnableApproval } from "./FormMappingEnableApproval";
+import { AvniTextField } from "../../common/components/AvniTextField";
 
 export const OrgSettings = () => {
   const [orgSettings, setOrgSettings] = React.useState();
@@ -73,7 +74,8 @@ export const OrgSettings = () => {
     showSummaryButton: "showSummaryButton",
     useKeycloakAsIDP: "useKeycloakAsIDP",
     useMinioForStorage: "useMinioForStorage",
-    skipRuleExecution: "skipRuleExecution"
+    skipRuleExecution: "skipRuleExecution",
+    maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount"
   };
 
   return orgSettings ? (
@@ -140,6 +142,22 @@ export const OrgSettings = () => {
           "Skip rule executions on upload",
           "SKIP_RULE_EXECUTION_ON_UPLOAD"
         )}
+        <AvniTextField
+          style={{ marginLeft: 8, marginTop: 10 }}
+          id="maxAddressDisplayInlineCount"
+          type="number"
+          variant="outlined"
+          label="Inline address count"
+          autoComplete="off"
+          value={orgSettings.maxAddressDisplayInlineCount}
+          onChange={event =>
+            onSettingsChange(
+              organisationConfigSettingKeys.maxAddressDisplayInlineCount,
+              event.target.value
+            )
+          }
+          toolTipKey={"MAX_ADDRESS_DISPLAY_INLINE_COUNT"}
+        />
       </Grid>
     </Grid>
   ) : (
