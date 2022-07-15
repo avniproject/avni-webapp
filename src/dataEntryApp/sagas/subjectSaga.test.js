@@ -7,6 +7,7 @@ import enrolmentReducer from "dataEntryApp/reducers/programEnrolReducer";
 import { expectSaga } from "redux-saga-test-plan";
 import mockData from "dataEntryApp/sagas/subjectSaga.mock";
 import registrationReducer from "dataEntryApp/reducers/registrationReducer";
+import { map } from "lodash";
 
 describe("subjectSaga", () => {
   test("updates the enrolment exit observations", async () => {
@@ -24,7 +25,12 @@ describe("subjectSaga", () => {
       obs => obs.concept.name === "a1"
     ).valueJSON.value;
 
-    expect(storeState.filteredFormElements).toEqual(formElementGroup1.getFormElements());
+    expect(storeState.filteredFormElements.length).toEqual(
+      formElementGroup1.getFormElements().length
+    );
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
+      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
+    );
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
@@ -44,7 +50,12 @@ describe("subjectSaga", () => {
       obs => obs.concept.name === "a1"
     ).valueJSON.value;
 
-    expect(storeState.filteredFormElements).toEqual(formElementGroup1.getFormElements());
+    expect(storeState.filteredFormElements.length).toEqual(
+      formElementGroup1.getFormElements().length
+    );
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
+      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
+    );
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
@@ -64,7 +75,12 @@ describe("subjectSaga", () => {
       obs => obs.concept.name === "a1"
     ).valueJSON.value;
 
-    expect(storeState.filteredFormElements).toEqual(formElementGroup1.getFormElements());
+    expect(storeState.filteredFormElements.length).toEqual(
+      formElementGroup1.getFormElements().length
+    );
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
+      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
+    );
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });

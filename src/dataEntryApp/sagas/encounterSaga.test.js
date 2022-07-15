@@ -5,6 +5,7 @@ import {
   updateEncounterObsWorker,
   updateCancelEncounterObsWorker
 } from "dataEntryApp/sagas/encounterSaga";
+import { map } from "lodash";
 
 describe("encounterSaga", () => {
   test("updates the encounter observations", async () => {
@@ -22,7 +23,12 @@ describe("encounterSaga", () => {
       obs => obs.concept.name === "a1"
     ).valueJSON.value;
 
-    expect(storeState.filteredFormElements).toEqual(formElementGroup1.getFormElements());
+    expect(storeState.filteredFormElements.length).toEqual(
+      formElementGroup1.getFormElements().length
+    );
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
+      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
+    );
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
@@ -42,7 +48,12 @@ describe("encounterSaga", () => {
       obs => obs.concept.name === "a1"
     ).valueJSON.value;
 
-    expect(storeState.filteredFormElements).toEqual(formElementGroup1.getFormElements());
+    expect(storeState.filteredFormElements.length).toEqual(
+      formElementGroup1.getFormElements().length
+    );
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
+      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
+    );
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
