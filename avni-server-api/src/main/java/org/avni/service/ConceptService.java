@@ -249,9 +249,10 @@ public class ConceptService implements NonScopeAwareService {
             return elements.stream().map(element -> {
                 if (element != null && element instanceof String) {
                     return conceptMap.getOrDefault(element, (String) element);
-                } else if( element != null && element instanceof ObservationCollection) {
+                } else if( element != null && element instanceof HashMap) {
                     LinkedHashMap<String, Object> observationResponse = new LinkedHashMap<>();
-                    Response.mapObservations(conceptRepository, this, observationResponse, (ObservationCollection) element);
+                    Response.mapObservations(conceptRepository, this, observationResponse,
+                            new ObservationCollection((HashMap<String, Object>) element));
                     return observationResponse;
                 } else {
                     return conceptMap.getOrDefault(element, element.toString());
