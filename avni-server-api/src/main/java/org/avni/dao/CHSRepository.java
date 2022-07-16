@@ -1,6 +1,5 @@
 package org.avni.dao;
 
-import org.joda.time.DateTime;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.Concept;
 import org.springframework.data.jpa.domain.Specification;

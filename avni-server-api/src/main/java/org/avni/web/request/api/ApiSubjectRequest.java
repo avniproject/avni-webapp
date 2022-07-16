@@ -6,10 +6,11 @@ import org.joda.time.LocalDate;
 
 import java.util.LinkedHashMap;
 
+import static org.avni.web.api.CommonFieldNames.EXTERNAL_ID;
 import static org.avni.web.api.CommonFieldNames.VOIDED;
 
 public class ApiSubjectRequest {
-    @JsonProperty("External ID")
+    @JsonProperty(EXTERNAL_ID)
     private String externalId;
 
     @JsonProperty("Subject type")

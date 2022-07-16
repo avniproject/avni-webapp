@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.*;
 
@@ -171,4 +172,15 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
         return addressIds.isEmpty() ? false : existsByAddressLevelIdIn(addressIds);
     }
     boolean existsBySubjectType(SubjectType subjectType);
+
+    default Individual getSubject(String uuid, String legacyId) {
+        Individual individual = null;
+        if (StringUtils.hasLength(uuid)) {
+            individual = this.findByUuid(uuid);
+        }
+        if (individual == null && StringUtils.hasLength(legacyId)) {
+            individual = this.findByLegacyId(legacyId.trim());
+        }
+        return individual;
+    }
 }

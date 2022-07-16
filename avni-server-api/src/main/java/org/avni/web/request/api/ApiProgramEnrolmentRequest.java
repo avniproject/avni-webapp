@@ -7,6 +7,7 @@ import org.avni.web.api.ProgramEnrolmentFieldNames;
 
 import java.util.LinkedHashMap;
 
+import static org.avni.web.api.CommonFieldNames.SUBJECT_ID;
 import static org.avni.web.api.CommonFieldNames.VOIDED;
 import static org.avni.web.api.ProgramEnrolmentFieldNames.*;
 

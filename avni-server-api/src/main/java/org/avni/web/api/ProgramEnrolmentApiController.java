@@ -60,17 +60,8 @@ public class ProgramEnrolmentApiController {
     }
 
     private void initializeIndividual(ApiProgramEnrolmentRequest request, ProgramEnrolment programEnrolment) {
-        Individual individual = null;
-        if (individual == null && StringUtils.hasLength(request.getSubjectUuid())) {
-            individual = individualRepository.findByLegacyIdOrUuid(request.getSubjectUuid());
-        }
-        if (individual == null && StringUtils.hasLength(request.getSubjectExternalId())) {
-            individual = individualRepository.findByLegacyId(request.getSubjectExternalId().trim());
-        }
-        if (individual == null) {
-            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s' or External ID '%s'",
-                    request.getSubjectUuid(), request.getSubjectExternalId()));
-        }
+        Individual individual = individualRepository.getSubject(request.getSubjectUuid(), request.getSubjectExternalId());
+        ApiErrorUtil.throwIfSubjectNotFound(individual, request.getSubjectUuid(), request.getSubjectExternalId());
         programEnrolment.setIndividual(individual);
     }
 

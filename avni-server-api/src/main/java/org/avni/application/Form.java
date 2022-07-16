@@ -48,6 +48,13 @@ public class Form extends OrganisationAwareEntity {
     @Type(type = "declarativeRule")
     private DeclarativeRule visitScheduleDeclarativeRule;
 
+    @Column(name = "task_schedule_rule")
+    private String taskScheduleRule;
+
+    @Column(name = "task_schedule_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule taskScheduleDeclarativeRule;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
     private Set<DecisionConcept> decisionConcepts = new HashSet<>();
 
