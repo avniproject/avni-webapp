@@ -72,7 +72,7 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
 
     public static SubjectResponse fromSubject(Individual subject, boolean subjectTypeRequested, ConceptRepository conceptRepository, ConceptService conceptService, List<GroupSubject> groups, S3Service s3Service) {
         SubjectResponse subjectResponse = fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService, s3Service);
-        subjectResponse.put("Groups", groups.stream().map(groupSubject -> groupSubject.getGroupSubjectUUID()));
+        subjectResponse.put("Groups", groups.stream().map(GroupSubject::getGroupSubjectUUID));
         return subjectResponse;
     }
 }

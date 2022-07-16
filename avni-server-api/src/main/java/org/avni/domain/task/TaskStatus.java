@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "task_type")
+@Table(name = "task_status")
 @BatchSize(size = 100)
 public class TaskStatus extends OrganisationAwareEntity {
     @Column
@@ -16,6 +16,11 @@ public class TaskStatus extends OrganisationAwareEntity {
 
     @Column
     private boolean isTerminal;
+
+    @ManyToOne(targetEntity = TaskType.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_type_id")
+    @NotNull
+    private TaskType taskType;
 
     public String getName() {
         return name;
@@ -31,5 +36,13 @@ public class TaskStatus extends OrganisationAwareEntity {
 
     public void setTerminal(boolean terminal) {
         isTerminal = terminal;
+    }
+
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
     }
 }

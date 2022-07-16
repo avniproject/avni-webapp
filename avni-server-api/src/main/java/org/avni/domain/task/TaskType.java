@@ -1,7 +1,9 @@
 package org.avni.domain.task;
 
+import org.avni.domain.ObservationCollection;
 import org.avni.domain.OrganisationAwareEntity;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,8 +22,8 @@ public class TaskType extends OrganisationAwareEntity {
     private TaskTypeName type;
 
     @Column
-    @NotNull
-    private String metadataSearchFields;
+    @Type(type = "observations")
+    private ObservationCollection metadataSearchFields;
 
     public String getName() {
         return name;
@@ -39,11 +41,11 @@ public class TaskType extends OrganisationAwareEntity {
         this.type = type;
     }
 
-    public String getMetadataSearchFields() {
+    public ObservationCollection getMetadataSearchFields() {
         return metadataSearchFields;
     }
 
-    public void setMetadataSearchFields(String metadataSearchFields) {
+    public void setMetadataSearchFields(ObservationCollection metadataSearchFields) {
         this.metadataSearchFields = metadataSearchFields;
     }
 }

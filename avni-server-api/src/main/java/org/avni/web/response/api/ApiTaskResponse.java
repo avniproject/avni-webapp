@@ -1,6 +1,6 @@
 package org.avni.web.response.api;
 
-import org.avni.web.contract.ApiTaskBaseContract;
+import java.util.LinkedHashMap;
 
-public class ApiTaskResponse extends ApiTaskBaseContract {
+public class ApiTaskResponse extends LinkedHashMap<String, Object> {
 }

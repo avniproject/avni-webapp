@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskTypeRepository extends CrudRepository<TaskType, Long> {
     TaskType findByName(String name);
+    TaskType findById(long id);
 }

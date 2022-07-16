@@ -12,7 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "task_type")
+@Table(name = "task")
 @BatchSize(size = 100)
 public class Task extends OrganisationAwareEntity {
     @Column
@@ -35,7 +35,7 @@ public class Task extends OrganisationAwareEntity {
     @Column
     private DateTime completedOn;
 
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_user_id")
     @NotNull
     private User assignedTo;

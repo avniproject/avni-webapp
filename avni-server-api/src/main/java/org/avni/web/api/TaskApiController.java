@@ -7,12 +7,12 @@ import org.avni.dao.task.TaskRepository;
 import org.avni.dao.task.TaskStatusRepository;
 import org.avni.dao.task.TaskTypeRepository;
 import org.avni.domain.Individual;
-import org.avni.domain.ValidationException;
 import org.avni.domain.task.Task;
 import org.avni.domain.task.TaskType;
+import org.avni.service.ConceptService;
 import org.avni.web.request.api.ApiTaskRequest;
 import org.avni.web.request.api.RequestUtils;
-import org.avni.web.response.SubjectResponse;
+import org.avni.web.response.Response;
 import org.avni.web.response.api.ApiTaskResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.UUID;
+
+import static org.avni.web.api.CommonFieldNames.*;
+import static org.avni.web.contract.TaskFieldNames.*;
 
 @RestController
 public class TaskApiController {
@@ -34,15 +38,17 @@ public class TaskApiController {
     private final TaskStatusRepository taskStatusRepository;
     private final ConceptRepository conceptRepository;
     private final IndividualRepository individualRepository;
+    private final ConceptService conceptService;
 
     @Autowired
-    public TaskApiController(TaskRepository taskRepository, TaskTypeRepository taskTypeRepository, UserRepository userRepository, TaskStatusRepository taskStatusRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository) {
+    public TaskApiController(TaskRepository taskRepository, TaskTypeRepository taskTypeRepository, UserRepository userRepository, TaskStatusRepository taskStatusRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository, ConceptService conceptService) {
         this.taskRepository = taskRepository;
         this.taskTypeRepository = taskTypeRepository;
         this.userRepository = userRepository;
         this.taskStatusRepository = taskStatusRepository;
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
+        this.conceptService = conceptService;
     }
 
     @PostMapping(value = "/api/task")
@@ -65,17 +71,25 @@ public class TaskApiController {
         ApiErrorUtil.throwIfSubjectNotFound(individual, request.getSubjectId(), request.getSubjectExternalId());
         task.setSubject(individual);
         task.setLegacyId(request.getExternalId());
-        task.setUuid(UUID.randomUUID().toString());
+        task.assignUUID();
         task.setVoided(request.isVoided());
         taskRepository.save(task);
 
         ApiTaskResponse response = new ApiTaskResponse();
-        response.setTaskTypeName(task.getTaskType().getName());
-        response.setAssignedTo(task.getAssignedTo().getUsername());
-        response.setCompletedOn(task.getCompletedOn());
-        response.setScheduledOn(task.getScheduledOn());
-        response.setExternalId(task.getLegacyId());
-        response.setTaskStatus(task.getTaskStatus().getName());
-        return null;
+        response.put(TASK_TYPE, task.getTaskType().getName());
+        response.put(ASSIGNED_TO, task.getAssignedTo().getUsername());
+        response.put(COMPLETED_ON, task.getCompletedOn());
+        response.put(SCHEDULED_ON, task.getScheduledOn());
+        response.put(EXTERNAL_ID, task.getLegacyId());
+        response.put(TASK_STATUS, task.getTaskStatus().getName());
+        Response.putObservations(conceptRepository, conceptService, response, new LinkedHashMap<>(), task.getMetadata(), METADATA);
+        Response.putObservations(conceptRepository, conceptService, response, new LinkedHashMap<>(), task.getObservations(), OBSERVATIONS);
+        response.put(NAME, task.getName());
+        response.put(SUBJECT_ID, task.getSubject().getUuid());
+        response.put(SUBJECT_EXTERNAL_ID, task.getSubject().getLegacyId());
+        response.put(ID, task.getUuid());
+        response.put(VOIDED, task.isVoided());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

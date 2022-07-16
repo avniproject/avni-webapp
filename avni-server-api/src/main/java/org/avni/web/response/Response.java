@@ -16,7 +16,7 @@ public class Response {
         if (value != null) map.put(name, value);
     }
 
-    static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap,
+    public static void putObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> parentMap,
                                 LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations, String observationsResponseKeyName) {
         mapObservations(conceptRepository, conceptService, observationsResponse, observations);
         parentMap.put(observationsResponseKeyName, observationsResponse);
