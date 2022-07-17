@@ -32,7 +32,6 @@ import java.util.Collections;
 
 @RestController
 public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter> {
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private UserService userService;

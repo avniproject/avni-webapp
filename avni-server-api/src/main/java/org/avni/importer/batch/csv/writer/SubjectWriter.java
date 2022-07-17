@@ -19,7 +19,6 @@ import org.jadira.usertype.spi.utils.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -40,7 +39,6 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
     private final GenderRepository genderRepository;
     private SubjectTypeCreator subjectTypeCreator;
     private LocationCreator locationCreator;
-    private EntityApprovalStatusService entityApprovalStatusService;
     private FormMappingRepository formMappingRepository;
     private ObservationService observationService;
     private RuleServerInvoker ruleServerInvoker;
@@ -58,7 +56,6 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
                          IndividualRepository individualRepository,
                          GenderRepository genderRepository,
                          SubjectTypeCreator subjectTypeCreator,
-                         EntityApprovalStatusService entityApprovalStatusService,
                          FormMappingRepository formMappingRepository,
                          ObservationService observationService,
                          RuleServerInvoker ruleServerInvoker,
@@ -74,7 +71,6 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
         this.individualRepository = individualRepository;
         this.genderRepository = genderRepository;
         this.subjectTypeCreator = subjectTypeCreator;
-        this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
         this.observationService = observationService;
         this.ruleServerInvoker = ruleServerInvoker;
@@ -130,7 +126,7 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
             savedIndividual = individualService.save(individual);
             visitCreator.saveScheduledVisits(formMapping.getType(), savedIndividual.getUuid(), null, ruleResponse.getVisitSchedules(), null);
         }
-        entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual.getId(), EntityApprovalStatus.EntityType.Subject);
+        entityApprovalStatusWriter.saveStatus(formMapping, savedIndividual, EntityApprovalStatus.EntityType.Subject);
     }
 
     private void setProfilePicture(SubjectType subjectType, Individual individual, Row row, List<String> errorMsgs) {

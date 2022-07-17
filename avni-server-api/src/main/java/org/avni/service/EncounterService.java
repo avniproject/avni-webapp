@@ -1,16 +1,20 @@
 package org.avni.service;
 
 import com.bugsnag.Bugsnag;
+import org.avni.dao.*;
 import org.avni.dao.application.FormMappingRepository;
+import org.avni.dao.individualRelationship.RuleFailureLogRepository;
+import org.avni.domain.Encounter;
+import org.avni.domain.EncounterType;
+import org.avni.domain.Individual;
+import org.avni.domain.ObservationCollection;
+import org.avni.util.BadRequestError;
 import org.avni.util.S;
 import org.avni.web.api.EncounterSearchRequest;
-import org.joda.time.DateTime;
-import org.avni.dao.*;
-import org.avni.dao.individualRelationship.RuleFailureLogRepository;
-import org.avni.domain.*;
-import org.avni.util.BadRequestError;
-import org.avni.web.request.*;
+import org.avni.web.request.EncounterContract;
+import org.avni.web.request.EncounterTypeContract;
 import org.avni.web.request.rules.RulesContractWrapper.VisitSchedule;
+import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,14 +35,13 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 @Service
 public class EncounterService implements ScopeAwareService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(EncounterService.class);
+
     @Autowired
     Bugsnag bugsnag;
     private EncounterRepository encounterRepository;
     private ObservationService observationService;
     private IndividualRepository individualRepository;
-    private RuleFailureLogRepository ruleFailureLogRepository;
     private EncounterTypeRepository encounterTypeRepository;
-    private FormMappingRepository formMappingRepository;
     private EncounterSearchRepository encounterSearchRepository;
 
     @Autowired
@@ -46,9 +49,7 @@ public class EncounterService implements ScopeAwareService {
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.individualRepository = individualRepository;
-        this.ruleFailureLogRepository = ruleFailureLogRepository;
         this.encounterTypeRepository = encounterTypeRepository;
-        this.formMappingRepository = formMappingRepository;
         this.encounterSearchRepository = encounterSearchRepository;
     }
 

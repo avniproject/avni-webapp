@@ -17,7 +17,6 @@ import org.avni.service.ProgramEnrolmentService;
 import org.joda.time.LocalDate;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -115,7 +114,7 @@ public class ProgramEnrolmentWriter extends EntityWriter implements ItemWriter<R
             savedEnrolment = programEnrolmentService.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, savedEnrolment.getUuid(), ruleResponse.getVisitSchedules(), null);
         }
-        entityApprovalStatusWriter.saveStatus(formMapping, savedEnrolment.getId(), EntityApprovalStatus.EntityType.ProgramEnrolment);
+        entityApprovalStatusWriter.saveStatus(formMapping, savedEnrolment, EntityApprovalStatus.EntityType.ProgramEnrolment);
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {
