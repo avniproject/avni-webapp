@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @Table(name = "program_enrolment")
 @JsonIgnoreProperties({"programEncounters", "individual"})
 @BatchSize(size = 100)
-public class ProgramEnrolment extends SyncAttributeEntity implements EntitySyncableByMultipleStrategies{
+public class ProgramEnrolment extends SyncAttributeEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id")

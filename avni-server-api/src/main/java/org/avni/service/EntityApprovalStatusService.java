@@ -1,14 +1,18 @@
 package org.avni.service;
 
-import org.avni.domain.*;
 import org.joda.time.DateTime;
 import org.avni.dao.*;
+import org.avni.domain.ApprovalStatus;
+import org.avni.domain.CHSEntity;
+import org.avni.domain.EntityApprovalStatus;
 import org.avni.web.request.EntityApprovalStatusRequest;
 import org.avni.web.request.rules.RulesContractWrapper.EntityApprovalStatusWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.joda.time.DateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.avni.domain.EntityApprovalStatus.EntityType.*;
@@ -32,14 +36,27 @@ public class EntityApprovalStatusService implements NonScopeAwareService {
     }
 
     public EntityApprovalStatus save(EntityApprovalStatusRequest request) {
+        EntityApprovalStatus entityApprovalStatus = entityApprovalStatusRepository.findByUuid(request.getUuid());
+        if (entityApprovalStatus == null) {
+            entityApprovalStatus = new EntityApprovalStatus();
+        }
         EntityApprovalStatus.EntityType entityType = EntityApprovalStatus.EntityType.valueOf(request.getEntityType());
-        EntityApprovalStatus entityApprovalStatus = createEntityApprovalStatus(request);
-
+        entityApprovalStatus.setUuid(request.getUuid());
+        entityApprovalStatus.setApprovalStatus(approvalStatusRepository.findByUuid(request.getApprovalStatusUuid()));
+        entityApprovalStatus.setApprovalStatusComment(request.getApprovalStatusComment());
+        entityApprovalStatus.setVoided(request.isVoided());
+        entityApprovalStatus.setEntityType(entityType);
+        entityApprovalStatus.setAutoApproved(request.getAutoApproved());
+        entityApprovalStatus.setStatusDateTime(request.getStatusDateTime());
         entityApprovalStatus.updateAudit();
-        CHSEntity entity = getChsEntityByUuid(request.getEntityUuid(), entityType);
-        entityApprovalStatus.copyAttributesFromEntity((EntitySyncableByMultipleStrategies) entity);
+        if (typeMap.get(entityType) == null) {
+            throw new IllegalArgumentException(String.format("Incorrect entityType '%s' provided for updating EntityApprovalStatus", entityType));
+        }
+        CHSEntity entity = typeMap.get(entityType).findByUuid(request.getEntityUuid());
+        if (entity == null) {
+            throw new IllegalArgumentException(String.format("Incorrect entityUuid '%s' provided for updating EntityApprovalStatus", request.getEntityUuid()));
+        }
         entityApprovalStatus.setEntityId(entity.getId());
-
         return entityApprovalStatusRepository.save(entityApprovalStatus);
     }
 
@@ -55,20 +72,19 @@ public class EntityApprovalStatusService implements NonScopeAwareService {
         return entity.getUuid();
     }
 
-    public void createStatus(EntityApprovalStatus.EntityType entityType, CHSEntity entity, ApprovalStatus.Status status) {
+    public void createStatus(EntityApprovalStatus.EntityType entityType, Long entityId, ApprovalStatus.Status status) {
         ApprovalStatus approvalStatus = approvalStatusRepository.findByStatus(status);
-        EntityApprovalStatus entityApprovalStatuses = entityApprovalStatusRepository.findFirstByEntityIdAndEntityTypeAndIsVoidedFalseOrderByStatusDateTimeDesc(entity.getId(), entityType);
+        EntityApprovalStatus entityApprovalStatuses = entityApprovalStatusRepository.findFirstByEntityIdAndEntityTypeAndIsVoidedFalseOrderByStatusDateTimeDesc(entityId, entityType);
         if (entityApprovalStatuses != null && entityApprovalStatuses.getApprovalStatus().getStatus().equals(status)) {
             return;
         }
         EntityApprovalStatus entityApprovalStatus = new EntityApprovalStatus();
         entityApprovalStatus.assignUUID();
         entityApprovalStatus.setEntityType(entityType);
-        entityApprovalStatus.setEntityId(entity.getId());
+        entityApprovalStatus.setEntityId(entityId);
         entityApprovalStatus.setApprovalStatus(approvalStatus);
         entityApprovalStatus.setStatusDateTime(new DateTime());
         entityApprovalStatus.setAutoApproved(false);
-        entityApprovalStatus.copyAttributesFromEntity((EntitySyncableByMultipleStrategies) entity);
         entityApprovalStatusRepository.save(entityApprovalStatus);
     }
 
@@ -82,30 +98,4 @@ public class EntityApprovalStatusService implements NonScopeAwareService {
         return entityApprovalStatusRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
-    private EntityApprovalStatus createEntityApprovalStatus(EntityApprovalStatusRequest request) {
-        EntityApprovalStatus.EntityType entityType = EntityApprovalStatus.EntityType.valueOf(request.getEntityType());
-        EntityApprovalStatus entityApprovalStatus = entityApprovalStatusRepository.findByUuid(request.getUuid());
-        if (entityApprovalStatus == null) {
-            entityApprovalStatus = new EntityApprovalStatus();
-        }
-        entityApprovalStatus.setUuid(request.getUuid());
-        entityApprovalStatus.setApprovalStatus(approvalStatusRepository.findByUuid(request.getApprovalStatusUuid()));
-        entityApprovalStatus.setApprovalStatusComment(request.getApprovalStatusComment());
-        entityApprovalStatus.setVoided(request.isVoided());
-        entityApprovalStatus.setEntityType(entityType);
-        entityApprovalStatus.setAutoApproved(request.getAutoApproved());
-        entityApprovalStatus.setStatusDateTime(request.getStatusDateTime());
-        return entityApprovalStatus;
-    }
-
-    private CHSEntity getChsEntityByUuid (String entityUuid, EntityApprovalStatus.EntityType entityType) {
-        if (typeMap.get(entityType) == null) {
-            throw new IllegalArgumentException(String.format("Incorrect entityType '%s' provided for updating EntityApprovalStatus", entityType));
-        }
-        CHSEntity entity = typeMap.get(entityType).findByUuid(entityUuid);
-        if (entity == null) {
-            throw new IllegalArgumentException(String.format("Incorrect entityUuid '%s' provided for updating EntityApprovalStatus", entityUuid));
-        }
-        return entity;
-    }
 }

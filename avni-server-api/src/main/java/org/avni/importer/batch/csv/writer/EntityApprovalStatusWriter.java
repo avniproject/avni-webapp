@@ -2,7 +2,6 @@ package org.avni.importer.batch.csv.writer;
 
 import org.avni.application.FormMapping;
 import org.avni.domain.ApprovalStatus;
-import org.avni.domain.CHSEntity;
 import org.avni.domain.EntityApprovalStatus;
 import org.avni.service.EntityApprovalStatusService;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -24,11 +23,13 @@ public class EntityApprovalStatusWriter {
         this.entityApprovalStatusService = entityApprovalStatusService;
     }
 
-    public void saveStatus(FormMapping formMapping, CHSEntity entity, EntityApprovalStatus.EntityType entityType) {
+    public void saveStatus(FormMapping formMapping, Long entityId, EntityApprovalStatus.EntityType entityType) {
         boolean isAutoApprove = Boolean.parseBoolean(autoApprove);
         if (formMapping.isEnableApproval()) {
             ApprovalStatus.Status status = isAutoApprove ? ApprovalStatus.Status.Approved : ApprovalStatus.Status.Pending;
-            entityApprovalStatusService.createStatus(entityType, entity, status);
+            entityApprovalStatusService.createStatus(entityType, entityId, status);
         }
     }
+
+
 }

@@ -2,7 +2,6 @@ package org.avni.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.avni.geo.Point;
 import org.hibernate.annotations.BatchSize;
@@ -21,7 +20,7 @@ import java.util.stream.Stream;
 @Table(name = "individual")
 @JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf"})
 @BatchSize(size = 100)
-public class Individual extends SyncAttributeEntity implements EntitySyncableByMultipleStrategies{
+public class Individual extends SyncAttributeEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -289,13 +288,4 @@ public class Individual extends SyncAttributeEntity implements EntitySyncableByM
         return programEncounters;
     }
 
-    @Override
-    public Long getAddressId() {
-        return getAddressLevel().getId();
-    }
-
-    @Override
-    public void setAddressId(Long addressId) {
-        throw new NotImplementedException("User setAddressLevel instead");
-    }
 }

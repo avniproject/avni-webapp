@@ -3,9 +3,11 @@ package org.avni.web;
 import org.avni.dao.EntityApprovalStatusRepository;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.EntityApprovalStatus;
+import org.avni.domain.ProgramEncounter;
 import org.avni.service.EntityApprovalStatusService;
 import org.avni.web.request.EntityApprovalStatusRequest;
 import org.joda.time.DateTime;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +21,7 @@ import javax.transaction.Transactional;
 
 @RestController
 public class EntityApprovalStatusController implements RestControllerResourceProcessor<EntityApprovalStatus> {
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final EntityApprovalStatusService entityApprovalStatusService;
     private EntityApprovalStatusRepository entityApprovalStatusRepository;
 

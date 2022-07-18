@@ -13,11 +13,13 @@ import org.avni.importer.batch.csv.contract.UploadRuleServerResponseContract;
 import org.avni.importer.batch.csv.creator.*;
 import org.avni.importer.batch.csv.writer.header.ProgramEncounterHeaders;
 import org.avni.importer.batch.model.Row;
+import org.avni.service.EntityApprovalStatusService;
 import org.avni.service.ObservationService;
 import org.avni.service.OrganisationConfigService;
 import org.avni.service.ProgramEncounterService;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -101,7 +103,7 @@ public class ProgramEncounterWriter extends EntityWriter implements ItemWriter<R
             programEnrolmentRepository.save(programEnrolment);
             visitCreator.saveScheduledVisits(formMapping.getType(), null, programEnrolment.getUuid(), ruleResponse.getVisitSchedules(), savedEncounter.getUuid());
         }
-        entityApprovalStatusWriter.saveStatus(formMapping, savedEncounter, EntityApprovalStatus.EntityType.ProgramEncounter);
+        entityApprovalStatusWriter.saveStatus(formMapping, savedEncounter.getId(), EntityApprovalStatus.EntityType.ProgramEncounter);
     }
 
     private ProgramEncounter getOrCreateProgramEncounter(Row row) {
