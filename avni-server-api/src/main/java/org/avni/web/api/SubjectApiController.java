@@ -121,14 +121,14 @@ public class SubjectApiController {
             throw new IllegalArgumentException(String.format("Subject not found with id '%s' or External ID '%s'", id, externalId));
         }
         try {
-            updateSubject(subject, request);
+            subject = updateSubject(subject, request);
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
         return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService, s3Service), HttpStatus.OK);
     }
 
-    private void updateSubject(Individual subject, ApiSubjectRequest request) throws ValidationException {
+    private Individual updateSubject(Individual subject, ApiSubjectRequest request) throws ValidationException {
         SubjectType subjectType = subjectTypeRepository.findByName(request.getSubjectType());
         if (subjectType == null) {
             throw new IllegalArgumentException(String.format("Subject type not found with name '%s'", request.getSubjectType()));
@@ -159,7 +159,7 @@ public class SubjectApiController {
         subject.setVoided(request.isVoided());
 
         subject.validate();
-        individualService.save(subject);
+        return individualService.save(subject);
     }
 
     private List<GroupSubject> findGroupAffiliation(Individual subject, List<GroupSubject> groupSubjects) {
