@@ -9,8 +9,22 @@ export const constFormType = {
   ProgramExit: "Program exit",
   ProgramEncounterCancellation: "Program encounter cancellation",
   IndividualEncounterCancellation: "Individual Encounter Cancellation",
-  Location: "Location"
+  Location: "Location",
+  Task: "Task"
 };
+
+export const encounterFormTypes = [
+  "Encounter",
+  "ProgramEncounter",
+  "ProgramEncounterCancellation",
+  "IndividualEncounterCancellation"
+];
+export const programFormTypes = [
+  "ProgramEncounter",
+  "ProgramExit",
+  "ProgramEnrolment",
+  "ProgramEncounterCancellation"
+];
 
 export const inlineConceptDataType = sortBy([
   "Numeric",

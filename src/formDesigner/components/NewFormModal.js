@@ -52,7 +52,7 @@ class NewFormModal extends Component {
       http
         .post("/web/forms", dataSend)
         .then(response => {
-          if (this.props.isCloneForm === false) {
+          if (!this.props.isCloneForm) {
             this.setState({
               toFormDetails: response.data.uuid
             });
@@ -68,7 +68,7 @@ class NewFormModal extends Component {
                 editResponse["name"] = this.state.name;
                 editResponse["formType"] = this.state.formType;
 
-                var promise = new Promise((resolve, reject) => {
+                const promise = new Promise((resolve, reject) => {
                   _.forEach(editResponse.formElementGroups, group => {
                     group["uuid"] = UUID.v4();
                     _.forEach(group.formElements, element => {
@@ -132,7 +132,7 @@ class NewFormModal extends Component {
     this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
   }
 
-  formTypeElement() {
+  formTypes() {
     return _.map(_.keys(constFormType), formType => {
       return (
         <MenuItem key={formType} value={formType}>
@@ -164,7 +164,7 @@ class NewFormModal extends Component {
               onChange={this.onChangeField.bind(this)}
               required
             >
-              {this.formTypeElement()}
+              {this.formTypes()}
             </Select>
             {this.state.errors.formType && (
               <FormHelperText error>{this.state.errors.formType}</FormHelperText>

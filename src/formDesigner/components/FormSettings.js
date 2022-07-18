@@ -10,7 +10,12 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
-import { constFormType } from "../common/constants";
+import {
+  constFormType,
+  encounterFormTypes,
+  isFormForEncounter,
+  programFormTypes
+} from "../common/constants";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -311,19 +316,8 @@ class FormSettings extends Component {
     );
   }
 
-  formTypeElement() {
-    const formTypes = [
-      "IndividualProfile",
-      "Encounter",
-      "ProgramEncounter",
-      "ProgramEnrolment",
-      "ProgramExit",
-      "ProgramEncounterCancellation",
-      "ChecklistItem",
-      "IndividualEncounterCancellation"
-    ];
-
-    return formTypes.map(formType => {
+  formTypes() {
+    return Object.keys(constFormType).map(formType => {
       return (
         <MenuItem key={formType} value={formType}>
           {constFormType[formType]}
@@ -398,18 +392,9 @@ class FormSettings extends Component {
   };
 
   render() {
-    const encounterTypes =
-      this.state.formType === "Encounter" ||
-      this.state.formType === "ProgramEncounter" ||
-      this.state.formType === "ProgramEncounterCancellation" ||
-      this.state.formType === "IndividualEncounterCancellation";
-    const programBased =
-      this.state.formType === "ProgramEncounter" ||
-      this.state.formType === "ProgramExit" ||
-      this.state.formType === "ProgramEnrolment" ||
-      this.state.formType === "ProgramEncounterCancellation";
-    const checklistItemBased =
-      this.state.formType !== "" && this.state.formType !== "ChecklistItem";
+    const encounterTypes = encounterFormTypes.includes(this.state.formType);
+    const programBased = programFormTypes.includes(this.state.formType);
+    const notChecklistItemBased = "ChecklistItem" !== this.state.formType;
 
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -439,14 +424,14 @@ class FormSettings extends Component {
                 onChange={this.onChangeField.bind(this)}
                 required
               >
-                {this.formTypeElement()}
+                {this.formTypes()}
               </Select>
               {this.state.errors.formType && (
                 <FormHelperText error>{this.state.errors.formType}</FormHelperText>
               )}
             </FormControl>
 
-            {checklistItemBased &&
+            {notChecklistItemBased &&
               this.state.formMappings.map((mapping, index) => {
                 return (
                   !mapping.voided && (
@@ -489,7 +474,7 @@ class FormSettings extends Component {
                 );
               })}
           </form>
-          {checklistItemBased && (
+          {notChecklistItemBased && (
             <Button
               color="primary"
               onClick={event => this.addMapping(programBased, encounterTypes)}

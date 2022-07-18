@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import DeclarativeRules from "./DeclerativeRules";
+import DeclarativeRules from "./DeclarativeRules";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";

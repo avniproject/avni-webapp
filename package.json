@@ -36,7 +36,7 @@
     "material-table": "1.43.0",
     "material-ui-rc-color-picker": "^1.0.4",
     "moment": "^2.22.2",
-    "openchs-idi": "github:openchs/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
+    "openchs-idi": "git+https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
     "openchs-models": "1.22.5",
     "popper.js": "^1.14.3",
     "prismjs": "^1.17.1",
@@ -70,7 +70,7 @@
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
-    "rules-config": "github:openchs/rules-config#2622898c242da48ad3fc5360995f22784b559610",
+    "rules-config": "github:openchs/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39",
     "uuid": "^3.3.2"
   },
   "scripts": {
