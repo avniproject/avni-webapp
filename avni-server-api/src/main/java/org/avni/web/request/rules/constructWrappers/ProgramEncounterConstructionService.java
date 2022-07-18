@@ -61,6 +61,7 @@ public class ProgramEncounterConstructionService {
         programEncounterContractWrapper.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
         programEncounterContractWrapper.setMaxVisitDateTime(request.getMaxVisitDateTime());
         programEncounterContractWrapper.setCancelDateTime(request.getCancelDateTime());
+        programEncounterContractWrapper.setVoided(request.isVoided());
         if (request.getObservations() != null) {
             programEncounterContractWrapper.setObservations(request.getObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
@@ -180,6 +181,7 @@ public class ProgramEncounterConstructionService {
         encounterContractWrapper.setCancelDateTime(encounterRequestEntity.getCancelDateTime());
         encounterContractWrapper.setEarliestVisitDateTime(encounterRequestEntity.getEarliestVisitDateTime());
         encounterContractWrapper.setMaxVisitDateTime(encounterRequestEntity.getMaxVisitDateTime());
+        encounterContractWrapper.setVoided(encounterRequestEntity.isVoided());
         if (encounterRequestEntity.getObservations() != null) {
             encounterContractWrapper.setObservations(encounterRequestEntity.getObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
@@ -192,9 +194,6 @@ public class ProgramEncounterConstructionService {
         if (encounterRequestEntity.getIndividualUUID() != null) {
             Individual individual = individualRepository.findByUuid(encounterRequestEntity.getIndividualUUID());
             encounterContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(individual));
-            IndividualContractWrapper individualContractWrapper = encounterContractWrapper.getSubject();
-            individualContractWrapper.setEnrolments(mapEnrolments(individual.getProgramEnrolments()));
-            individualContractWrapper.setEncounters(mapEncounters(individual.getEncounters()));
         }
         return encounterContractWrapper;
     }

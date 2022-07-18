@@ -233,8 +233,8 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
     }
 
     private LocationProjection getAddressLevelByLineage(Row row,
-                                                  List<AddressLevelType> locationTypes,
-                                                  List<LocationProjection> locations) throws Exception {
+                                                        List<AddressLevelType> locationTypes,
+                                                        List<LocationProjection> locations) throws Exception {
         List<String> inputLocations = new ArrayList<>();
         for (AddressLevelType addressLevelType : locationTypes) {
             String _location = row.get(addressLevelType.getName());
