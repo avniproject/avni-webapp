@@ -90,7 +90,9 @@ public class ProgramEnrolmentApiController {
         if (program == null) {
             throw new IllegalArgumentException(String.format("Program not found with name '%s'", request.getProgram()));
         }
-        enrolment.setLegacyId(request.getExternalId().trim());
+        if(StringUtils.hasLength(request.getExternalId())) {
+            enrolment.setLegacyId(request.getExternalId().trim());
+        }
         enrolment.setProgram(program);
         enrolment.setEnrolmentLocation(request.getEnrolmentLocation());
         enrolment.setExitLocation(request.getExitLocation());

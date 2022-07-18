@@ -133,7 +133,9 @@ public class GeneralEncounterApiController {
         if (encounterType == null) {
             throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
         }
-        encounter.setLegacyId(request.getExternalId().trim());
+        if(StringUtils.hasLength(request.getExternalId())) {
+            encounter.setLegacyId(request.getExternalId().trim());
+        }
         encounter.setEncounterType(encounterType);
         encounter.setEncounterLocation(request.getEncounterLocation());
         encounter.setCancelLocation(request.getCancelLocation());
