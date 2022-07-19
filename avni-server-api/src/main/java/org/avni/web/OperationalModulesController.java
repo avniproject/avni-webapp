@@ -10,6 +10,7 @@ import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
 import org.avni.dao.individualRelationship.IndividualRelationRepository;
+import org.avni.dao.task.TaskTypeRepository;
 import org.avni.domain.Concept;
 import org.avni.domain.JsonObject;
 import org.avni.domain.SubjectType;
@@ -21,6 +22,7 @@ import org.avni.web.request.FormMappingContract;
 import org.avni.web.request.application.FormContractWeb;
 import org.avni.web.request.webapp.IndividualRelationContract;
 import org.avni.web.request.webapp.SubjectTypeSetting;
+import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,16 +36,16 @@ import java.util.stream.Collectors;
 
 @RestController
 public class OperationalModulesController {
-
-    private EncounterTypeRepository encounterTypeRepository;
-    private SubjectTypeRepository subjectTypeRepository;
-    private ProgramRepository programRepository;
-    private FormMappingRepository formMappingRepository;
-    private FormRepository formRepository;
-    private AddressLevelTypeRepository addressLevelTypeRepository;
-    private OrganisationConfigService organisationConfigService;
-    private IndividualRelationRepository individualRelationRepository;
-    private ObjectMapper objectMapper;
+    private final EncounterTypeRepository encounterTypeRepository;
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final ProgramRepository programRepository;
+    private final FormMappingRepository formMappingRepository;
+    private final FormRepository formRepository;
+    private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private final OrganisationConfigService organisationConfigService;
+    private final IndividualRelationRepository individualRelationRepository;
+    private final TaskTypeRepository taskTypeRepository;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public OperationalModulesController(EncounterTypeRepository encounterTypeRepository,
@@ -53,7 +55,8 @@ public class OperationalModulesController {
                                         FormRepository formRepository,
                                         AddressLevelTypeRepository addressLevelTypeRepository,
                                         OrganisationConfigService organisationConfigService,
-                                        IndividualRelationRepository individualRelationRepository) {
+                                        IndividualRelationRepository individualRelationRepository,
+                                        TaskTypeRepository taskTypeRepository) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.programRepository = programRepository;
@@ -62,6 +65,7 @@ public class OperationalModulesController {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.organisationConfigService = organisationConfigService;
         this.individualRelationRepository = individualRelationRepository;
+        this.taskTypeRepository = taskTypeRepository;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -93,6 +97,8 @@ public class OperationalModulesController {
                 .stream()
                 .map(IndividualRelationContract::fromEntity)
                 .collect(Collectors.toList());
+        List<TaskTypeContract> taskTypeContracts = taskTypeRepository.findAll().stream().map(TaskTypeContract::fromEntity).collect(Collectors.toList());
+
         return new JsonObject()
                 .with("subjectTypes", subjectTypeRepository.findAllOperational())
                 .with("programs", programRepository.findAllOperational())
@@ -102,7 +108,8 @@ public class OperationalModulesController {
                 .with("addressLevelTypes", allLowestAddressLevels)
                 .with("customRegistrationLocations", customRegistrationLocationTypeContracts)
                 .with("relations", relations)
-                .with("allAddressLevels", allAddressLevels);
+                .with("allAddressLevels", allAddressLevels)
+                .with("taskTypes", taskTypeContracts);
     }
 
     private CustomRegistrationLocationTypeContract getCustomRegistrationLocationTypeContract(SubjectTypeSetting lt) {

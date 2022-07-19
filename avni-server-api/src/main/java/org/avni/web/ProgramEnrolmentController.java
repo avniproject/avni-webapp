@@ -57,7 +57,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @Transactional
     public AvniEntityResponse save(@RequestBody ProgramEnrolmentRequest request) {
         ProgramEnrolment programEnrolment = programEnrolmentService.programEnrolmentSave(request);
-        return new AvniEntityResponse(programEnrolment);
+        return new AvniEntityResponse(programEnrolmentRepository.findByUuid(request.getUuid()));
     }
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})

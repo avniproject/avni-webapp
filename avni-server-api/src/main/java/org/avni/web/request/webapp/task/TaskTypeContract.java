@@ -1,5 +1,6 @@
 package org.avni.web.request.webapp.task;
 
+import org.avni.domain.task.TaskType;
 import org.avni.web.request.ObservationRequest;
 import org.avni.web.request.ReferenceDataContract;
 
@@ -24,5 +25,13 @@ public class TaskTypeContract extends ReferenceDataContract {
 
     public void setMetadataSearchFields(List<ObservationRequest> metadataSearchFields) {
         this.metadataSearchFields = metadataSearchFields;
+    }
+
+    public static TaskTypeContract fromEntity(TaskType taskType) {
+        TaskTypeContract taskTypeContract = new TaskTypeContract();
+        taskTypeContract.setTaskTypeName(taskType.getType().name());
+        taskTypeContract.setName(taskType.getName());
+        taskTypeContract.setUuid(taskType.getUuid());
+        return taskTypeContract;
     }
 }

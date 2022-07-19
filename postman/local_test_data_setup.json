@@ -279,6 +279,32 @@
 			"response": []
 		},
 		{
+			"name": "Create Genders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\"name\": \"Male\", \"uuid\": \"6a15b2bc-a556-41f0-b8c1-a4895ceacb88\"},\n    {\"name\": \"Female\", \"uuid\": \"a8997040-2d01-46b9-899e-03359dafd228\"},\n    {\"name\": \"Other\", \"uuid\": \"a4db848e-45cb-4466-98fe-c195804f2dae\"}\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/genders",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"genders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create Subject Type 1",
 			"event": [
 				{
@@ -338,6 +364,33 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"name\": \"Subject Type 2\",\n    \"groupRoles\": [],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Individual\",\n    \"directlyAssignable\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/web/subjectType",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"web",
+						"subjectType"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Group Subject Type 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Group Subject Type 1\",\n    \"groupRoles\": [\n        {\n            \"voided\": false,\n            \"groupRoleUUID\": \"274d741c-0772-44be-a5aa-c89ce7ede61b\",\n            \"role\": \"Group Subject Type 1 Member 1\",\n            \"subjectMemberName\": \"Subject Type 1\",\n            \"minimumNumberOfMembers\": 1,\n            \"maximumNumberOfMembers\": 10\n        }\n    ],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Group\",\n    \"memberSubjectType\": \"\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -575,6 +628,113 @@
 					],
 					"path": [
 						"programEnrolments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task Type 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"name\": \"Task Type 1\",\n        \"taskTypeName\": \"Call\",\n        \"metadataSearchFields\": []\n    },\n    {\n        \"name\": \"Task Type 2\",\n        \"taskTypeName\": \"OpenSubject\",\n        \"metadataSearchFields\": []\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/web/taskTypes",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"web",
+						"taskTypes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task Status 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Task Status 1\",\n    \"isTerminal\": \"false\",\n    \"taskTypeId\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/web/taskStatus",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"web",
+						"taskStatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create task concepts",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"dataType\": \"Text\",\n        \"keyValues\": [],\n        \"name\": \"Contact number\",\n        \"uuid\": \"f6375fda-5ea2-479b-91d9-df5a85172820\"\n    },\n    {\n        \"dataType\": \"Numeric\",\n        \"keyValues\": [],\n        \"name\": \"Duration of talk\",\n        \"uuid\": \"d17f48ca-6cd9-4c6e-a4d8-e6e550b98417\"\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/concepts",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"concepts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"4a36a342-e511-436f-a201-637d83b79123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/api/task",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"api",
+						"task"
 					]
 				}
 			},
