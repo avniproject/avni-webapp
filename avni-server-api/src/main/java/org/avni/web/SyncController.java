@@ -88,6 +88,9 @@ public class SyncController {
     private final Logger logger;
     private final DocumentationService documentationService;
     private final DocumentationItemService documentationItemService;
+    private final TaskService taskService;
+    private final TaskTypeService taskTypeService;
+    private final TaskStatusService taskStatusService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -117,7 +120,8 @@ public class SyncController {
                           StandardReportCardTypeService standardReportCardTypeService, UserGroupService userGroupService,
                           LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
                           SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService,
-                          DocumentationService documentationService, DocumentationItemService documentationItemService) {
+                          DocumentationService documentationService, DocumentationItemService documentationItemService,
+                          TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -177,6 +181,9 @@ public class SyncController {
         this.syncDetailService = syncDetailService;
         this.documentationService = documentationService;
         this.documentationItemService = documentationItemService;
+        this.taskService = taskService;
+        this.taskTypeService = taskTypeService;
+        this.taskStatusService = taskStatusService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -247,6 +254,9 @@ public class SyncController {
         nonScopeAwareServiceMap.put("UserInfo", userService);
         nonScopeAwareServiceMap.put("Privilege", privilegeService);
         nonScopeAwareServiceMap.put("StandardReportCardType", standardReportCardTypeService);
+        nonScopeAwareServiceMap.put("Task", taskService);
+        nonScopeAwareServiceMap.put("TaskType", taskTypeService);
+        nonScopeAwareServiceMap.put("TaskStatus", taskStatusService);
     }
 
 

@@ -7,6 +7,7 @@ import org.avni.application.FormMapping;
 import org.avni.domain.*;
 import org.avni.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.avni.domain.individualRelationship.IndividualRelationshipType;
+import org.avni.domain.task.TaskStatus;
 import org.avni.importer.batch.JobService;
 import org.avni.service.EntityApprovalStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,19 @@ public class Avni {
         SpringApplication app = new SpringApplication(Avni.class);
         app.setWebApplicationType(WebApplicationType.SERVLET);
         app.run(args);
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<TaskStatus>> TaskStatusProcessor() {
+        return new ResourceProcessor<Resource<TaskStatus>>() {
+            @Override
+            public Resource<TaskStatus> process(Resource<TaskStatus> resource) {
+                TaskStatus taskStatus = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(taskStatus.getTaskType().getUuid(), "taskTypeUUID"));
+                return resource;
+            }
+        };
     }
 
     @Bean

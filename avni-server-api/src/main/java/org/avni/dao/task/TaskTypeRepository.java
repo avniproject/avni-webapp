@@ -1,12 +1,15 @@
 package org.avni.dao.task;
 
-import org.avni.dao.CHSRepository;
+import org.avni.dao.FindByLastModifiedDateTime;
+import org.avni.dao.ReferenceDataRepository;
 import org.avni.domain.task.TaskType;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TaskTypeRepository extends CrudRepository<TaskType, Long>, CHSRepository<TaskType> {
-    TaskType findByName(String name);
+@PreAuthorize("hasAnyAuthority('user')")
+@RepositoryRestResource(collectionResourceRel = "taskType", path = "taskType")
+public interface TaskTypeRepository extends ReferenceDataRepository<TaskType>, FindByLastModifiedDateTime<TaskType> {
     TaskType findById(long id);
 }
