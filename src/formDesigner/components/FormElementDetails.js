@@ -961,6 +961,27 @@ function FormElementDetails(props) {
               </AvniFormControl>
             </Grid>
             <Grid item>
+              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DISABLE_MANUAL_ACTIONS"}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      id="disableManualActions"
+                      checked={!!props.formElementData.keyValues.disableManualActions}
+                      onChange={event =>
+                        props.handleGroupElementKeyValueChange(
+                          props.groupIndex,
+                          "disableManualActions",
+                          event.target.checked,
+                          props.index
+                        )
+                      }
+                    />
+                  }
+                  label="Disable manual addition and removal"
+                />
+              </AvniFormControl>
+            </Grid>
+            <Grid item>
               <ColourStyle
                 label={"Text colour"}
                 colour={props.formElementData.keyValues.textColour}
