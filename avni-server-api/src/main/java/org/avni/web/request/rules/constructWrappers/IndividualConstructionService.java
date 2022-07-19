@@ -52,8 +52,33 @@ public class IndividualConstructionService {
 
 
     public IndividualContractWrapper constructIndividualContract(IndividualRequestEntity individualRequestEntity){
+        IndividualContractWrapper individualContract = new IndividualContractWrapper();
         Individual individual = individualRepository.findByUuid(individualRequestEntity.getUuid());
-        return programEnrolmentConstructionService.getSubjectInfo(individual);
+        individualContract.setUuid(individualRequestEntity.getUuid());
+        individualContract.setFirstName(individualRequestEntity.getFirstName());
+        individualContract.setLastName(individualRequestEntity.getLastName());
+        if(individual != null && individual.getSubjectType().isAllowProfilePicture()) {
+            individualContract.setProfilePicture(individualRequestEntity.getProfilePicture());
+        }
+        individualContract.setRegistrationDate(individualRequestEntity.getRegistrationDate());
+        individualContract.setDateOfBirth(individualRequestEntity.getDateOfBirth());
+        if(individualRequestEntity.getGenderUUID() != null){
+            individualContract.setGender(constructGenderContract(individualRequestEntity.getGenderUUID()));
+        }
+        if(individualRequestEntity.getSubjectTypeUUID() != null){
+            individualContract.setSubjectType(constructSubjectType(individualRequestEntity.getSubjectTypeUUID()));
+        }
+        if(individualRequestEntity.getAddressLevelUUID() != null){
+            individualContract.setLowestAddressLevel(constructAddressLevel(individualRequestEntity.getAddressLevelUUID()));
+        }
+        if(individualRequestEntity.getObservations() != null){
+            individualContract.setObservations(individualRequestEntity.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+        }
+        if (individual != null) {
+            individualContract.setEncounters(programEncounterConstructionService.mapEncounters(individual.getEncounters()));
+            individualContract.setEnrolments(programEncounterConstructionService.mapEnrolments(individual.getProgramEnrolments()));
+        }
+        return individualContract;
     }
 
     private SubjectTypeContract constructSubjectType(String subjectUUid) {
