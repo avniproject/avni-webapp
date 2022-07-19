@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @BatchSize(size = 100)
 @JsonIgnoreProperties({"approvalStatus"})
-public class EntityApprovalStatus extends SyncAttributeEntity implements EntitySyncableByMultipleStrategies{
+public class EntityApprovalStatus extends OrganisationAwareEntity {
 
     @Column
     private Long entityId;
@@ -33,9 +33,6 @@ public class EntityApprovalStatus extends SyncAttributeEntity implements EntityS
     @Column
     @NotNull
     private DateTime statusDateTime;
-
-    @Column(name = "address_id")
-    protected Long addressId;
 
     public enum EntityType {
         Subject,
@@ -93,11 +90,4 @@ public class EntityApprovalStatus extends SyncAttributeEntity implements EntityS
         this.statusDateTime = statusDateTime;
     }
 
-    public Long getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Long addressId) {
-        this.addressId = addressId;
-    }
 }

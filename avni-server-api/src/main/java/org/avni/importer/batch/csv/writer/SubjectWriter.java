@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -46,6 +47,7 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
     private final VisitCreator visitCreator;
     private final DecisionCreator decisionCreator;
     private final ObservationCreator observationCreator;
+    private EntityApprovalStatusService entityApprovalStatusService;
     private final IndividualService individualService;
     private final S3Service s3Service;
     private final EntityApprovalStatusWriter entityApprovalStatusWriter;
@@ -74,6 +76,7 @@ public class SubjectWriter extends EntityWriter implements ItemWriter<Row>, Seri
         this.individualRepository = individualRepository;
         this.genderRepository = genderRepository;
         this.subjectTypeCreator = subjectTypeCreator;
+        this.entityApprovalStatusService = entityApprovalStatusService;
         this.formMappingRepository = formMappingRepository;
         this.observationService = observationService;
         this.ruleServerInvoker = ruleServerInvoker;

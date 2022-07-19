@@ -119,7 +119,7 @@ public class GeneralEncounterApiController {
             throw new IllegalArgumentException(String.format("Encounter not found with id '%s' or External ID '%s'", id, request.getExternalId()));
         }
         try {
-            updateEncounter(encounter, request);
+            encounter = updateEncounter(encounter, request);
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
@@ -138,7 +138,7 @@ public class GeneralEncounterApiController {
         return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
-    private void updateEncounter(Encounter encounter, ApiEncounterRequest request) throws ValidationException {
+    private Encounter updateEncounter(Encounter encounter, ApiEncounterRequest request) throws ValidationException {
         EncounterType encounterType = encounterTypeRepository.findByName(request.getEncounterType());
         if (encounterType == null) {
             throw new IllegalArgumentException(String.format("Encounter type not found with name '%s'", request.getEncounterType()));
@@ -158,7 +158,7 @@ public class GeneralEncounterApiController {
         encounter.setVoided(request.isVoided());
 
         encounter.validate();
-        encounterService.save(encounter);
+        return encounterService.save(encounter);
     }
 
     private Encounter createEncounter(String externalId) {

@@ -130,7 +130,7 @@ public class ProgramEncounterApiController {
             throw new IllegalArgumentException(String.format("Encounter not found with id '%s' or External ID '%s'", id, request.getExternalId()));
         }
         try {
-            updateEncounter(encounter, request);
+            encounter = updateEncounter(encounter, request);
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }

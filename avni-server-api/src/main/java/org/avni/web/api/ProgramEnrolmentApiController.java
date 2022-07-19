@@ -77,11 +77,11 @@ public class ProgramEnrolmentApiController {
         if (programEnrolment == null) {
             throw new IllegalArgumentException(String.format("ProgramEnrolment not found with id '%s' or External ID '%s'", id, request.getExternalId()));
         }
-        updateEnrolment(programEnrolment, request);
+        programEnrolment = updateEnrolment(programEnrolment, request);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 
-    private void updateEnrolment(ProgramEnrolment enrolment, ApiProgramEnrolmentRequest request) {
+    private ProgramEnrolment updateEnrolment(ProgramEnrolment enrolment, ApiProgramEnrolmentRequest request) {
         Program program = programRepository.findByName(request.getProgram());
         if (program == null) {
             throw new IllegalArgumentException(String.format("Program not found with name '%s'", request.getProgram()));
@@ -97,7 +97,7 @@ public class ProgramEnrolmentApiController {
         enrolment.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         enrolment.setProgramExitObservations(RequestUtils.createObservations(request.getExitObservations(), conceptRepository));
         enrolment.setVoided(request.isVoided());
-        programEnrolmentService.save(enrolment);
+        return programEnrolmentService.save(enrolment);
     }
 
     @RequestMapping(value = "/api/programEnrolments", method = RequestMethod.GET)

@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @MappedSuperclass
-public class AbstractEncounter extends SyncAttributeEntity implements EntitySyncableByMultipleStrategies{
+public class AbstractEncounter extends SyncAttributeEntity {
     @Column
     private String name;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -167,7 +167,6 @@ public class AbstractEncounter extends SyncAttributeEntity implements EntitySync
         return addressId;
     }
 
-    @Override
     public void setAddressId(Long addressId) {
         this.addressId = addressId;
     }

@@ -56,6 +56,7 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                                                                                       List<Predicate> predicates,
                                                                                       From<A, B> from) {
         SubjectType subjectType = syncParameters.getSubjectType();
+        JsonObject syncSettings = syncParameters.getSyncSettings();
         if (subjectType.isShouldSyncByLocation()) {
             List<Long> addressLevels = syncParameters.getAddressLevels();
             if (addressLevels.size() > 0) {
