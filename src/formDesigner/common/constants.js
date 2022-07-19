@@ -1,14 +1,14 @@
 import { sortBy } from "lodash";
 
 export const constFormType = {
-  ChecklistItem: "Check list item",
-  Encounter: "Encounter",
-  ProgramEncounter: "Program encounter",
   IndividualProfile: "Subject Registration",
   ProgramEnrolment: "Program enrolment",
-  ProgramExit: "Program exit",
+  ProgramEncounter: "Program encounter",
   ProgramEncounterCancellation: "Program encounter cancellation",
+  ProgramExit: "Program exit",
+  Encounter: "Encounter",
   IndividualEncounterCancellation: "Individual Encounter Cancellation",
+  ChecklistItem: "Check list item",
   Location: "Location",
   Task: "Task"
 };

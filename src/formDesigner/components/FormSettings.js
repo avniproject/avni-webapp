@@ -10,12 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
-import {
-  constFormType,
-  encounterFormTypes,
-  isFormForEncounter,
-  programFormTypes
-} from "../common/constants";
+import { constFormType, encounterFormTypes, programFormTypes } from "../common/constants";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -49,13 +44,13 @@ class FormSettings extends Component {
     let formMapping = this.state.formMappings;
     let existingMapping = [];
 
-    if (this.state.formType === "") errorsList["formType"] = "Please select form type.";
+    if (_.isEmpty(this.state.formType)) errorsList["formType"] = "Please select form type.";
     errorsList["existingMapping"] = {};
     errorsList["unselectedData"] = {};
 
     if (this.state.formType !== "ChecklistItem") {
       let count = 0;
-      _.forEach(this.state.formMappings, function(formMap, index) {
+      _.forEach(this.state.formMappings, function(formMap) {
         if (!formMap.voided) count += 1;
       });
       if (count === 0) errorsList["name"] = "Please add atleast one form mapping.";
@@ -266,12 +261,7 @@ class FormSettings extends Component {
               </MenuItem>
             ))}
         </Select>
-        {this.state.errors.hasOwnProperty("unselectedData") &&
-          this.state.errors["unselectedData"].hasOwnProperty("programUuid" + index) && (
-            <FormHelperText error>
-              {this.state.errors["unselectedData"]["programUuid" + index]}
-            </FormHelperText>
-          )}
+        {this.renderError("programUuid", index)}
       </FormControl>
     );
   }
@@ -286,6 +276,27 @@ class FormSettings extends Component {
       this.setState({ formMappings, dirtyFlag: true });
     }
   };
+
+  taskTypeElement(index) {
+    return (
+      <FormControl fullWidth margin="dense">
+        <AvniFormLabel label={"Task Name"} toolTipKey={"APP_DESIGNER_FORM_MAPPING_TASK_NAME"} />
+        <Select
+          name="taskUuid"
+          value={this.state.formMappings[index].taskTypeUuid}
+          onChange={event => this.handleMappingChange(index, "taskTypeUuid", event.target.value)}
+        >
+          {this.state.data["taskTypes"] != null &&
+            this.state.data["taskTypes"].map(taskType => (
+              <MenuItem key={taskType.uuid} value={taskType.uuid}>
+                {taskType.name}
+              </MenuItem>
+            ))}
+        </Select>
+        {this.renderError("taskTypeUuid", index)}
+      </FormControl>
+    );
+  }
 
   subjectTypeElement(index) {
     return (
@@ -306,12 +317,7 @@ class FormSettings extends Component {
               </MenuItem>
             ))}
         </Select>
-        {this.state.errors.hasOwnProperty("unselectedData") &&
-          this.state.errors["unselectedData"].hasOwnProperty("subjectTypeUuid" + index) && (
-            <FormHelperText error>
-              {this.state.errors["unselectedData"]["subjectTypeUuid" + index]}
-            </FormHelperText>
-          )}
+        {this.renderError("subjectTypeUuid", index)}
       </FormControl>
     );
   }
@@ -329,34 +335,43 @@ class FormSettings extends Component {
   encounterTypesElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <AvniFormLabel
-          label={"Encounter Type"}
-          toolTipKey={"APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"}
-        />
-        <Select
-          name="encounterTypeUuid"
-          value={this.state.formMappings[index].encounterTypeUuid}
-          onChange={event =>
-            this.handleMappingChange(index, "encounterTypeUuid", event.target.value)
-          }
-        >
-          {this.state.data.encounterTypes != null &&
-            this.state.data.encounterTypes.map(encounterType => (
-              <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
-                {encounterType.name}
-              </MenuItem>
-            ))}
-        </Select>
+        <>
+          <AvniFormLabel
+            label={"Encounter Type"}
+            toolTipKey={"APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"}
+          />
+          <Select
+            name="encounterTypeUuid"
+            value={this.state.formMappings[index].encounterTypeUuid}
+            onChange={event =>
+              this.handleMappingChange(index, "encounterTypeUuid", event.target.value)
+            }
+          >
+            {this.state.data.encounterTypes != null &&
+              this.state.data.encounterTypes.map(encounterType => (
+                <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
+                  {encounterType.name}
+                </MenuItem>
+              ))}
+          </Select>
+        </>
 
-        {this.state.errors.hasOwnProperty("unselectedData") &&
-          this.state.errors["unselectedData"].hasOwnProperty("encounterTypeUuid" + index) && (
-            <FormHelperText error>
-              {this.state.errors["unselectedData"]["encounterTypeUuid" + index]}
-            </FormHelperText>
-          )}
+        {this.renderError("encounterTypeUuid", index)}
       </FormControl>
     );
   }
+
+  renderError(propertyName, index) {
+    return (
+      this.state.errors.hasOwnProperty("unselectedData") &&
+      this.state.errors["unselectedData"].hasOwnProperty(propertyName + index) && (
+        <FormHelperText error>
+          {this.state.errors["unselectedData"][propertyName + index]}
+        </FormHelperText>
+      )
+    );
+  }
+
   removeMapping = index => {
     const formMappings = [...this.state.formMappings];
     if (formMappings[index].newFlag) {
@@ -395,6 +410,7 @@ class FormSettings extends Component {
     const encounterTypes = encounterFormTypes.includes(this.state.formType);
     const programBased = programFormTypes.includes(this.state.formType);
     const notChecklistItemBased = "ChecklistItem" !== this.state.formType;
+    const isTaskFormType = "Task" === this.state.formType;
 
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -437,9 +453,16 @@ class FormSettings extends Component {
                   !mapping.voided && (
                     <div key={index}>
                       <Grid container item sm={12} spacing={2}>
-                        <Grid item sm={3}>
-                          {this.subjectTypeElement(index)}
-                        </Grid>
+                        {!isTaskFormType && (
+                          <Grid item sm={3}>
+                            {this.subjectTypeElement(index)}
+                          </Grid>
+                        )}
+                        {isTaskFormType && (
+                          <Grid item sm={3}>
+                            {this.taskTypeElement(index)}
+                          </Grid>
+                        )}
                         {programBased && (
                           <Grid item sm={4}>
                             {this.programNameElement(index)}
