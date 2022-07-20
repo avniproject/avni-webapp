@@ -91,6 +91,7 @@ public class SyncController {
     private final TaskService taskService;
     private final TaskTypeService taskTypeService;
     private final TaskStatusService taskStatusService;
+    private final TaskUnAssigmentService taskUnAssigmentService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -121,7 +122,7 @@ public class SyncController {
                           LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
                           SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService,
                           DocumentationService documentationService, DocumentationItemService documentationItemService,
-                          TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService) {
+                          TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService, TaskUnAssigmentService taskUnAssigmentService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -184,6 +185,7 @@ public class SyncController {
         this.taskService = taskService;
         this.taskTypeService = taskTypeService;
         this.taskStatusService = taskStatusService;
+        this.taskUnAssigmentService = taskUnAssigmentService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -257,6 +259,7 @@ public class SyncController {
         nonScopeAwareServiceMap.put("Task", taskService);
         nonScopeAwareServiceMap.put("TaskType", taskTypeService);
         nonScopeAwareServiceMap.put("TaskStatus", taskStatusService);
+        nonScopeAwareServiceMap.put("TaskUnAssignment", taskUnAssigmentService);
     }
 
 
