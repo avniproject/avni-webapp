@@ -46,7 +46,6 @@ public class Task extends OrganisationAwareEntity {
 
     @ManyToOne(targetEntity = Individual.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
-    @NotNull
     private Individual subject;
 
     @Column

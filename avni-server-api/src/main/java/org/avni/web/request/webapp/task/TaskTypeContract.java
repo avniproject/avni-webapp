@@ -9,7 +9,7 @@ import java.util.List;
 
 public class TaskTypeContract extends ReferenceDataContract {
     private String taskTypeName;
-    private List<ObservationRequest> metadataSearchFields = new ArrayList<>();
+    private String[] metadataSearchFields;
 
     public String getTaskTypeName() {
         return taskTypeName;
@@ -19,11 +19,11 @@ public class TaskTypeContract extends ReferenceDataContract {
         this.taskTypeName = taskTypeName;
     }
 
-    public List<ObservationRequest> getMetadataSearchFields() {
+    public String[] getMetadataSearchFields() {
         return metadataSearchFields;
     }
 
-    public void setMetadataSearchFields(List<ObservationRequest> metadataSearchFields) {
+    public void setMetadataSearchFields(String[] metadataSearchFields) {
         this.metadataSearchFields = metadataSearchFields;
     }
 

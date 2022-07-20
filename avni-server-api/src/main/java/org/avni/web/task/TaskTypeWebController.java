@@ -43,7 +43,7 @@ public class TaskTypeWebController {
         taskType.setType(TaskTypeName.valueOf(request.getTaskTypeName()));
         taskType.setVoided(request.isVoided());
         taskType.setName(request.getName());
-        taskType.setMetadataSearchFields(observationService.createObservations(request.getMetadataSearchFields()));
+        taskType.setMetadataSearchFields(request.getMetadataSearchFields());
         taskType.assignUUID();
         taskTypeRepository.save(taskType);
         return new AvniEntityResponse(taskType);
