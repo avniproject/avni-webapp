@@ -33,12 +33,23 @@ const FormListing = ({ history }) => {
       field: "formType",
       render: rowData => constFormType[rowData.formType]
     },
-    { title: "Subject Name", field: "subjectName", sorting: false },
+    {
+      title: "Subject Name",
+      field: "subjectName",
+      sorting: false,
+      render: rowData => (rowData.subjectName ? rowData.subjectName : "-")
+    },
     {
       title: "Program Name",
       field: "programName",
       sorting: false,
       render: rowData => (rowData.programName ? rowData.programName : "-")
+    },
+    {
+      title: "Task Type",
+      field: "taskTypeName",
+      sorting: false,
+      render: rowData => (rowData.taskTypeName ? rowData.taskTypeName : "-")
     },
     {
       title: "Last modified",

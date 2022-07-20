@@ -199,6 +199,7 @@ class FormSettings extends Component {
               programUuid: formMapping.programUUID,
               subjectTypeUuid: formMapping.subjectTypeUUID,
               encounterTypeUuid: formMapping.encounterTypeUUID,
+              taskTypeUuid: formMapping.taskTypeUUID,
               voided: false,
               newFlag: false,
               updatedFlag: false
