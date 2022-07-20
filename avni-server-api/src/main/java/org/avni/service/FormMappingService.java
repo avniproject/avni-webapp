@@ -9,6 +9,7 @@ import org.avni.dao.ProgramRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
+import org.avni.dao.task.TaskTypeRepository;
 import org.avni.domain.EncounterType;
 import org.avni.domain.Program;
 import org.avni.domain.SubjectType;
@@ -18,6 +19,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -29,11 +31,12 @@ import java.util.stream.Collectors;
 public class FormMappingService implements NonScopeAwareService {
 
     private final ProgramRepository programRepository;
-    private SubjectTypeRepository subjectTypeRepository;
-    private FormMappingRepository formMappingRepository;
-    private EncounterTypeRepository encounterTypeRepository;
-    private FormRepository formRepository;
-    private OrganisationConfigService organisationConfigService;
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final FormMappingRepository formMappingRepository;
+    private final EncounterTypeRepository encounterTypeRepository;
+    private final FormRepository formRepository;
+    private final OrganisationConfigService organisationConfigService;
+    private final TaskTypeRepository taskTypeRepository;
 
     @Autowired
     public FormMappingService(FormMappingRepository formMappingRepository,
@@ -41,13 +44,15 @@ public class FormMappingService implements NonScopeAwareService {
                               ProgramRepository programRepository,
                               SubjectTypeRepository subjectTypeRepository,
                               FormRepository formRepository,
-                              OrganisationConfigService organisationConfigService) {
+                              OrganisationConfigService organisationConfigService,
+                              TaskTypeRepository taskTypeRepository) {
         this.formMappingRepository = formMappingRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.programRepository = programRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.formRepository = formRepository;
         this.organisationConfigService = organisationConfigService;
+        this.taskTypeRepository = taskTypeRepository;
     }
 
     public void saveFormMapping(FormMappingParameterObject parametersForNewMapping,
@@ -108,20 +113,24 @@ public class FormMappingService implements NonScopeAwareService {
         }
         formMapping.setForm(form);
 
-        if (formMappingRequest.getProgramUUID() != null) {
+        if (StringUtils.hasText(formMappingRequest.getProgramUUID())) {
             formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
         }
 
-        if (formMappingRequest.getEncounterTypeUUID() != null) {
+        if (StringUtils.hasText(formMappingRequest.getEncounterTypeUUID())) {
             formMapping.setEncounterType(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()));
         }
 
-        if (formMappingRequest.getSubjectTypeUUID() != null) {
+        if (StringUtils.hasText(formMappingRequest.getSubjectTypeUUID())) {
             formMapping.setSubjectType(
                     subjectTypeRepository.findByUuid(
                             formMappingRequest.getSubjectTypeUUID()));
         } else {
             formMapping.setSubjectType(subjectTypeRepository.individualSubjectType());
+        }
+
+        if (StringUtils.hasText(formMappingRequest.getTaskTypeUUID())) {
+            formMapping.setTaskType(taskTypeRepository.findByUuid(formMappingRequest.getTaskTypeUUID()));
         }
 
         formMapping.setVoided(formMappingRequest.isVoided());

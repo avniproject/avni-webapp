@@ -5,6 +5,7 @@ public class FormMappingRequest {
     private String subjectTypeUuid;
     private String programUuid;
     private String encounterTypeUuid;
+    private String taskTypeUuid;
     private boolean isVoided;
 
     public String getUuid() {
@@ -43,4 +44,12 @@ public class FormMappingRequest {
     public boolean getVoided(){ return isVoided; }
 
     public void setVoided(boolean isVoided){ this.isVoided = isVoided; }
+
+    public String getTaskTypeUuid() {
+        return taskTypeUuid;
+    }
+
+    public void setTaskTypeUuid(String taskTypeUuid) {
+        this.taskTypeUuid = taskTypeUuid;
+    }
 }

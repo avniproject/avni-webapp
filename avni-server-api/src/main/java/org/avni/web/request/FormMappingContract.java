@@ -17,6 +17,7 @@ public class FormMappingContract extends ReferenceDataContract {
     private Boolean isVoided;
     private String formName;
     private Boolean enableApproval;
+    private String taskTypeUUID;
 
     public String getFormUUID() {
         return formUUID;
@@ -85,6 +86,7 @@ public class FormMappingContract extends ReferenceDataContract {
         contract.setSubjectTypeUUID(formMapping.getSubjectTypeUuid());
         contract.setProgramUUID(formMapping.getProgramUuid());
         contract.setFormUUID(formMapping.getFormUuid());
+        contract.setTaskTypeUUID(formMapping.getTaskTypeUuid());
         contract.setEncounterTypeUUID(formMapping.getEncounterTypeUuid());
         contract.setVoided(formMapping.isVoided());
         contract.setEnableApproval(formMapping.isEnableApproval());
@@ -100,5 +102,13 @@ public class FormMappingContract extends ReferenceDataContract {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public boolean isVoided() {
         return super.isVoided();
+    }
+
+    public void setTaskTypeUUID(String taskTypeUUID) {
+        this.taskTypeUUID = taskTypeUUID;
+    }
+
+    public String getTaskTypeUUID() {
+        return taskTypeUUID;
     }
 }

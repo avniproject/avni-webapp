@@ -3,10 +3,8 @@ package org.avni.web;
 import org.avni.application.*;
 import org.avni.builder.FormBuilder;
 import org.avni.builder.FormBuilderException;
-import org.avni.dao.OperationalEncounterTypeRepository;
 import org.avni.dao.OperationalProgramRepository;
 import org.avni.dao.ProgramRepository;
-import org.avni.dao.application.FormElementRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
 import org.avni.domain.*;
@@ -121,7 +119,10 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 Program program = firstFormMapping.getProgram();
                 if (program != null)
                     basicFormDetails.setProgramName(program.getOperationalProgramName());
-                basicFormDetails.setSubjectName(firstFormMapping.getSubjectType().getName());
+                if (firstFormMapping.getSubjectType() != null)
+                    basicFormDetails.setSubjectName(firstFormMapping.getSubjectType().getName());
+                if (firstFormMapping.getTaskType() != null)
+                    basicFormDetails.setTaskTypeName(firstFormMapping.getTaskType().getName());
             }
             return basicFormDetails;
         });
@@ -206,6 +207,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             formMappingContract.setVoided(formMappingRequest.getVoided());
             formMappingContract.setFormUUID(formUUID);
             formMappingContract.setUuid(formMappingRequest.getUuid());
+            formMappingContract.setTaskTypeUUID(formMappingRequest.getTaskTypeUuid());
             formMappingService.createOrUpdateFormMapping(formMappingContract);
         });
         return ResponseEntity.ok(null);

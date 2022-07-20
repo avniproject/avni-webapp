@@ -6,6 +6,7 @@ import org.avni.domain.EncounterType;
 import org.avni.domain.OrganisationAwareEntity;
 import org.avni.domain.Program;
 import org.avni.domain.SubjectType;
+import org.avni.domain.task.TaskType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -31,6 +32,10 @@ public class FormMapping extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_type_id")
     private SubjectType subjectType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_type_id")
+    private TaskType taskType;
 
     private boolean enableApproval;
 
@@ -98,14 +103,27 @@ public class FormMapping extends OrganisationAwareEntity {
         this.enableApproval = enableApproval;
     }
 
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Form=").append(getForm().getName());
-        stringBuilder.append(", subjectType=").append(getSubjectType().getName());
+        if (subjectType != null)
+            stringBuilder.append(", subjectType=").append(getSubjectType().getName());
         stringBuilder.append(", program=").append(getProgram() == null ? "null" : getProgram().getName());
         stringBuilder.append(", encounterType=").append(getEncounterType() == null ? "null" : getEncounterType().getName());
         return stringBuilder.toString();
+    }
+
+    public String getTaskTypeUuid() {
+        return taskType == null ? null : taskType.getUuid();
     }
 
     @Projection(name = "FormMappingProjection", types = {FormMapping.class})

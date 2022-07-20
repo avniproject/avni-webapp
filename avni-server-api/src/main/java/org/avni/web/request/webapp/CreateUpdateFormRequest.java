@@ -1,5 +1,5 @@
 package org.avni.web.request.webapp;
-import org.avni.web.request.webapp.FormMappingRequest;
+
 import java.util.List;
 
 public class CreateUpdateFormRequest {

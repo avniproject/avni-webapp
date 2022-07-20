@@ -26,6 +26,7 @@ public class BasicFormDetails extends ResourceSupport {
     private String lastModifiedByUUID;
     private Long organisationId;
     private Boolean voided;
+    private String taskTypeName;
 
     public BasicFormDetails(Form form, String programName) {
         this.name = form.getName();
@@ -104,5 +105,13 @@ public class BasicFormDetails extends ResourceSupport {
 
     public void setVoided(Boolean voided) {
         this.voided = voided;
+    }
+
+    public void setTaskTypeName(String taskTypeName) {
+        this.taskTypeName = taskTypeName;
+    }
+
+    public String getTaskTypeName() {
+        return taskTypeName;
     }
 }
