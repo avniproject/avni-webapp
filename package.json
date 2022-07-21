@@ -11,7 +11,7 @@
     "@material-ui/styles": "4.10.0",
     "@nivo/bar": "^0.62.0",
     "@nivo/pie": "^0.62.0",
-    "avni-health-modules": "0.0.13",
+    "avni-health-modules": "0.0.15",
     "aws-amplify": "^1.1.19",
     "aws-amplify-react": "^2.3.0",
     "axios": "^0.21.1",
@@ -70,7 +70,7 @@
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
-    "rules-config": "github:openchs/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39",
+    "rules-config": "github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39",
     "uuid": "^3.3.2"
   },
   "scripts": {
