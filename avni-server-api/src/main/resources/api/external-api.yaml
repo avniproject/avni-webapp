@@ -415,10 +415,10 @@ paths:
     delete:
       tags:
         - Program Encounter
-        summary: Delete a specific program encounter by ID or External ID
-        description: |
-          Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
-          OR provide the ExternalID of the program encounter. Legacy ID set by the external integrating system.
+      summary: Delete a specific program encounter by ID or External ID
+      description: |
+        Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
+        OR provide the ExternalID of the program encounter. Legacy ID set by the external integrating system.
       parameters:
         - in: path
           name: ID
