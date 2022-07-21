@@ -70,8 +70,8 @@ public class GeneralEncounterApiController {
     @GetMapping(value = "/api/encounter/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String uuid) {
-        Encounter encounter = encounterRepository.findByUuid(uuid);
+    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String legacyIdOrUuid) {
+        Encounter encounter = encounterRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
         if (encounter == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);

@@ -80,8 +80,8 @@ public class ProgramEncounterApiController {
     @GetMapping(value = "/api/programEncounter/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String uuid) {
-        ProgramEncounter programEncounter = programEncounterRepository.findByUuid(uuid);
+    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String legacyIdOrUuid) {
+        ProgramEncounter programEncounter = programEncounterRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
         if (programEncounter == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(EncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService), HttpStatus.OK);

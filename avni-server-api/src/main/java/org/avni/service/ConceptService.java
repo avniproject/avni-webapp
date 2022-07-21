@@ -243,6 +243,9 @@ public class ConceptService implements NonScopeAwareService {
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
     }
 
+    /**
+     * Important: Not to be used in any Internal API calls
+     */
     public Object getObservationValue(Map<String, String> conceptMap, Object value) {
         if (value instanceof ArrayList) {
             List<Object> elements = (List<Object>) value;

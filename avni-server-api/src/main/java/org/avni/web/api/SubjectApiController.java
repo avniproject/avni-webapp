@@ -83,8 +83,8 @@ public class SubjectApiController {
     @GetMapping(value = "/api/subject/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<SubjectResponse> get(@PathVariable("id") String uuid) {
-        Individual subject = individualRepository.findByUuid(uuid);
+    public ResponseEntity<SubjectResponse> get(@PathVariable("id") String legacyIdOrUuid) {
+        Individual subject = individualRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
         if (subject == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(Collections.singletonList(subject));

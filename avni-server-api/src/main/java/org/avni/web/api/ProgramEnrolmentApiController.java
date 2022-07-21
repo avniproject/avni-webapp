@@ -126,8 +126,8 @@ public class ProgramEnrolmentApiController {
     @GetMapping(value = "/api/programEnrolment/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<ProgramEnrolmentResponse> get(@PathVariable("id") String uuid) {
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
+    public ResponseEntity<ProgramEnrolmentResponse> get(@PathVariable("id") String legacyIdOrUuid) {
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
         if (programEnrolment == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);

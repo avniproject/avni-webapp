@@ -70,9 +70,10 @@ paths:
     get:
       tags:
         - Subject
-      summary: Get a specific subject by ID
+      summary: Get a specific subject by ID or External ID
       description: |
-        Provide the ID of the subject. The ID is in UUID format, the external id used by Avni
+        Provide the ID of the subject. The ID is in UUID format, the external id used by Avni.
+        OR provide the ExternalID of the Subject. Legacy ID set by the external integrating system.
       parameters:
         - in: path
           name: ID
@@ -227,9 +228,10 @@ paths:
     get:
       tags:
         - Program Enrolment
-      summary: Get a specific program enrolment by ID
+      summary: Get a specific program enrolment by ID or External ID
       description: |
         Provide the ID of the program enrolment. The ID is in UUID format, the external id used by Avni
+        OR provide the ExternalID of the Program Enrolment. Legacy ID set by the external integrating system.
       parameters:
         - in: path
           name: ID
@@ -254,7 +256,7 @@ paths:
     delete:
       tags:
         - Program Enrolment
-      summary: Delete a specific program enrolment by ID
+      summary: Delete a specific program enrolment by ID or External ID
       description: |
         Provide the ID of the program enrolment. The ID is in UUID format, the external id used by Avni
         OR provide the ExternalID of the Program Enrolment. Legacy ID set by the external integrating system.
@@ -385,9 +387,10 @@ paths:
     get:
       tags:
         - Program Encounter
-      summary: Get a specific program encounter by ID
+      summary: Get a specific program encounter by ID or External ID
       description: |
         Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
+        OR provide the ExternalID of the program encounter. Legacy ID set by the external integrating system.
       parameters:
         - in: path
           name: ID
@@ -412,7 +415,7 @@ paths:
     delete:
       tags:
         - Program Encounter
-        summary: Delete a specific program encounter by ID
+        summary: Delete a specific program encounter by ID or External ID
         description: |
           Provide the ID of the program encounter. The ID is in UUID format, the external id used by Avni
           OR provide the ExternalID of the program encounter. Legacy ID set by the external integrating system.
@@ -550,9 +553,10 @@ paths:
     get:
       tags:
         - Subject Encounter
-      summary: Get a specific subject encounter by ID
+      summary: Get a specific subject encounter by ID or External ID
       description: |
         Provide the ID of the subject encounter. The ID is in UUID format, the external id used by Avni
+        OR provide the ExternalID of the program encounter. Legacy ID set by the external integrating system.
       parameters:
         - in: path
           name: ID
@@ -577,7 +581,7 @@ paths:
     delete:
       tags:
         - Subject Encounter
-      summary: Delete a specific subject encounter by ID
+      summary: Delete a specific subject encounter by ID or External ID
       description: |
         Provide the ID of the subject encounter. The ID is in UUID format, the external id used by Avni
         OR provide the ExternalID of the Subject Encounter. Legacy ID set by the external integrating system.
