@@ -41,7 +41,7 @@ paths:
             type: string
         - in: query
           name: locationIds
-          description: comma seperated location Ids
+          description: comma seperated location names from higher level to lower level
           required: false
           schema:
             type: string
@@ -709,6 +709,32 @@ paths:
                       $ref: '#/components/schemas/Encounter'
         '400':
           description: bad input parameter
+  /api/task:
+    post:
+      tags:
+        - Task
+      summary: Creates a new task
+      parameters:
+        - in: header
+          name: auth-token
+          schema:
+            type: string
+            description: token provided by cognito
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskBody'
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Task'
+                  - $ref: '#/components/schemas/TaskBody'
 components:
   schemas:
     Subject:
@@ -719,7 +745,7 @@ components:
           format: uuid
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Voided:
           type: boolean
         Subject type:
@@ -742,7 +768,7 @@ components:
             $ref: '#/components/schemas/SubjectRelationship'
         observations:
           type: object
-          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts). Note that first name, last name and middle name (if allowed on subject type comes here)
           example:
             Phone number: 9801010101
             Medical problems: ["Asthama", "Diabetes"]
@@ -764,7 +790,7 @@ components:
       properties:
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Subject type:
           type: string
           example: Individual
@@ -786,6 +812,9 @@ components:
           description: Registration date
         First name:
           type: string
+        Middle name:
+          type: string
+          description: only applicable is subject type allows middle name
         Last name:
           type: string
         Registration location:
@@ -793,6 +822,8 @@ components:
         observations:
           type: object
           description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts)
+        Profile picture:
+          type: string
         Voided:
           type: boolean
     SubjectRelationship:
@@ -809,7 +840,7 @@ components:
           example: d290f1ee-6c54-4b01-90e6-d701748f0851
         Relative external ID:
           type: string
-          description: Relative's Legacy ID set by the external integrating system
+          description: Relative's Legacy ID set by the external integrating system, this field is optional.
         Enter date:
           type: string
           format: date-time
@@ -826,7 +857,7 @@ components:
           format: uuid
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Voided:
           type: boolean
         Subject ID:
@@ -834,7 +865,7 @@ components:
           format: uuid
         Subject external ID:
           type: string
-          description: Subject's Legacy ID set by the external integrating system
+          description: Subject's Legacy ID set by the external integrating system, this field is optional.
         Subject type:
           type: string
         Program:
@@ -871,7 +902,7 @@ components:
           format: uuid
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Voided:
           type: boolean
         Subject ID:
@@ -880,7 +911,7 @@ components:
           description: id of the subject
         Subject external ID:
           type: string
-          description: Subject's Legacy ID set by the external integrating system
+          description: Subject's Legacy ID set by the external integrating system, this field is optional.
         Subject type:
           type: string
           description: name of the subject type to which this encounter belongs, same as subject type in the subject resource
@@ -890,7 +921,7 @@ components:
           description: id of the program enrolment
         Enrolment external ID:
           type: string
-          description: Enrolment's Legacy ID set by the external integrating system
+          description: Enrolment's Legacy ID set by the external integrating system, this field is optional.
         Program:
           type: string
           description: name of the program of the enrolment to which this encounter belongs, same as program in the program enrolment resource
@@ -929,14 +960,14 @@ components:
       properties:
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Enrolment ID:
           type: string
           format: uuid
           description: id of the program enrolment
         Enrolment external ID:
           type: string
-          description: Enrolment's Legacy ID set by the external integrating system
+          description: Enrolment's Legacy ID set by the external integrating system, this field is optional.
         Program:
           type: string
           description: name of the program of the enrolment to which this encounter belongs, same as program in the program enrolment resource
@@ -978,7 +1009,7 @@ components:
           format: uuid
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Voided:
           type: boolean
         Encounter type:
@@ -990,7 +1021,7 @@ components:
           description: id of the subject
         Subject external ID:
           type: string
-          description: Subject's Legacy ID set by the external integrating system
+          description: Subject's Legacy ID set by the external integrating system, this field is optional.
         Subject type:
           type: string
           description: name of the subject type to which this encounter belongs, same as subject type in the subject resource
@@ -1026,7 +1057,7 @@ components:
       properties:
         External ID:
           type: string
-          description: Legacy ID set by the external integrating system
+          description: Legacy ID set by the external integrating system, this field is optional.
         Program:
           type: string
           example: ANC program
@@ -1036,7 +1067,7 @@ components:
           description: id of the subject
         Subject external ID:
           type: string
-          description: Subject's Legacy ID set by the external integrating system
+          description: Subject's Legacy ID set by the external integrating system, this field is optional.
         Enrolment location:
           $ref: '#/components/schemas/GeoLocation'
         Exit location:
@@ -1142,6 +1173,57 @@ components:
           type: integer
           example: 100
           description: Number of entities in each page
+    Task:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: Unique ID for the Task created by Avni
+    TaskBody:
+      type: object
+      properties:
+        External ID:
+          type: string
+          description: Any additional identifier the calling system can provide which Avni will save along with the task. Optional field.
+        Voided:
+          type: boolean
+          description: Optional field
+        Task type:
+          type: string
+          description: The name of task type present in Avni for which this task should be created
+        Task status:
+          type: string
+          description: The name of task status setup in Avni in which the task should be created
+        Name:
+          type: string
+        Scheduled on:
+          type: string
+          format: date-time
+          description: Optional field
+        Completed on:
+          type: string
+          format: date-time
+          description: Optional field
+        Assigned to:
+          type: string
+          description: The login username of the user to which the task should be assigned
+        metadata:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts
+          example:
+            Contact number: "9801010101"
+            Preferred time of day: 'Day'
+        observations:
+          type: object
+          description: as key value pairs. key is string and value of type (date, string, number or array of string of name of concepts
+          example:
+            Duration of talk: 25
+        Subject ID:
+          type: string
+          description: The unique Avni's ID of the subject for which this task is to be done
+        Subject External ID:
+          type: string
+          description: The ID of the calling system for the subject for which this task is to be done
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
