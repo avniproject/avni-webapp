@@ -6,12 +6,14 @@ import org.avni.domain.User;
 import org.avni.domain.task.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 
 @Repository
+@RepositoryRestResource(collectionResourceRel = "task", path = "task", exported = false)
 @PreAuthorize("hasAnyAuthority('user')")
 public interface TaskRepository extends TransactionalDataRepository<Task>, FindByLastModifiedDateTime<Task> {
 

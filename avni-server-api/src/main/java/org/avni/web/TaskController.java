@@ -5,7 +5,11 @@ import org.avni.domain.CHSEntity;
 import org.avni.domain.User;
 import org.avni.domain.task.Task;
 import org.avni.framework.security.UserContextHolder;
+import org.avni.service.TaskService;
+import org.avni.web.request.TaskRequest;
+import org.avni.web.response.AvniEntityResponse;
 import org.joda.time.DateTime;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,21 +17,21 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
 @RestController
 public class TaskController extends AbstractController<Task> implements RestControllerResourceProcessor<Task> {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
     @Autowired
-    public TaskController(TaskRepository taskRepository) {
+    public TaskController(TaskRepository taskRepository, TaskService taskService) {
         this.taskRepository = taskRepository;
+        this.taskService = taskService;
     }
 
     @RequestMapping(value = "/task", method = RequestMethod.GET)
@@ -41,9 +45,19 @@ public class TaskController extends AbstractController<Task> implements RestCont
         return wrap(taskRepository.findByAssignedToAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(user, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
     }
 
+    @RequestMapping(value = "/tasks", method = RequestMethod.POST)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public AvniEntityResponse save(@RequestBody TaskRequest taskRequest) {
+        logger.info(String.format("Saving task with UUID %s", taskRequest.getUuid()));
+        Task savedTask = taskService.save(taskRequest);
+        return new AvniEntityResponse(savedTask);
+    }
+
     @Override
     public Resource<Task> process(Resource<Task> resource) {
         Task task = resource.getContent();
+        resource.removeLinks();
         resource.add(new Link(task.getTaskType().getUuid(), "taskTypeUUID"));
         resource.add(new Link(task.getTaskStatus().getUuid(), "taskStatusUUID"));
         if (task.getSubject() != null) {

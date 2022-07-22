@@ -257,6 +257,9 @@ public class Avni {
                     if (formMapping.getSubjectType() != null) {
                         resource.add(new Link(formMapping.getSubjectType().getUuid(), "subjectTypeUUID"));
                     }
+                    if (formMapping.getTaskType() != null) {
+                        resource.add(new Link(formMapping.getTaskTypeUuid(), "taskTypeUUID"));
+                    }
 
                     String encounterTypeUuid = formMapping.getEncounterTypeUuid();
                     if (encounterTypeUuid != null) {

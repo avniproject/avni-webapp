@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedHashMap;
-import java.util.UUID;
 
 import static org.avni.web.api.CommonFieldNames.*;
 import static org.avni.web.contract.TaskFieldNames.*;
@@ -68,7 +67,6 @@ public class TaskApiController {
         task.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         task.setName(request.getName());
         Individual individual = individualRepository.getSubject(request.getSubjectId(), request.getSubjectExternalId());
-        ApiErrorUtil.throwIfSubjectNotFound(individual, request.getSubjectId(), request.getSubjectExternalId());
         task.setSubject(individual);
         task.setLegacyId(request.getExternalId());
         task.assignUUID();
@@ -85,8 +83,10 @@ public class TaskApiController {
         Response.putObservations(conceptRepository, conceptService, response, new LinkedHashMap<>(), task.getMetadata(), METADATA);
         Response.putObservations(conceptRepository, conceptService, response, new LinkedHashMap<>(), task.getObservations(), OBSERVATIONS);
         response.put(NAME, task.getName());
-        response.put(SUBJECT_ID, task.getSubject().getUuid());
-        response.put(SUBJECT_EXTERNAL_ID, task.getSubject().getLegacyId());
+        if (task.getSubject() != null) {
+            response.put(SUBJECT_ID, task.getSubject().getUuid());
+            response.put(SUBJECT_EXTERNAL_ID, task.getSubject().getLegacyId());
+        }
         response.put(ID, task.getUuid());
         response.put(VOIDED, task.isVoided());
 

@@ -1,0 +1,2 @@
+ALTER TABLE task
+    ALTER COLUMN scheduled_on SET NOT NULL;
