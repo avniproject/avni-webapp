@@ -3,10 +3,7 @@ package org.avni.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.application.FormElement;
-import org.avni.dao.AnswerConceptMigrationRepository;
-import org.avni.dao.ConceptAnswerRepository;
-import org.avni.dao.ConceptRepository;
-import org.avni.dao.OrganisationRepository;
+import org.avni.dao.*;
 import org.avni.dao.application.FormElementRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
@@ -42,11 +39,13 @@ public class ConceptService implements NonScopeAwareService {
     private OrganisationRepository organisationRepository;
     private FormElementRepository formElementRepository;
     private AnswerConceptMigrationRepository answerConceptMigrationRepository;
+    private LocationRepository locationRepository;
 
     @Autowired
-    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository, AnswerConceptMigrationRepository answerConceptMigrationRepository) {
+    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository, AnswerConceptMigrationRepository answerConceptMigrationRepository, LocationRepository locationRepository) {
         this.formElementRepository = formElementRepository;
         this.answerConceptMigrationRepository = answerConceptMigrationRepository;
+        this.locationRepository = locationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
@@ -267,8 +266,29 @@ public class ConceptService implements NonScopeAwareService {
             return observationResponse;
         } else {
             String conceptName = conceptMap.get(value);
-            return conceptName == null ? value : conceptName;
+            return conceptName == null ? checkAndReturnLocationAddress(value) : conceptName;
         }
+    }
+
+    private Object checkAndReturnLocationAddress(Object value) {
+        if(value != null && value instanceof String) {
+            LinkedHashMap<String, String> location = new LinkedHashMap<>();
+            AddressLevel addressLevel = locationRepository.findByLegacyIdOrUuid((String) value);
+            if(addressLevel == null) {
+                return value;
+            }
+            while (addressLevel != null) {
+                putAddressLevel(location, addressLevel);
+                addressLevel = addressLevel.getParent();
+            }
+            return location;
+        } else {
+            return value;
+        }
+    }
+
+    private static void putAddressLevel(Map<String, String> map, AddressLevel addressLevel) {
+        map.put(addressLevel.getTypeString(), addressLevel.getTitle());
     }
 
     public void addDependentConcepts(ConceptUsageContract conceptUsageContract, Concept answerConcept) {
