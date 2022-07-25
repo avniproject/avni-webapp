@@ -1,8 +1,6 @@
 package org.avni.service;
 
-import org.avni.application.Form;
-import org.avni.application.FormType;
-import org.avni.application.KeyType;
+import org.avni.application.*;
 import org.avni.builder.FormBuilder;
 import org.avni.builder.FormBuilderException;
 import org.avni.dao.ConceptRepository;
@@ -87,8 +85,13 @@ public class FormService implements NonScopeAwareService {
         for (FormElementGroupContract formElementGroup : formRequest.getFormElementGroups()) {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 if (formElement.getConcept().getDataType() != null && formElement.getConcept().getDataType().equals(String.valueOf(ConceptDataType.Location))) {
-                    Concept locationConcept = conceptRepository.findByUuid(formElement.getConcept().getUuid());
-                    locationConceptUuids.addAll((ArrayList<String>)locationConcept.getKeyValues().getKeyValue(KeyType.lowestAddressLevelTypeUUIDs).getValue());
+                    KeyValues keyValues = formElement.getConcept().getKeyValues();
+                    if (keyValues != null && keyValues.containsKey(KeyType.lowestAddressLevelTypeUUIDs)) {
+                        KeyValue isWithinCatchmentKeyValue = keyValues.get(KeyType.isWithinCatchment);
+                        if (isWithinCatchmentKeyValue != null && !(boolean) isWithinCatchmentKeyValue.getValue()) {
+                            locationConceptUuids.addAll((ArrayList<String>) keyValues.getKeyValue(KeyType.lowestAddressLevelTypeUUIDs).getValue());
+                        }
+                    }
                 }
             }
         }
