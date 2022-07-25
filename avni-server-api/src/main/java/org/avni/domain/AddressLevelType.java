@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.avni.application.projections.BaseProjection;
@@ -73,6 +74,7 @@ public class AddressLevelType extends OrganisationAwareEntity {
         this.addressLevels = addressLevels;
     }
 
+    @JsonIgnore
     public Boolean isVoidable() {
         return subTypes.stream().allMatch(CHSEntity::isVoided) && addressLevels.stream().allMatch(CHSEntity::isVoided);
     }
