@@ -42,7 +42,7 @@ public class LocationMappingController implements RestControllerResourceProcesso
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(scopeBasedSyncService.getSyncResult(locationMappingRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable, null, SyncParameters.SyncEntityName.LocationMapping));
+        return wrap(scopeBasedSyncService.getSyncResultsByCatchment(locationMappingRepository, userService.getCurrentUser(), lastModifiedDateTime, now, pageable, SyncParameters.SyncEntityName.LocationMapping));
     }
 
     @Override

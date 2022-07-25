@@ -11,7 +11,6 @@ import org.avni.web.request.rules.RulesContractWrapper.IndividualContractWrapper
 import org.avni.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.avni.web.response.AvniEntityResponse;
-import org.avni.web.response.SubjectResponse;
 import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +142,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (subjectTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.Individual));
+        return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(individualRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.Individual));
     }
 
     @GetMapping(value = "/individual/search")

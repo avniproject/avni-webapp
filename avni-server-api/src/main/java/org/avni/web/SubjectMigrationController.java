@@ -1,6 +1,5 @@
 package org.avni.web;
 
-import org.avni.dao.OperatingIndividualScopeAwareRepository;
 import org.avni.dao.SubjectMigrationRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.SyncParameters;
@@ -54,7 +53,7 @@ public class SubjectMigrationController extends AbstractController<SubjectMigrat
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUuid);
         if (subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
 
-        return wrap(scopeBasedSyncService.getSyncResult(subjectMigrationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.SubjectMigration));
+        return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(subjectMigrationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.SubjectMigration));
     }
 
     @Override

@@ -65,7 +65,7 @@ public class GroupSubjectController extends AbstractController<GroupSubject> imp
             return wrap(new PageImpl<>(Collections.emptyList()));
         SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
         if(subjectType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        return wrap(scopeBasedSyncService.getSyncResult(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.GroupSubject));
+        return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(groupSubjectRepository, userService.getCurrentUser(), lastModifiedDateTime, now, subjectType.getId(), pageable, subjectType, SyncParameters.SyncEntityName.GroupSubject));
     }
 
     @RequestMapping(value = "/groupSubjects", method = RequestMethod.POST)

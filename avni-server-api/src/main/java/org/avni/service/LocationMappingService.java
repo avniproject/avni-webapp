@@ -9,8 +9,6 @@ import org.avni.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import org.joda.time.DateTime;
-
 @Service
 public class LocationMappingService implements ScopeAwareService {
 
@@ -24,7 +22,7 @@ public class LocationMappingService implements ScopeAwareService {
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String typeUUID) {
         User user = UserContextHolder.getUserContext().getUser();
-        return isChanged(user, lastModifiedDateTime, null, null, SyncParameters.SyncEntityName.LocationMapping);
+        return isChangedByCatchment(user, lastModifiedDateTime, SyncParameters.SyncEntityName.LocationMapping);
     }
 
     @Override

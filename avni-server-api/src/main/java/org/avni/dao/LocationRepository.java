@@ -4,12 +4,8 @@ import java.util.Date;
 
 import org.avni.application.projections.LocationProjection;
 import org.avni.application.projections.VirtualCatchmentProjection;
-import org.avni.domain.Individual;
-import org.joda.time.DateTime;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.AddressLevelType;
-import org.avni.domain.Catchment;
-import org.springframework.cache.annotation.Cacheable;
+import org.avni.domain.*;
+import org.avni.framework.security.UserContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -19,11 +15,9 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
@@ -42,17 +36,14 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             long catchmentId,
             Date lastModifiedDateTime,
             Date now,
-            Pageable pageable);
+            Pageable pageable
+    );
 
-    boolean existsByLastModifiedDateTimeIsGreaterThanAndIdIn(
-            Date lastModifiedDateTime,
-            List<Long> addressIds);
+    boolean existsByVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(
+            long catchmentId,
+            Date lastModifiedDateTime
+    );
 
-    Page<AddressLevel> findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevelIds,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
@@ -80,12 +71,12 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Override
     default Page<AddressLevel> getSyncResults(SyncParameters syncParameters) {
-        return findByIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return findByVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
-        return existsByLastModifiedDateTimeIsGreaterThanAndIdIn(syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getAddressLevels());
+        return existsByVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
     }
 
     default AddressLevel findByName(String name) {
@@ -148,6 +139,9 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Query(value="select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForCatchmentId(@Param("catchmentId") Long catchmentId);
+
+    @Query(value="select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId and type_id in (:typeIds)", nativeQuery = true)
+    List<VirtualCatchmentProjection> getVirtualCatchmentsForCatchmentIdAndLocationTypeId(@Param("catchmentId") Long catchmentId, List<Long> typeIds);
 
     @Query(value="select * from virtual_catchment_address_mapping_table where addresslevel_id in (:addressLevelIds)", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForAddressLevelIds(@Param("addressLevelIds") List<Long> addressLevelIds);

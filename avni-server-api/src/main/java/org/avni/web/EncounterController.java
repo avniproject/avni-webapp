@@ -174,7 +174,7 @@ public class EncounterController extends AbstractController<Encounter> implement
                 .orElse(null);
         if (formMapping == null)
             throw new Exception(String.format("No form mapping found for encounter %s", encounterType.getName()));
-        return wrap(scopeBasedSyncService.getSyncResult(encounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Encounter));
+        return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(encounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Encounter));
     }
 
     @DeleteMapping("/web/encounter/{uuid}")

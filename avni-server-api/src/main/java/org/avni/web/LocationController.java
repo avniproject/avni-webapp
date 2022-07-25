@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,7 +101,7 @@ public class LocationController implements RestControllerResourceProcessor<Addre
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(scopeBasedSyncService.getSyncResult(locationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, null, pageable, null, SyncParameters.SyncEntityName.Location));
+        return wrap(scopeBasedSyncService.getSyncResultsByCatchment(locationRepository, userService.getCurrentUser(), lastModifiedDateTime, now, pageable, SyncParameters.SyncEntityName.Location));
     }
 
     @PutMapping(value = "/locations/{id}")

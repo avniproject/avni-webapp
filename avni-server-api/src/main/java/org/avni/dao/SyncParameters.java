@@ -1,5 +1,6 @@
 package org.avni.dao;
 
+import org.avni.domain.Catchment;
 import org.avni.domain.JsonObject;
 import org.avni.domain.SubjectType;
 import org.joda.time.DateTime;
@@ -7,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.avni.dao.SyncParameters.SyncEntityName.Individual;
 
 public class SyncParameters {
     private final DateTime lastModifiedDateTime;
@@ -19,6 +18,7 @@ public class SyncParameters {
     private SubjectType subjectType;
     private JsonObject syncSettings;
     private SyncEntityName syncEntityName;
+    private Catchment catchment;
 
     public SyncParameters(DateTime lastModifiedDateTime,
                           DateTime now, Long typeId,
@@ -26,7 +26,8 @@ public class SyncParameters {
                           List<Long> addressLevels,
                           SubjectType subjectType,
                           JsonObject syncSettings,
-                          SyncEntityName syncEntityName) {
+                          SyncEntityName syncEntityName,
+                          Catchment catchment) {
         this.lastModifiedDateTime = lastModifiedDateTime;
         this.now = now;
         this.typeId = typeId;
@@ -35,6 +36,7 @@ public class SyncParameters {
         this.subjectType = subjectType;
         this.syncSettings = syncSettings;
         this.syncEntityName = syncEntityName;
+        this.catchment = catchment;
     }
 
     public DateTime getLastModifiedDateTime() {
@@ -79,6 +81,10 @@ public class SyncParameters {
 
     public boolean isProgramEncounter() {
         return syncEntityName.equals(SyncEntityName.ProgramEncounter);
+    }
+
+    public Catchment getCatchment() {
+        return catchment;
     }
 
     public enum SyncEntityName {

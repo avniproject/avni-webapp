@@ -18,8 +18,12 @@ public class ScopeBasedSyncService<T extends CHSEntity> {
         this.addressLevelService = addressLevelService;
     }
 
-    public Page<T> getSyncResult(OperatingIndividualScopeAwareRepository<T> repository, User user, DateTime lastModifiedDateTime, DateTime now, Long typeId, Pageable pageable, SubjectType subjectType, SyncParameters.SyncEntityName syncEntityName) {
-        List<Long> addressLevels = addressLevelService.getAllAddressLevelIdsForCatchment(user.getCatchment());
-        return repository.getSyncResults(new SyncParameters(lastModifiedDateTime, now, typeId, pageable, addressLevels, subjectType, user.getSyncSettings(), syncEntityName));
+    public Page<T> getSyncResultsBySubjectTypeRegistrationLocation(OperatingIndividualScopeAwareRepository<T> repository, User user, DateTime lastModifiedDateTime, DateTime now, Long typeId, Pageable pageable, SubjectType subjectType, SyncParameters.SyncEntityName syncEntityName) {
+        List<Long> addressLevels = addressLevelService.getAllRegistrationAddressIdsBySubjectType(user.getCatchment(), subjectType);
+        return repository.getSyncResults(new SyncParameters(lastModifiedDateTime, now, typeId, pageable, addressLevels, subjectType, user.getSyncSettings(), syncEntityName, user.getCatchment()));
+    }
+
+    public Page<T> getSyncResultsByCatchment(OperatingIndividualScopeAwareRepository<T> repository, User user, DateTime lastModifiedDateTime, DateTime now, Pageable pageable, SyncParameters.SyncEntityName syncEntityName) {
+        return repository.getSyncResults(new SyncParameters(lastModifiedDateTime, now, null, pageable, null, null, user.getSyncSettings(), syncEntityName, user.getCatchment()));
     }
 }

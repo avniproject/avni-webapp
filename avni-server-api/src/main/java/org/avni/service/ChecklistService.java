@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import org.joda.time.DateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Component
@@ -48,7 +46,7 @@ public class ChecklistService implements ScopeAwareService {
         Checklist checklist = checklistRepository.findFirstByChecklistDetail(checklistDetail);
         return checklistDetail != null &&
                 checklist != null &&
-                isChanged(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType(), SyncParameters.SyncEntityName.Checklist);
+                isChangedBySubjectTypeRegistrationLocationType(user, lastModifiedDateTime, checklistDetail.getId(), checklist.getProgramEnrolment().getIndividual().getSubjectType(), SyncParameters.SyncEntityName.Checklist);
     }
 
     @Override

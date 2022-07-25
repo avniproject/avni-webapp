@@ -1,43 +1,67 @@
 package org.avni.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.avni.application.KeyType;
 import org.avni.application.projections.VirtualCatchmentProjection;
 import org.avni.dao.AddressLevelTypeRepository;
 import org.avni.dao.LocationRepository;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.AddressLevelType;
-import org.avni.domain.Catchment;
+import org.avni.domain.*;
+import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.AddressLevelContract;
+import org.avni.web.request.webapp.SubjectTypeSetting;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class AddressLevelService {
     private final LocationRepository locationRepository;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private final OrganisationConfigService organisationConfigService;
+    private ObjectMapper objectMapper;
     private ThreadLocal<AddressLevelsForCatchment> addressLevelCache = ThreadLocal.withInitial(AddressLevelsForCatchment::new);
 
     private class AddressLevelsForCatchment {
         private Long catchmentId;
         private List<Long> addressLevelIds;
 
-        public List<Long> getAddressLevelsForCatchment(Catchment catchment) {
+        public List<Long> getAddressLevelsByCatchmentAndSubjectType(Catchment catchment, SubjectType subjectType) {
             if (catchment.getId() == catchmentId) return addressLevelIds;
             this.catchmentId = catchment.getId();
-            this.addressLevelIds = locationRepository.getVirtualCatchmentsForCatchmentId(catchment.getId())
+            this.addressLevelIds = getAddressLevels(catchment, subjectType)
                     .stream()
                     .map(VirtualCatchmentProjection::getAddresslevel_id)
                     .collect(Collectors.toList());
             return addressLevelIds;
         }
+
+        private List<VirtualCatchmentProjection> getAddressLevels(Catchment catchment, SubjectType subjectType) {
+            List<SubjectTypeSetting> customRegistrationLocations = objectMapper.convertValue(organisationConfigService.getSettingsByKey(KeyType.customRegistrationLocations.toString()), new TypeReference<List<SubjectTypeSetting>>() {});
+            Optional<SubjectTypeSetting> customLocationTypes = customRegistrationLocations.stream()
+                    .filter(crl -> crl.getSubjectTypeUUID()
+                            .equals(subjectType.getUuid()))
+                    .findFirst();
+            if (customLocationTypes.isPresent()) {
+                List<Long> locationTypeIds = addressLevelTypeRepository.findAllByUuidIn(customLocationTypes.get().getLocationTypeUUIDs())
+                        .stream()
+                        .map(CHSBaseEntity::getId)
+                        .collect(Collectors.toList());
+                return locationRepository.getVirtualCatchmentsForCatchmentIdAndLocationTypeId(catchment.getId(), locationTypeIds);
+            }
+            return locationRepository.getVirtualCatchmentsForCatchmentId(catchment.getId());
+        }
     }
 
     public AddressLevelService(LocationRepository locationRepository,
-                               AddressLevelTypeRepository addressLevelTypeRepository) {
+                               AddressLevelTypeRepository addressLevelTypeRepository, OrganisationConfigService organisationConfigService) {
         this.locationRepository = locationRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
+        this.organisationConfigService = organisationConfigService;
+        this.objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
     public List<AddressLevelContract> getAllLocations() {
@@ -62,8 +86,8 @@ public class AddressLevelService {
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getAllAddressLevelIdsForCatchment(Catchment catchment) {
-        return addressLevelCache.get().getAddressLevelsForCatchment(catchment);
+    public List<Long> getAllRegistrationAddressIdsBySubjectType(Catchment catchment, SubjectType subjectType) {
+        return addressLevelCache.get().getAddressLevelsByCatchmentAndSubjectType(catchment, subjectType);
     }
 
     public String getTitleLineage(AddressLevel location) {

@@ -7,9 +7,7 @@ import org.avni.domain.AddressLevel;
 import org.avni.domain.ParentLocationMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,24 +15,26 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locationMapping", path = "locationMapping", exported = false)
 public interface LocationMappingRepository extends ReferenceDataRepository<ParentLocationMapping>, FindByLastModifiedDateTime<ParentLocationMapping>, OperatingIndividualScopeAwareRepository<ParentLocationMapping> {
-    Page<ParentLocationMapping> findByParentLocationIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            List<Long> addressLevelIds,
+    Page<ParentLocationMapping> findByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+            long catchmentId,
             Date lastModifiedDateTime,
             Date now,
-            Pageable pageable);
+            Pageable pageable
+    );
 
-    boolean existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date lastModifiedDateTime,
-            @Param("addressIds") List<Long> addressIds);
+    boolean existsByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(
+            long catchmentId,
+            Date lastModifiedDateTime
+    );
 
     @Override
     default Page<ParentLocationMapping> getSyncResults(SyncParameters syncParameters) {
-        return findByParentLocationIdInAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getAddressLevels(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
+        return findByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchment().getId(), CHSEntity.toDate(syncParameters.getLastModifiedDateTime()), CHSEntity.toDate(syncParameters.getNow()), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
-        return existsByLastModifiedDateTimeGreaterThanAndParentLocationIdIn(syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getAddressLevels());
+        return existsByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
     }
 
     default ParentLocationMapping findByName(String name) {

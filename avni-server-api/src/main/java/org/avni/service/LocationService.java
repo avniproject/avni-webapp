@@ -257,7 +257,7 @@ public class LocationService implements ScopeAwareService {
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String typeUUID) {
         User user = UserContextHolder.getUserContext().getUser();
-        return isChanged(user, lastModifiedDateTime, null, null, SyncParameters.SyncEntityName.Location);
+        return isChangedByCatchment(user, lastModifiedDateTime, SyncParameters.SyncEntityName.Location);
     }
 
     @Override
