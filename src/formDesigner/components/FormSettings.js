@@ -327,7 +327,7 @@ class FormSettings extends Component {
     return Object.keys(constFormType).map(formType => {
       return (
         <MenuItem key={formType} value={formType}>
-          {constFormType[formType]}
+          {constFormType[formType].display}
         </MenuItem>
       );
     });

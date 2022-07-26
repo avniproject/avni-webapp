@@ -18821,6 +18821,24 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
+"rules-config@github:avniproject/rules-config#484b477791757c7697c7f93fa596d9845aaef831":
+  version "0.0.1"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/484b477791757c7697c7f93fa596d9845aaef831"
+  dependencies:
+    "@quasar/babel-preset-app" "^2.0.1"
+    babel-preset-env "^1.7.0"
+    babel-register "^6.26.0"
+    chai "^4.1.2"
+    lodash "^4.17.11"
+    moment "^2.22.2"
+    openchs-models "^0.2.25"
+    superagent "^3.8.3"
+    test "^0.6.0"
+    uglifyjs-webpack-plugin "^1.2.5"
+    webpack "^3.12.0"
+    webpack-cli "^3.0.3"
+    webpack-node-externals "1.6.0"
+
 "rules-config@github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39":
   version "0.0.1"
   resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/600c1ad52b693af7dc826ca33d58257bc3bc9d39"

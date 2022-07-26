@@ -70,7 +70,7 @@
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
-    "rules-config": "github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39",
+    "rules-config": "github:avniproject/rules-config#484b477791757c7697c7f93fa596d9845aaef831",
     "uuid": "^3.3.2"
   },
   "scripts": {

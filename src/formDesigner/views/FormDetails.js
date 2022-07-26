@@ -48,6 +48,7 @@ import {
   formDesignerUpdateConceptElementData,
   formDesignerUpdateDragDropOrderForFirstGroup
 } from "../common/FormDesignerHandlers";
+import { constFormType } from "../common/constants";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -412,23 +413,9 @@ class FormDetails extends Component {
   };
 
   getEntityNameForRules() {
-    switch (this.state.form.formType) {
-      case "IndividualProfile":
-        return "individual";
-      case "Encounter":
-      case "IndividualEncounterCancellation":
-        return "encounter";
-      case "ProgramEnrolment":
-      case "ProgramExit":
-        return "programEnrolment";
-      case "ProgramEncounter":
-      case "ProgramEncounterCancellation":
-        return "programEncounter";
-      case "ChecklistItem":
-        return "checklistItem";
-      default:
-        return "";
-    }
+    const entityFormInfo = constFormType[this.state.form.formType];
+    if (_.isNil(entityFormInfo)) return "";
+    return entityFormInfo.ruleVariableName;
   }
 
   renderGroups() {
@@ -724,7 +711,7 @@ class FormDetails extends Component {
     let numberElementError = 0;
     this.setState(
       produce(draft => {
-        draft.nameError = draft.name === "" ? true : false;
+        draft.nameError = draft.name === "";
         draft.form.ruleError = {};
         const {
           validationDeclarativeRule,

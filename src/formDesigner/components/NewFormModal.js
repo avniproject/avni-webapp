@@ -136,7 +136,7 @@ class NewFormModal extends Component {
     return _.map(_.keys(constFormType), formType => {
       return (
         <MenuItem key={formType} value={formType}>
-          {constFormType[formType]}
+          {constFormType[formType].display}
         </MenuItem>
       );
     });

@@ -115,6 +115,19 @@ export const sampleVisitScheduleRule = entityName => {
 };`;
 };
 
+export const sampleTaskScheduleRule = entityName => {
+  return `//SAMPLE TASK SCHEDULE RULE EXAMPLE
+"use strict";
+({ params, imports }) => {
+  const ${entityName} = params.entity;
+  const scheduleBuilder = new imports.rulesConfig.TaskScheduleBuilder({
+    ${entityName}
+  });
+  //add new visit schedule object to scheduleBuilder
+  return scheduleBuilder.getAll();
+};`;
+};
+
 export const sampleValidationRule = entityName => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';

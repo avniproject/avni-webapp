@@ -31,7 +31,7 @@ const FormListing = ({ history }) => {
     {
       title: "Form Type",
       field: "formType",
-      render: rowData => constFormType[rowData.formType]
+      render: rowData => constFormType[rowData.formType].display
     },
     {
       title: "Subject Name",

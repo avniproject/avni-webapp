@@ -13,13 +13,15 @@ import {
   sampleChecklistRule,
   sampleDecisionRule,
   sampleValidationRule,
-  sampleVisitScheduleRule
+  sampleVisitScheduleRule,
+  sampleTaskScheduleRule
 } from "../common/SampleRule";
 import { ConceptSelect } from "common/components/ConceptSelect";
 import Box from "@material-ui/core/Box";
 import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../util";
 import { get } from "lodash";
+import _ from "lodash";
 
 const RulePanel = ({ title, details }) => {
   const [expanded, setExpanded] = useState(false);
@@ -88,8 +90,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
   const commonProps = {
     encounterTypes,
     subjectType: form.subjectType,
-    disabled,
-    form
+    disabled
   };
   return (
     <div>
@@ -133,6 +134,29 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
           />
         </Box>
       </DeclarativeFormRule>
+      <DeclarativeFormRule
+        title={"Task Schedule Rule"}
+        onValueChange={jsonData => onDeclarativeRuleUpdate("taskScheduleDeclarativeRule", jsonData)}
+        rulesJson={form.taskScheduleDeclarativeRule}
+        updateJsCode={declarativeRuleHolder =>
+          props.onRuleUpdate(
+            "taskScheduleRule",
+            declarativeRuleHolder.generateTaskScheduleRule(props.entityName)
+          )
+        }
+        jsCode={form.taskScheduleRule}
+        error={get(form, "ruleError.taskScheduleRule")}
+        getApplicableActions={state => state.getApplicableTaskScheduleRuleActions()}
+        sampleRule={sampleTaskScheduleRule(props.entityName)}
+        onJsCodeChange={event =>
+          confirmBeforeRuleEdit(
+            form.taskScheduleDeclarativeRule,
+            () => props.onRuleUpdate("taskScheduleRule", event),
+            () => onDeclarativeRuleUpdate("taskScheduleDeclarativeRule", null)
+          )
+        }
+        {...commonProps}
+      />
       <DeclarativeFormRule
         title={"Visit Schedule Rule"}
         onValueChange={jsonData =>
