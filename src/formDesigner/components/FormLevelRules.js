@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -12,16 +12,15 @@ import PropTypes from "prop-types";
 import {
   sampleChecklistRule,
   sampleDecisionRule,
+  sampleTaskScheduleRule,
   sampleValidationRule,
-  sampleVisitScheduleRule,
-  sampleTaskScheduleRule
+  sampleVisitScheduleRule
 } from "../common/SampleRule";
 import { ConceptSelect } from "common/components/ConceptSelect";
 import Box from "@material-ui/core/Box";
 import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../util";
 import { get } from "lodash";
-import _ from "lodash";
 
 const RulePanel = ({ title, details }) => {
   const [expanded, setExpanded] = useState(false);
