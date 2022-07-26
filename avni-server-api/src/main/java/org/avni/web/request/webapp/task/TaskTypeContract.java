@@ -28,6 +28,8 @@ public class TaskTypeContract extends ReferenceDataContract {
     }
 
     public static TaskTypeContract fromEntity(TaskType taskType) {
+        if (taskType == null) return null;
+
         TaskTypeContract taskTypeContract = new TaskTypeContract();
         taskTypeContract.setTaskTypeName(taskType.getType().name());
         taskTypeContract.setName(taskType.getName());

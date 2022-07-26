@@ -18,10 +18,9 @@ import java.util.HashSet;
 
 @Service
 public class FormService implements NonScopeAwareService {
-
-    private FormRepository formRepository;
-    private OrganisationConfigService organisationConfigService;
-    private ConceptRepository conceptRepository;
+    private final FormRepository formRepository;
+    private final OrganisationConfigService organisationConfigService;
+    private final ConceptRepository conceptRepository;
 
     public FormService(FormRepository formRepository, OrganisationConfigService organisationConfigService, ConceptRepository conceptRepository) {
         this.formRepository = formRepository;
@@ -38,6 +37,7 @@ public class FormService implements NonScopeAwareService {
                 .withFormElementGroups(formRequest.getFormElementGroups())
                 .withDecisionRule(formRequest.getDecisionRule())
                 .withVisitScheduleRule(formRequest.getVisitScheduleRule())
+                .withTaskScheduleRule(formRequest.getTaskScheduleRule())
                 .withValidationRule(formRequest.getValidationRule())
                 .withChecklistRule(formRequest.getChecklistsRule())
                 .withVoided(formRequest.isVoided())

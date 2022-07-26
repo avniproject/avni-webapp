@@ -11,6 +11,8 @@ import org.avni.web.request.ConceptContract;
 import org.avni.web.request.ReferenceDataContract;
 
 import java.io.InvalidObjectException;
+
+import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,10 +31,12 @@ public class FormContract extends ReferenceDataContract {
     private List<FormElementGroupContract> formElementGroups;
     private Long organisationId;
     private SubjectType subjectType;
+    private TaskTypeContract taskType;
     private String programName;
     private List<String> encounterTypes;
     private String decisionRule;
     private String visitScheduleRule;
+    private String taskScheduleRule;
     private String validationRule;
     private String checklistsRule;
     private String createdBy;
@@ -262,4 +266,19 @@ public class FormContract extends ReferenceDataContract {
         this.visitScheduleDeclarativeRule = visitScheduleDeclarativeRule;
     }
 
+    public TaskTypeContract getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskTypeContract taskType) {
+        this.taskType = taskType;
+    }
+
+    public String getTaskScheduleRule() {
+        return taskScheduleRule;
+    }
+
+    public void setTaskScheduleRule(String taskScheduleRule) {
+        this.taskScheduleRule = taskScheduleRule;
+    }
 }

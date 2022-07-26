@@ -35,6 +35,11 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
+    public FormBuilder withTaskScheduleRule(String taskScheduleRule) {
+        this.get().setTaskScheduleRule(taskScheduleRule);
+        return this;
+    }
+
     public FormBuilder withValidationRule(String validationRule) {
         this.get().setValidationRule(validationRule);
         return this;

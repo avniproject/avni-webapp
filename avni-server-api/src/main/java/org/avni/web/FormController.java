@@ -8,6 +8,7 @@ import org.avni.dao.ProgramRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
 import org.avni.domain.*;
+import org.avni.domain.task.TaskType;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.FormWebProjection;
 import org.avni.projection.IdentifierAssignmentProjection;
@@ -26,6 +27,7 @@ import org.avni.web.request.application.FormElementContract;
 import org.avni.web.request.application.FormElementGroupContract;
 import org.avni.web.request.webapp.CreateUpdateFormRequest;
 import org.avni.web.request.webapp.FormMappingRequest;
+import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.avni.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -270,6 +272,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         formContract.setModifiedDateTime(form.getLastModifiedDateTime());
         formContract.setDecisionRule(form.getDecisionRule());
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
+        formContract.setTaskScheduleRule(form.getTaskScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
         formContract.setChecklistsRule(form.getChecklistsRule());
         formContract.setOrganisationId(form.getOrganisationId());
@@ -284,7 +287,13 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 
         //Assuming that we'll have single registration form per subject types
         List<FormMapping> formMappings = formMappingRepository.findByFormIdAndIsVoidedFalse(form.getId());
-        formContract.setSubjectType(formMappings.isEmpty() ? null : formMappings.get(0).getSubjectType());
+        if (formMappings.size() > 0) {
+            FormMapping formMapping = formMappings.get(0);
+            formContract.setSubjectType(formMapping.getSubjectType());
+            TaskType taskType = formMapping.getTaskType();
+            formContract.setTaskType(TaskTypeContract.fromEntity(taskType));
+        }
+
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());

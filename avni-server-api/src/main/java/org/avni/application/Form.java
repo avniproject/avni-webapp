@@ -200,4 +200,12 @@ public class Form extends OrganisationAwareEntity {
         DecisionConcept decisionConcept = getDecisionConcept(concept.getUuid());
         this.decisionConcepts.remove(decisionConcept);
     }
+
+    public String getTaskScheduleRule() {
+        return taskScheduleRule;
+    }
+
+    public void setTaskScheduleRule(String taskScheduleRule) {
+        this.taskScheduleRule = taskScheduleRule;
+    }
 }
