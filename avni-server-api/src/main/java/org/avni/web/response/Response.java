@@ -22,7 +22,7 @@ public class Response {
         parentMap.put(observationsResponseKeyName, observationsResponse);
     }
 
-    public static void mapObservations(ConceptRepository conceptRepository, ConceptService conceptService, LinkedHashMap<String, Object> observationsResponse, ObservationCollection observations) {
+    public static void mapObservations(ConceptRepository conceptRepository, ConceptService conceptService, Map<String, Object> observationsResponse, ObservationCollection observations) {
         ObservationCollection obs = Optional.ofNullable(observations).orElse(new ObservationCollection());
         String stringObservations;
         try {

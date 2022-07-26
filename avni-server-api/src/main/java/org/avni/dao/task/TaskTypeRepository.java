@@ -12,4 +12,8 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(collectionResourceRel = "taskType", path = "taskType")
 public interface TaskTypeRepository extends ReferenceDataRepository<TaskType>, FindByLastModifiedDateTime<TaskType> {
     TaskType findById(long id);
+    default TaskType getTaskType(long id) {
+        if (id < 0) return null;
+        return findById(id);
+    }
 }
