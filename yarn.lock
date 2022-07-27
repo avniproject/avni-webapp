@@ -5675,7 +5675,7 @@ avni-health-modules@0.0.15:
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
-    rules-config "github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39"
+    rules-config "github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -14720,11 +14720,6 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
-
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -18821,9 +18816,9 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
-"rules-config@github:avniproject/rules-config#085c2f840461b02c7108a446e7b680ef79327271":
+"rules-config@github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/085c2f840461b02c7108a446e7b680ef79327271"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/809f5d164b875cf261fc11dad342d5a4315d309d"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"
@@ -18839,9 +18834,9 @@ rsvp@^4.8.4:
     webpack-cli "^3.0.3"
     webpack-node-externals "1.6.0"
 
-"rules-config@github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39":
+"rules-config@github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/600c1ad52b693af7dc826ca33d58257bc3bc9d39"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/809f5d164b875cf261fc11dad342d5a4315d309d"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"
