@@ -12,7 +12,7 @@
         <logger name="org.avni" additivity="false" level="info">
             <appender-ref ref="FILE"/>
         </logger>
-        <logger name="org.springframework" level="OFF"/>
+        <logger name="org.springframework" level="DEBUG"/>
         <logger name="org.hibernate.search.batchindexing.impl.SimpleIndexingProgressMonitor" level="OFF"/>
     </springProfile>
 </configuration>
