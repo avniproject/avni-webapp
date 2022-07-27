@@ -6,26 +6,20 @@ import org.avni.dao.task.TaskRepository;
 import org.avni.dao.task.TaskSearchCriteria;
 import org.avni.dao.task.TaskStatusRepository;
 import org.avni.dao.task.TaskTypeRepository;
-import org.avni.domain.Account;
-import org.avni.domain.task.Task;
 import org.avni.service.ConceptService;
-import org.avni.web.AbstractController;
-import org.avni.web.RestControllerResourceProcessor;
 import org.avni.web.request.task.TaskFilterCriteria;
 import org.avni.web.response.Response;
 import org.avni.web.response.TaskSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@RestController
+@RestController
 public class TaskWebController {
     private final TaskTypeRepository taskTypeRepository;
     private final TaskStatusRepository taskStatusRepository;
@@ -44,8 +38,9 @@ public class TaskWebController {
         this.conceptService = conceptService;
     }
 
-    @GetMapping(name = "/web/task")
+    @RequestMapping(value = "/web/task", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
     public List<TaskSearchResponse> getTasks(@RequestBody TaskFilterCriteria filterCriteria, Pageable pageable) {
         TaskSearchCriteria searchCriteria = new TaskSearchCriteria();
         searchCriteria.setTaskType(taskTypeRepository.getTaskType(filterCriteria.getTaskType()));
