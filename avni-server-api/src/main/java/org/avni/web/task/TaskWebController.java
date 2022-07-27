@@ -12,6 +12,7 @@ import org.avni.web.response.Response;
 import org.avni.web.response.TaskSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +41,7 @@ public class TaskWebController {
     }
 
     @GetMapping(name = "/web/task")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public List<TaskSearchResponse> getTasks(@RequestBody TaskFilterCriteria filterCriteria, Pageable pageable) {
         TaskSearchCriteria searchCriteria = new TaskSearchCriteria();
         searchCriteria.setTaskType(taskTypeRepository.getTaskType(filterCriteria.getTaskType()));
