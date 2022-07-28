@@ -45,7 +45,7 @@ public class AddressLevelService {
                     .filter(crl -> crl.getSubjectTypeUUID()
                             .equals(subjectType.getUuid()))
                     .findFirst();
-            if (customLocationTypes.isPresent()) {
+            if (customLocationTypes.isPresent() && !customLocationTypes.get().getLocationTypeUUIDs().isEmpty()) {
                 List<Long> locationTypeIds = addressLevelTypeRepository.findAllByUuidIn(customLocationTypes.get().getLocationTypeUUIDs())
                         .stream()
                         .map(CHSBaseEntity::getId)
