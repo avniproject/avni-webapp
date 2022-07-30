@@ -16,6 +16,7 @@ import SelfServiceReports from "../reports/SelfServiceReports";
 import CannedReport from "../reports/cannedReport/CannedReport";
 import News from "../news/News";
 import Documentation from "../documentation/Documentation";
+import Assignment from "../assignment/Assignment";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -78,6 +79,13 @@ const Routes = ({ user, organisation }) => (
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Documentation)}
+    />
+    <RestrictedRoute
+      exact
+      path="/assignment/task"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, Assignment)}
     />
     <RestrictedRoute
       exact

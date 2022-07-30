@@ -64,6 +64,7 @@ const Homepage = ({ user }) => {
         {renderCard("/#/admin/user", "Admin", "supervisor_account")}
         {renderCard("/#/appdesigner", "App Designer", "architecture")}
         {renderCard("/#/documentation", "Documentation", "article")}
+        {renderCard("/#/assignment/task", "Assignment", "assignment_turned_in")}
         {renderCard("/#/news", "News Broadcasts", "speaker")}
         {renderCard("/#/translations", "Translations", "translate")}
         {renderCard("/#/export", "Reports", "assessment")}
