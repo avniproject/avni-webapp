@@ -1,6 +1,7 @@
 package org.avni.web.request.task;
 
 import org.avni.web.request.ObservationRequest;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.List;
 public class TaskFilterCriteria {
     private long taskType;
     private long taskStatus;
-    private long assignedTo;
+    private Long assignedTo;
+    private DateTime completedOn;
+    private DateTime createdOn;
     private List<ObservationRequest> metadata = new ArrayList<>();
 
     public long getTaskType() {
@@ -27,11 +30,11 @@ public class TaskFilterCriteria {
         this.taskStatus = taskStatus;
     }
 
-    public long getAssignedTo() {
+    public Long getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(long assignedTo) {
+    public void setAssignedTo(Long assignedTo) {
         this.assignedTo = assignedTo;
     }
 
@@ -41,5 +44,25 @@ public class TaskFilterCriteria {
 
     public void setMetadata(List<ObservationRequest> metadata) {
         this.metadata = metadata;
+    }
+
+    public DateTime getCompletedOn() {
+        return completedOn;
+    }
+
+    public void setCompletedOn(DateTime completedOn) {
+        this.completedOn = completedOn;
+    }
+
+    public DateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(DateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public boolean isUnassigned() {
+        return assignedTo != null && assignedTo == 0;
     }
 }

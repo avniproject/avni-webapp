@@ -3,10 +3,7 @@ package org.avni.web.task;
 import org.avni.dao.task.TaskStatusRepository;
 import org.avni.dao.task.TaskTypeRepository;
 import org.avni.domain.task.TaskStatus;
-import org.avni.domain.task.TaskType;
-import org.avni.domain.task.TaskTypeName;
 import org.avni.web.request.webapp.task.TaskStatusContract;
-import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.avni.web.response.AvniEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +33,10 @@ public class TaskStatusWebController {
         taskStatus.setVoided(request.isVoided());
         taskStatus.setName(request.getName());
         taskStatus.setTerminal(request.isTerminal());
-        taskStatus.setTaskType(taskTypeRepository.findById(request.getTaskTypeId()));
+        Long taskTypeId = request.getTaskTypeId();
+        if (taskTypeId != null) {
+            taskStatus.setTaskType(taskTypeRepository.findById(taskTypeId.longValue()));
+        }
         taskStatus.assignUUID();
         taskStatusRepository.save(taskStatus);
         return new AvniEntityResponse(taskStatus);

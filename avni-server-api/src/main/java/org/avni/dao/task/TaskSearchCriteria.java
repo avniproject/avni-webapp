@@ -4,14 +4,21 @@ import org.avni.domain.Concept;
 import org.avni.domain.User;
 import org.avni.domain.task.TaskStatus;
 import org.avni.domain.task.TaskType;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TaskSearchCriteria {
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
+
     private TaskType taskType;
     private TaskStatus taskStatus;
     private User assignedTo;
+    private DateTime completedOn;
+    private DateTime createdOn;
     private Map<Concept, Object> metadata = new HashMap<>();
 
     public TaskType getTaskType() {
@@ -44,5 +51,29 @@ public class TaskSearchCriteria {
 
     public Map<Concept, Object> getMetadata() {
         return metadata;
+    }
+
+    public DateTime getCompletedOn() {
+        return completedOn;
+    }
+
+    public void setCompletedOn(DateTime completedOn) {
+        this.completedOn = completedOn;
+    }
+
+    public DateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(DateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public String getFormattedCreatedOn() {
+        return DATE_TIME_FORMATTER.print(createdOn);
+    }
+
+    public String getFormattedCompletedOn() {
+        return DATE_TIME_FORMATTER.print(completedOn);
     }
 }

@@ -6,12 +6,29 @@ import org.avni.util.O;
 import java.util.Map;
 
 public class TaskSearchResponse {
+    private String name;
+    private Long id;
     private String createdOn;
     private String completedOn;
     private String status;
     private String assignedTo;
     private String type;
     private Map<String, Object> metadata;
+
+    public static TaskSearchResponse from(Task task, Map<String, Object> metadataMap) {
+        TaskSearchResponse response = new TaskSearchResponse();
+        response.setName(task.getName());
+        response.setId(task.getId());
+        response.setCreatedOn(O.getDateInDbFormat(task.getCreatedDateTime().toDate()));
+        if (task.getCompletedOn() != null) {
+            response.setCompletedOn(O.getDateInDbFormat(task.getCompletedOn().toDate()));
+        }
+        response.setAssignedTo(task.getAssignedTo().getName());
+        response.setStatus(task.getTaskStatus().getName());
+        response.setType(task.getTaskType().getName());
+        response.setMetadata(metadataMap);
+        return response;
+    }
 
     public String getCreatedOn() {
         return createdOn;
@@ -61,14 +78,19 @@ public class TaskSearchResponse {
         this.type = type;
     }
 
-    public static TaskSearchResponse from(Task task, Map<String, Object> metadataMap) {
-        TaskSearchResponse response = new TaskSearchResponse();
-        response.setCreatedOn(O.getDateInDbFormat(task.getCreatedDateTime().toDate()));
-        response.setCompletedOn(O.getDateInDbFormat(task.getCreatedDateTime().toDate()));
-        response.setAssignedTo(task.getAssignedTo().getName());
-        response.setStatus(task.getTaskStatus().getName());
-        response.setType(task.getTaskType().getName());
-        response.setMetadata(metadataMap);
-        return response;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

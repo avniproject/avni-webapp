@@ -28,6 +28,10 @@ public interface CHSRepository<T extends CHSEntity> {
         );
     }
 
+    default Expression<String> convertToDate(Path<?> path, CriteriaBuilder cb) {
+        return cb.function("TO_CHAR", String.class, path, cb.literal("yyyy-MM-dd"));
+    }
+
     default Specification lastModifiedBetween(Date lastModifiedDateTime, Date now) {
         Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();

@@ -1,10 +1,8 @@
 package org.avni.web.task;
 
 import org.avni.dao.task.TaskTypeRepository;
-import org.avni.domain.ObservationCollection;
 import org.avni.domain.task.TaskType;
 import org.avni.domain.task.TaskTypeName;
-import org.avni.service.ObservationService;
 import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.avni.web.response.AvniEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,12 +17,10 @@ import java.util.List;
 @RestController
 public class TaskTypeWebController {
     private final TaskTypeRepository taskTypeRepository;
-    private final ObservationService observationService;
 
     @Autowired
-    public TaskTypeWebController(TaskTypeRepository taskTypeRepository, ObservationService observationService) {
+    public TaskTypeWebController(TaskTypeRepository taskTypeRepository) {
         this.taskTypeRepository = taskTypeRepository;
-        this.observationService = observationService;
     }
 
     @PostMapping(value = "/web/taskTypes")

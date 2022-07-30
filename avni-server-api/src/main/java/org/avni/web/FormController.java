@@ -12,10 +12,7 @@ import org.avni.domain.task.TaskType;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.FormWebProjection;
 import org.avni.projection.IdentifierAssignmentProjection;
-import org.avni.service.FormMappingService;
-import org.avni.service.FormService;
-import org.avni.service.IdentifierAssignmentService;
-import org.avni.service.UserService;
+import org.avni.service.*;
 import org.avni.util.BadRequestError;
 import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.ConceptContract;
@@ -68,6 +65,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     private ProjectionFactory projectionFactory;
     private UserService userService;
     private IdentifierAssignmentService identifierAssignmentService;
+    private final ConceptService conceptService;
 
     @Autowired
     public FormController(FormRepository formRepository,
@@ -79,7 +77,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                           FormMappingService formMappingService,
                           FormService formService,
                           UserService userService,
-                          IdentifierAssignmentService identifierAssignmentService) {
+                          IdentifierAssignmentService identifierAssignmentService, ConceptService conceptService) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
@@ -90,6 +88,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         this.formService = formService;
         this.userService = userService;
         this.identifierAssignmentService = identifierAssignmentService;
+        this.conceptService = conceptService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -291,7 +290,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             FormMapping formMapping = formMappings.get(0);
             formContract.setSubjectType(formMapping.getSubjectType());
             TaskType taskType = formMapping.getTaskType();
-            formContract.setTaskType(TaskTypeContract.fromEntity(taskType));
+            formContract.setTaskType(TaskTypeContract.fromEntity(taskType, conceptService));
         }
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {

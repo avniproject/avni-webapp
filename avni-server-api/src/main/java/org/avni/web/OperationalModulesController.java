@@ -14,6 +14,7 @@ import org.avni.dao.task.TaskTypeRepository;
 import org.avni.domain.Concept;
 import org.avni.domain.JsonObject;
 import org.avni.domain.SubjectType;
+import org.avni.service.ConceptService;
 import org.avni.service.OrganisationConfigService;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.AddressLevelTypeContract;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,6 +46,7 @@ public class OperationalModulesController {
     private final IndividualRelationRepository individualRelationRepository;
     private final TaskTypeRepository taskTypeRepository;
     private final ObjectMapper objectMapper;
+    private final ConceptService conceptService;
 
     @Autowired
     public OperationalModulesController(EncounterTypeRepository encounterTypeRepository,
@@ -56,7 +57,7 @@ public class OperationalModulesController {
                                         AddressLevelTypeRepository addressLevelTypeRepository,
                                         OrganisationConfigService organisationConfigService,
                                         IndividualRelationRepository individualRelationRepository,
-                                        TaskTypeRepository taskTypeRepository) {
+                                        TaskTypeRepository taskTypeRepository, ConceptService conceptService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.programRepository = programRepository;
@@ -66,6 +67,7 @@ public class OperationalModulesController {
         this.organisationConfigService = organisationConfigService;
         this.individualRelationRepository = individualRelationRepository;
         this.taskTypeRepository = taskTypeRepository;
+        this.conceptService = conceptService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -97,7 +99,7 @@ public class OperationalModulesController {
                 .stream()
                 .map(IndividualRelationContract::fromEntity)
                 .collect(Collectors.toList());
-        List<TaskTypeContract> taskTypeContracts = taskTypeRepository.findAll().stream().map(TaskTypeContract::fromEntity).collect(Collectors.toList());
+        List<TaskTypeContract> taskTypeContracts = taskTypeRepository.findAll().stream().map(tt -> TaskTypeContract.fromEntity(tt, conceptService)).collect(Collectors.toList());
 
         return new JsonObject()
                 .with("subjectTypes", subjectTypeRepository.findAllOperational())
