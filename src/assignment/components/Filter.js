@@ -6,6 +6,8 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import Button from "@material-ui/core/Button";
 import { labelValue } from "../reducers";
+import TextField from "@material-ui/core/TextField";
+import { map } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -20,6 +22,9 @@ const useStyle = makeStyles(theme => ({
   },
   header: {
     marginBottom: theme.spacing(3)
+  },
+  textField: {
+    backgroundColor: "#FFF"
   }
 }));
 
@@ -48,6 +53,8 @@ export const Filter = ({
   const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
   const onFilterChange = (filter, value) =>
     dispatch({ type: "setFilter", payload: { filter, value } });
+  const onMetadataFilterChange = (filter, value) =>
+    dispatch({ type: "setMetadataFilter", payload: { filter, value } });
 
   const selectFilter = (label, options, filter, isMulti = false) => (
     <FormControl fullWidth className={classes.filter}>
@@ -64,11 +71,24 @@ export const Filter = ({
     </FormControl>
   );
 
+  const metadataTextFilter = label => (
+    <FormControl fullWidth className={classes.filter}>
+      <FormLabel component="legend">{label}</FormLabel>
+      <TextField
+        className={classes.textField}
+        variant="outlined"
+        value={filterCriteria.metadata[label]}
+        onChange={event => onMetadataFilterChange(label, event.target.value)}
+      />
+    </FormControl>
+  );
+
   return (
     <Paper className={classes.root}>
       <Typography variant={"h6"} className={classes.header}>
         {"Filters"}
       </Typography>
+      {map(searchFields, name => metadataTextFilter(name))}
       {selectFilter("Task type", taskTypeOptions, "taskType")}
       {selectFilter("Task status", taskStatusOptions, "taskStatus")}
       {selectFilter("Assigned to", allUserOptions, "assignedTo")}

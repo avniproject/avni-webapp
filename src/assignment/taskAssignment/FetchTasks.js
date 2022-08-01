@@ -1,17 +1,17 @@
 import http from "common/utils/httpClient";
-import _, { get, mapValues } from "lodash";
+import { getFilterPayload } from "../reducers";
+import { isEmpty } from "lodash";
 
 export const fetchTasks = (query, filterCriteria) => {
-  const filterCriteriaValues = mapValues(filterCriteria, value => get(value, "value", null));
   return new Promise(resolve => {
     let apiUrl = "/web/task?";
     apiUrl += "size=" + query.pageSize;
     apiUrl += "&page=" + query.page;
-    if (!_.isEmpty(query.orderBy)) {
+    if (!isEmpty(query.orderBy)) {
       apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
     }
     http
-      .post(apiUrl, filterCriteriaValues)
+      .post(apiUrl, getFilterPayload(filterCriteria))
       .then(response => response.data)
       .then(result => {
         resolve({

@@ -3,6 +3,7 @@ import api from "../api";
 import {
   getAllSearchFields,
   getAssignmentValue,
+  getFilterPayload,
   getMetadataOptions,
   initialState,
   TaskAssignmentReducer
@@ -10,7 +11,7 @@ import {
 import MaterialTable from "material-table";
 import { getTableColumns } from "./TableColumns";
 import { fetchTasks } from "./FetchTasks";
-import { get, includes, isEmpty, mapValues } from "lodash";
+import { includes, isEmpty, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid } from "@material-ui/core";
 import { Filter } from "../components/Filter";
@@ -40,13 +41,15 @@ const TaskAssignment = ({ history, ...props }) => {
   const onActionDone = async () => {
     dispatch({ type: "onSave", payload: { saveStart: true } });
     dispatch({ type: "hideAction" });
-    const taskFilterCriteria = mapValues(filterCriteria, value => get(value, "value", null));
     const assignmentCriteriaValues = mapValues(assignmentCriteria, (v, k) =>
       includes(["assignToUserIds", "statusId", "assignToUserId"], k)
         ? getAssignmentValue(k, assignmentCriteria)
         : v
     );
-    const [error] = await api.assignTask({ ...assignmentCriteriaValues, taskFilterCriteria });
+    const [error] = await api.assignTask({
+      ...assignmentCriteriaValues,
+      taskFilterCriteria: getFilterPayload(filterCriteria)
+    });
     if (error) {
       alert(error);
     }

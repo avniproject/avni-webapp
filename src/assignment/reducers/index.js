@@ -1,4 +1,4 @@
-import { filter, flatMap, get, map } from "lodash";
+import { filter, flatMap, get, isEmpty, map, mapValues } from "lodash";
 
 const initialAssignmentCriteria = {
   taskIds: [],
@@ -13,9 +13,10 @@ export const initialState = {
   filterCriteria: {
     taskType: null,
     taskStatus: null,
-    assignedTo: null, //{label: 'Unassigned', value: 0}
+    assignedTo: { label: "Unassigned", value: 0 },
     createdOn: null,
-    completedOn: null
+    completedOn: null,
+    metadata: {}
   },
   displayAction: false,
   assignmentCriteria: initialAssignmentCriteria,
@@ -43,6 +44,11 @@ export const TaskAssignmentReducer = (state, action) => {
     case "setFilter": {
       const { filter, value } = payload;
       newState.filterCriteria[filter] = value;
+      return newState;
+    }
+    case "setMetadataFilter": {
+      const { filter, value } = payload;
+      newState.filterCriteria.metadata[filter] = value;
       return newState;
     }
     case "displayAction": {
@@ -93,4 +99,13 @@ export const getAssignmentValue = (key, assignmentCriteria) => {
     return map(assignmentCriteria[key], kv => get(kv, "value"));
   }
   return get(assignmentCriteria[key], "value", null);
+};
+
+export const getFilterPayload = filterCriteria => {
+  const filterCriteriaValues = mapValues(filterCriteria, value => get(value, "value", null));
+  filterCriteriaValues.metadata = map(filterCriteria.metadata, (v, k) => ({
+    conceptName: k,
+    value: v
+  })).filter(({ value }) => !isEmpty(value));
+  return filterCriteriaValues;
 };
