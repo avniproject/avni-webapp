@@ -13,16 +13,25 @@ import { getTableColumns } from "./TableColumns";
 import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { Grid } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import { Filter } from "../components/Filter";
 import { AssignmentAction } from "../components/AssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
+import Paper from "@material-ui/core/Paper";
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    height: "85vh",
+    backgroundColor: "#FFF"
+  }
+}));
 
 const refreshTable = ref => ref.current && ref.current.onQueryChange();
 const tableRef = React.createRef();
 
 const TaskAssignment = ({ history, ...props }) => {
+  const classes = useStyles();
   const [state, dispatch] = React.useReducer(TaskAssignmentReducer, initialState);
   const { filterCriteria, taskMetadata, displayAction, assignmentCriteria } = state;
   const { taskTypeOptions, taskStatusOptions, userOptions } = getMetadataOptions(
@@ -58,54 +67,59 @@ const TaskAssignment = ({ history, ...props }) => {
   };
 
   const renderContent = () => (
-    <Grid container>
-      <Grid item xs={8}>
-        <MaterialTable
-          title="All Tasks"
-          tableRef={tableRef}
-          columns={getTableColumns(taskMetadata)}
-          data={query => fetchTasks(query, filterCriteria)}
-          options={{
-            pageSize: 10,
-            pageSizeOptions: [10, 15, 20],
-            addRowPosition: "first",
-            sorting: true,
-            debounceInterval: 500,
-            search: false,
-            selection: true
-          }}
-          components={{
-            Toolbar: props => (
-              <AssignmentToolBar
-                dispatch={dispatch}
-                assignmentCriteria={assignmentCriteria}
-                {...props}
-              />
-            )
-          }}
-        />
-      </Grid>
-      <Grid xs={1} />
-      <Grid item xs={3}>
-        <Filter
+    <div className={classes.root}>
+      <Grid container>
+        <Grid item xs={8}>
+          <MaterialTable
+            title="All Tasks"
+            tableRef={tableRef}
+            columns={getTableColumns(taskMetadata)}
+            data={query => fetchTasks(query, filterCriteria)}
+            options={{
+              pageSize: 10,
+              pageSizeOptions: [10, 15, 25],
+              addRowPosition: "first",
+              sorting: true,
+              debounceInterval: 500,
+              search: false,
+              selection: true,
+              maxBodyHeight: "75vh",
+              minBodyHeight: "75vh"
+            }}
+            components={{
+              Toolbar: props => (
+                <AssignmentToolBar
+                  dispatch={dispatch}
+                  assignmentCriteria={assignmentCriteria}
+                  {...props}
+                />
+              ),
+              Container: props => <Paper {...props} elevation={0} />
+            }}
+          />
+        </Grid>
+        <Grid xs={1} />
+        <Grid item xs={3}>
+          <Filter
+            dispatch={dispatch}
+            filterCriteria={filterCriteria}
+            onFilterApply={onFilterApply}
+            taskStatusOptions={taskStatusOptions}
+            taskTypeOptions={taskTypeOptions}
+            userOptions={userOptions}
+            searchFields={getAllSearchFields(taskMetadata)}
+          />
+        </Grid>
+        <AssignmentAction
+          openAction={displayAction}
           dispatch={dispatch}
-          filterCriteria={filterCriteria}
-          onFilterApply={onFilterApply}
+          onDone={onActionDone}
           taskStatusOptions={taskStatusOptions}
-          taskTypeOptions={taskTypeOptions}
           userOptions={userOptions}
-          searchFields={getAllSearchFields(taskMetadata)}
+          assignmentCriteria={assignmentCriteria}
         />
       </Grid>
-      <AssignmentAction
-        openAction={displayAction}
-        dispatch={dispatch}
-        onDone={onActionDone}
-        taskStatusOptions={taskStatusOptions}
-        userOptions={userOptions}
-        assignmentCriteria={assignmentCriteria}
-      />
-    </Grid>
+    </div>
   );
 
   return (
