@@ -90,7 +90,7 @@ public class TaskService implements NonScopeAwareService {
             Concept concept = conceptRepository.findByName(observationRequest.getConceptName());
             Object value = observationRequest.getValue();
             if (concept.isCoded()) {
-                Concept answerConcept = conceptRepository.findByName((String) value);
+                Concept answerConcept = conceptRepository.findByNameIgnoreCase((String) value);
                 if (answerConcept != null) {
                     searchCriteria.addMetadata(concept, answerConcept.getUuid());
                 }
