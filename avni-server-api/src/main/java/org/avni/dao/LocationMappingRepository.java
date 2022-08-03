@@ -1,23 +1,19 @@
 package org.avni.dao;
 
-import java.util.Date;
-
-import org.avni.domain.CHSEntity;
 import org.avni.domain.AddressLevel;
+import org.avni.domain.CHSEntity;
 import org.avni.domain.ParentLocationMapping;
-import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locationMapping", path = "locationMapping", exported = false)
 public interface LocationMappingRepository extends ReferenceDataRepository<ParentLocationMapping>, FindByLastModifiedDateTime<ParentLocationMapping>, OperatingIndividualScopeAwareRepository<ParentLocationMapping> {
-
-    static final DateTime REALLY_OLD_DATE = new DateTime("1900-01-01T00:00:00.000Z");
 
     Page<ParentLocationMapping> findByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
             long catchmentId,
@@ -37,11 +33,8 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
-        if(syncParameters.getLastModifiedDateTime().isEqual(REALLY_OLD_DATE)) {
-            return true;
-        }
-        return existsByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
+        return true;
     }
 
     default ParentLocationMapping findByName(String name) {
