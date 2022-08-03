@@ -34,7 +34,9 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
 
     @Override
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
-        return existsByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
+        return true;
+        //TODO Temporary change to unblock Goonj implementation
+//        return existsByParentLocationVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
     }
 
     default ParentLocationMapping findByName(String name) {
