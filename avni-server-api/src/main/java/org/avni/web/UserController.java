@@ -12,6 +12,7 @@ import org.avni.service.IdpService;
 import org.avni.service.ResetSyncService;
 import org.avni.service.UserService;
 import org.avni.web.request.UserContract;
+import org.avni.web.request.syncAttribute.UserSyncSettings;
 import org.avni.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -45,6 +47,7 @@ public class UserController {
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
     private ResetSyncService resetSyncService;
+    private final SubjectTypeRepository subjectTypeRepository;
 
     @Value("${avni.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -55,7 +58,7 @@ public class UserController {
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           IdpService idpService,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ResetSyncService resetSyncService) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ResetSyncService resetSyncService, SubjectTypeRepository subjectTypeRepository) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
@@ -65,6 +68,7 @@ public class UserController {
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
         this.resetSyncService = resetSyncService;
+        this.subjectTypeRepository = subjectTypeRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -107,6 +111,19 @@ public class UserController {
         }
     }
 
+    @GetMapping(value = "/user/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @ResponseBody
+    public UserContract getUser(@PathVariable("id") Long id) {
+        User user = userRepository.findOne(id);
+        if (user == null) {
+            throw new EntityNotFoundException(String.format("User not found with id %d", id));
+        }
+        UserContract userContract = UserContract.fromEntity(user);
+        userContract.setSyncSettings(UserSyncSettings.fromUserSyncSettings(user.getSyncSettings(), subjectTypeRepository));
+        return userContract;
+    }
+
     @PutMapping(value = {"/user/{id}", "/user/accountOrgAdmin/{id}"})
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
@@ -116,7 +133,7 @@ public class UserController {
             if (user == null)
                 return ResponseEntity.badRequest()
                         .body(String.format("User with username '%s' not found", userContract.getUsername()));
-            resetSyncService.recordSyncAttributeValueChangeForUser(user, userContract);
+            resetSyncService.recordSyncAttributeValueChangeForUser(user, userContract, UserSyncSettings.fromUserSyncWebJSON(userContract.getSyncSettings(), subjectTypeRepository));
             user = setUserAttributes(user, userContract);
 
             idpService.updateUser(user);
@@ -151,13 +168,14 @@ public class UserController {
         user.setPhoneNumber(userContract.getPhoneNumber());
 
         user.setName(userContract.getName());
-        user.setCatchment(catchmentRepository.findOne(userContract.getCatchmentId()));
+        if(userContract.getCatchmentId()!=null) {
+            user.setCatchment(catchmentRepository.findOne(userContract.getCatchmentId()));
+        }
 
         user.setOrgAdmin(userContract.isOrgAdmin());
         user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
         user.setSettings(userContract.getSettings());
-        JsonObject syncSettings = userContract.getSyncSettings();
-        user.setSyncSettings(syncSettings == null ? new JsonObject() : syncSettings);
+        user.setSyncSettings(UserSyncSettings.fromUserSyncWebJSON(userContract.getSyncSettings(), subjectTypeRepository));
         User currentUser = userService.getCurrentUser();
         Long organisationId = null;
         if (!userContract.isAdmin()) {

@@ -2,10 +2,13 @@ package org.avni.service;
 
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.ResetSyncRepository;
+import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.UserRepository;
 import org.avni.domain.*;
+import org.avni.util.JsonObjectUtil;
 import org.avni.web.request.CatchmentContract;
 import org.avni.web.request.UserContract;
+import org.avni.web.request.syncAttribute.UserSyncSettings;
 import org.avni.web.request.webapp.SubjectTypeContractWeb;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,14 +26,14 @@ public class ResetSyncService {
     private final ResetSyncRepository resetSyncRepository;
     private final UserRepository userRepository;
     private final IndividualRepository individualRepository;
-    private final FormMappingService formMappingService;
+    private final SubjectTypeRepository subjectTypeRepository;
 
     @Autowired
-    public ResetSyncService(ResetSyncRepository resetSyncRepository, UserRepository userRepository, IndividualRepository individualRepository, FormMappingService formMappingService) {
+    public ResetSyncService(ResetSyncRepository resetSyncRepository, UserRepository userRepository, IndividualRepository individualRepository, SubjectTypeRepository subjectTypeRepository) {
         this.resetSyncRepository = resetSyncRepository;
         this.userRepository = userRepository;
         this.individualRepository = individualRepository;
-        this.formMappingService = formMappingService;
+        this.subjectTypeRepository = subjectTypeRepository;
     }
 
     public void recordCatchmentChange(Catchment savedCatchment, CatchmentContract request) {
@@ -47,7 +52,7 @@ public class ResetSyncService {
     }
 
     public void recordSyncAttributeChange(SubjectType savedSubjectType, SubjectTypeContractWeb request) {
-        if (individualRepository.existsBySubjectType(savedSubjectType) &&
+        if (individualRepository.existsBySubjectTypeUuid(savedSubjectType.getUuid()) &&
                 anySyncAttributeChanged(savedSubjectType, request)) {
             ResetSync resetSync = buildNewResetSync();
             resetSync.setSubjectType(savedSubjectType);
@@ -61,15 +66,14 @@ public class ResetSyncService {
                 isChanged(savedSubjectType.isShouldSyncByLocation(), request.isShouldSyncByLocation());
     }
 
-    public void recordSyncAttributeValueChangeForUser(User savedUser, UserContract userContract) {
-        JsonObject newSyncSettings = userContract.getSyncSettings() == null ? new JsonObject() : userContract.getSyncSettings();
+    public void recordSyncAttributeValueChangeForUser(User savedUser, UserContract userContract, JsonObject newSyncSettings) {
         Long savedCatchmentId = savedUser.getCatchmentId().orElse(null);
         if (isChanged(savedCatchmentId, userContract.getCatchmentId())) {
             ResetSync resetSync = buildNewResetSync();
             resetSync.setUser(savedUser);
             resetSyncRepository.save(resetSync);
         } else {
-            Set<SubjectType> changedSubjectTypes = getChangedSubjectTypes(savedUser.getSyncSettings(), newSyncSettings);
+            List<SubjectType> changedSubjectTypes = getChangedSubjectTypes(savedUser.getSyncSettings(), newSyncSettings);
             changedSubjectTypes.forEach(st -> {
                 ResetSync resetSync = buildNewResetSync();
                 resetSync.setUser(savedUser);
@@ -79,29 +83,27 @@ public class ResetSyncService {
         }
     }
 
-    private Set<SubjectType> getChangedSubjectTypes(JsonObject olderSettings, JsonObject newSettings) {
-        Set<SubjectType> changedSubjectTypes = new HashSet<>();
-        if (isSyncConcept1Changed(olderSettings, newSettings)) {
-            String conceptUUID = (String) newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), null));
-            Set<SubjectType> allSubjectTypes = formMappingService.getAllSubjectTypesHavingConceptUUID(conceptUUID);
-            changedSubjectTypes.addAll(allSubjectTypes);
-        }
-        if (isSyncConcept2Changed(olderSettings, newSettings)) {
-            String conceptUUID = (String) newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null));
-            Set<SubjectType> allSubjectTypes = formMappingService.getAllSubjectTypesHavingConceptUUID(conceptUUID);
-            changedSubjectTypes.addAll(allSubjectTypes);
-        }
-        return changedSubjectTypes;
+    private List<SubjectType> getChangedSubjectTypes(JsonObject olderSettings, JsonObject newSettings) {
+        List<UserSyncSettings> oldUserSettings = JsonObjectUtil.getUserSyncSettings(olderSettings);
+        List<UserSyncSettings> newUserSettings = JsonObjectUtil.getUserSyncSettings(newSettings);
+        List<String> changedSubjectTypeUUIDs = newUserSettings.stream().filter(nus -> {
+            UserSyncSettings savedUserSyncSetting = oldUserSettings.stream().filter(ous -> nus.getSubjectTypeUUID().equals(ous.getSubjectTypeUUID())).findFirst().orElse(null);
+            return savedUserSyncSetting == null || isSyncConcept1Changed(savedUserSyncSetting, nus) || isSyncConcept2Changed(savedUserSyncSetting, nus);
+        })
+                .map(UserSyncSettings::getSubjectTypeUUID)
+                .filter(individualRepository::existsBySubjectTypeUuid)
+                .collect(Collectors.toList());
+        return subjectTypeRepository.findAllByUuidIn(changedSubjectTypeUUIDs);
     }
 
-    private boolean isSyncConcept1Changed(JsonObject olderSettings, JsonObject newSettings) {
-        return isChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), null), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1.name(), null)) ||
-                isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST));
+    private boolean isSyncConcept1Changed(UserSyncSettings olderSettings, UserSyncSettings newSettings) {
+        return isChanged(olderSettings.getSyncConcept1(), newSettings.getSyncConcept1()) ||
+                isConceptValueChanged(olderSettings.getSyncConcept1Values(), newSettings.getSyncConcept1Values());
     }
 
-    private boolean isSyncConcept2Changed(JsonObject olderSettings, JsonObject newSettings) {
-        return isChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2.name(), null)) ||
-                isConceptValueChanged(olderSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST), newSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST));
+    private boolean isSyncConcept2Changed(UserSyncSettings olderSettings, UserSyncSettings newSettings) {
+        return isChanged(olderSettings.getSyncConcept2(), newSettings.getSyncConcept2()) ||
+                isConceptValueChanged(olderSettings.getSyncConcept2Values(), newSettings.getSyncConcept2Values());
     }
 
     private boolean isCatchmentChanged(List<Long> savedLocationIds, List<Long> locationIdsPassedInRequest) {
@@ -123,9 +125,7 @@ public class ResetSyncService {
         return resetSync;
     }
 
-    private boolean isConceptValueChanged(Object syncValue1, Object syncValue2) {
-        List<String> syncValue1List = (List<String>) syncValue1;
-        List<String> syncValue2List = (List<String>) syncValue2;
+    private boolean isConceptValueChanged(List<String> syncValue1List, List<String> syncValue2List) {
         return !(syncValue1List.containsAll(syncValue2List) && syncValue2List.containsAll(syncValue1List));
     }
 

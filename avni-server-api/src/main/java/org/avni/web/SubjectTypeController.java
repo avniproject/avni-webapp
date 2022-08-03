@@ -17,6 +17,7 @@ import org.avni.util.ObjectMapperSingleton;
 import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.GroupRoleContract;
 import org.avni.web.request.SubjectTypeContract;
+import org.avni.web.request.syncAttribute.UserSyncAttributeAssignmentRequest;
 import org.avni.web.request.webapp.SubjectTypeContractWeb;
 import org.avni.web.request.webapp.SubjectTypeSetting;
 import org.slf4j.Logger;
@@ -244,7 +245,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
 
     @GetMapping(value = "/subjectType/syncAttributesData")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    public JsonObject getAllConceptSyncAttributes() {
+    public UserSyncAttributeAssignmentRequest getAllConceptSyncAttributes() {
        return subjectTypeService.getSyncAttributeData();
     }
 

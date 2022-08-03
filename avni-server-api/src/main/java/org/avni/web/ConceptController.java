@@ -13,8 +13,7 @@ import org.avni.util.ObjectMapperSingleton;
 import org.avni.util.ReactAdminUtil;
 import org.avni.util.S;
 import org.avni.web.request.ConceptContract;
-import org.avni.web.request.ConceptSyncAttributeContract;
-import org.avni.web.request.SubjectSearchContract;
+import org.avni.web.request.syncAttribute.ConceptSyncAttributeContract;
 import org.avni.web.request.application.ConceptUsageContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

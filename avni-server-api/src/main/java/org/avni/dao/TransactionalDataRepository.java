@@ -2,6 +2,7 @@ package org.avni.dao;
 
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
+import org.avni.util.JsonObjectUtil;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -56,7 +57,6 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                                                                                       List<Predicate> predicates,
                                                                                       From<A, B> from) {
         SubjectType subjectType = syncParameters.getSubjectType();
-        JsonObject syncSettings = syncParameters.getSyncSettings();
         if (subjectType.isShouldSyncByLocation()) {
             List<Long> addressLevels = syncParameters.getAddressLevels();
             if (addressLevels.size() > 0) {
@@ -102,11 +102,11 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
         Boolean isSyncRegistrationConcept1Usable = subjectType.isSyncRegistrationConcept1Usable();
         Boolean isSyncRegistrationConcept2Usable = subjectType.isSyncRegistrationConcept2Usable();
         if (isSyncRegistrationConcept1Usable != null && isSyncRegistrationConcept1Usable) {
-            List<String> syncConcept1Values = (List<String>) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept1Values.name(), Collections.EMPTY_LIST);
+            List<String> syncConcept1Values = JsonObjectUtil.getSyncAttributeValuesBySubjectTypeUUID(syncSettings, subjectType.getUuid(), User.SyncSettingKeys.syncAttribute1);
             addPredicate(cb, predicates, from, syncConcept1Values, syncConcept1Column);
         }
         if (isSyncRegistrationConcept2Usable != null && isSyncRegistrationConcept2Usable) {
-            List<String> syncConcept2Values = (List<String>) syncSettings.getOrDefault(User.SyncSettingKeys.syncConcept2Values.name(), Collections.EMPTY_LIST);
+            List<String> syncConcept2Values = JsonObjectUtil.getSyncAttributeValuesBySubjectTypeUUID(syncSettings, subjectType.getUuid(), User.SyncSettingKeys.syncAttribute2);
             addPredicate(cb, predicates, from, syncConcept2Values, syncConcept2Column);
         }
     }

@@ -1,4 +1,4 @@
-package org.avni.web.request;
+package org.avni.web.request.syncAttribute;
 
 import org.avni.domain.Concept;
 

@@ -19,4 +19,6 @@ public interface SubjectTypeRepository extends ReferenceDataRepository<SubjectTy
     List<SubjectTypeProjection> findAllOperational();
 
     List<SubjectType> findAllByIconFileS3KeyNotNull();
+
+    List<SubjectType> findAllByUuidIn(List<String> UUIDs);
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.avni.domain.OperatingIndividualScope;
 import org.avni.domain.JsonObject;
 import org.avni.domain.User;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,7 +14,7 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserContract extends ReferenceDataContract {
     private String username;
-    private long catchmentId;
+    private Long catchmentId;
     private String phoneNumber;
     private String email;
     private boolean orgAdmin = false;
@@ -27,6 +28,10 @@ public class UserContract extends ReferenceDataContract {
     private String password;
     private JsonObject syncSettings;
     private Set<Long> directAssignmentIds = new HashSet<>();
+    private String createdBy;
+    private String lastModifiedBy;
+    private DateTime lastModifiedDateTime;
+    private DateTime createdDateTime;
 
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
@@ -39,6 +44,11 @@ public class UserContract extends ReferenceDataContract {
         userContract.setDisabledInCognito(user.isDisabledInCognito());
         userContract.setOrgAdmin(user.isOrgAdmin());
         userContract.setRoles(user.getRoles());
+        userContract.setCatchmentId(user.getCatchmentId().orElse(null));
+        userContract.setCreatedBy(user.getCreatedByUserName());
+        userContract.setCreatedDateTime(user.getCreatedDateTime());
+        userContract.setLastModifiedBy(user.getLastModifiedByUserName());
+        userContract.setLastModifiedDateTime(user.getLastModifiedDateTime());
         return userContract;
     }
 
@@ -74,11 +84,11 @@ public class UserContract extends ReferenceDataContract {
         this.username = username;
     }
 
-    public long getCatchmentId() {
+    public Long getCatchmentId() {
         return catchmentId;
     }
 
-    public void setCatchmentId(long catchmentId) {
+    public void setCatchmentId(Long catchmentId) {
         this.catchmentId = catchmentId;
     }
 
@@ -160,5 +170,37 @@ public class UserContract extends ReferenceDataContract {
 
     public void setDirectAssignmentIds(Set<Long> directAssignmentIds) {
         this.directAssignmentIds = directAssignmentIds;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public DateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(DateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 }

@@ -171,7 +171,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     default boolean hasSubjectsInLocations(List<Long> addressIds) {
         return addressIds.isEmpty() ? false : existsByAddressLevelIdIn(addressIds);
     }
-    boolean existsBySubjectType(SubjectType subjectType);
+    boolean existsBySubjectTypeUuid(String subjectTypeUUID);
 
     default Individual getSubject(String uuid, String legacyId) {
         Individual individual = null;

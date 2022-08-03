@@ -93,10 +93,11 @@ public class User {
     private JsonObject syncSettings;
 
     public enum SyncSettingKeys {
-       syncConcept1Values,
-       syncConcept2Values,
-       syncConcept1,
-       syncConcept2,
+        syncAttribute1,
+        syncAttribute2,
+        syncAttribute1Values,
+        syncAttribute2Values,
+        subjectTypeSyncSettings,
     }
 
     public static final String USER = "user";

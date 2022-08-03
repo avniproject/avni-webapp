@@ -2,14 +2,13 @@ package org.avni.service;
 
 import org.avni.application.Subject;
 import org.avni.dao.AvniJobRepository;
-import org.avni.dao.ConceptRepository;
 import org.avni.dao.OperationalSubjectTypeRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
-import org.avni.web.request.ConceptSyncAttributeContract;
 import org.avni.web.request.OperationalSubjectTypeContract;
 import org.avni.web.request.SubjectTypeContract;
+import org.avni.web.request.syncAttribute.UserSyncAttributeAssignmentRequest;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,9 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -38,7 +37,7 @@ public class SubjectTypeService implements NonScopeAwareService {
     private Job syncAttributesJob;
     private JobLauncher syncAttributesJobLauncher;
     private AvniJobRepository avniJobRepository;
-    private ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
 
     @Autowired
     public SubjectTypeService(SubjectTypeRepository subjectTypeRepository,
@@ -46,13 +45,13 @@ public class SubjectTypeService implements NonScopeAwareService {
                               Job syncAttributesJob,
                               JobLauncher syncAttributesJobLauncher,
                               AvniJobRepository avniJobRepository,
-                              ConceptRepository conceptRepository) {
+                              ConceptService conceptService) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.syncAttributesJob = syncAttributesJob;
         this.syncAttributesJobLauncher = syncAttributesJobLauncher;
         this.avniJobRepository = avniJobRepository;
-        this.conceptRepository = conceptRepository;
+        this.conceptService = conceptService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -130,27 +129,15 @@ public class SubjectTypeService implements NonScopeAwareService {
         return subjectTypeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
-    public JsonObject getSyncAttributeData() {
-        List<ConceptSyncAttributeContract> syncRegistrationConcept1List = new ArrayList<>();
-        List<ConceptSyncAttributeContract> syncRegistrationConcept2List = new ArrayList<>();
+    public UserSyncAttributeAssignmentRequest getSyncAttributeData() {
         List<SubjectType> subjectTypes = subjectTypeRepository.findAllByIsVoidedFalse();
-        subjectTypes.forEach(subjectType -> {
-            if (subjectType.getSyncRegistrationConcept1() != null) {
-                Concept concept = conceptRepository.findByUuid(subjectType.getSyncRegistrationConcept1());
-                syncRegistrationConcept1List.add(ConceptSyncAttributeContract.fromConcept(concept));
-            }
-            if (subjectType.getSyncRegistrationConcept2() != null) {
-                Concept concept = conceptRepository.findByUuid(subjectType.getSyncRegistrationConcept2());
-                syncRegistrationConcept2List.add(ConceptSyncAttributeContract.fromConcept(concept));
-            }
-        });
+        List<SubjectType> subjectTypesHavingSyncConcepts = subjectTypes
+                .stream()
+                .filter(st -> st.getSyncRegistrationConcept1() != null || st.getSyncRegistrationConcept2() != null)
+                .collect(Collectors.toList());
         boolean isAnySyncByLocation = subjectTypes.stream().anyMatch(SubjectType::isShouldSyncByLocation);
         boolean isAnyDirectlyAssignable = subjectTypes.stream().anyMatch(SubjectType::isDirectlyAssignable);
-        return new JsonObject()
-                .with("syncConcept1", syncRegistrationConcept1List)
-                .with("syncConcept2", syncRegistrationConcept2List)
-                .with("isAnySubjectTypeSyncByLocation", isAnySyncByLocation)
-                .with("isAnySubjectTypeDirectlyAssignable", isAnyDirectlyAssignable);
+        return new UserSyncAttributeAssignmentRequest(subjectTypesHavingSyncConcepts, isAnySyncByLocation, isAnyDirectlyAssignable, conceptService);
     }
 
     public Stream<SubjectType> getAll() {

@@ -68,14 +68,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String datePickerMode = row.get("Date picker mode");
         Boolean beneficiaryMode = row.getBool("Enable Beneficiary mode");
         String idPrefix = row.get("Beneficiary ID Prefix");
-        String syncConcept1Name = row.get("Sync concept 1 name");
-        String syncConcept1Values = row.get("Sync concept 1 values");
-        String syncConcept2Name = row.get("Sync concept 2 name");
-        String syncConcept2Values = row.get("Sync concept 2 values");
         String subjectUUIDs = row.get("Sync subject UUIDs");
-        JsonObject syncSettings = new JsonObject();
-        populateSyncConcepts(syncSettings, syncConcept1Name, syncConcept1Values, User.SyncSettingKeys.syncConcept1, User.SyncSettingKeys.syncConcept1Values);
-        populateSyncConcepts(syncSettings, syncConcept2Name, syncConcept2Values, User.SyncSettingKeys.syncConcept2, User.SyncSettingKeys.syncConcept2Values);
         Set<Long> subjectIds = new HashSet<>();
         if (subjectUUIDs != null) {
             subjectIds = Arrays.stream(subjectUUIDs.split(","))
@@ -97,7 +90,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         User currentUser = userService.getCurrentUser();
         if (user != null) {
             user.setAuditInfo(currentUser);
-            user.setSyncSettings(syncSettings);
             userService.save(user, subjectIds);
             return;
         }
@@ -121,21 +113,9 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
 
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
-        user.setSyncSettings(syncSettings);
         deploymentSpecificConfiguration.getIdpService(organisation).createUser(user);
         userService.save(user, subjectIds);
         userService.addToDefaultUserGroup(user);
     }
 
-    private void populateSyncConcepts(JsonObject syncSettings, String conceptName, String conceptValues, User.SyncSettingKeys key, User.SyncSettingKeys values) {
-        Concept concept = conceptRepository.findByName(conceptName);
-        if (concept != null && conceptValues != null) {
-            syncSettings.with(key.name(), concept.getUuid());
-            syncSettings.with(values.name(),
-                    Arrays.asList(conceptValues.split(","))
-                            .stream()
-                            .map(answer -> concept.getDbValue(answer, true))
-                            .collect(Collectors.toList()));
-        }
-    }
 }
