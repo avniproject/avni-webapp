@@ -1,11 +1,11 @@
 package org.avni.dao;
 
-import java.util.Date;
-
 import org.avni.application.projections.LocationProjection;
 import org.avni.application.projections.VirtualCatchmentProjection;
-import org.avni.domain.*;
-import org.avni.framework.security.UserContextHolder;
+import org.avni.domain.AddressLevel;
+import org.avni.domain.AddressLevelType;
+import org.avni.domain.Catchment;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -16,12 +16,15 @@ import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepository<AddressLevel> {
+
+    static final DateTime REALLY_OLD_DATE = new DateTime("1900-01-01T00:00:00.000Z");
 
     @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
             "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
@@ -76,6 +79,9 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Override
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+        if(syncParameters.getLastModifiedDateTime().isEqual(REALLY_OLD_DATE)) {
+            return true;
+        }
         return existsByVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
     }
 

@@ -158,6 +158,10 @@ log_live:
 tunnel_staging_db:
 	ssh avni-server-staging -L 6015:stagingdb.openchs.org:5432
 
+
+tunnel_staging_server_for_debug:
+	ssh avni-server-staging -L 5005:127.0.0.1:5005
+
 start_server_staging: build_server
 	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
 
