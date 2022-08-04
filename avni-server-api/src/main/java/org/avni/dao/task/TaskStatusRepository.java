@@ -18,4 +18,6 @@ public interface TaskStatusRepository extends ReferenceDataRepository<TaskStatus
         if (taskStatusId < 0) return null;
         return findById(taskStatusId);
     }
+
+    TaskStatus findByNameAndTaskType(String name, TaskType taskType);
 }

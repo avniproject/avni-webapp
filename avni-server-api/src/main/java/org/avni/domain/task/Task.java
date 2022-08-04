@@ -37,7 +37,6 @@ public class Task extends OrganisationAwareEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_user_id")
-    @NotNull
     private User assignedTo;
 
     @Column

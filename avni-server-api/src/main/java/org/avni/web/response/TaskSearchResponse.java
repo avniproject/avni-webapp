@@ -23,7 +23,9 @@ public class TaskSearchResponse {
         if (task.getCompletedOn() != null) {
             response.setCompletedOn(O.getDateInDbFormat(task.getCompletedOn().toDate()));
         }
-        response.setAssignedTo(task.getAssignedTo().getName());
+        if (task.getAssignedTo() != null) {
+            response.setAssignedTo(task.getAssignedTo().getName());
+        }
         response.setStatus(task.getTaskStatus().getName());
         response.setType(task.getTaskType().getName());
         response.setMetadata(metadataMap);

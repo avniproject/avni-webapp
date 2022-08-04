@@ -1,0 +1,1 @@
+ALTER TABLE task ALTER COLUMN assigned_user_id DROP NOT NULL;

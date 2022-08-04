@@ -1,14 +1,21 @@
 package org.avni.web.api;
 
+import org.avni.application.KeyType;
+import org.avni.application.KeyValues;
+import org.avni.application.ValueType;
 import org.avni.dao.ConceptRepository;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.UserRepository;
 import org.avni.dao.task.TaskRepository;
 import org.avni.dao.task.TaskStatusRepository;
 import org.avni.dao.task.TaskTypeRepository;
+import org.avni.domain.Concept;
 import org.avni.domain.Individual;
+import org.avni.domain.ObservationCollection;
 import org.avni.domain.task.Task;
+import org.avni.domain.task.TaskStatus;
 import org.avni.domain.task.TaskType;
+import org.avni.domain.task.TaskTypeName;
 import org.avni.service.ConceptService;
 import org.avni.web.request.api.ApiTaskRequest;
 import org.avni.web.request.api.RequestUtils;
@@ -57,13 +64,33 @@ public class TaskApiController {
     public ResponseEntity post(@RequestBody ApiTaskRequest request) {
         Task task = new Task();
         TaskType taskType = taskTypeRepository.findByName(request.getTaskTypeName());
+        if (taskType == null) {
+            throw new IllegalArgumentException(String.format("Task type not found with name '%s'", request.getTaskTypeName()));
+        }
+        TaskStatus taskStatus = taskStatusRepository.findByNameAndTaskType(request.getTaskStatus(), taskType);
+        if (taskStatus == null) {
+            throw new IllegalArgumentException(String.format("Task status not found with name '%s'", request.getTaskStatus()));
+        }
+        task.setTaskStatus(taskStatus);
         task.setTaskType(taskType);
         task.setAssignedTo(userRepository.findByUsername(request.getAssignedTo()));
         task.setCompletedOn(request.getCompletedOn());
         task.setScheduledOn(request.getScheduledOn());
         task.setLegacyId(request.getExternalId());
-        task.setTaskStatus(taskStatusRepository.findByName(request.getTaskStatus()));
-        task.setMetadata(RequestUtils.createObservations(request.getMetadata(), conceptRepository));
+        ObservationCollection metadata = RequestUtils.createObservations(request.getMetadata(), conceptRepository);
+        if (taskType.getType().equals(TaskTypeName.Call)) {
+            boolean hasAtLeastOneMobileNumberValue = metadata.entrySet().stream().anyMatch(entrySet -> {
+                Concept concept = conceptRepository.findByUuid(entrySet.getKey());
+                KeyValues keyValues = concept.getKeyValues();
+                ValueType[] valueTypes = {ValueType.yes};
+                return keyValues.containsOneOfTheValues(KeyType.contact_number, valueTypes) ||
+                        keyValues.containsOneOfTheValues(KeyType.primary_contact, valueTypes);
+            });
+            if (!hasAtLeastOneMobileNumberValue) {
+                throw new IllegalArgumentException("Call type task cannot be saved without mobile number");
+            }
+        }
+        task.setMetadata(metadata);
         task.setObservations(RequestUtils.createObservations(request.getObservations(), conceptRepository));
         task.setName(request.getName());
         Individual individual = individualRepository.getSubject(request.getSubjectId(), request.getSubjectExternalId());
@@ -75,7 +102,9 @@ public class TaskApiController {
 
         ApiTaskResponse response = new ApiTaskResponse();
         response.put(TASK_TYPE, task.getTaskType().getName());
-        response.put(ASSIGNED_TO, task.getAssignedTo().getUsername());
+        if (task.getAssignedTo() != null) {
+            response.put(ASSIGNED_TO, task.getAssignedTo().getUsername());
+        }
         response.put(COMPLETED_ON, task.getCompletedOn());
         response.put(SCHEDULED_ON, task.getScheduledOn());
         response.put(EXTERNAL_ID, task.getLegacyId());

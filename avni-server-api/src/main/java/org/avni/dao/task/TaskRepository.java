@@ -37,8 +37,10 @@ public interface TaskRepository extends TransactionalDataRepository<Task>, FindB
                 predicates.add(cb.equal(root.join("taskType"), searchCriteria.getTaskType()));
             if (searchCriteria.getTaskStatus() != null)
                 predicates.add(cb.equal(root.join("taskStatus"), searchCriteria.getTaskStatus()));
-            if (searchCriteria.getAssignedTo() != null || isUnassigned)
+            if (searchCriteria.getAssignedTo() != null)
                 predicates.add(cb.equal(root.join("assignedTo"), searchCriteria.getAssignedTo()));
+            if (isUnassigned)
+                predicates.add(cb.isNull(root.get("assignedTo")));
             if (searchCriteria.getCreatedOn() != null)
                 predicates.add(cb.between(convertToDate(root.get("createdDateTime"), cb), searchCriteria.getFormattedCreatedOn(), today));
             if (searchCriteria.getCompletedOn() != null)
