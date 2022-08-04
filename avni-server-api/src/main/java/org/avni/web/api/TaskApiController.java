@@ -83,8 +83,8 @@ public class TaskApiController {
                 Concept concept = conceptRepository.findByUuid(entrySet.getKey());
                 KeyValues keyValues = concept.getKeyValues();
                 ValueType[] valueTypes = {ValueType.yes};
-                return keyValues != null && keyValues.containsOneOfTheValues(KeyType.contact_number, valueTypes) ||
-                        keyValues.containsOneOfTheValues(KeyType.primary_contact, valueTypes);
+                return keyValues != null && (keyValues.containsOneOfTheValues(KeyType.contact_number, valueTypes) ||
+                        keyValues.containsOneOfTheValues(KeyType.primary_contact, valueTypes));
             });
             if (!hasAtLeastOneMobileNumberValue) {
                 throw new IllegalArgumentException("Call type task cannot be saved without mobile number");
