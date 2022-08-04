@@ -83,7 +83,7 @@ public class TaskApiController {
                 Concept concept = conceptRepository.findByUuid(entrySet.getKey());
                 KeyValues keyValues = concept.getKeyValues();
                 ValueType[] valueTypes = {ValueType.yes};
-                return keyValues.containsOneOfTheValues(KeyType.contact_number, valueTypes) ||
+                return keyValues != null && keyValues.containsOneOfTheValues(KeyType.contact_number, valueTypes) ||
                         keyValues.containsOneOfTheValues(KeyType.primary_contact, valueTypes);
             });
             if (!hasAtLeastOneMobileNumberValue) {
