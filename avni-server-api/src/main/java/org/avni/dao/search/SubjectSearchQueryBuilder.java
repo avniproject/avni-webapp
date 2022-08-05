@@ -44,6 +44,7 @@ public class SubjectSearchQueryBuilder {
             "                         on penr.id = pe.program_enrolment_id and\n" +
             "                            pe.encounter_date_time is not null and\n" +
             "                            pe.is_voided is false";
+    private static final String ADDRESS_LEVEL_JOIN = "left outer join address_level al on al.id = i.address_id";
 
     private String offsetLimitClause = "offset :offset limit :limit";
     private String orderByClause = "\norder by i.id desc\n";
@@ -278,8 +279,11 @@ public class SubjectSearchQueryBuilder {
 
     public SubjectSearchQueryBuilder withAddressIdsFilter(List<Integer> addressIds) {
         if (addressIds == null || addressIds.isEmpty()) return this;
-        parameters.put("addressIds", addressIds);
-        whereClauses.add("i.address_id in (:addressIds)");
+        joinClauses.add(ADDRESS_LEVEL_JOIN);
+        String addressIdString = addressIds.stream().map(String::valueOf)
+                .collect(Collectors.joining("|"));
+        parameters.put("addressLQuery", String.format("*.%s.*", addressIdString));
+        whereClauses.add("al.lineage ~ cast(:addressLQuery as lquery)");
         return this;
     }
 
