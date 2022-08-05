@@ -23,6 +23,7 @@ import { RegistrationType } from "./components/export/RegistrationType";
 import { EnrolmentType } from "./components/export/EnrolmentType";
 import { EncounterType } from "./components/export/EncounterType";
 import { GroupSubjectType } from "./components/export/GroupSubjectType";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -53,7 +54,8 @@ const Export = ({
     startDate,
     endDate,
     addressLevelIds,
-    addressLevelError
+    addressLevelError,
+    includeVoided
   } = exportRequest;
   const dispatch = (type, payload) => dispatchFun({ type, payload });
   const subjectTypes = _.get(operationalModules, "subjectTypes");
@@ -71,7 +73,8 @@ const Export = ({
       endDate: endDate.setHours(23, 59, 59, 999),
       reportType: ReportTypes.getCode(reportType.name),
       addressLevelIds: addressLevelIds,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      includeVoided
     };
     const [ok, error] = await api.startExportJob(request);
     if (!ok && error) {
@@ -97,6 +100,20 @@ const Export = ({
       </Grid>
     );
   };
+
+  const renderIncludeVoided = () => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          color={"primary"}
+          checked={includeVoided}
+          name="Include voided entries"
+          onChange={event => dispatch("includeVoided", event.target.checked)}
+        />
+      }
+      label="Include voided entries"
+    />
+  );
 
   const onReportTypeChange = type => {
     dispatch("reportType", type);
@@ -162,6 +179,7 @@ const Export = ({
                 {RenderReportTypes()}
                 {renderReportTypeOptions()}
                 {!_.isEmpty(reportType.name) && renderAddressLevel()}
+                {!_.isEmpty(reportType.name) && renderIncludeVoided()}
               </Grid>
               <Grid container direction="row" justify="flex-start">
                 <Button

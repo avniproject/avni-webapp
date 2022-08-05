@@ -8,7 +8,8 @@ export const initialState = {
   startDate: new Date(),
   endDate: new Date(),
   addressLevelIds: [],
-  addressLevelError: ""
+  addressLevelError: "",
+  includeVoided: false
 };
 
 export function ExportReducer(exportRequest, action) {
@@ -34,6 +35,8 @@ export function ExportReducer(exportRequest, action) {
       return { ...exportRequest, addressLevelIds: action.payload };
     case "AddressLevelError":
       return { ...exportRequest, addressLevelError: action.payload };
+    case "includeVoided":
+      return { ...exportRequest, includeVoided: action.payload };
     default:
       return exportRequest;
   }
