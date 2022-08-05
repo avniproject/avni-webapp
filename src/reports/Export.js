@@ -85,6 +85,7 @@ const Export = ({
       <Grid container direction={"row"}>
         <Grid item xs={12}>
           <AddressLevelsByType
+            label={"Address (Leave blank to consider all)"}
             addressLevelsIds={addressLevelIds}
             setAddressLevelsIds={ids => dispatch("addressLevelIds", ids)}
             setError={error => dispatch("AddressLevelError", error)}

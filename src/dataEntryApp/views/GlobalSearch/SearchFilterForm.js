@@ -6,7 +6,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
-import { getAllLocations, getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
+import { getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import Button from "@material-ui/core/Button";
 import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
@@ -20,7 +20,6 @@ import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { locationNameRenderer } from "../../utils/LocationUtil";
 import SubjectTypeOptions from "./SubjectTypeOptions";
 
 const initialStates = {
@@ -61,8 +60,6 @@ const useStyles = makeStyles(theme => ({
 function SearchFilterFormContainer({
   match,
   operationalModules,
-  getAllLocations,
-  allLocations,
   getGenders,
   genders,
   getOrganisationConfig,
@@ -73,18 +70,16 @@ function SearchFilterFormContainer({
     if (!organisationConfigs) {
       getOrganisationConfig();
     }
-    getAllLocations();
     getGenders();
   }, []);
 
-  if (!(operationalModules && allLocations && genders && organisationConfigs)) {
+  if (!(operationalModules && genders && organisationConfigs)) {
     return <CustomizedBackdrop load={false} />;
   } else {
     return (
       <SearchFilterForm
         match={match}
         operationalModules={operationalModules}
-        allLocations={allLocations}
         genders={genders}
         organisationConfigs={organisationConfigs}
         searchRequest={searchRequest}
@@ -96,7 +91,6 @@ function SearchFilterFormContainer({
 const mapStateToProps = state => {
   return {
     operationalModules: state.dataEntry.metadata.operationalModules,
-    allLocations: state.dataEntry.metadata.allLocations,
     genders: state.dataEntry.metadata.genders,
     organisationConfigs: state.dataEntry.metadata.organisationConfigs,
     searchRequest: state.dataEntry.searchFilterReducer.request
@@ -104,7 +98,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  getAllLocations,
   getGenders,
   getOrganisationConfig
 };
@@ -121,7 +114,6 @@ export default withRouter(
 function SearchFilterForm({
   match,
   operationalModules,
-  allLocations,
   genders,
   organisationConfigs,
   searchRequest
@@ -138,7 +130,6 @@ function SearchFilterForm({
         <LineBreak num={1} />
         <SearchForm
           operationalModules={operationalModules}
-          allLocations={allLocations}
           genders={genders}
           organisationConfigs={organisationConfigs}
           searchRequest={searchRequest}
@@ -152,7 +143,6 @@ function SearchFilterForm({
 
 export const SearchForm = ({
   operationalModules,
-  allLocations,
   genders,
   organisationConfigs,
   searchRequest,
@@ -228,20 +218,7 @@ export const SearchForm = ({
       : [];
 
   // address
-  const previousSelectedLocations =
-    (addressIds && allLocations.filter(({ id }) => _.includes(addressIds, id))) || [];
-  const previousSelectedType = _.get(_.head(previousSelectedLocations), "type", "");
-  const [selectedAddressLevelType, setSelectedAddressLevelType] = useState(previousSelectedType);
-  const [selectedAddress, setSelectedAddress] = React.useState(
-    previousSelectedLocations.map(location => ({
-      label: location.name,
-      value: location.id,
-      optionLabel: locationNameRenderer(location)
-    }))
-  );
-  const onAddressSelect = value => setSelectedAddress(value);
-  const selectedAddressSort =
-    selectedAddress !== null ? selectedAddress.map(address => address.value) : [];
+  const [addressLevelIds, setAddressLevelIds] = React.useState(addressIds || []);
 
   const setPreviousMinMaxValues = registrationDate => ({
     minValue: (registrationDate && registrationDate.minValue) || null,
@@ -438,7 +415,7 @@ export const SearchForm = ({
         maxValue: null
       },
       includeVoided: includeVoied,
-      addressIds: selectedAddressSort,
+      addressIds: addressLevelIds,
       concept: conceptRequests,
       gender: selectedGenderSort,
       registrationDate: {
@@ -470,8 +447,7 @@ export const SearchForm = ({
   const resetFilters = () => {
     setEnterValue(initialStates.nameAgeSearchAll);
     setSelectedGender({});
-    setSelectedAddress([]);
-    setSelectedAddressLevelType("");
+    setAddressLevelIds([]);
     setSelectedDate(initialStates.entityDate);
     setSelectedConcept(initialConceptList);
     setIncludeVoided(false);
@@ -505,15 +481,11 @@ export const SearchForm = ({
                   searchFilterForms={selectedSearchFilter}
                   onChange={searchFilterValue}
                   enterValue={enterValue}
-                  operationalModules={operationalModules}
                   genders={genders}
-                  allLocation={allLocations}
                   onGenderChange={onGenderChange}
                   selectedGender={selectedGender}
-                  onAddressSelect={onAddressSelect}
-                  selectedAddress={selectedAddress}
-                  selectedAddressLevelType={selectedAddressLevelType}
-                  setSelectedAddressLevelType={setSelectedAddressLevelType}
+                  addressLevelIds={addressLevelIds}
+                  setAddressLevelIds={setAddressLevelIds}
                 />
               </Grid>
               <Grid item xs={12}>

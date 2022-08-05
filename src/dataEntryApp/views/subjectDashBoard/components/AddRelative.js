@@ -27,11 +27,7 @@ import { LineBreak } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import { find, get, head, includes, isEmpty } from "lodash";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import {
-  getAllLocations,
-  getGenders,
-  getOrganisationConfig
-} from "../../../reducers/metadataReducer";
+import { getGenders, getOrganisationConfig } from "../../../reducers/metadataReducer";
 import {
   findApplicableRelations,
   getRelationshipType,
@@ -138,8 +134,6 @@ const AddRelative = ({
   getSubjectProfile,
   subjectProfile,
   operationalModules,
-  getAllLocations,
-  allLocations,
   getGenders,
   genders,
   getOrganisationConfig,
@@ -150,7 +144,6 @@ const AddRelative = ({
     getSubjectProfile(match.queryParams.uuid);
     getRelationshipTypes();
     getOrganisationConfig();
-    getAllLocations();
     getGenders();
   }, []);
 
@@ -242,7 +235,6 @@ const AddRelative = ({
                   setError={setError}
                   subjectProfile={subjectProfile}
                   operationalModules={operationalModules}
-                  allLocations={allLocations}
                   genders={genders}
                   organisationConfigs={organisationConfigs}
                   searchRequest={searchRequest}
@@ -398,7 +390,6 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   searchRequest: state.dataEntry.searchFilterReducer.request,
   operationalModules: state.dataEntry.metadata.operationalModules,
-  allLocations: state.dataEntry.metadata.allLocations,
   genders: state.dataEntry.metadata.genders,
   organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
@@ -407,7 +398,6 @@ const mapDispatchToProps = {
   getRelationshipTypes,
   saveRelationShip,
   getSubjectProfile,
-  getAllLocations,
   getGenders,
   getOrganisationConfig
 };

@@ -6,12 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "react-select";
-import { locationNameRenderer } from "../../utils/LocationUtil";
 import { find } from "lodash";
+import AddressLevelsByType from "../../../common/components/AddressLevelsByType";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,26 +26,15 @@ const useStyles = makeStyles(theme => ({
 function BasicForm({
   searchFilterForms,
   onChange,
-  operationalModules,
   genders,
-  allLocation,
   onGenderChange,
   selectedGender,
-  onAddressSelect,
-  selectedAddress,
-  selectedAddressLevelType,
   enterValue,
-  setSelectedAddressLevelType
+  addressLevelIds,
+  setAddressLevelIds
 }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const onAddressLevelTypeChange = event => {
-    setSelectedAddressLevelType(event.target.value);
-    onAddressSelect(null);
-  };
-  const locations = allLocation.filter(
-    location => location.type === selectedAddressLevelType && !location.voided
-  );
 
   function renderSearchAll(index, titleKey) {
     return (
@@ -160,40 +145,10 @@ function BasicForm({
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Address" ? (
             <Grid item xs={12} key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                {t(searchFilterForm.titleKey)}
-              </Typography>
-              <FormControl component="fieldset">
-                <RadioGroup
-                  row
-                  aria-label="position"
-                  name="position"
-                  onChange={onAddressLevelTypeChange}
-                  value={selectedAddressLevelType}
-                >
-                  {operationalModules.addressLevelTypes
-                    ? operationalModules.addressLevelTypes.map((addressLevelType, index) => (
-                        <FormControlLabel
-                          key={index}
-                          value={addressLevelType.name}
-                          control={<Radio color="primary" />}
-                          label={t(addressLevelType.name)}
-                        />
-                      ))
-                    : ""}
-                </RadioGroup>
-              </FormControl>
-              <Select
-                isMulti
-                placeholder={t("selectAddress")}
-                value={selectedAddress}
-                options={locations.map(location => ({
-                  label: location.name,
-                  value: location.id,
-                  optionLabel: locationNameRenderer(location)
-                }))}
-                onChange={onAddressSelect}
-                formatOptionLabel={({ optionLabel }) => <div>{optionLabel}</div>}
+              <AddressLevelsByType
+                label={t(searchFilterForm.titleKey)}
+                addressLevelsIds={addressLevelIds}
+                setAddressLevelsIds={setAddressLevelIds}
               />
             </Grid>
           ) : (

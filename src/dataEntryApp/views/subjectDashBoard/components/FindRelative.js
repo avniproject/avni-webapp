@@ -83,7 +83,6 @@ const FindRelative = ({
   subjectType,
   subjectProfile,
   operationalModules,
-  allLocations,
   genders,
   organisationConfigs,
   searchRequest,
@@ -127,7 +126,6 @@ const FindRelative = ({
       ) : (
         <SearchForm
           operationalModules={operationalModules}
-          allLocations={allLocations}
           genders={genders}
           organisationConfigs={organisationConfigs}
           searchRequest={searchRequest}
