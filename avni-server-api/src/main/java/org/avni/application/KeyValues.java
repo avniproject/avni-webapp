@@ -19,6 +19,6 @@ public class KeyValues extends ArrayList<KeyValue> implements Serializable {
 
     public boolean containsOneOfTheValues(KeyType keyType, ValueType[] valueTypes) {
         KeyValue keyValue = getKeyValue(keyType);
-        return Arrays.stream(valueTypes).anyMatch(valueType -> valueType.toString().equals(keyValue.getValue().toString()));
+        return keyValue != null && Arrays.stream(valueTypes).anyMatch(valueType -> valueType.toString().equals(keyValue.getValue().toString()));
     }
 }
