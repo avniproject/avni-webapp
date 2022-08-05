@@ -4,13 +4,14 @@ import java.util.Arrays;
 
 public enum FormType {
     BeneficiaryIdentification,
-    IndividualEncounterCancellation,
     IndividualProfile,
-    Encounter,
-    ProgramEncounter,
+    ProgramEligibility,
     ProgramEnrolment,
     ProgramExit,
+    ProgramEncounter,
     ProgramEncounterCancellation,
+    Encounter,
+    IndividualEncounterCancellation,
     ChecklistItem,
     IndividualRelationship,
     Location,

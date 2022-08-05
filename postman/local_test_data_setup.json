@@ -720,7 +720,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"4a36a342-e511-436f-a201-637d83b79123\"\n}",
+					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": {{Subject 1 UUID}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -735,6 +735,138 @@
 					"path": [
 						"api",
 						"task"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Task 1 Form",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Task 1 Form\",\n    \"formType\": \"Task\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/web/forms",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"web",
+						"forms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Program Encounter Type 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"Program Encounter Type 1\", response[\"id\"]);",
+							"postman.setEnvironmentVariable(\"Program Encounter Type 1 UUID\", response[\"uuid\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Program Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": {{Subject Type 1 UUID}},\n    \"programUuid\": {{Program 1 UUID}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/web/encounterType",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"web",
+						"encounterType"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add General Encounter Type 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"General Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/web/encounterType",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"web",
+						"encounterType"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Individuals",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{origin}}/individual?subjectTypeUuid={{Subject Type 1 UUID}}&lastModifiedDateTime=2020-07-24T08:41:27.815Z&size=100&page=0",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"individual"
+					],
+					"query": [
+						{
+							"key": "subjectTypeUuid",
+							"value": "{{Subject Type 1 UUID}}"
+						},
+						{
+							"key": "lastModifiedDateTime",
+							"value": "2020-07-24T08:41:27.815Z"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						}
 					]
 				}
 			},

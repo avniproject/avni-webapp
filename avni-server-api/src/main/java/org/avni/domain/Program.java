@@ -43,6 +43,16 @@ public class Program extends OrganisationAwareEntity {
 
     private Boolean active;
 
+    @Column
+    private boolean manualEligibilityCheckRequired;
+
+    @Column
+    private String programEligibilityCheckRule;
+
+    @Column(name = "program_eligibility_check_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule programEligibilityCheckDeclarativeRule;
+
     public String getName() {
         return name;
     }
@@ -116,6 +126,30 @@ public class Program extends OrganisationAwareEntity {
 
     public void setEnrolmentEligibilityCheckDeclarativeRule(DeclarativeRule enrolmentEligibilityCheckDeclarativeRule) {
         this.enrolmentEligibilityCheckDeclarativeRule = enrolmentEligibilityCheckDeclarativeRule;
+    }
+
+    public String getProgramEligibilityCheckRule() {
+        return programEligibilityCheckRule;
+    }
+
+    public void setProgramEligibilityCheckRule(String programEligibilityCheckRule) {
+        this.programEligibilityCheckRule = programEligibilityCheckRule;
+    }
+
+    public DeclarativeRule getProgramEligibilityCheckDeclarativeRule() {
+        return programEligibilityCheckDeclarativeRule;
+    }
+
+    public void setProgramEligibilityCheckDeclarativeRule(DeclarativeRule programEligibilityCheckDeclarativeRule) {
+        this.programEligibilityCheckDeclarativeRule = programEligibilityCheckDeclarativeRule;
+    }
+
+    public boolean isManualEligibilityCheckRequired() {
+        return manualEligibilityCheckRequired;
+    }
+
+    public void setManualEligibilityCheckRequired(boolean manualEligibilityCheckRequired) {
+        this.manualEligibilityCheckRequired = manualEligibilityCheckRequired;
     }
 
     @Projection(name = "ProgramProjection", types = {Program.class})

@@ -8,6 +8,7 @@ import org.avni.application.Format;
 import org.avni.application.Subject;
 import org.avni.application.projections.BaseProjection;
 import org.avni.web.request.GroupRoleContract;
+import org.hibernate.annotations.Type;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -102,6 +103,13 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @Column(name = "allow_middle_name")
     private boolean allowMiddleName;
+
+    @Column
+    private String programEligibilityCheckRule;
+
+    @Column(name = "program_eligibility_check_declarative_rule")
+    @Type(type = "declarativeRule")
+    private DeclarativeRule programEligibilityCheckDeclarativeRule;
 
     private String nameHelpText;
 
@@ -318,6 +326,22 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setNameHelpText(String nameHelpText) {
         this.nameHelpText = nameHelpText;
+    }
+
+    public String getProgramEligibilityCheckRule() {
+        return programEligibilityCheckRule;
+    }
+
+    public void setProgramEligibilityCheckRule(String programEligibilityCheckRule) {
+        this.programEligibilityCheckRule = programEligibilityCheckRule;
+    }
+
+    public DeclarativeRule getProgramEligibilityCheckDeclarativeRule() {
+        return programEligibilityCheckDeclarativeRule;
+    }
+
+    public void setProgramEligibilityCheckDeclarativeRule(DeclarativeRule programEligibilityCheckDeclarativeRule) {
+        this.programEligibilityCheckDeclarativeRule = programEligibilityCheckDeclarativeRule;
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})
