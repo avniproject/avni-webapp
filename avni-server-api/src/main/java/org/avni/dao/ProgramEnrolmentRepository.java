@@ -36,7 +36,14 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             "and i.isVoided = false " +
             "and coalesce(enl.enrolmentDateTime, enl.programExitDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)")
-    Stream<ProgramEnrolment> findEnrolments(Long programId, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime);
+    Stream<ProgramEnrolment> findNonVoidedEnrolments(Long programId, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime);
+
+    @Query("select enl from ProgramEnrolment enl " +
+            "join enl.individual i " +
+            "where enl.program.id = :programId " +
+            "and coalesce(enl.enrolmentDateTime, enl.programExitDateTime) between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)")
+    Stream<ProgramEnrolment> findAllEnrolments(Long programId, List<Long> locationIds, DateTime startDateTime, DateTime endDateTime);
 
     //group by is added for distinct enl records
     @Query("select enl from ProgramEnrolment enl " +
@@ -50,8 +57,17 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds) " +
             "group by enl.id")
-    Stream<ProgramEnrolment> findProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Long programId);
+    Stream<ProgramEnrolment> findNonVoidedProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Long programId);
 
+    @Query("select enl from ProgramEnrolment enl " +
+            "join enl.programEncounters enc " +
+            "join enl.individual i " +
+            "where enc.encounterType.id = :encounterTypeId " +
+            "and enl.program.id = :programId " +
+            "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds) " +
+            "group by enl.id")
+    Stream<ProgramEnrolment> findAllProgramEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId, Long programId);
 
     Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanAndLastModifiedDateTimeLessThanAndProgramNameOrderByLastModifiedDateTimeAscIdAsc(
             Date lastModifiedDateTime,

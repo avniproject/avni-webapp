@@ -15,6 +15,7 @@ public class ExportJobRequest {
     private ReportType reportType;
     private List<Long> addressLevelIds = new ArrayList<>();
     private String timeZone;
+    private boolean includeVoided;
 
     public String getTimeZone() {
         return timeZone;
@@ -85,5 +86,11 @@ public class ExportJobRequest {
         this.endDate = endDate;
     }
 
+    public boolean isIncludeVoided() {
+        return includeVoided;
+    }
 
+    public void setIncludeVoided(boolean includeVoided) {
+        this.includeVoided = includeVoided;
+    }
 }

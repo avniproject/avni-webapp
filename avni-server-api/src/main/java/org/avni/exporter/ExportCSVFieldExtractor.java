@@ -49,6 +49,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private Date endDate;
     @Value("#{jobParameters['timeZone']}")
     private String timeZone;
+    @Value("#{jobParameters['includeVoided']}")
+    private String includeVoided;
 
     private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
@@ -133,6 +135,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         headers.append(",").append("member.membership_start_date");
         headers.append(",").append("member.membership_end_date");
         addAuditColumns(headers, "member");
+        addVoidedColumnIfRequired(headers, "group");
     }
 
     private void addEncounterHeaders(Long maxVisitCount, StringBuilder headers) {
@@ -150,6 +153,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             headers.append(",").append(prefix).append(".cancel_date_time");
             appendObsColumns(headers, prefix, programUUID != null ? programEncounterCancelMap : encounterCancelMap);
             addAuditColumns(headers, prefix);
+            addVoidedColumnIfRequired(headers, prefix);
         }
     }
 
@@ -161,6 +165,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         headers.append(",").append("enl.program_exit_date_time");
         appendObsColumns(headers, "enl_exit", exitEnrolmentMap);
         addAuditColumns(headers, "enl");
+        addVoidedColumnIfRequired(headers, "enl");
     }
 
     private void addRegistrationHeaders(StringBuilder headers, SubjectType subjectType) {
@@ -179,7 +184,15 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         }
         appendObsColumns(headers, "ind", registrationMap);
         addAuditColumns(headers, "ind");
+        addVoidedColumnIfRequired(headers, "ind");
     }
+
+    private void addVoidedColumnIfRequired(StringBuilder headers, String prefix) {
+        if (Boolean.parseBoolean(includeVoided)) {
+            headers.append(",").append(format("%s.voided", prefix));
+        }
+    }
+
 
     private void addAuditColumns(StringBuilder headers, String prefix) {
         headers.append(",").append(format("%s_created_by", prefix));
@@ -230,6 +243,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             }
             row.addAll(getObs(individual.getObservations(), registrationMap));
             addAuditFields(individual, row);
+            addVoidedFieldIfRequired(individual, row);
             if (programUUID == null && reportType.equals(ReportType.Encounter.toString())) {
                 addGeneralEncounterRelatedFields(exportItemRow, row);
             } else if (reportType.equals(ReportType.Enrolment.toString())) {
@@ -266,6 +280,13 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(getDateForTimeZone(group.getMembershipStartDate()));
         row.add(getDateForTimeZone(group.getMembershipEndDate()));
         addAuditFields(group, row);
+        addVoidedFieldIfRequired(group, row);
+    }
+
+    private void addVoidedFieldIfRequired(CHSEntity chsEntity, List<Object> row) {
+        if (Boolean.parseBoolean(includeVoided)) {
+            row.add(chsEntity.isVoided());
+        }
     }
 
     private void addAuditFields(Auditable auditable, List<Object> row) {
@@ -286,6 +307,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(getDateForTimeZone(programEnrolment.getProgramExitDateTime()));
         row.addAll(getObs(programEnrolment.getProgramExitObservations(), exitEnrolmentMap));
         addAuditFields(programEnrolment, row);
+        addVoidedFieldIfRequired(programEnrolment, row);
     }
 
     private void addGeneralEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
@@ -309,6 +331,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         row.add(getDateForTimeZone(encounter.getCancelDateTime()));
         row.addAll(getObs(encounter.getCancelObservations(), cancelMap));
         addAuditFields(encounter, row);
+        addVoidedFieldIfRequired(encounter, row);
     }
 
     @Override

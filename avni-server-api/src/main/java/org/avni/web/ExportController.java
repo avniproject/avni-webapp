@@ -82,6 +82,7 @@ public class ExportController {
                         .addString("reportType", exportJobRequest.getReportType().name())
                         .addString("addressIds", exportJobRequest.getAddressLevelString())
                         .addString("timeZone", exportJobRequest.getTimeZone())
+                        .addString("includeVoided", String.valueOf(exportJobRequest.isIncludeVoided()))
                         .toJobParameters();
 
         try {

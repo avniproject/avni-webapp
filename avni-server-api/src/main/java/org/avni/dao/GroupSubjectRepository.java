@@ -66,7 +66,15 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             "and m.isVoided = false " +
             "and g.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
-    Stream<GroupSubject> findGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
+    Stream<GroupSubject> findNonVoidedGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
+
+    @Query("select gs from GroupSubject gs " +
+            "join gs.groupSubject g " +
+            "join gs.memberSubject m " +
+            "where g.subjectType.id = :subjectTypeId " +
+            "and g.registrationDate between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR g.addressLevel.id in :locationIds)")
+    Stream<GroupSubject> findAllGroupSubjects(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
 
 
     default Specification<GroupSubject> syncStrategySpecification(SyncParameters syncParameters) {

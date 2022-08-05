@@ -104,7 +104,13 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "and ind.subjectType.id = :subjectTypeId " +
             "and ind.registrationDate between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds,NULL) is null OR ind.addressLevel.id in :locationIds)")
-    Stream<Individual> findIndividuals(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
+    Stream<Individual> findNonVoidedIndividuals(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
+
+    @Query("select ind from Individual ind " +
+            "where ind.subjectType.id = :subjectTypeId " +
+            "and ind.registrationDate between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds,NULL) is null OR ind.addressLevel.id in :locationIds)")
+    Stream<Individual> findAllIndividuals(Long subjectTypeId, List<Long> locationIds, LocalDate startDateTime, LocalDate endDateTime);
 
     //group by is added for distinct ind records
     @Query("select i from Individual i " +
@@ -115,7 +121,15 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
             "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)" +
             "group by i.id")
-    Stream<Individual> findEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId);
+    Stream<Individual> findNonVoidedEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId);
+
+    @Query("select i from Individual i " +
+            "join i.encounters enc " +
+            "where enc.encounterType.id = :encounterTypeId " +
+            "and coalesce(enc.encounterDateTime, enc.cancelDateTime) between :startDateTime and :endDateTime " +
+            "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)" +
+            "group by i.id")
+    Stream<Individual> findAllEncounters(List<Long> locationIds, DateTime startDateTime, DateTime endDateTime, Long encounterTypeId);
 
 
     @Query("select i from Individual i where i.uuid =:id or i.legacyId = :id")
