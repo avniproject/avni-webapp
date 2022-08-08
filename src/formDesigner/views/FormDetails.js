@@ -48,7 +48,7 @@ import {
   formDesignerUpdateConceptElementData,
   formDesignerUpdateDragDropOrderForFirstGroup
 } from "../common/FormDesignerHandlers";
-import { constFormType } from "../common/constants";
+import { FormTypeEntities } from "../common/constants";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -413,7 +413,7 @@ class FormDetails extends Component {
   };
 
   getEntityNameForRules() {
-    const entityFormInfo = constFormType[this.state.form.formType];
+    const entityFormInfo = FormTypeEntities[this.state.form.formType];
     if (_.isNil(entityFormInfo)) return "";
     return entityFormInfo.ruleVariableName;
   }

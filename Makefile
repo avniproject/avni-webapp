@@ -11,13 +11,13 @@ clean:
 deps: check-node-v
 	yarn install
 
-start: check-node-v
+start:
 	yarn start
 
 storybook: check-node-v
 	yarn storybook
 
-test: check-node-v
+test:
 	yarn test --watchAll
 
 prettier-all: check-node-v

@@ -174,6 +174,7 @@ class OrgManager extends Component {
           edit={WithProps({ user }, UserEdit)}
         />
         <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+        <Resource name="task" options={{ label: "Tasks" }} list={Tasks} />
         <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
         <Resource
           name="identifierSource"

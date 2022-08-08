@@ -3,7 +3,7 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
-import { constFormType } from "../common/constants";
+import { FormTypeEntities } from "../common/constants";
 
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -31,7 +31,7 @@ const FormListing = ({ history }) => {
     {
       title: "Form Type",
       field: "formType",
-      render: rowData => constFormType[rowData.formType].display
+      render: rowData => FormTypeEntities[rowData.formType].display
     },
     {
       title: "Subject Name",

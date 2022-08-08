@@ -6,7 +6,7 @@ import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
-import { constFormType } from "../common/constants";
+import { FormTypeEntities } from "../common/constants";
 import { default as UUID } from "uuid";
 import _ from "lodash";
 
@@ -16,10 +16,10 @@ class NewFormModal extends Component {
 
     this.state = {
       name: props.name,
-      formType: "",
+      formTypeInfo: null,
       data: {},
       toFormDetails: "",
-      errors: { name: "", formType: "" },
+      errors: { name: "", formTypeInfo: "" },
       showUpdateAlert: false,
       defaultSnackbarStatus: true
     };
@@ -28,7 +28,7 @@ class NewFormModal extends Component {
   validateForm() {
     let errorsList = {};
     if (this.state.name === "") errorsList["name"] = "Please enter form name.";
-    if (this.state.formType === "") errorsList["formType"] = "Please select form type.";
+    if (_.isNil(this.state.formTypeInfo)) errorsList["formTypeInfo"] = "Please select form type.";
     this.setState({
       errors: errorsList
     });
@@ -47,7 +47,7 @@ class NewFormModal extends Component {
     if (validateFormStatus) {
       let dataSend = {
         name: this.state.name,
-        formType: this.state.formType
+        formType: this.state.formTypeInfo.formType
       };
       http
         .post("/web/forms", dataSend)
@@ -66,7 +66,7 @@ class NewFormModal extends Component {
                 editResponse = response.data;
                 editResponse["uuid"] = newUUID;
                 editResponse["name"] = this.state.name;
-                editResponse["formType"] = this.state.formType;
+                editResponse["formType"] = this.state.formTypeInfo.formType;
 
                 const promise = new Promise((resolve, reject) => {
                   _.forEach(editResponse.formElementGroups, group => {
@@ -133,10 +133,10 @@ class NewFormModal extends Component {
   }
 
   formTypes() {
-    return _.map(_.keys(constFormType), formType => {
+    return _.map(FormTypeEntities.getAllFormTypeInfo(), formTypeInfo => {
       return (
-        <MenuItem key={formType} value={formType}>
-          {constFormType[formType].display}
+        <MenuItem key={formTypeInfo} value={formTypeInfo}>
+          {formTypeInfo.display}
         </MenuItem>
       );
     });
@@ -158,16 +158,16 @@ class NewFormModal extends Component {
           <FormControl fullWidth margin="dense">
             <InputLabel htmlFor="formType">Form Type</InputLabel>
             <Select
-              id="formType"
-              name="formType"
-              value={this.state.formType}
+              id="formTypeInfo"
+              name="formTypeInfo"
+              value={this.state.formTypeInfo}
               onChange={this.onChangeField.bind(this)}
               required
             >
               {this.formTypes()}
             </Select>
-            {this.state.errors.formType && (
-              <FormHelperText error>{this.state.errors.formType}</FormHelperText>
+            {this.state.errors.formTypeInfo && (
+              <FormHelperText error>{this.state.errors.formTypeInfo}</FormHelperText>
             )}
           </FormControl>
           <FormControl fullWidth margin="dense">

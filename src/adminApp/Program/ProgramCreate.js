@@ -24,19 +24,17 @@ import {
   sampleEnrolmentSummaryRule
 } from "../../formDesigner/common/SampleRule";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
-import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
+import { confirmBeforeRuleEdit } from "../../formDesigner/util";
+import ProgramService from "../service/ProgramService";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
-  const [nameValidation, setNameValidation] = useState(false);
-  const [subjectValidation, setSubjectValidation] = useState(false);
-  const [error, setError] = useState("");
-  const [alert, setAlert] = useState(false);
+  const [errors, setErrors] = useState(new Map());
+  const [saved, setSaved] = useState(false);
   const [id, setId] = useState();
   const [subjectT, setSubjectT] = useState({});
   const [subjectType, setSubjectType] = useState([]);
   const [formList, setFormList] = useState([]);
-  const [ruleValidationError, setRuleValidationError] = useState();
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
@@ -51,60 +49,21 @@ const ProgramCreate = props => {
 
   const onSubmit = event => {
     event.preventDefault();
-    let hasError = false;
 
-    if (program.name.trim() === "") {
-      setError("");
-      setNameValidation(true);
-      hasError = true;
-    }
-
-    if (_.isEmpty(subjectT)) {
-      setError("");
-      setSubjectValidation(true);
-      hasError = true;
-    }
-    const { jsCode, validationError } = validateRule(
-      program.enrolmentEligibilityCheckDeclarativeRule,
-      holder => holder.generateEligibilityRule()
-    );
-    if (!_.isEmpty(validationError)) {
-      hasError = true;
-      setRuleValidationError(validationError);
-    } else if (!_.isEmpty(jsCode)) {
+    let [errors, jsCode] = ProgramService.validateProgram(program, subjectT);
+    if (!_.isEmpty(jsCode) && _.isNil(errors.get("EnrolmentEligibilityCheckDeclarativeRule"))) {
       program.enrolmentEligibilityCheckRule = jsCode;
     }
-
-    if (hasError) {
+    if (errors.size !== 0) {
+      setErrors(errors);
       return;
     }
 
-    setNameValidation(false);
-    setSubjectValidation(false);
-
-    setNameValidation(false);
-    http
-      .post("/web/program", {
-        name: program.name,
-        colour: program.colour === "" ? "#ff0000" : program.colour,
-        programSubjectLabel: program.programSubjectLabel,
-        enrolmentSummaryRule: program.enrolmentSummaryRule,
-        subjectTypeUuid: subjectT.uuid,
-        programEnrolmentFormUuid: _.get(program, "programEnrolmentForm.formUUID"),
-        programExitFormUuid: _.get(program, "programExitForm.formUUID"),
-        enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
-        enrolmentEligibilityCheckDeclarativeRule: program.enrolmentEligibilityCheckDeclarativeRule
-      })
-      .then(response => {
-        if (response.status === 200) {
-          setError("");
-          setAlert(true);
-          setId(response.data.id);
-        }
-      })
-      .catch(error => {
-        setError(error.response.data.message);
-      });
+    ProgramService.saveProgram(program, subjectT).then(saveResponse => {
+      setErrors(saveResponse.errors);
+      setSaved(saveResponse.status === 200);
+      if (saveResponse.errors.size() === 0) setId(saveResponse.id);
+    });
   };
 
   return (
@@ -125,14 +84,9 @@ const ProgramCreate = props => {
                 toolTipKey={"APP_DESIGNER_PROGRAM_NAME"}
               />
               <div />
-              {nameValidation && (
+              {!_.isNil(errors.get("Name")) && (
                 <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
                   Empty name is not allowed.
-                </FormLabel>
-              )}
-              {error !== "" && (
-                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                  {error}
                 </FormLabel>
               )}
               <p />
@@ -150,7 +104,7 @@ const ProgramCreate = props => {
                 toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_TYPE"}
               />
               <div />
-              {subjectValidation && (
+              {!_.isNil(errors.get("SubjectType")) && (
                 <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
                   Empty subject type is not allowed.
                 </FormLabel>
@@ -240,7 +194,7 @@ const ProgramCreate = props => {
                     })
                   }
                   jsCode={program.enrolmentEligibilityCheckRule}
-                  error={ruleValidationError}
+                  error={errors.get("EnrolmentEligibilityCheckDeclarativeRule")}
                   subjectType={subjectT}
                   getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
                   sampleRule={sampleEnrolmentEligibilityCheckRule()}
@@ -266,7 +220,7 @@ const ProgramCreate = props => {
           </div>
         </DocumentationContainer>
       </Box>
-      {alert && <Redirect to={"/appDesigner/program/" + id + "/show"} />}
+      {saved && <Redirect to={"/appDesigner/program/" + id + "/show"} />}
     </>
   );
 };

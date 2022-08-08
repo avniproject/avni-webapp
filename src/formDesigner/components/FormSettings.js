@@ -10,7 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
-import { constFormType, encounterFormTypes, programFormTypes } from "../common/constants";
+import { FormTypeEntities, encounterFormTypes, programFormTypes } from "../common/constants";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
@@ -23,7 +23,7 @@ class FormSettings extends Component {
     this.state = {
       uuid: "",
       name: "",
-      formType: "",
+      formTypeInfo: null,
       formMappings: [],
       onClose: false,
       data: {},
@@ -44,11 +44,11 @@ class FormSettings extends Component {
     let formMapping = this.state.formMappings;
     let existingMapping = [];
 
-    if (_.isEmpty(this.state.formType)) errorsList["formType"] = "Please select form type.";
+    if (_.isNil(this.state.formTypeInfo)) errorsList["formTypeInfo"] = "Please select form type.";
     errorsList["existingMapping"] = {};
     errorsList["unselectedData"] = {};
 
-    if (this.state.formType !== "ChecklistItem") {
+    if (this.state.formTypeInfo !== FormTypeEntities.ChecklistItem) {
       let count = 0;
       _.forEach(this.state.formMappings, function(formMap) {
         if (!formMap.voided) count += 1;
@@ -59,7 +59,7 @@ class FormSettings extends Component {
     _.forEach(formMapping, (formMap, index) => {
       let uniqueString;
       if (!formMap.voided) {
-        if (this.state.formType === "IndividualProfile") {
+        if (this.state.formTypeInfo === FormTypeEntities.IndividualProfile) {
           uniqueString = formMap.subjectTypeUuid;
           if (formMap.subjectTypeUuid === "") {
             errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
@@ -67,8 +67,8 @@ class FormSettings extends Component {
         }
 
         if (
-          this.state.formType === "ProgramEncounterCancellation" ||
-          this.state.formType === "ProgramEncounter"
+          this.state.formTypeInfo === FormTypeEntities.ProgramEncounterCancellation ||
+          this.state.formTypeInfo === FormTypeEntities.ProgramEncounter
         ) {
           uniqueString = formMap.subjectTypeUuid + formMap.programUuid + formMap.encounterTypeUuid;
           if (formMap.subjectTypeUuid === "") {
@@ -83,7 +83,10 @@ class FormSettings extends Component {
           }
         }
 
-        if (this.state.formType === "ProgramExit" || this.state.formType === "ProgramEnrolment") {
+        if (
+          this.state.formTypeInfo === FormTypeEntities.ProgramExit ||
+          this.state.formTypeInfo === FormTypeEntities.ProgramEnrolment
+        ) {
           uniqueString = formMap.subjectTypeUuid + formMap.programUuid;
           if (formMap.subjectTypeUuid === "") {
             errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
@@ -94,8 +97,8 @@ class FormSettings extends Component {
         }
 
         if (
-          this.state.formType === "Encounter" ||
-          this.state.formType === "IndividualEncounterCancellation"
+          this.state.formTypeInfo === FormTypeEntities.Encounter ||
+          this.state.formTypeInfo === FormTypeEntities.IndividualEncounterCancellation
         ) {
           uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
           if (formMap.subjectTypeUuid === "") {
@@ -144,7 +147,7 @@ class FormSettings extends Component {
         http
           .put("/web/forms/" + existFormUUID + "/metadata", {
             name: this.state.name,
-            formType: this.state.formType,
+            formType: this.state.formTypeInfo.formType,
             formMappings: this.state.formMappings
           })
           .then(response => {
@@ -179,7 +182,7 @@ class FormSettings extends Component {
       .then(response => {
         this.setState({
           name: response.data.name,
-          formType: response.data.formType,
+          formTypeInfo: FormTypeEntities.getFormTypeInfo(response.data.formType),
           uuid: response.data.uuid
         });
       })
@@ -218,21 +221,21 @@ class FormSettings extends Component {
   }
 
   onChangeField(event) {
-    if (event.target.name === "formType" && event.target.value !== this.state.formType) {
+    if (event.target.name === "formType" && event.target.value !== this.state.formTypeInfo) {
       const formMappings = [...this.state.formMappings];
       _.forEach(formMappings, function(formMap, index) {
         formMap["voided"] = true;
       });
       this.setState(
         Object.assign({}, this.state, {
-          [event.target.name]: event.target.value,
+          formTypeInfo: event.target.value,
           formMappings: formMappings,
           warningFlag: true,
           dirtyFlag: true
         })
       );
     } else {
-      if (event.target.value !== this.state.formType) {
+      if (event.target.value !== this.state.formTypeInfo) {
         this.setState(
           Object.assign({}, this.state, {
             [event.target.name]: event.target.value,
@@ -324,10 +327,10 @@ class FormSettings extends Component {
   }
 
   formTypes() {
-    return Object.keys(constFormType).map(formType => {
+    return FormTypeEntities.getAllFormTypeInfo().map(formTypeInfo => {
       return (
-        <MenuItem key={formType} value={formType}>
-          {constFormType[formType].display}
+        <MenuItem key={formTypeInfo} value={formTypeInfo}>
+          {formTypeInfo.display}
         </MenuItem>
       );
     });
@@ -408,10 +411,10 @@ class FormSettings extends Component {
   };
 
   render() {
-    const encounterTypes = encounterFormTypes.includes(this.state.formType);
-    const programBased = programFormTypes.includes(this.state.formType);
-    const notChecklistItemBased = "ChecklistItem" !== this.state.formType;
-    const isTaskFormType = "Task" === this.state.formType;
+    const encounterTypes = encounterFormTypes.includes(this.state.formTypeInfo);
+    const programBased = programFormTypes.includes(this.state.formTypeInfo);
+    const notChecklistItemBased = FormTypeEntities.ChecklistItem !== this.state.formTypeInfo;
+    const isTaskFormType = FormTypeEntities.Task === this.state.formTypeInfo;
 
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -437,14 +440,14 @@ class FormSettings extends Component {
               <Select
                 id="formType"
                 name="formType"
-                value={this.state.formType}
+                value={this.state.formTypeInfo}
                 onChange={this.onChangeField.bind(this)}
                 required
               >
                 {this.formTypes()}
               </Select>
-              {this.state.errors.formType && (
-                <FormHelperText error>{this.state.errors.formType}</FormHelperText>
+              {this.state.errors.formTypeInfo && (
+                <FormHelperText error>{this.state.errors.formTypeInfo.formType}</FormHelperText>
               )}
             </FormControl>
 

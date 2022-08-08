@@ -1,8 +1,8 @@
-import { sortBy } from "lodash";
+import _ from "lodash";
 
 const allEntityForms = [];
 
-class EntityFormInfo {
+class FormTypeInfo {
   formType;
   display;
   ruleVariableName;
@@ -15,41 +15,61 @@ class EntityFormInfo {
   }
 }
 
-export const constFormType = {
-  IndividualProfile: new EntityFormInfo("IndividualProfile", "Subject Registration", "individual"),
-  ProgramEnrolment: new EntityFormInfo("ProgramEnrolment", "Program enrolment", "programEnrolment"),
-  ProgramEncounter: new EntityFormInfo("ProgramEncounter", "Program encounter", "programEncounter"),
-  ProgramEncounterCancellation: new EntityFormInfo(
+export const FormTypeEntities = {
+  IndividualProfile: new FormTypeInfo("IndividualProfile", "Subject registration", "individual"),
+  SubjectEnrolmentEligibility: new FormTypeInfo(
+    "SubjectEnrolmentEligibility",
+    "Subject enrolment eligibility",
+    "individual"
+  ),
+  ManualProgramEnrolmentEligibility: new FormTypeInfo(
+    "ManualProgramEnrolmentEligibility",
+    "Manual enrolment eligibility",
+    "individual"
+  ),
+  ProgramEnrolment: new FormTypeInfo("ProgramEnrolment", "Program enrolment", "programEnrolment"),
+  ProgramExit: new FormTypeInfo("ProgramExit", "Program exit", "programEnrolment"),
+  ProgramEncounter: new FormTypeInfo("ProgramEncounter", "Program encounter", "programEncounter"),
+  ProgramEncounterCancellation: new FormTypeInfo(
     "ProgramEncounterCancellation",
     "Program encounter cancellation",
     "programEncounter"
   ),
-  ProgramExit: new EntityFormInfo("ProgramExit", "Program exit", "programEnrolment"),
-  Encounter: new EntityFormInfo("Encounter", "Encounter", "encounter"),
-  IndividualEncounterCancellation: new EntityFormInfo(
+  Encounter: new FormTypeInfo("Encounter", "Encounter", "encounter"),
+  IndividualEncounterCancellation: new FormTypeInfo(
     "IndividualEncounterCancellation",
     "Individual Encounter Cancellation",
     "encounter"
   ),
-  ChecklistItem: new EntityFormInfo("ChecklistItem", "Check list item", "checklistItem"),
-  Location: new EntityFormInfo("Location", "Location"),
-  Task: new EntityFormInfo("Task", "Task", "task")
+  ChecklistItem: new FormTypeInfo("ChecklistItem", "Check list item", "checklistItem"),
+  Location: new FormTypeInfo("Location", "Location"),
+  Task: new FormTypeInfo("Task", "Task", "task"),
+
+  getFormTypeInfo(formType) {
+    return _.find(allEntityForms, entityFormInfo => entityFormInfo.formType === formType);
+  },
+
+  getAllFormTypeInfo() {
+    return allEntityForms;
+  }
 };
 
 export const encounterFormTypes = [
-  "Encounter",
-  "ProgramEncounter",
-  "ProgramEncounterCancellation",
-  "IndividualEncounterCancellation"
-];
-export const programFormTypes = [
-  "ProgramEncounter",
-  "ProgramExit",
-  "ProgramEnrolment",
-  "ProgramEncounterCancellation"
+  FormTypeEntities.Encounter,
+  FormTypeEntities.ProgramEncounter,
+  FormTypeEntities.ProgramEncounterCancellation,
+  FormTypeEntities.IndividualEncounterCancellation
 ];
 
-export const inlineConceptDataType = sortBy([
+export const programFormTypes = [
+  FormTypeEntities.ProgramEncounter,
+  FormTypeEntities.ProgramExit,
+  FormTypeEntities.ProgramEnrolment,
+  FormTypeEntities.ProgramEncounterCancellation,
+  FormTypeEntities.ManualProgramEnrolmentEligibility
+];
+
+export const inlineConceptDataType = _.sortBy([
   "Numeric",
   "Text",
   "Notes",
