@@ -1,0 +1,2 @@
+alter table program rename column program_eligibility_check_rule to manual_enrolment_eligibility_check_rule;
+alter table program rename column program_eligibility_check_declarative_rule to manual_enrolment_eligibility_check_declarative_rule;

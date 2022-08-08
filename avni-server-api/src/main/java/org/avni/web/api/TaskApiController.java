@@ -21,6 +21,8 @@ import org.avni.web.request.api.ApiTaskRequest;
 import org.avni.web.request.api.RequestUtils;
 import org.avni.web.response.Response;
 import org.avni.web.response.api.ApiTaskResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,7 +89,7 @@ public class TaskApiController {
                         keyValues.containsOneOfTheValues(KeyType.primary_contact, valueTypes));
             });
             if (!hasAtLeastOneMobileNumberValue) {
-                throw new IllegalArgumentException("Call type task cannot be saved without mobile number");
+                throw new RuntimeException("Call type task cannot be saved without mobile number. If you have provided the mobile number please contact support.");
             }
         }
         task.setMetadata(metadata);

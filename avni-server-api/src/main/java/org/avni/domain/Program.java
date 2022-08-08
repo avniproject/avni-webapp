@@ -3,7 +3,6 @@ package org.avni.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.avni.application.projections.BaseProjection;
 import org.hibernate.annotations.Type;
@@ -47,11 +46,11 @@ public class Program extends OrganisationAwareEntity {
     private boolean manualEligibilityCheckRequired;
 
     @Column
-    private String programEligibilityCheckRule;
+    private String manualEnrolmentEligibilityCheckRule;
 
-    @Column(name = "program_eligibility_check_declarative_rule")
+    @Column(name = "manual_enrolment_eligibility_check_declarative_rule")
     @Type(type = "declarativeRule")
-    private DeclarativeRule programEligibilityCheckDeclarativeRule;
+    private DeclarativeRule manualEnrolmentEligibilityCheckDeclarativeRule;
 
     public String getName() {
         return name;
@@ -128,20 +127,20 @@ public class Program extends OrganisationAwareEntity {
         this.enrolmentEligibilityCheckDeclarativeRule = enrolmentEligibilityCheckDeclarativeRule;
     }
 
-    public String getProgramEligibilityCheckRule() {
-        return programEligibilityCheckRule;
+    public String getManualEnrolmentEligibilityCheckRule() {
+        return manualEnrolmentEligibilityCheckRule;
     }
 
-    public void setProgramEligibilityCheckRule(String programEligibilityCheckRule) {
-        this.programEligibilityCheckRule = programEligibilityCheckRule;
+    public void setManualEnrolmentEligibilityCheckRule(String programEligibilityCheckRule) {
+        this.manualEnrolmentEligibilityCheckRule = programEligibilityCheckRule;
     }
 
-    public DeclarativeRule getProgramEligibilityCheckDeclarativeRule() {
-        return programEligibilityCheckDeclarativeRule;
+    public DeclarativeRule getManualEnrolmentEligibilityCheckDeclarativeRule() {
+        return manualEnrolmentEligibilityCheckDeclarativeRule;
     }
 
-    public void setProgramEligibilityCheckDeclarativeRule(DeclarativeRule programEligibilityCheckDeclarativeRule) {
-        this.programEligibilityCheckDeclarativeRule = programEligibilityCheckDeclarativeRule;
+    public void setManualEnrolmentEligibilityCheckDeclarativeRule(DeclarativeRule programEligibilityCheckDeclarativeRule) {
+        this.manualEnrolmentEligibilityCheckDeclarativeRule = programEligibilityCheckDeclarativeRule;
     }
 
     public boolean isManualEligibilityCheckRequired() {

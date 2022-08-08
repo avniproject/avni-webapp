@@ -720,7 +720,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": {{Subject 1 UUID}}\n}",
+					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"contact_number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"{{Subject 1 UUID}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -790,7 +790,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Program Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": {{Subject Type 1 UUID}},\n    \"programUuid\": {{Program 1 UUID}}\n}",
+					"raw": "{\n    \"name\": \"Program Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\",\n    \"programUuid\": \"{{Program 1 UUID}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
