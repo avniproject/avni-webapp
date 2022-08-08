@@ -5675,7 +5675,7 @@ avni-health-modules@0.0.15:
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
-    rules-config "github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d"
+    rules-config "github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -15343,10 +15343,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.22.6:
-  version "1.22.6"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.22.6.tgz#66b025a23876fb8e2e210399e468240df3e53039"
-  integrity sha512-VAOm1ymf36QH59iBeyrAcI0KyOplzj7VIXl6aWUUxZJYU7i5aczrfwe1bY3LuV0fTbEkvWPJu1q1gtsoa3O64Q==
+openchs-models@1.23.10:
+  version "1.23.10"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.23.10.tgz#dffd4833c68ae6bd3ea89497d9655aec751250eb"
+  integrity sha512-6bmYh7N9skEWp3K198gC+6MgUUsXmfeiBotsfhtnkC10Rt+Fyjp5B23NZWF92P6gsrS6zlW2AAZvQgStqrl5Sg==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -18825,25 +18825,7 @@ rsvp@^4.8.4:
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.22.2"
-    openchs-models "^0.2.25"
-    superagent "^3.8.3"
-    test "^0.6.0"
-    uglifyjs-webpack-plugin "^1.2.5"
-    webpack "^3.12.0"
-    webpack-cli "^3.0.3"
-    webpack-node-externals "1.6.0"
-
-"rules-config@github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d":
-  version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/809f5d164b875cf261fc11dad342d5a4315d309d"
-  dependencies:
-    "@quasar/babel-preset-app" "^2.0.1"
-    babel-preset-env "^1.7.0"
-    babel-register "^6.26.0"
-    chai "^4.1.2"
-    lodash "^4.17.11"
-    moment "^2.22.2"
+    moment "^2.29.4"
     openchs-models "^0.2.25"
     superagent "^3.8.3"
     test "^0.6.0"

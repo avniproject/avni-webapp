@@ -8,7 +8,7 @@ endif
 clean:
 	rm -rf node_modules
 
-deps: check-node-v
+deps:
 	yarn install
 
 start:
