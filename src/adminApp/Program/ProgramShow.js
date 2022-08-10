@@ -14,6 +14,7 @@ import { get } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
+import RuleDisplay from "../components/RuleDisplay";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
@@ -127,43 +128,15 @@ const ProgramShow = props => {
             <span style={{ fontSize: "15px" }}>{program.organisationId}</span>
           </div>
           <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Enrolment Summary Rule</FormLabel>
-            <br />
-            <Editor
-              readOnly
-              value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-          </div>
+          <RuleDisplay
+            fieldLabel={"Enrolment Summary Rule"}
+            ruleText={program.enrolmentSummaryRule}
+          />
           <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Enrolment Eligibility Check Rule</FormLabel>
-            <br />
-            <Editor
-              readOnly
-              value={
-                program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
-              }
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-          </div>
+          <RuleDisplay
+            fieldLabel={"Enrolment Eligibility Check Rule"}
+            ruleText={program.enrolmentEligibilityCheckRule}
+          />
           <p />
           <Audit {...program} />
         </div>

@@ -117,6 +117,8 @@ export function subjectTypeReducer(subjectType, action) {
       };
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };
+    case "programEligibilityCheckRule":
+      return { ...subjectType, programEligibilityCheckRule: action.payload };
     case "locationTypes":
       return { ...subjectType, locationTypeUUIDs: action.payload };
     case "allowEmptyLocation":

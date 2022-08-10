@@ -19,6 +19,7 @@ import {
 import { highlight, languages } from "prismjs/components/prism-core";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
+import RuleDisplay from "../components/RuleDisplay";
 
 const EditProgramFields = props => {
   const {

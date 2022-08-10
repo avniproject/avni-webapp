@@ -16,6 +16,7 @@ import { Audit } from "../../formDesigner/components/Audit";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { AdvancedSettingShow } from "./AdvancedSettingShow";
+import RuleDisplay from "../components/RuleDisplay";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -105,23 +106,15 @@ const SubjectTypeShow = props => {
               <span style={{ fontSize: "15px" }}>{subjectType.organisationId}</span>
             </div>
             <p />
-            <div>
-              <FormLabel style={{ fontSize: "13px" }}>Subject Summary Rule</FormLabel>
-              <br />
-              <Editor
-                readOnly
-                value={subjectType.subjectSummaryRule || ""}
-                highlight={code => highlight(code, languages.js)}
-                padding={10}
-                style={{
-                  fontFamily: '"Fira code", "Fira Mono", monospace',
-                  fontSize: 15,
-                  height: "auto",
-                  borderStyle: "solid",
-                  borderWidth: "1px"
-                }}
-              />
-            </div>
+            <RuleDisplay
+              fieldLabel={"Subject Summary Rule"}
+              ruleText={subjectType.subjectSummaryRule}
+            />
+            <p />
+            <RuleDisplay
+              fieldLabel={"Subject Program Eligibility Check Rule"}
+              ruleText={subjectType.programEligibilityCheckRule}
+            />
             <p />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
             <AdvancedSettingShow locationTypes={locationTypes} subjectType={subjectType} />

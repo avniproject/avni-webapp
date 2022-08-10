@@ -17,6 +17,7 @@ import {
 } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
+import RuleDisplay from "../components/RuleDisplay";
 
 const EncounterTypeShow = props => {
   const [encounterType, setEncounterType] = useState({});
@@ -122,27 +123,10 @@ const EncounterTypeShow = props => {
           </div>
           <p />
 
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Encounter Eligibility Check Rule</FormLabel>
-            <br />
-            <Editor
-              readOnly
-              value={
-                encounterType.encounterEligibilityCheckRule
-                  ? encounterType.encounterEligibilityCheckRule
-                  : ""
-              }
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-          </div>
+          <RuleDisplay
+            fieldLabel={"Encounter Eligibility Check Rule"}
+            ruleText={encounterType.encounterEligibilityCheckRule}
+          />
           <p />
           <Audit {...encounterType} />
         </div>

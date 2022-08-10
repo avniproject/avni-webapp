@@ -6,6 +6,7 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import ResourceShowView from "../../common/ResourceShowView";
 import http from "../../../common/utils/httpClient";
+import RuleDisplay from "../../../adminApp/components/RuleDisplay";
 
 export const ReportCardShow = props => {
   const RenderCard = ({ card, ...props }) => {
@@ -63,25 +64,7 @@ export const ReportCardShow = props => {
             <p />
           </React.Fragment>
         )}
-        {!isStandardReportCard && (
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Query</FormLabel>
-            <br />
-            <Editor
-              readOnly
-              value={card.query ? card.query : ""}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-          </div>
-        )}
+        {!isStandardReportCard && <RuleDisplay fieldLabel={"Query"} ruleText={card.query} />}
       </div>
     );
   };

@@ -57,6 +57,16 @@ export const sampleSubjectSummaryRule = () => {
 };`;
 };
 
+export const sampleSubjectProgramEligibilityCheckRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) => {
+  const individual = params.entity;
+  //sample condition individual.isFemale() && individual.getAgeInYears() > 5;
+  return true;
+};`;
+};
+
 export const sampleEnrolmentEligibilityCheckRule = () => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';

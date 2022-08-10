@@ -29,6 +29,7 @@
   "APP_DESIGNER_PROGRAM_EXIT_FORM": "Filled when exiting someone from a program",
   "APP_DESIGNER_PROGRAM_SUMMARY_RULE": "Program summary is dynamically computed when user opens subject dashboard",
   "SUBJECT_SUMMARY_RULE": "Subject summary is dynamically computed when user opens subject profile",
+  "SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE": "To be run when user manually checks eligibility for multiple programs and fills the form for additional input",
   "APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE": "This hides/shows the program enrolment option",
   "APP_DESIGNER_MANUAL_ENROLMENT_ELIGIBILITY_CHECK_RULE": "This checks for eligibility of program after manual enrolment eligibility form is filled",
   "APP_DESIGNER_PROGRAM_ACTIVE": "Switch off program if you don't want to use it anymore.",
