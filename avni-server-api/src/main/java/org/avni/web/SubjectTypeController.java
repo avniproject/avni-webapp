@@ -44,11 +44,11 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     private final SubjectTypeService subjectTypeService;
     private final GroupRoleRepository groupRoleRepository;
     private final ResetSyncService resetSyncService;
-    private SubjectTypeRepository subjectTypeRepository;
-    private FormService formService;
-    private FormMappingService formMappingService;
-    private OrganisationConfigService organisationConfigService;
-    private ObjectMapper objectMapper;
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final FormService formService;
+    private final FormMappingService formMappingService;
+    private final OrganisationConfigService organisationConfigService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public SubjectTypeController(SubjectTypeRepository subjectTypeRepository,
@@ -150,6 +150,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setUniqueName(request.isUniqueName());
         subjectType.setType(Subject.valueOf(request.getType()));
         subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
+        subjectType.setProgramEligibilityCheckRule(request.getProgramEligibilityCheckRule());
         subjectType.setAllowMiddleName(request.isAllowMiddleName());
         subjectType.setValidFirstNameFormat(request.getValidFirstNameFormat());
         subjectType.setValidMiddleNameFormat(request.getValidMiddleNameFormat());

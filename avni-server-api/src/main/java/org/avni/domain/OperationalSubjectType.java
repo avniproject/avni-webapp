@@ -69,6 +69,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
         return subjectType.getSubjectSummaryRule();
     }
 
+    public String getProgramEligibilityCheckRule() {
+        return subjectType.getProgramEligibilityCheckRule();
+    }
+
     public boolean isUniqueName() {
         return subjectType.isUniqueName();
     }
