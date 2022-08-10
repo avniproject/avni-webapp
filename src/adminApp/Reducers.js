@@ -2,28 +2,16 @@ import Types from "./SubjectType/Types";
 import { default as UUID } from "uuid";
 import { isEmpty, map } from "lodash";
 
+function getUpdatedProgram(program, action) {
+  let newProgram = { ...program };
+  newProgram[action.type] = action.payload;
+  return newProgram;
+}
+
 export function programReducer(program, action) {
   switch (action.type) {
-    case "name":
-      return { ...program, name: action.payload };
-    case "colour":
-      return { ...program, colour: action.payload };
-    case "active":
-      return { ...program, active: action.payload };
-    case "programSubjectLabel":
-      return { ...program, programSubjectLabel: action.payload };
-    case "enrolmentSummaryRule":
-      return { ...program, enrolmentSummaryRule: action.payload };
-    case "enrolmentEligibilityCheckRule":
-      return { ...program, enrolmentEligibilityCheckRule: action.payload };
-    case "enrolmentEligibilityCheckDeclarativeRule":
-      return { ...program, enrolmentEligibilityCheckDeclarativeRule: action.payload };
     case "setLoaded":
       return { ...program, loaded: true };
-    case "programEnrolmentForm":
-      return { ...program, programEnrolmentForm: action.payload };
-    case "programExitForm":
-      return { ...program, programExitForm: action.payload };
     case "setData":
       return {
         ...program,
@@ -34,11 +22,16 @@ export function programReducer(program, action) {
         enrolmentEligibilityCheckRule: action.payload.enrolmentEligibilityCheckRule,
         enrolmentEligibilityCheckDeclarativeRule:
           action.payload.enrolmentEligibilityCheckDeclarativeRule,
+        manualEnrolmentEligibilityCheckRule: action.payload.manualEnrolmentEligibilityCheckRule,
+        manualEnrolmentEligibilityCheckDeclarativeRule:
+          action.payload.manualEnrolmentEligibilityCheckDeclarativeRule,
         active: action.payload.active,
         loaded: true
       };
-    default:
+    case "":
       return program;
+    default:
+      return getUpdatedProgram(program, action);
   }
 }
 

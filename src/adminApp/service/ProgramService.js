@@ -8,16 +8,24 @@ class ProgramService {
 
     if (_.isEmpty(program.name)) errors.set("Name", "Empty");
 
-    if (_.isEmpty(subjectType)) errors.set("SubjectType", "Empty");
+    if (_.isNil(subjectType)) errors.set("SubjectType", "Empty");
 
-    const { jsCode, validationError } = validateRule(
+    const { jsCodeEECDR, validationErrorEECDR } = validateRule(
       program.enrolmentEligibilityCheckDeclarativeRule,
       holder => holder.generateEligibilityRule()
     );
-    if (!_.isEmpty(validationError)) {
-      errors.set("EnrolmentEligibilityCheckDeclarativeRule", validationError);
+    if (!_.isEmpty(validationErrorEECDR)) {
+      errors.set("EnrolmentEligibilityCheckDeclarativeRule", validationErrorEECDR);
     }
-    return [errors, jsCode];
+
+    const { jsCodeMEECDR, validationErrorMEECDR } = validateRule(
+      program.manualEnrolmentEligibilityCheckDeclarativeRule,
+      holder => holder.generateEligibilityRule()
+    );
+    if (!_.isEmpty(validationErrorMEECDR)) {
+      errors.set("ManualEnrolmentEligibilityCheckDeclarativeRule", validationErrorMEECDR);
+    }
+    return [errors, jsCodeEECDR, jsCodeMEECDR];
   }
 
   static saveProgram(program, subjectType, programId) {
@@ -51,6 +59,21 @@ class ProgramService {
         saveResponse.errors.set("SaveProgram", error.response.data.message);
         return saveResponse;
       });
+  }
+
+  static updateJSRules(program, errors, jsCodeEECDR, jsCodeMEECDR) {
+    if (
+      !_.isEmpty(jsCodeEECDR) &&
+      _.isNil(errors.get("EnrolmentEligibilityCheckDeclarativeRule"))
+    ) {
+      program.enrolmentEligibilityCheckRule = jsCodeEECDR;
+    }
+    if (
+      !_.isEmpty(jsCodeMEECDR) &&
+      _.isNil(errors.get("ManualEnrolmentEligibilityCheckDeclarativeRule"))
+    ) {
+      program.manenrolmentEligibilityCheckRule = jsCodeMEECDR;
+    }
   }
 }
 

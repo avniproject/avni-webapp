@@ -4,6 +4,7 @@ export const programInitialState = {
   programSubjectLabel: "",
   enrolmentSummaryRule: "",
   enrolmentEligibilityCheckRule: "",
+  manualEnrolmentEligibilityCheckRule: "",
   loaded: false
 };
 

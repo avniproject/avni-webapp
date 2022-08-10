@@ -1,0 +1,238 @@
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import _ from "lodash";
+import FormLabel from "@material-ui/core/FormLabel";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import MenuItem from "@material-ui/core/MenuItem";
+import ColorPicker from "material-ui-rc-color-picker";
+import { colorPickerCSS } from "../Constant";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import { findProgramEnrolmentForms, findProgramExitForms } from "../domain/formMapping";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
+import Editor from "react-simple-code-editor";
+import {
+  sampleEnrolmentEligibilityCheckRule,
+  sampleEnrolmentSummaryRule
+} from "../../formDesigner/common/SampleRule";
+import { highlight, languages } from "prismjs/components/prism-core";
+import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
+import { confirmBeforeRuleEdit } from "../../formDesigner/util";
+
+const EditProgramFields = props => {
+  const {
+    program,
+    errors,
+    subjectTypes,
+    formList,
+    dispatch,
+    onSubjectTypeChange,
+    subjectType
+  } = props;
+  return (
+    <>
+      <AvniTextField
+        id="name"
+        label="Name"
+        autoComplete="off"
+        required
+        value={program.name}
+        onChange={event => dispatch({ type: "name", payload: event.target.value })}
+        toolTipKey={"APP_DESIGNER_PROGRAM_NAME"}
+      />
+      <br />
+      {!_.isNil(errors.get("Name")) && (
+        <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+          Empty name is not allowed.
+        </FormLabel>
+      )}
+
+      <AvniSelect
+        label="Select Subject Type *"
+        value={_.isEmpty(subjectType) ? "" : subjectType}
+        onChange={event => onSubjectTypeChange(event.target.value)}
+        style={{ width: "200px" }}
+        required
+        options={subjectTypes.map(option => (
+          <MenuItem value={option} key={option.uuid}>
+            {option.name}
+          </MenuItem>
+        ))}
+        toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_TYPE"}
+      />
+      {!_.isNil(errors.get("SubjectType")) && (
+        <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+          Empty subject type is not allowed.
+        </FormLabel>
+      )}
+
+      <br />
+      <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_PROGRAM_COLOR"} />
+      <ColorPicker
+        id="colour"
+        label="Colour"
+        style={colorPickerCSS}
+        color={program.colour}
+        onChange={color => dispatch({ type: "colour", payload: color.color })}
+      />
+
+      <br />
+      <br />
+      <AvniTextField
+        id="programSubjectLabel"
+        label="Program subject label"
+        autoComplete="off"
+        value={program.programSubjectLabel}
+        onChange={event => dispatch({ type: "programSubjectLabel", payload: event.target.value })}
+        toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_LABEL"}
+      />
+
+      <br />
+      <AvniSelectForm
+        label={"Select enrolment form"}
+        value={_.get(program, "programEnrolmentForm.formName")}
+        onChange={selectedForm =>
+          dispatch({
+            type: "programEnrolmentForm",
+            payload: selectedForm
+          })
+        }
+        formList={findProgramEnrolmentForms(formList)}
+        toolTipKey={"APP_DESIGNER_PROGRAM_ENROLMENT_FORM"}
+      />
+
+      <br />
+      <AvniSelectForm
+        label={"Select exit form"}
+        value={_.get(program, "programExitForm.formName")}
+        onChange={selectedForm =>
+          dispatch({
+            type: "programExitForm",
+            payload: selectedForm
+          })
+        }
+        formList={findProgramExitForms(formList)}
+        toolTipKey={"APP_DESIGNER_PROGRAM_EXIT_FORM"}
+      />
+
+      <br />
+      <AvniSwitch
+        checked={program.manualEligibilityCheckRequired}
+        onChange={event =>
+          dispatch({ type: "manualEligibilityCheckRequired", payload: event.target.checked })
+        }
+        name="Manual eligibility check required"
+        toolTipKey={"APP_DESIGNER_PROGRAM_MANUAL_ELIGIBILITY_CHECK_REQUIRED"}
+      />
+
+      <br />
+      <AvniFormLabel
+        label={"Enrolment Summary Rule"}
+        toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"}
+      />
+      <Editor
+        value={program.enrolmentSummaryRule || sampleEnrolmentSummaryRule()}
+        onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
+        highlight={code => highlight(code, languages.js)}
+        padding={10}
+        style={{
+          fontFamily: '"Fira code", "Fira Mono", monospace',
+          fontSize: 15,
+          height: "auto",
+          borderStyle: "solid",
+          borderWidth: "1px"
+        }}
+      />
+
+      <br />
+      <br />
+      <AvniFormLabel
+        label={"Enrolment eligibility check rule"}
+        toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
+      />
+      {program.loaded && (
+        <RuleDesigner
+          rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
+          onValueChange={jsonData =>
+            dispatch({
+              type: "enrolmentEligibilityCheckDeclarativeRule",
+              payload: jsonData
+            })
+          }
+          updateJsCode={declarativeRuleHolder =>
+            dispatch({
+              type: "enrolmentEligibilityCheckRule",
+              payload: declarativeRuleHolder.generateEligibilityRule()
+            })
+          }
+          jsCode={program.enrolmentEligibilityCheckRule}
+          error={errors.get("EnrolmentEligibilityCheckDeclarativeRule")}
+          subjectType={subjectType}
+          getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
+          sampleRule={sampleEnrolmentEligibilityCheckRule()}
+          onJsCodeChange={event => {
+            confirmBeforeRuleEdit(
+              program.enrolmentEligibilityCheckDeclarativeRule,
+              () => dispatch({ type: "enrolmentEligibilityCheckRule", payload: event }),
+              () =>
+                dispatch({
+                  type: "enrolmentEligibilityCheckDeclarativeRule",
+                  payload: null
+                })
+            );
+          }}
+        />
+      )}
+
+      <br />
+      <br />
+      <AvniFormLabel
+        label={"Manual enrolment eligibility check rule"}
+        toolTipKey={"APP_DESIGNER_MANUAL_ENROLMENT_ELIGIBILITY_CHECK_RULE"}
+      />
+      {program.loaded && (
+        <RuleDesigner
+          rulesJson={program.manualEnrolmentEligibilityCheckDeclarativeRule}
+          onValueChange={jsonData =>
+            dispatch({
+              type: "manualEnrolmentEligibilityCheckDeclarativeRule",
+              payload: jsonData
+            })
+          }
+          updateJsCode={declarativeRuleHolder =>
+            dispatch({
+              type: "manualEnrolmentEligibilityCheckRule",
+              payload: declarativeRuleHolder.generateEligibilityRule()
+            })
+          }
+          jsCode={program.manualEnrolmentEligibilityCheckRule}
+          error={errors.get("ManualEnrolmentEligibilityCheckDeclarativeRule")}
+          subjectType={subjectType}
+          getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
+          sampleRule={sampleEnrolmentEligibilityCheckRule()}
+          onJsCodeChange={event => {
+            confirmBeforeRuleEdit(
+              program.manualEnrolmentEligibilityCheckDeclarativeRule,
+              () => dispatch({ type: "manualEnrolmentEligibilityCheckRule", payload: event }),
+              () =>
+                dispatch({ type: "manualEnrolmentEligibilityCheckDeclarativeRule", payload: null })
+            );
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+EditProgramFields.propTypes = {
+  program: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
+  subjectTypes: PropTypes.array.isRequired,
+  formList: PropTypes.array.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  subjectType: PropTypes.object.isRequired,
+  onSubjectTypeChange: PropTypes.func.isRequired
+};
+
+export default EditProgramFields;
