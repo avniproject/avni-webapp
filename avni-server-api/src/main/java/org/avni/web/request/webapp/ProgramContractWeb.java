@@ -1,27 +1,20 @@
 package org.avni.web.request.webapp;
 
-import org.avni.domain.DeclarativeRule;
 import org.avni.domain.OperationalProgram;
-import org.springframework.hateoas.core.Relation;
-
+import org.avni.web.contract.ProgramContract;
 import org.joda.time.DateTime;
+import org.springframework.hateoas.core.Relation;
 
 
 /**
  * This class represents a combined entity representing one to one mapping of Program and OperationalProgram.
  */
 @Relation(collectionRelation = "program")
-public class ProgramContractWeb {
-    private String name;
+public class ProgramContractWeb extends ProgramContract {
     private String programSubjectLabel;
-    private String colour;
     private Long id;
     private Long organisationId;
     private Long programOrganisationId;
-    private boolean voided;
-    private Boolean active;
-    private String enrolmentSummaryRule;
-    private String enrolmentEligibilityCheckRule;
     private String createdBy;
     private String lastModifiedBy;
     private DateTime createdDateTime;
@@ -29,16 +22,6 @@ public class ProgramContractWeb {
     private String subjectTypeUuid;
     private String programEnrolmentFormUuid;
     private String programExitFormUuid;
-    private String uuid;
-    private DeclarativeRule enrolmentEligibilityCheckDeclarativeRule;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getProgramSubjectLabel() {
         return programSubjectLabel;
@@ -64,28 +47,12 @@ public class ProgramContractWeb {
         this.organisationId = organisationId;
     }
 
-    public String getColour() {
-        return colour;
-    }
-
-    public void setColour(String colour) {
-        this.colour = colour;
-    }
-
-    public void setUUID(String uuid){
-        this.uuid = uuid;
-    }
-
-    public String getUUID(){
-        return uuid;
-    }
-
     public static ProgramContractWeb fromOperationalProgram(OperationalProgram operationalProgram) {
         ProgramContractWeb contract = new ProgramContractWeb();
 
         contract.setId(operationalProgram.getId());
         contract.setName(operationalProgram.getName());
-        contract.setUUID(operationalProgram.getProgram().getUuid());
+        contract.setUuid(operationalProgram.getProgram().getUuid());
         contract.setColour(operationalProgram.getProgram().getColour());
         contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
         contract.setOrganisationId(operationalProgram.getOrganisationId());
@@ -99,16 +66,10 @@ public class ProgramContractWeb {
         contract.setCreatedDateTime(operationalProgram.getCreatedDateTime());
         contract.setModifiedDateTime(operationalProgram.getLastModifiedDateTime());
         contract.setEnrolmentEligibilityCheckDeclarativeRule(operationalProgram.getEnrolmentEligibilityCheckDeclarativeRule());
+        contract.setManualEligibilityCheckRequired(operationalProgram.isManualEligibilityCheckRequired());
+        contract.setManualEnrolmentEligibilityCheckRule(operationalProgram.getManualEnrolmentEligibilityCheckRule());
+        contract.setManualEnrolmentEligibilityCheckDeclarativeRule(operationalProgram.getManualEnrolmentEligibilityCheckDeclarativeRule());
         return contract;
-    }
-
-
-    public boolean isVoided() {
-        return voided;
-    }
-
-    public void setVoided(boolean voided) {
-        this.voided = voided;
     }
 
     public Long getProgramOrganisationId() {
@@ -117,22 +78,6 @@ public class ProgramContractWeb {
 
     public void setProgramOrganisationId(Long programOrganisationId) {
         this.programOrganisationId = programOrganisationId;
-    }
-
-    public String getEnrolmentSummaryRule() {
-        return enrolmentSummaryRule;
-    }
-
-    public void setEnrolmentSummaryRule(String enrolmentSummaryRule) {
-        this.enrolmentSummaryRule = enrolmentSummaryRule;
-    }
-
-    public String getEnrolmentEligibilityCheckRule() {
-        return enrolmentEligibilityCheckRule;
-    }
-
-    public void setEnrolmentEligibilityCheckRule(String enrolmentEligibilityCheckRule) {
-        this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
     }
 
     public void setCreatedBy(String username){
@@ -189,21 +134,5 @@ public class ProgramContractWeb {
 
     public void setSubjectTypeUuid(String subjectTypeUuid) {
         this.subjectTypeUuid = subjectTypeUuid;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public DeclarativeRule getEnrolmentEligibilityCheckDeclarativeRule() {
-        return enrolmentEligibilityCheckDeclarativeRule;
-    }
-
-    public void setEnrolmentEligibilityCheckDeclarativeRule(DeclarativeRule enrolmentEligibilityCheckDeclarativeRule) {
-        this.enrolmentEligibilityCheckDeclarativeRule = enrolmentEligibilityCheckDeclarativeRule;
     }
 }

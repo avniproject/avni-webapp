@@ -9,8 +9,10 @@ import org.avni.domain.Individual;
 import org.avni.domain.OperationalProgram;
 import org.avni.domain.Organisation;
 import org.avni.domain.Program;
+import org.avni.web.contract.ProgramContract;
 import org.avni.web.request.OperationalProgramContract;
 import org.avni.web.request.ProgramRequest;
+import org.avni.web.request.webapp.ProgramContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +45,23 @@ public class ProgramService implements NonScopeAwareService {
         if (program == null) {
             program = createProgram(programRequest);
         }
-        program.setName(programRequest.getName());
-        program.setColour(programRequest.getColour());
-        program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
-        program.setEnrolmentEligibilityCheckRule(programRequest.getEnrolmentEligibilityCheckRule());
-        program.setEnrolmentEligibilityCheckDeclarativeRule(programRequest.getEnrolmentEligibilityCheckDeclarativeRule());
-        program.setActive(programRequest.getActive());
+
+        this.updateAndSaveProgram(program, programRequest);
         programRepository.save(program);
     }
 
+    public void updateAndSaveProgram(Program program, ProgramContract programContract) {
+        program.setName(programContract.getName());
+        program.setColour(programContract.getColour());
+        program.setEnrolmentSummaryRule(programContract.getEnrolmentSummaryRule());
+        program.setEnrolmentEligibilityCheckRule(programContract.getEnrolmentEligibilityCheckRule());
+        program.setEnrolmentEligibilityCheckDeclarativeRule(programContract.getEnrolmentEligibilityCheckDeclarativeRule());
+        program.setActive(programContract.getActive());
+        program.setManualEligibilityCheckRequired(programContract.isManualEligibilityCheckRequired());
+        program.setManualEnrolmentEligibilityCheckRule(programContract.getManualEnrolmentEligibilityCheckRule());
+        program.setManualEnrolmentEligibilityCheckDeclarativeRule(programContract.getManualEnrolmentEligibilityCheckDeclarativeRule());
+        programRepository.save(program);
+    }
 
     public List<Program> getEligiblePrograms(Individual individual) {
         //get all program uuids using form mappings and form type

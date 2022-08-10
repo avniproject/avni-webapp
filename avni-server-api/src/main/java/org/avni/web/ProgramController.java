@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 @RestController
 public class ProgramController implements RestControllerResourceProcessor<ProgramContractWeb> {
     private final Logger logger;
-    private ProgramRepository programRepository;
-    private OperationalProgramRepository operationalProgramRepository;
-    private ProgramService programService;
+    private final ProgramRepository programRepository;
+    private final OperationalProgramRepository operationalProgramRepository;
+    private final ProgramService programService;
     private final IndividualRepository individualRepository;
-    private FormService formService;
-    private FormMappingService formMappingService;
+    private final FormService formService;
+    private final FormMappingService formMappingService;
 
     @Autowired
     public ProgramController(ProgramRepository programRepository,
@@ -63,9 +63,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public void save(@RequestBody List<ProgramRequest> programRequests) {
-        programRequests.forEach(programRequest -> {
-            programService.saveProgram(programRequest);
-        });
+        programRequests.forEach(programService::saveProgram);
     }
 
     @PostMapping(value = "/web/program")
@@ -80,12 +78,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Program %s already exists", request.getName())));
         Program program = new Program();
         program.assignUUIDIfRequired();
-        program.setName(request.getName());
-        program.setColour(request.getColour());
-        program.setEnrolmentSummaryRule(request.getEnrolmentSummaryRule());
-        program.setEnrolmentEligibilityCheckRule(request.getEnrolmentEligibilityCheckRule());
-        program.setEnrolmentEligibilityCheckDeclarativeRule(request.getEnrolmentEligibilityCheckDeclarativeRule());
-        programRepository.save(program);
+        programService.updateAndSaveProgram(program, request);
         OperationalProgram operationalProgram = new OperationalProgram();
         operationalProgram.assignUUIDIfRequired();
         operationalProgram.setName(request.getName());
@@ -132,15 +125,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
                     .body(ReactAdminUtil.generateJsonError(String.format("Operational Program with id '%d' not found", id)));
 
         Program program = operationalProgram.getProgram();
-
-        program.setName(request.getName());
-        program.setColour(request.getColour());
-        program.setEnrolmentSummaryRule(request.getEnrolmentSummaryRule());
-        program.setEnrolmentEligibilityCheckRule(request.getEnrolmentEligibilityCheckRule());
-        program.setEnrolmentEligibilityCheckDeclarativeRule(request.getEnrolmentEligibilityCheckDeclarativeRule());
-        program.setActive(request.getActive());
-
-        programRepository.save(program);
+        programService.updateAndSaveProgram(program, request);
 
         operationalProgram.setProgramSubjectLabel(request.getProgramSubjectLabel());
         operationalProgram.setName(request.getName());
@@ -196,7 +181,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         }
         return operationalPrograms.stream()
                 .sorted(Comparator.comparing(OperationalProgram::getName))
-                .map(operationalProgram -> ProgramContractWeb.fromOperationalProgram(operationalProgram))
+                .map(ProgramContractWeb::fromOperationalProgram)
                 .collect(Collectors.toList());
     }
 
