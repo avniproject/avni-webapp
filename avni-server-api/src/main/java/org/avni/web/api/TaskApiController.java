@@ -19,24 +19,22 @@ import org.avni.domain.task.TaskTypeName;
 import org.avni.service.ConceptService;
 import org.avni.web.request.api.ApiTaskRequest;
 import org.avni.web.request.api.RequestUtils;
-import org.avni.web.response.Response;
+import org.avni.web.response.ResponsePage;
 import org.avni.web.response.api.ApiTaskResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
-
-import static org.avni.web.api.CommonFieldNames.*;
-import static org.avni.web.contract.TaskFieldNames.*;
+import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 public class TaskApiController {
@@ -64,7 +62,7 @@ public class TaskApiController {
     @Transactional
     @ResponseBody
     public ResponseEntity post(@RequestBody ApiTaskRequest request) {
-        Task task = new Task();
+        Task task = createTask(request.getExternalId());
         TaskType taskType = taskTypeRepository.findByName(request.getTaskTypeName());
         if (taskType == null) {
             throw new IllegalArgumentException(String.format("Task type not found with name '%s'", request.getTaskTypeName()));
@@ -101,26 +99,34 @@ public class TaskApiController {
         task.assignUUID();
         task.setVoided(request.isVoided());
         taskRepository.save(task);
+        return new ResponseEntity<>(ApiTaskResponse.fromTask(task, conceptRepository, conceptService), HttpStatus.OK);
+    }
 
-        ApiTaskResponse response = new ApiTaskResponse();
-        response.put(TASK_TYPE, task.getTaskType().getName());
-        if (task.getAssignedTo() != null) {
-            response.put(ASSIGNED_TO, task.getAssignedTo().getUsername());
-        }
-        response.put(COMPLETED_ON, task.getCompletedOn());
-        response.put(SCHEDULED_ON, task.getScheduledOn());
-        response.put(EXTERNAL_ID, task.getLegacyId());
-        response.put(TASK_STATUS, task.getTaskStatus().getName());
-        Response.putObservations(conceptRepository, conceptService, response, new LinkedHashMap<>(), task.getMetadata(), METADATA);
-        Response.putObservations(conceptRepository, conceptService, response, new LinkedHashMap<>(), task.getObservations(), OBSERVATIONS);
-        response.put(NAME, task.getName());
-        if (task.getSubject() != null) {
-            response.put(SUBJECT_ID, task.getSubject().getUuid());
-            response.put(SUBJECT_EXTERNAL_ID, task.getSubject().getLegacyId());
-        }
-        response.put(ID, task.getUuid());
-        response.put(VOIDED, task.isVoided());
+    @RequestMapping(value = "/api/tasks", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponsePage getSubjects(@RequestParam(value = "type") String type,
+                                    @RequestParam(value = "isTerminalStatus") boolean isTerminalStatus,
+                                    @RequestParam(value = "metadata") String metadataConcepts,
+                                    Pageable pageable) {
+        Map<Concept, String> conceptsMap = conceptService.readConceptsFromJsonObject(metadataConcepts);
+        Page<Task> tasks = taskRepository.findByTaskTypeMetadataAndTaskStatus(type, isTerminalStatus, conceptsMap, pageable);
+        ArrayList<ApiTaskResponse> taskResponses = new ArrayList<>();
+        tasks.forEach(task -> taskResponses.add(ApiTaskResponse.fromTask(task, conceptRepository, conceptService)));
+        return new ResponsePage(taskResponses, tasks.getNumberOfElements(), tasks.getTotalPages(), tasks.getSize());
+    }
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    private Task createTask(String externalId) {
+        if (StringUtils.hasLength(externalId)) {
+            Task task = taskRepository.findByLegacyId(externalId.trim());
+            if (task != null) {
+                return task;
+            }
+        }
+        Task task = new Task();
+        task.assignUUID();
+        if (StringUtils.hasLength(externalId)) {
+            task.setLegacyId(externalId.trim());
+        }
+        return task;
     }
 }

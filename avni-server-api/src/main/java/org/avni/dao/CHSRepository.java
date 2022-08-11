@@ -47,11 +47,11 @@ public interface CHSRepository<T extends CHSEntity> {
         return spec;
     }
 
-    default Specification withConceptValues(Map<Concept, String> concepts) {
+    default Specification withConceptValues(Map<Concept, String> concepts, String observationField) {
         Specification<T> spec = (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             concepts.forEach((concept, value) -> {
-                predicates.add(cb.equal(jsonExtractPathText(root.get("observations"), concept.getUuid(), cb), value));
+                predicates.add(cb.equal(jsonExtractPathText(root.get(observationField), concept.getUuid(), cb), value));
             });
 
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));

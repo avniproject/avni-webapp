@@ -116,18 +116,18 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
 
     default Page<Encounter> findByConcepts(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
-                .and(withConceptValues(concepts)), pageable);
+                .and(withConceptValues(concepts, "observations")), pageable);
     }
 
     default Page<Encounter> findByConceptsAndEncounterType(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String encounterType, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
-                .and(withConceptValues(concepts))
+                .and(withConceptValues(concepts, "observations"))
                 .and(findByEncounterTypeSpec(encounterType)), pageable);
     }
 
     default Page<Encounter> findByConceptsAndEncounterTypeAndSubject(Date lastModifiedDateTime, Date now, Map<Concept, String> concepts, String encounterType, String subjectUUID, Pageable pageable) {
         return findAll(lastModifiedBetween(lastModifiedDateTime, now)
-                .and(withConceptValues(concepts))
+                .and(withConceptValues(concepts, "observations"))
                 .and(findByEncounterTypeSpec(encounterType))
                 .and(findBySubjectUUIDSpec(subjectUUID)), pageable);
     }

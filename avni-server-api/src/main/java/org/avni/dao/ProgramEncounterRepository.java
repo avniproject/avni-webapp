@@ -112,7 +112,7 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
 
     default Page<ProgramEncounter> search(SearchParams searchParams, Pageable pageable) {
         return findAll(where(lastModifiedBetween(searchParams.lastModifiedDateTime, searchParams.now))
-                .and(withConceptValues(searchParams.concepts))
+                .and(withConceptValues(searchParams.concepts, "observations"))
                 .and(withEncounterType(searchParams.encounterType))
                 .and(withProgramEnrolment(searchParams.programEnrolment)), pageable);
     }
