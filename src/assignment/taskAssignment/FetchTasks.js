@@ -17,7 +17,7 @@ export const fetchTasks = (query, filterCriteria) => {
         resolve({
           data: result.content,
           page: query.page,
-          totalCount: result.numberOfElements
+          totalCount: result.totalElements
         });
       })
       .catch(err => console.log(err));
