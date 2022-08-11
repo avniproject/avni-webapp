@@ -2,8 +2,6 @@ import React from "react";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
 import FormLabel from "@material-ui/core/FormLabel";
 import ColorValue from "../../common/ColorValue";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import ResourceShowView from "../../common/ResourceShowView";
 import http from "../../../common/utils/httpClient";
 import RuleDisplay from "../../../adminApp/components/RuleDisplay";

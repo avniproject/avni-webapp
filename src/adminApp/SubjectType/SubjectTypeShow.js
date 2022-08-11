@@ -13,8 +13,6 @@ import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings, useLocationType } from "./effects";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import { AdvancedSettingShow } from "./AdvancedSettingShow";
 import RuleDisplay from "../components/RuleDisplay";
 

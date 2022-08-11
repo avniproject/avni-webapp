@@ -7,7 +7,6 @@ import Button from "@material-ui/core/Button";
 import { programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
 import "material-ui-rc-color-picker/assets/index.css";
-import _ from "lodash";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import ProgramService from "../service/ProgramService";
 import EditProgramFields from "./EditProgramFields";

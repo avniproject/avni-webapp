@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import _ from "lodash";
@@ -19,7 +19,6 @@ import {
 import { highlight, languages } from "prismjs/components/prism-core";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
-import RuleDisplay from "../components/RuleDisplay";
 
 const EditProgramFields = props => {
   const {

@@ -7,8 +7,6 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get } from "lodash";
 import {

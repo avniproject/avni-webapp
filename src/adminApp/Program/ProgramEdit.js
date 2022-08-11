@@ -20,7 +20,6 @@ const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
   const [redirectShow, setRedirectShow] = useState(false);
-  const [programData, setProgramData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [subjectType, setSubjectType] = useState(null);
   const [formList, setFormList] = useState([]);
@@ -31,7 +30,6 @@ const ProgramEdit = props => {
       .get("/web/program/" + props.match.params.id)
       .then(response => response.data)
       .then(result => {
-        setProgramData(result);
         dispatch({ type: "setData", payload: result });
         http
           .get("/web/operationalModules")
