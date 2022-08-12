@@ -4,7 +4,6 @@ const initialAssignmentCriteria = {
   taskIds: [],
   assignToUserIds: [],
   statusId: null,
-  assignToUserId: null,
   allSelected: false
 };
 

@@ -51,9 +51,7 @@ const TaskAssignment = ({ history, ...props }) => {
     dispatch({ type: "onSave", payload: { saveStart: true } });
     dispatch({ type: "hideAction" });
     const assignmentCriteriaValues = mapValues(assignmentCriteria, (v, k) =>
-      includes(["assignToUserIds", "statusId", "assignToUserId"], k)
-        ? getAssignmentValue(k, assignmentCriteria)
-        : v
+      includes(["assignToUserIds", "statusId"], k) ? getAssignmentValue(k, assignmentCriteria) : v
     );
     const [error] = await api.assignTask({
       ...assignmentCriteriaValues,

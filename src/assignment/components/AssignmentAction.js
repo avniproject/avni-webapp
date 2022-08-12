@@ -26,7 +26,6 @@ export const AssignmentAction = ({
   const classes = useStyles();
   const onClose = () => dispatch({ type: "hideAction" });
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
-  const assignedToKeyName = assignmentCriteria.allSelected ? "assignToUserIds" : "assignToUserId";
 
   const selectAction = (label, value, options, assignmentKeyName, isMulti = false) => (
     <Grid item spacing={3} alignItems={"center"} xs={12}>
@@ -53,13 +52,7 @@ export const AssignmentAction = ({
         style={{ top: "25%", left: "30%" }}
       >
         <Typography variant={"h6"}>{"Bulk Action"}</Typography>
-        {selectAction(
-          "Set user to",
-          null,
-          userOptions,
-          assignedToKeyName,
-          assignmentCriteria.allSelected
-        )}
+        {selectAction("Set user to", null, userOptions, "assignToUserIds", true)}
         {selectAction("Set status to", null, taskStatusOptions, "statusId")}
         <Grid item container spacing={3}>
           <Grid item>
