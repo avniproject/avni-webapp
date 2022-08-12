@@ -1,8 +1,6 @@
 package org.avni.web.task;
 
-import org.avni.dao.task.TaskStatusRepository;
-import org.avni.dao.task.TaskTypeRepository;
-import org.avni.domain.task.TaskStatus;
+import org.avni.service.TaskStatusService;
 import org.avni.web.request.webapp.task.TaskStatusContract;
 import org.avni.web.response.AvniEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TaskStatusWebController {
-    private final TaskStatusRepository taskStatusRepository;
-    private final TaskTypeRepository taskTypeRepository;
+    private final TaskStatusService taskStatusService;
 
     @Autowired
-    public TaskStatusWebController(TaskStatusRepository taskStatusRepository, TaskTypeRepository taskTypeRepository) {
-        this.taskStatusRepository = taskStatusRepository;
-        this.taskTypeRepository = taskTypeRepository;
+    public TaskStatusWebController(TaskStatusService taskStatusService) {
+        this.taskStatusService = taskStatusService;
     }
 
     @PostMapping(value = "/web/taskStatus")
@@ -29,16 +25,7 @@ public class TaskStatusWebController {
     @Transactional
     @ResponseBody
     public AvniEntityResponse post(@RequestBody TaskStatusContract request) {
-        TaskStatus taskStatus = new TaskStatus();
-        taskStatus.setVoided(request.isVoided());
-        taskStatus.setName(request.getName());
-        taskStatus.setTerminal(request.isTerminal());
-        Long taskTypeId = request.getTaskTypeId();
-        if (taskTypeId != null) {
-            taskStatus.setTaskType(taskTypeRepository.findById(taskTypeId.longValue()));
-        }
-        taskStatus.assignUUID();
-        taskStatusRepository.save(taskStatus);
-        return new AvniEntityResponse(taskStatus);
+        return new AvniEntityResponse(taskStatusService.saveTaskStatus(request));
     }
+
 }

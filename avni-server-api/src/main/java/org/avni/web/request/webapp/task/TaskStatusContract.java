@@ -6,6 +6,7 @@ import org.avni.web.request.ReferenceDataContract;
 public class TaskStatusContract extends ReferenceDataContract {
     private boolean isTerminal;
     private Long taskTypeId;
+    private String taskTypeUUID;
 
     public static TaskStatusContract fromEntity(TaskStatus taskStatus) {
         TaskStatusContract taskStatusContract = new TaskStatusContract();
@@ -14,6 +15,7 @@ public class TaskStatusContract extends ReferenceDataContract {
         taskStatusContract.setTerminal(taskStatus.isTerminal());
         taskStatusContract.setName(taskStatus.getName());
         taskStatusContract.setTaskTypeId(taskStatus.getTaskType().getId());
+        taskStatusContract.setTaskTypeUUID(taskStatus.getTaskType().getUuid());
         return taskStatusContract;
     }
 
@@ -31,5 +33,13 @@ public class TaskStatusContract extends ReferenceDataContract {
 
     public void setTaskTypeId(Long taskTypeId) {
         this.taskTypeId = taskTypeId;
+    }
+
+    public String getTaskTypeUUID() {
+        return taskTypeUUID;
+    }
+
+    public void setTaskTypeUUID(String taskTypeUUID) {
+        this.taskTypeUUID = taskTypeUUID;
     }
 }

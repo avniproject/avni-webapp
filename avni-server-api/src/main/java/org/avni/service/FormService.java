@@ -44,6 +44,7 @@ public class FormService implements NonScopeAwareService {
                 .withValidationDeclarativeRule(formRequest.getValidationDeclarativeRule())
                 .withDecisionDeclarativeRule(formRequest.getDecisionDeclarativeRule())
                 .withVisitScheduleDeclarativeRule(formRequest.getVisitScheduleDeclarativeRule())
+                .withTaskScheduleDeclarativeRule(formRequest.getTaskScheduleDeclarativeRule())
                 .build();
 
         mapDecisionConcepts(formRequest, form);

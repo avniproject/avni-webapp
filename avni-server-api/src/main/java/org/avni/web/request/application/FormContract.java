@@ -47,6 +47,7 @@ public class FormContract extends ReferenceDataContract {
     private DeclarativeRule validationDeclarativeRule;
     private DeclarativeRule decisionDeclarativeRule;
     private DeclarativeRule visitScheduleDeclarativeRule;
+    private DeclarativeRule taskScheduleDeclarativeRule;
 
     public FormContract() {
     }
@@ -149,6 +150,8 @@ public class FormContract extends ReferenceDataContract {
         formContract.setDecisionDeclarativeRule(form.getDecisionDeclarativeRule());
         formContract.setValidationDeclarativeRule(form.getValidationDeclarativeRule());
         formContract.setVisitScheduleDeclarativeRule(form.getVisitScheduleDeclarativeRule());
+        formContract.setTaskScheduleRule(form.getTaskScheduleRule());
+        formContract.setTaskScheduleDeclarativeRule(form.getTaskScheduleDeclarativeRule());
 
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
@@ -280,5 +283,13 @@ public class FormContract extends ReferenceDataContract {
 
     public void setTaskScheduleRule(String taskScheduleRule) {
         this.taskScheduleRule = taskScheduleRule;
+    }
+
+    public DeclarativeRule getTaskScheduleDeclarativeRule() {
+        return taskScheduleDeclarativeRule;
+    }
+
+    public void setTaskScheduleDeclarativeRule(DeclarativeRule taskScheduleDeclarativeRule) {
+        this.taskScheduleDeclarativeRule = taskScheduleDeclarativeRule;
     }
 }

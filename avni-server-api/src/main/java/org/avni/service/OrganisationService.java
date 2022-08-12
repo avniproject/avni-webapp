@@ -26,6 +26,8 @@ import org.avni.web.request.webapp.CatchmentsExport;
 import org.avni.web.request.webapp.ConceptExport;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
 import org.avni.web.request.webapp.documentation.DocumentationContract;
+import org.avni.web.request.webapp.task.TaskStatusContract;
+import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +110,8 @@ public class OrganisationService {
     private final NewsRepository newsRepository;
     private final SubjectMigrationRepository subjectMigrationRepository;
     private final DocumentationService documentationService;
+    private final TaskTypeService taskTypeService;
+    private final TaskStatusService taskStatusService;
     private final Logger logger;
 
     @Autowired
@@ -169,7 +173,9 @@ public class OrganisationService {
                                CommentThreadRepository commentThreadRepository,
                                NewsRepository newsRepository,
                                SubjectMigrationRepository subjectMigrationRepository,
-                               DocumentationService documentationService) {
+                               DocumentationService documentationService,
+                               TaskTypeService taskTypeService,
+                               TaskStatusService taskStatusService) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -230,6 +236,8 @@ public class OrganisationService {
         this.newsRepository = newsRepository;
         this.subjectMigrationRepository = subjectMigrationRepository;
         this.documentationService = documentationService;
+        this.taskTypeService = taskTypeService;
+        this.taskStatusService = taskStatusService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -486,6 +494,20 @@ public class OrganisationService {
         List<DocumentationContract> documentationContracts = documentationService.getAll();
         if (!documentationContracts.isEmpty()) {
             addFileToZip(zos, "documentations.json", documentationContracts);
+        }
+    }
+
+    public void addTaskType(ZipOutputStream zos) throws IOException {
+        List<TaskTypeContract> taskTypeContracts = taskTypeService.getAll();
+        if (!taskTypeContracts.isEmpty()) {
+            addFileToZip(zos, "taskType.json", taskTypeContracts);
+        }
+    }
+
+    public void addTaskStatus(ZipOutputStream zos) throws IOException {
+        List<TaskStatusContract> taskStatusContracts = taskStatusService.getAll();
+        if (!taskStatusContracts.isEmpty()) {
+            addFileToZip(zos, "taskStatus.json", taskStatusContracts);
         }
     }
 

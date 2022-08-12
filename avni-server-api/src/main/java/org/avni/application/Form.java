@@ -208,4 +208,12 @@ public class Form extends OrganisationAwareEntity {
     public void setTaskScheduleRule(String taskScheduleRule) {
         this.taskScheduleRule = taskScheduleRule;
     }
+
+    public DeclarativeRule getTaskScheduleDeclarativeRule() {
+        return taskScheduleDeclarativeRule;
+    }
+
+    public void setTaskScheduleDeclarativeRule(DeclarativeRule taskScheduleDeclarativeRule) {
+        this.taskScheduleDeclarativeRule = taskScheduleDeclarativeRule;
+    }
 }

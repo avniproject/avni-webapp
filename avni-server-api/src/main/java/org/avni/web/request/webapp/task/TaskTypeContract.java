@@ -11,12 +11,7 @@ public class TaskTypeContract extends ReferenceDataContract {
 
     public static TaskTypeContract fromEntity(TaskType taskType, ConceptService conceptService) {
         if (taskType == null) return null;
-
-        TaskTypeContract taskTypeContract = new TaskTypeContract();
-        taskTypeContract.setTaskTypeName(taskType.getType().name());
-        taskTypeContract.setName(taskType.getName());
-        taskTypeContract.setUuid(taskType.getUuid());
-        taskTypeContract.setId(taskType.getId());
+        TaskTypeContract taskTypeContract = fromEntity(taskType);
         String[] metadataSearchFields = taskType.getMetadataSearchFields();
         if (metadataSearchFields != null) {
             String[] searchConcepts = new String[metadataSearchFields.length];
@@ -26,6 +21,16 @@ public class TaskTypeContract extends ReferenceDataContract {
             }
             taskTypeContract.setMetadataSearchFields(searchConcepts);
         }
+        return taskTypeContract;
+    }
+
+    public static TaskTypeContract fromEntity(TaskType taskType) {
+        TaskTypeContract taskTypeContract = new TaskTypeContract();
+        taskTypeContract.setTaskTypeName(taskType.getType().name());
+        taskTypeContract.setName(taskType.getName());
+        taskTypeContract.setUuid(taskType.getUuid());
+        taskTypeContract.setId(taskType.getId());
+        taskTypeContract.setMetadataSearchFields(taskType.getMetadataSearchFields());
         return taskTypeContract;
     }
 

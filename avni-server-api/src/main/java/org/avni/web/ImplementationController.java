@@ -69,6 +69,8 @@ public class ImplementationController implements RestControllerResourceProcessor
             organisationService.addReportCards(zos);
             organisationService.addReportDashboard(zos);
             organisationService.addDocumentation(zos);
+            organisationService.addTaskType(zos);
+            organisationService.addTaskStatus(zos);
             organisationService.addIcons(zos);
         }
 

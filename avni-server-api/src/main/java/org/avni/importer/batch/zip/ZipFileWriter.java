@@ -16,6 +16,8 @@ import org.avni.web.request.application.ChecklistDetailRequest;
 import org.avni.web.request.application.FormContract;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
 import org.avni.web.request.webapp.documentation.DocumentationContract;
+import org.avni.web.request.webapp.task.TaskStatusContract;
+import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -40,6 +42,7 @@ import static java.lang.String.format;
 @JobScope
 public class ZipFileWriter implements ItemWriter<BundleFile> {
 
+    private static final String SUBJECT_ICON_DIRECTORY = "subjectTypeIcons";
     private final AuthService authService;
     private final EncounterTypeService encounterTypeService;
     private final FormMappingService formMappingService;
@@ -65,8 +68,8 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
     private DashboardService dashboardService;
     private S3Service s3Service;
     private DocumentationService documentationService;
-    private static final String SUBJECT_ICON_DIRECTORY = "subjectTypeIcons";
-
+    private TaskTypeService taskTypeService;
+    private TaskStatusService taskStatusService;
     @Value("#{jobParameters['userId']}")
     private Long userId;
     @Value("#{jobParameters['organisationUUID']}")
@@ -97,6 +100,8 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         add("video.json");
         add("reportCard.json");
         add("reportDashboard.json");
+        add("taskType.json");
+        add("taskStatus.json");
     }};
 
 
@@ -122,7 +127,9 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                          VideoService videoService,
                          CardService cardService,
                          DashboardService dashboardService, @Qualifier("BatchS3Service") S3Service s3Service,
-                         DocumentationService documentationService) {
+                         DocumentationService documentationService,
+                         TaskTypeService taskTypeService,
+                         TaskStatusService taskStatusService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -146,6 +153,8 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         this.dashboardService = dashboardService;
         this.s3Service = s3Service;
         this.documentationService = documentationService;
+        this.taskTypeService = taskTypeService;
+        this.taskStatusService = taskStatusService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -175,7 +184,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
     private String uploadIcon(BundleFile bundleFile) throws IOException {
         String completePath = bundleFile.getName();
         logger.info("uploading icon {}", completePath);
-        String[] fileName = completePath.replace(format("%s/", SUBJECT_ICON_DIRECTORY),"").split("\\.");
+        String[] fileName = completePath.replace(format("%s/", SUBJECT_ICON_DIRECTORY), "").split("\\.");
         String subjectTypeUUID = fileName[0];
         String extension = fileName[1];
         return this.s3Service.uploadByteArray(subjectTypeUUID, extension, "icons", bundleFile.getContent());
@@ -326,6 +335,18 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                 DashboardContract[] dashboardContracts = convertString(fileData, DashboardContract[].class);
                 for (DashboardContract dashboardContract : dashboardContracts) {
                     dashboardService.uploadDashboard(dashboardContract);
+                }
+                break;
+            case "taskType.json":
+                TaskTypeContract[] taskTypeContracts = convertString(fileData, TaskTypeContract[].class);
+                for (TaskTypeContract taskTypeContract : taskTypeContracts) {
+                    taskTypeService.saveTaskType(taskTypeContract);
+                }
+                break;
+            case "taskStatus.json":
+                TaskStatusContract[] taskStatusContracts = convertString(fileData, TaskStatusContract[].class);
+                for (TaskStatusContract taskStatusContract : taskStatusContracts) {
+                    taskStatusService.importTaskStatus(taskStatusContract);
                 }
                 break;
         }

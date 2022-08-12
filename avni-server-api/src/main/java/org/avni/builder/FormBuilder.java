@@ -72,6 +72,10 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         this.get().setVisitScheduleDeclarativeRule(visitScheduleDeclarativeRule);
         return this;
     }
+    public FormBuilder withTaskScheduleDeclarativeRule(DeclarativeRule taskScheduleDeclarativeRule) {
+        this.get().setTaskScheduleDeclarativeRule(taskScheduleDeclarativeRule);
+        return this;
+    }
 
     private FormElementGroup getExistingFormElementGroup(String uuid) {
         return this.get().findFormElementGroup(uuid);

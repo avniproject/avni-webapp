@@ -1,8 +1,6 @@
 package org.avni.web.task;
 
-import org.avni.dao.task.TaskTypeRepository;
-import org.avni.domain.task.TaskType;
-import org.avni.domain.task.TaskTypeName;
+import org.avni.service.TaskTypeService;
 import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.avni.web.response.AvniEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +14,11 @@ import java.util.List;
 
 @RestController
 public class TaskTypeWebController {
-    private final TaskTypeRepository taskTypeRepository;
+    private final TaskTypeService taskTypeService;
 
     @Autowired
-    public TaskTypeWebController(TaskTypeRepository taskTypeRepository) {
-        this.taskTypeRepository = taskTypeRepository;
+    public TaskTypeWebController(TaskTypeService taskTypeService) {
+        this.taskTypeService = taskTypeService;
     }
 
     @PostMapping(value = "/web/taskTypes")
@@ -34,13 +32,7 @@ public class TaskTypeWebController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public AvniEntityResponse post(@RequestBody TaskTypeContract request) {
-        TaskType taskType = new TaskType();
-        taskType.setType(TaskTypeName.valueOf(request.getTaskTypeName()));
-        taskType.setVoided(request.isVoided());
-        taskType.setName(request.getName());
-        taskType.setMetadataSearchFields(request.getMetadataSearchFields());
-        taskType.assignUUID();
-        taskTypeRepository.save(taskType);
-        return new AvniEntityResponse(taskType);
+        return new AvniEntityResponse(taskTypeService.saveTaskType(request));
     }
+
 }
