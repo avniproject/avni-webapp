@@ -130,20 +130,18 @@ public class TaskService implements NonScopeAwareService {
     }
 
     private void assignmentForSelectedAll(TaskAssignmentRequest taskAssignmentRequest) {
-        Long[] assignToUserIds = taskAssignmentRequest.getAssignedToUserIdArray();
         Page<Task> taskPage = searchTaskByCriteria(taskAssignmentRequest.getTaskFilterCriteria(), PageRequest.of(0, 1000));
-        List<User> users = userRepository.findByIdIn(assignToUserIds);
+        List<User> users = userRepository.findByIdIn(taskAssignmentRequest.getAssignedToUserIdArray());
         List<Task> tasksToUpdate = taskPage.getContent();
         TaskStatus taskStatus = null;
         if (taskAssignmentRequest.getStatusId() != null) {
             taskStatus = taskStatusRepository.findOne(taskAssignmentRequest.getStatusId());
         }
-        assignTasksEquallyToUsers(taskPage, users, tasksToUpdate, taskStatus);
+        assignTasksEquallyToUsers(taskPage.getTotalElements(), users, tasksToUpdate, taskStatus);
         taskRepository.saveAll(tasksToUpdate);
     }
 
-    private void assignTasksEquallyToUsers(Page<Task> taskPage, List<User> users, List<Task> tasksToUpdate, TaskStatus taskStatus) {
-        long totalTasks = taskPage.getTotalElements();
+    private void assignTasksEquallyToUsers(long totalTasks, List<User> users, List<Task> tasksToUpdate, TaskStatus taskStatus) {
         int totalUsers = users.size();
         int userIndex = 0;
         for (int i = 0; i < totalTasks; i++) {
@@ -162,18 +160,16 @@ public class TaskService implements NonScopeAwareService {
     }
 
     private void assignmentForSelectedTaskIds(TaskAssignmentRequest taskAssignmentRequest) {
-        List<Task> assignedTasks = taskRepository.findAllByIdIn(taskAssignmentRequest.getTaskIds()).stream().peek(task -> {
-            if (taskAssignmentRequest.getStatusId() != null) {
-                TaskStatus taskStatus = taskStatusRepository.findOne(taskAssignmentRequest.getStatusId());
-                task.setTaskStatus(taskStatus);
-                if (taskStatus.isTerminal()) {
-                    task.setCompletedOn(new DateTime());
-                }
-            }
-            if (taskAssignmentRequest.getAssignToUserId() != null) {
-                task.setAssignedTo(userRepository.findOne(taskAssignmentRequest.getAssignToUserId()));
-            }
-        }).collect(Collectors.toList());
-        taskRepository.saveAll(assignedTasks);
+        List<User> users = userRepository.findByIdIn(taskAssignmentRequest.getAssignedToUserIdArray());
+        List<Task> tasksToUpdate = taskRepository.findAllByIdIn(taskAssignmentRequest.getTaskIds());
+        if (users.size() > tasksToUpdate.size()) {
+            throw new IllegalArgumentException("Users cannot be more than the selected tasks");
+        }
+        TaskStatus taskStatus = null;
+        if (taskAssignmentRequest.getStatusId() != null) {
+            taskStatus = taskStatusRepository.findOne(taskAssignmentRequest.getStatusId());
+        }
+        assignTasksEquallyToUsers(tasksToUpdate.size(), users, tasksToUpdate, taskStatus);
+        taskRepository.saveAll(tasksToUpdate);
     }
 }

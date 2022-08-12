@@ -5,7 +5,6 @@ import java.util.List;
 public class TaskAssignmentRequest {
     private List<Long> taskIds;
     private List<Long> assignToUserIds;
-    private Long assignToUserId;
     private Long statusId;
     private boolean isAllSelected;
     private TaskFilterCriteria taskFilterCriteria;
@@ -52,13 +51,5 @@ public class TaskAssignmentRequest {
 
     public void setTaskFilterCriteria(TaskFilterCriteria taskFilterCriteria) {
         this.taskFilterCriteria = taskFilterCriteria;
-    }
-
-    public Long getAssignToUserId() {
-        return assignToUserId;
-    }
-
-    public void setAssignToUserId(Long assignToUserId) {
-        this.assignToUserId = assignToUserId;
     }
 }
