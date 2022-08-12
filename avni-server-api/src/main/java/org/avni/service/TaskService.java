@@ -151,6 +151,9 @@ public class TaskService implements NonScopeAwareService {
             task.setAssignedTo(users.get(userIndex));
             if (taskStatus != null) {
                 task.setTaskStatus(taskStatus);
+                if (taskStatus.isTerminal()) {
+                    task.setCompletedOn(new DateTime());
+                }
             }
             if (userIndex + 1 != totalUsers && (i + 1) == ((userIndex + 1) * (totalTasks / totalUsers))) {
                 userIndex++;
@@ -161,7 +164,11 @@ public class TaskService implements NonScopeAwareService {
     private void assignmentForSelectedTaskIds(TaskAssignmentRequest taskAssignmentRequest) {
         List<Task> assignedTasks = taskRepository.findAllByIdIn(taskAssignmentRequest.getTaskIds()).stream().peek(task -> {
             if (taskAssignmentRequest.getStatusId() != null) {
-                task.setTaskStatus(taskStatusRepository.findOne(taskAssignmentRequest.getStatusId()));
+                TaskStatus taskStatus = taskStatusRepository.findOne(taskAssignmentRequest.getStatusId());
+                task.setTaskStatus(taskStatus);
+                if (taskStatus.isTerminal()) {
+                    task.setCompletedOn(new DateTime());
+                }
             }
             if (taskAssignmentRequest.getAssignToUserId() != null) {
                 task.setAssignedTo(userRepository.findOne(taskAssignmentRequest.getAssignToUserId()));
