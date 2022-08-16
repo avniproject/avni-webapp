@@ -14,6 +14,9 @@ public class ProgramRequest extends ProgramContract {
         programRequest.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
         programRequest.setEnrolmentSummaryRule(program.getEnrolmentSummaryRule());
         programRequest.setEnrolmentEligibilityCheckDeclarativeRule(program.getEnrolmentEligibilityCheckDeclarativeRule());
+        programRequest.setManualEligibilityCheckRequired(program.isManualEligibilityCheckRequired());
+        programRequest.setManualEnrolmentEligibilityCheckRule(program.getManualEnrolmentEligibilityCheckRule());
+        programRequest.setManualEnrolmentEligibilityCheckDeclarativeRule(program.getManualEnrolmentEligibilityCheckDeclarativeRule());
         return programRequest;
     }
 }

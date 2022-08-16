@@ -21,7 +21,7 @@ import static java.lang.String.format;
 @Component
 @JobScope
 public class ZipJobCompletionNotificationListener extends JobExecutionListenerSupport {
-    private Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(ZipJobCompletionNotificationListener.class);
 
     @Value("#{jobParameters['uuid']}")
     private String uuid;
@@ -30,14 +30,13 @@ public class ZipJobCompletionNotificationListener extends JobExecutionListenerSu
     @Value("#{jobParameters['organisationUUID']}")
     private String organisationUUID;
 
-    private BulkUploadS3Service bulkUploadS3Service;
-    private AuthService authService;
+    private final BulkUploadS3Service bulkUploadS3Service;
+    private final AuthService authService;
 
     @Autowired
     public ZipJobCompletionNotificationListener(BulkUploadS3Service bulkUploadS3Service, AuthService authService) {
         this.bulkUploadS3Service = bulkUploadS3Service;
         this.authService = authService;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override

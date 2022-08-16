@@ -22,8 +22,7 @@ import static java.lang.String.format;
 @Component
 @JobScope
 public class ErrorFileCreatorListener implements JobExecutionListener {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(ErrorFileCreatorListener.class);
     private final S3Service s3Service;
 
     @Value("#{jobParameters['uuid']}")

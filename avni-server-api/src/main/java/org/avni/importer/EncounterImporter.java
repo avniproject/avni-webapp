@@ -21,7 +21,7 @@ import java.util.List;
 
 @Component
 public class EncounterImporter extends Importer<EncounterRequest> {
-    private EncounterController encounterController;
+    private final EncounterController encounterController;
 
     @Autowired
     public EncounterImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, EncounterController encounterController, UserRepository userRepository) {

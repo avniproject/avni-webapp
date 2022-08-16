@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 @JobScope
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
-    private Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
 
     @Value("#{jobParameters['uuid']}")
     private String uuid;
@@ -37,7 +37,6 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
     public JobCompletionNotificationListener(ExportS3Service exportS3Service, AuthService authService) {
         this.exportS3Service = exportS3Service;
         this.authService = authService;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override

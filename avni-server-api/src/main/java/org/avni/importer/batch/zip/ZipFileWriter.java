@@ -41,13 +41,14 @@ import static java.lang.String.format;
 @Component
 @JobScope
 public class ZipFileWriter implements ItemWriter<BundleFile> {
+    private static final Logger logger = LoggerFactory.getLogger(ZipFileWriter.class);
 
     private static final String SUBJECT_ICON_DIRECTORY = "subjectTypeIcons";
     private final AuthService authService;
     private final EncounterTypeService encounterTypeService;
     private final FormMappingService formMappingService;
     private final OrganisationConfigService organisationConfigService;
-    private Logger logger;
+
     private ObjectMapper objectMapper;
     private ConceptService conceptService;
     private FormService formService;
@@ -156,7 +157,6 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         this.taskTypeService = taskTypeService;
         this.taskStatusService = taskStatusService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @PostConstruct

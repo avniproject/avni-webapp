@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 @Component
 @JobScope
 public class SyncAttributesJobListener extends JobExecutionListenerSupport {
-    private Logger logger;
-    private SubjectTypeRepository subjectTypeRepository;
-    private AuthService authService;
+    private static final Logger logger = LoggerFactory.getLogger(SyncAttributesJobListener.class);
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final AuthService authService;
 
     @Value("#{jobParameters['uuid']}")
     private String uuid;
@@ -38,7 +38,6 @@ public class SyncAttributesJobListener extends JobExecutionListenerSupport {
     public SyncAttributesJobListener(SubjectTypeRepository subjectTypeRepository, AuthService authService) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.authService = authService;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override

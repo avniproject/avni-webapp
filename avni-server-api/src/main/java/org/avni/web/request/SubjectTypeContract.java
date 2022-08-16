@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.avni.application.Format;
+import org.avni.domain.DeclarativeRule;
 import org.avni.domain.SubjectType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,6 +22,10 @@ public class SubjectTypeContract extends ReferenceDataContract {
     private String type;
 
     private String subjectSummaryRule;
+
+    private String programEligibilityCheckRule;
+
+    private DeclarativeRule programEligibilityCheckDeclarativeRule;
 
     private boolean allowEmptyLocation;
 
@@ -55,6 +60,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setActive(subjectType.getActive());
         contract.setType(subjectType.getType().name());
         contract.setSubjectSummaryRule(subjectType.getSubjectSummaryRule());
+        contract.setProgramEligibilityCheckRule(subjectType.getProgramEligibilityCheckRule());
+        contract.setProgramEligibilityCheckDeclarativeRule(subjectType.getProgramEligibilityCheckDeclarativeRule());
         contract.setAllowEmptyLocation(subjectType.isAllowEmptyLocation());
         contract.setAllowProfilePicture(subjectType.isAllowProfilePicture());
         contract.setUniqueName(subjectType.isUniqueName());
@@ -231,5 +238,21 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setValidMiddleNameFormat(FormatContract validMiddleNameFormat) {
         this.validMiddleNameFormat = validMiddleNameFormat;
+    }
+
+    public String getProgramEligibilityCheckRule() {
+        return programEligibilityCheckRule;
+    }
+
+    public void setProgramEligibilityCheckRule(String programEligibilityCheckRule) {
+        this.programEligibilityCheckRule = programEligibilityCheckRule;
+    }
+
+    public DeclarativeRule getProgramEligibilityCheckDeclarativeRule() {
+        return programEligibilityCheckDeclarativeRule;
+    }
+
+    public void setProgramEligibilityCheckDeclarativeRule(DeclarativeRule programEligibilityCheckDeclarativeRule) {
+        this.programEligibilityCheckDeclarativeRule = programEligibilityCheckDeclarativeRule;
     }
 }
