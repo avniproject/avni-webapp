@@ -1,0 +1,3 @@
+alter table subject_program_eligibility add column observations jsonb;
+drop policy subject_program_eligibility_orgs on subject_program_eligibility;
+select enable_rls_on_tx_table('subject_program_eligibility');

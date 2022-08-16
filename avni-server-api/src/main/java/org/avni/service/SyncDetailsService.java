@@ -53,6 +53,7 @@ public class SyncDetailsService {
             }
             addToSyncableItems(syncableItems, "Individual", subjectType.getUuid());
             addToSyncableItems(syncableItems, "SubjectMigration", subjectType.getUuid());
+            addToSyncableItems(syncableItems, "SubjectProgramEligibility", subjectType.getUuid());
             if (subjectType.isPerson()) {
                 addToSyncableItems(syncableItems, "IndividualRelationship", subjectType.getUuid());
             }

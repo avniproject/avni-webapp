@@ -92,6 +92,7 @@ public class SyncController {
     private final TaskTypeService taskTypeService;
     private final TaskStatusService taskStatusService;
     private final TaskUnAssigmentService taskUnAssigmentService;
+    private final SubjectProgramEligibilityService subjectProgramEligibilityService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -122,7 +123,8 @@ public class SyncController {
                           LocationHierarchyService locationHierarchyService, ExtensionService extensionService,
                           SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService,
                           DocumentationService documentationService, DocumentationItemService documentationItemService,
-                          TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService, TaskUnAssigmentService taskUnAssigmentService) {
+                          TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService,
+                          TaskUnAssigmentService taskUnAssigmentService, SubjectProgramEligibilityService subjectProgramEligibilityService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -186,6 +188,7 @@ public class SyncController {
         this.taskTypeService = taskTypeService;
         this.taskStatusService = taskStatusService;
         this.taskUnAssigmentService = taskUnAssigmentService;
+        this.subjectProgramEligibilityService = subjectProgramEligibilityService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -209,6 +212,7 @@ public class SyncController {
         scopeAwareServiceMap.put("AddressLevel", addressLevelService);
         scopeAwareServiceMap.put("LocationMapping", locationMappingService);
         scopeAwareServiceMap.put("SubjectMigration", subjectMigrationService);
+        scopeAwareServiceMap.put("SubjectProgramEligibility", subjectProgramEligibilityService);
     }
 
     private void populateEntityNameToTableMap() {

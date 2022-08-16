@@ -100,6 +100,7 @@ public class SyncParameters {
         LocationMapping,
         Location,
         SubjectMigration,
-        GroupSubject
+        GroupSubject,
+        SubjectProgramEligibility
     }
 }

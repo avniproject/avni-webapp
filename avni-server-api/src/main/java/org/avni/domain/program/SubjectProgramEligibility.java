@@ -1,8 +1,10 @@
 package org.avni.domain.program;
 
 import org.avni.domain.Individual;
+import org.avni.domain.ObservationCollection;
 import org.avni.domain.OrganisationAwareEntity;
 import org.avni.domain.Program;
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -25,6 +27,10 @@ public class SubjectProgramEligibility extends OrganisationAwareEntity {
 
     @Column
     private DateTime checkDate;
+
+    @Column
+    @Type(type = "observations")
+    private ObservationCollection observations;
 
     public Individual getSubject() {
         return subject;
@@ -56,5 +62,13 @@ public class SubjectProgramEligibility extends OrganisationAwareEntity {
 
     public void setCheckDate(DateTime checkDate) {
         this.checkDate = checkDate;
+    }
+
+    public ObservationCollection getObservations() {
+        return observations;
+    }
+
+    public void setObservations(ObservationCollection observations) {
+        this.observations = observations;
     }
 }
