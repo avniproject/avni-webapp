@@ -694,7 +694,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n    {\n        \"dataType\": \"Text\",\n        \"keyValues\": [],\n        \"name\": \"Contact number\",\n        \"uuid\": \"f6375fda-5ea2-479b-91d9-df5a85172820\"\n    },\n    {\n        \"dataType\": \"Numeric\",\n        \"keyValues\": [],\n        \"name\": \"Duration of talk\",\n        \"uuid\": \"d17f48ca-6cd9-4c6e-a4d8-e6e550b98417\"\n    }\n]",
+					"raw": "[\n    {\n        \"dataType\": \"Text\",\n        \"keyValues\": [\n            {\"key\": \"contact_number\", \"value\": \"yes\"}\n        ],\n        \"name\": \"Contact number\",\n        \"uuid\": \"f6375fda-5ea2-479b-91d9-df5a85172820\"\n    },\n    {\n        \"dataType\": \"Numeric\",\n        \"keyValues\": [],\n        \"name\": \"Duration of talk\",\n        \"uuid\": \"d17f48ca-6cd9-4c6e-a4d8-e6e550b98417\"\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -720,7 +720,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"contact_number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"{{Subject 1 UUID}}\"\n}",
+					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"{{Subject 1 UUID}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
