@@ -25,8 +25,8 @@ public class SubjectProgramEligibilityService implements ScopeAwareService {
     }
 
     @Override
-    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String groupSubjectTypeUuid) {
-        SubjectType subjectType = subjectTypeRepository.findByUuid(groupSubjectTypeUuid);
+    public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String subjectTypeUUID) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
         User user = UserContextHolder.getUserContext().getUser();
         return subjectType != null && isChangedBySubjectTypeRegistrationLocationType(user, lastModifiedDateTime, subjectType.getId(), subjectType, SyncParameters.SyncEntityName.SubjectProgramEligibility);
     }

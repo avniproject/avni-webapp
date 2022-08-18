@@ -99,7 +99,7 @@ public class SubjectProgramEligibilityController extends AbstractController<Subj
         SubjectProgramEligibility subjectProgramEligibility = resource.getContent();
         resource.removeLinks();
         resource.add(new Link(subjectProgramEligibility.getSubject().getUuid(), "subjectUUID"));
-        resource.add(new Link(subjectProgramEligibility.getProgram().getUuid(), "programEnrolmentUUID"));
+        resource.add(new Link(subjectProgramEligibility.getProgram().getUuid(), "programUUID"));
         return resource;
     }
 

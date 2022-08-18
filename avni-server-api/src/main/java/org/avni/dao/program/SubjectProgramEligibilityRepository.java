@@ -29,7 +29,7 @@ public interface SubjectProgramEligibilityRepository extends TransactionalDataRe
             List<Predicate> predicates = new ArrayList<>();
             SubjectType subjectType = syncParameters.getSubjectType();
             Join<SubjectProgramEligibility, Individual> subjectJoin = root.join("subject");
-            predicates.add(cb.equal(subjectJoin.get("id"), syncParameters.getTypeId()));
+            predicates.add(cb.equal(subjectJoin.get("subjectType").get("id"), syncParameters.getTypeId()));
             if (subjectType.isShouldSyncByLocation()) {
                 List<Long> addressLevels = syncParameters.getAddressLevels();
                 if (addressLevels.size() > 0) {
