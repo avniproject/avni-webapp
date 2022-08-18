@@ -52,8 +52,8 @@ public class FormContract extends ReferenceDataContract {
     public FormContract() {
     }
 
-    public FormContract(String uuid, String userUUID, String name, String formType) {
-        super(uuid, userUUID, name);
+    public FormContract(String uuid, String name, String formType) {
+        super(uuid, name);
         this.formType = formType;
         formElementGroups = new ArrayList<>();
     }

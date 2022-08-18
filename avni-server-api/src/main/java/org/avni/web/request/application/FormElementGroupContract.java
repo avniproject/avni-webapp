@@ -28,12 +28,6 @@ public class FormElementGroupContract extends ReferenceDataContract {
     public FormElementGroupContract() {
     }
 
-    public FormElementGroupContract(String uuid, String userUUID, String name, Double displayOrder) {
-        super(uuid, userUUID, name);
-        this.displayOrder = displayOrder;
-        formElements = new ArrayList<>();
-    }
-
     public String getRule() {
         return rule;
     }

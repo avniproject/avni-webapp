@@ -33,15 +33,6 @@ public class FormElementContract extends ReferenceDataContract {
     public FormElementContract() {
     }
 
-    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, ConceptContract concept, String type, FormatContract validFormat) {
-        super(uuid, userUUID, name);
-        this.isMandatory = isMandatory;
-        this.keyValues = keyValues;
-        this.concept = concept;
-        this.type = type;
-        this.validFormat = validFormat;
-    }
-
     public boolean isMandatory() {
         return isMandatory;
     }

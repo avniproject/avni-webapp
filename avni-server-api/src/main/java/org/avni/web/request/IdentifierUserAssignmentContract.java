@@ -4,6 +4,7 @@ public class IdentifierUserAssignmentContract extends CHSRequest{
     private String identifierSourceUUID;
     private String identifierStart;
     private String identifierEnd;
+    private String userUUID;
 
     public String getIdentifierSourceUUID() {
         return identifierSourceUUID;
@@ -27,5 +28,13 @@ public class IdentifierUserAssignmentContract extends CHSRequest{
 
     public void setIdentifierEnd(String identifierEnd) {
         this.identifierEnd = identifierEnd;
+    }
+
+    public String getUserUUID() {
+        return userUUID;
+    }
+
+    public void setUserUUID(String userUUID) {
+        this.userUUID = userUUID;
     }
 }

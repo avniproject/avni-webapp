@@ -9,8 +9,8 @@ public class ReferenceDataContract extends CHSRequest {
     public ReferenceDataContract() {
     }
 
-    public ReferenceDataContract(String uuid, String userUUID, String name) {
-        super(uuid, userUUID);
+    public ReferenceDataContract(String uuid, String name) {
+        super(uuid);
         this.name = name;
     }
 
