@@ -7,529 +7,1074 @@
 	},
 	"item": [
 		{
-			"name": "Create Location Type - State",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"State\",\n    \"level\": \"3\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/addressLevelType",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"addressLevelType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Location Type - District",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"District\",\n    \"level\": \"2\",\n    \"parent\": {\n        \"name\": \"State\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/addressLevelType",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"addressLevelType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Location Type - City",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"City\",\n    \"level\": \"1\",\n    \"parent\": {\n        \"name\": \"District\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/addressLevelType",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"addressLevelType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Location - State 1",
-			"event": [
+			"name": "Location",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"State 1\", response[\"id\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"name\": \"State 1\",\n        \"level\": 1,\n        \"type\": \"State\",\n        \"parents\": [\n            {}\n        ]\n    }\n]",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Location Type - State",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/locations",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"locations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Location - District 1",
-			"event": [
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"State\",\n    \"level\": \"3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/addressLevelType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"addressLevelType"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"District 1\", response[\"id\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"name\": \"District 1\",\n        \"level\": 2,\n        \"type\": \"District\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Location Type - District",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/locations",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"locations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Location - City 1",
-			"event": [
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"District\",\n    \"level\": \"2\",\n    \"parent\": {\n        \"name\": \"State\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/addressLevelType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"addressLevelType"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"City 1\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"City 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"name\": \"City 1\",\n        \"level\": 3,\n        \"type\": \"City\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Location Type - City",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/locations",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"locations"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Catchment 1",
-			"event": [
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"City\",\n    \"level\": \"1\",\n    \"parent\": {\n        \"name\": \"District\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/addressLevelType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"addressLevelType"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Catchment 1\", response[\"id\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"deleteFastSync\": false,\n    \"name\": \"Catchment 1\",\n    \"locationIds\": [\n        {{City 1}}\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Location - State 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"State 1\", response[\"id\"]);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/catchment",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"catchment"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Assign Catchment to User",
-			"event": [
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"State 1\",\n        \"level\": 1,\n        \"type\": \"State\",\n        \"parents\": [\n            {}\n        ]\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/locations",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"username\": \"admin@example\",\n    \"name\": \"Example ka Admin\",\n    \"id\": 2,\n    \"organisationId\": 2,\n    \"email\": \"foo@example.com\",\n    \"phoneNumber\": \"+919090909090\",\n    \"disabledInCognito\": false,\n    \"operatingIndividualScope\": \"ByCatchment\",\n    \"settings\": null,\n    \"syncSettings\": {},\n    \"roles\": [\n        \"organisation_admin\",\n        \"user\"\n    ],\n    \"catchmentId\": {{Catchment 1}},\n    \"voided\": false,\n    \"admin\": false,\n    \"orgAdmin\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Location - District 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"District 1\", response[\"id\"]);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/user/2",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"user",
-						"2"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Genders",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\"name\": \"Male\", \"uuid\": \"6a15b2bc-a556-41f0-b8c1-a4895ceacb88\"},\n    {\"name\": \"Female\", \"uuid\": \"a8997040-2d01-46b9-899e-03359dafd228\"},\n    {\"name\": \"Other\", \"uuid\": \"a4db848e-45cb-4466-98fe-c195804f2dae\"}\n]",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"District 1\",\n        \"level\": 2,\n        \"type\": \"District\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/locations",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"locations"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{origin}}/genders",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"genders"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Subject Type 1",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Subject Type 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Subject Type 1\",\n    \"groupRoles\": [],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Individual\",\n    \"directlyAssignable\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Location - City 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"City 1\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"City 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/subjectType",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"web",
-						"subjectType"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"City 1\",\n        \"level\": 3,\n        \"type\": \"City\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/locations",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create Subject Type 2",
-			"event": [
+			"name": "User",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Subject Type 2\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Subject Type 2 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Subject Type 2\",\n    \"groupRoles\": [],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Individual\",\n    \"directlyAssignable\": false\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Catchment 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Catchment 1\", response[\"id\"]);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/subjectType",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"web",
-						"subjectType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Group Subject Type 1",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Group Subject Type 1\",\n    \"groupRoles\": [\n        {\n            \"voided\": false,\n            \"groupRoleUUID\": \"274d741c-0772-44be-a5aa-c89ce7ede61b\",\n            \"role\": \"Group Subject Type 1 Member 1\",\n            \"subjectMemberName\": \"Subject Type 1\",\n            \"minimumNumberOfMembers\": 1,\n            \"maximumNumberOfMembers\": 10\n        }\n    ],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Group\",\n    \"memberSubjectType\": \"\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"deleteFastSync\": false,\n    \"name\": \"Catchment 1\",\n    \"locationIds\": [\n        {{City 1}}\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/catchment",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"catchment"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{origin}}/web/subjectType",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"web",
-						"subjectType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Program 1",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Program 1\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Program 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Program 1\",\n    \"colour\": \"#ff0000\",\n    \"programSubjectLabel\": \"\",\n    \"enrolmentSummaryRule\": \"\",\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\",\n    \"enrolmentEligibilityCheckRule\": \"\",\n    \"enrolmentEligibilityCheckDeclarativeRule\": null\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Assign Catchment to User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/program",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"web",
-						"program"
-					]
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin@example\",\n    \"name\": \"Example ka Admin\",\n    \"id\": 2,\n    \"organisationId\": 2,\n    \"email\": \"foo@example.com\",\n    \"phoneNumber\": \"+919090909090\",\n    \"disabledInCognito\": false,\n    \"operatingIndividualScope\": \"ByCatchment\",\n    \"settings\": null,\n    \"syncSettings\": {},\n    \"roles\": [\n        \"organisation_admin\",\n        \"user\"\n    ],\n    \"catchmentId\": {{Catchment 1}},\n    \"voided\": false,\n    \"admin\": false,\n    \"orgAdmin\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/user/2",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"user",
+								"2"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create Subject - 1",
-			"event": [
+			"name": "Application",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Subject 1\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Subject 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"uuid\": \"4a36a342-e511-436f-a201-637d83b79123\",\n    \"firstName\": \"Subject 1\",\n    \"voided\": false,\n    \"dateOfBirth\": null,\n    \"registrationDate\": \"2022-07-13\",\n    \"genderUUID\": null,\n    \"addressLevelUUID\": \"{{City 1 UUID}}\",\n    \"subjectTypeUUID\": \"{{Subject Type 1 UUID}}\",\n    \"observations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": []\n    },\n    \"identifierAssignmentUuids\": []\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Menu Items",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"group\": \"Functionality\",\n        \"type\": \"Link\",\n        \"displayKey\": \"dawa-prapatra\",\n        \"link\": \"https://google.com?q=${user.name}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/menuItems",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"menuItems"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/individuals",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"individuals"
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create Subject - 2",
-			"event": [
+			"name": "App Designer",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Subject 2\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Subject 2 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"uuid\": \"ff60679f-1738-4185-9bf6-0047787dcbe4\",\n    \"firstName\": \"Subject 2\",\n    \"voided\": false,\n    \"dateOfBirth\": null,\n    \"registrationDate\": \"2022-07-13\",\n    \"genderUUID\": null,\n    \"addressLevelUUID\": \"{{City 1 UUID}}\",\n    \"subjectTypeUUID\": \"{{Subject Type 2 UUID}}\",\n    \"observations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": []\n    },\n    \"identifierAssignmentUuids\": []\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create Genders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/individuals",
-					"host": [
-						"{{origin}}"
 					],
-					"path": [
-						"individuals"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\"name\": \"Male\", \"uuid\": \"6a15b2bc-a556-41f0-b8c1-a4895ceacb88\"},\n    {\"name\": \"Female\", \"uuid\": \"a8997040-2d01-46b9-899e-03359dafd228\"},\n    {\"name\": \"Other\", \"uuid\": \"a4db848e-45cb-4466-98fe-c195804f2dae\"}\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/genders",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"genders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subject Type 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Subject Type 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Subject Type 1\",\n    \"groupRoles\": [],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Individual\",\n    \"directlyAssignable\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/subjectType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"subjectType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subject Type 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Subject Type 2\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Subject Type 2 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Subject Type 2\",\n    \"groupRoles\": [],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Individual\",\n    \"directlyAssignable\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/subjectType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"subjectType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Group Subject Type 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Group Subject Type 1\",\n    \"groupRoles\": [\n        {\n            \"voided\": false,\n            \"groupRoleUUID\": \"274d741c-0772-44be-a5aa-c89ce7ede61b\",\n            \"role\": \"Group Subject Type 1 Member 1\",\n            \"subjectMemberName\": \"Subject Type 1\",\n            \"minimumNumberOfMembers\": 1,\n            \"maximumNumberOfMembers\": 10\n        }\n    ],\n    \"subjectSummaryRule\": \"\",\n    \"shouldSyncByLocation\": true,\n    \"type\": \"Group\",\n    \"memberSubjectType\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/subjectType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"subjectType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Program 1\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Program 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Program 1\",\n    \"colour\": \"#ff0000\",\n    \"programSubjectLabel\": \"\",\n    \"enrolmentSummaryRule\": \"\",\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\",\n    \"enrolmentEligibilityCheckRule\": \"\",\n    \"enrolmentEligibilityCheckDeclarativeRule\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/program",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"program"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program Encounter Type 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Program Encounter Type 1\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Program Encounter Type 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Program Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\",\n    \"programUuid\": \"{{Program 1 UUID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/encounterType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"encounterType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add General Encounter Type 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"General Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/encounterType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"encounterType"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "Core Tx Data",
+			"item": [
+				{
+					"name": "Create Subject - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Subject 1\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Subject 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuid\": \"4a36a342-e511-436f-a201-637d83b79123\",\n    \"firstName\": \"Subject 1\",\n    \"voided\": false,\n    \"dateOfBirth\": null,\n    \"registrationDate\": \"2022-07-13\",\n    \"genderUUID\": null,\n    \"addressLevelUUID\": \"{{City 1 UUID}}\",\n    \"subjectTypeUUID\": \"{{Subject Type 1 UUID}}\",\n    \"observations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": []\n    },\n    \"identifierAssignmentUuids\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/individuals",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subject - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Subject 2\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Subject 2 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuid\": \"ff60679f-1738-4185-9bf6-0047787dcbe4\",\n    \"firstName\": \"Subject 2\",\n    \"voided\": false,\n    \"dateOfBirth\": null,\n    \"registrationDate\": \"2022-07-13\",\n    \"genderUUID\": null,\n    \"addressLevelUUID\": \"{{City 1 UUID}}\",\n    \"subjectTypeUUID\": \"{{Subject Type 2 UUID}}\",\n    \"observations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": []\n    },\n    \"identifierAssignmentUuids\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/individuals",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program Enrolment 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Enrolment 1\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Enrolment 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuid\": \"7635ec62-2442-44cd-a0fa-a184e935ea4a\",\n    \"voided\": false,\n    \"programUUID\": \"{{Program 1 UUID}}\",\n    \"enrolmentDateTime\": \"2022-07-13T17:26:20+05:30\",\n    \"programExitDateTime\": null,\n    \"programOutcomeUUID\": null,\n    \"individualUUID\": \"{{Subject 1 UUID}}\",\n    \"observations\": [],\n    \"programExitObservations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": [],\n        \"exit\": false\n    },\n    \"checklists\": [],\n    \"identifierAssignmentUuids\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/programEnrolments",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"programEnrolments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Program Enrolment 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Enrolment 1\", response[\"id\"]);",
+									"postman.setEnvironmentVariable(\"Enrolment 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"uuid\": \"dad083d8-485b-4201-b239-5579fe5a05a0\",\n    \"voided\": false,\n    \"programUUID\": \"{{Program 1 UUID}}\",\n    \"enrolmentDateTime\": \"2022-07-13T17:26:20+05:30\",\n    \"programExitDateTime\": null,\n    \"programOutcomeUUID\": null,\n    \"individualUUID\": \"{{Subject 2 UUID}}\",\n    \"observations\": [],\n    \"programExitObservations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": [],\n        \"exit\": false\n    },\n    \"checklists\": [],\n    \"identifierAssignmentUuids\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/programEnrolments",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"programEnrolments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "Create Task Type 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"name\": \"Task Type 1\",\n        \"taskTypeName\": \"Call\",\n        \"metadataSearchFields\": []\n    },\n    {\n        \"name\": \"Task Type 2\",\n        \"taskTypeName\": \"OpenSubject\",\n        \"metadataSearchFields\": []\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/taskTypes",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"taskTypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task Status 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Task Status 1\",\n    \"isTerminal\": \"false\",\n    \"taskTypeId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/taskStatus",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"taskStatus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create task concepts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"dataType\": \"Text\",\n        \"keyValues\": [\n            {\"key\": \"contact_number\", \"value\": \"yes\"}\n        ],\n        \"name\": \"Contact number\",\n        \"uuid\": \"f6375fda-5ea2-479b-91d9-df5a85172820\"\n    },\n    {\n        \"dataType\": \"Numeric\",\n        \"keyValues\": [],\n        \"name\": \"Duration of talk\",\n        \"uuid\": \"d17f48ca-6cd9-4c6e-a4d8-e6e550b98417\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/concepts",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"concepts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"{{Subject 1 UUID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/api/task",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"api",
+								"task"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Task 1 Form",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Task 1 Form\",\n    \"formType\": \"Task\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/forms",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"forms"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Assign Subject 1 to User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"response should be okay\", function () {",
+							"    pm.response.to.not.be.error;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -556,289 +1101,20 @@
 			"response": []
 		},
 		{
-			"name": "Create Program Enrolment 1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Enrolment 1\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Enrolment 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"uuid\": \"7635ec62-2442-44cd-a0fa-a184e935ea4a\",\n    \"voided\": false,\n    \"programUUID\": \"{{Program 1 UUID}}\",\n    \"enrolmentDateTime\": \"2022-07-13T17:26:20+05:30\",\n    \"programExitDateTime\": null,\n    \"programOutcomeUUID\": null,\n    \"individualUUID\": \"{{Subject 1 UUID}}\",\n    \"observations\": [],\n    \"programExitObservations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": [],\n        \"exit\": false\n    },\n    \"checklists\": [],\n    \"identifierAssignmentUuids\": []\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/programEnrolments",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"programEnrolments"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Program Enrolment 2",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Enrolment 1\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Enrolment 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"uuid\": \"dad083d8-485b-4201-b239-5579fe5a05a0\",\n    \"voided\": false,\n    \"programUUID\": \"{{Program 1 UUID}}\",\n    \"enrolmentDateTime\": \"2022-07-13T17:26:20+05:30\",\n    \"programExitDateTime\": null,\n    \"programOutcomeUUID\": null,\n    \"individualUUID\": \"{{Subject 2 UUID}}\",\n    \"observations\": [],\n    \"programExitObservations\": [],\n    \"visitSchedules\": [],\n    \"decisions\": {\n        \"enrolmentDecisions\": [],\n        \"encounterDecisions\": [],\n        \"registrationDecisions\": [],\n        \"enrolmentObservations\": [],\n        \"encounterObservations\": [],\n        \"registrationObservations\": [],\n        \"exit\": false\n    },\n    \"checklists\": [],\n    \"identifierAssignmentUuids\": []\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/programEnrolments",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"programEnrolments"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Task Type 1",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"name\": \"Task Type 1\",\n        \"taskTypeName\": \"Call\",\n        \"metadataSearchFields\": []\n    },\n    {\n        \"name\": \"Task Type 2\",\n        \"taskTypeName\": \"OpenSubject\",\n        \"metadataSearchFields\": []\n    }\n]",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/taskTypes",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"web",
-						"taskTypes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Task Status 1",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Task Status 1\",\n    \"isTerminal\": \"false\",\n    \"taskTypeId\": 1\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/taskStatus",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"web",
-						"taskStatus"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create task concepts",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "[\n    {\n        \"dataType\": \"Text\",\n        \"keyValues\": [\n            {\"key\": \"contact_number\", \"value\": \"yes\"}\n        ],\n        \"name\": \"Contact number\",\n        \"uuid\": \"f6375fda-5ea2-479b-91d9-df5a85172820\"\n    },\n    {\n        \"dataType\": \"Numeric\",\n        \"keyValues\": [],\n        \"name\": \"Duration of talk\",\n        \"uuid\": \"d17f48ca-6cd9-4c6e-a4d8-e6e550b98417\"\n    }\n]",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/concepts",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"concepts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Task 1",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"External ID\": \"071e472f-df83-4a64-977e-9ca4c37176c2\",\n  \"Voided\": false,\n  \"Task type\": \"Task Type 1\",\n  \"Task status\": \"Task Status 1\",\n  \"Name\": \"Task 1\",\n  \"Scheduled on\": \"2022-07-21T17:32:28Z\",\n  \"Completed on\": null,\n  \"Assigned to\": \"admin@example\",\n  \"metadata\": {\n      \"Contact number\": \"9090909090\"\n  },\n  \"observations\": {\n      \"Duration of talk\": 25\n  },\n  \"Subject ID\": \"{{Subject 1 UUID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/api/task",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"api",
-						"task"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Task 1 Form",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Task 1 Form\",\n    \"formType\": \"Task\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/forms",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"web",
-						"forms"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Program Encounter Type 1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"const response = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"Program Encounter Type 1\", response[\"id\"]);",
-							"postman.setEnvironmentVariable(\"Program Encounter Type 1 UUID\", response[\"uuid\"]);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Program Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\",\n    \"programUuid\": \"{{Program 1 UUID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/encounterType",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"web",
-						"encounterType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add General Encounter Type 1",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"General Encounter Type 1\",\n    \"encounterEligibilityCheckRule\": \"\",\n    \"encounterEligibilityCheckDeclarativeRule\": null,\n    \"subjectTypeUuid\": \"{{Subject Type 1 UUID}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{origin}}/web/encounterType",
-					"host": [
-						"{{origin}}"
-					],
-					"path": [
-						"web",
-						"encounterType"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Get Individuals",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"response should be okay\", function () {",
+							"    pm.response.to.not.be.error;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],

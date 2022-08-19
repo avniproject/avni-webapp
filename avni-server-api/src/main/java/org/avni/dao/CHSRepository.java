@@ -1,19 +1,25 @@
 package org.avni.dao;
 
+import org.avni.application.menu.MenuItem;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.Concept;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public interface CHSRepository<T extends CHSEntity> {
+@NoRepositoryBean
+public interface CHSRepository<T extends CHSEntity> extends CrudRepository<T, Long> {
     T findByUuid(String uuid);
     List<T> findAll();
     List<T> findAllByIsVoidedFalse();
+
+    default T findEntity(Long id) {
+        if (id == null) return null;
+        return findById(id).orElse(null);
+    }
 
     default Predicate jsonContains(Path<?> jsonb, String pattern, CriteriaBuilder builder) {
         return builder.isTrue(builder.function("jsonb_object_values_contain", Boolean.class,

@@ -1,13 +1,14 @@
 package org.avni.web.request.application.menu;
 
+import org.avni.application.menu.MenuItemGroup;
 import org.avni.application.menu.MenuItemType;
 import org.avni.web.request.CHSRequest;
 
 public class MenuItemRequest extends CHSRequest {
     private String displayKey;
-    private MenuItemType menuItemType;
-    private String menuItemIcon;
-    private String menuItemGroup;
+    private MenuItemType type;
+    private String icon;
+    private MenuItemGroup group;
     private String link;
 
     public String getDisplayKey() {
@@ -18,28 +19,28 @@ public class MenuItemRequest extends CHSRequest {
         this.displayKey = displayKey;
     }
 
-    public MenuItemType getMenuItemType() {
-        return menuItemType;
+    public MenuItemType getType() {
+        return type;
     }
 
-    public void setMenuItemType(MenuItemType menuItemType) {
-        this.menuItemType = menuItemType;
+    public void setType(MenuItemType type) {
+        this.type = type;
     }
 
-    public String getMenuItemIcon() {
-        return menuItemIcon;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setMenuItemIcon(String menuItemIcon) {
-        this.menuItemIcon = menuItemIcon;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
-    public String getMenuItemGroup() {
-        return menuItemGroup;
+    public MenuItemGroup getGroup() {
+        return group;
     }
 
-    public void setMenuItemGroup(String menuItemGroup) {
-        this.menuItemGroup = menuItemGroup;
+    public void setGroup(MenuItemGroup group) {
+        this.group = group;
     }
 
     public String getLink() {

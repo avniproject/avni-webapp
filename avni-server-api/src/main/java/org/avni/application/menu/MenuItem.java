@@ -12,13 +12,14 @@ public class MenuItem extends OrganisationAwareEntity {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private MenuItemType menuItemType;
+    private MenuItemType type;
 
     @Column
-    private String menuItemIcon;
+    private String icon;
 
-    @Column
-    private String menuItemGroup;
+    @Column(name = "menu_group")
+    @Enumerated(EnumType.STRING)
+    private MenuItemGroup group;
 
     @Column
     private String link;
@@ -31,28 +32,28 @@ public class MenuItem extends OrganisationAwareEntity {
         this.displayKey = displayKey;
     }
 
-    public MenuItemType getMenuItemType() {
-        return menuItemType;
+    public MenuItemType getType() {
+        return type;
     }
 
-    public void setMenuItemType(MenuItemType menuItemType) {
-        this.menuItemType = menuItemType;
+    public void setType(MenuItemType menuItemType) {
+        this.type = menuItemType;
     }
 
-    public String getMenuItemIcon() {
-        return menuItemIcon;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setMenuItemIcon(String menuItemIcon) {
-        this.menuItemIcon = menuItemIcon;
+    public void setIcon(String menuItemIcon) {
+        this.icon = menuItemIcon;
     }
 
-    public String getMenuItemGroup() {
-        return menuItemGroup;
+    public MenuItemGroup getGroup() {
+        return group;
     }
 
-    public void setMenuItemGroup(String menuItemGroup) {
-        this.menuItemGroup = menuItemGroup;
+    public void setGroup(MenuItemGroup menuItemGroup) {
+        this.group = menuItemGroup;
     }
 
     public String getLink() {
