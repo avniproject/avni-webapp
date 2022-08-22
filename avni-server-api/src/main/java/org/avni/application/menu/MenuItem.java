@@ -22,7 +22,7 @@ public class MenuItem extends OrganisationAwareEntity {
     private MenuItemGroup group;
 
     @Column
-    private String link;
+    private String linkFunction;
 
     public String getDisplayKey() {
         return displayKey;
@@ -56,11 +56,11 @@ public class MenuItem extends OrganisationAwareEntity {
         this.group = menuItemGroup;
     }
 
-    public String getLink() {
-        return link;
+    public String getLinkFunction() {
+        return linkFunction;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setLinkFunction(String linkFunction) {
+        this.linkFunction = linkFunction;
     }
 }

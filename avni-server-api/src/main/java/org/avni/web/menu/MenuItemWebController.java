@@ -41,7 +41,7 @@ public class MenuItemWebController {
         menuItem.setIcon(request.getIcon());
         menuItem.setType(request.getType());
         menuItem.setDisplayKey(request.getDisplayKey());
-        menuItem.setLink(request.getLink());
+        menuItem.setLinkFunction(request.getLinkFunction());
         menuItem.assignUUIDIfRequired();
         menuItemRepository.save(menuItem);
     }

@@ -259,6 +259,84 @@
 			"name": "User",
 			"item": [
 				{
+					"name": "Get Cognito Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{origin}}/cognito-details",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"cognito-details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Syncs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{origin}}/resetSyncs?lastModifiedDateTime=1900-01-01T00:00:00.000Z&now=2022-08-22T06:31:29.253Z&size=100&page=0",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"resetSyncs"
+							],
+							"query": [
+								{
+									"key": "lastModifiedDateTime",
+									"value": "1900-01-01T00:00:00.000Z"
+								},
+								{
+									"key": "now",
+									"value": "2022-08-22T06:31:29.253Z"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create Catchment 1",
 					"event": [
 						{
@@ -350,12 +428,25 @@
 			"item": [
 				{
 					"name": "Create Menu Items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\n        \"group\": \"Functionality\",\n        \"type\": \"Link\",\n        \"displayKey\": \"dawa-prapatra\",\n        \"link\": \"https://google.com?q=${user.name}\"\n    }\n]",
+							"raw": "[\n    {\n        \"group\": \"Functionality\",\n        \"type\": \"Link\",\n        \"displayKey\": \"dawa-prapatra\",\n        \"linkFunction\": \"({params}) => {return `https://reporting.avniproject.org/public/question/11265388-5909-438e-9d9a-6faaa0c5863f}?username=${encodeURIComponent(user.username)}&name=${encodeURIComponent(user.name)}&month=${params.moment().month() + 1}&year=${params.moment().year()}`;}\"\n    }\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -370,6 +461,37 @@
 							"path": [
 								"web",
 								"menuItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Menu Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{origin}}/menuItem?lastModifiedDateTime=2020-07-24T08:41:27.815Z&size=100&page=0",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"menuItem"
+							],
+							"query": [
+								{
+									"key": "lastModifiedDateTime",
+									"value": "2020-07-24T08:41:27.815Z"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								}
 							]
 						}
 					},

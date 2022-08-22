@@ -9,7 +9,7 @@ public class MenuItemRequest extends CHSRequest {
     private MenuItemType type;
     private String icon;
     private MenuItemGroup group;
-    private String link;
+    private String linkFunction;
 
     public String getDisplayKey() {
         return displayKey;
@@ -43,11 +43,11 @@ public class MenuItemRequest extends CHSRequest {
         this.group = group;
     }
 
-    public String getLink() {
-        return link;
+    public String getLinkFunction() {
+        return linkFunction;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setLinkFunction(String linkFunction) {
+        this.linkFunction = linkFunction;
     }
 }

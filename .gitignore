@@ -32,3 +32,4 @@ write.lock
 
 #Local files
 dev-commands.txt
+/log/
