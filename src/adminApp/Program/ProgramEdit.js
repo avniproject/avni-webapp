@@ -91,15 +91,17 @@ const ProgramEdit = props => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <EditProgramFields
-            program={program}
-            errors={errors}
-            subjectTypes={subjectTypes}
-            formList={formList}
-            dispatch={dispatch}
-            onSubjectTypeChange={setSubjectType}
-            subjectType={subjectType}
-          />
+          {program.loaded && (
+            <EditProgramFields
+              program={program}
+              errors={errors}
+              subjectTypes={subjectTypes}
+              formList={formList}
+              dispatch={dispatch}
+              onSubjectTypeChange={setSubjectType}
+              subjectType={subjectType}
+            />
+          )}
           <br />
           <AvniSwitch
             checked={program.active}
