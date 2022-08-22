@@ -1,5 +1,6 @@
 package org.avni.web;
 
+import org.avni.service.application.MenuItemService;
 import org.joda.time.DateTime;
 import org.avni.domain.*;
 import org.avni.service.*;
@@ -84,7 +85,7 @@ public class SyncController {
     private final LocationHierarchyService locationHierarchyService;
     private final ExtensionService extensionService;
     private final SubjectMigrationService subjectMigrationService;
-    private SyncDetailsService syncDetailService;
+    private final SyncDetailsService syncDetailService;
     private final Logger logger;
     private final DocumentationService documentationService;
     private final DocumentationItemService documentationItemService;
@@ -93,6 +94,7 @@ public class SyncController {
     private final TaskStatusService taskStatusService;
     private final TaskUnAssigmentService taskUnAssigmentService;
     private final SubjectProgramEligibilityService subjectProgramEligibilityService;
+    private final MenuItemService menuItemService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -124,7 +126,7 @@ public class SyncController {
                           SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService,
                           DocumentationService documentationService, DocumentationItemService documentationItemService,
                           TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService,
-                          TaskUnAssigmentService taskUnAssigmentService, SubjectProgramEligibilityService subjectProgramEligibilityService) {
+                          TaskUnAssigmentService taskUnAssigmentService, SubjectProgramEligibilityService subjectProgramEligibilityService, MenuItemService menuItemService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -189,6 +191,7 @@ public class SyncController {
         this.taskStatusService = taskStatusService;
         this.taskUnAssigmentService = taskUnAssigmentService;
         this.subjectProgramEligibilityService = subjectProgramEligibilityService;
+        this.menuItemService = menuItemService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -264,8 +267,8 @@ public class SyncController {
         nonScopeAwareServiceMap.put("TaskType", taskTypeService);
         nonScopeAwareServiceMap.put("TaskStatus", taskStatusService);
         nonScopeAwareServiceMap.put("TaskUnAssignment", taskUnAssigmentService);
+        nonScopeAwareServiceMap.put("MenuItem", menuItemService);
     }
-
 
     @PostMapping(value = "/syncDetails")
     @PreAuthorize(value = "hasAnyAuthority('user')")
