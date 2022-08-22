@@ -136,6 +136,11 @@ const ProgramShow = props => {
             ruleText={program.enrolmentEligibilityCheckRule}
           />
           <p />
+          <RuleDisplay
+            fieldLabel={"Manual Enrolment Eligibility Check Rule"}
+            ruleText={program.manualEnrolmentEligibilityCheckRule}
+          />
+          <p />
           <Audit {...program} />
         </div>
 
