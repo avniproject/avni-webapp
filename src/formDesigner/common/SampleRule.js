@@ -77,6 +77,17 @@ export const sampleEnrolmentEligibilityCheckRule = () => {
 };`;
 };
 
+export const sampleManualEnrolmentEligibilityCheckRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) => {
+  const subjectProgramEligibility = params.entity;
+  const {subject, program} = params;
+  //sample condition subject.isFemale() && subject.getAgeInYears() > 5;
+  return true;
+};`;
+};
+
 export const sampleEncounterEligibilityCheckRule = () => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';

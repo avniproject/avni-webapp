@@ -14,7 +14,8 @@ import { AvniSwitch } from "../../common/components/AvniSwitch";
 import Editor from "react-simple-code-editor";
 import {
   sampleEnrolmentEligibilityCheckRule,
-  sampleEnrolmentSummaryRule
+  sampleEnrolmentSummaryRule,
+  sampleManualEnrolmentEligibilityCheckRule
 } from "../../formDesigner/common/SampleRule";
 import { highlight, languages } from "prismjs/components/prism-core";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
@@ -192,32 +193,22 @@ const EditProgramFields = props => {
         toolTipKey={"APP_DESIGNER_MANUAL_ENROLMENT_ELIGIBILITY_CHECK_RULE"}
       />
       {program.loaded && (
-        <RuleDesigner
-          rulesJson={program.manualEnrolmentEligibilityCheckDeclarativeRule}
-          onValueChange={jsonData =>
-            dispatch({
-              type: "manualEnrolmentEligibilityCheckDeclarativeRule",
-              payload: jsonData
-            })
+        <Editor
+          value={
+            program.manualEnrolmentEligibilityCheckRule ||
+            sampleManualEnrolmentEligibilityCheckRule()
           }
-          updateJsCode={declarativeRuleHolder =>
-            dispatch({
-              type: "manualEnrolmentEligibilityCheckRule",
-              payload: declarativeRuleHolder.generateEligibilityRule()
-            })
+          onValueChange={event =>
+            dispatch({ type: "manualEnrolmentEligibilityCheckRule", payload: event })
           }
-          jsCode={program.manualEnrolmentEligibilityCheckRule}
-          error={errors.get("ManualEnrolmentEligibilityCheckDeclarativeRule")}
-          subjectType={subjectType}
-          getApplicableActions={state => state.getApplicableEnrolmentEligibilityActions()}
-          sampleRule={sampleEnrolmentEligibilityCheckRule()}
-          onJsCodeChange={event => {
-            confirmBeforeRuleEdit(
-              program.manualEnrolmentEligibilityCheckDeclarativeRule,
-              () => dispatch({ type: "manualEnrolmentEligibilityCheckRule", payload: event }),
-              () =>
-                dispatch({ type: "manualEnrolmentEligibilityCheckDeclarativeRule", payload: null })
-            );
+          highlight={code => highlight(code, languages.js)}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 15,
+            height: "auto",
+            borderStyle: "solid",
+            borderWidth: "1px"
           }}
         />
       )}
