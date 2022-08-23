@@ -435,7 +435,10 @@
 								"exec": [
 									"pm.test(\"response should be okay\", function () {",
 									"    pm.response.to.not.be.error;",
-									"});"
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"Menu Item 1\", response[0][\"id\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -446,7 +449,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\n        \"group\": \"Functionality\",\n        \"type\": \"Link\",\n        \"displayKey\": \"dawa-prapatra\",\n        \"linkFunction\": \"({params}) => {return `https://reporting.avniproject.org/public/question/11265388-5909-438e-9d9a-6faaa0c5863f}?username=${encodeURIComponent(user.username)}&name=${encodeURIComponent(user.name)}&month=${params.moment().month() + 1}&year=${params.moment().year()}`;}\"\n    }\n]",
+							"raw": "[\n    {\n        \"group\": \"Functionality\",\n        \"type\": \"Link\",\n        \"displayKey\": \"dawa-prapatra\",\n        \"linkFunction\": \"({params}) => {return `https://reporting.avniproject.org/public/question/11265388-5909-438e-9d9a-6faaa0c5863f?username=${encodeURIComponent(user.username)}&name=${encodeURIComponent(user.name)}&month=${params.moment().month() + 1}&year=${params.moment().year()}`;}\"\n    }\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -461,6 +464,38 @@
 							"path": [
 								"web",
 								"menuItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Item 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{origin}}/web/menuItem/{{Menu Item 1}}",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"menuItem",
+								"{{Menu Item 1}}"
 							]
 						}
 					},

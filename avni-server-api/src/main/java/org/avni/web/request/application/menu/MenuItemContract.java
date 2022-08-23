@@ -4,7 +4,7 @@ import org.avni.application.menu.MenuItemGroup;
 import org.avni.application.menu.MenuItemType;
 import org.avni.web.request.CHSRequest;
 
-public class MenuItemRequest extends CHSRequest {
+public class MenuItemContract extends CHSRequest {
     private String displayKey;
     private MenuItemType type;
     private String icon;
