@@ -28,6 +28,7 @@ import DashboardList from "../formDesigner/components/Dashboard/DashboardList";
 import Extensions from "../formDesigner/components/Extensions/Extensions";
 import RuleFailureTelemetryList from "../formDesigner/components/RuleFailureTelemetry/RuleFailureTelemetryList";
 import SearchResultFields from "../formDesigner/components/SearchResultFields/SearchResultFields";
+import ApplicationMenuList from "./ApplicationMenu/ApplicationMenuList";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -107,6 +108,11 @@ class OrgManagerAppDesigner extends Component {
             name="dashboard"
             options={{ label: "Offline Dashboard" }}
             list={DashboardList}
+          />
+          <Resource
+            name="applicationMenu"
+            options={{ label: "Application Menu" }}
+            list={ApplicationMenuList}
           />
           <Resource name="extensions" options={{ label: "Extensions" }} list={Extensions} />
           <Resource
