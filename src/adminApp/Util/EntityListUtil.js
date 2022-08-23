@@ -4,10 +4,10 @@ class EntityListUtil {
   static refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   static createVoidAction(tableRef, resourceName, entityDisplayName, entityFieldName = "name") {
-    return rowData => this._voidAction(rowData, ...arguments);
+    return rowData => this.voidAction(rowData, ...arguments);
   }
 
-  static _voidAction(rowData, tableRef, resourceName, entityDisplayName, entityFieldName) {
+  static voidAction(rowData, tableRef, resourceName, entityDisplayName, entityFieldName) {
     return {
       icon: "delete_outline",
       tooltip: `Delete ${entityDisplayName.toLowerCase()}}`,
@@ -29,15 +29,15 @@ class EntityListUtil {
     };
   }
 
-  static createEditAction(history, resourceName, entityDisplayName) {
-    return rowData => this._editAction(rowData, ...arguments);
+  static createEditAction(history, entityName, entityDisplayName) {
+    return rowData => this.editAction(rowData, ...arguments);
   }
 
-  static _editAction(rowData, history, resourceName, entityDisplayName) {
+  static editAction(rowData, history, entityName, entityDisplayName) {
     return {
       icon: "edit",
       tooltip: `Edit ${entityDisplayName.toLowerCase()}`,
-      onClick: () => history.push(`/appDesigner/${resourceName}/${rowData.id}`),
+      onClick: () => history.push(`/appDesigner/${entityName}/${rowData.id}`),
       disabled: rowData.voided
     };
   }

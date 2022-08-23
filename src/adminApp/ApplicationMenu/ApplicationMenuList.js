@@ -9,6 +9,8 @@ import { CreateComponent } from "../../common/components/CreateComponent";
 import EntityListUtil from "../Util/EntityListUtil";
 
 const ApplicationMenuList = ({ history }) => {
+  const [createTriggered, triggerCreate] = useState(false);
+
   const columns = [
     {
       title: "Display Key",
@@ -35,8 +37,6 @@ const ApplicationMenuList = ({ history }) => {
 
   const tableRef = React.createRef();
 
-  const [redirect, setRedirect] = useState(false);
-
   const fetchData = query =>
     new Promise(resolve => {
       let apiUrl = "/web/menuItem";
@@ -58,7 +58,7 @@ const ApplicationMenuList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={() => {}} name="New Menu Item" />
+              <CreateComponent onSubmit={() => triggerCreate(true)} name="New Menu Item" />
             </div>
 
             <MaterialTable
@@ -79,14 +79,19 @@ const ApplicationMenuList = ({ history }) => {
                 })
               }}
               actions={[
-                EntityListUtil.createEditAction(history, "menuItem", "menu item"),
-                EntityListUtil.createVoidAction(tableRef, "menuItem", "menu item", "displayKey")
+                EntityListUtil.createEditAction(history, "applicationMenu", "application menu"),
+                EntityListUtil.createVoidAction(
+                  tableRef,
+                  "menuItem",
+                  "application menu",
+                  "displayKey"
+                )
               ]}
             />
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/appDesigner/menuItem/create"} />}
+      {createTriggered && <Redirect to={"/appDesigner/applicationMenu/create"} />}
     </>
   );
 };

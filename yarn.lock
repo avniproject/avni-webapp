@@ -14720,6 +14720,11 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -15343,10 +15348,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.23.10:
-  version "1.23.10"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.23.10.tgz#dffd4833c68ae6bd3ea89497d9655aec751250eb"
-  integrity sha512-6bmYh7N9skEWp3K198gC+6MgUUsXmfeiBotsfhtnkC10Rt+Fyjp5B23NZWF92P6gsrS6zlW2AAZvQgStqrl5Sg==
+openchs-models@1.23.11:
+  version "1.23.11"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.23.11.tgz#9fbd1780657c7e1fb9b8626395d985c80963a7cc"
+  integrity sha512-wx17EvxRiwzXXDQMJ0doydfcgdKUpUKTyKTqz4BWD6U99r4G2BDvK6IunLHxNOYWQdZOi9HjOk6G1jRJgkViWA==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -18816,6 +18821,24 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
+"rules-config@github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39":
+  version "0.0.1"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/600c1ad52b693af7dc826ca33d58257bc3bc9d39"
+  dependencies:
+    "@quasar/babel-preset-app" "^2.0.1"
+    babel-preset-env "^1.7.0"
+    babel-register "^6.26.0"
+    chai "^4.1.2"
+    lodash "^4.17.11"
+    moment "^2.29.4"
+    openchs-models "^0.2.25"
+    superagent "^3.8.3"
+    test "^0.6.0"
+    uglifyjs-webpack-plugin "^1.2.5"
+    webpack "^3.12.0"
+    webpack-cli "^3.0.3"
+    webpack-node-externals "1.6.0"
+
 "rules-config@github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d":
   version "0.0.1"
   resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/809f5d164b875cf261fc11dad342d5a4315d309d"
@@ -18825,7 +18848,7 @@ rsvp@^4.8.4:
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.29.4"
+    moment "^2.22.2"
     openchs-models "^0.2.25"
     superagent "^3.8.3"
     test "^0.6.0"
