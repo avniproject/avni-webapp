@@ -7,6 +7,7 @@ import org.avni.framework.security.UserContextHolder;
 import org.avni.web.external.ExotelRestClient;
 import org.avni.web.request.ExotelRequest;
 import org.avni.web.response.ExotelResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
@@ -17,12 +18,20 @@ public class ExotelService {
     private final ExternalSystemConfigRepository externalSystemConfigRepository;
     private final ExotelRestClient exotelRestClient;
 
-    public ExotelService(ExternalSystemConfigRepository externalSystemConfigRepository, ExotelRestClient exotelRestClient) {
+    @Value("${avni.connectToExotelInDev}")
+    private boolean connectToExotelInDev;
+
+    private boolean isDev;
+
+    public ExotelService(boolean isDev, ExternalSystemConfigRepository externalSystemConfigRepository, ExotelRestClient exotelRestClient) {
+        this.isDev = isDev;
         this.externalSystemConfigRepository = externalSystemConfigRepository;
         this.exotelRestClient = exotelRestClient;
     }
 
     public ExotelResponse makeMaskedCall(String to) throws ConnectException {
+        if (isDev && !connectToExotelInDev) return new ExotelResponse(true);
+
         ExternalSystemConfig externalSystemConfig = externalSystemConfigRepository.findBySystemName(SystemName.Exotel);
         String callerId = (String) externalSystemConfig.getConfig().get("callerId");
         String from = UserContextHolder.getUser().getPhoneNumber();
