@@ -258,6 +258,12 @@ export const UserDetail = ({ user, ...props }) => {
             !isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : ""
           }
         />
+        <FunctionField
+          label="Enable Call Masking"
+          render={user =>
+            !isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : ""
+          }
+        />
         <TextField label="Identifier prefix" source="settings.idPrefix" />
         <FunctionField label="Created" render={audit => createdAudit(audit)} />
         <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
@@ -613,6 +619,11 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           source="settings.registerEnrol"
           label="Register + Enrol"
           toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"}
+        />
+        <AvniBooleanInput
+          source="settings.enableCallMasking"
+          label="Enable Call Masking"
+          toolTipKey={"ADMIN_USER_SETTINGS_ENABLE_CALL_MASKING"}
         />
         <AvniTextInput
           source="settings.idPrefix"
