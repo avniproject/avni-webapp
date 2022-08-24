@@ -6,6 +6,8 @@ import org.avni.web.AbstractController;
 import org.avni.web.request.application.menu.MenuItemContract;
 import org.avni.web.response.AvniEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,29 +25,46 @@ public class MenuItemWebController extends AbstractController<MenuItem> {
     }
 
     @RequestMapping(value = "/web/menuItems", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
-    public List<AvniEntityResponse> post(@RequestBody List<MenuItemContract> menuItemRequests) {
+    public List<AvniEntityResponse> postMultiple(@RequestBody List<MenuItemContract> menuItemRequests) {
         return menuItemRequests.stream().map(this::post).collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/web/menuItem", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PostMapping("/web/menuItem")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     public AvniEntityResponse post(@RequestBody MenuItemContract request) {
-        MenuItem menuItem = newOrExistingEntity(menuItemRepository, request, new MenuItem());
+        MenuItem menuItem = new MenuItem();
+        updateMenuItem(request, menuItem);
+        return new AvniEntityResponse(menuItemRepository.save(menuItem));
+    }
+
+    private void updateMenuItem(MenuItemContract request, MenuItem menuItem) {
         menuItem.setGroup(request.getGroup());
         menuItem.setIcon(request.getIcon());
         menuItem.setType(request.getType());
         menuItem.setDisplayKey(request.getDisplayKey());
         menuItem.setLinkFunction(request.getLinkFunction());
-        return new AvniEntityResponse(menuItemRepository.save(menuItem));
+    }
+
+    @PutMapping(value = "/web/menuItem/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @Transactional
+    public ResponseEntity<?> put(@PathVariable("id") Long id, @RequestBody MenuItemContract request) {
+        MenuItem menuItem = menuItemRepository.findEntity(id);
+        updateMenuItem(request, menuItem);
+        return new ResponseEntity<>(menuItemRepository.save(menuItem), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/web/menuItem/{id}", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public MenuItemContract get(@PathVariable("id") Long id) {
         MenuItem entity = menuItemRepository.findEntity(id);
+        return createContract(entity);
+    }
+
+    private MenuItemContract createContract(MenuItem entity) {
         MenuItemContract contract = new MenuItemContract();
         contract.setUuid(entity.getUuid());
         contract.setId(entity.getId());
@@ -54,6 +73,13 @@ public class MenuItemWebController extends AbstractController<MenuItem> {
         contract.setType(entity.getType());
         contract.setDisplayKey(entity.getDisplayKey());
         contract.setLinkFunction(entity.getLinkFunction());
+        contract.setVoided(entity.isVoided());
         return contract;
+    }
+
+    @RequestMapping(value = "/web/menuItem", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public List<MenuItemContract> get() {
+        return menuItemRepository.findAll().stream().map(this::createContract).collect(Collectors.toList());
     }
 }
