@@ -1,21 +1,27 @@
 import { MenuItem } from "openchs-models";
 
 export default class ApplicationMenuReducer {
-  static SET_MENU_ITEM = "setMenuItem";
+  static INITIAL_MENU_ITEM = "setMenuItem";
   static SAVED = "saved";
   static SAVE_FAILED = "saveFailed";
-
   static ERROR_SAVE = "errorSave";
+  static MENU_ITEM = "menuItem";
 
-  static applicationMenuInitialState = {
-    menuItem: new MenuItem(),
-    errors: new Map(),
-    saved: false
-  };
+  static createApplicationMenuInitialState() {
+    return {
+      menuItem: new MenuItem(),
+      errors: new Map(),
+      saved: false
+    };
+  }
+
+  static getReducer() {
+    return (applicationMenuState, action) => this.execute(applicationMenuState, action);
+  }
 
   static execute(applicationMenuState, action) {
     switch (action.type) {
-      case ApplicationMenuReducer.SET_MENU_ITEM:
+      case ApplicationMenuReducer.INITIAL_MENU_ITEM:
         return { menuItem: action.payload, errors: new Map(), saved: false };
       case ApplicationMenuReducer.SAVED:
         return { ...applicationMenuState, saved: true };
@@ -26,6 +32,9 @@ export default class ApplicationMenuReducer {
           saved: false,
           errors: new Map(applicationMenuState.errors)
         };
+      case ApplicationMenuReducer.MENU_ITEM:
+        Object.assign(applicationMenuState.menuItem, action.payload);
+        return { ...applicationMenuState, menuItem: applicationMenuState.menuItem.clone() };
       default:
         return { ...applicationMenuState };
     }

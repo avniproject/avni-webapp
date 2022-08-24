@@ -200,3 +200,8 @@ export const sampleCardQuery = () => {
     // return params.db.objects('Individual').filtered("individual.voided == false");
 };`;
 };
+
+export const sampleLinkFunction = () => {
+  return `'use strict';
+  ({params}) => {return "google.com"}`;
+};

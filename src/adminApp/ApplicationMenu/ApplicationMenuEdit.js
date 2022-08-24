@@ -15,8 +15,8 @@ import ApplicationMenuEditFields from "./ApplicationMenuEditFields";
 
 const ApplicationMenuEdit = props => {
   const [state, dispatch] = useReducer(
-    ApplicationMenuReducer.execute,
-    ApplicationMenuReducer.applicationMenuInitialState
+    ApplicationMenuReducer.getReducer(),
+    ApplicationMenuReducer.createApplicationMenuInitialState()
   );
   const [redirectShow, setRedirectShow] = useState(false);
   const [deleteAlert, setDeleteAlert] = useState(false);
@@ -28,7 +28,7 @@ const ApplicationMenuEdit = props => {
       .then(result => {
         const menuItem = MenuItem.fromResource(result);
         menuItem.id = result.id;
-        dispatch({ type: ApplicationMenuReducer.SET_MENU_ITEM, payload: menuItem });
+        dispatch({ type: ApplicationMenuReducer.INITIAL_MENU_ITEM, payload: menuItem });
       });
   }, []);
 
@@ -78,9 +78,9 @@ const ApplicationMenuEdit = props => {
         </Grid>
       </Box>
       {(redirectShow || state.saved) && (
-        <Redirect to={`/appDesigner/subjectType/${props.match.params.id}/show`} />
+        <Redirect to={`/appDesigner/applicationMenu/${props.match.params.id}/show`} />
       )}
-      {deleteAlert && <Redirect to="/appDesigner/subjectType" />}
+      {deleteAlert && <Redirect to="/appDesigner/applicationMenu" />}
     </>
   );
 };
