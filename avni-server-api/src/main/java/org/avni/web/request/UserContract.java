@@ -45,6 +45,7 @@ public class UserContract extends ReferenceDataContract {
         userContract.setOrgAdmin(user.isOrgAdmin());
         userContract.setRoles(user.getRoles());
         userContract.setCatchmentId(user.getCatchmentId().orElse(null));
+        userContract.setSettings(user.getSettings());
         userContract.setCreatedBy(user.getCreatedByUserName());
         userContract.setCreatedDateTime(user.getCreatedDateTime());
         userContract.setLastModifiedBy(user.getLastModifiedByUserName());
