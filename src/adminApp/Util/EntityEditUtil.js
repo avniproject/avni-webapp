@@ -1,4 +1,3 @@
-import _ from "lodash";
 import http from "../../common/utils/httpClient";
 
 class EntityEditUtil {

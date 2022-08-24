@@ -20,6 +20,9 @@ storybook: check-node-v
 test:
 	yarn test --watchAll
 
+build:
+	yarn run build
+
 prettier-all: check-node-v
 	yarn prettier-all
 

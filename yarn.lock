@@ -15348,10 +15348,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.23.11:
-  version "1.23.11"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.23.11.tgz#9fbd1780657c7e1fb9b8626395d985c80963a7cc"
-  integrity sha512-wx17EvxRiwzXXDQMJ0doydfcgdKUpUKTyKTqz4BWD6U99r4G2BDvK6IunLHxNOYWQdZOi9HjOk6G1jRJgkViWA==
+openchs-models@1.25.3:
+  version "1.25.3"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.25.3.tgz#38040136c8753aaca3e2dad9cc0d82d000d415fd"
+  integrity sha512-f6iziYZoMTIuISd4eWt9pE+fWV4usA+Mt/tDSOubFlFEMJBEcRFP4adoR58Xr/cfoMFQZUeWptS0YbGI6inAjQ==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -18830,7 +18830,7 @@ rsvp@^4.8.4:
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.29.4"
+    moment "^2.22.2"
     openchs-models "^0.2.25"
     superagent "^3.8.3"
     test "^0.6.0"

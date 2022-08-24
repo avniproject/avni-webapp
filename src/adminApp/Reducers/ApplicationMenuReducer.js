@@ -19,14 +19,15 @@ export default class ApplicationMenuReducer {
         return { menuItem: action.payload, errors: new Map(), saved: false };
       case ApplicationMenuReducer.SAVED:
         return { ...applicationMenuState, saved: true };
-      case ApplicationMenuReducer.SAVE_FAILED: {
+      case ApplicationMenuReducer.SAVE_FAILED:
         applicationMenuState.errors.set(this.ERROR_SAVE, action.payload);
         return {
           ...applicationMenuState,
           saved: false,
           errors: new Map(applicationMenuState.errors)
         };
-      }
+      default:
+        return { ...applicationMenuState };
     }
   }
 }
