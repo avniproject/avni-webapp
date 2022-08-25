@@ -1,6 +1,7 @@
 package org.avni.service;
 
 import org.avni.dao.externalSystem.ExternalSystemConfigRepository;
+import org.avni.domain.User;
 import org.avni.domain.extenalSystem.ExternalSystemConfig;
 import org.avni.domain.extenalSystem.SystemName;
 import org.avni.framework.security.UserContextHolder;
@@ -30,10 +31,14 @@ public class ExotelService {
     }
 
     public ExotelResponse makeMaskedCall(String to) throws ConnectException {
-        if (isDev && !connectToExotelInDev) return new ExotelResponse(true);
+        if (isDev && !connectToExotelInDev) return new ExotelResponse(true, "Skipping Exotel call in dev mode.");
 
         ExternalSystemConfig externalSystemConfig = externalSystemConfigRepository.findBySystemName(SystemName.Exotel);
         String callerId = (String) externalSystemConfig.getConfig().get("callerId");
+        User user = UserContextHolder.getUser();
+        if (user == null) {
+            return new ExotelResponse(false, "UserContext not found, please login and try again.");
+        }
         String from = UserContextHolder.getUser().getPhoneNumber();
         ExotelRequest exotelRequest = new ExotelRequest(from, to, callerId);
 

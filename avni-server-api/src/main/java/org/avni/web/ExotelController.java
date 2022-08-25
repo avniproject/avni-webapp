@@ -31,7 +31,7 @@ public class ExotelController {
         try {
             return exotelService.makeMaskedCall(to);
         } catch (ConnectException e) {
-            return new ExotelResponse(false);
+            return new ExotelResponse(false, e.getMessage());
         }
     }
 }

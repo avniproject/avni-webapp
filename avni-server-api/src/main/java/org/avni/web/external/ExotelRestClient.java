@@ -48,7 +48,7 @@ public class ExotelRestClient {
             logger.debug(format("Exotel Response Body: %s", exotelResponse.getBody()));
 
             if (exotelResponse.getStatusCode().equals(HttpStatus.OK)) {
-                return new ExotelResponse(true);
+                return new ExotelResponse(true, "Masking call successful.");
             } else {
                 logger.error(format("Error connecting for Request to Exotel: %s", exotelRequest));
                 logger.error(format("Exotel Error response: %s, %s", exotelResponse.getStatusCode(), exotelResponse.getBody()));
