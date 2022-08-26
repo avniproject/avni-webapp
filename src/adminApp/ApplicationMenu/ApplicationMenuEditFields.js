@@ -14,7 +14,6 @@ import { MenuItem as MaterialMenuItem } from "@material-ui/core";
 const ApplicationMenuEditFields = props => {
   const { menuItem, dispatch } = props;
   const allGroups = MenuItem.getAllGroups();
-  console.log("ApplicationMenuEditFields", allGroups);
   return (
     <>
       <AvniTextField

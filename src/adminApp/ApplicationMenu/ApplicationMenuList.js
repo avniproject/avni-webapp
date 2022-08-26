@@ -1,12 +1,12 @@
 import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
-import http from "common/utils/httpClient";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import EntityListUtil from "../Util/EntityListUtil";
+import ApplicationMenuService from "../service/ApplicationMenuService";
 
 const ApplicationMenuList = ({ history }) => {
   const [createTriggered, triggerCreate] = useState(false);
@@ -16,7 +16,10 @@ const ApplicationMenuList = ({ history }) => {
       title: "Display Key",
       defaultSort: "asc",
       sorting: false,
-      field: "displayKey"
+      field: "displayKey",
+      render: rowData => (
+        <a href={`#/appDesigner/applicationMenu/${rowData.id}/show`}>{rowData.displayKey}</a>
+      )
     },
     {
       title: "Type",
@@ -39,15 +42,11 @@ const ApplicationMenuList = ({ history }) => {
 
   const fetchData = query =>
     new Promise(resolve => {
-      let apiUrl = "/web/menuItem";
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          resolve({
-            data: result
-          });
-        });
+      ApplicationMenuService.getMenuList().then(result =>
+        resolve({
+          data: result
+        })
+      );
     });
 
   return (

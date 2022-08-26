@@ -1,5 +1,4 @@
 import React, { useEffect, useReducer, useState } from "react";
-import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -8,10 +7,10 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { SaveComponent } from "../../common/components/SaveComponent";
-import { MenuItem } from "openchs-models";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
 import EntityEditUtil from "../Util/EntityEditUtil";
 import ApplicationMenuEditFields from "./ApplicationMenuEditFields";
+import ApplicationMenuService from "../service/ApplicationMenuService";
 
 const ApplicationMenuEdit = props => {
   const [state, dispatch] = useReducer(
@@ -22,19 +21,13 @@ const ApplicationMenuEdit = props => {
   const [deleteAlert, setDeleteAlert] = useState(false);
 
   useEffect(() => {
-    http
-      .get("/web/menuItem/" + props.match.params.id)
-      .then(response => response.data)
-      .then(result => {
-        const menuItem = MenuItem.fromResource(result);
-        menuItem.id = result.id;
-        dispatch({ type: ApplicationMenuReducer.INITIAL_MENU_ITEM, payload: menuItem });
-      });
+    ApplicationMenuService.getMenuItem(props.match.params.id).then(menuItem =>
+      dispatch({ type: ApplicationMenuReducer.INITIAL_MENU_ITEM, payload: menuItem })
+    );
   }, []);
 
   const onSubmit = () => {
-    http
-      .put("/web/menuItem/" + props.match.params.id, state.menuItem)
+    ApplicationMenuService.put(state.menuItem)
       .then(response => {
         if (response.status === 200) {
           dispatch({ type: ApplicationMenuReducer.SAVED });

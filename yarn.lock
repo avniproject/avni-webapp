@@ -5668,14 +5668,13 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.15:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.15.tgz#36dbeefdfb9b291e2fee145fb931c38b97e72160"
-  integrity sha512-Zrvwxt4WrbicZe3tm3I82VLGDzFPuxBEY1Y/Wg2xOvw5EPR2A2FWYxuj5ibrWBiSWv4NzkVyfXIg3xH9AcSkBA==
+avni-health-modules@0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.18.tgz#18d2b6f5447158b50fabf75773071e66a81e10c0"
+  integrity sha512-ub0E2bhbFXrLm1j8RhmX467ZWViSZ782gwoUYYW5dX4R6VHUxfLkV9VXJzV1qL5yI79sfHJw2ADSzUXoUsXlYQ==
   dependencies:
     lodash "4.17.11"
     moment "2.19.3"
-    rules-config "github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39"
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -15348,18 +15347,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.25.3:
-  version "1.25.3"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.25.3.tgz#38040136c8753aaca3e2dad9cc0d82d000d415fd"
-  integrity sha512-f6iziYZoMTIuISd4eWt9pE+fWV4usA+Mt/tDSOubFlFEMJBEcRFP4adoR58Xr/cfoMFQZUeWptS0YbGI6inAjQ==
-  dependencies:
-    lodash "^4.17.11"
-    moment "^2.22.2"
-
-openchs-models@^0.2.25:
-  version "0.2.86"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
-  integrity sha512-+ivZewM93wX66HxRs+XIwxcHeGLEZfxPZE5hvcEvFEgyyRb7f8ZMOgpkLr7NBYpdoOPdM12qzQYKWNXnKW7oXg==
+openchs-models@1.25.5:
+  version "1.25.5"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.25.5.tgz#257a8616be6f983f2095b5bb2ef91dd3230b1739"
+  integrity sha512-wn1DdkUPxG9XjT+WuwlQlD2uAPvQEjckallwXwzZNAJFkdplLDT+W7cwgFEKsA6W00G9uqCwv8e3BcTR+wHskg==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
@@ -18821,35 +18812,16 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
-"rules-config@github:avniproject/rules-config#600c1ad52b693af7dc826ca33d58257bc3bc9d39":
+"rules-config@github:avniproject/rules-config#e2e7fc522cf3770842363a0194509349e009ac27":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/600c1ad52b693af7dc826ca33d58257bc3bc9d39"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/e2e7fc522cf3770842363a0194509349e009ac27"
   dependencies:
     "@quasar/babel-preset-app" "^2.0.1"
     babel-preset-env "^1.7.0"
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.22.2"
-    openchs-models "^0.2.25"
-    superagent "^3.8.3"
-    test "^0.6.0"
-    uglifyjs-webpack-plugin "^1.2.5"
-    webpack "^3.12.0"
-    webpack-cli "^3.0.3"
-    webpack-node-externals "1.6.0"
-
-"rules-config@github:avniproject/rules-config#809f5d164b875cf261fc11dad342d5a4315d309d":
-  version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/809f5d164b875cf261fc11dad342d5a4315d309d"
-  dependencies:
-    "@quasar/babel-preset-app" "^2.0.1"
-    babel-preset-env "^1.7.0"
-    babel-register "^6.26.0"
-    chai "^4.1.2"
-    lodash "^4.17.11"
-    moment "^2.22.2"
-    openchs-models "^0.2.25"
+    moment "^2.29.4"
     superagent "^3.8.3"
     test "^0.6.0"
     uglifyjs-webpack-plugin "^1.2.5"

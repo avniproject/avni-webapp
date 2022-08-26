@@ -21,3 +21,10 @@ export const createdAudit = ({ createdBy, createdDateTime, createdByUserName }) 
   const [date, time] = getFormattedDateTime(createdDateTime);
   return `By ${createdBy || createdByUserName} at ${time}, ${date}`;
 };
+
+export function mapAuditFields(source, destination) {
+  destination.createdBy = source.createdBy;
+  destination.lastModifiedBy = source.lastModifiedBy;
+  destination.createdDateTime = source.createdDateTime;
+  destination.lastModifiedDateTime = source.lastModifiedDateTime;
+}

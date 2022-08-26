@@ -138,6 +138,10 @@ class HttpClient {
   async deleteEntity(url) {
     return await this.delete(url);
   }
+
+  getData(...args) {
+    return this.get(...args).then(response => response.data);
+  }
 }
 
 export const httpClient = new HttpClient();
