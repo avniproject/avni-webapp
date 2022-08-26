@@ -65,7 +65,7 @@ public class ExotelRestClient {
         } catch (HttpStatusCodeException e) {
             String baseErrorMessage = "Error while connecting the call.";
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                baseErrorMessage += "This could be because of incorrect phone number.";
+                baseErrorMessage += "This could be because you are trying to call an incorrect phone number.";
             } else {
                 baseErrorMessage = getErrorMessageString(e.getResponseBodyAsString(), baseErrorMessage);
             }
