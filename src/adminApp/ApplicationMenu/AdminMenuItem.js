@@ -1,5 +1,4 @@
-import _ from "lodash";
-import { MenuItem, ModelGeneral } from "openchs-models";
+import { MenuItem } from "openchs-models";
 import { mapAuditFields } from "../components/AuditUtil";
 
 class AdminMenuItem extends MenuItem {
