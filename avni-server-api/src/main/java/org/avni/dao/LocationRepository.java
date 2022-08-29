@@ -32,17 +32,24 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             nativeQuery = true)
     List<LocationProjection> findByIdIn(Long[] ids);
 
-    Page<AddressLevel> findByVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable
-    );
+    @Query(value = "select al1.*\n" +
+            "from catchment c\n" +
+            "         inner join catchment_address_mapping cam on c.id = cam.catchment_id\n" +
+            "         inner join address_level al on cam.addresslevel_id = al.id\n" +
+            "         inner join address_level al1 on al.lineage @> al1.lineage \n" +
+            "where c.id = :catchmentId\n" +
+            "  and al1.last_modified_date_time between :lastModifiedDateTime and :now\n" +
+            "order by al1.last_modified_date_time asc, al1.id asc", nativeQuery = true)
+    Page<AddressLevel> getSyncResults(long catchmentId, Date lastModifiedDateTime, Date now, Pageable pageable);
 
-    boolean existsByVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(
-            long catchmentId,
-            Date lastModifiedDateTime
-    );
+    @Query(value = "select count(*)\n" +
+            "from catchment c\n" +
+            "         inner join catchment_address_mapping cam on c.id = cam.catchment_id\n" +
+            "         inner join address_level al on cam.addresslevel_id = al.id\n" +
+            "         inner join address_level al1 on al.lineage @> al1.lineage \n" +
+            "where c.id = :catchmentId\n" +
+            "  and al1.last_modified_date_time > :lastModifiedDateTime\n" , nativeQuery = true)
+    Long getChangedRowCount(long catchmentId,Date lastModifiedDateTime);
 
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
@@ -71,12 +78,12 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @Override
     default Page<AddressLevel> getSyncResults(SyncParameters syncParameters) {
-        return findByVirtualCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
+        return getSyncResults(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate(), syncParameters.getNow().toDate(), syncParameters.getPageable());
     }
 
     @Override
     default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
-        return existsByVirtualCatchmentsIdAndLastModifiedDateTimeGreaterThan(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate());
+        return getChangedRowCount(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate()) > 0;
     }
 
     default AddressLevel findByName(String name) {
