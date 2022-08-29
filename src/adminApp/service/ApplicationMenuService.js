@@ -11,11 +11,15 @@ class ApplicationMenuService {
   }
 
   static getMenuList() {
-    return http.getData(menuItemEndpoint);
+    return http.getPageData("menuItemWebResponses", menuItemEndpoint);
   }
 
   static put(menuItem) {
     return http.put(`${menuItemEndpoint}/${menuItem.id}`, menuItem);
+  }
+
+  static post(menuItem) {
+    return http.post(menuItemEndpoint, menuItem);
   }
 }
 

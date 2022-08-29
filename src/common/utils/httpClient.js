@@ -142,6 +142,18 @@ class HttpClient {
   getData(...args) {
     return this.get(...args).then(response => response.data);
   }
+
+  getPageData(embeddedResourceCollectionName, ...args) {
+    return this.getData(args).then(responseBodyJson => {
+      return {
+        data: responseBodyJson._embedded
+          ? responseBodyJson._embedded[embeddedResourceCollectionName]
+          : [],
+        page: responseBodyJson.page.number,
+        totalCount: responseBodyJson.page.totalElements
+      };
+    });
+  }
 }
 
 export const httpClient = new HttpClient();

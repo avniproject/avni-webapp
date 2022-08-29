@@ -41,13 +41,11 @@ const ApplicationMenuList = ({ history }) => {
   const tableRef = React.createRef();
 
   const fetchData = query =>
-    new Promise(resolve => {
-      ApplicationMenuService.getMenuList().then(result =>
-        resolve({
-          data: result
-        })
-      );
-    });
+    new Promise(resolve =>
+      ApplicationMenuService.getMenuList().then(data => {
+        resolve(data);
+      })
+    );
 
   return (
     <>
@@ -74,7 +72,7 @@ const ApplicationMenuList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
+                  backgroundColor: "#fff"
                 })
               }}
               actions={[

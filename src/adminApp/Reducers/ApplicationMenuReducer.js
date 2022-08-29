@@ -1,22 +1,19 @@
-import { MenuItem } from "openchs-models";
+import AdminMenuItem from "../ApplicationMenu/AdminMenuItem";
 
 export default class ApplicationMenuReducer {
-  static INITIAL_MENU_ITEM = "setMenuItem";
+  static INITIAL_MENU_ITEM = "initialMenuItem";
   static SAVED = "saved";
   static SAVE_FAILED = "saveFailed";
   static ERROR_SAVE = "errorSave";
   static MENU_ITEM = "menuItem";
+  static SUBMITTED = "submitted";
 
   static createApplicationMenuInitialState() {
     return {
-      menuItem: new MenuItem(),
+      menuItem: new AdminMenuItem(),
       errors: new Map(),
       saved: false
     };
-  }
-
-  static getReducer() {
-    return (applicationMenuState, action) => this.execute(applicationMenuState, action);
   }
 
   static execute(applicationMenuState, action) {
@@ -35,8 +32,16 @@ export default class ApplicationMenuReducer {
       case ApplicationMenuReducer.MENU_ITEM:
         Object.assign(applicationMenuState.menuItem, action.payload);
         return { ...applicationMenuState, menuItem: applicationMenuState.menuItem.clone() };
+      case ApplicationMenuReducer.SUBMITTED:
+        const errors = applicationMenuState.menuItem.validate();
+        if (errors.size > 0) return { ...applicationMenuState, errors: errors };
+
+        action.payload.cb();
+        return { ...applicationMenuState, errors: new Map() };
       default:
         return { ...applicationMenuState };
     }
   }
 }
+
+ApplicationMenuReducer.execute.bind(ApplicationMenuReducer);

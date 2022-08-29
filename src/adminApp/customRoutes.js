@@ -73,6 +73,7 @@ export default [
   />,
   <Route exact path="/dashboard/:id" component={WithProps({ edit: true }, CreateEditDashboard)} />,
   <Route exact path="/dashboard/:id/show" component={DashboardShow} />,
-  <Route exact path="/applicationMenu/:id" component={ApplicationMenuEdit} />,
-  <Route exact path="/applicationMenu/:id/show" component={ApplicationMenuShow} />
+  <Route exact path="/applicationMenu/create" component={ApplicationMenuEdit} />,
+  <Route exact path="/applicationMenu/:id/show" component={ApplicationMenuShow} />,
+  <Route exact path="/applicationMenu/:id" component={ApplicationMenuEdit} />
 ];
