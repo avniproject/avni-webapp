@@ -61,7 +61,8 @@ public class RequestUtils {
                     }
                     obsValue = groupOfChildObservations;
                 } else {
-                    obsValue = entryValue;
+                    Map<String, Object> childObsCollection = (Map<String, Object>) entryValue;
+                    obsValue = createObservations(childObsCollection, conceptRepository);
                 }
                 break;
             }
