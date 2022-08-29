@@ -1,10 +1,12 @@
 package org.avni.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.avni.domain.CHSEntity;
 import org.springframework.util.StringUtils;
 
 import java.util.UUID;
 
+// Should be renamed to CHSContract
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class CHSRequest {
     private String uuid;
@@ -18,6 +20,16 @@ public class CHSRequest {
 
     public CHSRequest(String uuid) {
         this.uuid = uuid;
+    }
+
+    public CHSRequest(String uuid, Long id, boolean isVoided) {
+        this.uuid = uuid;
+        this.id = id;
+        this.isVoided = isVoided;
+    }
+
+    public CHSRequest(CHSEntity chsEntity) {
+        this(chsEntity.getUuid(), chsEntity.getId(), chsEntity.isVoided());
     }
 
     public Long getId() { return id; }

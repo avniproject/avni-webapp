@@ -3,9 +3,12 @@ package org.avni.web.menu;
 import org.avni.application.menu.MenuItem;
 import org.avni.dao.application.MenuItemRepository;
 import org.avni.web.AbstractController;
+import org.avni.web.RestControllerResourceProcessor;
 import org.avni.web.request.application.menu.MenuItemContract;
 import org.avni.web.response.AvniEntityResponse;
+import org.avni.web.response.MenuItemWebResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class MenuItemWebController extends AbstractController<MenuItem> {
+public class MenuItemWebController extends AbstractController<MenuItem> implements RestControllerResourceProcessor<MenuItemWebResponse> {
     private final MenuItemRepository menuItemRepository;
 
     @Autowired
@@ -41,6 +44,7 @@ public class MenuItemWebController extends AbstractController<MenuItem> {
     }
 
     private void updateMenuItem(MenuItemContract request, MenuItem menuItem) {
+        menuItem.assignUUIDIfRequired();
         menuItem.setGroup(request.getGroup());
         menuItem.setIcon(request.getIcon());
         menuItem.setType(request.getType());
@@ -59,27 +63,36 @@ public class MenuItemWebController extends AbstractController<MenuItem> {
 
     @RequestMapping(value = "/web/menuItem/{id}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
-    public MenuItemContract get(@PathVariable("id") Long id) {
+    public MenuItemContract getOne(@PathVariable("id") Long id) {
         MenuItem entity = menuItemRepository.findEntity(id);
-        return createContract(entity);
+        return createResponse(entity);
     }
 
-    private MenuItemContract createContract(MenuItem entity) {
-        MenuItemContract contract = new MenuItemContract();
-        contract.setUuid(entity.getUuid());
-        contract.setId(entity.getId());
-        contract.setGroup(entity.getGroup());
-        contract.setIcon(entity.getIcon());
-        contract.setType(entity.getType());
-        contract.setDisplayKey(entity.getDisplayKey());
-        contract.setLinkFunction(entity.getLinkFunction());
-        contract.setVoided(entity.isVoided());
-        return contract;
+    private MenuItemWebResponse createResponse(MenuItem entity) {
+        MenuItemWebResponse response = new MenuItemWebResponse(entity);
+        response.setGroup(entity.getGroup());
+        response.setIcon(entity.getIcon());
+        response.setType(entity.getType());
+        response.setDisplayKey(entity.getDisplayKey());
+        response.setLinkFunction(entity.getLinkFunction());
+        response.setCreatedBy(entity.getCreatedBy().getName());
+        response.setLastModifiedBy(entity.getLastModifiedBy().getName());
+        response.setCreatedDateTime(entity.getCreatedDateTime());
+        response.setLastModifiedDateTime(entity.getLastModifiedDateTime());
+        return response;
     }
 
     @RequestMapping(value = "/web/menuItem", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    public List<MenuItemContract> get() {
-        return menuItemRepository.findAll().stream().map(this::createContract).collect(Collectors.toList());
+    public PagedResources<MenuItemWebResponse> getAll() {
+        return wrapListAsPage(menuItemRepository.findAllByIsVoidedFalse().stream().map(this::createResponse).collect(Collectors.toList()));
+    }
+
+    @DeleteMapping(value = "/web/menuItem/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @Transactional
+    public ResponseEntity delete(@PathVariable("id") Long id) {
+        menuItemRepository.voidEntity(id);
+        return ResponseEntity.ok(null);
     }
 }

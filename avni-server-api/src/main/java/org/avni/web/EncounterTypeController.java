@@ -32,9 +32,9 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     private final Logger logger;
     private final OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private final EncounterTypeService encounterTypeService;
-    private EncounterTypeRepository encounterTypeRepository;
-    private FormService formService;
-    private FormMappingService formMappingSevice;
+    private final EncounterTypeRepository encounterTypeRepository;
+    private final FormService formService;
+    private final FormMappingService formMappingSevice;
 
     @Autowired
     public EncounterTypeController(EncounterTypeRepository encounterTypeRepository,

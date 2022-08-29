@@ -30,4 +30,9 @@ public interface RestControllerResourceProcessor<T> {
         PagedResources.PageMetadata pageMetadata = new PagedResources.PageMetadata(pageable.getPageSize(), 0, 0, 0);
         return new PagedResources<>(new ArrayList<>(), pageMetadata);
     }
+
+    default PagedResources<T> wrapListAsPage(List list) {
+        PagedResources.PageMetadata pageMetadata = new PagedResources.PageMetadata(list.size(), 0, list.size(), 1);
+        return new PagedResources<>(list, pageMetadata);
+    }
 }

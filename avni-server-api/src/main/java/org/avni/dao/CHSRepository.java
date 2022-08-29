@@ -1,6 +1,5 @@
 package org.avni.dao;
 
-import org.avni.application.menu.MenuItem;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.Concept;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,7 +7,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.persistence.criteria.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @NoRepositoryBean
 public interface CHSRepository<T extends CHSEntity> extends CrudRepository<T, Long> {
@@ -63,5 +65,11 @@ public interface CHSRepository<T extends CHSEntity> extends CrudRepository<T, Lo
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
         return spec;
+    }
+
+    default void voidEntity(Long id) {
+        T entity = this.findEntity(id);
+        entity.setVoided(true);
+        this.save(entity);
     }
 }
