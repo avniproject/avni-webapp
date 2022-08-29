@@ -9,6 +9,7 @@ import org.avni.domain.SubjectType;
 import org.avni.framework.security.AuthService;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.model.BundleFile;
+import org.avni.importer.batch.model.BundleZip;
 import org.avni.service.*;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.*;
@@ -166,14 +167,13 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
 
     @Override
     public void write(List<? extends BundleFile> bundleFiles) throws Exception {
-        Map<String, byte[]> fileDataMap = bundleFiles.stream().collect(Collectors.toMap(BundleFile::getName, BundleFile::getContent));
-        List<String> forms = bundleFiles.stream().filter(jf -> jf.getName().startsWith("forms"))
-                .map(jf -> new String(jf.getContent(), StandardCharsets.UTF_8)).collect(Collectors.toList());
+        BundleZip bundleZip = new BundleZip(bundleFiles.stream().collect(Collectors.toMap(BundleFile::getName, BundleFile::getContent)));
+        List<String> forms = bundleZip.getForms();
         for (String filename : fileSequence) {
             if (filename.equals("forms")) {
                 for (String form : forms) deployFile("form", form, bundleFiles);
             } else {
-                byte[] fileData = fileDataMap.get(filename);
+                byte[] fileData = bundleZip.getFile(filename);
                 if (fileData != null) {
                     deployFile(filename, new String(fileData, StandardCharsets.UTF_8), bundleFiles);
                 }
