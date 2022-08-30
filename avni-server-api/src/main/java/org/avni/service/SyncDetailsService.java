@@ -98,7 +98,7 @@ public class SyncDetailsService {
                 "MyGroups", "GroupPrivileges", "Extension", "GroupRole", "LocationHierarchy", "ReportCard",
                 "Dashboard", "DashboardSection", "DashboardSectionCardMapping", "ApprovalStatus", "GroupDashboard",
                 "EntityApprovalStatus", "News", "UserInfo", "Privilege", "StandardReportCardType", "Documentation", "DocumentationItem",
-                "Task", "TaskType", "TaskStatus", "TaskUnAssignment"
+                "Task", "TaskType", "TaskStatus", "TaskUnAssignment", "UserSubjectAssignment"
         ));
 
         return syncableItems;

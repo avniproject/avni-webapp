@@ -5,6 +5,7 @@ import org.avni.dao.SyncParameters;
 import org.avni.dao.TransactionalDataRepository;
 import org.avni.domain.Individual;
 import org.avni.domain.SubjectType;
+import org.avni.domain.User;
 import org.avni.domain.program.SubjectProgramEligibility;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinAssignedUser;
+import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinUserSubjectAssignment;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "subjectProgramEligibility", path = "subjectProgramEligibility", exported = false)
@@ -43,8 +44,8 @@ public interface SubjectProgramEligibilityRepository extends TransactionalDataRe
                 }
             }
             if (subjectType.isDirectlyAssignable()) {
-                Long userId = UserContextHolder.getUserContext().getUser().getId();
-                predicates.add(cb.equal(joinAssignedUser(subjectJoin).get("id"), userId));
+                User user = UserContextHolder.getUserContext().getUser();
+                predicates.add(cb.equal(joinUserSubjectAssignment(subjectJoin), user));
             }
             addSyncAttributeConceptPredicate(cb, predicates, subjectJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));

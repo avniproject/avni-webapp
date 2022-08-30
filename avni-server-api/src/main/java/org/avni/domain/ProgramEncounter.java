@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "program_encounter")
-@JsonIgnoreProperties({"programEnrolment"})
+@JsonIgnoreProperties({"programEnrolment", "individual"})
 @BatchSize(size = 100)
 public class ProgramEncounter extends AbstractEncounter {
 
@@ -23,8 +23,9 @@ public class ProgramEncounter extends AbstractEncounter {
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 
-    @Column(name= "individual_id")
-    private Long individualId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "individual_id")
+    private Individual individual;
 
     public ProgramEnrolment getProgramEnrolment() {
         return programEnrolment;
@@ -35,12 +36,12 @@ public class ProgramEncounter extends AbstractEncounter {
     }
 
     @JsonIgnore
-    public Long getIndividualId() {
-        return individualId;
+    public Individual getIndividual() {
+        return individual;
     }
 
-    public void setIndividualId(Long individualId) {
-        this.individualId = individualId;
+    public void setIndividual(Individual individual) {
+        this.individual = individual;
     }
 
     @Projection(name = "ProgramEncounterProjectionMinimal", types = {ProgramEncounter.class})

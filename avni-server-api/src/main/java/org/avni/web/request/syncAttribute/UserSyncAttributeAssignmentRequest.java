@@ -9,12 +9,10 @@ import java.util.stream.Collectors;
 public class UserSyncAttributeAssignmentRequest {
     private List<UserSubjectTypeSyncAttributeAssignmentRequest> subjectTypes;
     private boolean isAnySubjectTypeSyncByLocation;
-    private boolean isAnySubjectTypeDirectlyAssignable;
 
     public UserSyncAttributeAssignmentRequest(List<SubjectType> subjectTypes,
                                               boolean isAnySubjectTypeSyncByLocation,
-                                              boolean isAnySubjectTypeDirectlyAssignable, ConceptService conceptService) {
-        this.isAnySubjectTypeDirectlyAssignable = isAnySubjectTypeDirectlyAssignable;
+                                              ConceptService conceptService) {
         this.isAnySubjectTypeSyncByLocation = isAnySubjectTypeSyncByLocation;
         this.subjectTypes = subjectTypes.stream()
                 .map(st -> UserSubjectTypeSyncAttributeAssignmentRequest.fromSubjectType(st, conceptService))
@@ -31,9 +29,5 @@ public class UserSyncAttributeAssignmentRequest {
 
     public boolean isAnySubjectTypeSyncByLocation() {
         return isAnySubjectTypeSyncByLocation;
-    }
-
-    public boolean isAnySubjectTypeDirectlyAssignable() {
-        return isAnySubjectTypeDirectlyAssignable;
     }
 }

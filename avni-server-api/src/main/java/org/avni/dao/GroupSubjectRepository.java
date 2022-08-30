@@ -13,13 +13,11 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.QueryHint;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinAssignedUser;
+import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinUserSubjectAssignment;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "groupSubject", path = "groupSubject", exported = false)
@@ -99,9 +97,9 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
                 }
             }
             if (subjectType.isDirectlyAssignable()) {
-                Long userId = UserContextHolder.getUserContext().getUser().getId();
-                predicates.add(cb.equal(joinAssignedUser(root.join("groupSubject")).get("id"), userId));
-                predicates.add(cb.equal(joinAssignedUser(root.join("memberSubject")).get("id"), userId));
+                User user = UserContextHolder.getUserContext().getUser();
+                predicates.add(cb.equal(joinUserSubjectAssignment(root.join("groupSubject")), user));
+                predicates.add(cb.equal(joinUserSubjectAssignment(root.join("memberSubject")), user));
             }
             addSyncAttributeConceptPredicate(cb, predicates, root, syncParameters, "groupSubjectSyncConcept1Value", "groupSubjectSyncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));

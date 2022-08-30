@@ -1237,7 +1237,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"admin@example\",\n    \"name\": \"Example ka Admin\",\n    \"id\": 2,\n    \"organisationId\": 2,\n    \"email\": \"foo@example.com\",\n    \"phoneNumber\": \"+919090909090\",\n    \"disabledInCognito\": false,\n    \"operatingIndividualScope\": \"None\",\n    \"settings\": null,\n    \"syncSettings\": {},\n    \"roles\": [\n        \"organisation_admin\",\n        \"user\"\n    ],\n    \"catchmentId\": {{Catchment 1}},\n    \"voided\": false,\n    \"admin\": false,\n    \"orgAdmin\": true,\n    \"directAssignmentIds\": [\n        {{Subject 1}}\n    ]\n}",
+					"raw": "{\n    \"username\": \"admin@example\",\n    \"name\": \"Example ka Admin\",\n    \"id\": 2,\n    \"organisationId\": 2,\n    \"email\": \"foo@example.com\",\n    \"phoneNumber\": \"+919090909090\",\n    \"disabledInCognito\": false,\n    \"operatingIndividualScope\": \"None\",\n    \"settings\": null,\n    \"syncSettings\": {},\n    \"roles\": [\n        \"organisation_admin\",\n        \"user\"\n    ],\n    \"catchmentId\": {{Catchment 1}},\n    \"voided\": false,\n    \"admin\": false,\n    \"orgAdmin\": true\n}",
 					"options": {
 						"raw": {
 							"language": "json"

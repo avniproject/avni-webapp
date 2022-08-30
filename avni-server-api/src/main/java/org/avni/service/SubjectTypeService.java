@@ -138,8 +138,7 @@ public class SubjectTypeService implements NonScopeAwareService {
                 .filter(st -> st.getSyncRegistrationConcept1() != null || st.getSyncRegistrationConcept2() != null)
                 .collect(Collectors.toList());
         boolean isAnySyncByLocation = subjectTypes.stream().anyMatch(SubjectType::isShouldSyncByLocation);
-        boolean isAnyDirectlyAssignable = subjectTypes.stream().anyMatch(SubjectType::isDirectlyAssignable);
-        return new UserSyncAttributeAssignmentRequest(subjectTypesHavingSyncConcepts, isAnySyncByLocation, isAnyDirectlyAssignable, conceptService);
+        return new UserSyncAttributeAssignmentRequest(subjectTypesHavingSyncConcepts, isAnySyncByLocation, conceptService);
     }
 
     public Stream<SubjectType> getAll() {

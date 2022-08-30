@@ -27,7 +27,6 @@ public class UserContract extends ReferenceDataContract {
     private String[] roles;
     private String password;
     private JsonObject syncSettings;
-    private Set<Long> directAssignmentIds = new HashSet<>();
     private String createdBy;
     private String lastModifiedBy;
     private DateTime lastModifiedDateTime;
@@ -163,14 +162,6 @@ public class UserContract extends ReferenceDataContract {
 
     public void setSyncSettings(JsonObject syncSettings) {
         this.syncSettings = syncSettings;
-    }
-
-    public Set<Long> getDirectAssignmentIds() {
-        return directAssignmentIds;
-    }
-
-    public void setDirectAssignmentIds(Set<Long> directAssignmentIds) {
-        this.directAssignmentIds = directAssignmentIds;
     }
 
     public String getCreatedBy() {

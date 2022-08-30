@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -76,17 +75,17 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
         }
         User user = UserContextHolder.getUserContext().getUser();
         if (subjectType.isDirectlyAssignable()) {
-            Join<Object, Object> assignedUserJoin = null;
+            Join<Object, Object> userSubjectAssignmentJoin = null;
             if (syncParameters.isParentOrSelfIndividual()) {
-                assignedUserJoin = joinAssignedUser(from);
-            } else if (syncParameters.isEncounter() || syncParameters.isParentOrSelfEnrolment()) {
-                assignedUserJoin = joinAssignedUserViaSubject(from);
-            } else if (syncParameters.isProgramEncounter()) {
-                assignedUserJoin = joinAssignedUserViaEnrolment(from);
+                userSubjectAssignmentJoin = joinUserSubjectAssignment(from);
+            } else if (syncParameters.isProgramEncounter() ||
+                    syncParameters.isEncounter() ||
+                    syncParameters.isParentOrSelfEnrolment()) {
+                userSubjectAssignmentJoin = joinUserSubjectAssignmentViaSubject(from);
             }
 
-            if (assignedUserJoin != null)
-                predicates.add(cb.equal(assignedUserJoin.get("id"), user.getId()));
+            if (userSubjectAssignmentJoin != null)
+                predicates.add(cb.equal(userSubjectAssignmentJoin.get("user"), user));
         }
         addSyncAttributeConceptPredicate(cb, predicates, from, syncParameters, "syncConcept1Value", "syncConcept2Value");
     }

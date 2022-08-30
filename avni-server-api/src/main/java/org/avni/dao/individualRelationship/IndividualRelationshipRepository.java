@@ -10,7 +10,6 @@ import org.avni.domain.*;
 import org.avni.domain.individualRelationship.IndividualRelationship;
 import org.avni.framework.security.UserContextHolder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 
-import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinAssignedUser;
+import static org.avni.dao.sync.TransactionDataCriteriaBuilderUtil.joinUserSubjectAssignment;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individualRelationship", path = "individualRelationship", exported = false)
@@ -53,9 +52,9 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
                 }
             }
             if (subjectType.isDirectlyAssignable()) {
-                Long userId = UserContextHolder.getUserContext().getUser().getId();
-                predicates.add(cb.equal(joinAssignedUser(individualAJoin).get("id"), userId));
-                predicates.add(cb.equal(joinAssignedUser(individualBJoin).get("id"), userId));
+                User user = UserContextHolder.getUserContext().getUser();
+                predicates.add(cb.equal(joinUserSubjectAssignment(individualAJoin), user));
+                predicates.add(cb.equal(joinUserSubjectAssignment(individualBJoin), user));
             }
             addSyncAttributeConceptPredicate(cb, predicates, individualAJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
             addSyncAttributeConceptPredicate(cb, predicates, individualBJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");

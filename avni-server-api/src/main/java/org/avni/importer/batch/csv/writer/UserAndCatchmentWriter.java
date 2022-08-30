@@ -30,24 +30,18 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final DeploymentSpecificConfiguration deploymentSpecificConfiguration;
-    private final IndividualRepository individualRepository;
-    private final ConceptRepository conceptRepository;
 
     @Autowired
     public UserAndCatchmentWriter(CatchmentService catchmentService,
                                   LocationRepository locationRepository,
                                   UserService userService,
                                   UserRepository userRepository,
-                                  DeploymentSpecificConfiguration deploymentSpecificConfiguration,
-                                  IndividualRepository individualRepository,
-                                  ConceptRepository conceptRepository) {
+                                  DeploymentSpecificConfiguration deploymentSpecificConfiguration) {
         this.catchmentService = catchmentService;
         this.locationRepository = locationRepository;
         this.userService = userService;
         this.userRepository = userRepository;
         this.deploymentSpecificConfiguration = deploymentSpecificConfiguration;
-        this.individualRepository = individualRepository;
-        this.conceptRepository = conceptRepository;
     }
 
     @Override
@@ -69,14 +63,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         Boolean beneficiaryMode = row.getBool("Enable Beneficiary mode");
         String idPrefix = row.get("Beneficiary ID Prefix");
         String subjectUUIDs = row.get("Sync subject UUIDs");
-        Set<Long> subjectIds = new HashSet<>();
-        if (subjectUUIDs != null) {
-            subjectIds = Arrays.stream(subjectUUIDs.split(","))
-                    .map(individualRepository::findByUuid)
-                    .filter(Objects::nonNull)
-                    .map(CHSBaseEntity::getId)
-                    .collect(Collectors.toSet());
-        }
 
         AddressLevel location = locationRepository.findByTitleLineageIgnoreCase(fullAddress)
                 .orElseThrow(() -> new Exception(format(
@@ -90,7 +76,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         User currentUser = userService.getCurrentUser();
         if (user != null) {
             user.setAuditInfo(currentUser);
-            userService.save(user, subjectIds);
+            userService.save(user);
             return;
         }
         user = new User();
@@ -114,7 +100,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
         deploymentSpecificConfiguration.getIdpService(organisation).createUser(user);
-        userService.save(user, subjectIds);
+        userService.save(user);
         userService.addToDefaultUserGroup(user);
     }
 

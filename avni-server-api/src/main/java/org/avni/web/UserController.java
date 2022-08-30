@@ -97,7 +97,7 @@ public class UserController {
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
             idpService.createUserWithPassword(user, userContract.getPassword());
-            userService.save(user, userContract.getDirectAssignmentIds());
+            userService.save(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             userService.addToDefaultUserGroup(user);
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
@@ -137,7 +137,7 @@ public class UserController {
             user = setUserAttributes(user, userContract);
 
             idpService.updateUser(user);
-            userService.save(user, userContract.getDirectAssignmentIds());
+            userService.save(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);

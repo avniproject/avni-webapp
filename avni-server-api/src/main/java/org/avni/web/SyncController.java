@@ -95,6 +95,7 @@ public class SyncController {
     private final TaskUnAssigmentService taskUnAssigmentService;
     private final SubjectProgramEligibilityService subjectProgramEligibilityService;
     private final MenuItemService menuItemService;
+    private final UserSubjectAssignmentService userSubjectAssignmentService;
 
     @Autowired
     public SyncController(Environment environment, IndividualService individualService, EncounterService encounterService,
@@ -126,7 +127,7 @@ public class SyncController {
                           SubjectMigrationService subjectMigrationService, SyncDetailsService syncDetailService,
                           DocumentationService documentationService, DocumentationItemService documentationItemService,
                           TaskService taskService, TaskTypeService taskTypeService, TaskStatusService taskStatusService,
-                          TaskUnAssigmentService taskUnAssigmentService, SubjectProgramEligibilityService subjectProgramEligibilityService, MenuItemService menuItemService) {
+                          TaskUnAssigmentService taskUnAssigmentService, SubjectProgramEligibilityService subjectProgramEligibilityService, MenuItemService menuItemService, UserSubjectAssignmentService userSubjectAssignmentService) {
         this.environment = environment;
         this.individualService = individualService;
         this.encounterService = encounterService;
@@ -192,6 +193,7 @@ public class SyncController {
         this.taskUnAssigmentService = taskUnAssigmentService;
         this.subjectProgramEligibilityService = subjectProgramEligibilityService;
         this.menuItemService = menuItemService;
+        this.userSubjectAssignmentService = userSubjectAssignmentService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -268,6 +270,7 @@ public class SyncController {
         nonScopeAwareServiceMap.put("TaskStatus", taskStatusService);
         nonScopeAwareServiceMap.put("TaskUnAssignment", taskUnAssigmentService);
         nonScopeAwareServiceMap.put("MenuItem", menuItemService);
+        nonScopeAwareServiceMap.put("UserSubjectAssignment", userSubjectAssignmentService);
     }
 
     @PostMapping(value = "/syncDetails")

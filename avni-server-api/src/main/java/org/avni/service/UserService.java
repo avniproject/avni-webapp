@@ -10,11 +10,7 @@ import org.springframework.stereotype.Service;
 
 import org.joda.time.DateTime;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService implements NonScopeAwareService {
@@ -23,15 +19,13 @@ public class UserService implements NonScopeAwareService {
     private OrganisationRepository organisationRepository;
     private GroupRepository groupRepository;
     private UserGroupRepository userGroupRepository;
-    private IndividualRepository individualRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository, IndividualRepository individualRepository) {
+    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository) {
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.groupRepository = groupRepository;
         this.userGroupRepository = userGroupRepository;
-        this.individualRepository = individualRepository;
     }
 
     public User getCurrentUser() {
@@ -49,23 +43,6 @@ public class UserService implements NonScopeAwareService {
             }
         }
         return userRepository.save(user);
-    }
-
-    public User save(User user, Set<Long> subjectAssignmentIds) throws Exception {
-        User savedUser = this.save(user);
-        for (Long subjectId : subjectAssignmentIds) {
-            saveDirectAssignment(user, subjectId);
-        }
-        return savedUser;
-    }
-
-    private void saveDirectAssignment(User user, Long assignedSubjectId) throws Exception {
-        Individual individual = individualRepository.findOne(assignedSubjectId);
-        if (individual == null) {
-            throw new Exception(String.format("Subject id %d not found", assignedSubjectId));
-        }
-        individual.setAssignedUser(user);
-        individualRepository.save(individual);
     }
 
     public void addToDefaultUserGroup(User user) {

@@ -3,6 +3,7 @@ package org.avni.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.avni.domain.individualRelationship.IndividualRelationship;
+import org.avni.domain.task.TaskType;
 import org.avni.geo.Point;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "individual")
-@JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf"})
+@JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf", "userSubjectAssignments"})
 @BatchSize(size = 100)
 public class Individual extends SyncAttributeEntity {
 
@@ -68,9 +69,8 @@ public class Individual extends SyncAttributeEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
     private Set<Encounter> encounters = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_user_id")
-    private User assignedUser;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "subject")
+    private Set<UserSubjectAssignment> userSubjectAssignments = new HashSet<>();
 
     @Column
     @Type(type = "observations")
@@ -139,6 +139,14 @@ public class Individual extends SyncAttributeEntity {
 
     public void setEncounters(Set<Encounter> encounters) {
         this.encounters = encounters;
+    }
+
+    public Set<UserSubjectAssignment> getUserSubjectAssignments() {
+        return userSubjectAssignments;
+    }
+
+    public void setUserSubjectAssignments(Set<UserSubjectAssignment> userSubjectAssignments) {
+        this.userSubjectAssignments = userSubjectAssignments;
     }
 
     public ObservationCollection getObservations() {
@@ -290,13 +298,5 @@ public class Individual extends SyncAttributeEntity {
         HashSet<ProgramEncounter> programEncounters = new HashSet<>();
         this.programEnrolments.forEach(programEnrolment -> programEncounters.addAll(programEnrolment.getProgramEncounters()));
         return programEncounters;
-    }
-
-    public User getAssignedUser() {
-        return assignedUser;
-    }
-
-    public void setAssignedUser(User assignedUser) {
-        this.assignedUser = assignedUser;
     }
 }

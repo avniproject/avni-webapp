@@ -213,7 +213,7 @@ public class ProgramEncounterService implements ScopeAwareService {
         ProgramEnrolment programEnrolment = programEncounter.getProgramEnrolment();
         Individual individual = programEnrolment.getIndividual();
         programEncounter.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
-        programEncounter.setIndividualId(individual.getId());
+        programEncounter.setIndividual(individual);
         if (individual.getAddressLevel() != null) {
             programEncounter.setAddressId(individual.getAddressLevel().getId());
         }
