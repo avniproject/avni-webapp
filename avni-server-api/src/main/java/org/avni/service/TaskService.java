@@ -40,11 +40,13 @@ public class TaskService implements NonScopeAwareService {
     private final UserRepository userRepository;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
+    private final TaskUnAssigmentService taskUnAssigmentService;
 
     public TaskService(TaskRepository taskRepository, ObservationService observationService,
                        TaskTypeRepository taskTypeRepository, TaskStatusRepository taskStatusRepository,
                        IndividualRepository individualRepository, UserRepository userRepository,
-                       ConceptRepository conceptRepository, ConceptService conceptService) {
+                       ConceptRepository conceptRepository, ConceptService conceptService,
+                       TaskUnAssigmentService taskUnAssigmentService) {
         this.taskRepository = taskRepository;
         this.observationService = observationService;
         this.taskTypeRepository = taskTypeRepository;
@@ -53,6 +55,7 @@ public class TaskService implements NonScopeAwareService {
         this.userRepository = userRepository;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.taskUnAssigmentService = taskUnAssigmentService;
     }
 
     @Override
@@ -146,7 +149,9 @@ public class TaskService implements NonScopeAwareService {
         int userIndex = 0;
         for (int i = 0; i < totalTasks; i++) {
             Task task = tasksToUpdate.get(i);
-            task.setAssignedTo(users.get(userIndex));
+            User newAssignment = users.get(userIndex);
+            populateTaskUnAssignment(task.getAssignedTo(), newAssignment, task);
+            task.setAssignedTo(newAssignment);
             if (taskStatus != null) {
                 task.setTaskStatus(taskStatus);
                 if (taskStatus.isTerminal()) {
@@ -156,6 +161,12 @@ public class TaskService implements NonScopeAwareService {
             if (userIndex + 1 != totalUsers && (i + 1) == ((userIndex + 1) * (totalTasks / totalUsers))) {
                 userIndex++;
             }
+        }
+    }
+
+    private void populateTaskUnAssignment(User olderUser, User newUser, Task task) {
+        if (olderUser != null && !olderUser.getId().equals(newUser.getId())) {
+            taskUnAssigmentService.saveTaskUnAssignment(task, olderUser);
         }
     }
 
