@@ -45,7 +45,9 @@ public interface SubjectProgramEligibilityRepository extends TransactionalDataRe
             }
             if (subjectType.isDirectlyAssignable()) {
                 User user = UserContextHolder.getUserContext().getUser();
-                predicates.add(cb.equal(joinUserSubjectAssignment(subjectJoin), user));
+                Join<Object, Object> userSubjectAssignmentJoin = joinUserSubjectAssignment(subjectJoin);
+                predicates.add(cb.equal(userSubjectAssignmentJoin.get("user"), user));
+                predicates.add(cb.equal(userSubjectAssignmentJoin.get("isVoided"), false));
             }
             addSyncAttributeConceptPredicate(cb, predicates, subjectJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));

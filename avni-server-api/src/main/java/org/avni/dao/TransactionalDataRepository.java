@@ -84,8 +84,10 @@ public interface TransactionalDataRepository<T extends CHSEntity> extends CHSRep
                 userSubjectAssignmentJoin = joinUserSubjectAssignmentViaSubject(from);
             }
 
-            if (userSubjectAssignmentJoin != null)
+            if (userSubjectAssignmentJoin != null) {
                 predicates.add(cb.equal(userSubjectAssignmentJoin.get("user"), user));
+                predicates.add(cb.equal(userSubjectAssignmentJoin.get("isVoided"), false));
+            }
         }
         addSyncAttributeConceptPredicate(cb, predicates, from, syncParameters, "syncConcept1Value", "syncConcept2Value");
     }

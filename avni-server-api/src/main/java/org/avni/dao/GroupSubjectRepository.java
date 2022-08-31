@@ -98,8 +98,12 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
             }
             if (subjectType.isDirectlyAssignable()) {
                 User user = UserContextHolder.getUserContext().getUser();
-                predicates.add(cb.equal(joinUserSubjectAssignment(root.join("groupSubject")), user));
-                predicates.add(cb.equal(joinUserSubjectAssignment(root.join("memberSubject")), user));
+                Join<Object, Object> userGroupSubjectJoin = joinUserSubjectAssignment(root.join("groupSubject"));
+                Join<Object, Object> userMemberSubjectJoin = joinUserSubjectAssignment(root.join("memberSubject"));
+                predicates.add(cb.equal(userGroupSubjectJoin.get("user"), user));
+                predicates.add(cb.equal(userGroupSubjectJoin.get("isVoided"), false));
+                predicates.add(cb.equal(userMemberSubjectJoin.get("user"), user));
+                predicates.add(cb.equal(userMemberSubjectJoin.get("isVoided"), false));
             }
             addSyncAttributeConceptPredicate(cb, predicates, root, syncParameters, "groupSubjectSyncConcept1Value", "groupSubjectSyncConcept2Value");
             return cb.and(predicates.toArray(new Predicate[0]));

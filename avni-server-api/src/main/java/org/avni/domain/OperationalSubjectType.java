@@ -100,6 +100,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
                 getSubjectType().getLastModifiedDateTime() : super.getLastModifiedDateTime();
     }
 
+    public boolean isDirectlyAssignable() {
+        return subjectType.isDirectlyAssignable();
+    }
+
     @Override
     public boolean isVoided() {
         return subjectType.isVoided() || super.isVoided();

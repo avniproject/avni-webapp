@@ -53,8 +53,12 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
             }
             if (subjectType.isDirectlyAssignable()) {
                 User user = UserContextHolder.getUserContext().getUser();
-                predicates.add(cb.equal(joinUserSubjectAssignment(individualAJoin), user));
-                predicates.add(cb.equal(joinUserSubjectAssignment(individualBJoin), user));
+                Join<Object, Object> userSubjectAAssignmentJoin = joinUserSubjectAssignment(individualAJoin);
+                Join<Object, Object> userSubjectBAssignmentJoin = joinUserSubjectAssignment(individualBJoin);
+                predicates.add(cb.equal(userSubjectAAssignmentJoin.get("user"), user));
+                predicates.add(cb.equal(userSubjectAAssignmentJoin.get("isVoided"), false));
+                predicates.add(cb.equal(userSubjectBAssignmentJoin.get("user"), user));
+                predicates.add(cb.equal(userSubjectBAssignmentJoin.get("isVoided"), false));
             }
             addSyncAttributeConceptPredicate(cb, predicates, individualAJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");
             addSyncAttributeConceptPredicate(cb, predicates, individualBJoin, syncParameters, "syncConcept1Value", "syncConcept2Value");

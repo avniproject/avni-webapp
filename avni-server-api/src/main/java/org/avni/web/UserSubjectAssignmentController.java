@@ -4,11 +4,13 @@ import org.avni.dao.UserSubjectAssignmentRepository;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.User;
 import org.avni.domain.UserSubjectAssignment;
+import org.avni.domain.task.Task;
 import org.avni.framework.security.UserContextHolder;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,5 +39,13 @@ public class UserSubjectAssignmentController extends AbstractController<UserSubj
             Pageable pageable) {
         User user = UserContextHolder.getUserContext().getUser();
         return wrap(userSubjectAssignmentRepository.findByUserAndIsVoidedTrueAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(user, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
+    }
+
+    @Override
+    public Resource<UserSubjectAssignment> process(Resource<UserSubjectAssignment> resource) {
+        UserSubjectAssignment userSubjectAssignment = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(userSubjectAssignment.getSubject().getUuid(), "subjectUUID"));
+        return resource;
     }
 }
