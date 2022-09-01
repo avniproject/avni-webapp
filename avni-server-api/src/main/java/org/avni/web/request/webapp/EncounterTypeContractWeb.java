@@ -30,6 +30,7 @@ public class EncounterTypeContractWeb {
     private String programEncounterCancelFormUuid;
     private String programUuid;
     private DeclarativeRule encounterEligibilityCheckDeclarativeRule;
+    private boolean isImmutable;
 
     public String getName() {
         return name;
@@ -78,6 +79,7 @@ public class EncounterTypeContractWeb {
         contract.setCreatedDateTime(operationalEncounterType.getCreatedDateTime());
         contract.setModifiedDateTime(operationalEncounterType.getLastModifiedDateTime());
         contract.setEncounterEligibilityCheckDeclarativeRule(operationalEncounterType.getEncounterEligibilityCheckDeclarativeRule());
+        contract.setImmutable(operationalEncounterType.getImmutable());
         return contract;
     }
 
@@ -184,5 +186,13 @@ public class EncounterTypeContractWeb {
 
     public void setEncounterEligibilityCheckDeclarativeRule(DeclarativeRule encounterEligibilityCheckDeclarativeRule) {
         this.encounterEligibilityCheckDeclarativeRule = encounterEligibilityCheckDeclarativeRule;
+    }
+
+    public boolean isImmutable() {
+        return isImmutable;
+    }
+
+    public void setImmutable(boolean immutable) {
+        isImmutable = immutable;
     }
 }

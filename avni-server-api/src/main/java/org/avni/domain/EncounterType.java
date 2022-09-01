@@ -42,6 +42,9 @@ public class EncounterType extends OrganisationAwareEntity {
 
     private Boolean active;
 
+    @Column(name = "is_immutable")
+    private boolean isImmutable;
+
     public String getName() {
         return name;
     }
@@ -105,10 +108,18 @@ public class EncounterType extends OrganisationAwareEntity {
         this.encounterEligibilityCheckDeclarativeRule = encounterEligibilityCheckDeclarativeRule;
     }
 
+    public boolean isImmutable() {
+        return isImmutable;
+    }
+
+    public void setImmutable(boolean immutable) {
+        isImmutable = immutable;
+    }
     @Projection(name = "EncounterTypeProjection", types = {EncounterType.class})
     public interface EncounterTypeProjection extends BaseProjection {
         String getName();
 
         String getOperationalEncounterTypeName();
     }
+
 }

@@ -62,4 +62,8 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     public DeclarativeRule getEncounterEligibilityCheckDeclarativeRule() {
         return getEncounterType().getEncounterEligibilityCheckDeclarativeRule();
     }
+
+    public boolean getImmutable(){
+        return encounterType.isImmutable();
+    }
 }

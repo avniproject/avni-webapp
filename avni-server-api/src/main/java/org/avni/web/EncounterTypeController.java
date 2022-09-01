@@ -100,10 +100,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
             );
         EncounterType encounterType = new EncounterType();
         encounterType.assignUUID();
-        encounterType.setName(request.getName());
-        encounterType.setEncounterEligibilityCheckRule(request.getEncounterEligibilityCheckRule());
-        encounterType.setEncounterEligibilityCheckDeclarativeRule(request.getEncounterEligibilityCheckDeclarativeRule());
-        encounterType.setActive(request.getActive());
+        buildEncounter(encounterType, request);
         encounterTypeRepository.save(encounterType);
         OperationalEncounterType operationalEncounterType = new OperationalEncounterType();
         operationalEncounterType.assignUUID();
@@ -132,11 +129,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
                     .body(ReactAdminUtil.generateJsonError(String.format("Subject Type with id '%d' not found", id)));
 
         EncounterType encounterType = operationalEncounterType.getEncounterType();
-
-        encounterType.setName(request.getName());
-        encounterType.setEncounterEligibilityCheckRule(request.getEncounterEligibilityCheckRule());
-        encounterType.setEncounterEligibilityCheckDeclarativeRule(request.getEncounterEligibilityCheckDeclarativeRule());
-        encounterType.setActive(request.getActive());
+        buildEncounter(encounterType, request);
         encounterTypeRepository.save(encounterType);
 
         operationalEncounterType.setName(request.getName());
@@ -147,11 +140,19 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
         return ResponseEntity.ok(EncounterTypeContractWeb.fromOperationalEncounterType(operationalEncounterType));
     }
 
+    private void buildEncounter(EncounterType encounterType, EncounterTypeContractWeb request) {
+        encounterType.setName(request.getName());
+        encounterType.setEncounterEligibilityCheckRule(request.getEncounterEligibilityCheckRule());
+        encounterType.setEncounterEligibilityCheckDeclarativeRule(request.getEncounterEligibilityCheckDeclarativeRule());
+        encounterType.setActive(request.getActive());
+        encounterType.setImmutable(request.isImmutable());
+    }
+
     private void saveFormsAndMapping(EncounterTypeContractWeb request, EncounterType encounterType) {
-        FormType encounterFormType = request.getProgramUuid() == null?
-                FormType.Encounter: FormType.ProgramEncounter;
-        FormType cancellationFormType = request.getProgramUuid() == null?
-                FormType.IndividualEncounterCancellation: FormType.ProgramEncounterCancellation;
+        FormType encounterFormType = request.getProgramUuid() == null ?
+                FormType.Encounter : FormType.ProgramEncounter;
+        FormType cancellationFormType = request.getProgramUuid() == null ?
+                FormType.IndividualEncounterCancellation : FormType.ProgramEncounterCancellation;
 
         Form encounterForm = formService.getOrCreateForm(request.getProgramEncounterFormUuid(), String.format("%s Encounter", encounterType.getName()), encounterFormType);
         formMappingSevice.saveFormMapping(
