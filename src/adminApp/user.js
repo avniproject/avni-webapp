@@ -12,7 +12,6 @@ import {
   FunctionField,
   List,
   REDUX_FORM_NAME,
-  ReferenceArrayField,
   ReferenceArrayInput,
   ReferenceField,
   ReferenceInput,
@@ -22,7 +21,6 @@ import {
   SimpleForm,
   SimpleFormIterator,
   SimpleShowLayout,
-  SingleFieldList,
   TextField,
   TextInput
 } from "react-admin";
@@ -56,7 +54,6 @@ import { Paper } from "@material-ui/core";
 import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
-import { TitleChip } from "./components/TitleChip";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 
@@ -213,15 +210,6 @@ export const UserDetail = ({ user, ...props }) => {
         {map(syncAttributesData.subjectTypes, st => (
           <SubjectTypeSyncAttributeShow subjectType={st} />
         ))}
-        <ReferenceArrayField
-          label={"Direct assignment"}
-          reference="individual"
-          source={`directAssignmentIds`}
-        >
-          <SingleFieldList linkType={false}>
-            <TitleChip source="name" />
-          </SingleFieldList>
-        </ReferenceArrayField>
         <FunctionField
           label="Preferred Language"
           render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")}
@@ -656,16 +644,6 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
               <SubjectTypeSyncAttributes subjectType={st} />
             ))}
             <LineBreak />
-            {syncAttributesData.isAnySubjectTypeDirectlyAssignable && (
-              <ReferenceArrayInput
-                reference="individual"
-                source="directAssignmentIds"
-                label="Subjects to sync"
-                filterToQuery={searchText => ({ name: searchText })}
-              >
-                <AutocompleteArrayInput resettable />
-              </ReferenceArrayInput>
-            )}
           </div>
         )}
       </Fragment>
