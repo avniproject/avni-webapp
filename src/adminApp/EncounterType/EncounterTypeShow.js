@@ -84,6 +84,8 @@ const EncounterTypeShow = props => {
           </div>
           <p />
           <BooleanStatusInShow status={encounterType.active} label={"Active"} />
+          <p />
+          <BooleanStatusInShow status={encounterType.immutable} label={"Immutable"} />
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Encounter Form</FormLabel>
             <br />

@@ -29,6 +29,8 @@ import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
 import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
+import EditEncounterTypeFields from "./EditEncounterTypeFields";
+import EncounterTypeErrors from "./EncounterTypeErrors";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -113,13 +115,9 @@ const EncounterTypeEdit = props => {
 
     http
       .put("/web/encounterType/" + props.match.params.id, {
-        name: encounterType.name,
-        encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
-        encounterEligibilityCheckDeclarativeRule:
-          encounterType.encounterEligibilityCheckDeclarativeRule,
+        ...encounterType,
         id: props.match.params.id,
         subjectTypeUuid: subjectT.uuid,
-        active: encounterType.active,
         programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
         programEncounterCancelFormUuid: _.get(
           encounterType,
@@ -149,16 +147,7 @@ const EncounterTypeEdit = props => {
     }
   };
 
-  function getCancellationForms() {
-    return _.isEmpty(programT)
-      ? findEncounterCancellationForms(formList)
-      : findProgramEncounterCancellationForms(formList);
-  }
-
-  function getEncounterForms() {
-    return _.isEmpty(programT) ? findEncounterForms(formList) : findProgramEncounterForms(formList);
-  }
-
+  console.log("encounterType", encounterType);
   function resetValue(type) {
     dispatch({
       type,
@@ -198,128 +187,25 @@ const EncounterTypeEdit = props => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <AvniTextField
-            id="name"
-            label="Name"
-            autoComplete="off"
-            value={encounterType.name}
-            onChange={event => dispatch({ type: "name", payload: event.target.value })}
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_NAME"}
-          />
-          <div />
-          {nameValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty name is not allowed.
-            </FormLabel>
-          )}
-          {error !== "" && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              {error}
-            </FormLabel>
-          )}
-          <p />
-          <AvniSelect
-            label="Select subject type *"
-            value={_.isEmpty(subjectT) ? "" : subjectT}
-            onChange={event => setSubjectT(event.target.value)}
-            style={{ width: "200px" }}
-            required
-            options={subjectType.map(option => (
-              <MenuItem value={option} key={option.uuid}>
-                {option.name}
-              </MenuItem>
-            ))}
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
-          />
-          <div />
-          {subjectValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty subject type is not allowed.
-            </FormLabel>
-          )}
-          <p />
-          <AvniSelect
-            label="Select Program"
-            value={_.isEmpty(programT) ? "" : programT}
-            onChange={event => updateProgram(event.target.value)}
-            style={{ width: "200px" }}
-            required
-            options={program.map(option => (
-              <MenuItem value={option} key={option.uuid}>
-                {option.name}
-              </MenuItem>
-            ))}
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
-          />
-          <p />
-          <AvniSelectForm
-            label={"Select Encounter Form"}
-            value={_.get(encounterType, "programEncounterForm.formName")}
-            onChange={selectedForm =>
-              dispatch({
-                type: "programEncounterForm",
-                payload: selectedForm
-              })
-            }
-            formList={getEncounterForms()}
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_FORM"}
-          />
-          <p />
-          <AvniSelectForm
-            label={"Select Encounter Cancellation Form"}
-            value={_.get(encounterType, "programEncounterCancellationForm.formName")}
-            onChange={selectedForm =>
-              dispatch({
-                type: "programEncounterCancellationForm",
-                payload: selectedForm
-              })
-            }
-            formList={getCancellationForms()}
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_CANCELLATION_FORM"}
-          />
-          <p />
-          <AvniSwitch
-            checked={encounterType.active ? true : false}
-            onChange={event => dispatch({ type: "active", payload: event.target.checked })}
-            name="Active"
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ACTIVE"}
-          />
-          <p />
-          <AvniFormLabel
-            label={"Encounter Eligibility Check Rule"}
-            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
-          />
           {encounterType.loaded && (
-            <RuleDesigner
-              rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}
-              onValueChange={jsonData =>
-                dispatch({
-                  type: "encounterEligibilityCheckDeclarativeRule",
-                  payload: jsonData
-                })
-              }
-              updateJsCode={declarativeRuleHolder =>
-                dispatch({
-                  type: "encounterEligibilityCheckRule",
-                  payload: declarativeRuleHolder.generateEligibilityRule()
-                })
-              }
-              jsCode={encounterType.encounterEligibilityCheckRule}
-              error={ruleValidationError}
-              subjectType={subjectT}
-              getApplicableActions={state => state.getApplicableEncounterEligibilityActions()}
-              sampleRule={sampleEncounterEligibilityCheckRule()}
-              onJsCodeChange={event => {
-                confirmBeforeRuleEdit(
-                  encounterType.encounterEligibilityCheckDeclarativeRule,
-                  () => dispatch({ type: "encounterEligibilityCheckRule", payload: event }),
-                  () =>
-                    dispatch({ type: "encounterEligibilityCheckDeclarativeRule", payload: null })
-                );
-              }}
+            <EditEncounterTypeFields
+              encounterType={encounterType}
+              dispatch={dispatch}
+              subjectT={subjectT}
+              setSubjectT={setSubjectT}
+              subjectType={subjectType}
+              programT={programT}
+              updateProgram={updateProgram}
+              program={program}
+              formList={formList}
+              ruleValidationError={ruleValidationError}
             />
           )}
-          <p />
+          <EncounterTypeErrors
+            nameValidation={nameValidation}
+            subjectValidation={subjectValidation}
+            error={error}
+          />
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>

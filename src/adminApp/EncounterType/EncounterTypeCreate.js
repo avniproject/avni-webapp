@@ -7,22 +7,11 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import MenuItem from "@material-ui/core/MenuItem";
 import _ from "lodash";
-import {
-  findEncounterCancellationForms,
-  findEncounterForms,
-  findProgramEncounterCancellationForms,
-  findProgramEncounterForms
-} from "../domain/formMapping";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
-import { AvniTextField } from "../../common/components/AvniTextField";
-import { AvniSelect } from "../../common/components/AvniSelect";
-import { AvniSelectForm } from "../../common/components/AvniSelectForm";
-import { AvniFormLabel } from "../../common/components/AvniFormLabel";
-import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
-import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
-import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
+import { validateRule } from "../../formDesigner/util";
+import EditEncounterTypeFields from "./EditEncounterTypeFields";
+import EncounterTypeErrors from "./EncounterTypeErrors";
 
 const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -82,10 +71,7 @@ const EncounterTypeCreate = props => {
     setSubjectValidation(false);
     http
       .post("/web/encounterType", {
-        name: encounterType.name,
-        encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
-        encounterEligibilityCheckDeclarativeRule:
-          encounterType.encounterEligibilityCheckDeclarativeRule,
+        ...encounterType,
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
         programEncounterCancelFormUuid: _.get(
@@ -105,16 +91,6 @@ const EncounterTypeCreate = props => {
         setError(error.response.data.message);
       });
   };
-
-  function getCancellationForms() {
-    return _.isEmpty(programT)
-      ? findEncounterCancellationForms(formList)
-      : findProgramEncounterCancellationForms(formList);
-  }
-
-  function getEncounterForms() {
-    return _.isEmpty(programT) ? findEncounterForms(formList) : findProgramEncounterForms(formList);
-  }
 
   function resetValue(type) {
     dispatch({
@@ -150,129 +126,25 @@ const EncounterTypeCreate = props => {
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <DocumentationContainer filename={"EncounterType.md"}>
           <Title title={"Create Encounter Type"} />
-
           <div className="container">
             <form onSubmit={onSubmit}>
-              <AvniTextField
-                id="name"
-                label="Name*"
-                autoComplete="off"
-                value={encounterType.name}
-                onChange={event => dispatch({ type: "name", payload: event.target.value })}
-                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_NAME"}
+              <EditEncounterTypeFields
+                encounterType={encounterType}
+                dispatch={dispatch}
+                subjectT={subjectT}
+                setSubjectT={setSubjectT}
+                subjectType={subjectType}
+                programT={programT}
+                updateProgram={updateProgram}
+                program={program}
+                formList={formList}
+                ruleValidationError={ruleValidationError}
               />
-              <div />
-              {nameValidation && (
-                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                  Empty name is not allowed.
-                </FormLabel>
-              )}
-              {error !== "" && (
-                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                  {error}
-                </FormLabel>
-              )}
-              <p />
-              <AvniSelect
-                label="Select subject type *"
-                value={_.isEmpty(subjectT) ? "" : subjectT}
-                onChange={event => setSubjectT(event.target.value)}
-                style={{ width: "200px" }}
-                required
-                options={subjectType.map(option => (
-                  <MenuItem value={option} key={option.uuid}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
+              <EncounterTypeErrors
+                nameValidation={nameValidation}
+                subjectValidation={subjectValidation}
+                error={error}
               />
-              <div />
-              {subjectValidation && (
-                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                  Empty subject type is not allowed.
-                </FormLabel>
-              )}
-              <p />
-              <AvniSelect
-                label="Select Program"
-                value={_.isEmpty(programT) ? "" : programT}
-                onChange={event => updateProgram(event.target.value)}
-                style={{ width: "200px" }}
-                required
-                options={program.map(option => (
-                  <MenuItem value={option} key={option.uuid}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
-              />
-              <div />
-              <p />
-              <AvniSelectForm
-                label={"Select Encounter Form"}
-                value={_.get(encounterType, "programEncounterForm.formName")}
-                onChange={selectedForm =>
-                  dispatch({
-                    type: "programEncounterForm",
-                    payload: selectedForm
-                  })
-                }
-                formList={getEncounterForms()}
-                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_FORM"}
-              />
-              <p />
-              <AvniSelectForm
-                label={"Select Encounter Cancellation Form"}
-                value={_.get(encounterType, "programEncounterCancellationForm.formName")}
-                onChange={selectedForm =>
-                  dispatch({
-                    type: "programEncounterCancellationForm",
-                    payload: selectedForm
-                  })
-                }
-                formList={getCancellationForms()}
-                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_CANCELLATION_FORM"}
-              />
-              <p />
-              <AvniFormLabel
-                label={"Encounter Eligibility Check Rule"}
-                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
-              />
-              {encounterType.loaded && (
-                <RuleDesigner
-                  rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}
-                  onValueChange={jsonData =>
-                    dispatch({
-                      type: "encounterEligibilityCheckDeclarativeRule",
-                      payload: jsonData
-                    })
-                  }
-                  updateJsCode={declarativeRuleHolder =>
-                    dispatch({
-                      type: "encounterEligibilityCheckRule",
-                      payload: declarativeRuleHolder.generateEligibilityRule()
-                    })
-                  }
-                  jsCode={encounterType.encounterEligibilityCheckRule}
-                  error={ruleValidationError}
-                  subjectType={subjectT}
-                  getApplicableActions={state => state.getApplicableEncounterEligibilityActions()}
-                  sampleRule={sampleEncounterEligibilityCheckRule()}
-                  onJsCodeChange={event => {
-                    confirmBeforeRuleEdit(
-                      encounterType.encounterEligibilityCheckDeclarativeRule,
-                      () => dispatch({ type: "encounterEligibilityCheckRule", payload: event }),
-                      () =>
-                        dispatch({
-                          type: "encounterEligibilityCheckDeclarativeRule",
-                          payload: null
-                        })
-                    );
-                  }}
-                />
-              )}
-              <p />
-
               <Button color="primary" variant="contained" type="submit">
                 <i className="material-icons">save</i>Save
               </Button>

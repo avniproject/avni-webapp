@@ -55,13 +55,13 @@ export function encounterTypeReducer(encounterType, action) {
     case "setData":
       return {
         ...encounterType,
-        name: action.payload.name,
-        encounterEligibilityCheckRule: action.payload.encounterEligibilityCheckRule,
-        encounterEligibilityCheckDeclarativeRule:
-          action.payload.encounterEligibilityCheckDeclarativeRule,
-        active: action.payload.active,
-        loaded: true
+        loaded: true,
+        ...action.payload
       };
+    case "setMetadata": {
+    }
+    case "setImmutable":
+      return { ...encounterType, immutable: action.payload };
     default:
       return encounterType;
   }
