@@ -4,7 +4,6 @@ import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import FormLabel from "@material-ui/core/FormLabel";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
 import _ from "lodash";

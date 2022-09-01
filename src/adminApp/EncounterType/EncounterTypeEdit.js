@@ -4,31 +4,18 @@ import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import FormLabel from "@material-ui/core/FormLabel";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import MenuItem from "@material-ui/core/MenuItem";
 import _ from "lodash";
 import {
-  findEncounterCancellationForms,
-  findEncounterForms,
   findProgramEncounterCancellationForm,
-  findProgramEncounterCancellationForms,
-  findProgramEncounterForm,
-  findProgramEncounterForms
+  findProgramEncounterForm
 } from "../domain/formMapping";
 import { SaveComponent } from "../../common/components/SaveComponent";
-import { AvniTextField } from "../../common/components/AvniTextField";
-import { AvniSelect } from "../../common/components/AvniSelect";
-import { AvniSelectForm } from "../../common/components/AvniSelectForm";
-import { AvniFormLabel } from "../../common/components/AvniFormLabel";
-import { AvniSwitch } from "../../common/components/AvniSwitch";
-import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
-import { confirmBeforeRuleEdit, validateRule } from "../../formDesigner/util";
-import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
+import { validateRule } from "../../formDesigner/util";
 import EditEncounterTypeFields from "./EditEncounterTypeFields";
 import EncounterTypeErrors from "./EncounterTypeErrors";
 

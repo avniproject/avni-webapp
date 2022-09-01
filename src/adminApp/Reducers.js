@@ -58,8 +58,6 @@ export function encounterTypeReducer(encounterType, action) {
         loaded: true,
         ...action.payload
       };
-    case "setMetadata": {
-    }
     case "setImmutable":
       return { ...encounterType, immutable: action.payload };
     default:
