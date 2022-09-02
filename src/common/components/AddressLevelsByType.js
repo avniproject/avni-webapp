@@ -10,7 +10,8 @@ const AddressLevelsByType = ({
   label,
   addressLevelsIds = [],
   setAddressLevelsIds,
-  setError = noop
+  setError = noop,
+  skipGrid = false
 }) => {
   const [selectedAddresses, setSelectedAddresses] = React.useState([]);
 
@@ -66,22 +67,28 @@ const AddressLevelsByType = ({
     }
   };
 
-  return (
+  const renderComponent = () => (
+    <FormControl fullWidth component="fieldset">
+      <FormLabel component="legend">{label}</FormLabel>
+      <AsyncSelect
+        cacheOptions
+        isMulti
+        value={selectedAddresses}
+        placeholder={`Start typing and select`}
+        onChange={onChange}
+        loadOptions={loadLocations}
+        formatOptionLabel={({ optionLabel }) => <div>{optionLabel}</div>}
+      />
+    </FormControl>
+  );
+
+  const renderWithGrid = () => (
     <Grid item xs={6} style={{ marginBottom: "10px" }}>
-      <FormControl fullWidth component="fieldset">
-        <FormLabel component="legend">{label}</FormLabel>
-        <AsyncSelect
-          cacheOptions
-          isMulti
-          value={selectedAddresses}
-          placeholder={`Start typing and select`}
-          onChange={onChange}
-          loadOptions={loadLocations}
-          formatOptionLabel={({ optionLabel }) => <div>{optionLabel}</div>}
-        />
-      </FormControl>
+      {renderComponent()}
     </Grid>
   );
+
+  return skipGrid ? renderComponent() : renderWithGrid();
 };
 
 export default AddressLevelsByType;

@@ -83,7 +83,7 @@ const customFilters = ({
   const styles = useStyles();
 
   const columns = [
-    { title: "Filter Name", field: "titleKey" },
+    { title: "TaskAssignmentFilter Name", field: "titleKey" },
     { title: "Concept Name", field: "conceptName" },
     { title: "Subject Type", field: "Subject" },
     { title: "Filter Type", field: "Filter Type" },
@@ -104,7 +104,7 @@ const customFilters = ({
 
   const editFilter = (filterType, title) => ({
     icon: "edit",
-    tooltip: "Edit Filter",
+    tooltip: "Edit TaskAssignmentFilter",
     onClick: (event, filter) => {
       history.push({
         pathname: "/appdesigner/filters",

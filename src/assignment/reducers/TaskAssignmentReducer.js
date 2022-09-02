@@ -1,4 +1,5 @@
 import { filter, flatMap, get, isEmpty, map, mapValues } from "lodash";
+import { labelValue } from "../util/util";
 
 const initialAssignmentCriteria = {
   taskIds: [],
@@ -75,8 +76,6 @@ export const TaskAssignmentReducer = (state, action) => {
       return newState;
   }
 };
-
-export const labelValue = (label, value) => ({ label, value });
 
 export const getMetadataOptions = (taskMetadata, filterCriteria) => {
   const taskTypeOptions = map(taskMetadata.taskTypes, ({ name, id }) => labelValue(name, id));

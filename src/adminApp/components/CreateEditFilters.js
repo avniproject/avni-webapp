@@ -202,7 +202,7 @@ export const CreateEditFilters = props => {
       .put("/organisationConfig", data)
       .then(response => {
         if (response.status === 200 || response.status === 201) {
-          setMessageStatus({ message: "Filter updated", display: true });
+          setMessageStatus({ message: "TaskAssignmentFilter updated", display: true });
           setSnackBarStatus(true);
         }
       })
@@ -325,7 +325,7 @@ export const CreateEditFilters = props => {
 
   return (
     <div>
-      <Title title="Filter Config" />
+      <Title title="TaskAssignmentFilter Config" />
       <Box boxShadow={2} p={1} bgcolor="background.paper">
         <DocumentationContainer filename={props.history.location.state.filename}>
           <Box>
@@ -335,7 +335,7 @@ export const CreateEditFilters = props => {
               <FormControl fullWidth>
                 <AvniTextField
                   id="Filter Name"
-                  label="Filter Name *"
+                  label="TaskAssignmentFilter Name *"
                   autoComplete="off"
                   value={filterName}
                   onChange={event => setFilterName(event.target.value)}

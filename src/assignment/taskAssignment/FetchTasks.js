@@ -1,5 +1,5 @@
 import http from "common/utils/httpClient";
-import { getFilterPayload } from "../reducers";
+import { getFilterPayload } from "../reducers/TaskAssignmentReducer";
 import { isEmpty } from "lodash";
 
 export const fetchTasks = (query, filterCriteria) => {

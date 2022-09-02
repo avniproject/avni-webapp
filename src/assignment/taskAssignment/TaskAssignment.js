@@ -7,14 +7,14 @@ import {
   getMetadataOptions,
   initialState,
   TaskAssignmentReducer
-} from "../reducers";
+} from "../reducers/TaskAssignmentReducer";
 import MaterialTable from "material-table";
 import { getTableColumns } from "./TableColumns";
 import { fetchTasks } from "./FetchTasks";
 import { includes, isEmpty, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid, makeStyles } from "@material-ui/core";
-import { Filter } from "../components/Filter";
+import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
 import { AssignmentAction } from "../components/AssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
@@ -98,7 +98,7 @@ const TaskAssignment = ({ history, ...props }) => {
         </Grid>
         <Grid xs={1} />
         <Grid item xs={3}>
-          <Filter
+          <TaskAssignmentFilter
             dispatch={dispatch}
             filterCriteria={filterCriteria}
             onFilterApply={onFilterApply}
