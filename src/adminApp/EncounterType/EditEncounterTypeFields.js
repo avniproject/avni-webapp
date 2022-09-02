@@ -77,19 +77,6 @@ const EditEncounterTypeFields = ({
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
       />
       <p />
-      <AvniSwitch
-        toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE"}
-        name={"Immutable"}
-        onChange={e =>
-          dispatch({
-            type: "setImmutable",
-            payload: e.target.checked
-          })
-        }
-        checked={!!encounterType.immutable}
-      />
-      <div />
-      <p />
       <AvniSelectForm
         label={"Select Encounter Form"}
         value={_.get(encounterType, "programEncounterForm.formName")}
@@ -154,6 +141,19 @@ const EditEncounterTypeFields = ({
         />
       )}
       <p />
+      <AvniSwitch
+        toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE"}
+        name={"Immutable"}
+        onChange={e =>
+          dispatch({
+            type: "setImmutable",
+            payload: e.target.checked
+          })
+        }
+        checked={!!encounterType.immutable}
+      />
+      <p />
+      <div />
     </div>
   );
 };
