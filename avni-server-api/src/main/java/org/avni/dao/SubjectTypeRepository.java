@@ -21,4 +21,6 @@ public interface SubjectTypeRepository extends ReferenceDataRepository<SubjectTy
     List<SubjectType> findAllByIconFileS3KeyNotNull();
 
     List<SubjectType> findAllByUuidIn(List<String> UUIDs);
+
+    List<SubjectType> findAllByIsVoidedFalseAndIsDirectlyAssignableTrue();
 }

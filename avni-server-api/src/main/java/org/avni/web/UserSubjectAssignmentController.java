@@ -2,10 +2,11 @@ package org.avni.web;
 
 import org.avni.dao.UserSubjectAssignmentRepository;
 import org.avni.domain.CHSEntity;
+import org.avni.domain.JsonObject;
 import org.avni.domain.User;
 import org.avni.domain.UserSubjectAssignment;
-import org.avni.domain.task.Task;
 import org.avni.framework.security.UserContextHolder;
+import org.avni.service.UserSubjectAssignmentService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserSubjectAssignmentController extends AbstractController<UserSubjectAssignment> implements RestControllerResourceProcessor<UserSubjectAssignment> {
 
     private final UserSubjectAssignmentRepository userSubjectAssignmentRepository;
+    private  final UserSubjectAssignmentService userSubjectAssignmentService;
 
     @Autowired
-    public UserSubjectAssignmentController(UserSubjectAssignmentRepository userSubjectAssignmentRepository) {
+    public UserSubjectAssignmentController(UserSubjectAssignmentRepository userSubjectAssignmentRepository, UserSubjectAssignmentService userSubjectAssignmentService) {
         this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
+        this.userSubjectAssignmentService = userSubjectAssignmentService;
     }
 
     @RequestMapping(value = "/userSubjectAssignment", method = RequestMethod.GET)
@@ -39,6 +42,12 @@ public class UserSubjectAssignmentController extends AbstractController<UserSubj
             Pageable pageable) {
         User user = UserContextHolder.getUserContext().getUser();
         return wrap(userSubjectAssignmentRepository.findByUserAndIsVoidedTrueAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(user, CHSEntity.toDate(lastModifiedDateTime), CHSEntity.toDate(now), pageable));
+    }
+
+    @RequestMapping(value = "/web/subjectAssignmentMetadata", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public JsonObject getSubjectAssignmentMetadataForSearch() {
+        return userSubjectAssignmentService.getUserSubjectAssignmentMetadata();
     }
 
     @Override
