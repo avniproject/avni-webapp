@@ -1,14 +1,15 @@
 import api from "../api";
+import { getFilterPayload } from "../reducers/SubjectAssignmentReducer";
 
-export const fetchSubjectData = query =>
-  new Promise(resolve => {
-    const searchRequest = {};
+export const fetchSubjectData = (query, filterCriteria) => {
+  const requestBody = getFilterPayload(filterCriteria);
+  return new Promise(resolve => {
     const pageElement = {};
     pageElement.pageNumber = query.page;
     pageElement.numberOfRecordPerPage = query.pageSize;
-    searchRequest.pageElement = pageElement;
+    requestBody.pageElement = pageElement;
     api
-      .getSubjects(searchRequest)
+      .getSubjects(requestBody)
       .then(response => response.data)
       .then(result => {
         resolve({
@@ -19,3 +20,4 @@ export const fetchSubjectData = query =>
       })
       .catch(err => console.log(err));
   });
+};

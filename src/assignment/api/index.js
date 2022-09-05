@@ -8,7 +8,7 @@ export default {
       .post("/web/taskAssignment", payload)
       .then(r => [null])
       .catch(r => [`${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
-  getSubjects: payload => http.post("/web/searchAPI/v2", payload),
+  getSubjects: payload => http.post("/web/subjectAssignment/search", payload),
   getSubjectAssignmentMetadata: () =>
     http.fetchJson("/web/subjectAssignmentMetadata").then(response => response.json)
 };

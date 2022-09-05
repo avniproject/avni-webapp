@@ -19,6 +19,7 @@ import { AssignmentAction } from "../components/AssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
 import Paper from "@material-ui/core/Paper";
+import { refreshTable } from "../util/util";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,7 +28,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const refreshTable = ref => ref.current && ref.current.onQueryChange();
 const tableRef = React.createRef();
 
 const TaskAssignment = ({ history, ...props }) => {

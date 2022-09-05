@@ -7,11 +7,12 @@ import {
   initialState,
   SubjectAssignmentReducer
 } from "../reducers/SubjectAssignmentReducer";
-import { columns } from "./SubjectAssignmentColumns";
+import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
+import { refreshTable } from "../util/util";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,14 +20,21 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#FFF"
   }
 }));
+
+const tableRef = React.createRef();
+
 const SubjectAssignment = () => {
   const classes = useStyles();
-  const tableRef = React.createRef();
   const [state, updateState] = useReducer(SubjectAssignmentReducer, initialState);
   const dispatch = (type, payload) => updateState({ type, payload });
-  const { subjectOptions, programOptions, userOptions, userGroupOptions } = getMetadataOptions(
-    state.metadata
-  );
+  const {
+    subjectOptions,
+    programOptions,
+    userOptions,
+    userGroupOptions,
+    syncAttribute1,
+    syncAttribute2
+  } = getMetadataOptions(state.metadata, state.filterCriteria);
 
   useEffect(() => {
     api.getSubjectAssignmentMetadata().then(metadata => {
@@ -34,7 +42,10 @@ const SubjectAssignment = () => {
     });
   }, []);
 
-  console.log("state =>>", state);
+  const onFilterApply = () => {
+    refreshTable(tableRef);
+  };
+
   const renderData = () => {
     return (
       <div className={classes.root}>
@@ -43,8 +54,8 @@ const SubjectAssignment = () => {
             <MaterialTable
               title="Subjects"
               tableRef={tableRef}
-              columns={columns}
-              data={fetchSubjectData}
+              columns={getColumns()}
+              data={query => fetchSubjectData(query, state.filterCriteria)}
               options={{
                 pageSize: 10,
                 pageSizeOptions: [10, 15, 25],
@@ -64,8 +75,10 @@ const SubjectAssignment = () => {
               programOptions={programOptions}
               userOptions={userOptions}
               userGroupOptions={userGroupOptions}
+              syncAttribute1={syncAttribute1}
+              syncAttribute2={syncAttribute2}
               dispatch={dispatch}
-              onFilterApply={() => {}}
+              onFilterApply={onFilterApply}
               filterCriteria={state.filterCriteria}
             />
           </Grid>

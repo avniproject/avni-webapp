@@ -4,7 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import React from "react";
 import { useStyle } from "../util/FilterStyles";
 
-const TextFilter = ({ label, value, filterCriteria, onFilterChange }) => {
+const TextFilter = ({ label, value, filterCriteria, onFilterChange, isNumeric }) => {
   const classes = useStyle();
 
   return (
@@ -20,6 +20,7 @@ const TextFilter = ({ label, value, filterCriteria, onFilterChange }) => {
         variant="outlined"
         value={value}
         onChange={event => onFilterChange(event.target.value)}
+        type={isNumeric ? "number" : "text"}
       />
     </FormControl>
   );

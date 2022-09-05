@@ -1,4 +1,4 @@
-import { map } from "lodash";
+import { map, get, chain, mapValues, find, isEmpty } from "lodash";
 import { labelValue } from "../util/util";
 
 export const initialState = {
@@ -12,7 +12,7 @@ export const initialState = {
     syncAttribute2: null,
     program: null,
     userGroup: null,
-    user: null,
+    assignedTo: { label: "Unassigned", value: "0" },
     createdOn: null
   }
 };
@@ -31,6 +31,14 @@ export const SubjectAssignmentReducer = (state, action) => {
   switch (action.type) {
     case "setMetadata": {
       newState.metadata = payload;
+      const { subjectTypes } = payload;
+      const subjectType = chain(subjectTypes)
+        .first()
+        .value();
+      newState.filterCriteria.subjectType = {
+        label: get(subjectType, "name", null),
+        value: get(subjectType, "uuid", "")
+      };
       newState.loaded = true;
       return newState;
     }
@@ -43,12 +51,56 @@ export const SubjectAssignmentReducer = (state, action) => {
       return newState;
   }
 };
-export const getMetadataOptions = metadata => {
-  const { subjectTypes, programs, users, userGroups } = metadata;
-  const subjectOptions = map(subjectTypes, ({ id, name }) => labelValue(name, id));
-  //TODO: make program dependenton ST
-  const programOptions = map(programs, ({ id, name }) => labelValue(name, id));
-  const userOptions = map(users, ({ id, name }) => labelValue(name, id));
-  const userGroupOptions = map(userGroups, ({ id, groupName }) => labelValue(groupName, id));
-  return { subjectOptions, programOptions, userOptions, userGroupOptions };
+export const getMetadataOptions = (metadata, filterCriteria) => {
+  const { subjectTypes, programs, users, groups, syncAttributes } = metadata;
+  const subjectOptions = map(subjectTypes, ({ uuid, name }) => labelValue(name, uuid));
+  const selectedSubjectType = find(
+    subjectTypes,
+    ({ uuid }) => uuid === filterCriteria.subjectType.value
+  );
+  const syncAttribute1 = find(
+    syncAttributes,
+    ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept1")
+  );
+  const syncAttribute2 = find(
+    syncAttributes,
+    ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept2")
+  );
+  const programOptions = map(programs, ({ uuid, name }) => labelValue(name, uuid));
+  const userOptions = map(users, ({ uuid, name }) => labelValue(name, uuid));
+  const userGroupOptions = map(groups, ({ uuid, groupName }) => labelValue(groupName, uuid));
+  return {
+    subjectOptions,
+    programOptions,
+    userOptions,
+    userGroupOptions,
+    syncAttribute1,
+    syncAttribute2
+  };
+};
+
+export const getFilterPayload = filterCriteria => {
+  const filterCriteriaValues = mapValues(filterCriteria, value => get(value, "value", value));
+  const concept = [];
+  if (!isEmpty(filterCriteria.syncAttribute1)) {
+    concept.push(filterCriteria.syncAttribute1);
+  }
+  if (!isEmpty(filterCriteria.syncAttribute2)) {
+    concept.push(filterCriteria.syncAttribute2);
+  }
+  filterCriteriaValues.concept = concept;
+  return filterCriteriaValues;
+};
+
+export const getConceptSearchContract = (concept, selectedValue) => {
+  const dataType = concept.dataType;
+  const isNumeric = dataType === "Numeric";
+  return {
+    uuid: concept.uuid,
+    searchScope: "REGISTRATION",
+    dataType: dataType,
+    values: [],
+    minValue: isNumeric ? selectedValue : null,
+    value: selectedValue
+  };
 };

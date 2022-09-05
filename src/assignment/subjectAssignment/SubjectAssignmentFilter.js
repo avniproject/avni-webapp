@@ -7,6 +7,33 @@ import { dateFilterFieldOptions } from "../util/DateFilterOptions";
 import TextFilter from "../components/TextFilter";
 import AddressLevelsByType from "../../common/components/AddressLevelsByType";
 import Box from "@material-ui/core/Box";
+import { labelValue } from "../util/util";
+import { get, isNil } from "lodash";
+import { getConceptSearchContract } from "../reducers/SubjectAssignmentReducer";
+
+const renderSyncAttributeFilter = (concept, filterCriteria, filterName, onFilterChange) => {
+  if (isNil(concept)) return null;
+  const isNumeric = concept.dataType === `Numeric`;
+
+  if (concept.dataType !== "Coded") {
+    return (
+      <TextFilter
+        isNumeric={isNumeric}
+        label={concept.name}
+        value={
+          isNumeric
+            ? get(filterCriteria, `${filterName}.minValue`)
+            : get(filterCriteria, `${filterName}.value`)
+        }
+        filterCriteria={filterCriteria}
+        onFilterChange={value => {
+          const contract = getConceptSearchContract(concept, value);
+          return onFilterChange(filterName, contract);
+        }}
+      />
+    );
+  } else return null;
+};
 
 const SubjectAssignmentFilter = ({
   onFilterApply,
@@ -14,11 +41,13 @@ const SubjectAssignmentFilter = ({
   programOptions,
   userOptions,
   userGroupOptions,
+  syncAttribute1,
+  syncAttribute2,
   dispatch,
   filterCriteria
 }) => {
   const classes = useStyle();
-  console.log("filterCriteria,", filterCriteria);
+  const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
   const onFilterChange = (filter, value) => dispatch("setFilter", { filter, value });
   return (
     <Fragment>
@@ -33,6 +62,18 @@ const SubjectAssignmentFilter = ({
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
         />
+        {renderSyncAttributeFilter(
+          syncAttribute1,
+          filterCriteria,
+          "syncAttribute1",
+          onFilterChange
+        )}
+        {renderSyncAttributeFilter(
+          syncAttribute2,
+          filterCriteria,
+          "syncAttribute2",
+          onFilterChange
+        )}
         <TextFilter
           label={"Subject Name"}
           value={filterCriteria.name}
@@ -54,9 +95,9 @@ const SubjectAssignmentFilter = ({
           onFilterChange={onFilterChange}
         />
         <SelectFilter
-          label={"User"}
-          options={userOptions}
-          filter={"user"}
+          label={"Assigned to"}
+          options={allUserOptions}
+          filter={"assignedTo"}
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
         />
