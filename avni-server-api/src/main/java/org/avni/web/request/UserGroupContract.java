@@ -12,10 +12,12 @@ public class UserGroupContract {
     private Long userId;
     private Long groupId;
     private String phoneNumber;
+    private String uuid;
 
     public static UserGroupContract fromEntity(UserGroup userGroup) {
         UserGroupContract userGroupContract = new UserGroupContract();
         userGroupContract.setId(userGroup.getId());
+        userGroupContract.setUuid(userGroup.getUuid());
         userGroupContract.setGroupName(userGroup.getGroupName());
         userGroupContract.setGroupId(userGroup.getGroupId());
         userGroupContract.setUserName(userGroup.getUser().getUsername());
@@ -24,6 +26,14 @@ public class UserGroupContract {
         userGroupContract.setPhoneNumber(userGroup.getUser().getPhoneNumber());
         userGroupContract.setName(userGroup.getUser().getName());
         return userGroupContract;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public long getId() {

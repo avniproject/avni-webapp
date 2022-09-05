@@ -1,5 +1,7 @@
 package org.avni.web.request.webapp.search;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,10 @@ public class SubjectSearchRequest {
     private DateRange programEnrolmentDate;
     private String searchAll;
     private PageDetails pageElement;
+    private String program;
+    private String userGroup;
+    private String assignedTo;
+    private DateTime createdOn;
 
     public String getSubjectType() {
         return subjectType;
@@ -125,5 +131,37 @@ public class SubjectSearchRequest {
     private String trim(String item) {
         if (item == null) return item;
         return item.trim();
+    }
+
+    public String getProgram() {
+        return program;
+    }
+
+    public void setProgram(String program) {
+        this.program = program;
+    }
+
+    public String getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(String userGroup) {
+        this.userGroup = userGroup;
+    }
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public DateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(DateTime createdOn) {
+        this.createdOn = createdOn;
     }
 }

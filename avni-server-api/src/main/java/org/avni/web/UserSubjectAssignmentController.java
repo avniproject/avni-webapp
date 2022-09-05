@@ -7,6 +7,7 @@ import org.avni.domain.User;
 import org.avni.domain.UserSubjectAssignment;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.UserSubjectAssignmentService;
+import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -14,18 +15,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.LinkedHashMap;
 
 @RestController
 public class UserSubjectAssignmentController extends AbstractController<UserSubjectAssignment> implements RestControllerResourceProcessor<UserSubjectAssignment> {
 
     private final UserSubjectAssignmentRepository userSubjectAssignmentRepository;
-    private  final UserSubjectAssignmentService userSubjectAssignmentService;
+    private final UserSubjectAssignmentService userSubjectAssignmentService;
 
     @Autowired
     public UserSubjectAssignmentController(UserSubjectAssignmentRepository userSubjectAssignmentRepository, UserSubjectAssignmentService userSubjectAssignmentService) {
@@ -48,6 +50,12 @@ public class UserSubjectAssignmentController extends AbstractController<UserSubj
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public JsonObject getSubjectAssignmentMetadataForSearch() {
         return userSubjectAssignmentService.getUserSubjectAssignmentMetadata();
+    }
+
+    @RequestMapping(value = "/web/subjectAssignment/search", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponseEntity<LinkedHashMap<String, Object>> getSubjects(@RequestBody SubjectSearchRequest subjectSearchRequest) {
+        return new ResponseEntity<>(userSubjectAssignmentService.searchSubjects(subjectSearchRequest), HttpStatus.OK);
     }
 
     @Override
