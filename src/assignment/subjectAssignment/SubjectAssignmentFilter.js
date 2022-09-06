@@ -56,6 +56,7 @@ const SubjectAssignmentFilter = ({
           {"Filters"}
         </Typography>
         <SelectFilter
+          isClearable={false}
           label={"Subject type"}
           options={subjectOptions}
           filter={"subjectType"}

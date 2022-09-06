@@ -51,24 +51,29 @@ export const SubjectAssignmentReducer = (state, action) => {
       return newState;
   }
 };
-export const getMetadataOptions = (metadata, filterCriteria) => {
-  const { subjectTypes, programs, users, groups, syncAttributes } = metadata;
-  const subjectOptions = map(subjectTypes, ({ uuid, name }) => labelValue(name, uuid));
+
+export const getSyncAttributes = (metaData, filterCriteria) => {
   const selectedSubjectType = find(
-    subjectTypes,
+    metaData.subjectTypes,
     ({ uuid }) => uuid === filterCriteria.subjectType.value
   );
   const syncAttribute1 = find(
-    syncAttributes,
+    metaData.syncAttributes,
     ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept1")
   );
   const syncAttribute2 = find(
-    syncAttributes,
+    metaData.syncAttributes,
     ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept2")
   );
+  return { syncAttribute1, syncAttribute2 };
+};
+export const getMetadataOptions = (metadata, filterCriteria) => {
+  const { subjectTypes, programs, users, groups } = metadata;
+  const subjectOptions = map(subjectTypes, ({ uuid, name }) => labelValue(name, uuid));
+  const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
   const programOptions = map(programs, ({ uuid, name }) => labelValue(name, uuid));
   const userOptions = map(users, ({ uuid, name }) => labelValue(name, uuid));
-  const userGroupOptions = map(groups, ({ uuid, groupName }) => labelValue(groupName, uuid));
+  const userGroupOptions = map(groups, ({ uuid, name }) => labelValue(name, uuid));
   return {
     subjectOptions,
     programOptions,

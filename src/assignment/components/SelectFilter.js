@@ -16,14 +16,15 @@ const SelectFilter = ({
   filter,
   isMulti = false,
   filterCriteria,
-  onFilterChange
+  onFilterChange,
+  isClearable = true
 }) => {
   const classes = useStyle();
   return (
     <FormControl fullWidth className={classes.filter}>
       <FormLabel component="legend">{label}</FormLabel>
       <Select
-        isClearable
+        isClearable={isClearable}
         isSearchable
         maxMenuHeight={120}
         isMulti={isMulti}

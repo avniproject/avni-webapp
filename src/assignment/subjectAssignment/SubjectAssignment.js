@@ -54,7 +54,7 @@ const SubjectAssignment = () => {
             <MaterialTable
               title="Subjects"
               tableRef={tableRef}
-              columns={getColumns()}
+              columns={getColumns(state.metadata, state.filterCriteria)}
               data={query => fetchSubjectData(query, state.filterCriteria)}
               options={{
                 pageSize: 10,

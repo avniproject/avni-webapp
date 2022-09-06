@@ -1,7 +1,9 @@
-import { split, map, groupBy, forEach, isEmpty } from "lodash";
+import { split, map, groupBy, forEach, isEmpty, isNil } from "lodash";
+import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
 
-export const getColumns = () => {
-  return [
+export const getColumns = (metadata, filterCriteria) => {
+  const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
+  const fixedColumns = [
     {
       title: "Name",
       field: "fullName"
@@ -19,6 +21,19 @@ export const getColumns = () => {
       render: row => getFormattedUserAndGroups(row.assignedTo)
     }
   ];
+  addSyncAttributeColumnIfRequired(syncAttribute1, fixedColumns);
+  addSyncAttributeColumnIfRequired(syncAttribute2, fixedColumns);
+
+  return fixedColumns;
+};
+
+const addSyncAttributeColumnIfRequired = (syncAttribute, fixedColumns) => {
+  if (!isNil(syncAttribute)) {
+    fixedColumns.push({
+      title: syncAttribute.name,
+      field: syncAttribute.name
+    });
+  }
 };
 
 const getFormattedUserAndGroups = (userGroupString = "") => {
