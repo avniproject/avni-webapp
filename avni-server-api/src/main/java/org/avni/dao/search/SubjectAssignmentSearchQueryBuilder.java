@@ -24,10 +24,10 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 "         left outer join subject_type st on i.subject_type_id = st.id and st.is_voided is false\n" +
                 "         left outer join program_enrolment penr on i.id = penr.individual_id and penr.is_voided is false\n" +
                 "         left outer join program p on p.id = penr.program_id\n" +
-                "         left outer join user_subject_assignment usa on usa.subject_id = i.id\n" +
+                "         left outer join user_subject_assignment usa on usa.subject_id = i.id and usa.is_voided is false\n" +
                 "         left outer join users assigned_to on usa.user_id = assigned_to.id\n" +
-                "         left outer join user_group ug on ug.user_id = assigned_to.id\n" +
-                "         left outer join groups g on g.id = ug.group_id\n";
+                "         left outer join user_group ug on ug.user_id = assigned_to.id and ug.is_voided is false\n" +
+                "         left outer join groups g on g.id = ug.group_id and g.is_voided is false\n";
         return super.buildUsingBaseQuery(SUBJECT_ASSIGNMENT_SEARCH_BASE_QUERY, "\n group by 1, 2, 3, 4");
     }
 
