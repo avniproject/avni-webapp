@@ -1,9 +1,39 @@
-import { split, map, groupBy, forEach, isEmpty, isNil } from "lodash";
+import _, { split, map, groupBy, forEach, isEmpty, isNil } from "lodash";
 import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
 import React from "react";
+import SubjectAssignmentMultiSelect from "./SubjectAssignmentMultiSelect";
 
 export const getColumns = (metadata, filterCriteria) => {
   const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
+
+  function getUserOptions(row, users) {
+    let userDropdownValues = [];
+    _.map(users, user =>
+      userDropdownValues.push({
+        subjectId: row.id,
+        id: user.id,
+        label: user.name,
+        value: user.uuid
+      })
+    );
+
+    return userDropdownValues;
+  }
+
+  function getSelectedUserOptions(row, assignedUsers) {
+    let userDropdownSelectedValues = [];
+    _.map(assignedUsers, assignedUser =>
+      userDropdownSelectedValues.push({
+        subjectId: row.id,
+        id: assignedUser.id,
+        label: assignedUser.name,
+        value: assignedUser.uuid
+      })
+    );
+
+    return userDropdownSelectedValues;
+  }
+
   const fixedColumns = [
     {
       title: "Name",
@@ -23,7 +53,12 @@ export const getColumns = (metadata, filterCriteria) => {
     },
     {
       title: "Assignment",
-      render: row => getFormattedUserAndGroups(row.assignedTo)
+      render: row => (
+        <SubjectAssignmentMultiSelect
+          options={getUserOptions(row, metadata.users)}
+          selectedOptions={getSelectedUserOptions(row, row.assignedUsers)}
+        />
+      )
     }
   ];
   addSyncAttributeColumnIfRequired(syncAttribute1, fixedColumns);

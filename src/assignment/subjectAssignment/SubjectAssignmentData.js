@@ -21,3 +21,14 @@ export const fetchSubjectData = (query, filterCriteria) => {
       .catch(err => console.log(err));
   });
 };
+
+export const updateUserAssignmentToSubject = event => {
+  const voided = event.action !== "select-option";
+  const payload = { userId: event.option.id, subjectId: event.option.subjectId, voided };
+  return new Promise(resolve => {
+    api
+      .postUpdateUserAssignmentToSubject(payload)
+      .then(response => response.data)
+      .catch(err => console.log(err));
+  });
+};
