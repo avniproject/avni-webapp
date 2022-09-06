@@ -19,7 +19,7 @@ public class SubjectSearchRequest {
     private DateRange programEnrolmentDate;
     private String searchAll;
     private PageDetails pageElement;
-    private String program;
+    private List<String> programs;
     private String userGroup;
     private String assignedTo;
     private DateTime createdOn;
@@ -133,12 +133,12 @@ public class SubjectSearchRequest {
         return item.trim();
     }
 
-    public String getProgram() {
-        return program;
+    public List<String> getPrograms() {
+        return programs;
     }
 
-    public void setProgram(String program) {
-        this.program = program;
+    public void setPrograms(List<String> programs) {
+        this.programs = programs;
     }
 
     public String getUserGroup() {
