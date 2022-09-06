@@ -89,14 +89,14 @@ const SubjectAssignmentFilter = ({
         />
         <Box mb={5} />
         <SelectFilter
+          isMulti={true}
           label={"Program"}
           options={programOptions}
-          filter={"program"}
+          filter={"programs"}
           filterCriteria={filterCriteria}
           onFilterChange={onFilterChange}
         />
         <SelectFilter
-          isClearable={false}
           label={"Assigned to"}
           options={allUserOptions}
           filter={"assignedTo"}
@@ -104,7 +104,6 @@ const SubjectAssignmentFilter = ({
           onFilterChange={onFilterChange}
         />
         <SelectFilter
-          isClearable={false}
           label={"User group"}
           options={userGroupOptions}
           filter={"userGroup"}

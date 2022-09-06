@@ -10,7 +10,7 @@ export const initialState = {
     addressIds: [],
     syncAttribute1: null,
     syncAttribute2: null,
-    program: null,
+    programs: [],
     userGroup: null,
     assignedTo: { label: "Unassigned", value: "0" },
     createdOn: null
@@ -31,18 +31,13 @@ export const SubjectAssignmentReducer = (state, action) => {
   switch (action.type) {
     case "setMetadata": {
       newState.metadata = payload;
-      const { subjectTypes, groups } = payload;
-      const everyOneGroup = find(groups, ({ name }) => name === "Everyone");
+      const { subjectTypes } = payload;
       const subjectType = chain(subjectTypes)
         .first()
         .value();
       newState.filterCriteria.subjectType = {
         label: get(subjectType, "name", null),
         value: get(subjectType, "uuid", "")
-      };
-      newState.filterCriteria.userGroup = {
-        label: get(everyOneGroup, "name"),
-        value: get(everyOneGroup, "uuid")
       };
       newState.loaded = true;
       return newState;
@@ -99,6 +94,7 @@ export const getFilterPayload = filterCriteria => {
     concept.push(filterCriteria.syncAttribute2);
   }
   filterCriteriaValues.concept = concept;
+  filterCriteriaValues.programs = map(filterCriteria.programs, ({ value }) => value);
   return filterCriteriaValues;
 };
 
