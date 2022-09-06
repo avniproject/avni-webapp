@@ -7,6 +7,7 @@ import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.UserWebProjection;
 import org.avni.web.request.ConceptContract;
 import org.avni.web.request.GroupContract;
+import org.avni.web.request.UserSubjectAssignmentContract;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,13 +28,13 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
     private final GroupRepository groupRepository;
     private final SubjectSearchRepository subjectSearchRepository;
     private final ConceptRepository conceptRepository;
-
+    private final IndividualRepository individualRepository;
 
     @Autowired
     public UserSubjectAssignmentService(UserSubjectAssignmentRepository userSubjectAssignmentRepository, UserRepository userRepository,
                                         SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository,
                                         GroupRepository groupRepository, SubjectSearchRepository subjectSearchRepository,
-                                        ConceptRepository conceptRepository) {
+                                        ConceptRepository conceptRepository, IndividualRepository individualRepository) {
         this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
         this.userRepository = userRepository;
         this.subjectTypeRepository = subjectTypeRepository;
@@ -44,6 +42,7 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
         this.groupRepository = groupRepository;
         this.subjectSearchRepository = subjectSearchRepository;
         this.conceptRepository = conceptRepository;
+        this.individualRepository = individualRepository;
     }
 
     @Override
@@ -88,6 +87,26 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
         recordsMap.put("totalElements", totalCount);
         recordsMap.put("listOfRecords", searchResults);
         return recordsMap;
+    }
+
+    @Transactional
+    public UserSubjectAssignment save(UserSubjectAssignmentContract userSubjectAssignmentRequest, Organisation organisation) {
+        UserSubjectAssignment userSubjectAssignment = new UserSubjectAssignment();
+        User user = userRepository.findOne(userSubjectAssignmentRequest.getUserId());
+        Individual subject = individualRepository.findOne(userSubjectAssignmentRequest.getSubjectId());
+
+        Optional<UserSubjectAssignment> userSubjectAssignmentOptional = userSubjectAssignmentRepository.findUserSubjectAssignmentByUserAndSubject(user, subject);
+        if(userSubjectAssignmentOptional.isPresent()) {
+            userSubjectAssignment = userSubjectAssignmentOptional.get();
+        } else {
+            userSubjectAssignment.assignUUID();
+            userSubjectAssignment.setUser(user);
+            userSubjectAssignment.setSubject(subject);
+            userSubjectAssignment.setOrganisationId(organisation.getId());
+        }
+        userSubjectAssignment.setVoided(userSubjectAssignmentRequest.isVoided());
+        userSubjectAssignment.updateAudit();
+        return userSubjectAssignmentRepository.save(userSubjectAssignment);
     }
 
 }

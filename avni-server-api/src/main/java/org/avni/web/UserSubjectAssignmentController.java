@@ -1,12 +1,10 @@
 package org.avni.web;
 
 import org.avni.dao.UserSubjectAssignmentRepository;
-import org.avni.domain.CHSEntity;
-import org.avni.domain.JsonObject;
-import org.avni.domain.User;
-import org.avni.domain.UserSubjectAssignment;
+import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.service.UserSubjectAssignmentService;
+import org.avni.web.request.UserSubjectAssignmentContract;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +54,15 @@ public class UserSubjectAssignmentController extends AbstractController<UserSubj
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<LinkedHashMap<String, Object>> getSubjects(@RequestBody SubjectSearchRequest subjectSearchRequest) {
         return new ResponseEntity<>(userSubjectAssignmentService.searchSubjects(subjectSearchRequest), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/userSubjectAssignment", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    @Transactional
+    ResponseEntity<?> save(@RequestBody UserSubjectAssignmentContract userSubjectAssignmentContract) {
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        userSubjectAssignmentService.save(userSubjectAssignmentContract, organisation);
+        return ResponseEntity.ok(userSubjectAssignmentContract);
     }
 
     @Override
