@@ -96,6 +96,7 @@ const SubjectAssignmentFilter = ({
           onFilterChange={onFilterChange}
         />
         <SelectFilter
+          isClearable={false}
           label={"Assigned to"}
           options={allUserOptions}
           filter={"assignedTo"}
@@ -103,6 +104,7 @@ const SubjectAssignmentFilter = ({
           onFilterChange={onFilterChange}
         />
         <SelectFilter
+          isClearable={false}
           label={"User group"}
           options={userGroupOptions}
           filter={"userGroup"}

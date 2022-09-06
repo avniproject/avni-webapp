@@ -31,13 +31,18 @@ export const SubjectAssignmentReducer = (state, action) => {
   switch (action.type) {
     case "setMetadata": {
       newState.metadata = payload;
-      const { subjectTypes } = payload;
+      const { subjectTypes, groups } = payload;
+      const everyOneGroup = find(groups, ({ name }) => name === "Everyone");
       const subjectType = chain(subjectTypes)
         .first()
         .value();
       newState.filterCriteria.subjectType = {
         label: get(subjectType, "name", null),
         value: get(subjectType, "uuid", "")
+      };
+      newState.filterCriteria.userGroup = {
+        label: get(everyOneGroup, "name"),
+        value: get(everyOneGroup, "uuid")
       };
       newState.loaded = true;
       return newState;
