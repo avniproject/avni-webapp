@@ -18,6 +18,7 @@ import News from "../news/News";
 import Documentation from "../documentation/Documentation";
 import Assignment from "../assignment/Assignment";
 import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment";
+import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -83,10 +84,17 @@ const Routes = ({ user, organisation }) => (
     />
     <RestrictedRoute
       exact
-      path="/assignment/task"
+      path="/assignment"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Assignment)}
+    />
+    <RestrictedRoute
+      exact
+      path="/assignment/task"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, TaskAssignment)}
     />
     <RestrictedRoute
       exact

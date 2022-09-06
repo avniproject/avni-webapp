@@ -1,77 +1,36 @@
 import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import Icon from "@material-ui/core/Icon";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import httpClient from "../../common/utils/httpClient";
 import { isProdEnv } from "../../common/constants";
+import { HomePageCard } from "./HomePageCard";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
 
-  const renderCard = (href, name, customicon) => (
-    <CardActionArea style={classes.cardArea} href={href}>
-      <Card style={classes.card} raised={true}>
-        <CardContent style={{ marginTop: 10 }}>
-          <Grid container direction="column" justify="center" alignItems="center">
-            <Grid item>
-              <Icon color="primary" style={{ fontSize: 100 }}>
-                {customicon}
-              </Icon>
-            </Grid>
-            <Grid item>
-              <Typography
-                variant="h5"
-                component="h2"
-                align="center"
-                color="secondary"
-                style={{ marginTop: 5 }}
-              >
-                {name}
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </CardActionArea>
-  );
-
-  const classes = {
-    card: {
-      width: 220,
-      height: 220,
-      justify: "center"
-    },
-    cardArea: {
-      width: 220,
-      height: 220,
-      justify: "center",
-      margin: 50,
-      textDecoration: "none"
-    },
-
-    typography: {
-      justify: "center"
-    }
-  };
-
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
-        {renderCard("/#/admin/user", "Admin", "supervisor_account")}
-        {renderCard("/#/appdesigner", "App Designer", "architecture")}
-        {renderCard("/#/documentation", "Documentation", "article")}
-        {renderCard("/#/assignment/task", "Assignment", "assignment_turned_in")}
-        {renderCard("/#/assignment/subject", "Subject Assignment", "assignment_turned_in")}
-        {renderCard("/#/news", "News Broadcasts", "speaker")}
-        {renderCard("/#/translations", "Translations", "translate")}
-        {renderCard("/#/export", "Reports", "assessment")}
-        {renderCard("/#/app", "Data Entry App", "keyboard")}
-        {renderCard("/#/help", "Support And Training", "help")}
-        {isProdEnv && renderCard("/analytics/activities", "Canned Reports", "assessment")}
+        <HomePageCard href={"/#/admin/user"} name={"Admin"} customicon={"supervisor_account"} />
+        <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customicon={"architecture"} />
+        <HomePageCard href={"/#/documentation"} name={"Documentation"} customicon={"article"} />
+        <HomePageCard
+          href={"/#/assignment"}
+          name={"Assignment"}
+          customicon={"assignment_turned_in"}
+        />
+        <HomePageCard href={"/#/news"} name={"News Broadcasts"} customicon={"speaker"} />
+        <HomePageCard href={"/#/translations"} name={"Translations"} customicon={"translate"} />
+        <HomePageCard href={"/#/export"} name={"Reports"} customicon={"assessment"} />
+        <HomePageCard href={"/#/app"} name={"Data Entry App"} customicon={"keyboard"} />
+        <HomePageCard href={"/#/help"} name={"Support And Training"} customicon={"help"} />
+        {isProdEnv && (
+          <HomePageCard
+            href={"/analytics/activities"}
+            name={"Canned Reports"}
+            customicon={"assessment"}
+          />
+        )}
       </Grid>
     </ScreenWithAppBar>
   );

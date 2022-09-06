@@ -10,5 +10,7 @@ export default {
       .catch(r => [`${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   getSubjects: payload => http.post("/web/subjectAssignment/search", payload),
   getSubjectAssignmentMetadata: () =>
-    http.fetchJson("/web/subjectAssignmentMetadata").then(response => response.json)
+    http.fetchJson("/web/subjectAssignmentMetadata").then(response => response.json),
+  getAssignmentMetadata: () =>
+    http.fetchJson("/web/assignmentMetadata").then(response => response.json)
 };
