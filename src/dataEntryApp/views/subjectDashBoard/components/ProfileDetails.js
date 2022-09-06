@@ -13,7 +13,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Modal from "./CommonModal";
 import { getPrograms } from "../../../reducers/programReducer";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
@@ -21,7 +21,7 @@ import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { CommentDrawer } from "./comments/CommentDrawer";
 import CommentIcon from "@material-ui/icons/Comment";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
-import { get } from "lodash";
+import { get, isNil } from "lodash";
 import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
@@ -156,6 +156,7 @@ const ProfileDetails = ({
   const close = () => {
     return true;
   };
+  const isMultipleProgramEligible = !isNil(programs) ? programs.length > 1 : isNil(programs);
 
   const content = (
     <DialogContent>
@@ -194,6 +195,8 @@ const ProfileDetails = ({
     </DialogContent>
   );
 
+  console.log("selectedProgram", selectedProgram);
+  console.log("programs", programs);
   return (
     <div className={classes.tableView}>
       <CommentDrawer open={openComment} setOpen={setOpenComment} subjectUUID={subjectUuid} />
@@ -274,7 +277,10 @@ const ProfileDetails = ({
             )}
           </Grid>
           <Grid item>
-            {tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided ? (
+            {tabsStatus &&
+            tabsStatus.showProgramTab &&
+            !profileDetails.voided &&
+            isMultipleProgramEligible ? (
               <div>
                 <Modal
                   content={content}
@@ -306,7 +312,21 @@ const ProfileDetails = ({
                 />
               </div>
             ) : (
-              ""
+              <Link
+                to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                  programs[0].name
+                }&formType=ProgramEnrolment&subjectTypeName=${profileDetails.subjectType.name}`}
+              >
+                <Fab
+                  id={programs[0].name}
+                  className={classes.enrollButtonStyle}
+                  variant="extended"
+                  color="primary"
+                  aria-label="add"
+                >
+                  {t(`Enrol in ${programs[0].name}`)}
+                </Fab>
+              </Link>
             )}
           </Grid>
         </Grid>
