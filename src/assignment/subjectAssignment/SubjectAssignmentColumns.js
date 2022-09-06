@@ -1,12 +1,17 @@
 import { split, map, groupBy, forEach, isEmpty, isNil } from "lodash";
 import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
+import React from "react";
 
 export const getColumns = (metadata, filterCriteria) => {
   const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
   const fixedColumns = [
     {
       title: "Name",
-      field: "fullName"
+      render: row => (
+        <a href={`/#/app/subject?uuid=${row.uuid}`} target="_blank" rel="noopener noreferrer">
+          {row.fullName}
+        </a>
+      )
     },
     {
       title: "Address",
