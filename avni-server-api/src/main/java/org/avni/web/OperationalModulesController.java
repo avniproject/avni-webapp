@@ -140,4 +140,18 @@ public class OperationalModulesController {
             return jsonObject;
         }).collect(Collectors.toList());
     }
+
+    @GetMapping("/web/assignmentMetadata")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public JsonObject getAssignmentMetadata() {
+        boolean isAnyDirectlyAssignable = subjectTypeRepository
+                .findAllByIsVoidedFalse()
+                .stream()
+                .anyMatch(SubjectType::isDirectlyAssignable);
+        boolean isAnyTaskTypeSetup = taskTypeRepository.findAllByIsVoidedFalse().size() > 0;
+        return new JsonObject()
+                .with("isAnyDirectlyAssignable", isAnyDirectlyAssignable)
+                .with("isAnyTaskTypeSetup", isAnyTaskTypeSetup);
+    }
 }
