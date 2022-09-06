@@ -25,7 +25,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 "         left outer join user_subject_assignment usa on usa.subject_id = i.id\n" +
                 "         left outer join users u on usa.user_id = u.id\n" +
                 "         left outer join user_group ug on ug.user_id = u.id\n" +
-                "         left outer join groups g on g.id = ug.group_id";
+                "         left outer join groups g on g.id = ug.group_id\n";
         return super.buildUsingBaseQuery(SUBJECT_ASSIGNMENT_SEARCH_BASE_QUERY, "\n group by 1, 2, 3, 4");
     }
 
