@@ -96,7 +96,7 @@ const TaskAssignment = ({ history, ...props }) => {
             }}
           />
         </Grid>
-        <Grid xs={1} />
+        <Grid item xs={1} />
         <Grid item xs={3}>
           <TaskAssignmentFilter
             dispatch={dispatch}

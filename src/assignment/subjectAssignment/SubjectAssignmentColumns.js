@@ -1,6 +1,7 @@
 import _, { split, map, groupBy, forEach, isEmpty, isNil } from "lodash";
 import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
 import React from "react";
+import Chip from "@material-ui/core/Chip";
 import SubjectAssignmentMultiSelect from "./SubjectAssignmentMultiSelect";
 
 export const getColumns = (metadata, filterCriteria) => {
@@ -48,8 +49,8 @@ export const getColumns = (metadata, filterCriteria) => {
       field: "addressLevel"
     },
     {
-      title: "Program",
-      field: "programs"
+      title: "Programs",
+      render: row => getFormattedPrograms(row.programs)
     },
     {
       title: "Assignment",
@@ -76,6 +77,16 @@ const addSyncAttributeColumnIfRequired = (syncAttribute, fixedColumns) => {
   }
 };
 
+const getFormattedPrograms = programColorString => {
+  if (isEmpty(programColorString)) return "";
+  const programAndColorArray = split(programColorString, ",");
+  return map(programAndColorArray, (singleProgramAndColor, index) => {
+    const programAndColor = split(singleProgramAndColor, ":");
+
+    return getChip(programAndColor[0], programAndColor[1], index);
+  });
+};
+
 const getFormattedUserAndGroups = (userGroupString = "") => {
   if (isEmpty(userGroupString)) return "";
   const userGroupArray = map(split(userGroupString, ", "), ug => {
@@ -86,5 +97,22 @@ const getFormattedUserAndGroups = (userGroupString = "") => {
   forEach(groupBy(userGroupArray, "user"), (v, k) =>
     results.push(`${k} (${map(v, ({ group }) => group).join(", ")})`)
   );
-  return results.join(", ");
+  return map(results, (result, index) => {
+    return getChip(result, "#808080", index);
+  });
+};
+
+const getChip = (label, colour, key) => {
+  return (
+    <Chip
+      key={key}
+      size="small"
+      label={label}
+      style={{
+        margin: 2,
+        backgroundColor: colour,
+        color: "white"
+      }}
+    />
+  );
 };
