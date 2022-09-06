@@ -47,6 +47,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
       </Typography>
       <HelpText text={helpText} t={t} />
       <TextField
+        multiline={true}
         id={fe.name.replaceAll(" ", "-")}
         type={"text"}
         autoComplete="off"
