@@ -16,7 +16,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 "       cast(concat_ws(' ', i.first_name, i.middle_name, i.last_name) as text) as \"fullName\",\n" +
                 "       i.uuid                                                                 as \"uuid\",\n" +
                 "       cast(tllv.title_lineage as text)                                       as \"addressLevel\",\n" +
-                "       string_agg(distinct p.name, ', ')                                      as \"programs\",\n" +
+                "       string_agg(distinct p.name || ':' || p.colour, ', ')                       as \"programs\",\n" +
                 "       string_agg(distinct u.name || ':' || g.name, ', ')                     as \"assignedTo\"\n" +
                 "       $CUSTOM_FIELDS\n" +
                 "from individual i\n" +
