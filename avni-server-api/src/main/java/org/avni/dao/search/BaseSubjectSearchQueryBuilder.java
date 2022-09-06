@@ -139,16 +139,20 @@ public class BaseSubjectSearchQueryBuilder<T> {
             List<SearchResultConcepts> searchResultConcepts = sf.getSearchResultConcepts();
             searchResultConcepts.forEach(c -> {
                 org.avni.domain.Concept concept = conceptRepository.findByUuid(c.getUuid());
-                if (concept.isCoded()) {
-                    customFields.add(String.format("multi_select_coded(i.observations -> '%s') as \"%s\"", concept.getUuid(), concept.getName()));
-                } else if (concept.getDataType().equals(ConceptDataType.Date.toString())) {
-                    customFields.add(String.format("cast(i.observations ->> '%s' as date) as \"%s\"", concept.getUuid(), concept.getName()));
-                } else {
-                    customFields.add(String.format("i.observations ->> '%s' as \"%s\"", concept.getUuid(), concept.getName()));
-                }
+                addCustomFields(concept);
             });
         });
         return (T) this;
+    }
+
+    protected void addCustomFields(org.avni.domain.Concept concept) {
+        if (concept.isCoded()) {
+            customFields.add(String.format("multi_select_coded(i.observations -> '%s') as \"%s\"", concept.getUuid(), concept.getName()));
+        } else if (concept.getDataType().equals(ConceptDataType.Date.toString())) {
+            customFields.add(String.format("cast(i.observations ->> '%s' as date) as \"%s\"", concept.getUuid(), concept.getName()));
+        } else {
+            customFields.add(String.format("i.observations ->> '%s' as \"%s\"", concept.getUuid(), concept.getName()));
+        }
     }
 
     private List<CustomSearchFields> getSearchFields(String subjectTypeUUID, List<CustomSearchFields> customSearchFields) {

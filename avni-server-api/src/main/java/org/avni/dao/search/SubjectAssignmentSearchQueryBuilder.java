@@ -1,7 +1,16 @@
 package org.avni.dao.search;
 
+import org.avni.dao.SubjectTypeRepository;
+import org.avni.domain.Concept;
+import org.avni.domain.SubjectType;
+import org.avni.framework.ApplicationContextProvider;
+import org.avni.service.ConceptService;
+import org.avni.service.OrganisationConfigService;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<SubjectAssignmentSearchQueryBuilder> {
 
@@ -12,6 +21,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 "       cast(tllv.title_lineage as text)                                       as \"addressLevel\",\n" +
                 "       string_agg(distinct p.name, ', ')                                      as \"programs\",\n" +
                 "       string_agg(distinct u.name || ':' || g.name, ', ')                     as \"assignedTo\"\n" +
+                "       $CUSTOM_FIELDS\n" +
                 "from individual i\n" +
                 "         left outer join title_lineage_locations_view tllv on i.address_id = tllv.lowestpoint_id\n" +
                 "         left outer join subject_type st on i.subject_type_id = st.id\n" +
@@ -34,7 +44,21 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 .createdOnFilter(request.getCreatedOn())
                 .assignedToFilter(request.getAssignedTo())
                 .userGroupFilter(request.getUserGroup())
+                .withSyncAttributes(request.getSubjectType())
                 .withConceptsFilter(request.getConcept());
+    }
+
+    public SubjectAssignmentSearchQueryBuilder withSyncAttributes(String subjectTypeUUID) {
+        SubjectTypeRepository subjectTypeRepository = ApplicationContextProvider.getContext().getBean(SubjectTypeRepository.class);
+        ConceptService conceptService = ApplicationContextProvider.getContext().getBean(ConceptService.class);
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
+        if (subjectType.getSyncRegistrationConcept1() != null) {
+            this.addCustomFields(conceptService.get(subjectType.getSyncRegistrationConcept1()));
+        }
+        if (subjectType.getSyncRegistrationConcept2() != null) {
+            this.addCustomFields(conceptService.get(subjectType.getSyncRegistrationConcept2()));
+        }
+        return this;
     }
 
 
