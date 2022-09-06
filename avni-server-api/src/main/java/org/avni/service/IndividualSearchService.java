@@ -3,6 +3,7 @@ package org.avni.service;
 import org.avni.dao.IndividualRepository;
 import org.avni.dao.ProgramEnrolmentRepository;
 import org.avni.dao.SubjectSearchRepository;
+import org.avni.dao.search.SubjectSearchQueryBuilder;
 import org.avni.domain.Program;
 import org.avni.web.request.EnrolmentContract;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
@@ -30,8 +31,8 @@ public class IndividualSearchService {
 
     @Transactional
     public LinkedHashMap<String, Object> search(SubjectSearchRequest subjectSearchRequest) {
-        List<Map<String, Object>> searchResults = subjectSearchRepository.search(subjectSearchRequest);
-        BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest);
+        List<Map<String, Object>> searchResults = subjectSearchRepository.search(subjectSearchRequest, new SubjectSearchQueryBuilder());
+        BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest, new SubjectSearchQueryBuilder());
         return constructIndividual(searchResults, totalCount);
     }
 

@@ -1,18 +1,13 @@
 package org.avni.dao.search;
 
 import org.avni.dao.SubjectTypeRepository;
-import org.avni.domain.Concept;
 import org.avni.domain.SubjectType;
 import org.avni.framework.ApplicationContextProvider;
 import org.avni.service.ConceptService;
-import org.avni.service.OrganisationConfigService;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<SubjectAssignmentSearchQueryBuilder> {
+public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<SubjectAssignmentSearchQueryBuilder> implements SearchBuilder {
 
     public SqlQuery build() {
         String SUBJECT_ASSIGNMENT_SEARCH_BASE_QUERY = "select i.id                                                                   as \"id\",\n" +
@@ -95,5 +90,15 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
         addWhereClauses("ug.uuid = :userGroupUUID");
         addWhereClauses("usa.user_id is not null");
         return this;
+    }
+
+    @Override
+    public SqlQuery getSQLResultQuery(SubjectSearchRequest searchRequest) {
+        return this.withSubjectSearchFilter(searchRequest).build();
+    }
+
+    @Override
+    public SqlQuery getSQLCountQuery(SubjectSearchRequest searchRequest) {
+        return this.withSubjectSearchFilter(searchRequest).forCount().build();
     }
 }

@@ -1,7 +1,7 @@
 package org.avni.dao;
 
+import org.avni.dao.search.SearchBuilder;
 import org.avni.dao.search.SqlQuery;
-import org.avni.dao.search.SubjectSearchQueryBuilder;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
@@ -22,10 +22,8 @@ public class SubjectSearchRepository {
     private EntityManager entityManager;
 
     @Transactional
-    public List<Map<String,Object>> search(SubjectSearchRequest searchRequest) {
-        SqlQuery query = new SubjectSearchQueryBuilder()
-                .withSubjectSearchFilter(searchRequest)
-                .build();
+    public List<Map<String,Object>> search(SubjectSearchRequest searchRequest, SearchBuilder searchBuilder) {
+        SqlQuery query = searchBuilder.getSQLResultQuery(searchRequest);
         Query sql = entityManager.createNativeQuery(query.getSql());
         NativeQueryImpl nativeQuery = (NativeQueryImpl) sql;
         nativeQuery.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -35,11 +33,8 @@ public class SubjectSearchRepository {
         return sql.getResultList();
     }
 
-    public BigInteger getTotalCount(SubjectSearchRequest searchRequest) {
-        SqlQuery query = new SubjectSearchQueryBuilder()
-                .withSubjectSearchFilter(searchRequest)
-                .forCount()
-                .build();
+    public BigInteger getTotalCount(SubjectSearchRequest searchRequest, SearchBuilder searchBuilder) {
+        SqlQuery query = searchBuilder.getSQLCountQuery(searchRequest);
         Query sql = entityManager.createNativeQuery(query.getSql());
         query.getParameters().forEach((name, value) -> {
             sql.setParameter(name, value);

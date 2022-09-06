@@ -1,6 +1,7 @@
 package org.avni.service;
 
 import org.avni.dao.*;
+import org.avni.dao.search.SubjectAssignmentSearchQueryBuilder;
 import org.avni.domain.*;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.UserWebProjection;
@@ -27,18 +28,21 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
     private final SubjectTypeRepository subjectTypeRepository;
     private final ProgramRepository programRepository;
     private final GroupRepository groupRepository;
-    private final SubjectAssignmentSearchRepository subjectAssignmentSearchRepository;
+    private final SubjectSearchRepository subjectSearchRepository;
     private final ConceptRepository conceptRepository;
 
 
     @Autowired
-    public UserSubjectAssignmentService(UserSubjectAssignmentRepository userSubjectAssignmentRepository, UserRepository userRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, GroupRepository groupRepository, SubjectAssignmentSearchRepository subjectAssignmentSearchRepository, ConceptRepository conceptRepository) {
+    public UserSubjectAssignmentService(UserSubjectAssignmentRepository userSubjectAssignmentRepository, UserRepository userRepository,
+                                        SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository,
+                                        GroupRepository groupRepository, SubjectSearchRepository subjectSearchRepository,
+                                        ConceptRepository conceptRepository) {
         this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
         this.userRepository = userRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.programRepository = programRepository;
         this.groupRepository = groupRepository;
-        this.subjectAssignmentSearchRepository = subjectAssignmentSearchRepository;
+        this.subjectSearchRepository = subjectSearchRepository;
         this.conceptRepository = conceptRepository;
     }
 
@@ -78,8 +82,8 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
 
     @Transactional
     public LinkedHashMap<String, Object> searchSubjects(SubjectSearchRequest subjectSearchRequest) {
-        List<Map<String, Object>> searchResults = subjectAssignmentSearchRepository.search(subjectSearchRequest);
-        BigInteger totalCount = subjectAssignmentSearchRepository.getTotalCount(subjectSearchRequest);
+        List<Map<String, Object>> searchResults = subjectSearchRepository.search(subjectSearchRequest, new SubjectAssignmentSearchQueryBuilder());
+        BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest, new SubjectAssignmentSearchQueryBuilder());
         LinkedHashMap<String, Object> recordsMap = new LinkedHashMap<String, Object>();
         recordsMap.put("totalElements", totalCount);
         recordsMap.put("listOfRecords", searchResults);

@@ -3,7 +3,7 @@ package org.avni.dao.search;
 import org.avni.web.request.webapp.search.DateRange;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 
-public class SubjectSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<SubjectSearchQueryBuilder> {
+public class SubjectSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<SubjectSearchQueryBuilder> implements SearchBuilder {
 
     public SqlQuery build() {
         String baseQuery = "select distinct i.id as \"id\",\n" +
@@ -24,7 +24,7 @@ public class SubjectSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<Sub
     }
 
     public SubjectSearchQueryBuilder withSubjectSearchFilter(SubjectSearchRequest request) {
-        return  this
+        return this
                 .withNameFilter(request.getName())
                 .withGenderFilter(request.getGender())
                 .withSubjectTypeFilter(request.getSubjectType())
@@ -69,4 +69,13 @@ public class SubjectSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<Sub
                         "penr.enrolment_date_time <= cast(trim(:rangeParam) as date)");
     }
 
+    @Override
+    public SqlQuery getSQLResultQuery(SubjectSearchRequest searchRequest) {
+        return this.withSubjectSearchFilter(searchRequest).build();
+    }
+
+    @Override
+    public SqlQuery getSQLCountQuery(SubjectSearchRequest searchRequest) {
+        return this.withSubjectSearchFilter(searchRequest).forCount().build();
+    }
 }
