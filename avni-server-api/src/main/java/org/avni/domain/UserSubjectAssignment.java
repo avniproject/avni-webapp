@@ -32,6 +32,10 @@ public class UserSubjectAssignment extends OrganisationAwareEntity {
         return subject;
     }
 
+    public String getSubjectIdAsString() {
+        return String.valueOf(subject.getId());
+    }
+
     public void setSubject(Individual subject) {
         this.subject = subject;
     }

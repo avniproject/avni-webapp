@@ -17,6 +17,9 @@ import java.util.Optional;
 public interface UserSubjectAssignmentRepository extends ReferenceDataRepository<UserSubjectAssignment> {
 
     Optional<UserSubjectAssignment> findUserSubjectAssignmentByUserAndSubject(User user, Individual subject);
+
+    List<UserSubjectAssignment> findUserSubjectAssignmentBySubject_IdIn(List<Long> subjectIds);
+
     boolean existsByUserAndIsVoidedTrueAndLastModifiedDateTimeGreaterThan(User user, Date lastModifiedDateTime);
 
     Page<UserSubjectAssignment> findByUserAndIsVoidedTrueAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
@@ -25,12 +28,6 @@ public interface UserSubjectAssignmentRepository extends ReferenceDataRepository
             Date now,
             Pageable pageable
     );
-
-    Page<UserSubjectAssignment> findByUserIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            Long userId,
-            Date lastModifiedDateTime,
-            Date now,
-            Pageable pageable);
 
     default UserSubjectAssignment findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in UserSubjectAssignment.");

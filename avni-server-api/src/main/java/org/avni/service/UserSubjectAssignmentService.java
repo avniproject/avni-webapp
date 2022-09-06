@@ -82,7 +82,18 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
     @Transactional
     public LinkedHashMap<String, Object> searchSubjects(SubjectSearchRequest subjectSearchRequest) {
         List<Map<String, Object>> searchResults = subjectSearchRepository.search(subjectSearchRequest, new SubjectAssignmentSearchQueryBuilder());
+        List<Long> subjectIds = searchResults.stream().map(s -> Long.parseLong(s.get("id").toString())).collect(Collectors.toList());
+        List<UserSubjectAssignment> userSubjectAssignmentBySubjectIds = userSubjectAssignmentRepository.findUserSubjectAssignmentBySubject_IdIn(subjectIds);
+
+        Map<String, List<User>> groupedSubjects = userSubjectAssignmentBySubjectIds.stream().
+                collect(Collectors.groupingBy( UserSubjectAssignment::getSubjectIdAsString,TreeMap::new,
+                        Collectors.mapping(UserSubjectAssignment::getUser, Collectors.toList())));
+        for (Map<String, Object> searchResult : searchResults) {
+            searchResult.put("assignedUsers", groupedSubjects.get(String.valueOf(searchResult.get("id"))));
+        }
+
         BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest, new SubjectAssignmentSearchQueryBuilder());
+
         LinkedHashMap<String, Object> recordsMap = new LinkedHashMap<String, Object>();
         recordsMap.put("totalElements", totalCount);
         recordsMap.put("listOfRecords", searchResults);
