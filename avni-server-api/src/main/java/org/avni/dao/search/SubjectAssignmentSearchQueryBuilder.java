@@ -7,6 +7,8 @@ import org.avni.service.ConceptService;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
 
+import java.util.List;
+
 public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<SubjectAssignmentSearchQueryBuilder> implements SearchBuilder {
 
     public SqlQuery build() {
@@ -35,7 +37,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 .withSubjectTypeFilter(request.getSubjectType())
                 .withAddressIdsFilter(request.getAddressIds())
                 .withPaginationFilters(request.getPageElement())
-                .programFilter(request.getProgram())
+                .programFilter(request.getPrograms())
                 .createdOnFilter(request.getCreatedOn())
                 .assignedToFilter(request.getAssignedTo())
                 .userGroupFilter(request.getUserGroup())
@@ -57,10 +59,10 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
     }
 
 
-    public SubjectAssignmentSearchQueryBuilder programFilter(String programUUID) {
-        if (programUUID == null) return this;
-        addParameter("programUuid", programUUID);
-        addWhereClauses("p.uuid = :programUuid");
+    public SubjectAssignmentSearchQueryBuilder programFilter(List<String> programUUIDs) {
+        if (programUUIDs == null || programUUIDs.isEmpty()) return this;
+        addParameter("programUuids", programUUIDs);
+        addWhereClauses("p.uuid in (:programUuids)");
         return this;
     }
 
