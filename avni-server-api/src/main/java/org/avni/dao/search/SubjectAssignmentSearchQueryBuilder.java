@@ -16,17 +16,17 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 "       cast(concat_ws(' ', i.first_name, i.middle_name, i.last_name) as text) as \"fullName\",\n" +
                 "       i.uuid                                                                 as \"uuid\",\n" +
                 "       cast(tllv.title_lineage as text)                                       as \"addressLevel\",\n" +
-                "       string_agg(distinct p.name || ':' || p.colour, ', ')                       as \"programs\",\n" +
-                "       string_agg(distinct u.name || ':' || g.name, ', ')                     as \"assignedTo\"\n" +
+                "       string_agg(distinct p.name || ':' || p.colour, ', ')                   as \"programs\",\n" +
+                "       string_agg(distinct assigned_to.name || ':' || g.name, ', ')           as \"assignedTo\"\n" +
                 "       $CUSTOM_FIELDS\n" +
                 "from individual i\n" +
                 "         left outer join title_lineage_locations_view tllv on i.address_id = tllv.lowestpoint_id\n" +
-                "         left outer join subject_type st on i.subject_type_id = st.id\n" +
+                "         left outer join subject_type st on i.subject_type_id = st.id and st.is_voided is false\n" +
                 "         left outer join program_enrolment penr on i.id = penr.individual_id and penr.is_voided is false\n" +
                 "         left outer join program p on p.id = penr.program_id\n" +
                 "         left outer join user_subject_assignment usa on usa.subject_id = i.id\n" +
-                "         left outer join users u on usa.user_id = u.id\n" +
-                "         left outer join user_group ug on ug.user_id = u.id\n" +
+                "         left outer join users assigned_to on usa.user_id = assigned_to.id\n" +
+                "         left outer join user_group ug on ug.user_id = assigned_to.id\n" +
                 "         left outer join groups g on g.id = ug.group_id\n";
         return super.buildUsingBaseQuery(SUBJECT_ASSIGNMENT_SEARCH_BASE_QUERY, "\n group by 1, 2, 3, 4");
     }
@@ -40,7 +40,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 .programFilter(request.getPrograms())
                 .createdOnFilter(request.getCreatedOn())
                 .assignedToFilter(request.getAssignedTo())
-                .userGroupFilter(request.getUserGroup())
+                .userGroupFilter(request.getUserGroup(), request.getAssignedTo())
                 .withSyncAttributes(request.getSubjectType())
                 .withConceptsFilter(request.getConcept());
     }
@@ -86,11 +86,16 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
         return this;
     }
 
-    public SubjectAssignmentSearchQueryBuilder userGroupFilter(String userGroupUUID) {
-        if (userGroupUUID == null) return this;
-        addParameter("userGroupUUID", userGroupUUID);
-        addWhereClauses("ug.uuid = :userGroupUUID");
-        addWhereClauses("usa.user_id is not null");
+    public SubjectAssignmentSearchQueryBuilder userGroupFilter(String groupUUID, String userUUID) {
+        if (groupUUID == null) return this;
+        addParameter("groupUUID", groupUUID);
+        if (userUUID != null && userUUID.equals("0")) {
+            removeWhereClause("usa.user_id is null");
+            addWhereClauses("(ug.id isnull or g.uuid <> :groupUUID)");
+        } else {
+            addWhereClauses("g.uuid = :groupUUID");
+            addWhereClauses("usa.user_id is not null");
+        }
         return this;
     }
 

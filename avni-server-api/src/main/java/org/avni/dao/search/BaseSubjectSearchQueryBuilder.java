@@ -50,7 +50,6 @@ public class BaseSubjectSearchQueryBuilder<T> {
         StringBuffer query = new StringBuffer();
         query.append(baseQuery);
         query.append(String.join(" \n ", joinClauses));
-        whereClauses.add("st.is_voided is false");
         if (!whereClauses.isEmpty()) {
             query.append("\n where \n");
         }
@@ -368,6 +367,10 @@ public class BaseSubjectSearchQueryBuilder<T> {
 
     protected void addWhereClauses(String clause) {
         whereClauses.add(clause);
+    }
+
+    protected void removeWhereClause(String clause) {
+        whereClauses.remove(clause);
     }
 
     public T forCount() {

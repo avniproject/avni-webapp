@@ -19,7 +19,7 @@ public class SubjectSearchQueryBuilder extends BaseSubjectSearchQueryBuilder<Sub
                 "from individual i\n" +
                 "         left outer join title_lineage_locations_view tllv on i.address_id = tllv.lowestpoint_id\n" +
                 "         left outer join gender on i.gender_id = gender.id\n" +
-                "         left outer join subject_type st on i.subject_type_id = st.id\n";
+                "         left outer join subject_type st on i.subject_type_id = st.id and st.is_voided is false\n";
         return super.buildUsingBaseQuery(baseQuery, "");
     }
 
