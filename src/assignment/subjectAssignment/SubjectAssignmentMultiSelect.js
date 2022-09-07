@@ -19,26 +19,25 @@ const SubjectAssignmentMultiSelect = props => {
   function onChange(value, event) {
     updateUserAssignmentToSubject(event);
     //TODO how should we handle error of assignment/un-assignment
-    this.setState(value);
+    setSelectedOptions(value);
   }
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {
     if (value.length === 0) {
-      return `${placeholderButtonLabel}: None`;
+      return placeholderButtonLabel;
     }
-    return `${placeholderButtonLabel} ${value.length} users: ${value
+    return `Assigned to ${value.length} users: ${value
       .map(entry => entry.label)
-      .join(", ")} `.substring(0, 255);
+      .join(", ")}`.substring(0, 255);
   }
 
   return (
     <ReactMultiSelectCheckboxes
       options={getSortedDropdownList(props.options)}
-      placeholderButtonLabel="Assigned to"
       value={selectedOptions}
       onChange={onChange}
       setState={setSelectedOptions}
-      // getDropdownButtonLabel={getDropdownButtonLabel}
+      getDropdownButtonLabel={getDropdownButtonLabel}
     />
   );
 };
