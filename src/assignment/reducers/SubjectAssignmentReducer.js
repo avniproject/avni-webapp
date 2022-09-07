@@ -39,6 +39,7 @@ export const SubjectAssignmentReducer = (state, action) => {
         label: get(subjectType, "name", null),
         value: get(subjectType, "uuid", "")
       };
+      newState.filterCriteria.createdOn = { label: "Any time", value: "1900-01-01T18:30:00.000Z" };
       newState.loaded = true;
       return newState;
     }

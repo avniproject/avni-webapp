@@ -1,4 +1,4 @@
-import _, { split, map, groupBy, forEach, isEmpty, isNil } from "lodash";
+import _, { split, map, isEmpty, isNil } from "lodash";
 import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
 import React from "react";
 import Chip from "@material-ui/core/Chip";
@@ -84,21 +84,6 @@ const getFormattedPrograms = programColorString => {
     const programAndColor = split(singleProgramAndColor, ":");
 
     return getChip(programAndColor[0], programAndColor[1], index);
-  });
-};
-
-const getFormattedUserAndGroups = (userGroupString = "") => {
-  if (isEmpty(userGroupString)) return "";
-  const userGroupArray = map(split(userGroupString, ", "), ug => {
-    const userAndGroup = split(ug, ":");
-    return { user: userAndGroup[0], group: userAndGroup[1] };
-  });
-  const results = [];
-  forEach(groupBy(userGroupArray, "user"), (v, k) =>
-    results.push(`${k} (${map(v, ({ group }) => group).join(", ")})`)
-  );
-  return map(results, (result, index) => {
-    return getChip(result, "#808080", index);
   });
 };
 
