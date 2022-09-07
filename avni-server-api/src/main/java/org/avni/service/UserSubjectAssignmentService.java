@@ -19,6 +19,7 @@ import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserSubjectAssignmentService implements NonScopeAwareService {
@@ -94,7 +95,10 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
 
         ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
         for (Map<String, Object> searchResult : searchResults) {
-            List<UserWebProjection> userWebProjections = groupedSubjects.get(String.valueOf(searchResult.get("id"))).stream()
+            List<UserWebProjection> userWebProjections = Optional
+                    .ofNullable(groupedSubjects.get(String.valueOf(searchResult.get("id"))))
+                    .map(Collection::stream)
+                    .orElseGet(Stream::empty)
                     .map(uw -> pf.createProjection(UserWebProjection.class, uw)).collect(Collectors.toList());
             searchResult.put("assignedUsers", userWebProjections);
         }
