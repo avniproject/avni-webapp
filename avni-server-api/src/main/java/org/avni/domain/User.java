@@ -10,7 +10,6 @@ import org.avni.web.validation.ValidationException;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -91,6 +90,10 @@ public class User {
     @Column(name = "sync_settings")
     @Type(type = "jsonObject")
     private JsonObject syncSettings;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<UserGroup> userGroups;
+
 
     public enum SyncSettingKeys {
         syncAttribute1,
@@ -181,6 +184,14 @@ public class User {
 
     public void setVoided(boolean voided) {
         isVoided = voided;
+    }
+
+    public List<UserGroup> getUserGroups() {
+        return userGroups;
+    }
+
+    public void setUserGroups(List<UserGroup> userGroups) {
+        this.userGroups = userGroups;
     }
 
     @Override

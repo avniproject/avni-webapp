@@ -11,6 +11,8 @@ import org.avni.web.request.UserSubjectAssignmentContract;
 import org.avni.web.request.webapp.search.SubjectSearchRequest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -89,8 +91,12 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
                 .filter(usa -> !usa.isVoided())
                 .collect(Collectors.groupingBy( UserSubjectAssignment::getSubjectIdAsString,TreeMap::new,
                         Collectors.mapping(UserSubjectAssignment::getUser, Collectors.toList())));
+
+        ProjectionFactory pf = new SpelAwareProxyProjectionFactory();
         for (Map<String, Object> searchResult : searchResults) {
-            searchResult.put("assignedUsers", groupedSubjects.get(String.valueOf(searchResult.get("id"))));
+            List<UserWebProjection> userWebProjections = groupedSubjects.get(String.valueOf(searchResult.get("id"))).stream()
+                    .map(uw -> pf.createProjection(UserWebProjection.class, uw)).collect(Collectors.toList());
+            searchResult.put("assignedUsers", userWebProjections);
         }
 
         BigInteger totalCount = subjectSearchRepository.getTotalCount(subjectSearchRequest, new SubjectAssignmentSearchQueryBuilder());
