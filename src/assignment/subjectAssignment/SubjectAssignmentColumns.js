@@ -13,11 +13,10 @@ export const getColumns = (metadata, filterCriteria) => {
       userDropdownValues.push({
         subjectId: row.id,
         id: user.id,
-        label: user.name,
+        label: getFormattedUserAndGroups(user),
         value: user.uuid
       })
     );
-
     return userDropdownValues;
   }
 
@@ -27,13 +26,24 @@ export const getColumns = (metadata, filterCriteria) => {
       userDropdownSelectedValues.push({
         subjectId: row.id,
         id: assignedUser.id,
-        label: assignedUser.name,
+        label: getFormattedUserAndGroups(assignedUser),
         value: assignedUser.uuid
       })
     );
-
     return userDropdownSelectedValues;
   }
+
+  const getFormattedUserAndGroups = user => {
+    const groupNames = `${user.userGroups
+      .filter(ug => ug.groupName !== "Everyone")
+      .map(ug => ug.groupName)
+      .join(", ")}`;
+    if (groupNames.length > 0) {
+      return `${user.name} (${groupNames})`;
+    } else {
+      return `${user.name}`;
+    }
+  };
 
   const fixedColumns = [
     {
@@ -53,7 +63,7 @@ export const getColumns = (metadata, filterCriteria) => {
       render: row => getFormattedPrograms(row.programs)
     },
     {
-      title: "Assignment",
+      title: "Assigned to",
       render: row => (
         <SubjectAssignmentMultiSelect
           options={getUserOptions(row, metadata.users)}

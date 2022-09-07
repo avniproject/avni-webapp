@@ -14,7 +14,7 @@ const SubjectAssignmentMultiSelect = props => {
   return (
     <ReactMultiSelectCheckboxes
       options={props.options}
-      placeholderButtonLabel="Assign Users"
+      placeholderButtonLabel="Assigned to"
       value={selectedOptions}
       onChange={onChange}
       setState={setSelectedOptions}
