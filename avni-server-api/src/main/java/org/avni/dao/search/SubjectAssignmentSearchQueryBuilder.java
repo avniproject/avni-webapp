@@ -45,6 +45,15 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
                 .withConceptsFilter(request.getConcept());
     }
 
+    public SubjectAssignmentSearchQueryBuilder withSubjectTypeFilter(String subjectTypeUUID) {
+        if (subjectTypeUUID == null) return this;
+        SubjectTypeRepository subjectTypeRepository = ApplicationContextProvider.getContext().getBean(SubjectTypeRepository.class);
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
+        addParameter("subjectTypeId", subjectType.getId());
+        addWhereClauses("st.id = :subjectTypeId");
+        return this;
+    }
+
     public SubjectAssignmentSearchQueryBuilder withSyncAttributes(String subjectTypeUUID) {
         SubjectTypeRepository subjectTypeRepository = ApplicationContextProvider.getContext().getBean(SubjectTypeRepository.class);
         ConceptService conceptService = ApplicationContextProvider.getContext().getBean(ConceptService.class);
@@ -68,9 +77,9 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
 
     public SubjectAssignmentSearchQueryBuilder createdOnFilter(DateTime createdOn) {
         if (createdOn == null) return this;
-        addParameter("createdOn", createdOn.toString());
-        addParameter("today", new DateTime().toString());
-        addWhereClauses("cast(i.created_date_time as date) between cast(:createdOn as date) and cast(:today as date)");
+        addParameter("createdOn", createdOn.millisOfDay().withMinimumValue().toString());
+        addParameter("today", new DateTime().millisOfDay().withMaximumValue().toString());
+        addWhereClauses("i.created_date_time between cast(:createdOn as timestamptz) and cast(:today as timestamptz)");
         return this;
     }
 
