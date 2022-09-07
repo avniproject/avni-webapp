@@ -70,7 +70,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
         if (createdOn == null) return this;
         addParameter("createdOn", createdOn.toString());
         addParameter("today", new DateTime().toString());
-        addWhereClauses("i.created_date_time between cast(:createdOn as date) and cast(:today as date)");
+        addWhereClauses("cast(i.created_date_time as date) between cast(:createdOn as date) and cast(:today as date)");
         return this;
     }
 
@@ -80,7 +80,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
             addWhereClauses("usa.user_id is null");
         } else {
             addParameter("userUUID", userUUID);
-            addWhereClauses("u.uuid = :userUUID");
+            addWhereClauses("assigned_to.uuid = :userUUID");
             addWhereClauses("usa.user_id is not null");
         }
         return this;
