@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
 import { updateUserAssignmentToSubject } from "./SubjectAssignmentData";
 import _ from "lodash";
@@ -7,6 +7,10 @@ const SubjectAssignmentMultiSelect = props => {
   const [selectedOptions, setSelectedOptions] = useState(
     getSortedDropdownList(props.selectedOptions)
   );
+
+  useEffect(() => {
+    setSelectedOptions(getSortedDropdownList(props.selectedOptions));
+  }, [props.selectedOptions]);
 
   function getSortedDropdownList(unsortedList) {
     return _.sortBy(unsortedList, [
