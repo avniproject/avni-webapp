@@ -20,7 +20,7 @@ public class CustomQueryController {
         this.queryRepository = queryRepository;
     }
 
-    @RequestMapping(name = "/executeQuery", method = RequestMethod.POST)
+    @RequestMapping(value = "/executeQuery", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     @Transactional
