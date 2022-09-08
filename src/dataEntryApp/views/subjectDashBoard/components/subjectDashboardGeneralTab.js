@@ -83,13 +83,15 @@ const SubjectDashboardGeneralTab = ({
   return (
     <ContainerComponent className={displayGeneralInfoInProfileTab ? {} : classes.root}>
       {subjectVoided && <SubjectVoided showUnVoid={false} />}
-      <NewGeneralEncounterButton
-        general={general}
-        subjectUuid={subjectUuid}
-        subjectVoided={subjectVoided}
-        subjectTypeUuid={subjectTypeUuid}
-        display={!displayGeneralInfoInProfileTab}
-      />
+      {subjectVoided && !displayGeneralInfoInProfileTab && (
+        <NewGeneralEncounterButton
+          general={general}
+          subjectUuid={subjectUuid}
+          subjectVoided={subjectVoided}
+          subjectTypeUuid={subjectTypeUuid}
+          display={!displayGeneralInfoInProfileTab}
+        />
+      )}
       <ExpansionPanel className={classes.expansionPanel}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
