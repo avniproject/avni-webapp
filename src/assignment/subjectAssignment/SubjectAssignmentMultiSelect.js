@@ -20,11 +20,15 @@ const SubjectAssignmentMultiSelect = props => {
     ]);
   }
 
-  function onChange(value, event) {
-    updateUserAssignmentToSubject(event);
-    //TODO how should we handle error of assignment/un-assignment
-    setSelectedOptions(value);
-  }
+  const onChange = (value, event) => {
+    updateUserAssignmentToSubject(event)
+      .then(setSelectedOptions(value))
+      .catch(() =>
+        alert(
+          "Server side error! Refresh your page and resume. If the assignment has not happened, kindly try later."
+        )
+      );
+  };
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {
     if (value.length === 0) {
