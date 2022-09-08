@@ -1,12 +1,9 @@
 import React, { useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
 import { isEmpty, size } from "lodash";
-import SubjectButton from "./Button";
-import { InternalLink } from "common/components/utils";
-import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { getEligibleEncounters, resetState } from "../../../reducers/encounterReducer";
 import { getNewEligibleEncounters } from "../../../../common/mapper/EncounterMapper";
+import { NewVisitLinkButton } from "./NewVisitLinkButton";
 
 export const NewGeneralEncounterButton = ({ subjectUuid, subjectVoided, display = false }) => {
   const newEncounterBaseURL = "/app/subject/encounter";
@@ -17,24 +14,15 @@ export const NewGeneralEncounterButton = ({ subjectUuid, subjectVoided, display 
   const encounterTypes = useSelector(
     state => state.dataEntry.metadata.operationalModules.encounterTypes
   );
-  const { t } = useTranslation();
   const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(
     encounterTypes,
     eligibleEncounters
   );
 
   useEffect(() => {
-    dispatch(getEligibleEncounters(subjectUuid));
     dispatch(resetState());
+    dispatch(getEligibleEncounters(subjectUuid));
   }, []);
-
-  const renderNewVisitButton = (to, label) => (
-    <Grid container justify="flex-end">
-      <InternalLink to={to} noUnderline id={"new-general-visit"}>
-        <SubjectButton btnLabel={t(label)} />
-      </InternalLink>
-    </Grid>
-  );
 
   const renderBasedOnOptions = () => {
     const allEncounters = [...unplannedEncounters, ...scheduledEncounters];
@@ -47,11 +35,13 @@ export const NewGeneralEncounterButton = ({ subjectUuid, subjectVoided, display 
           : `${newEncounterBaseURL}?subjectUuid=${subjectUuid}&uuid=${
               encounter.encounterType.uuid
             }`;
-      return renderNewVisitButton(newVisitURL, encounter.encounterType.name);
+      return <NewVisitLinkButton label={encounter.encounterType.name} to={newVisitURL} />;
     }
-    return renderNewVisitButton(
-      `/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`,
-      "newGeneralVisit"
+    return (
+      <NewVisitLinkButton
+        label={"newGeneralVisit"}
+        to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
+      />
     );
   };
 

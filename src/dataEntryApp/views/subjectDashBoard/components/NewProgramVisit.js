@@ -3,18 +3,18 @@ import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { get, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
-import { Typography, Paper } from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
 import {
   getEligibleProgramEncounters,
   resetState
 } from "../../../reducers/programEncounterReducer";
-import { ProgramEncounter } from "avni-models";
 import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { getNewEligibleProgramEncounters } from "../../../../common/mapper/ProgramEncounterMapper";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,31 +37,9 @@ const NewProgramVisit = ({ match, ...props }) => {
     props.getEligibleProgramEncounters(enrolmentUuid);
   }, []);
 
-  //Creating New programEncounter Object for Plan Encounter
-  const planEncounterList = get(props, "eligibleEncounters.scheduledEncounters", []).map(
-    planEncounter => {
-      const planVisit = new ProgramEncounter();
-      planVisit.encounterType = planEncounter.encounterType;
-      planVisit.encounterDateTime = planEncounter.encounterDateTime;
-      planVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
-      planVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
-      planVisit.name = planEncounter.name;
-      planVisit.uuid = planEncounter.uuid;
-      return planVisit;
-    }
-  );
-
-  //Creating New programEncounter Object for Unplan Encounter
-  const unplanEncounterList = get(props, "eligibleEncounters.eligibleEncounterTypeUUIDs", []).map(
-    uuid => {
-      const unplanVisit = new ProgramEncounter();
-      unplanVisit.encounterType = props.operationalModules.encounterTypes.find(
-        eT => eT.uuid === uuid
-      );
-      unplanVisit.name =
-        unplanVisit.encounterType && unplanVisit.encounterType.operationalEncounterTypeName;
-      return unplanVisit;
-    }
+  const { planEncounterList, unplanEncounterList } = getNewEligibleProgramEncounters(
+    props.operationalModules.encounterTypes,
+    props.eligibleEncounters
   );
 
   const sections = [];

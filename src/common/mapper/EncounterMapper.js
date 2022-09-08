@@ -1,17 +1,11 @@
 import { get } from "lodash";
 import { Encounter } from "avni-models";
+import { mapBasicEncounter } from "./BaseEncounterMapper";
 
 export const getNewEligibleEncounters = (encounterTypes, eligibleEncounters) => {
-  const scheduledEncounters = get(eligibleEncounters, "scheduledEncounters", []).map(pe => {
-    const encounter = new Encounter();
-    encounter.encounterType = pe.encounterType;
-    encounter.encounterDateTime = pe.encounterDateTime;
-    encounter.earliestVisitDateTime = pe.earliestVisitDateTime;
-    encounter.maxVisitDateTime = pe.maxVisitDateTime;
-    encounter.name = pe.name;
-    encounter.uuid = pe.uuid;
-    return encounter;
-  });
+  const scheduledEncounters = get(eligibleEncounters, "scheduledEncounters", []).map(pe =>
+    mapBasicEncounter(new Encounter(), pe)
+  );
   const unplannedEncounters = get(eligibleEncounters, "eligibleEncounterTypeUUIDs", []).map(
     uuid => {
       const encounter = new Encounter();

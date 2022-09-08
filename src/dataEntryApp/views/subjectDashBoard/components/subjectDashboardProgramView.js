@@ -7,12 +7,11 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { InternalLink, withParams } from "../../../../common/components/utils";
+import { withParams } from "../../../../common/components/utils";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
 import { filter, get, isEmpty, isNil } from "lodash";
 import {
@@ -33,6 +32,7 @@ import { ExtensionOption } from "./extension/ExtensionOption";
 import { EnrolmentDetails } from "./EnrolmentDetails";
 import PlannedVisitsTable from "../PlannedVisitsTable";
 import CompletedVisits from "./CompletedVisits";
+import { NewProgramEncounterButton } from "./NewProgramEncounterButton";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -193,20 +193,9 @@ const ProgramView = ({
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
-
-        <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          {!subjectVoided && isNotExited ? (
-            <InternalLink
-              id={"new-program-visit"}
-              to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
-              noUnderline
-            >
-              <SubjectButton btnLabel={t("newProgramVisit")} />
-            </InternalLink>
-          ) : (
-            ""
-          )}
-        </Grid>
+        {!subjectVoided && isNotExited && (
+          <NewProgramEncounterButton enrolmentUUID={programData.uuid} />
+        )}
       </Grid>
       <Paper className={classes.root}>
         <RuleSummary
