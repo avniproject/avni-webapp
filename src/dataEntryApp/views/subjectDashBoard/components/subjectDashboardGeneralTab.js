@@ -13,7 +13,7 @@ import SubjectVoided from "../../../components/SubjectVoided";
 import PlannedVisitsTable from "../PlannedVisitsTable";
 import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import CompletedVisits from "./CompletedVisits";
-import { NewFormButton } from "./NewFormButton";
+import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -83,7 +83,7 @@ const SubjectDashboardGeneralTab = ({
   return (
     <ContainerComponent className={displayGeneralInfoInProfileTab ? {} : classes.root}>
       {subjectVoided && <SubjectVoided showUnVoid={false} />}
-      <NewFormButton
+      <NewGeneralEncounterButton
         general={general}
         subjectUuid={subjectUuid}
         subjectVoided={subjectVoided}

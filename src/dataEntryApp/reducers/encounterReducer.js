@@ -187,7 +187,8 @@ export const selectEncounterState = state => state.dataEntry.encounterReducer;
 
 const initialState = {
   saved: false,
-  validationResults: []
+  validationResults: [],
+  eligibleEncounters: { scheduledEncounters: [], eligibleEncounterTypeUUIDs: [] }
 };
 
 export default (state = initialState, action) => {
@@ -270,7 +271,7 @@ export default (state = initialState, action) => {
         encounter: null,
         encounterForm: null,
         encounterFormMappings: null,
-        eligibleEncounters: { scheduledEncounters: [], eligibleEncounterTypeUUIDs: [] }
+        ...initialState
       };
     }
     case types.SET_STATE: {

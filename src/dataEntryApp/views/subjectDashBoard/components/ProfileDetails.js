@@ -21,7 +21,7 @@ import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { CommentDrawer } from "./comments/CommentDrawer";
 import CommentIcon from "@material-ui/icons/Comment";
 import { selectOrganisationConfig } from "../../../sagas/selectors";
-import { get, isNil } from "lodash";
+import { get, isNil, isEmpty } from "lodash";
 import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
@@ -312,21 +312,23 @@ const ProfileDetails = ({
                 />
               </div>
             ) : (
-              <Link
-                to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                  programs[0].name
-                }&formType=ProgramEnrolment&subjectTypeName=${profileDetails.subjectType.name}`}
-              >
-                <Fab
-                  id={programs[0].name}
-                  className={classes.enrollButtonStyle}
-                  variant="extended"
-                  color="primary"
-                  aria-label="add"
+              !isEmpty(programs) && (
+                <Link
+                  to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
+                    programs[0].name
+                  }&formType=ProgramEnrolment&subjectTypeName=${profileDetails.subjectType.name}`}
                 >
-                  {t(`Enrol in ${programs[0].name}`)}
-                </Fab>
-              </Link>
+                  <Fab
+                    id={programs[0].name}
+                    className={classes.enrollButtonStyle}
+                    variant="extended"
+                    color="primary"
+                    aria-label="add"
+                  >
+                    {t(`Enrol in ${programs[0].name}`)}
+                  </Fab>
+                </Link>
+              )
             )}
           </Grid>
         </Grid>

@@ -3,15 +3,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { isEmpty, get } from "lodash";
+import { isEmpty } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
 import { getEligibleEncounters, resetState } from "../../../reducers/encounterReducer";
-import { Encounter } from "avni-models";
 import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { getNewEligibleEncounters } from "../../../../common/mapper/EncounterMapper";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,35 +34,17 @@ const NewGeneralVisit = ({ match, ...props }) => {
     props.getEligibleEncounters(subjectUuid);
   }, []);
 
-  const scheduledEncounters = get(props, "eligibleEncounters.scheduledEncounters", []).map(pe => {
-    const encounter = new Encounter();
-    encounter.encounterType = pe.encounterType;
-    encounter.encounterDateTime = pe.encounterDateTime;
-    encounter.earliestVisitDateTime = pe.earliestVisitDateTime;
-    encounter.maxVisitDateTime = pe.maxVisitDateTime;
-    encounter.name = pe.name;
-    encounter.uuid = pe.uuid;
-    return encounter;
-  });
-
-  const actualEncounters = get(props, "eligibleEncounters.eligibleEncounterTypeUUIDs", []).map(
-    uuid => {
-      const encounter = new Encounter();
-      encounter.encounterType = props.operationalModules.encounterTypes.find(
-        eT => eT.uuid === uuid
-      );
-      encounter.name =
-        encounter.encounterType && encounter.encounterType.operationalEncounterTypeName;
-      return encounter;
-    }
+  const { scheduledEncounters, unplannedEncounters } = getNewEligibleEncounters(
+    props.operationalModules.encounterTypes,
+    props.eligibleEncounters
   );
 
   const sections = [];
   if (!isEmpty(scheduledEncounters)) {
     sections.push({ title: t("plannedVisits"), data: scheduledEncounters });
   }
-  if (!isEmpty(actualEncounters)) {
-    sections.push({ title: t("unplannedVisits"), data: actualEncounters });
+  if (!isEmpty(unplannedEncounters)) {
+    sections.push({ title: t("unplannedVisits"), data: unplannedEncounters });
   }
 
   return props.load ? (

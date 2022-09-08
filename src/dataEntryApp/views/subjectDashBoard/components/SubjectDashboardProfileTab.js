@@ -30,7 +30,7 @@ import {
 } from "../../../reducers/serverSideRulesReducer";
 import { RuleSummary } from "./RuleSummary";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
-import { NewFormButton } from "./NewFormButton";
+import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import { Individual } from "avni-models";
 
 const useStyles = makeStyles(theme => ({
@@ -346,7 +346,7 @@ const SubjectDashboardProfileTab = ({
         </Paper>
       ) : (
         <Paper className={classes.root}>
-          <NewFormButton
+          <NewGeneralEncounterButton
             general={general}
             subjectTypeUuid={profile.subjectType.uuid}
             subjectUuid={profile.uuid}
