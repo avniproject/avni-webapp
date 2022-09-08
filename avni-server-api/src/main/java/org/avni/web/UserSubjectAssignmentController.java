@@ -56,7 +56,7 @@ public class UserSubjectAssignmentController extends AbstractController<UserSubj
         return new ResponseEntity<>(userSubjectAssignmentService.searchSubjects(subjectSearchRequest), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/userSubjectAssignment", method = RequestMethod.POST)
+    @RequestMapping(value = "/web/userSubjectAssignment", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @Transactional
     ResponseEntity<?> save(@RequestBody UserSubjectAssignmentContract userSubjectAssignmentContract) {
