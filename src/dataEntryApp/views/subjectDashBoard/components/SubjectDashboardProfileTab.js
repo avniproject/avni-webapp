@@ -346,7 +346,7 @@ const SubjectDashboardProfileTab = ({
         </Paper>
       ) : (
         <Paper className={classes.root}>
-          {profile.voided && displayGeneralInfoInProfileTab && (
+          {!profile.voided && displayGeneralInfoInProfileTab && (
             <NewGeneralEncounterButton subjectUuid={profile.uuid} />
           )}
           <RuleSummary
