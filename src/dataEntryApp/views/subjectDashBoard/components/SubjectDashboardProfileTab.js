@@ -347,13 +347,7 @@ const SubjectDashboardProfileTab = ({
       ) : (
         <Paper className={classes.root}>
           {profile.voided && displayGeneralInfoInProfileTab && (
-            <NewGeneralEncounterButton
-              general={general}
-              subjectTypeUuid={profile.subjectType.uuid}
-              subjectUuid={profile.uuid}
-              subjectVoided={profile.voided}
-              display={displayGeneralInfoInProfileTab}
-            />
+            <NewGeneralEncounterButton subjectUuid={profile.uuid} />
           )}
           <RuleSummary
             title={"subjectSummary"}
