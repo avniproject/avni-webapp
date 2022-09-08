@@ -34,9 +34,13 @@ const SubjectAssignmentMultiSelect = props => {
     if (value.length === 0) {
       return placeholderButtonLabel;
     }
-    return `Assigned to ${value.length} users: ${value
+
+    let labelDenotingAssignedUsers = `${value.length} users: ${value
       .map(entry => entry.label)
-      .join(", ")}`.substring(0, 255);
+      .join(", ")}`;
+
+    let truncatedLabel = _.truncate(labelDenotingAssignedUsers, { length: 50 });
+    return truncatedLabel;
   }
 
   return (
