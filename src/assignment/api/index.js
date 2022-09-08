@@ -13,5 +13,5 @@ export default {
     http.fetchJson("/web/subjectAssignmentMetadata").then(response => response.json),
   getAssignmentMetadata: () =>
     http.fetchJson("/web/assignmentMetadata").then(response => response.json),
-  postUpdateUserAssignmentToSubject: payload => http.post("userSubjectAssignment", payload)
+  postUpdateUserAssignmentToSubject: payload => http.post("/web/userSubjectAssignment", payload)
 };
