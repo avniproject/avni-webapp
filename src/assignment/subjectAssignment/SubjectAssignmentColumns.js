@@ -48,6 +48,9 @@ export const getColumns = (metadata, filterCriteria) => {
   const fixedColumns = [
     {
       title: "Name",
+      cellStyle: { width: "10%" },
+      width: "10%",
+      headerStyle: { width: "10%" },
       render: row => (
         <a href={`/#/app/subject?uuid=${row.uuid}`} target="_blank" rel="noopener noreferrer">
           {row.fullName}
@@ -56,14 +59,23 @@ export const getColumns = (metadata, filterCriteria) => {
     },
     {
       title: "Address",
-      field: "addressLevel"
+      field: "addressLevel",
+      cellStyle: { width: "25%" },
+      width: "25%",
+      headerStyle: { width: "25%" }
     },
     {
       title: "Programs",
+      cellStyle: { width: "25%" },
+      width: "25%",
+      headerStyle: { width: "25%" },
       render: row => getFormattedPrograms(row.programs)
     },
     {
       title: "Assigned to",
+      cellStyle: { width: "40%" },
+      width: "40%",
+      headerStyle: { width: "40%" },
       render: row => (
         <SubjectAssignmentMultiSelect
           options={getUserOptions(row, metadata.users)}

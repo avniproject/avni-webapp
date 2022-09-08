@@ -51,22 +51,24 @@ const SubjectAssignment = () => {
       <div className={classes.root}>
         <Grid container>
           <Grid item xs={8}>
-            <MaterialTable
-              title="Subjects"
-              tableRef={tableRef}
-              columns={getColumns(state.metadata, state.filterCriteria)}
-              data={query => fetchSubjectData(query, state.filterCriteria)}
-              options={{
-                pageSize: 10,
-                pageSizeOptions: [10, 15, 25],
-                addRowPosition: "first",
-                sorting: true,
-                debounceInterval: 500,
-                search: false,
-                maxBodyHeight: "75vh",
-                minBodyHeight: "75vh"
-              }}
-            />
+            <div style={{ maxWidth: "100%" }}>
+              <MaterialTable
+                title="Subjects"
+                tableRef={tableRef}
+                columns={getColumns(state.metadata, state.filterCriteria)}
+                data={query => fetchSubjectData(query, state.filterCriteria)}
+                options={{
+                  pageSize: 10,
+                  pageSizeOptions: [10, 15, 25],
+                  addRowPosition: "first",
+                  sorting: true,
+                  debounceInterval: 500,
+                  search: false,
+                  maxBodyHeight: "75vh",
+                  minBodyHeight: "75vh"
+                }}
+              />
+            </div>
           </Grid>
           <Grid item xs={1} />
           <Grid item xs={3}>
