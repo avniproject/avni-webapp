@@ -183,6 +183,11 @@ public class GroupPrivilegeService implements NonScopeAwareService {
         return groupPrivilegeRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
+    public GroupPrivileges getGroupPrivileges(User user) {
+        List<GroupPrivilege> privileges = groupPrivilegeRepository.getAllAllowPrivilegesForUser(user.getId());
+        return new GroupPrivileges(false, privileges);
+    }
+
     public GroupPrivileges getGroupPrivileges() {
         if (this.userHasAllPrivileges()) {
             return new GroupPrivileges();

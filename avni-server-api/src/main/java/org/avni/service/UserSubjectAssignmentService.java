@@ -32,12 +32,17 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
     private final SubjectSearchRepository subjectSearchRepository;
     private final ConceptRepository conceptRepository;
     private final IndividualRepository individualRepository;
+    private final ChecklistService checklistService;
+    private final ChecklistItemService checklistItemService;
+    private final IndividualRelationshipService individualRelationshipService;
+    private final GroupSubjectRepository groupSubjectRepository;
+    private final GroupPrivilegeService privilegeService;
 
     @Autowired
     public UserSubjectAssignmentService(UserSubjectAssignmentRepository userSubjectAssignmentRepository, UserRepository userRepository,
                                         SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository,
                                         GroupRepository groupRepository, SubjectSearchRepository subjectSearchRepository,
-                                        ConceptRepository conceptRepository, IndividualRepository individualRepository) {
+                                        ConceptRepository conceptRepository, IndividualRepository individualRepository, ChecklistService checklistService, ChecklistItemService checklistItemService, IndividualRelationshipService individualRelationshipService, GroupSubjectRepository groupSubjectRepository, GroupPrivilegeService privilegeService) {
         this.userSubjectAssignmentRepository = userSubjectAssignmentRepository;
         this.userRepository = userRepository;
         this.subjectTypeRepository = subjectTypeRepository;
@@ -46,6 +51,11 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
         this.subjectSearchRepository = subjectSearchRepository;
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
+        this.checklistService = checklistService;
+        this.checklistItemService = checklistItemService;
+        this.individualRelationshipService = individualRelationshipService;
+        this.groupSubjectRepository = groupSubjectRepository;
+        this.privilegeService = privilegeService;
     }
 
     @Override
@@ -127,8 +137,49 @@ public class UserSubjectAssignmentService implements NonScopeAwareService {
             userSubjectAssignment.setOrganisationId(organisation.getId());
         }
         userSubjectAssignment.setVoided(userSubjectAssignmentRequest.isVoided());
-        userSubjectAssignment.updateAudit();
+        updateAuditForUserSubjectAssignment(userSubjectAssignment);
         return userSubjectAssignmentRepository.save(userSubjectAssignment);
     }
 
+    private void updateAuditForUserSubjectAssignment(UserSubjectAssignment userSubjectAssignment) {
+        userSubjectAssignment.updateAudit();
+        triggerSyncForSubjectAndItsChildrenForUser(userSubjectAssignment.getSubject(), userSubjectAssignment.getUser());
+    }
+
+    private void triggerSyncForSubjectAndItsChildrenForUser(Individual individual, User user) {
+        individual.updateAudit();
+        individual.getProgramEnrolments()
+                .stream()
+                .forEach(enr -> enr.updateAudit());
+        individual.getProgramEncounters()
+                .stream()
+                .forEach(enc -> enc.updateAudit());
+        individual.getEncounters()
+                .stream()
+                .forEach(enr -> enr.updateAudit());
+        GroupPrivileges groupPrivileges = privilegeService.getGroupPrivileges(user);
+        checklistService.findChecklistsByIndividual(individual)
+                .stream()
+                .filter(checklist ->
+                        groupPrivileges.hasViewPrivilege(checklist))
+                .forEach(ent -> ent.updateAudit());
+        checklistItemService.findChecklistItemsByIndividual(individual)
+                .stream()
+                .filter(checklistItem ->
+                        groupPrivileges.hasViewPrivilege(checklistItem))
+                .forEach(ent -> ent.updateAudit());
+        individualRelationshipService.findByIndividual(individual)
+                .stream()
+                .filter(individualRelationship ->
+                        groupPrivileges.hasViewPrivilege(individualRelationship.getIndividuala()) &&
+                                groupPrivileges.hasViewPrivilege(individualRelationship.getIndividualB()))
+                .forEach(ent -> ent.updateAudit());
+        groupSubjectRepository.findAllByGroupSubjectOrMemberSubject(individual)
+                .stream()
+                .filter(groupSubject ->
+                        groupPrivileges.hasViewPrivilege(groupSubject.getGroupSubject()) &&
+                                groupPrivileges.hasViewPrivilege(groupSubject.getMemberSubject())
+                )
+                .forEach(ent -> ent.updateAudit());
+    }
 }
