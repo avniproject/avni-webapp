@@ -146,5 +146,5 @@ export const getNewRequestBody = ({
       output.programs = [{ uuid: program.uuid, encounters: [{ uuid: encounterType.uuid }] }];
     }
   }
-  return { output, filters };
+  return { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, output, filters };
 };
