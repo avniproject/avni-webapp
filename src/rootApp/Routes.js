@@ -19,6 +19,7 @@ import Documentation from "../documentation/Documentation";
 import Assignment from "../assignment/Assignment";
 import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment";
 import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
+import NewExport from "../reports/export/NewExport";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -116,6 +117,13 @@ const Routes = ({ user, organisation }) => (
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Export)}
+    />
+    <RestrictedRoute
+      exact
+      path="/newExport"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, NewExport)}
     />
     <RestrictedRoute
       exact

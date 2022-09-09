@@ -1,6 +1,5 @@
 import { FormControl, FormLabel, makeStyles } from "@material-ui/core";
 import React from "react";
-import api from "../api";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
@@ -9,7 +8,7 @@ import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getOperationalModules, getUploadStatuses } from "../reducers";
 import JobStatus from "../components/export/JobStatus";
 import Paper from "@material-ui/core/Paper";
-import _ from "lodash";
+import { get, isEmpty } from "lodash";
 import Box from "@material-ui/core/Box";
 import ReportTypes, { reportTypes } from "./ReportTypes";
 import FormGroup from "@material-ui/core/FormGroup";
@@ -18,17 +17,13 @@ import Radio from "../../dataEntryApp/components/Radio";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import AddressLevelsByType from "../../common/components/AddressLevelsByType";
 import { reportSideBarOptions } from "../Common";
-import {
-  applicableOptions,
-  ExportReducer,
-  getRequestBody,
-  initialState
-} from "./reducer/ExportReducer";
+import { applicableOptions, ExportReducer, initialState } from "./reducer/ExportReducer";
 import { RegistrationType } from "../components/export/RegistrationType";
 import { EnrolmentType } from "../components/export/EnrolmentType";
 import { EncounterType } from "../components/export/EncounterType";
 import { GroupSubjectType } from "../components/export/GroupSubjectType";
 import Checkbox from "@material-ui/core/Checkbox";
+import { ExportRequestBody } from "../components/export/ExportRequestBody";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -37,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Export = ({
+const NewExport = ({
   operationalModules,
   getOperationalModules,
   getUploadStatuses,
@@ -60,21 +55,22 @@ const Export = ({
     endDate,
     addressLevelIds,
     addressLevelError,
-    includeVoided
+    includeVoided,
+    customRequest
   } = exportRequest;
   const dispatch = (type, payload) => dispatchFun({ type, payload });
-  const subjectTypes = _.get(operationalModules, "subjectTypes");
+  const subjectTypes = get(operationalModules, "subjectTypes");
   const { programOptions, encounterTypeOptions } = applicableOptions(
     operationalModules,
     exportRequest
   );
 
   const onStartExportHandler = async () => {
-    const [ok, error] = await api.startExportJob(getRequestBody(exportRequest));
-    if (!ok && error) {
-      alert(error);
-    }
-    setTimeout(() => getUploadStatuses(0), 1000);
+    // const [ok, error] = await api.startExportJob(getRequestBody(exportRequest));
+    // if (!ok && error) {
+    //     alert(error);
+    // }
+    // setTimeout(() => getUploadStatuses(0), 1000);
   };
 
   const renderAddressLevel = () => {
@@ -172,9 +168,14 @@ const Export = ({
               <Grid>
                 {RenderReportTypes()}
                 {renderReportTypeOptions()}
-                {!_.isEmpty(reportType.name) && renderAddressLevel()}
-                {!_.isEmpty(reportType.name) && renderIncludeVoided()}
+                {!isEmpty(reportType.name) && renderAddressLevel()}
+                {!isEmpty(reportType.name) && renderIncludeVoided()}
               </Grid>
+              <ExportRequestBody
+                dispatch={dispatch}
+                customRequest={customRequest}
+                exportRequest={exportRequest}
+              />
               <Grid container direction="row" justify="flex-start">
                 <Button
                   variant="contained"
@@ -212,5 +213,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     { getOperationalModules, getUploadStatuses }
-  )(Export)
+  )(NewExport)
 );

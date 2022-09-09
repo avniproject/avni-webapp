@@ -1,15 +1,18 @@
 import { filter, intersectionWith, isEmpty } from "lodash";
+import ReportTypes, { reportTypes } from "../ReportTypes";
+import moment from "moment";
 
 export const initialState = {
   reportType: "",
   subjectType: {},
   program: {},
   encounterType: {},
-  startDate: new Date(),
-  endDate: new Date(),
+  startDate: moment().toDate(),
+  endDate: moment().toDate(),
   addressLevelIds: [],
   addressLevelError: "",
-  includeVoided: false
+  includeVoided: false,
+  customRequest: {}
 };
 
 export function ExportReducer(exportRequest, action) {
@@ -37,6 +40,8 @@ export function ExportReducer(exportRequest, action) {
       return { ...exportRequest, addressLevelError: action.payload };
     case "includeVoided":
       return { ...exportRequest, includeVoided: action.payload };
+    case "customRequest":
+      return { ...exportRequest, customRequest: action.payload };
     default:
       return exportRequest;
   }
@@ -74,4 +79,72 @@ export const applicableOptions = (
     );
     return { programOptions, encounterTypeOptions };
   }
+};
+
+export const getRequestBody = ({
+  reportType,
+  subjectType,
+  program,
+  encounterType,
+  startDate,
+  endDate,
+  addressLevelIds,
+  includeVoided
+}) => {
+  return {
+    subjectTypeUUID: subjectType.uuid,
+    programUUID: program.uuid,
+    encounterTypeUUID: encounterType.uuid,
+    startDate: moment(startDate)
+      .startOf("day")
+      .toDate(),
+    endDate: moment(endDate)
+      .endOf("day")
+      .toDate(),
+    reportType: ReportTypes.getCode(reportType.name),
+    addressLevelIds: addressLevelIds,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    includeVoided
+  };
+};
+
+export const getNewRequestBody = ({
+  reportType,
+  subjectType,
+  program,
+  encounterType,
+  startDate,
+  endDate,
+  addressLevelIds,
+  includeVoided
+}) => {
+  const output = {};
+  const filters = {
+    addressLevelIds: addressLevelIds,
+    date: {
+      from: moment(startDate)
+        .startOf("day")
+        .toDate(),
+      to: moment(endDate)
+        .endOf("day")
+        .toDate()
+    },
+    includeVoided
+  };
+  if (!isEmpty(subjectType)) {
+    output.uuid = subjectType.uuid;
+    if (reportType.name === reportTypes.GroupSubject) {
+      output.membershipExport = true;
+    }
+  }
+  if (!isEmpty(encounterType) && isEmpty(program)) {
+    output.encounters = [{ uuid: encounterType.uuid }];
+  }
+  if (!isEmpty(program)) {
+    output.programs = [{ uuid: program.uuid }];
+    if (!isEmpty(encounterType)) {
+      output.programs = [{ uuid: program.uuid, encounters: [{ uuid: encounterType.uuid }] }];
+    }
+  }
+  return { output, filters };
 };
