@@ -9,7 +9,7 @@ import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
 import Translations from "../translations";
-import Export from "../reports/Export";
+import Export from "../reports/export/Export";
 import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 import Tutorials from "../tutorials/Tutorials";
 import SelfServiceReports from "../reports/SelfServiceReports";

@@ -2,7 +2,7 @@ import { FormControl, FormLabel } from "@material-ui/core";
 import { isEmpty } from "lodash";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "../dataEntryApp/components/Radio";
+import Radio from "../../../dataEntryApp/components/Radio";
 import React from "react";
 
 export const ExportOptions = ({ options, label, selectedOption, onChange }) => {

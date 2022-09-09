@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { getUploadStatuses } from "./reducers";
+import { getUploadStatuses } from "../../reducers";
 import { withRouter } from "react-router-dom";
 import React from "react";
 import Table from "@material-ui/core/Table";

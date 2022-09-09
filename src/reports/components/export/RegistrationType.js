@@ -1,5 +1,5 @@
 import React from "react";
-import { ExportOptions } from "../../ExportOptions";
+import { ExportOptions } from "./ExportOptions";
 import { DateOptions } from "./DateOptions";
 
 export const RegistrationType = ({

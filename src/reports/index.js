@@ -1,3 +1,3 @@
-import Export from "./Export";
+import Export from "./export/Export";
 
 export default { Export };

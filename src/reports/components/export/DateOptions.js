@@ -1,7 +1,7 @@
 import React from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import Grid from "@material-ui/core/Grid";
-import { DateSelector } from "../../DateSelector";
+import { DateSelector } from "./DateSelector";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 export const DateOptions = ({ startDate, endDate, dispatch, startDateLabel, endDateLabel }) => {

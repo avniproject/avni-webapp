@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty } from "lodash";
-import { ExportOptions } from "../../ExportOptions";
+import { ExportOptions } from "./ExportOptions";
 import { DateOptions } from "./DateOptions";
 
 export const EnrolmentType = ({
