@@ -22,7 +22,7 @@ const SubjectAssignmentMultiSelect = props => {
 
   const onChange = (value, event) => {
     updateUserAssignmentToSubject(event)
-      .then(setSelectedOptions(value))
+      .then(() => setSelectedOptions(value))
       .catch(() =>
         alert(
           "Server side error! Refresh your page and resume. If the assignment has not happened, kindly try later."
@@ -35,7 +35,7 @@ const SubjectAssignmentMultiSelect = props => {
       return placeholderButtonLabel;
     }
 
-    let labelDenotingAssignedUsers = `${value.length} users: ${value
+    let labelDenotingAssignedUsers = `${value.length} user(s): ${value
       .map(entry => entry.label)
       .join(", ")}`;
 
