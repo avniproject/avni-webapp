@@ -5,7 +5,6 @@ import { formatDate } from "../../utils/General";
 import MaterialTable from "material-table";
 import { InternalLink } from "../../../common/components/utils";
 import { DeleteButton } from "../../components/DeleteButton";
-import ConfirmDialog from "../../components/ConfirmDialog";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { size } from "lodash";
@@ -23,17 +22,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PlannedVisitsTable = ({
-  plannedVisits,
-  doBaseUrl,
-  cancelBaseURL,
-  onDelete,
-  deleteTitle,
-  deleteMessage
-}) => {
+const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
 
   const getStatus = ({ maxVisitDateTime, earliestVisitDateTime }) => {
     if (moment().isAfter(moment(maxVisitDateTime))) {
@@ -82,15 +73,8 @@ const PlannedVisitsTable = ({
             </InternalLink>
           </Grid>
           <Grid item>
-            <DeleteButton onDelete={() => setVoidConfirmation(true)} />
+            <DeleteButton onDelete={() => onDelete(row)} />
           </Grid>
-          <ConfirmDialog
-            title={t(deleteTitle)}
-            open={voidConfirmation}
-            setOpen={setVoidConfirmation}
-            message={t(deleteMessage)}
-            onConfirm={() => onDelete(row.uuid)}
-          />
         </Grid>
       )
     }

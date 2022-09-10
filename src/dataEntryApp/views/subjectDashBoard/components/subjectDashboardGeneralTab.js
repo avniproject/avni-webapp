@@ -14,6 +14,7 @@ import PlannedVisitsTable from "../PlannedVisitsTable";
 import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import CompletedVisits from "./CompletedVisits";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
+import ConfirmDialog from "../../../components/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -73,6 +74,8 @@ const SubjectDashboardGeneralTab = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = React.useState();
+
   const plannedVisits = filter(
     general,
     ({ voided, encounterDateTime, cancelDateTime }) =>
@@ -101,9 +104,18 @@ const SubjectDashboardGeneralTab = ({
             plannedVisits={plannedVisits || []}
             doBaseUrl={`/app/subject/encounter?encounterUuid`}
             cancelBaseURL={`/app/subject/cancelEncounter?uuid`}
-            onDelete={uuid => voidGeneralEncounter(uuid)}
-            deleteTitle={"GeneralEncounterVoidAlertTitle"}
-            deleteMessage={"GeneralEncounterVoidAlertMessage"}
+            onDelete={plannedEncounter => {
+              setPlannedEncounterUUIDToBeVoided(plannedEncounter.uuid);
+            }}
+          />
+          <ConfirmDialog
+            title={t("GeneralEncounterVoidAlertTitle")}
+            open={plannedEncounterUUIDToBeVoided !== undefined}
+            setOpen={() => setPlannedEncounterUUIDToBeVoided()}
+            message={t("GeneralEncounterVoidAlertMessage")}
+            onConfirm={() => {
+              voidGeneralEncounter(plannedEncounterUUIDToBeVoided);
+            }}
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
