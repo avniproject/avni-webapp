@@ -3,7 +3,8 @@ package org.avni.web.request.export;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExportOutput extends ExportEntityType {
+public class ExportOutput {
+    private ExportEntityType individual;
     private List<ExportEntityType> encounters = new ArrayList<>();
     private List<ExportNestedOutput> groups = new ArrayList<>();
     private List<ExportNestedOutput> programs = new ArrayList<>();
@@ -32,7 +33,15 @@ public class ExportOutput extends ExportEntityType {
         this.programs = programs;
     }
 
-    private static class ExportNestedOutput extends ExportEntityType {
+    public ExportEntityType getIndividual() {
+        return individual;
+    }
+
+    public void setIndividual(ExportEntityType individual) {
+        this.individual = individual;
+    }
+
+    public static class ExportNestedOutput extends ExportEntityType {
         private List<ExportEntityType> encounters = new ArrayList<>();
 
         public List<ExportEntityType> getEncounters() {

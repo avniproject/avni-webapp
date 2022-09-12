@@ -10,7 +10,7 @@ public class ExportEntityType {
     private long maxCount;
 
     public ExportFilters getFilters() {
-        return filters;
+        return filters == null ? new ExportFilters() : filters;
     }
 
     public void setFilters(ExportFilters filters) {
@@ -35,6 +35,10 @@ public class ExportEntityType {
 
     public List<String> getFields() {
         return fields;
+    }
+
+    public boolean isEmptyOrContains(String conceptUUID) {
+        return fields.isEmpty() || fields.contains(conceptUUID);
     }
 
     public void setFields(List<String> fields) {

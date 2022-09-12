@@ -24,7 +24,7 @@ public class ExportFilters {
         this.date = date;
     }
 
-    private class DateFilter {
+    public static class DateFilter {
         private DateTime to;
         private DateTime from;
 

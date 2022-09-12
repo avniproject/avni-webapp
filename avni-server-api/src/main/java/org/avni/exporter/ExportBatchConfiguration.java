@@ -100,7 +100,7 @@ public class ExportBatchConfiguration {
     @Bean
     public Step exportV2Step(Tasklet exportV2Tasklet,
                              LongitudinalExportJobStepListener listener) {
-        return stepBuilderFactory.get("step1")
+        return stepBuilderFactory.get("exportV2Step")
                 .tasklet(exportV2Tasklet)
                 .listener(listener)
                 .build();
