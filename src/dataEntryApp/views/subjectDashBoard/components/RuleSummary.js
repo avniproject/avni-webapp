@@ -70,7 +70,7 @@ export const RuleSummary = ({ isFetching, title, summaryObservations = [] }) => 
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Grid item conatiner xs={12}>
+        <Grid item container xs={12}>
           {isFetching ? renderProgress() : renderObs()}
         </Grid>
       </ExpansionPanelDetails>

@@ -15,6 +15,7 @@ import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer"
 import CompletedVisits from "./CompletedVisits";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import ConfirmDialog from "../../../components/ConfirmDialog";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -74,7 +75,7 @@ const SubjectDashboardGeneralTab = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = React.useState();
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = React.useState("");
 
   const plannedVisits = filter(
     general,
@@ -84,7 +85,7 @@ const SubjectDashboardGeneralTab = ({
   const ContainerComponent = displayGeneralInfoInProfileTab ? Box : Paper;
 
   return (
-    <ContainerComponent className={displayGeneralInfoInProfileTab ? {} : classes.root}>
+    <ContainerComponent className={displayGeneralInfoInProfileTab ? "" : classes.root}>
       {subjectVoided && <SubjectVoided showUnVoid={false} />}
       {!subjectVoided && !displayGeneralInfoInProfileTab && (
         <NewGeneralEncounterButton subjectUuid={subjectUuid} />
@@ -110,7 +111,7 @@ const SubjectDashboardGeneralTab = ({
           />
           <ConfirmDialog
             title={t("GeneralEncounterVoidAlertTitle")}
-            open={plannedEncounterUUIDToBeVoided !== undefined}
+            open={!_.isEmpty(plannedEncounterUUIDToBeVoided)}
             setOpen={() => setPlannedEncounterUUIDToBeVoided()}
             message={t("GeneralEncounterVoidAlertMessage")}
             onConfirm={() => {
