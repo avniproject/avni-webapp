@@ -6,7 +6,6 @@ import org.avni.dao.ExportJobParametersRepository;
 import org.avni.domain.*;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.export.ExportEntityType;
-import org.avni.web.request.export.ExportFilters;
 import org.avni.web.request.export.ExportOutput;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -45,13 +44,18 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
     @Override
     public ItemRow process(Object exportItem) throws Exception {
         ItemRow exportItemRow = new ItemRow();
-        // Individual would have already passed filters applicable for it
-        Individual individual = (Individual) exportItem;
-        exportItemRow.setIndividual(individual);
+        Individual individual = initIndividual((Individual) exportItem, exportItemRow);
         initGeneralEncounters(exportItemRow, individual);
         initProgramsAndTheirEncounters(exportItemRow, individual);
         initGroupSubjectsAndTheirEncounters(exportItemRow, individual);
         return exportItemRow;
+    }
+
+    private Individual initIndividual(Individual exportItem, ItemRow exportItemRow) {
+        // Individual would have already passed filters applicable for it
+        Individual individual = exportItem;
+        exportItemRow.setIndividual(individual);
+        return individual;
     }
 
     private void initGroupSubjectsAndTheirEncounters(ItemRow exportItemRow, Individual individual) {
@@ -101,12 +105,10 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
     }
 
     public boolean applyFilters(Map<String, ExportEntityType> entityToFiltersMap, String uuid, DateTime entityDateTime) {
-        Optional<ExportFilters> output = Optional.ofNullable(entityToFiltersMap.get(uuid).getFilters());
-        if(output.isPresent()) {
-            if (output.get().getDate() != null) {
-                return output.get().getDate().apply(entityDateTime);
-            }
+        ExportEntityType entity = entityToFiltersMap.get(uuid);
+        if(entity == null || entity.getFilters() == null || entity.getFilters().getDate() == null) {
+            return true;
         }
-        return true;
+        return entity.getFilters().getDate().apply(entityDateTime);
     }
 }
