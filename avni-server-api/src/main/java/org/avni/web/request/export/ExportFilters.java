@@ -43,5 +43,15 @@ public class ExportFilters {
         public void setFrom(DateTime from) {
             this.from = from;
         }
+
+        public boolean apply(DateTime inputDateTime) {
+            if(inputDateTime == null) {
+                return false;
+            }
+            if(inputDateTime.isBefore(from) || inputDateTime.isAfter(to)) {
+                return false;
+            }
+            return true;
+        }
     }
 }
