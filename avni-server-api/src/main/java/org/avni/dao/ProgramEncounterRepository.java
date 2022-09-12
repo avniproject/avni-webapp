@@ -57,7 +57,21 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
             "group by enc.program_enrolment_id " +
             "order by count desc " +
             "limit 1", nativeQuery = true)
-    Long getMaxProgramEncounterCount(String programEncounterTypeUUID, Calendar startDate, Calendar endDate);
+    Long getMaxProgramEncounterCountBetween(String programEncounterTypeUUID, Calendar startDate, Calendar endDate);
+
+    @Query(value = "select count(enc.id) as count " +
+            "from program_encounter enc " +
+            "join encounter_type t on t.id = enc.encounter_type_id " +
+            "where t.uuid = :programEncounterTypeUUID and (enc.encounter_date_time notnull or enc.cancel_date_time notnull) " +
+            "group by enc.program_enrolment_id " +
+            "order by count desc " +
+            "limit 1", nativeQuery = true)
+    Long getMaxProgramEncounterCount(String programEncounterTypeUUID);
+
+    default Long getMaxProgramEncounterCount(String programEncounterTypeUUID, Calendar startDate, Calendar endDate) {
+        return startDate == null ? getMaxProgramEncounterCount(programEncounterTypeUUID) :
+                getMaxProgramEncounterCountBetween(programEncounterTypeUUID, startDate, endDate);
+    }
 
     @Query("select pe from ProgramEncounter pe where pe.uuid =:id or pe.legacyId = :id")
     ProgramEncounter findByLegacyIdOrUuid(String id);

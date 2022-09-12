@@ -19,7 +19,7 @@ public class ExportFilters {
     }
 
     public DateFilter getDate() {
-        return date;
+        return date == null ? new DateFilter() : date;
     }
 
     public void setDate(DateFilter date) {

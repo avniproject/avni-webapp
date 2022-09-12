@@ -90,7 +90,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         this.exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {
         });
         String timezone = exportJobParameters.getTimezone();
-        addMaxVisitCount(exportJobParameters);
         String subjectTypeUUID = this.exportOutput.getUuid();
         this.registrationMap = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
         addRegistrationHeaders(headers, subjectTypeRepository.findByUuid(subjectTypeUUID), this.registrationMap);
@@ -229,40 +228,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         writer.write(this.headers.toString());
     }
 
-    private void addMaxVisitCount(ExportJobParameters exportJobParameters) {
-        this.exportOutput.getEncounters().forEach(exportEntityType -> addMaxVisitCount(exportJobParameters, exportEntityType));
-        this.exportOutput.getGroups().forEach(exportEntityType -> {
-            exportEntityType.getEncounters().forEach(groupExportEntityType ->
-                    addMaxVisitCount(exportJobParameters, groupExportEntityType));
-        });
-        this.exportOutput.getPrograms().forEach(programEntityType -> {
-            programEntityType.getEncounters().forEach(programEncounterEntityType -> {
-                addMaxProgramVisitCount(exportJobParameters, programEncounterEntityType);
-            });
-        });
-    }
-
-    private void addMaxProgramVisitCount(ExportJobParameters exportJobParameters, ExportEntityType programEncounterEntityType) {
-        DateFilter dateFilter = programEncounterEntityType.getFilters().getDate();
-        programEncounterEntityType.setMaxCount(
-                programEncounterRepository.getMaxProgramEncounterCount(
-                        programEncounterEntityType.getUuid(),
-                        getCalendarTime(dateFilter.getFrom(), exportJobParameters.getTimezone()),
-                        getCalendarTime(dateFilter.getTo(), exportJobParameters.getTimezone())
-                ));
-    }
-
-    private void addMaxVisitCount(ExportJobParameters exportJobParameters, ExportEntityType exportEntityType) {
-        DateFilter dateFilter = exportEntityType.getFilters().getDate();
-        exportEntityType.setMaxCount(
-                encounterRepository.getMaxEncounterCount(
-                        exportEntityType.getUuid(),
-                        getCalendarTime(dateFilter.getFrom(), exportJobParameters.getTimezone()),
-                        getCalendarTime(dateFilter.getTo(), exportJobParameters.getTimezone())
-                ));
-    }
-
     private Calendar getCalendarTime(DateTime dateTime, String timeZone) {
+        if (dateTime == null) return null;
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
         calendar.setTime(dateTime.toDate());
         return calendar;
