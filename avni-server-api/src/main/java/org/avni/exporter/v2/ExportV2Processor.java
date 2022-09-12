@@ -106,7 +106,9 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
 
     public boolean applyFilters(Map<String, ExportEntityType> entityToFiltersMap, String uuid, DateTime entityDateTime) {
         ExportEntityType entity = entityToFiltersMap.get(uuid);
-        if(entity == null || entity.getFilters() == null || entity.getFilters().getDate() == null) {
+        if(entity == null) {
+            return false;
+        } else if(entity.getFilters() == null || entity.getFilters().getDate() == null) {
             return true;
         }
         return entity.getFilters().getDate().apply(entityDateTime);
