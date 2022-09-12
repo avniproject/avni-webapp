@@ -16,15 +16,10 @@ public class ExportJobParameters extends OrganisationAwareEntity {
     @NotNull
     private User user;
 
-    @Column(name = "output")
+    @Column(name = "report_format")
     @Type(type = "jsonObject")
     @NotNull
-    private JsonObject output;
-
-    @Column(name = "filter")
-    @Type(type = "jsonObject")
-    @NotNull
-    private JsonObject filter;
+    private JsonObject reportFormat;
 
     @Column(name = "timezone")
     @NotNull
@@ -38,14 +33,6 @@ public class ExportJobParameters extends OrganisationAwareEntity {
         this.user = user;
     }
 
-    public JsonObject getOutput() {
-        return output;
-    }
-
-    public void setOutput(JsonObject output) {
-        this.output = output;
-    }
-
     public String getTimezone() {
         return timezone;
     }
@@ -54,11 +41,11 @@ public class ExportJobParameters extends OrganisationAwareEntity {
         this.timezone = timezone;
     }
 
-    public JsonObject getFilter() {
-        return filter;
+    public JsonObject getReportFormat() {
+        return reportFormat;
     }
 
-    public void setFilter(JsonObject filter) {
-        this.filter = filter;
+    public void setReportFormat(JsonObject reportFormat) {
+        this.reportFormat = reportFormat;
     }
 }

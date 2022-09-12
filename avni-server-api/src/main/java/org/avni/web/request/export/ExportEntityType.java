@@ -6,7 +6,16 @@ import java.util.List;
 public class ExportEntityType {
     private String uuid;
     private List<String> fields = new ArrayList<>();
+    private ExportFilters filters;
     private long maxCount;
+
+    public ExportFilters getFilters() {
+        return filters;
+    }
+
+    public void setFilters(ExportFilters filters) {
+        this.filters = filters;
+    }
 
     public long getMaxCount() {
         return maxCount;

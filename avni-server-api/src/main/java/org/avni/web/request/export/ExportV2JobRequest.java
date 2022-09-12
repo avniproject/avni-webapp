@@ -9,35 +9,24 @@ import java.util.List;
 import java.util.Map;
 
 public class ExportV2JobRequest {
-    private JsonObject filters;
-    private JsonObject output;
+    private JsonObject individual;
     private String timezone;
 
     public ExportJobParameters buildJobParameters() {
         ExportJobParameters exportJobParameters = new ExportJobParameters();
         exportJobParameters.setTimezone(this.getTimezone());
-        exportJobParameters.setFilter(this.getFilters());
-        exportJobParameters.setOutput(this.getOutput());
+        exportJobParameters.setReportFormat(this.getIndividual());
         exportJobParameters.setUser(UserContextHolder.getUser());
         exportJobParameters.assignUUID();
         return exportJobParameters;
     }
 
-
-    public JsonObject getFilters() {
-        return filters;
+    public JsonObject getIndividual() {
+        return individual;
     }
 
-    public void setFilters(JsonObject filters) {
-        this.filters = filters;
-    }
-
-    public JsonObject getOutput() {
-        return output;
-    }
-
-    public void setOutput(JsonObject output) {
-        this.output = output;
+    public void setIndividual(JsonObject individual) {
+        this.individual = individual;
     }
 
     public String getTimezone() {
@@ -46,22 +35,6 @@ public class ExportV2JobRequest {
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
-    }
-
-    public List<String> getAddressIds() {
-        return (List<String>) filters.getOrDefault("addressLevelIds", Collections.EMPTY_LIST);
-    }
-
-    private Map<String, String> getDateFilter() {
-        return (Map<String, String>) filters.get("date");
-    }
-
-    public String getToDate() {
-        return this.getDateFilter().get("to");
-    }
-
-    public String getFromDate() {
-        return this.getDateFilter().get("from");
     }
 
 }
