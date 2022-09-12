@@ -1,10 +1,9 @@
 package org.avni.exporter;
 
 import org.avni.dao.EncounterTypeRepository;
-import org.avni.service.ExportS3Service;
+import org.avni.web.request.export.ReportType;
 import org.joda.time.DateTime;
 import org.avni.domain.*;
-import org.avni.web.request.ReportType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -18,8 +17,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import static java.lang.String.format;
 
 @Component
 @StepScope

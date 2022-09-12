@@ -1,4 +1,4 @@
-package org.avni.web.request;
+package org.avni.web.request.export;
 
 public enum ReportType {
     Registration, Enrolment, Encounter, GroupSubject

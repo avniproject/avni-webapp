@@ -3,29 +3,15 @@ package org.avni.web;
 
 import org.apache.commons.io.IOUtils;
 import org.avni.dao.JobStatus;
-import org.avni.domain.Organisation;
-import org.avni.domain.User;
-import org.avni.domain.UserContext;
 import org.avni.exporter.ExportJobService;
-import org.avni.framework.security.UserContextHolder;
 import org.avni.service.ExportS3Service;
-import org.avni.web.request.ExportJobRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
+import org.avni.web.request.export.ExportJobRequest;
+import org.avni.web.request.export.ExportV2JobRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,65 +19,32 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 @RestController
 public class ExportController {
 
-    private final Logger logger;
-    private Job exportVisitJob;
 
-    private JobLauncher bgJobLauncher;
     private ExportJobService exportJobService;
     private ExportS3Service exportS3Service;
 
     @Autowired
-    public ExportController(Job exportVisitJob, JobLauncher bgJobLauncher, ExportJobService exportJobService, ExportS3Service exportS3Service) {
-        this.bgJobLauncher = bgJobLauncher;
-        this.exportVisitJob = exportVisitJob;
+    public ExportController(ExportJobService exportJobService, ExportS3Service exportS3Service) {
         this.exportJobService = exportJobService;
         this.exportS3Service = exportS3Service;
-        logger = LoggerFactory.getLogger(getClass());
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> getVisitData(@RequestBody ExportJobRequest exportJobRequest) {
-        UserContext userContext = UserContextHolder.getUserContext();
-        User user = userContext.getUser();
-        Organisation organisation = userContext.getOrganisation();
-        String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
-        if (mediaDirectory == null) {
-            String errorMessage = "Information missing. Media Directory for Implementation absent";
-            logger.error(errorMessage);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
-        }
-        String jobUUID = UUID.randomUUID().toString();
-        JobParameters jobParameters =
-                new JobParametersBuilder()
-                        .addString("uuid", jobUUID)
-                        .addString("organisationUUID", organisation.getUuid())
-                        .addLong("userId", user.getId(), false)
-                        .addLong("organisationId", organisation.getId())
-                        .addString("fileName", jobUUID.concat(ExportS3Service.FILE_NAME_EXTENSION))
-                        .addString("programUUID", exportJobRequest.getProgramUUID(), false)
-                        .addString("subjectTypeUUID", exportJobRequest.getSubjectTypeUUID(), false)
-                        .addString("encounterTypeUUID", exportJobRequest.getEncounterTypeUUID(), false)
-                        .addDate("startDate", exportJobRequest.getStartDate(), false)
-                        .addDate("endDate", exportJobRequest.getEndDate(), false)
-                        .addString("reportType", exportJobRequest.getReportType().name())
-                        .addString("addressIds", exportJobRequest.getAddressLevelString())
-                        .addString("timeZone", exportJobRequest.getTimeZone())
-                        .addString("includeVoided", String.valueOf(exportJobRequest.isIncludeVoided()))
-                        .toJobParameters();
-
-        try {
-            bgJobLauncher.run(exportVisitJob, jobParameters);
-        } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-        return ResponseEntity.ok(true);
+        return exportJobService.runExportJob(exportJobRequest);
     }
+
+    @RequestMapping(value = "/export/v2", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public ResponseEntity<?> getVisitDataV2(@RequestBody ExportV2JobRequest exportJobRequest) {
+        return exportJobService.runExportV2Job(exportJobRequest);
+    }
+
 
     @RequestMapping(value = "/export/status", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")

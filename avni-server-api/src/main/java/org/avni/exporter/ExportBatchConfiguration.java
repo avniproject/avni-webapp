@@ -2,9 +2,11 @@ package org.avni.exporter;
 
 import org.avni.dao.*;
 import org.avni.domain.*;
+import org.avni.exporter.v2.ExportV2CSVFieldExtractor;
+import org.avni.exporter.v2.LongitudinalExportV2TaskletImpl;
 import org.avni.framework.security.AuthService;
 import org.avni.service.ExportS3Service;
-import org.avni.web.request.ReportType;
+import org.avni.web.request.export.ReportType;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.batch.core.Job;
@@ -32,6 +34,8 @@ import static java.lang.String.format;
 @EnableBatchProcessing
 public class ExportBatchConfiguration {
     private final int CHUNK_SIZE = 100;
+    private final EntityManager entityManager;
+    private final ExportJobParametersRepository exportJobParametersRepository;
     private JobBuilderFactory jobBuilderFactory;
     private StepBuilderFactory stepBuilderFactory;
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -43,7 +47,6 @@ public class ExportBatchConfiguration {
     private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramRepository programRepository;
-    private final EntityManager entityManager;
 
     @Autowired
     public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory,
@@ -57,7 +60,8 @@ public class ExportBatchConfiguration {
                                     SubjectTypeRepository subjectTypeRepository,
                                     EncounterTypeRepository encounterTypeRepository,
                                     ProgramRepository programRepository,
-                                    EntityManager entityManager) {
+                                    EntityManager entityManager,
+                                    ExportJobParametersRepository exportJobParametersRepository) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.programEnrolmentRepository = programEnrolmentRepository;
@@ -70,6 +74,7 @@ public class ExportBatchConfiguration {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programRepository = programRepository;
         this.entityManager = entityManager;
+        this.exportJobParametersRepository = exportJobParametersRepository;
     }
 
     @Bean
@@ -80,6 +85,41 @@ public class ExportBatchConfiguration {
                 .listener(listener)
                 .start(step1)
                 .build();
+    }
+
+    @Bean
+    public Job exportV2Job(JobCompletionNotificationListener listener, Step exportV2Step) {
+        return jobBuilderFactory
+                .get("exportVisitJob")
+                .incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(exportV2Step)
+                .build();
+    }
+
+    @Bean
+    public Step exportV2Step(Tasklet exportV2Tasklet,
+                             LongitudinalExportJobStepListener listener) {
+        return stepBuilderFactory.get("step1")
+                .tasklet(exportV2Tasklet)
+                .listener(listener)
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public Tasklet exportV2Tasklet(@Value("#{jobParameters['uuid']}") String uuid,
+                                   @Value("#{jobParameters['userId']}") Long userId,
+                                   @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
+                                   @Value("#{jobParameters['exportJobParamsUUID']}") String exportJobParamsUUID,
+                                   LongitudinalExportJobStepListener listener,
+                                   ExportV2CSVFieldExtractor exportV2CSVFieldExtractor) {
+        authService.authenticateByUserId(userId, organisationUUID);
+        ExportJobParameters exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
+        Stream stream = null;
+        LongitudinalExportTasklet encounterTasklet = new LongitudinalExportV2TaskletImpl(CHUNK_SIZE, entityManager, exportV2CSVFieldExtractor, exportS3Service, uuid, stream);
+        listener.setItemReaderCleaner(encounterTasklet);
+        return encounterTasklet;
     }
 
     @Bean
@@ -94,7 +134,7 @@ public class ExportBatchConfiguration {
     @Bean
     @StepScope
     public Tasklet tasklet(@Value("#{jobParameters['uuid']}") String uuid,
-                        @Value("#{jobParameters['userId']}") Long userId,
+                           @Value("#{jobParameters['userId']}") Long userId,
                            @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
                            @Value("#{jobParameters['programUUID']}") String programUUID,
                            @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID,

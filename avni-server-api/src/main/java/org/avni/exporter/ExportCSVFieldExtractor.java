@@ -10,7 +10,7 @@ import org.avni.dao.SubjectTypeRepository;
 import org.avni.domain.*;
 import org.avni.service.AddressLevelService;
 import org.avni.service.FormMappingService;
-import org.avni.web.request.ReportType;
+import org.avni.web.request.export.ReportType;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.batch.core.configuration.annotation.StepScope;
