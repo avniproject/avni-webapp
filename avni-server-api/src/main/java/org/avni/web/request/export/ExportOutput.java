@@ -1,10 +1,12 @@
 package org.avni.web.request.export;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExportOutput {
-    private ExportEntityType individual;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ExportOutput extends ExportEntityType {
     private List<ExportEntityType> encounters = new ArrayList<>();
     private List<ExportNestedOutput> groups = new ArrayList<>();
     private List<ExportNestedOutput> programs = new ArrayList<>();
@@ -31,14 +33,6 @@ public class ExportOutput {
 
     public void setPrograms(List<ExportNestedOutput> programs) {
         this.programs = programs;
-    }
-
-    public ExportEntityType getIndividual() {
-        return individual;
-    }
-
-    public void setIndividual(ExportEntityType individual) {
-        this.individual = individual;
     }
 
     public static class ExportNestedOutput extends ExportEntityType {

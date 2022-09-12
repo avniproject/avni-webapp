@@ -40,13 +40,16 @@ public class ExportJobService {
 
     private AvniJobRepository avniJobRepository;
     private Job exportVisitJob;
+    private Job exportV2Job;
 
     private JobLauncher bgJobLauncher;
     private ExportJobParametersRepository exportJobParametersRepository;
 
     @Autowired
-    public ExportJobService(Job exportVisitJob, JobLauncher bgJobLauncher, AvniJobRepository avniJobRepository, ExportJobParametersRepository exportJobParametersRepository) {
+    public ExportJobService(Job exportVisitJob, JobLauncher bgJobLauncher, AvniJobRepository avniJobRepository,
+                            Job exportV2Job, ExportJobParametersRepository exportJobParametersRepository) {
         this.avniJobRepository = avniJobRepository;
+        this.exportV2Job = exportV2Job;
         this.exportJobParametersRepository = exportJobParametersRepository;
         logger = LoggerFactory.getLogger(getClass());
         this.bgJobLauncher = bgJobLauncher;
@@ -79,7 +82,7 @@ public class ExportJobService {
                 .addString("timeZone", exportJobRequest.getTimeZone())
                 .addString("includeVoided", String.valueOf(exportJobRequest.isIncludeVoided()))
                 .toJobParameters();
-        return launchJob(jobParameters);
+        return launchJob(jobParameters, exportVisitJob);
     }
 
     public ResponseEntity<?> runExportV2Job(ExportV2JobRequest exportJobRequest) {
@@ -87,12 +90,12 @@ public class ExportJobService {
         exportJobParametersRepository.save(exportJobParameters);
         JobParameters jobParameters = getCommonJobParams(UserContextHolder.getUserContext())
                 .addString("exportJobParamsUUID", exportJobParameters.getUuid()).toJobParameters();
-        return launchJob(jobParameters);
+        return launchJob(jobParameters, exportV2Job);
     }
 
-    private ResponseEntity<?> launchJob(JobParameters jobParameters) {
+    private ResponseEntity<?> launchJob(JobParameters jobParameters, Job job) {
         try {
-            bgJobLauncher.run(exportVisitJob, jobParameters);
+            bgJobLauncher.run(job, jobParameters);
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

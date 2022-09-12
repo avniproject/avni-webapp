@@ -91,8 +91,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         });
         String timezone = exportJobParameters.getTimezone();
         addMaxVisitCount(exportJobParameters);
-        String subjectTypeUUID = this.exportOutput.getIndividual().getUuid();
-        this.registrationMap = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput.getIndividual());
+        String subjectTypeUUID = this.exportOutput.getUuid();
+        this.registrationMap = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
         addRegistrationHeaders(headers, subjectTypeRepository.findByUuid(subjectTypeUUID), this.registrationMap);
 
         this.exportOutput.getPrograms().forEach(p -> {

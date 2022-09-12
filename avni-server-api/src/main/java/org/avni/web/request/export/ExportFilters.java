@@ -1,9 +1,11 @@
 package org.avni.web.request.export;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.joda.time.DateTime;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExportFilters {
     private List<Long> addressLevelIds;
     private DateFilter date;

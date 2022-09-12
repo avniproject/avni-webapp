@@ -1,11 +1,18 @@
 package org.avni.exporter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.dao.*;
 import org.avni.domain.*;
 import org.avni.exporter.v2.ExportV2CSVFieldExtractor;
+import org.avni.exporter.v2.ExportV2Processor;
 import org.avni.exporter.v2.LongitudinalExportV2TaskletImpl;
 import org.avni.framework.security.AuthService;
 import org.avni.service.ExportS3Service;
+import org.avni.util.ObjectMapperSingleton;
+import org.avni.web.request.export.ExportEntityType;
+import org.avni.web.request.export.ExportFilters;
+import org.avni.web.request.export.ExportOutput;
 import org.avni.web.request.export.ReportType;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -47,6 +54,7 @@ public class ExportBatchConfiguration {
     private SubjectTypeRepository subjectTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramRepository programRepository;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory,
@@ -75,6 +83,7 @@ public class ExportBatchConfiguration {
         this.programRepository = programRepository;
         this.entityManager = entityManager;
         this.exportJobParametersRepository = exportJobParametersRepository;
+        this.objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
     @Bean
@@ -113,11 +122,17 @@ public class ExportBatchConfiguration {
                                    @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
                                    @Value("#{jobParameters['exportJobParamsUUID']}") String exportJobParamsUUID,
                                    LongitudinalExportJobStepListener listener,
-                                   ExportV2CSVFieldExtractor exportV2CSVFieldExtractor) {
+                                   ExportV2CSVFieldExtractor exportV2CSVFieldExtractor,
+                                   ExportV2Processor exportV2Processor) {
         authService.authenticateByUserId(userId, organisationUUID);
         ExportJobParameters exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
-        Stream stream = null;
-        LongitudinalExportTasklet encounterTasklet = new LongitudinalExportV2TaskletImpl(CHUNK_SIZE, entityManager, exportV2CSVFieldExtractor, exportS3Service, uuid, stream);
+        ExportOutput exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {});
+        ExportFilters subjectFilters = exportOutput.getFilters();
+        List<Long> addressLevelIds = subjectFilters.getAddressLevelIds();
+        List<Long> selectedAddressIds = getLocations(addressLevelIds);
+        List<Long> addressParam = selectedAddressIds.isEmpty() ? null : selectedAddressIds;
+        Stream stream = getRegistrationStream(exportOutput.getUuid(), addressParam, subjectFilters.getDate().getFrom().toLocalDate(), subjectFilters.getDate().getTo().toLocalDate(), false);
+        LongitudinalExportTasklet encounterTasklet = new LongitudinalExportV2TaskletImpl(CHUNK_SIZE, entityManager, exportV2CSVFieldExtractor, exportV2Processor, exportS3Service, uuid, stream);
         listener.setItemReaderCleaner(encounterTasklet);
         return encounterTasklet;
     }
@@ -150,7 +165,8 @@ public class ExportBatchConfiguration {
         authService.authenticateByUserId(userId, organisationUUID);
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
-        List<Long> selectedAddressIds = getLocations(addressIds);
+        List<Long> locationIds = addressIds.isEmpty() ? Collections.emptyList() : Arrays.stream(addressIds.split(",")).map(Long::valueOf).collect(Collectors.toList());
+        List<Long> selectedAddressIds = getLocations(locationIds);
         List<Long> addressParam = selectedAddressIds.isEmpty() ? null : selectedAddressIds;
         boolean isVoidedIncluded = Boolean.parseBoolean(includeVoided);
         Stream stream;
@@ -206,8 +222,7 @@ public class ExportBatchConfiguration {
                 individualRepository.findNonVoidedIndividuals(subjectType.getId(), addressParam, startDateTime, endDateTime);
     }
 
-    private List<Long> getLocations(@Value("#{jobParameters['addressIds']}") String addressIds) {
-        List<Long> locationIds = addressIds.isEmpty() ? Collections.emptyList() : Arrays.stream(addressIds.split(",")).map(Long::valueOf).collect(Collectors.toList());
+    private List<Long> getLocations(List<Long> locationIds) {
         List<AddressLevel> selectedAddressLevels = locationRepository.findAllById(locationIds);
         List<AddressLevel> allAddressLevels = locationRepository.findAllByIsVoidedFalse();
         return selectedAddressLevels
