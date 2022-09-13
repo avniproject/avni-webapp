@@ -1,5 +1,6 @@
 package org.avni.exporter.v2;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementType;
 import org.avni.domain.*;
@@ -19,7 +20,8 @@ public class HeaderCreator {
         put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
         put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
         put("firstName", new HeaderNameAndFunctionMapper<>("first_name", Individual::getFirstName));
-        put("middleName", new HeaderNameAndFunctionMapper<>("middle_name", Individual::getMiddleName));
+        put("middleName", new HeaderNameAndFunctionMapper<>("middle_name", (Individual individual) -> {if (individual.getSubjectType().isAllowMiddleName())
+        { return individual.getMiddleName();} else {return "";}}));
         put("lastName", new HeaderNameAndFunctionMapper<>("last_name", Individual::getLastName));
         put("dateOfBirth", new HeaderNameAndFunctionMapper<>("date_of_birth", Individual::getDateOfBirth));
         put("registrationDate", new HeaderNameAndFunctionMapper<>("registration_date", Individual::getRegistrationDate));
@@ -91,28 +93,37 @@ public class HeaderCreator {
     }
 
     private void appendStaticRegistrationHeaders(StringBuilder registrationHeaders, List<String> fields, String prefix) {
+        initMapIfFieldsNotSet(fields, registrationDataMap);
         fields.stream()
                 .filter(registrationDataMap::containsKey)
                 .forEach(key -> registrationHeaders.append(",").append(prefix).append(".").append(registrationDataMap.get(key).getName()));
     }
 
     private void appendStaticEnrolmentHeaders(StringBuilder enrolmentHeaders, List<String> fields, String prefix) {
+        initMapIfFieldsNotSet(fields, enrolmentDataMap);
         fields.stream()
                 .filter(enrolmentDataMap::containsKey)
                 .forEach(key -> enrolmentHeaders.append(",").append(prefix).append(".").append(enrolmentDataMap.get(key).getName()));
     }
 
     private void appendStaticEncounterHeaders(StringBuilder encounterHeaders, List<String> fields, String prefix) {
+        initMapIfFieldsNotSet(fields, encounterDataMap);
         fields.stream()
                 .filter(encounterDataMap::containsKey)
                 .forEach(key -> encounterHeaders.append(",").append(prefix).append(".").append(encounterDataMap.get(key).getName()));
+    }
+
+    private void initMapIfFieldsNotSet(List<String> fields, Map<String, ?> map) {
+        if(fields != null && fields.isEmpty() && map != null && !map.isEmpty()) {
+            fields.addAll(map.keySet());
+        }
     }
 
     private void addAddressLevelHeaderNames(StringBuilder sb, List<String> addressLevelTypes) {
         addressLevelTypes.forEach(level -> sb.append(",").append(quotedStringValue(level)));
     }
 
-    private String quotedStringValue(String text) {
+    protected String quotedStringValue(String text) {
         if (StringUtils.isEmpty(text))
             return text;
         return "\"".concat(text).concat("\"");
@@ -144,4 +155,15 @@ public class HeaderCreator {
         headers.append(",").append(format("%s_modified_date_time", prefix));
     }
 
+    public static Map<String, HeaderNameAndFunctionMapper<Individual>> getRegistrationDataMap() {
+        return registrationDataMap;
+    }
+
+    public static Map<String, HeaderNameAndFunctionMapper<ProgramEnrolment>> getEnrolmentDataMap() {
+        return enrolmentDataMap;
+    }
+
+    public static Map<String, HeaderNameAndFunctionMapper<AbstractEncounter>> getEncounterDataMap() {
+        return encounterDataMap;
+    }
 }
