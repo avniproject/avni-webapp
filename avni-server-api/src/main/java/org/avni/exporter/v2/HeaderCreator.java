@@ -2,12 +2,11 @@ package org.avni.exporter.v2;
 
 import org.avni.application.FormElement;
 import org.avni.application.FormElementType;
-import org.avni.domain.Concept;
-import org.avni.domain.ConceptDataType;
-import org.avni.domain.SubjectType;
+import org.avni.domain.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,19 +15,42 @@ import static java.lang.String.format;
 @Component
 public class HeaderCreator {
 
+    private static Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap = new HashMap<String, HeaderNameAndFunctionMapper<Individual>>() {{
+        put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
+        put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
+        put("firstName", new HeaderNameAndFunctionMapper<>("first_name", Individual::getFirstName));
+        put("middleName", new HeaderNameAndFunctionMapper<>("middle_name", Individual::getMiddleName));
+        put("lastName", new HeaderNameAndFunctionMapper<>("last_name", Individual::getLastName));
+        put("dateOfBirth", new HeaderNameAndFunctionMapper<>("date_of_birth", Individual::getDateOfBirth));
+        put("registrationDate", new HeaderNameAndFunctionMapper<>("registration_date", Individual::getRegistrationDate));
+        put("gender", new HeaderNameAndFunctionMapper<>("gender", Individual::getGender));
+    }};
 
-    public StringBuilder addRegistrationHeaders(SubjectType subjectType, Map<String, FormElement> registrationMap, List<String> addressLevelTypes) {
+    private static Map<String, HeaderNameAndFunctionMapper<ProgramEnrolment>> enrolmentDataMap = new HashMap<String, HeaderNameAndFunctionMapper<ProgramEnrolment>>() {{
+        put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
+        put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
+        put("enrolmentDateTime", new HeaderNameAndFunctionMapper<>("enrolment_date_time", ProgramEnrolment::getEnrolmentDateTime));
+        put("programExitDateTime", new HeaderNameAndFunctionMapper<>("program_exit_date_time", ProgramEnrolment::getProgramExitDateTime));
+    }};
+
+    private static Map<String, HeaderNameAndFunctionMapper<AbstractEncounter>> encounterDataMap = new HashMap<String, HeaderNameAndFunctionMapper<AbstractEncounter>>() {{
+        put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
+        put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
+        put("name", new HeaderNameAndFunctionMapper<>("name", AbstractEncounter::getName));
+        put("earliestVisitDateTime", new HeaderNameAndFunctionMapper<>("earliest_visit_date_time", AbstractEncounter::getEarliestVisitDateTime));
+        put("maxVisitDateTime", new HeaderNameAndFunctionMapper<>("max_visit_date_time", AbstractEncounter::getMaxVisitDateTime));
+        put("encounterDateTime", new HeaderNameAndFunctionMapper<>("encounter_date_time", AbstractEncounter::getEncounterDateTime));
+        put("cancelDateTime", new HeaderNameAndFunctionMapper<>("cancel_date_time", AbstractEncounter::getCancelDateTime));
+    }};
+
+
+    public StringBuilder addRegistrationHeaders(SubjectType subjectType,
+                                                Map<String, FormElement> registrationMap,
+                                                List<String> addressLevelTypes,
+                                                List<String> fields) {
         StringBuilder registrationHeaders = new StringBuilder();
         String subjectTypeName = subjectType.getName();
-        registrationHeaders.append(subjectTypeName).append(".id");
-        registrationHeaders.append(",").append(subjectTypeName).append(".uuid");
-        registrationHeaders.append(",").append(subjectTypeName).append(".first_name");
-        if (subjectType.isAllowMiddleName())
-            registrationHeaders.append(",").append(subjectTypeName).append(".middle_name");
-        registrationHeaders.append(",").append(subjectTypeName).append(".last_name");
-        registrationHeaders.append(",").append(subjectTypeName).append(".date_of_birth");
-        registrationHeaders.append(",").append(subjectTypeName).append(".registration_date");
-        registrationHeaders.append(",").append(subjectTypeName).append(".gender");
+        appendStaticRegistrationHeaders(registrationHeaders, fields, subjectTypeName);
         addAddressLevelHeaderNames(registrationHeaders, addressLevelTypes);
         if (subjectType.isGroup()) {
             registrationHeaders.append(",").append(subjectTypeName).append(".total_members");
@@ -38,36 +60,52 @@ public class HeaderCreator {
         return registrationHeaders;
     }
 
-    public StringBuilder addEnrolmentHeaders(Map<String, FormElement> enrolmentMap, Map<String, FormElement> exitEnrolmentMap, String programName) {
+    public StringBuilder addEnrolmentHeaders(Map<String, FormElement> enrolmentMap,
+                                             Map<String, FormElement> exitEnrolmentMap,
+                                             String programName,
+                                             List<String> fields) {
         StringBuilder enrolmentHeaders = new StringBuilder();
-        enrolmentHeaders.append(",").append(programName).append(".id");
-        enrolmentHeaders.append(",").append(programName).append(".uuid");
-        enrolmentHeaders.append(",").append(programName).append(".enrolment_date_time");
+        appendStaticEnrolmentHeaders(enrolmentHeaders, fields, programName);
         appendObsHeaders(enrolmentHeaders, programName, enrolmentMap);
-        enrolmentHeaders.append(",").append(programName).append(".program_exit_date_time");
         appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap);
         addAuditHeaders(enrolmentHeaders, programName);
         return enrolmentHeaders;
     }
 
-    public StringBuilder addEncounterHeaders(Long maxVisitCount, Map<String, FormElement> encounterMap, Map<String, FormElement> encounterCancelMap, String encounterTypeName) {
+    public StringBuilder addEncounterHeaders(Long maxVisitCount,
+                                             Map<String, FormElement> encounterMap,
+                                             Map<String, FormElement> encounterCancelMap,
+                                             String encounterTypeName,
+                                             List<String> fields) {
         StringBuilder encounterHeaders = new StringBuilder();
         int visit = 0;
         while (visit < maxVisitCount) {
             visit++;
             String prefix = encounterTypeName + "_" + visit;
-            encounterHeaders.append(",").append(prefix).append(".id");
-            encounterHeaders.append(",").append(prefix).append(".uuid");
-            encounterHeaders.append(",").append(prefix).append(".name");
-            encounterHeaders.append(",").append(prefix).append(".earliest_visit_date_time");
-            encounterHeaders.append(",").append(prefix).append(".max_visit_date_time");
-            encounterHeaders.append(",").append(prefix).append(".encounter_date_time");
+            appendStaticEncounterHeaders(encounterHeaders, fields, prefix);
             appendObsHeaders(encounterHeaders, prefix, encounterMap);
-            encounterHeaders.append(",").append(prefix).append(".cancel_date_time");
             appendObsHeaders(encounterHeaders, prefix, encounterCancelMap);
             addAuditHeaders(encounterHeaders, prefix);
         }
         return encounterHeaders;
+    }
+
+    private void appendStaticRegistrationHeaders(StringBuilder registrationHeaders, List<String> fields, String prefix) {
+        fields.stream()
+                .filter(registrationDataMap::containsKey)
+                .forEach(key -> registrationHeaders.append(",").append(prefix).append(".").append(registrationDataMap.get(key).getName()));
+    }
+
+    private void appendStaticEnrolmentHeaders(StringBuilder enrolmentHeaders, List<String> fields, String prefix) {
+        fields.stream()
+                .filter(enrolmentDataMap::containsKey)
+                .forEach(key -> enrolmentHeaders.append(",").append(prefix).append(".").append(enrolmentDataMap.get(key).getName()));
+    }
+
+    private void appendStaticEncounterHeaders(StringBuilder encounterHeaders, List<String> fields, String prefix) {
+        fields.stream()
+                .filter(encounterDataMap::containsKey)
+                .forEach(key -> encounterHeaders.append(",").append(prefix).append(".").append(encounterDataMap.get(key).getName()));
     }
 
     private void addAddressLevelHeaderNames(StringBuilder sb, List<String> addressLevelTypes) {
