@@ -1,41 +1,46 @@
 package org.avni.exporter.v2;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementType;
 import org.avni.domain.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
 @Component
 public class HeaderCreator {
 
-    private static Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap = new HashMap<String, HeaderNameAndFunctionMapper<Individual>>() {{
+    private static Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<Individual>>() {{
         put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
         put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
         put("firstName", new HeaderNameAndFunctionMapper<>("first_name", Individual::getFirstName));
-        put("middleName", new HeaderNameAndFunctionMapper<>("middle_name", (Individual individual) -> {if (individual.getSubjectType().isAllowMiddleName())
-        { return individual.getMiddleName();} else {return "";}}));
+        put("middleName", new HeaderNameAndFunctionMapper<>("middle_name", (Individual individual) -> {
+            if (individual.getSubjectType().isAllowMiddleName()) {
+                return individual.getMiddleName();
+            } else {
+                return "";
+            }
+        }));
         put("lastName", new HeaderNameAndFunctionMapper<>("last_name", Individual::getLastName));
         put("dateOfBirth", new HeaderNameAndFunctionMapper<>("date_of_birth", Individual::getDateOfBirth));
         put("registrationDate", new HeaderNameAndFunctionMapper<>("registration_date", Individual::getRegistrationDate));
         put("gender", new HeaderNameAndFunctionMapper<>("gender", Individual::getGender));
     }};
 
-    private static Map<String, HeaderNameAndFunctionMapper<ProgramEnrolment>> enrolmentDataMap = new HashMap<String, HeaderNameAndFunctionMapper<ProgramEnrolment>>() {{
+    private static Map<String, HeaderNameAndFunctionMapper<ProgramEnrolment>> enrolmentDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<ProgramEnrolment>>() {{
         put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
         put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
         put("enrolmentDateTime", new HeaderNameAndFunctionMapper<>("enrolment_date_time", ProgramEnrolment::getEnrolmentDateTime));
         put("programExitDateTime", new HeaderNameAndFunctionMapper<>("program_exit_date_time", ProgramEnrolment::getProgramExitDateTime));
     }};
 
-    private static Map<String, HeaderNameAndFunctionMapper<AbstractEncounter>> encounterDataMap = new HashMap<String, HeaderNameAndFunctionMapper<AbstractEncounter>>() {{
+    private static Map<String, HeaderNameAndFunctionMapper<AbstractEncounter>> encounterDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<AbstractEncounter>>() {{
         put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
         put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
         put("name", new HeaderNameAndFunctionMapper<>("name", AbstractEncounter::getName));
@@ -52,7 +57,7 @@ public class HeaderCreator {
                                                 List<String> fields) {
         StringBuilder registrationHeaders = new StringBuilder();
         String subjectTypeName = subjectType.getName();
-        appendStaticRegistrationHeaders(registrationHeaders, fields, subjectTypeName);
+        registrationHeaders.append(getStaticRegistrationHeaders(fields, subjectTypeName));
         addAddressLevelHeaderNames(registrationHeaders, addressLevelTypes);
         if (subjectType.isGroup()) {
             registrationHeaders.append(",").append(subjectTypeName).append(".total_members");
@@ -67,7 +72,7 @@ public class HeaderCreator {
                                              String programName,
                                              List<String> fields) {
         StringBuilder enrolmentHeaders = new StringBuilder();
-        appendStaticEnrolmentHeaders(enrolmentHeaders, fields, programName);
+        enrolmentHeaders.append(getStaticEnrolmentHeaders(fields, programName));
         appendObsHeaders(enrolmentHeaders, programName, enrolmentMap);
         appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap);
         addAuditHeaders(enrolmentHeaders, programName);
@@ -83,8 +88,11 @@ public class HeaderCreator {
         int visit = 0;
         while (visit < maxVisitCount) {
             visit++;
+            if (visit != 1) {
+                encounterHeaders.append(",");
+            }
             String prefix = encounterTypeName + "_" + visit;
-            appendStaticEncounterHeaders(encounterHeaders, fields, prefix);
+            encounterHeaders.append(appendStaticEncounterHeaders(fields, prefix));
             appendObsHeaders(encounterHeaders, prefix, encounterMap);
             appendObsHeaders(encounterHeaders, prefix, encounterCancelMap);
             addAuditHeaders(encounterHeaders, prefix);
@@ -92,29 +100,32 @@ public class HeaderCreator {
         return encounterHeaders;
     }
 
-    private void appendStaticRegistrationHeaders(StringBuilder registrationHeaders, List<String> fields, String prefix) {
+    private String getStaticRegistrationHeaders(List<String> fields, String prefix) {
         initMapIfFieldsNotSet(fields, registrationDataMap);
-        fields.stream()
+        return fields.stream()
                 .filter(registrationDataMap::containsKey)
-                .forEach(key -> registrationHeaders.append(",").append(prefix).append(".").append(registrationDataMap.get(key).getName()));
+                .map(key -> String.format("%s_%s", prefix, registrationDataMap.get(key).getName()))
+                .collect(Collectors.joining(","));
     }
 
-    private void appendStaticEnrolmentHeaders(StringBuilder enrolmentHeaders, List<String> fields, String prefix) {
+    private String getStaticEnrolmentHeaders(List<String> fields, String prefix) {
         initMapIfFieldsNotSet(fields, enrolmentDataMap);
-        fields.stream()
+        return fields.stream()
                 .filter(enrolmentDataMap::containsKey)
-                .forEach(key -> enrolmentHeaders.append(",").append(prefix).append(".").append(enrolmentDataMap.get(key).getName()));
+                .map(key -> String.format("%s_%s", prefix, enrolmentDataMap.get(key).getName()))
+                .collect(Collectors.joining(","));
     }
 
-    private void appendStaticEncounterHeaders(StringBuilder encounterHeaders, List<String> fields, String prefix) {
+    private String appendStaticEncounterHeaders(List<String> fields, String prefix) {
         initMapIfFieldsNotSet(fields, encounterDataMap);
-        fields.stream()
+        return fields.stream()
                 .filter(encounterDataMap::containsKey)
-                .forEach(key -> encounterHeaders.append(",").append(prefix).append(".").append(encounterDataMap.get(key).getName()));
+                .map(key -> String.format("%s_%s", prefix, encounterDataMap.get(key).getName()))
+                .collect(Collectors.joining(","));
     }
 
     private void initMapIfFieldsNotSet(List<String> fields, Map<String, ?> map) {
-        if(fields != null && fields.isEmpty() && map != null && !map.isEmpty()) {
+        if (fields != null && fields.isEmpty() && map != null && !map.isEmpty()) {
             fields.addAll(map.keySet());
         }
     }

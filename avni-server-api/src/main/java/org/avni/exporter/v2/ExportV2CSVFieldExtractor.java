@@ -97,7 +97,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             LinkedHashMap<String, FormElement> applicableExitFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), null, FormType.ProgramExit), p);
             this.enrolmentMap.put(p.getUuid(), applicableEnrolmentFields);
             this.exitEnrolmentMap.put(p.getUuid(), applicableExitFields);
-            this.headers.append(headerCreator.addEnrolmentHeaders(applicableEnrolmentFields, applicableExitFields, programRepository.findByUuid(p.getUuid()).getName(), p.getFields()));
+            this.headers.append(",")
+                    .append(headerCreator.addEnrolmentHeaders(applicableEnrolmentFields, applicableExitFields, programRepository.findByUuid(p.getUuid()).getName(), p.getFields()));
             p.getEncounters().forEach(pe -> {
                 LinkedHashMap<String, FormElement> applicableProgramEncounterFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounter), p);
                 LinkedHashMap<String, FormElement> applicableProgramCancelFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounterCancellation), p);
@@ -106,7 +107,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                 DateFilter dateFilter = pe.getFilters().getDate();
                 Long maxProgramEncounterCount = programEncounterRepository.getMaxProgramEncounterCount(pe.getUuid(), getCalendarTime(dateFilter.getFrom(), timezone), getCalendarTime(dateFilter.getTo(), timezone));
                 EncounterType encounterType = encounterTypeRepository.findByUuid(pe.getUuid());
-                this.headers.append(headerCreator.addEncounterHeaders(maxProgramEncounterCount, applicableProgramEncounterFields, applicableProgramCancelFields, encounterType.getName(), pe.getFields()));
+                this.headers.append(",")
+                        .append(headerCreator.addEncounterHeaders(maxProgramEncounterCount, applicableProgramEncounterFields, applicableProgramCancelFields, encounterType.getName(), pe.getFields()));
             });
         });
         exportOutput.getEncounters().forEach(e -> populateGeneralEncounterMap(subjectTypeUUID, e, e.getUuid(), this.encounterMap, this.encounterCancelMap, timezone));
@@ -114,7 +116,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             String groupSubjectTypeUUID = g.getUuid();
             LinkedHashMap<String, FormElement> applicableGroupsFields = getApplicableFields(formMappingService.getFormMapping(groupSubjectTypeUUID, null, null, FormType.IndividualProfile), g);
             this.groupsMap.put(g.getUuid(), applicableGroupsFields);
-            this.headers.append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(groupSubjectTypeUUID), applicableGroupsFields, this.addressLevelTypes, g.getFields()));
+            this.headers.append(",")
+                    .append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(groupSubjectTypeUUID), applicableGroupsFields, this.addressLevelTypes, g.getFields()));
             g.getEncounters().forEach(ge -> populateGeneralEncounterMap(groupSubjectTypeUUID, ge, ge.getUuid(), this.groupEncounterMap, this.groupEncounterCancelMap, timezone));
         });
     }
@@ -127,7 +130,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         DateFilter dateFilter = e.getFilters().getDate();
         Long maxProgramEncounterCount = encounterRepository.getMaxEncounterCount(e.getUuid(), getCalendarTime(dateFilter.getFrom(), timezone), getCalendarTime(dateFilter.getTo(), timezone));
         EncounterType encounterType = encounterTypeRepository.findByUuid(e.getUuid());
-        this.headers.append(headerCreator.addEncounterHeaders(maxProgramEncounterCount, applicableEncounterFields, applicableCancelEncounterFields, encounterType.getName(), e.getFields()));
+        this.headers.append(",")
+                .append(headerCreator.addEncounterHeaders(maxProgramEncounterCount, applicableEncounterFields, applicableCancelEncounterFields, encounterType.getName(), e.getFields()));
     }
 
     private LinkedHashMap<String, FormElement> getApplicableFields(Map<String, FormElement> formElementMap, ExportEntityType exportEntityType) {
