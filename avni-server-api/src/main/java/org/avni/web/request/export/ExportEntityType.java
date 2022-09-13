@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExportEntityType {
     private String uuid;
     private List<String> fields = new ArrayList<>();
     private ExportFilters filters;
-    private long maxCount;
+    private long maxCount = 1;
 
     public ExportFilters getFilters() {
         return filters == null ? new ExportFilters() : filters;
@@ -46,5 +47,13 @@ public class ExportEntityType {
 
     public void setFields(List<String> fields) {
         this.fields = fields;
+    }
+
+    public long getNoOfFields() {
+        return getFields().size();
+    }
+
+    public long getTotalNumberOfColumns() {
+        return getNoOfFields() * getMaxCount();
     }
 }

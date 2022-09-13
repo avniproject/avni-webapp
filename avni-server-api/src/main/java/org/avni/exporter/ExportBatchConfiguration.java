@@ -10,7 +10,6 @@ import org.avni.exporter.v2.LongitudinalExportV2TaskletImpl;
 import org.avni.framework.security.AuthService;
 import org.avni.service.ExportS3Service;
 import org.avni.util.ObjectMapperSingleton;
-import org.avni.web.request.export.ExportEntityType;
 import org.avni.web.request.export.ExportFilters;
 import org.avni.web.request.export.ExportOutput;
 import org.avni.web.request.export.ReportType;
@@ -126,7 +125,7 @@ public class ExportBatchConfiguration {
                                    ExportV2Processor exportV2Processor) {
         authService.authenticateByUserId(userId, organisationUUID);
         ExportJobParameters exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
-        ExportOutput exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {});
+        ExportOutput exportOutput = exportV2CSVFieldExtractor.getExportOutput();
         ExportFilters subjectFilters = exportOutput.getFilters();
         List<Long> addressLevelIds = subjectFilters.getAddressLevelIds();
         List<Long> selectedAddressIds = getLocations(addressLevelIds);

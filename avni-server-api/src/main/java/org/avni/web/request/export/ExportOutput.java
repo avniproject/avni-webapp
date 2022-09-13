@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExportOutput extends ExportEntityType {
@@ -44,6 +45,11 @@ public class ExportOutput extends ExportEntityType {
 
         public void setEncounters(List<ExportEntityType> encounters) {
             this.encounters = encounters;
+        }
+
+        public long getTotalNumberOfColumns() {
+            return super.getTotalNumberOfColumns() + Optional.ofNullable(encounters).orElse(new ArrayList<>())
+                    .stream().mapToLong(entry -> entry.getTotalNumberOfColumns()).sum();
         }
     }
 }

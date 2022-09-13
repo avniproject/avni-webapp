@@ -4,15 +4,16 @@ import org.avni.domain.Encounter;
 import org.avni.domain.Individual;
 import org.avni.domain.ProgramEncounter;
 import org.avni.domain.ProgramEnrolment;
+import org.avni.web.request.export.ExportEntityType;
 
 import java.util.List;
 import java.util.Map;
 
 public class ItemRow {
     private Individual individual;
-    private Map<ProgramEnrolment, List<ProgramEncounter>> programEnrolmentMap;
-    private List<Encounter> encounters;
-    private Map<Individual, List<Encounter>> groupSubjectMap;
+    private Map<ProgramEnrolment, Map<ExportEntityType, List<ProgramEncounter>>> programEnrolmentToEncountersMap;
+    private Map<ExportEntityType, List<Encounter>> exportEntityTypeToEncountersMap;
+    private Map<Individual, Map<ExportEntityType, List<Encounter>>> groupSubjectToEncountersMap;
 
     public Individual getIndividual() {
         return individual;
@@ -22,27 +23,27 @@ public class ItemRow {
         this.individual = individual;
     }
 
-    public Map<ProgramEnrolment, List<ProgramEncounter>> getProgramEnrolmentMap() {
-        return programEnrolmentMap;
+    public Map<ProgramEnrolment, Map<ExportEntityType, List<ProgramEncounter>>> getProgramEnrolmentToEncountersMap() {
+        return programEnrolmentToEncountersMap;
     }
 
-    public void setProgramEnrolmentMap(Map<ProgramEnrolment, List<ProgramEncounter>> programEnrolmentMap) {
-        this.programEnrolmentMap = programEnrolmentMap;
+    public void setProgramEnrolmentToEncountersMap(Map<ProgramEnrolment, Map<ExportEntityType, List<ProgramEncounter>>> programEnrolmentToEncountersMap) {
+        this.programEnrolmentToEncountersMap = programEnrolmentToEncountersMap;
     }
 
-    public List<Encounter> getEncounters() {
-        return encounters;
+    public Map<ExportEntityType, List<Encounter>> getExportEntityTypeToEncountersMap() {
+        return exportEntityTypeToEncountersMap;
     }
 
-    public void setEncounters(List<Encounter> encounters) {
-        this.encounters = encounters;
+    public void setExportEntityTypeToEncountersMap(Map<ExportEntityType, List<Encounter>> exportEntityTypeToEncountersMap) {
+        this.exportEntityTypeToEncountersMap = exportEntityTypeToEncountersMap;
     }
 
-    public Map<Individual, List<Encounter>> getGroupSubjectMap() {
-        return groupSubjectMap;
+    public Map<Individual, Map<ExportEntityType, List<Encounter>>> getGroupSubjectToEncountersMap() {
+        return groupSubjectToEncountersMap;
     }
 
-    public void setGroupSubjectMap(Map<Individual, List<Encounter>> groupSubjectMap) {
-        this.groupSubjectMap = groupSubjectMap;
+    public void setGroupSubjectToEncountersMap(Map<Individual, Map<ExportEntityType, List<Encounter>>> groupSubjectToEncountersMap) {
+        this.groupSubjectToEncountersMap = groupSubjectToEncountersMap;
     }
 }
