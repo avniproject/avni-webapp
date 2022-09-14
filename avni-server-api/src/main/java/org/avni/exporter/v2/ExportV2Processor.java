@@ -1,6 +1,5 @@
 package org.avni.exporter.v2;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.dao.ExportJobParametersRepository;
 import org.avni.domain.*;
@@ -68,10 +67,13 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
         Map<Individual, Map<String, List<Encounter>>> individualToEncountersMap = Optional.ofNullable(individual.getMemberGroupSubjects())
                 .orElse(new HashSet<>()).stream()
                 .filter(gr -> applyFilters(groupsToFiltersMap, gr.getGroupSubject().getSubjectType().getUuid(), gr.getGroupSubject().getRegistrationDate()
-                        .toDateTimeAtStartOfDay(DateTimeZone.forID(exportJobParameters.getTimezone()))))
+                        .toDateTimeAtStartOfDay(DateTimeZone.forID(exportJobParameters.getTimezone())), gr.isVoided()))
                 .flatMap(gs -> gs.getGroupSubject().getEncounters(false))
-                .filter(e -> applyFilters(groupsEncountersToFiltersMap, e.getEncounterType().getUuid(), e.getEncounterDateTime()))
-                .collect(Collectors.groupingBy(Encounter::getIndividual, Collectors.groupingBy(e -> e.getEncounterType().getUuid())));
+                .filter(e -> e.getEncounterDateTime() != null || e.getCancelDateTime() != null)
+                .filter(e -> applyFilters(groupsEncountersToFiltersMap, e.getEncounterType().getUuid(), Optional.ofNullable(e.getEncounterDateTime()).orElse(e.getCancelDateTime()), e.isVoided()))
+                .sorted(this::compareEncounters)
+                .collect(Collectors.groupingBy(Encounter::getIndividual, LinkedHashMap::new,
+                        Collectors.groupingBy(e -> e.getEncounterType().getUuid(), LinkedHashMap::new, Collectors.toList())));
         exportItemRow.setGroupSubjectToEncountersMap(individualToEncountersMap);
     }
 
@@ -85,10 +87,13 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
                 .collect(Collectors.toMap(ExportEntityType::getUuid, Function.identity()));
         Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programToEncountersMap = Optional.ofNullable(individual.getProgramEnrolments())
                 .orElse(new HashSet<>()).stream()
-                .filter(pe -> applyFilters(programsToFiltersMap, pe.getProgram().getUuid(), pe.getEnrolmentDateTime()))
+                .filter(pe -> applyFilters(programsToFiltersMap, pe.getProgram().getUuid(), pe.getEnrolmentDateTime(), pe.isVoided()))
                 .flatMap(pe -> pe.getEncounters(false))
-                .filter(e -> applyFilters(encountersToFiltersMap, e.getEncounterType().getUuid(), e.getEncounterDateTime()))
-                .collect(Collectors.groupingBy(ProgramEncounter::getProgramEnrolment, Collectors.groupingBy(pe -> pe.getEncounterType().getUuid())));
+                .filter(e -> e.getEncounterDateTime() != null || e.getCancelDateTime() != null)
+                .filter(e -> applyFilters(encountersToFiltersMap, e.getEncounterType().getUuid(), Optional.ofNullable(e.getEncounterDateTime()).orElse(e.getCancelDateTime()), e.isVoided()))
+                .sorted(this::compareEncounters)
+                .collect(Collectors.groupingBy(ProgramEncounter::getProgramEnrolment, LinkedHashMap::new,
+                        Collectors.groupingBy(pe -> pe.getEncounterType().getUuid(), LinkedHashMap::new, Collectors.toList())));
         exportItemRow.setProgramEnrolmentToEncountersMap(programToEncountersMap);
     }
 
@@ -98,22 +103,30 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
                 .stream().collect(Collectors.toMap(ExportEntityType::getUuid, Function.identity()));
         Map<String, List<Encounter>> generalEncounters = Optional.ofNullable(individual.getEncounters()).orElse(new HashSet<>())
                 .stream()
-                .filter(e -> applyFilters(generalEncountersToFiltersMap, e.getEncounterType().getUuid(), e.getEncounterDateTime()))
-                .collect(Collectors.groupingBy(e -> e.getEncounterType().getUuid()));
+                .filter(e -> e.getEncounterDateTime() != null || e.getCancelDateTime() != null)
+                .filter(e -> applyFilters(generalEncountersToFiltersMap, e.getEncounterType().getUuid(), Optional.ofNullable(e.getEncounterDateTime()).orElse(e.getCancelDateTime()), e.isVoided()))
+                .sorted(this::compareEncounters)
+                .collect(Collectors.groupingBy(e -> e.getEncounterType().getUuid(), LinkedHashMap::new, Collectors.toList()));
         exportItemRow.setEncounterTypeToEncountersMap(generalEncounters);
     }
 
-    public boolean applyFilters(Map<String, ExportEntityType> entityToFiltersMap, String typeUUID, DateTime entityDateTime) {
+    public boolean applyFilters(Map<String, ExportEntityType> entityToFiltersMap, String typeUUID, DateTime entityDateTime, boolean isVoided) {
         ExportEntityType entity = entityToFiltersMap.get(typeUUID);
         if(entity == null) {
             return false;
         } else if(entity.isDateEmpty()) {
-            return true;
+            return (entity.getFilters().includeVoided() || !isVoided);
         }
-        return entity.getFilters().getDate().apply(entityDateTime);
+        return (entity.getFilters().includeVoided() || !isVoided) && (entity.getFilters().getDate().apply(entityDateTime));
     }
 
     public void setExportOutput(ExportOutput exportOutput) {
         this.exportOutput = exportOutput;
+    }
+
+    private int compareEncounters(AbstractEncounter enc1, AbstractEncounter enc2) {
+        DateTime t1 = Optional.ofNullable(enc1.getEncounterDateTime()).orElse(enc1.getCancelDateTime());
+        DateTime t2 = Optional.ofNullable(enc2.getEncounterDateTime()).orElse(enc2.getCancelDateTime());
+        return t1.compareTo(t2);
     }
 }

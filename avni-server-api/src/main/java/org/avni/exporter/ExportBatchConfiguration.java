@@ -123,13 +123,12 @@ public class ExportBatchConfiguration {
                                    ExportV2CSVFieldExtractor exportV2CSVFieldExtractor,
                                    ExportV2Processor exportV2Processor) {
         authService.authenticateByUserId(userId, organisationUUID);
-        ExportJobParameters exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
         ExportOutput exportOutput = exportV2CSVFieldExtractor.getExportOutput();
         ExportFilters subjectFilters = exportOutput.getFilters();
         List<Long> addressLevelIds = subjectFilters.getAddressLevelIds();
         List<Long> selectedAddressIds = getLocations(addressLevelIds);
         List<Long> addressParam = selectedAddressIds.isEmpty() ? null : selectedAddressIds;
-        Stream stream = getRegistrationStream(exportOutput.getUuid(), addressParam, subjectFilters.getDate().getFrom().toLocalDate(), subjectFilters.getDate().getTo().toLocalDate(), false);
+        Stream stream = getRegistrationStream(exportOutput.getUuid(), addressParam, subjectFilters.getDate().getFrom().toLocalDate(), subjectFilters.getDate().getTo().toLocalDate(), subjectFilters.includeVoided());
         LongitudinalExportTasklet encounterTasklet = new LongitudinalExportV2TaskletImpl(CHUNK_SIZE, entityManager, exportV2CSVFieldExtractor, exportV2Processor, exportS3Service, uuid, stream);
         listener.setItemReaderCleaner(encounterTasklet);
         return encounterTasklet;

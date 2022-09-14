@@ -242,7 +242,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             columnsData.add(getTotalMembers(individual));
         }
         columnsData.addAll(getObs(individual.getObservations(), registrationMap));
-        addAuditFields(individual, columnsData);
     }
 
     private void addStaticRegistrationColumns(List<Object> columnsData, Individual individual,
@@ -258,7 +257,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         addStaticEnrolmentColumns(program, columnsData, programEnrolment, HeaderCreator.getEnrolmentDataMap());
         columnsData.addAll(getObs(programEnrolment.getObservations(), enrolmentMap));
         columnsData.addAll(getObs(programEnrolment.getObservations(), exitEnrolmentMap));
-        addAuditFields(programEnrolment, columnsData);
     }
 
     public <T extends AbstractEncounter> void addEncounterColumns(Long maxVisitCount, List<Object> columnsData, List<T> encounters,
@@ -268,7 +266,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             appendStaticEncounterColumns(encounterEntityType, columnsData, encounter, HeaderCreator.getEncounterDataMap());
             columnsData.addAll(getObs(encounter.getObservations(), map));
             columnsData.addAll(getObs(encounter.getObservations(), cancelMap));
-            addAuditFields(encounter, columnsData);
             counter.getAndIncrement();
         });
         int visit = counter.get();
@@ -366,12 +363,12 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                 .collect(Collectors.toList());
     }
 
-    private void addAuditFields(Auditable auditable, List<Object> row) {
-        row.add(auditable.getCreatedBy().getUsername());
-        row.add(getDateForTimeZone(auditable.getCreatedDateTime()));
-        row.add(auditable.getLastModifiedBy().getUsername());
-        row.add(getDateForTimeZone(auditable.getLastModifiedDateTime()));
-    }
+//    private void addAuditFields(Auditable auditable, List<Object> row) {
+//        row.add(auditable.getCreatedBy().getUsername());
+//        row.add(getDateForTimeZone(auditable.getCreatedDateTime()));
+//        row.add(auditable.getLastModifiedBy().getUsername());
+//        row.add(getDateForTimeZone(auditable.getLastModifiedDateTime()));
+//    }
 
     private void addAddressLevels(List<Object> row, AddressLevel addressLevel) {
         Map<String, String> addressLevelMap = addressLevel != null ?

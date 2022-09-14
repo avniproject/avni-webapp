@@ -16,6 +16,12 @@ import static java.lang.String.format;
 @Component
 public class HeaderCreator {
 
+    //        row.add(auditable.getCreatedBy().getUsername());
+//        row.add(getDateForTimeZone(auditable.getCreatedDateTime()));
+//        row.add(auditable.getLastModifiedBy().getUsername());
+//        row.add(getDateForTimeZone(auditable.getLastModifiedDateTime()));
+//    }
+
     private static Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<Individual>>() {{
         put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
         put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
@@ -31,6 +37,11 @@ public class HeaderCreator {
         put("dateOfBirth", new HeaderNameAndFunctionMapper<>("date_of_birth", Individual::getDateOfBirth));
         put("registrationDate", new HeaderNameAndFunctionMapper<>("registration_date", Individual::getRegistrationDate));
         put("gender", new HeaderNameAndFunctionMapper<>("gender", Individual::getGender));
+        put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (Individual individual) -> individual.getCreatedBy().getName()));
+        put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", Individual::getCreatedDateTime));
+        put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (Individual individual) -> individual.getLastModifiedBy().getName()));
+        put("lastModifiedDateTime", new HeaderNameAndFunctionMapper<>("last_modified_date_time", Individual::getLastModifiedDateTime));
+        put("voided", new HeaderNameAndFunctionMapper<>("voided", CHSEntity::isVoided));
     }};
 
     private static Map<String, HeaderNameAndFunctionMapper<ProgramEnrolment>> enrolmentDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<ProgramEnrolment>>() {{
@@ -38,6 +49,11 @@ public class HeaderCreator {
         put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
         put("enrolmentDateTime", new HeaderNameAndFunctionMapper<>("enrolment_date_time", ProgramEnrolment::getEnrolmentDateTime));
         put("programExitDateTime", new HeaderNameAndFunctionMapper<>("program_exit_date_time", ProgramEnrolment::getProgramExitDateTime));
+        put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (ProgramEnrolment individual) -> individual.getCreatedBy().getName()));
+        put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", ProgramEnrolment::getCreatedDateTime));
+        put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (ProgramEnrolment individual) -> individual.getLastModifiedBy().getName()));
+        put("lastModifiedDateTime", new HeaderNameAndFunctionMapper<>("last_modified_date_time", ProgramEnrolment::getLastModifiedDateTime));
+        put("voided", new HeaderNameAndFunctionMapper<>("voided", CHSEntity::isVoided));
     }};
 
     private static Map<String, HeaderNameAndFunctionMapper<AbstractEncounter>> encounterDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<AbstractEncounter>>() {{
@@ -48,6 +64,11 @@ public class HeaderCreator {
         put("maxVisitDateTime", new HeaderNameAndFunctionMapper<>("max_visit_date_time", AbstractEncounter::getMaxVisitDateTime));
         put("encounterDateTime", new HeaderNameAndFunctionMapper<>("encounter_date_time", AbstractEncounter::getEncounterDateTime));
         put("cancelDateTime", new HeaderNameAndFunctionMapper<>("cancel_date_time", AbstractEncounter::getCancelDateTime));
+        put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (AbstractEncounter individual) -> individual.getCreatedBy().getName()));
+        put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", AbstractEncounter::getCreatedDateTime));
+        put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (AbstractEncounter individual) -> individual.getLastModifiedBy().getName()));
+        put("lastModifiedDateTime", new HeaderNameAndFunctionMapper<>("last_modified_date_time", AbstractEncounter::getLastModifiedDateTime));
+        put("voided", new HeaderNameAndFunctionMapper<>("voided", CHSEntity::isVoided));
     }};
 
 
@@ -63,7 +84,6 @@ public class HeaderCreator {
             registrationHeaders.append(",").append(subjectTypeName).append(".total_members");
         }
         appendObsHeaders(registrationHeaders, subjectTypeName, registrationMap, fields);
-        addAuditHeaders(registrationHeaders, subjectTypeName);
         return registrationHeaders;
     }
 
@@ -75,7 +95,6 @@ public class HeaderCreator {
         enrolmentHeaders.append(getStaticEnrolmentHeaders(fields, programName));
         appendObsHeaders(enrolmentHeaders, programName, enrolmentMap, fields);
         appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap, fields);
-        addAuditHeaders(enrolmentHeaders, programName);
         return enrolmentHeaders;
     }
 
@@ -95,7 +114,6 @@ public class HeaderCreator {
             encounterHeaders.append(appendStaticEncounterHeaders(fields, prefix));
             appendObsHeaders(encounterHeaders, prefix, encounterMap, fields);
             appendObsHeaders(encounterHeaders, prefix, encounterCancelMap, fields);
-            addAuditHeaders(encounterHeaders, prefix);
         }
         return encounterHeaders;
     }
@@ -158,13 +176,6 @@ public class HeaderCreator {
                 sb.append(",\"").append(prefix).append("_").append(groupPrefix).append(concept.getName()).append("\"");
             }
         });
-    }
-
-    private void addAuditHeaders(StringBuilder headers, String prefix) {
-        headers.append(",").append(format("%s_created_by", prefix));
-        headers.append(",").append(format("%s_created_date_time", prefix));
-        headers.append(",").append(format("%s_modified_by", prefix));
-        headers.append(",").append(format("%s_modified_date_time", prefix));
     }
 
     public static Map<String, HeaderNameAndFunctionMapper<Individual>> getRegistrationDataMap() {

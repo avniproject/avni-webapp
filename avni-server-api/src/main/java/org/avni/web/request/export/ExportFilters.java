@@ -9,6 +9,7 @@ import java.util.List;
 public class ExportFilters {
     private List<Long> addressLevelIds;
     private DateFilter date;
+    private boolean includeVoided = false;
 
     public List<Long> getAddressLevelIds() {
         return addressLevelIds;
@@ -24,6 +25,14 @@ public class ExportFilters {
 
     public void setDate(DateFilter date) {
         this.date = date;
+    }
+
+    public boolean includeVoided() {
+        return includeVoided;
+    }
+
+    public void setIncludeVoided(boolean includeVoided) {
+        this.includeVoided = includeVoided;
     }
 
     public static class DateFilter {
