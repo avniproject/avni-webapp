@@ -89,6 +89,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
   const commonProps = {
     encounterTypes,
     subjectType: form.subjectType,
+    form,
     disabled
   };
   return (
