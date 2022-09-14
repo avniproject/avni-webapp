@@ -38,7 +38,6 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
     @PostConstruct
     public void init() {
         exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
-        exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {});
     }
 
     @Override
@@ -66,14 +65,14 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
         Map<String, ExportEntityType> groupsEncountersToFiltersMap = Optional.ofNullable(exportOutput.getGroups()).orElse(new ArrayList<>())
                 .stream().flatMap(p -> p.getEncounters().stream())
                 .collect(Collectors.toMap(ExportEntityType::getUuid, Function.identity()));
-        Map<Individual, List<Encounter>> individualToEncountersMap = Optional.ofNullable(individual.getGroupSubjects())
+        Map<Individual, Map<EncounterType, List<Encounter>>> individualToEncountersMap = Optional.ofNullable(individual.getGroupSubjects())
                 .orElse(new HashSet<>()).stream()
                 .filter(gr -> applyFilters(groupsToFiltersMap, gr.getUuid(), gr.getGroupSubject().getRegistrationDate()
                         .toDateTimeAtStartOfDay(DateTimeZone.forID(exportJobParameters.getTimezone()))))
                 .flatMap(gs -> gs.getGroupSubject().getEncounters(false))
                 .filter(e -> applyFilters(groupsEncountersToFiltersMap, e.getUuid(), e.getEncounterDateTime()))
-                .collect(Collectors.groupingBy(Encounter::getIndividual));
-        exportItemRow.setGroupSubjectMap(individualToEncountersMap);
+                .collect(Collectors.groupingBy(Encounter::getIndividual, Collectors.groupingBy(Encounter::getEncounterType)));
+        exportItemRow.setGroupSubjectToEncountersMap(individualToEncountersMap);
     }
 
     private void initProgramsAndTheirEncounters(ItemRow exportItemRow, Individual individual) {
@@ -84,24 +83,24 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
         Map<String, ExportEntityType> encountersToFiltersMap = Optional.ofNullable(exportOutput.getPrograms()).orElse(new ArrayList<>())
                 .stream().flatMap(p -> p.getEncounters().stream())
                 .collect(Collectors.toMap(ExportEntityType::getUuid, Function.identity()));
-        Map<ProgramEnrolment, List<ProgramEncounter>> programToEncountersMap = Optional.ofNullable(individual.getProgramEnrolments())
+        Map<ProgramEnrolment, Map<EncounterType, List<ProgramEncounter>>> programToEncountersMap = Optional.ofNullable(individual.getProgramEnrolments())
                 .orElse(new HashSet<>()).stream()
                 .filter(pe -> applyFilters(programsToFiltersMap, pe.getUuid(), pe.getEnrolmentDateTime()))
                 .flatMap(pe -> pe.getEncounters(false))
                 .filter(e -> applyFilters(encountersToFiltersMap, e.getUuid(), e.getEncounterDateTime()))
-                .collect(Collectors.groupingBy(ProgramEncounter::getProgramEnrolment));
-        exportItemRow.setProgramEnrolmentMap(programToEncountersMap);
+                .collect(Collectors.groupingBy(ProgramEncounter::getProgramEnrolment, Collectors.groupingBy(ProgramEncounter::getEncounterType)));
+        exportItemRow.setProgramEnrolmentToEncountersMap(programToEncountersMap);
     }
 
     private void initGeneralEncounters(ItemRow exportItemRow, Individual individual) {
         // filter Encounter by exportOutput
         Map<String, ExportEntityType> generalEncountersToFiltersMap = Optional.ofNullable(exportOutput.getEncounters()).orElse(new ArrayList<>())
                 .stream().collect(Collectors.toMap(ExportEntityType::getUuid, Function.identity()));
-        List<Encounter> generalEncounters = Optional.ofNullable(individual.getEncounters()).orElse(new HashSet<>())
+        Map<EncounterType, List<Encounter>> generalEncounters = Optional.ofNullable(individual.getEncounters()).orElse(new HashSet<>())
                 .stream()
                 .filter(e -> applyFilters(generalEncountersToFiltersMap, e.getUuid(), e.getEncounterDateTime()))
-                .collect(Collectors.toList());
-        exportItemRow.setEncounters(generalEncounters);
+                .collect(Collectors.groupingBy(Encounter::getEncounterType));
+        exportItemRow.setEncounterTypeToEncountersMap(generalEncounters);
     }
 
     public boolean applyFilters(Map<String, ExportEntityType> entityToFiltersMap, String uuid, DateTime entityDateTime) {
@@ -112,5 +111,9 @@ public class ExportV2Processor implements ItemProcessor<Object, ItemRow> {
             return true;
         }
         return entity.getFilters().getDate().apply(entityDateTime);
+    }
+
+    public void setExportOutput(ExportOutput exportOutput) {
+        this.exportOutput = exportOutput;
     }
 }

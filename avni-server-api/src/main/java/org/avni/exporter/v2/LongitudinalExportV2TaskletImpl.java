@@ -31,6 +31,7 @@ public class LongitudinalExportV2TaskletImpl implements LongitudinalExportTaskle
     private final String jobUuid;
     private final Iterator iterator;
     private final Stream stream;
+
     private int read;
     private FlatFileItemWriter<ItemRow> writer;
 
@@ -44,6 +45,7 @@ public class LongitudinalExportV2TaskletImpl implements LongitudinalExportTaskle
         this.exportS3Service = exportS3Service;
         this.jobUuid = jobUuid;
         this.stream = stream;
+        this.exportV2Processor.setExportOutput(exportV2CSVFieldExtractor.getExportOutput());
         iterator = stream.iterator();
     }
 

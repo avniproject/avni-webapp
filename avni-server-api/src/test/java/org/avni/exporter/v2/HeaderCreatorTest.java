@@ -18,7 +18,8 @@ public class HeaderCreatorTest {
         SubjectType subjectType = getSubjectType("Individual", Subject.Person);
 
         HeaderCreator headerCreator = new HeaderCreator();
-        List<String> fieldsToAdd = Arrays.asList("id", "uuid", "firstName");
+        List<String> fieldsToAdd = new ArrayList<>();
+        fieldsToAdd.addAll(Arrays.asList("id", "uuid", "firstName"));
         List<String> addressLevelTypes = Arrays.asList("Village");
         Map<String, FormElement> registrationMap = getStringFormElementMap();
         StringBuilder registrationHeaders = headerCreator.addRegistrationHeaders(subjectType, registrationMap, addressLevelTypes, fieldsToAdd);
@@ -37,7 +38,9 @@ public class HeaderCreatorTest {
     @Test
     public void shouldGenerateMultipleColumnsForEncounter() {
         HeaderCreator headerCreator = new HeaderCreator();
-        StringBuilder stringBuilder = headerCreator.addEncounterHeaders(2L, getStringFormElementMap(), getStringFormElementMap(), "ENC", Arrays.asList("id"));
+        List<String> fields = new ArrayList<>();
+        fields.add("id");
+        StringBuilder stringBuilder = headerCreator.addEncounterHeaders(2L, getStringFormElementMap(), getStringFormElementMap(), "ENC", fields);
         assertEquals(stringBuilder.toString(), "ENC_1_id,\"ENC_1_Question 1\",\"ENC_1_Question 1\",ENC_1_created_by,ENC_1_created_date_time,ENC_1_modified_by,ENC_1_modified_date_time,ENC_2_id,\"ENC_2_Question 1\",\"ENC_2_Question 1\",ENC_2_created_by,ENC_2_created_date_time,ENC_2_modified_by,ENC_2_modified_date_time");
     }
 

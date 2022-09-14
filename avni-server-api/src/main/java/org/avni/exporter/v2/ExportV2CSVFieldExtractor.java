@@ -2,6 +2,7 @@ package org.avni.exporter.v2;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.poi.ss.formula.functions.T;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementType;
 import org.avni.application.FormType;
@@ -29,7 +30,6 @@ import java.io.Writer;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @StepScope
@@ -37,7 +37,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
 
     private static final String selectedAnswerFieldValue = "1";
     private static final String unSelectedAnswerFieldValue = "0";
-    public static final long NO_OF_AUDIT_FIELDS = 4l;
     private final ExportJobParametersRepository exportJobParametersRepository;
     private final ObjectMapper objectMapper;
     private final EncounterRepository encounterRepository;
@@ -97,10 +96,10 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         this.addressLevelTypes = addressLevelService.getAllAddressLevelTypeNames();
         ExportJobParameters exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
         String timezone = exportJobParameters.getTimezone();
+        exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {});
         String subjectTypeUUID = exportOutput.getUuid();
         this.registrationMap = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
         this.headers.append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(subjectTypeUUID), this.registrationMap, this.addressLevelTypes, exportOutput.getFields()));
-        exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {});
         exportOutput.getPrograms().forEach(p -> {
             LinkedHashMap<String, FormElement> applicableEnrolmentFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), null, FormType.ProgramEnrolment), p);
             LinkedHashMap<String, FormElement> applicableExitFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), null, FormType.ProgramExit), p);
@@ -181,36 +180,49 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         List<Object> columnsData = new ArrayList<>();
         addRegistrationColumns(columnsData, itemRow.getIndividual(), this.registrationMap);
         exportOutput.getPrograms().forEach(program -> {
-            //TODO do we need to handle programs less than maxCount
             Optional<ProgramEnrolment> programEnrolmentOptional = itemRow.getIndividual().getProgramEnrolments().stream()
                     .filter(pe -> pe.getUuid().equals(program.getUuid())).findFirst();
-            programEnrolmentOptional.ifPresent(programEnrolment -> {
-                addEnrolmentColumns(columnsData, programEnrolment, this.enrolmentMap.get(program.getUuid()), this.exitEnrolmentMap.get(program.getUuid()), program);
-                program.getEncounters().forEach(pe -> {
-                    addEncounterColumns(pe.getMaxCount(), columnsData, programEnrolment.getEncounters(false),
-                            this.encounterMap.get(pe.getUuid()), this.encounterCancelMap.get(pe.getUuid()), pe);
+            if(programEnrolmentOptional.isPresent()) {
+                programEnrolmentOptional.ifPresent(programEnrolment -> {
+                    addEnrolmentColumns(columnsData, programEnrolment, this.enrolmentMap.get(program.getUuid()), this.exitEnrolmentMap.get(program.getUuid()), program);
+                    program.getEncounters().forEach(pe -> {
+                        Map<EncounterType, List<ProgramEncounter>> encounterTypeListMap = itemRow.getProgramEnrolmentToEncountersMap().get(programEnrolment);
+                        if(encounterTypeListMap != null && encounterTypeListMap.get(pe) != null) {
+                            addEncounterColumns(pe.getMaxCount(), columnsData, encounterTypeListMap.get(pe), this.encounterMap.get(pe.getUuid()),
+                                    this.encounterCancelMap.get(pe.getUuid()), pe);
+                        }
+                    });
                 });
-            });
+            } else {
+                AddBlanks(columnsData, program.getTotalNumberOfColumns());
+            }
         });
         exportOutput.getEncounters().forEach(enc -> {
-            addEncounterColumns(enc.getMaxCount(), columnsData, itemRow.getIndividual().getEncounters(false),
-                    this.encounterMap.get(enc.getUuid()), this.encounterCancelMap.get(enc.getUuid()), enc);
+            List<Encounter> encounterTypeList = itemRow.getEncounterTypeToEncountersMap().get(enc);
+            if(encounterTypeList != null) {
+                addEncounterColumns(enc.getMaxCount(), columnsData, encounterTypeList,
+                        this.encounterMap.get(enc.getUuid()), this.encounterCancelMap.get(enc.getUuid()), enc);
+            }
         });
         exportOutput.getGroups().forEach(grp -> {
-            //TODO do we need to handle GroupSubject less than maxCount
             String groupSubjectTypeUUID = grp.getUuid();
             Optional<GroupSubject> groupSubjectOptional = itemRow.getIndividual().getGroupSubjects().stream()
                     .filter(gs -> gs.getUuid().equals(groupSubjectTypeUUID)).findFirst();
-            groupSubjectOptional.ifPresent( groupSubject -> {
-                addRegistrationColumns(columnsData, groupSubject.getGroupSubject(), this.groupsMap.get(groupSubjectTypeUUID));
-//                addRegistrationColumns(columnsData, groupSubject.getMemberSubject(), this.groupsMap.get(groupSubjectTypeUUID)); //TODO is this required
-                grp.getEncounters().forEach(ge -> {
-                    addEncounterColumns(ge.getMaxCount(), columnsData, groupSubject.getGroupSubject().getEncounters(false),
-                            this.encounterMap.get(ge.getUuid()), this.encounterCancelMap.get(ge.getUuid()), ge);
+            if(groupSubjectOptional.isPresent()) {
+                groupSubjectOptional.ifPresent( groupSubject -> {
+                    Map<EncounterType, List<Encounter>> encounterTypeListMap = itemRow.getGroupSubjectToEncountersMap().get(groupSubject);
+                    addRegistrationColumns(columnsData, groupSubject.getGroupSubject(), this.groupsMap.get(groupSubjectTypeUUID));
+                    grp.getEncounters().forEach(ge -> {
+                        if(encounterTypeListMap != null && encounterTypeListMap.get(ge) != null) {
+                            addEncounterColumns(ge.getMaxCount(), columnsData, encounterTypeListMap.get(ge),
+                                    this.encounterMap.get(ge.getUuid()), this.encounterCancelMap.get(ge.getUuid()), ge);
+                        }
+                    });
                 });
-            });
+            } else {
+                AddBlanks(columnsData, grp.getTotalNumberOfColumns());
+            }
         });
-
         return columnsData.toArray();
     }
 
@@ -240,7 +252,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         addAuditFields(programEnrolment, columnsData);
     }
 
-    public <T extends AbstractEncounter> void addEncounterColumns(Long maxVisitCount, List<Object> columnsData, Stream<T> encounters,
+    public <T extends AbstractEncounter> void addEncounterColumns(Long maxVisitCount, List<Object> columnsData, List<T> encounters,
                                                                   Map<String, FormElement> map, Map<String, FormElement> cancelMap, ExportEntityType encounterEntityType) {
         AtomicInteger counter = new AtomicInteger(0);
         encounters.forEach(encounter -> {
@@ -252,7 +264,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         });
         int visit = counter.get();
         while (visit++ < maxVisitCount) {
-            AddBlanks(columnsData, encounterEntityType.getTotalNumberOfColumns()+ NO_OF_AUDIT_FIELDS);
+            AddBlanks(columnsData, encounterEntityType.getTotalNumberOfColumns());
         }
     }
 

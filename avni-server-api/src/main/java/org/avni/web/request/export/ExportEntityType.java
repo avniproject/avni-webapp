@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExportEntityType {
+
+    public static final long NO_OF_AUDIT_FIELDS = 4l;
     private String uuid;
     private List<String> fields = new ArrayList<>();
     private ExportFilters filters;
@@ -54,6 +56,6 @@ public class ExportEntityType {
     }
 
     public long getTotalNumberOfColumns() {
-        return getNoOfFields() * getMaxCount();
+        return (getNoOfFields() + NO_OF_AUDIT_FIELDS)* getMaxCount();
     }
 }

@@ -62,7 +62,7 @@ public class HeaderCreator {
         if (subjectType.isGroup()) {
             registrationHeaders.append(",").append(subjectTypeName).append(".total_members");
         }
-        appendObsHeaders(registrationHeaders, subjectTypeName, registrationMap);
+        appendObsHeaders(registrationHeaders, subjectTypeName, registrationMap, fields);
         addAuditHeaders(registrationHeaders, subjectTypeName);
         return registrationHeaders;
     }
@@ -73,8 +73,8 @@ public class HeaderCreator {
                                              List<String> fields) {
         StringBuilder enrolmentHeaders = new StringBuilder();
         enrolmentHeaders.append(getStaticEnrolmentHeaders(fields, programName));
-        appendObsHeaders(enrolmentHeaders, programName, enrolmentMap);
-        appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap);
+        appendObsHeaders(enrolmentHeaders, programName, enrolmentMap, fields);
+        appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap, fields);
         addAuditHeaders(enrolmentHeaders, programName);
         return enrolmentHeaders;
     }
@@ -93,8 +93,8 @@ public class HeaderCreator {
             }
             String prefix = encounterTypeName + "_" + visit;
             encounterHeaders.append(appendStaticEncounterHeaders(fields, prefix));
-            appendObsHeaders(encounterHeaders, prefix, encounterMap);
-            appendObsHeaders(encounterHeaders, prefix, encounterCancelMap);
+            appendObsHeaders(encounterHeaders, prefix, encounterMap, fields);
+            appendObsHeaders(encounterHeaders, prefix, encounterCancelMap, fields);
             addAuditHeaders(encounterHeaders, prefix);
         }
         return encounterHeaders;
@@ -140,7 +140,8 @@ public class HeaderCreator {
         return "\"".concat(text).concat("\"");
     }
 
-    private void appendObsHeaders(StringBuilder sb, String prefix, Map<String, FormElement> map) {
+    private void appendObsHeaders(StringBuilder sb, String prefix, Map<String, FormElement> map, List<String> fields) {
+        fields.addAll(map.keySet());
         map.forEach((uuid, fe) -> {
             if (ConceptDataType.isGroupQuestion(fe.getConcept().getDataType())) return;
             Concept concept = fe.getConcept();
