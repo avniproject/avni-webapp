@@ -37,6 +37,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
 
     private static final String selectedAnswerFieldValue = "1";
     private static final String unSelectedAnswerFieldValue = "0";
+    public static final String EMPTY_STRING = "";
     private final ExportJobParametersRepository exportJobParametersRepository;
     private final ObjectMapper objectMapper;
     private final EncounterRepository encounterRepository;
@@ -96,7 +97,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         this.addressLevelTypes = addressLevelService.getAllAddressLevelTypeNames();
         ExportJobParameters exportJobParameters = exportJobParametersRepository.findByUuid(exportJobParamsUUID);
         String timezone = exportJobParameters.getTimezone();
-        exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {});
+        exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {
+        });
         String subjectTypeUUID = exportOutput.getUuid();
         this.registrationMap = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
         this.headers.append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(subjectTypeUUID), this.registrationMap, this.addressLevelTypes, exportOutput.getFields()));
@@ -179,17 +181,19 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     private Object[] createRow(ItemRow itemRow) {
         List<Object> columnsData = new ArrayList<>();
         addRegistrationColumns(columnsData, itemRow.getIndividual(), this.registrationMap);
+        Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programEnrolmentToEncountersMap = itemRow.getProgramEnrolmentToEncountersMap();
         exportOutput.getPrograms().forEach(program -> {
-            Optional<ProgramEnrolment> programEnrolmentOptional = itemRow.getIndividual().getProgramEnrolments().stream()
-                    .filter(pe -> pe.getUuid().equals(program.getUuid())).findFirst();
-            if(programEnrolmentOptional.isPresent()) {
+            Optional<ProgramEnrolment> programEnrolmentOptional = programEnrolmentToEncountersMap.keySet().stream().filter(pe -> pe.getProgram().getUuid().equals(program.getUuid())).findFirst();
+            if (programEnrolmentOptional.isPresent()) {
                 programEnrolmentOptional.ifPresent(programEnrolment -> {
                     addEnrolmentColumns(columnsData, programEnrolment, this.enrolmentMap.get(program.getUuid()), this.exitEnrolmentMap.get(program.getUuid()), program);
                     program.getEncounters().forEach(pe -> {
-                        Map<EncounterType, List<ProgramEncounter>> encounterTypeListMap = itemRow.getProgramEnrolmentToEncountersMap().get(programEnrolment);
-                        if(encounterTypeListMap != null && encounterTypeListMap.get(pe) != null) {
-                            addEncounterColumns(pe.getMaxCount(), columnsData, encounterTypeListMap.get(pe), this.encounterMap.get(pe.getUuid()),
-                                    this.encounterCancelMap.get(pe.getUuid()), pe);
+                        Map<String, List<ProgramEncounter>> encounterTypeListMap = programEnrolmentToEncountersMap.get(programEnrolment);
+                        if (encounterTypeListMap != null && encounterTypeListMap.get(pe.getUuid()) != null) {
+                            addEncounterColumns(pe.getMaxCount(), columnsData, encounterTypeListMap.get(pe.getUuid()), this.programEncounterMap.get(pe.getUuid()),
+                                    this.programEncounterCancelMap.get(pe.getUuid()), pe);
+                        } else {
+                            AddBlanks(columnsData, pe.getTotalNumberOfColumns());
                         }
                     });
                 });
@@ -198,24 +202,29 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             }
         });
         exportOutput.getEncounters().forEach(enc -> {
-            List<Encounter> encounterTypeList = itemRow.getEncounterTypeToEncountersMap().get(enc);
-            if(encounterTypeList != null) {
+            List<Encounter> encounterTypeList = itemRow.getEncounterTypeToEncountersMap().get(enc.getUuid());
+            if (encounterTypeList != null) {
                 addEncounterColumns(enc.getMaxCount(), columnsData, encounterTypeList,
                         this.encounterMap.get(enc.getUuid()), this.encounterCancelMap.get(enc.getUuid()), enc);
+            } else {
+                AddBlanks(columnsData, enc.getTotalNumberOfColumns());
             }
         });
         exportOutput.getGroups().forEach(grp -> {
             String groupSubjectTypeUUID = grp.getUuid();
-            Optional<GroupSubject> groupSubjectOptional = itemRow.getIndividual().getGroupSubjects().stream()
-                    .filter(gs -> gs.getUuid().equals(groupSubjectTypeUUID)).findFirst();
-            if(groupSubjectOptional.isPresent()) {
-                groupSubjectOptional.ifPresent( groupSubject -> {
-                    Map<EncounterType, List<Encounter>> encounterTypeListMap = itemRow.getGroupSubjectToEncountersMap().get(groupSubject);
-                    addRegistrationColumns(columnsData, groupSubject.getGroupSubject(), this.groupsMap.get(groupSubjectTypeUUID));
+            Map<Individual, Map<String, List<Encounter>>> groupSubjectToEncountersMap = itemRow.getGroupSubjectToEncountersMap();
+            Optional<Individual> groupSubjectOptional = groupSubjectToEncountersMap.keySet().stream()
+                    .filter(individual -> individual.getSubjectType().getUuid().equals(groupSubjectTypeUUID)).findFirst();
+            if (groupSubjectOptional.isPresent()) {
+                groupSubjectOptional.ifPresent(individual -> {
+                    addRegistrationColumns(columnsData, individual, this.groupsMap.get(groupSubjectTypeUUID));
+                    Map<String, List<Encounter>> encounterTypeListMap = groupSubjectToEncountersMap.get(individual);
                     grp.getEncounters().forEach(ge -> {
-                        if(encounterTypeListMap != null && encounterTypeListMap.get(ge) != null) {
-                            addEncounterColumns(ge.getMaxCount(), columnsData, encounterTypeListMap.get(ge),
-                                    this.encounterMap.get(ge.getUuid()), this.encounterCancelMap.get(ge.getUuid()), ge);
+                        if (encounterTypeListMap != null && encounterTypeListMap.get(ge.getUuid()) != null) {
+                            addEncounterColumns(ge.getMaxCount(), columnsData, encounterTypeListMap.get(ge.getUuid()),
+                                    this.groupEncounterMap.get(ge.getUuid()), this.groupEncounterCancelMap.get(ge.getUuid()), ge);
+                        } else {
+                            AddBlanks(columnsData, ge.getTotalNumberOfColumns());
                         }
                     });
                 });
@@ -237,15 +246,15 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     }
 
     private void addStaticRegistrationColumns(List<Object> columnsData, Individual individual,
-                                                 Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap) {
+                                              Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap) {
         exportOutput.getFields().stream()
                 .filter(registrationDataMap::containsKey)
                 .forEach(key -> columnsData.add(registrationDataMap.get(key).getValueFunction().apply(individual)));
     }
 
     public void addEnrolmentColumns(List<Object> columnsData, ProgramEnrolment programEnrolment, Map<String, FormElement> enrolmentMap,
-                                             Map<String, FormElement> exitEnrolmentMap,
-                                             ExportOutput.ExportNestedOutput program) {
+                                    Map<String, FormElement> exitEnrolmentMap,
+                                    ExportOutput.ExportNestedOutput program) {
         addStaticEnrolmentColumns(program, columnsData, programEnrolment, HeaderCreator.getEnrolmentDataMap());
         columnsData.addAll(getObs(programEnrolment.getObservations(), enrolmentMap));
         columnsData.addAll(getObs(programEnrolment.getObservations(), exitEnrolmentMap));
@@ -264,7 +273,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         });
         int visit = counter.get();
         while (visit++ < maxVisitCount) {
-            AddBlanks(columnsData, encounterEntityType.getTotalNumberOfColumns());
+            AddBlanks(columnsData, encounterEntityType.getEffectiveNoOfFields() );
         }
     }
 
@@ -302,7 +311,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             String dataType = formElement.getConcept().getDataType();
             if (dataType.equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
-            } else if(dataType.equals(ConceptDataType.DateTime.toString()) || dataType.equals(ConceptDataType.Date.toString())){
+            } else if (dataType.equals(ConceptDataType.DateTime.toString()) || dataType.equals(ConceptDataType.Date.toString())) {
                 values.add(processDateObs(val));
             } else if (ConceptDataType.isMedia(dataType)) {
                 values.add(processMediaObs(val));
@@ -318,9 +327,10 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     }
 
     private Object processDateObs(Object val) {
-        if(val == null) return "";
+        if (val == null) return "";
         return getDateForTimeZone(new DateTime(String.valueOf(val)));
     }
+
     private List<Object> processCodedObs(String formType, Object val, FormElement formElement) {
         List<Object> values = new ArrayList<>();
         if (formType.equals(FormElementType.MultiSelect.toString())) {
@@ -384,8 +394,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     }
 
     private void AddBlanks(List<Object> row, long noOfColumns) {
-        for(int i=0; i < noOfColumns; i++) {
-            row.add(",");
+        for (int i = 0; i < noOfColumns; i++) {
+            row.add(EMPTY_STRING);
         }
     }
 

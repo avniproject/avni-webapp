@@ -19,6 +19,11 @@ public class ExportEntityType {
         return filters == null ? new ExportFilters() : filters;
     }
 
+    public boolean isDateEmpty() {
+        return this.filters == null || this.filters.getDate() == null ||
+                this.filters.getDate().getTo() == null;
+    }
+
     public void setFilters(ExportFilters filters) {
         this.filters = filters;
     }
@@ -56,6 +61,10 @@ public class ExportEntityType {
     }
 
     public long getTotalNumberOfColumns() {
-        return (getNoOfFields() + NO_OF_AUDIT_FIELDS)* getMaxCount();
+        return getEffectiveNoOfFields() * getMaxCount();
+    }
+
+    public long getEffectiveNoOfFields() {
+        return getNoOfFields() + NO_OF_AUDIT_FIELDS;
     }
 }

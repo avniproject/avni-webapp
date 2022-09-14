@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class ItemRow {
     private Individual individual;
-    private Map<ProgramEnrolment, Map<EncounterType, List<ProgramEncounter>>> programEnrolmentToEncountersMap;
-    private Map<EncounterType, List<Encounter>> encounterTypeToEncountersMap;
-    private Map<Individual, Map<EncounterType, List<Encounter>>> groupSubjectToEncountersMap;
+    private Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programEnrolmentToEncountersMap;
+    private Map<String, List<Encounter>> encounterTypeToEncountersMap;
+    private Map<Individual, Map<String, List<Encounter>>> groupSubjectToEncountersMap;
 
     public Individual getIndividual() {
         return individual;
@@ -19,27 +19,27 @@ public class ItemRow {
         this.individual = individual;
     }
 
-    public Map<ProgramEnrolment, Map<EncounterType, List<ProgramEncounter>>> getProgramEnrolmentToEncountersMap() {
+    public Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> getProgramEnrolmentToEncountersMap() {
         return programEnrolmentToEncountersMap;
     }
 
-    public void setProgramEnrolmentToEncountersMap(Map<ProgramEnrolment, Map<EncounterType, List<ProgramEncounter>>> programEnrolmentToEncountersMap) {
+    public void setProgramEnrolmentToEncountersMap(Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programEnrolmentToEncountersMap) {
         this.programEnrolmentToEncountersMap = programEnrolmentToEncountersMap;
     }
 
-    public Map<EncounterType, List<Encounter>> getEncounterTypeToEncountersMap() {
+    public Map<String, List<Encounter>> getEncounterTypeToEncountersMap() {
         return encounterTypeToEncountersMap;
     }
 
-    public void setEncounterTypeToEncountersMap(Map<EncounterType, List<Encounter>> encounterTypeToEncountersMap) {
+    public void setEncounterTypeToEncountersMap(Map<String, List<Encounter>> encounterTypeToEncountersMap) {
         this.encounterTypeToEncountersMap = encounterTypeToEncountersMap;
     }
 
-    public Map<Individual, Map<EncounterType, List<Encounter>>> getGroupSubjectToEncountersMap() {
+    public Map<Individual, Map<String, List<Encounter>>> getGroupSubjectToEncountersMap() {
         return groupSubjectToEncountersMap;
     }
 
-    public void setGroupSubjectToEncountersMap(Map<Individual, Map<EncounterType, List<Encounter>>> groupSubjectToEncountersMap) {
+    public void setGroupSubjectToEncountersMap(Map<Individual, Map<String, List<Encounter>>> groupSubjectToEncountersMap) {
         this.groupSubjectToEncountersMap = groupSubjectToEncountersMap;
     }
 }
