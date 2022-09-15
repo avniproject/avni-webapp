@@ -116,6 +116,11 @@ public class Individual extends SyncAttributeEntity {
         return gender;
     }
 
+    @JsonIgnore
+    public String getGenderName() {
+        return gender == null ? "" : gender.getName();
+    }
+
     public void setGender(Gender gender) {
         this.gender = gender;
     }

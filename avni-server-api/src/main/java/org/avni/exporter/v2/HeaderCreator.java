@@ -36,7 +36,7 @@ public class HeaderCreator {
         put("lastName", new HeaderNameAndFunctionMapper<>("last_name", Individual::getLastName));
         put("dateOfBirth", new HeaderNameAndFunctionMapper<>("date_of_birth", Individual::getDateOfBirth));
         put("registrationDate", new HeaderNameAndFunctionMapper<>("registration_date", Individual::getRegistrationDate));
-        put("gender", new HeaderNameAndFunctionMapper<>("gender", Individual::getGender));
+        put("gender", new HeaderNameAndFunctionMapper<>("gender", Individual::getGenderName));
         put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (Individual individual) -> individual.getCreatedBy().getName()));
         put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", Individual::getCreatedDateTime));
         put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (Individual individual) -> individual.getLastModifiedBy().getName()));

@@ -109,8 +109,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
             this.headers.append(",")
                     .append(headerCreator.addEnrolmentHeaders(applicableEnrolmentFields, applicableExitFields, programRepository.findByUuid(p.getUuid()).getName(), p.getFields()));
             p.getEncounters().forEach(pe -> {
-                LinkedHashMap<String, FormElement> applicableProgramEncounterFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounter), p);
-                LinkedHashMap<String, FormElement> applicableProgramCancelFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounterCancellation), p);
+                LinkedHashMap<String, FormElement> applicableProgramEncounterFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounter), pe);
+                LinkedHashMap<String, FormElement> applicableProgramCancelFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounterCancellation), pe);
                 this.programEncounterMap.put(pe.getUuid(), applicableProgramEncounterFields);
                 this.programEncounterCancelMap.put(pe.getUuid(), applicableProgramCancelFields);
                 DateFilter dateFilter = pe.getFilters().getDate();
@@ -181,7 +181,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
 
     private Object[] createRow(ItemRow itemRow) {
         List<Object> columnsData = new ArrayList<>();
-        addRegistrationColumns(columnsData, itemRow.getIndividual(), this.registrationMap);
+        addRegistrationColumns(columnsData, itemRow.getIndividual(), this.registrationMap, exportOutput.getFields());
         Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programEnrolmentToEncountersMap = itemRow.getProgramEnrolmentToEncountersMap();
         exportOutput.getPrograms().forEach(program -> {
             Optional<ProgramEnrolment> programEnrolmentOptional = programEnrolmentToEncountersMap.keySet().stream().filter(pe -> pe.getProgram().getUuid().equals(program.getUuid())).findFirst();
@@ -218,7 +218,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                     .filter(individual -> individual.getSubjectType().getUuid().equals(groupSubjectTypeUUID)).findFirst();
             if (groupSubjectOptional.isPresent()) {
                 groupSubjectOptional.ifPresent(individual -> {
-                    addRegistrationColumns(columnsData, individual, this.groupsMap.get(groupSubjectTypeUUID));
+                    addRegistrationColumns(columnsData, individual, this.groupsMap.get(groupSubjectTypeUUID), grp.getFields());
                     Map<String, List<Encounter>> encounterTypeListMap = groupSubjectToEncountersMap.get(individual);
                     grp.getEncounters().forEach(ge -> {
                         if (encounterTypeListMap != null && encounterTypeListMap.get(ge.getUuid()) != null) {
@@ -236,8 +236,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         return columnsData.toArray();
     }
 
-    public void addRegistrationColumns(List<Object> columnsData, Individual individual, Map<String, FormElement> registrationMap) {
-        addStaticRegistrationColumns(columnsData, individual, HeaderCreator.getRegistrationDataMap());
+    public void addRegistrationColumns(List<Object> columnsData, Individual individual, Map<String, FormElement> registrationMap, List<String> fields) {
+        addStaticRegistrationColumns(columnsData, individual, HeaderCreator.getRegistrationDataMap(), fields);
         addAddressLevels(columnsData, individual.getAddressLevel());
         if (individual.getSubjectType().isGroup()) {
             columnsData.add(getTotalMembers(individual));
@@ -246,8 +246,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     }
 
     private void addStaticRegistrationColumns(List<Object> columnsData, Individual individual,
-                                              Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap) {
-        exportOutput.getFields().stream()
+                                              Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap, List<String> fields) {
+        fields.stream()
                 .filter(registrationDataMap::containsKey)
                 .forEach(key -> columnsData.add(registrationDataMap.get(key).getValueFunction().apply(individual)));
     }
