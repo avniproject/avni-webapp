@@ -12,7 +12,9 @@ export const sampleFormElementRule = entityName => {
   const showCondition = formElementValue1 === formElementValue2;
   statusBuilder.show().whenItem(showCondition).is.truthy;
   //for form element validation error
-  statusBuilder.validationError("Values are not equal").whenItem(showCondition).is.falsy;
+  if(!showCondition){
+  statusBuilder.validationError("Values are not equal");
+  }
   return statusBuilder.build();
 };`;
 };
