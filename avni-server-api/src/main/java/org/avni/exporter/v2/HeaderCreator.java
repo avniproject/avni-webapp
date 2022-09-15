@@ -14,61 +14,56 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 
 @Component
-public class HeaderCreator {
-
-    //        row.add(auditable.getCreatedBy().getUsername());
-//        row.add(getDateForTimeZone(auditable.getCreatedDateTime()));
-//        row.add(auditable.getLastModifiedBy().getUsername());
-//        row.add(getDateForTimeZone(auditable.getLastModifiedDateTime()));
-//    }
+public class HeaderCreator implements LongitudinalExportRequestFieldNameConstants, LongitudinalExportDBFieldNameConstants {
 
     private static Map<String, HeaderNameAndFunctionMapper<Individual>> registrationDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<Individual>>() {{
-        put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
-        put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
-        put("firstName", new HeaderNameAndFunctionMapper<>("first_name", Individual::getFirstName));
-        put("middleName", new HeaderNameAndFunctionMapper<>("middle_name", (Individual individual) -> {
+        put(ID, new HeaderNameAndFunctionMapper<>(HEADER_NAME_ID, CHSBaseEntity::getId));
+        put(UUID, new HeaderNameAndFunctionMapper<>(HEADER_NAME_UUID, CHSBaseEntity::getUuid));
+        put(FIRST_NAME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_FIRST_NAME, Individual::getFirstName));
+        put(MIDDLE_NAME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_MIDDLE_NAME, (Individual individual) -> {
             if (individual.getSubjectType().isAllowMiddleName()) {
                 return individual.getMiddleName();
             } else {
                 return "";
             }
         }));
-        put("lastName", new HeaderNameAndFunctionMapper<>("last_name", Individual::getLastName));
-        put("dateOfBirth", new HeaderNameAndFunctionMapper<>("date_of_birth", Individual::getDateOfBirth));
-        put("registrationDate", new HeaderNameAndFunctionMapper<>("registration_date", Individual::getRegistrationDate));
-        put("gender", new HeaderNameAndFunctionMapper<>("gender", Individual::getGenderName));
-        put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (Individual individual) -> individual.getCreatedBy().getName()));
-        put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", Individual::getCreatedDateTime));
-        put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (Individual individual) -> individual.getLastModifiedBy().getName()));
-        put("lastModifiedDateTime", new HeaderNameAndFunctionMapper<>("last_modified_date_time", Individual::getLastModifiedDateTime));
-        put("voided", new HeaderNameAndFunctionMapper<>("voided", CHSEntity::isVoided));
+        put(LAST_NAME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_NAME, Individual::getLastName));
+        put(DATE_OF_BIRTH, new HeaderNameAndFunctionMapper<>(HEADER_NAME_DATE_OF_BIRTH, Individual::getDateOfBirth));
+        put(REGISTRATION_DATE, new HeaderNameAndFunctionMapper<>(HEADER_NAME_REGISTRATION_DATE, Individual::getRegistrationDate));
+        put(GENDER, new HeaderNameAndFunctionMapper<>(HEADER_NAME_GENDER, Individual::getGenderName));
+        put(CREATED_BY, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CREATED_BY, (Individual individual) -> individual.getCreatedBy().getName()));
+        put(CREATED_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CREATED_DATE_TIME, Individual::getCreatedDateTime));
+        put(LAST_MODIFIED_BY, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_MODIFIED_BY, (Individual individual) -> individual.getLastModifiedBy().getName()));
+        put(LAST_MODIFIED_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_MODIFIED_DATE_TIME, Individual::getLastModifiedDateTime));
+        put(VOIDED, new HeaderNameAndFunctionMapper<>(HEADER_NAME_VOIDED, CHSEntity::isVoided));
     }};
 
     private static Map<String, HeaderNameAndFunctionMapper<ProgramEnrolment>> enrolmentDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<ProgramEnrolment>>() {{
-        put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
-        put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
-        put("enrolmentDateTime", new HeaderNameAndFunctionMapper<>("enrolment_date_time", ProgramEnrolment::getEnrolmentDateTime));
-        put("programExitDateTime", new HeaderNameAndFunctionMapper<>("program_exit_date_time", ProgramEnrolment::getProgramExitDateTime));
-        put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (ProgramEnrolment individual) -> individual.getCreatedBy().getName()));
-        put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", ProgramEnrolment::getCreatedDateTime));
-        put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (ProgramEnrolment individual) -> individual.getLastModifiedBy().getName()));
-        put("lastModifiedDateTime", new HeaderNameAndFunctionMapper<>("last_modified_date_time", ProgramEnrolment::getLastModifiedDateTime));
-        put("voided", new HeaderNameAndFunctionMapper<>("voided", CHSEntity::isVoided));
+        put(ID, new HeaderNameAndFunctionMapper<>(HEADER_NAME_ID, CHSBaseEntity::getId));
+        put(UUID, new HeaderNameAndFunctionMapper<>(HEADER_NAME_UUID, CHSBaseEntity::getUuid));
+        put(ENROLMENT_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_ENROLMENT_DATE_TIME, ProgramEnrolment::getEnrolmentDateTime));
+        put(PROGRAM_EXIT_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_PROGRAM_EXIT_DATE_TIME, ProgramEnrolment::getProgramExitDateTime));
+        put(CREATED_BY, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CREATED_BY, (ProgramEnrolment individual) -> individual.getCreatedBy().getName()));
+        put(CREATED_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CREATED_DATE_TIME, ProgramEnrolment::getCreatedDateTime));
+        put(LAST_MODIFIED_BY, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_MODIFIED_BY, (ProgramEnrolment individual) -> individual.getLastModifiedBy().getName()));
+        put(LAST_MODIFIED_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_MODIFIED_DATE_TIME, ProgramEnrolment::getLastModifiedDateTime));
+        put(VOIDED, new HeaderNameAndFunctionMapper<>(HEADER_NAME_VOIDED, CHSEntity::isVoided));
     }};
 
+
     private static Map<String, HeaderNameAndFunctionMapper<AbstractEncounter>> encounterDataMap = new LinkedHashMap<String, HeaderNameAndFunctionMapper<AbstractEncounter>>() {{
-        put("id", new HeaderNameAndFunctionMapper<>("id", CHSBaseEntity::getId));
-        put("uuid", new HeaderNameAndFunctionMapper<>("uuid", CHSBaseEntity::getUuid));
-        put("name", new HeaderNameAndFunctionMapper<>("name", AbstractEncounter::getName));
-        put("earliestVisitDateTime", new HeaderNameAndFunctionMapper<>("earliest_visit_date_time", AbstractEncounter::getEarliestVisitDateTime));
-        put("maxVisitDateTime", new HeaderNameAndFunctionMapper<>("max_visit_date_time", AbstractEncounter::getMaxVisitDateTime));
-        put("encounterDateTime", new HeaderNameAndFunctionMapper<>("encounter_date_time", AbstractEncounter::getEncounterDateTime));
-        put("cancelDateTime", new HeaderNameAndFunctionMapper<>("cancel_date_time", AbstractEncounter::getCancelDateTime));
-        put("createdBy", new HeaderNameAndFunctionMapper<>("created_by", (AbstractEncounter individual) -> individual.getCreatedBy().getName()));
-        put("createdDateTime", new HeaderNameAndFunctionMapper<>("created_date_time", AbstractEncounter::getCreatedDateTime));
-        put("lastModifiedBy", new HeaderNameAndFunctionMapper<>("last_modified_by", (AbstractEncounter individual) -> individual.getLastModifiedBy().getName()));
-        put("lastModifiedDateTime", new HeaderNameAndFunctionMapper<>("last_modified_date_time", AbstractEncounter::getLastModifiedDateTime));
-        put("voided", new HeaderNameAndFunctionMapper<>("voided", CHSEntity::isVoided));
+        put(ID, new HeaderNameAndFunctionMapper<>(HEADER_NAME_ID, CHSBaseEntity::getId));
+        put(UUID, new HeaderNameAndFunctionMapper<>(HEADER_NAME_UUID, CHSBaseEntity::getUuid));
+        put(NAME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_NAME, AbstractEncounter::getName));
+        put(EARLIEST_VISIT_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_EARLIEST_VISIT_DATE_TIME, AbstractEncounter::getEarliestVisitDateTime));
+        put(MAX_VISIT_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_MAX_VISIT_DATE_TIME, AbstractEncounter::getMaxVisitDateTime));
+        put(ENCOUNTER_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_ENCOUNTER_DATE_TIME, AbstractEncounter::getEncounterDateTime));
+        put(CANCEL_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CANCEL_DATE_TIME, AbstractEncounter::getCancelDateTime));
+        put(CREATED_BY, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CREATED_BY, (AbstractEncounter individual) -> individual.getCreatedBy().getName()));
+        put(CREATED_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_CREATED_DATE_TIME, AbstractEncounter::getCreatedDateTime));
+        put(LAST_MODIFIED_BY, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_MODIFIED_BY, (AbstractEncounter individual) -> individual.getLastModifiedBy().getName()));
+        put(LAST_MODIFIED_DATE_TIME, new HeaderNameAndFunctionMapper<>(HEADER_NAME_LAST_MODIFIED_DATE_TIME, AbstractEncounter::getLastModifiedDateTime));
+        put(VOIDED, new HeaderNameAndFunctionMapper<>(HEADER_NAME_VOIDED, CHSEntity::isVoided));
     }};
 
 

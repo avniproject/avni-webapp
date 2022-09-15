@@ -1,11 +1,14 @@
 package org.avni.web;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.io.IOUtils;
 import org.avni.dao.JobStatus;
 import org.avni.exporter.ExportJobService;
 import org.avni.service.ExportS3Service;
+import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.export.ExportJobRequest;
+import org.avni.web.request.export.ExportOutput;
 import org.avni.web.request.export.ExportV2JobRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -42,9 +45,17 @@ public class ExportController {
     @RequestMapping(value = "/export/v2", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> getVisitDataV2(@RequestBody ExportV2JobRequest exportJobRequest) {
+        ResponseEntity<?> validationErrorResponseEntity = validateHeader(exportJobRequest);
+        if(validationErrorResponseEntity != null) {
+            return validationErrorResponseEntity;
+        }
         return exportJobService.runExportV2Job(exportJobRequest);
     }
 
+    private ResponseEntity<?> validateHeader(ExportV2JobRequest exportJobRequest) {
+        return ObjectMapperSingleton.getObjectMapper().convertValue(exportJobRequest.getIndividual(), new TypeReference<ExportOutput>() {})
+                .validate();
+    }
 
     @RequestMapping(value = "/export/status", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")

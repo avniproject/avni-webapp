@@ -1,6 +1,8 @@
 package org.avni.web.request.export;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.avni.exporter.v2.ExportV2ValidationHelper;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,14 @@ public class ExportOutput extends ExportEntityType {
 
     public void setPrograms(List<ExportNestedOutput> programs) {
         this.programs = programs;
+    }
+
+    public ResponseEntity<?> validate() {
+        List<String> errors = new ExportV2ValidationHelper().validate(this);
+        if(!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        return null;
     }
 
     public static class ExportNestedOutput extends ExportEntityType {
