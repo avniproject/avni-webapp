@@ -2,7 +2,6 @@ package org.avni.exporter.v2;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.poi.ss.formula.functions.T;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementType;
 import org.avni.application.FormType;
@@ -100,18 +99,18 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         exportOutput = objectMapper.convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {
         });
         String subjectTypeUUID = exportOutput.getUuid();
-        this.registrationMap = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
+        this.registrationMap = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
         this.headers.append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(subjectTypeUUID), this.registrationMap, this.addressLevelTypes, exportOutput.getFields()));
         exportOutput.getPrograms().forEach(p -> {
-            LinkedHashMap<String, FormElement> applicableEnrolmentFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), null, FormType.ProgramEnrolment), p);
-            LinkedHashMap<String, FormElement> applicableExitFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), null, FormType.ProgramExit), p);
+            LinkedHashMap<String, FormElement> applicableEnrolmentFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), null, FormType.ProgramEnrolment), p);
+            LinkedHashMap<String, FormElement> applicableExitFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), null, FormType.ProgramExit), p);
             this.enrolmentMap.put(p.getUuid(), applicableEnrolmentFields);
             this.exitEnrolmentMap.put(p.getUuid(), applicableExitFields);
             this.headers.append(",")
                     .append(headerCreator.addEnrolmentHeaders(applicableEnrolmentFields, applicableExitFields, programRepository.findByUuid(p.getUuid()).getName(), p.getFields()));
             p.getEncounters().forEach(pe -> {
-                LinkedHashMap<String, FormElement> applicableProgramEncounterFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounter), p);
-                LinkedHashMap<String, FormElement> applicableProgramCancelFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounterCancellation), p);
+                LinkedHashMap<String, FormElement> applicableProgramEncounterFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounter), p);
+                LinkedHashMap<String, FormElement> applicableProgramCancelFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), pe.getUuid(), FormType.ProgramEncounterCancellation), p);
                 this.programEncounterMap.put(pe.getUuid(), applicableProgramEncounterFields);
                 this.programEncounterCancelMap.put(pe.getUuid(), applicableProgramCancelFields);
                 DateFilter dateFilter = pe.getFilters().getDate();
@@ -126,7 +125,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         exportOutput.getEncounters().forEach(e -> populateGeneralEncounterMap(subjectTypeUUID, e, e.getUuid(), this.encounterMap, this.encounterCancelMap, timezone));
         exportOutput.getGroups().forEach(g -> {
             String groupSubjectTypeUUID = g.getUuid();
-            LinkedHashMap<String, FormElement> applicableGroupsFields = getApplicableFields(formMappingService.getFormMapping(groupSubjectTypeUUID, null, null, FormType.IndividualProfile), g);
+            LinkedHashMap<String, FormElement> applicableGroupsFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(groupSubjectTypeUUID, null, null, FormType.IndividualProfile), g);
             this.groupsMap.put(g.getUuid(), applicableGroupsFields);
             this.headers.append(",")
                     .append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(groupSubjectTypeUUID), applicableGroupsFields, this.addressLevelTypes, g.getFields()));
@@ -135,8 +134,8 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     }
 
     private void populateGeneralEncounterMap(String subjectTypeUUID, ExportEntityType e, String uuid, Map<String, Map<String, FormElement>> encounterMap, Map<String, Map<String, FormElement>> encounterCancelMap, String timezone) {
-        LinkedHashMap<String, FormElement> applicableEncounterFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, uuid, FormType.Encounter), e);
-        LinkedHashMap<String, FormElement> applicableCancelEncounterFields = getApplicableFields(formMappingService.getFormMapping(subjectTypeUUID, null, uuid, FormType.IndividualEncounterCancellation), e);
+        LinkedHashMap<String, FormElement> applicableEncounterFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, uuid, FormType.Encounter), e);
+        LinkedHashMap<String, FormElement> applicableCancelEncounterFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, uuid, FormType.IndividualEncounterCancellation), e);
         encounterMap.put(e.getUuid(), applicableEncounterFields);
         encounterCancelMap.put(e.getUuid(), applicableCancelEncounterFields);
         DateFilter dateFilter = e.getFilters().getDate();

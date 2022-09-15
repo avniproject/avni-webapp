@@ -1,18 +1,13 @@
 package org.avni.service;
 
-import org.avni.application.Form;
-import org.avni.application.FormElement;
-import org.avni.application.FormMapping;
-import org.avni.application.FormType;
+import org.avni.application.*;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramRepository;
 import org.avni.dao.SubjectTypeRepository;
 import org.avni.dao.application.FormMappingRepository;
 import org.avni.dao.application.FormRepository;
 import org.avni.dao.task.TaskTypeRepository;
-import org.avni.domain.EncounterType;
-import org.avni.domain.Program;
-import org.avni.domain.SubjectType;
+import org.avni.domain.*;
 import org.avni.util.BadRequestError;
 import org.avni.web.request.FormMappingContract;
 import org.joda.time.DateTime;
@@ -21,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -206,13 +198,24 @@ public class FormMappingService implements NonScopeAwareService {
     }
 
     @Transactional(readOnly = true)
-    public LinkedHashMap<String, FormElement> getFormMapping(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType) {
+    public LinkedHashMap<String, FormElement> getAllFormElementsAndDecisionMap(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType) {
         return getEntityConceptMap(formMappingRepository.getRequiredFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, formType));
     }
 
     private LinkedHashMap<String, FormElement> getEntityConceptMap(FormMapping formMapping) {
-        List<FormElement> formElements = formMapping == null ? Collections.emptyList() : formMapping.getForm().getApplicableFormElements();
+        List<FormElement> formElements = formMapping == null ? new ArrayList<>() : formMapping.getForm().getApplicableFormElements();
+        formElements.addAll(getDecisionFormElements(formMapping));
         return formElements.stream().collect(Collectors.toMap(f -> f.getConcept().getUuid(), f -> f, (a, b) -> b, LinkedHashMap::new));
+    }
+
+    private List<FormElement> getDecisionFormElements(FormMapping formMapping) {
+        Set<Concept> decisionConcepts = formMapping == null ? Collections.emptySet() : formMapping.getForm().getDecisionConcepts();
+        return decisionConcepts.stream().map(concept -> {
+            FormElement formElement = new FormElement();
+            formElement.setType(concept.getDataType().equals(ConceptDataType.Coded.name()) ? FormElementType.MultiSelect.name() : FormElementType.SingleSelect.name());
+            formElement.setConcept(concept);
+            return formElement;
+        }).collect(Collectors.toList());
     }
 
     @Override

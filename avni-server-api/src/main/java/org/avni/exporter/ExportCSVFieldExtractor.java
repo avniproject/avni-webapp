@@ -85,7 +85,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     @PostConstruct
     public void init() {
         SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
-        this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
+        this.registrationMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, null, FormType.IndividualProfile);
         this.addressLevelTypes = addressLevelService.getAllAddressLevelTypeNames();
         switch (ReportType.valueOf(reportType)) {
             case Registration: {
@@ -104,13 +104,13 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             }
             case Encounter: {
                 if (programUUID == null) {
-                    this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
-                    this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
+                    this.encounterMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
+                    this.encounterCancelMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
                     addRegistrationHeaders(this.headers, subjectType);
                 } else {
                     setEnrolmentMappings();
-                    this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
-                    this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
+                    this.programEncounterMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
+                    this.programEncounterCancelMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
                     addRegistrationHeaders(this.headers, subjectType);
                     addEnrolmentHeaders(this.headers);
                 }
@@ -202,8 +202,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     }
 
     private void setEnrolmentMappings() {
-        this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
-        this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
+        this.enrolmentMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
+        this.exitEnrolmentMap = formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
     }
 
     private Long getMaxVisitCount() {
