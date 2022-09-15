@@ -30,7 +30,7 @@ public class ExportEntityType {
         return maxCount;
     }
 
-    public void setMaxCount(long maxCount) {
+    public void setMaxCount(Long maxCount) {
         this.maxCount = maxCount;
     }
 

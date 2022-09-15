@@ -116,6 +116,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                 this.programEncounterCancelMap.put(pe.getUuid(), applicableProgramCancelFields);
                 DateFilter dateFilter = pe.getFilters().getDate();
                 Long maxProgramEncounterCount = programEncounterRepository.getMaxProgramEncounterCount(pe.getUuid(), getCalendarTime(dateFilter.getFrom(), timezone), getCalendarTime(dateFilter.getTo(), timezone));
+                maxProgramEncounterCount = maxProgramEncounterCount == null ? 1l : maxProgramEncounterCount;
                 EncounterType encounterType = encounterTypeRepository.findByUuid(pe.getUuid());
                 pe.setMaxCount(maxProgramEncounterCount);
                 this.headers.append(",")
@@ -140,6 +141,7 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         encounterCancelMap.put(e.getUuid(), applicableCancelEncounterFields);
         DateFilter dateFilter = e.getFilters().getDate();
         Long maxEncounterCount = encounterRepository.getMaxEncounterCount(e.getUuid(), getCalendarTime(dateFilter.getFrom(), timezone), getCalendarTime(dateFilter.getTo(), timezone));
+        maxEncounterCount = maxEncounterCount == null ? 1l : maxEncounterCount;
         EncounterType encounterType = encounterTypeRepository.findByUuid(e.getUuid());
         e.setMaxCount(maxEncounterCount);
         this.headers.append(",")

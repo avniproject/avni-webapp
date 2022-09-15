@@ -78,12 +78,13 @@ public class HeaderCreator {
                                                 List<String> fields) {
         StringBuilder registrationHeaders = new StringBuilder();
         String subjectTypeName = subjectType.getName();
+        boolean areFieldsAlreadySet = !fields.isEmpty();
         registrationHeaders.append(getStaticRegistrationHeaders(fields, subjectTypeName));
         addAddressLevelHeaderNames(registrationHeaders, addressLevelTypes);
         if (subjectType.isGroup()) {
             registrationHeaders.append(",").append(subjectTypeName).append(".total_members");
         }
-        appendObsHeaders(registrationHeaders, subjectTypeName, registrationMap, fields);
+        appendObsHeaders(registrationHeaders, subjectTypeName, registrationMap, fields, areFieldsAlreadySet);
         return registrationHeaders;
     }
 
@@ -92,9 +93,10 @@ public class HeaderCreator {
                                              String programName,
                                              List<String> fields) {
         StringBuilder enrolmentHeaders = new StringBuilder();
+        boolean areFieldsAlreadySet = !fields.isEmpty();
         enrolmentHeaders.append(getStaticEnrolmentHeaders(fields, programName));
-        appendObsHeaders(enrolmentHeaders, programName, enrolmentMap, fields);
-        appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap, fields);
+        appendObsHeaders(enrolmentHeaders, programName, enrolmentMap, fields, areFieldsAlreadySet);
+        appendObsHeaders(enrolmentHeaders, programName + "_exit", exitEnrolmentMap, fields, areFieldsAlreadySet);
         return enrolmentHeaders;
     }
 
@@ -111,9 +113,10 @@ public class HeaderCreator {
                 encounterHeaders.append(",");
             }
             String prefix = encounterTypeName + "_" + visit;
+            boolean areFieldsAlreadySet = !fields.isEmpty();
             encounterHeaders.append(appendStaticEncounterHeaders(fields, prefix));
-            appendObsHeaders(encounterHeaders, prefix, encounterMap, fields);
-            appendObsHeaders(encounterHeaders, prefix, encounterCancelMap, fields);
+            appendObsHeaders(encounterHeaders, prefix, encounterMap, fields, areFieldsAlreadySet);
+            appendObsHeaders(encounterHeaders, prefix, encounterCancelMap, fields, areFieldsAlreadySet);
         }
         return encounterHeaders;
     }
@@ -158,21 +161,28 @@ public class HeaderCreator {
         return "\"".concat(text).concat("\"");
     }
 
-    private void appendObsHeaders(StringBuilder sb, String prefix, Map<String, FormElement> map, List<String> fields) {
-        fields.addAll(map.keySet());
+    private void appendObsHeaders(StringBuilder sb, String prefix, Map<String, FormElement> map, List<String> fields, boolean areFieldsAlreadySet) {
         map.forEach((uuid, fe) -> {
             if (ConceptDataType.isGroupQuestion(fe.getConcept().getDataType())) return;
             Concept concept = fe.getConcept();
             String groupPrefix = fe.getGroup() != null ? fe.getGroup().getConcept().getName() + "_" : "";
             if (concept.getDataType().equals(ConceptDataType.Coded.toString()) && fe.getType().equals(FormElementType.MultiSelect.toString())) {
-                concept.getSortedAnswers().map(ca -> ca.getAnswerConcept().getName()).forEach(can ->
-                        sb.append(",\"")
-                                .append(prefix)
-                                .append("_")
-                                .append(groupPrefix)
-                                .append(concept.getName())
-                                .append("_").append(can).append("\""));
+                boolean storeAnswers = fields.remove(concept.getUuid());
+                concept.getSortedAnswers().map(ca -> ca.getAnswerConcept().getName()).forEach(can -> {
+                    sb.append(",\"")
+                            .append(prefix)
+                            .append("_")
+                            .append(groupPrefix)
+                            .append(concept.getName())
+                            .append("_").append(can).append("\"");
+                    if(storeAnswers || !areFieldsAlreadySet) {
+                        fields.add(can);
+                    }
+                });
             } else {
+                if(!areFieldsAlreadySet) {
+                    fields.add(concept.getName());
+                }
                 sb.append(",\"").append(prefix).append("_").append(groupPrefix).append(concept.getName()).append("\"");
             }
         });
