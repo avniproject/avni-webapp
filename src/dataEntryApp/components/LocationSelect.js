@@ -1,36 +1,20 @@
 import React from "react";
-import http from "common/utils/httpClient";
 import { useTranslation } from "react-i18next";
-import Select from "react-select";
-import { isEmpty } from "lodash";
+import { deburr, get, isEmpty, map } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
 import { addressLevelService } from "../services/AddressLevelService";
+import AsyncSelect from "react-select/async";
+import httpClient from "../../common/utils/httpClient";
 
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => {
   const { t } = useTranslation();
-
-  const [locationMap, setLocationMap] = React.useState(new Map());
-  const [locationOptions, setLocationOptions] = React.useState([]);
   const [selectedLocationValue, setSelectedLocationValue] = React.useState();
 
   React.useEffect(() => {
-    async function fetchLocations() {
-      return await getLocationsByType(typeId);
-    }
-
     if (selectedLocationValue && selectedLocationValue.value.typeId !== typeId) {
       setSelectedLocationValue(null);
       onSelect({});
     }
-    fetchLocations().then(locations => {
-      setLocationOptions(
-        locations.map(location => ({
-          label: location.name,
-          value: location,
-          optionLabel: locationNameRenderer(location)
-        }))
-      );
-    });
   }, [typeId]);
 
   React.useEffect(() => {
@@ -48,17 +32,6 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     addressLevelService.addAddressLevel(location.value);
   };
 
-  const getLocationsByType = async typeId => {
-    if (locationMap.has(typeId)) {
-      return locationMap.get(typeId);
-    } else {
-      return await http.get(`/locations/search/typeId/${typeId}`).then(res => {
-        setLocationMap(currentMap => currentMap.set(typeId, res.data));
-        return res.data || [];
-      });
-    }
-  };
-
   const formatOptionLabel = ({ optionLabel }) => {
     return (
       <div style={{ display: "flex" }}>
@@ -67,15 +40,38 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     );
   };
 
+  const loadLocations = (value, callback) => {
+    if (!value) {
+      return callback([]);
+    }
+    const inputValue = deburr(value.trim()).toLowerCase();
+    let title = encodeURIComponent(inputValue);
+    let apiUrl = `/locations/search/find?title=${title}&addressLevelTypeId=${typeId}&size=100&page=0`;
+    return httpClient
+      .get(apiUrl)
+      .then(response => callback(getLocationOptions(get(response, "data.content", []))))
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const getLocationOptions = locations =>
+    map(locations, location => ({
+      label: location.title,
+      value: location.id,
+      optionLabel: locationNameRenderer(location)
+    }));
+
   return (
     <div style={{ width: "30%" }}>
-      <Select
+      <AsyncSelect
         name="locations"
         isSearchable
-        options={locationOptions}
-        onChange={onLocationSelected}
+        cacheOptions
         value={selectedLocationValue}
         placeholder={t(placeholder)}
+        onChange={onLocationSelected}
+        loadOptions={loadLocations}
         formatOptionLabel={formatOptionLabel}
       />
     </div>
