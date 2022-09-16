@@ -5,6 +5,7 @@ import { map, isEmpty, isEqual, isFunction, deburr, get, sortBy, noop } from "lo
 import AsyncSelect from "react-select/async";
 import httpClient from "../utils/httpClient";
 import { Grid } from "@material-ui/core";
+import { locationNameRenderer } from "../../dataEntryApp/utils/LocationUtil";
 
 const AddressLevelsByType = ({
   label,
@@ -14,6 +15,7 @@ const AddressLevelsByType = ({
   skipGrid = false
 }) => {
   const [selectedAddresses, setSelectedAddresses] = React.useState([]);
+  const [defaultOptions, setDefaultOptions] = React.useState([]);
 
   React.useEffect(() => {
     const ids = map(selectedAddresses, ({ value }) => value);
@@ -24,36 +26,35 @@ const AddressLevelsByType = ({
     }
   }, []);
 
+  React.useEffect(() => {
+    fetchLocation("", setDefaultOptions);
+  }, []);
+
   const loadLocations = (value, callback) => {
     if (!value) {
       return callback([]);
     }
+    return fetchLocation(value, callback);
+  };
+
+  function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();
+    let title = encodeURIComponent(inputValue);
+    let apiUrl = `/locations/search/find?title=${title}&size=100&page=0`;
     return httpClient
-      .get("locations/search/find?title=" + encodeURIComponent(inputValue))
+      .get(apiUrl)
       .then(response => callback(getLocationOptions(get(response, "data.content", []))))
       .catch(error => {
         console.log(error);
       });
-  };
+  }
 
   const getLocationOptions = locations =>
     map(locations, location => ({
       label: location.title,
       value: location.id,
-      optionLabel: getLineageName(location)
+      optionLabel: locationNameRenderer(location)
     }));
-
-  const getLineageName = location => {
-    if (isEmpty(location.title)) {
-      return "";
-    }
-    let retVal = `${location.title} (${location.typeString})`;
-    let lineageParts = location.titleLineage.split(", ");
-    if (lineageParts.length > 1)
-      retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
-    return retVal;
-  };
 
   const onChange = event => {
     setSelectedAddresses(event);
@@ -72,6 +73,7 @@ const AddressLevelsByType = ({
       <FormLabel component="legend">{label}</FormLabel>
       <AsyncSelect
         cacheOptions
+        defaultOptions={defaultOptions}
         isMulti
         value={selectedAddresses}
         placeholder={`Start typing and select`}

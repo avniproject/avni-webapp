@@ -1,10 +1,12 @@
-import { isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 
 export const locationNameRenderer = location => {
-  if (isEmpty(location.name)) {
+  const locName = get(location, "name", get(location, "title"));
+  const locType = get(location, "type", get(location, "typeString"));
+  if (isEmpty(locName)) {
     return "";
   }
-  let retVal = `${location.name} (${location.type})`;
+  let retVal = `${locName} (${locType})`;
   let lineageParts = location.titleLineage.split(", ");
   if (lineageParts.length > 1)
     retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
