@@ -19,7 +19,7 @@ public class ExportEntityType {
 
     public boolean isDateEmpty() {
         return this.filters == null || this.filters.getDate() == null ||
-                this.filters.getDate().getTo() == null;
+                this.filters.getDate().getTo() == null || this.filters.getDate().getFrom() == null;
     }
 
     public void setFilters(ExportFilters filters) {

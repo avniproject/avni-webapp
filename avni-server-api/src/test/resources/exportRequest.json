@@ -1,0 +1,55 @@
+{
+    "uuid": "d22027ff-e019-4d1c-9352-bd740efccc38",
+    "fields": ["id", "uuid", "firstName"],
+    "filters": {
+        "addressLevelIds": [],
+        "date": {
+            "from": "2020-01-12",
+            "to": "2022-05-04"
+        }
+    },
+    "encounters": [
+        {
+            "uuid": "16a3be1b-18a1-45e9-bfc8-f7915898abef",
+            "fields": ["id", "encounterDateTime", "cancelDateTime", "uuid", "name","1f51e7f7-6db0-41ea-a372-e7b553ccb857","a6a6d4c0-4339-4ef0-b152-6d1c23eaf7c2", "a44678fd-ee6d-4dc5-b103-f5534eb0f338", "ab095140-b090-4f59-98ac-89b6479df471", "voided"],
+            "filters": {
+                        "includeVoided": true,
+                        "date": {
+                            "from": "2020-01-12",
+                            "to": "2022-05-04"
+                        }
+                    }
+        }
+    ],
+    "groups": [
+        {
+            "uuid": "e524b328-c0ad-4232-9fcb-2cf8c126a2c6",
+            "fields": ["id", "uuid", "firstName"],
+            "encounters": [
+                {
+                    "uuid": "0c823f64-b2ec-420b-9e28-5e953b66b6d1",
+                    "fields": ["id"]
+                }
+            ]
+        }
+    ],
+    "programs": [
+        {
+            "uuid": "debe0d88-3b8a-4ac4-9f95-80a1af3b83c5",
+            "fields": ["id", "uuid", "enrolmentDateTime"],
+            "encounters": [
+                {
+                    "uuid": "66c93422-eb3a-4ae0-b537-3802899f40cb",
+                    "fields": ["id", "voided"],
+                    "filters": {
+                        "includeVoided": true,
+                        "date": {
+                            "from": "2021-01-12",
+                            "to": "2022-05-04"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
