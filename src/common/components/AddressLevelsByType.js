@@ -1,7 +1,7 @@
 import React from "react";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
-import { map, isEmpty, isEqual, isFunction, deburr, get, sortBy, noop } from "lodash";
+import { map, isEqual, isFunction, deburr, get, sortBy, noop } from "lodash";
 import AsyncSelect from "react-select/async";
 import httpClient from "../utils/httpClient";
 import { Grid } from "@material-ui/core";
