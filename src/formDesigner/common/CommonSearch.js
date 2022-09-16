@@ -23,7 +23,7 @@ const CommonSearch = ({
   return (
     <AsyncSelect
       cacheOptions
-      defaultOptions
+      defaultOptions={defaultOptions}
       isMulti={isMulti}
       value={isEmpty(value) ? null : value}
       placeholder={placeholder}

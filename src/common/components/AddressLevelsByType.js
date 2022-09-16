@@ -14,6 +14,7 @@ const AddressLevelsByType = ({
   setError = noop
 }) => {
   const [selectedAddresses, setSelectedAddresses] = React.useState([]);
+  const [defaultOptions, setDefaultOptions] = React.useState([]);
 
   React.useEffect(() => {
     const ids = map(selectedAddresses, ({ value }) => value);
@@ -24,10 +25,18 @@ const AddressLevelsByType = ({
     }
   }, []);
 
+  React.useEffect(() => {
+    fetchLocation("", setDefaultOptions);
+  }, []);
+
   const loadLocations = (value, callback) => {
     if (!value) {
       return callback([]);
     }
+    return fetchLocation(value, callback);
+  };
+
+  function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();
     let title = encodeURIComponent(inputValue);
     let apiUrl = `/locations/search/find?title=${title}&size=100&page=0`;
@@ -37,7 +46,7 @@ const AddressLevelsByType = ({
       .catch(error => {
         console.log(error);
       });
-  };
+  }
 
   const getLocationOptions = locations =>
     map(locations, location => ({
@@ -64,6 +73,7 @@ const AddressLevelsByType = ({
         <FormLabel component="legend">{label}</FormLabel>
         <AsyncSelect
           cacheOptions
+          defaultOptions={defaultOptions}
           isMulti
           value={selectedAddresses}
           placeholder={`Start typing and select`}

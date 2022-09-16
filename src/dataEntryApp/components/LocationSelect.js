@@ -9,6 +9,7 @@ import httpClient from "../../common/utils/httpClient";
 const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => {
   const { t } = useTranslation();
   const [selectedLocationValue, setSelectedLocationValue] = React.useState();
+  const [defaultOptions, setDefaultOptions] = React.useState([]);
 
   React.useEffect(() => {
     if (selectedLocationValue && selectedLocationValue.value.typeId !== typeId) {
@@ -27,6 +28,10 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     }
   }, [selectedLocation]);
 
+  React.useEffect(() => {
+    fetchLocation("", setDefaultOptions);
+  }, []);
+
   const onLocationSelected = location => {
     onSelect(location.value);
     addressLevelService.addAddressLevel(location.value);
@@ -44,6 +49,10 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     if (!value) {
       return callback([]);
     }
+    return fetchLocation(value, callback);
+  };
+
+  function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();
     let title = encodeURIComponent(inputValue);
     let apiUrl = `/locations/search/find?title=${title}&addressLevelTypeId=${typeId}&size=100&page=0`;
@@ -53,7 +62,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
       .catch(error => {
         console.log(error);
       });
-  };
+  }
 
   const getLocationOptions = locations =>
     map(locations, location => ({
@@ -68,6 +77,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
         name="locations"
         isSearchable
         cacheOptions
+        defaultOptions={defaultOptions}
         value={selectedLocationValue}
         placeholder={t(placeholder)}
         onChange={onLocationSelected}
