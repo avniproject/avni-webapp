@@ -79,9 +79,11 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     @ResponseBody
     public Page<LocationProjection> find(
-            @RequestParam(value = "title") String title,
+            @RequestParam(value = "title") String title, @RequestParam(value = "addressLevelTypeId", required = false) Integer addressLevelTypeId,
             Pageable pageable) {
-        return locationRepository.findByIsVoidedFalseAndTitleIgnoreCaseStartingWithOrderByTitleAsc(title, pageable);
+        return addressLevelTypeId == null ?
+                locationRepository.findByTitle(title, pageable) :
+                locationRepository.findByTitleAndAddressLevelType(title, addressLevelTypeId, pageable);
     }
 
     @GetMapping(value = "/locations/search/findAllById")

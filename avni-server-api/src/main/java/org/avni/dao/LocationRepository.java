@@ -62,7 +62,18 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "where (:title is null or lower(al.title) like lower(concat('%', :title,'%'))) " +
             "and al.is_voided = false order by al.title ",
             nativeQuery = true)
-    Page<LocationProjection> findByIsVoidedFalseAndTitleIgnoreCaseStartingWithOrderByTitleAsc(String title, Pageable pageable);
+    Page<LocationProjection> findByTitle(String title, Pageable pageable);
+
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where (:title is null or lower(al.title) like lower(concat('%', :title,'%'))) " +
+            "and alt.id = :addressLevelTypeId " +
+            "and al.is_voided = false order by al.title ",
+            nativeQuery = true)
+    Page<LocationProjection> findByTitleAndAddressLevelType(String title, Integer addressLevelTypeId, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
 
