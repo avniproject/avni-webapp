@@ -12,7 +12,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
   const [defaultOptions, setDefaultOptions] = React.useState([]);
 
   React.useEffect(() => {
-    if (selectedLocationValue && selectedLocationValue.value.typeId !== typeId) {
+    if (selectedLocationValue && selectedLocationValue.typeId !== typeId) {
       setSelectedLocationValue(null);
       onSelect({});
     }
@@ -67,7 +67,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
   const getLocationOptions = locations =>
     map(locations, location => ({
       label: location.title,
-      value: location.id,
+      value: location,
       optionLabel: locationNameRenderer(location)
     }));
 
