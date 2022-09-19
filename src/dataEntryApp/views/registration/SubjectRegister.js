@@ -209,10 +209,11 @@ const SubjectRegister = props => {
                 onSelect={location => {
                   props.setAddress(
                     AddressLevel.create({
+                      name: location.title,
                       uuid: location.uuid,
-                      title: location.name,
+                      title: location.title,
                       level: location.level,
-                      typeString: location.type,
+                      typeString: location.typeString,
                       titleLineage: location.titleLineage
                     })
                   );

@@ -16,7 +16,7 @@ const LocationSearch = ({ value, onChange, isMulti }) => {
       const locations = get(response, "data.content", []);
       const locationOptions = map(locations, ({ title, uuid, typeString }) => ({
         label: `${title} (${typeString})`,
-        value: { title, uuid, typeString, toString: () => uuid }
+        value: { name: title, title, uuid, typeString, toString: () => uuid }
       }));
       return callback(locationOptions);
     });
