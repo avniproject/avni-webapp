@@ -164,6 +164,7 @@ const ProgramView = ({
 
   const [voidConfirmation, setVoidConfirmation] = React.useState(false);
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [plannedEncounterUUIDToBeVoided, setPlannedEncounterUUIDToBeVoided] = React.useState();
   const dispatch = useDispatch();
 
   const programSummary = useSelector(selectProgramSummary);
@@ -244,9 +245,18 @@ const ProgramView = ({
               plannedVisits={plannedVisits || []}
               doBaseUrl={`/app/subject/programEncounter?encounterUuid`}
               cancelBaseURL={`/app/subject/cancelProgramEncounter?uuid`}
-              onDelete={uuid => voidProgramEncounter(uuid)}
-              deleteTitle={"ProgramEncounterVoidAlertTitle"}
-              deleteMessage={"ProgramEncounterVoidAlertMessage"}
+              onDelete={plannedEncounter => {
+                setPlannedEncounterUUIDToBeVoided(plannedEncounter.uuid);
+              }}
+            />
+            <ConfirmDialog
+              title={t("ProgramEncounterVoidAlertTitle")}
+              open={plannedEncounterUUIDToBeVoided !== undefined}
+              setOpen={() => setPlannedEncounterUUIDToBeVoided()}
+              message={t("ProgramEncounterVoidAlertMessage")}
+              onConfirm={() => {
+                voidProgramEncounter(plannedEncounterUUIDToBeVoided);
+              }}
             />
           </ExpansionPanelDetails>
         </ExpansionPanel>
