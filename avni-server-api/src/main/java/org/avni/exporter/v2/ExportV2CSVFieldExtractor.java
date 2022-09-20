@@ -101,6 +101,15 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
         String subjectTypeUUID = exportOutput.getUuid();
         this.registrationMap = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, null, null, FormType.IndividualProfile), exportOutput);
         this.headers.append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(subjectTypeUUID), this.registrationMap, this.addressLevelTypes, exportOutput.getFields()));
+        exportOutput.getEncounters().forEach(e -> populateGeneralEncounterMap(subjectTypeUUID, e, e.getUuid(), this.encounterMap, this.encounterCancelMap, timezone));
+        exportOutput.getGroups().forEach(g -> {
+            String groupSubjectTypeUUID = g.getUuid();
+            LinkedHashMap<String, FormElement> applicableGroupsFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(groupSubjectTypeUUID, null, null, FormType.IndividualProfile), g);
+            this.groupsMap.put(g.getUuid(), applicableGroupsFields);
+            this.headers.append(",")
+                    .append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(groupSubjectTypeUUID), applicableGroupsFields, this.addressLevelTypes, g.getFields()));
+            g.getEncounters().forEach(ge -> populateGeneralEncounterMap(groupSubjectTypeUUID, ge, ge.getUuid(), this.groupEncounterMap, this.groupEncounterCancelMap, timezone));
+        });
         exportOutput.getPrograms().forEach(p -> {
             LinkedHashMap<String, FormElement> applicableEnrolmentFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), null, FormType.ProgramEnrolment), p);
             LinkedHashMap<String, FormElement> applicableExitFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(subjectTypeUUID, p.getUuid(), null, FormType.ProgramExit), p);
@@ -121,15 +130,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                 this.headers.append(",")
                         .append(headerCreator.addEncounterHeaders(maxProgramEncounterCount, applicableProgramEncounterFields, applicableProgramCancelFields, encounterType.getName(), pe.getFields()));
             });
-        });
-        exportOutput.getEncounters().forEach(e -> populateGeneralEncounterMap(subjectTypeUUID, e, e.getUuid(), this.encounterMap, this.encounterCancelMap, timezone));
-        exportOutput.getGroups().forEach(g -> {
-            String groupSubjectTypeUUID = g.getUuid();
-            LinkedHashMap<String, FormElement> applicableGroupsFields = getApplicableFields(formMappingService.getAllFormElementsAndDecisionMap(groupSubjectTypeUUID, null, null, FormType.IndividualProfile), g);
-            this.groupsMap.put(g.getUuid(), applicableGroupsFields);
-            this.headers.append(",")
-                    .append(headerCreator.addRegistrationHeaders(subjectTypeRepository.findByUuid(groupSubjectTypeUUID), applicableGroupsFields, this.addressLevelTypes, g.getFields()));
-            g.getEncounters().forEach(ge -> populateGeneralEncounterMap(groupSubjectTypeUUID, ge, ge.getUuid(), this.groupEncounterMap, this.groupEncounterCancelMap, timezone));
         });
     }
 
@@ -182,26 +182,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
     private Object[] createRow(ItemRow itemRow) {
         List<Object> columnsData = new ArrayList<>();
         addRegistrationColumns(columnsData, itemRow.getIndividual(), this.registrationMap, exportOutput.getFields());
-        Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programEnrolmentToEncountersMap = itemRow.getProgramEnrolmentToEncountersMap();
-        exportOutput.getPrograms().forEach(program -> {
-            Optional<ProgramEnrolment> programEnrolmentOptional = programEnrolmentToEncountersMap.keySet().stream().filter(pe -> pe.getProgram().getUuid().equals(program.getUuid())).findFirst();
-            if (programEnrolmentOptional.isPresent()) {
-                programEnrolmentOptional.ifPresent(programEnrolment -> {
-                    addEnrolmentColumns(columnsData, programEnrolment, this.enrolmentMap.get(program.getUuid()), this.exitEnrolmentMap.get(program.getUuid()), program);
-                    program.getEncounters().forEach(pe -> {
-                        Map<String, List<ProgramEncounter>> encounterTypeListMap = programEnrolmentToEncountersMap.get(programEnrolment);
-                        if (encounterTypeListMap != null && encounterTypeListMap.get(pe.getUuid()) != null) {
-                            addEncounterColumns(pe.getMaxCount(), columnsData, encounterTypeListMap.get(pe.getUuid()), this.programEncounterMap.get(pe.getUuid()),
-                                    this.programEncounterCancelMap.get(pe.getUuid()), pe);
-                        } else {
-                            AddBlanks(columnsData, pe.getTotalNumberOfColumns());
-                        }
-                    });
-                });
-            } else {
-                AddBlanks(columnsData, program.getTotalNumberOfColumns());
-            }
-        });
         exportOutput.getEncounters().forEach(enc -> {
             List<Encounter> encounterTypeList = itemRow.getEncounterTypeToEncountersMap().get(enc.getUuid());
             if (encounterTypeList != null) {
@@ -231,6 +211,28 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                 });
             } else {
                 AddBlanks(columnsData, grp.getTotalNumberOfColumns());
+                AddBlanks(columnsData, addressLevelTypes.size());//Blanks for GroupSubject addressLevels
+                AddBlanks(columnsData, 1);//Blanks for No of Group members
+            }
+        });
+        Map<ProgramEnrolment, Map<String, List<ProgramEncounter>>> programEnrolmentToEncountersMap = itemRow.getProgramEnrolmentToEncountersMap();
+        exportOutput.getPrograms().forEach(program -> {
+            Optional<ProgramEnrolment> programEnrolmentOptional = programEnrolmentToEncountersMap.keySet().stream().filter(pe -> pe.getProgram().getUuid().equals(program.getUuid())).findFirst();
+            if (programEnrolmentOptional.isPresent()) {
+                programEnrolmentOptional.ifPresent(programEnrolment -> {
+                    addEnrolmentColumns(columnsData, programEnrolment, this.enrolmentMap.get(program.getUuid()), this.exitEnrolmentMap.get(program.getUuid()), program);
+                    program.getEncounters().forEach(pe -> {
+                        Map<String, List<ProgramEncounter>> encounterTypeListMap = programEnrolmentToEncountersMap.get(programEnrolment);
+                        if (encounterTypeListMap != null && encounterTypeListMap.get(pe.getUuid()) != null) {
+                            addEncounterColumns(pe.getMaxCount(), columnsData, encounterTypeListMap.get(pe.getUuid()), this.programEncounterMap.get(pe.getUuid()),
+                                    this.programEncounterCancelMap.get(pe.getUuid()), pe);
+                        } else {
+                            AddBlanks(columnsData, pe.getTotalNumberOfColumns());
+                        }
+                    });
+                });
+            } else {
+                AddBlanks(columnsData, program.getTotalNumberOfColumns());
             }
         });
         return columnsData.toArray();
