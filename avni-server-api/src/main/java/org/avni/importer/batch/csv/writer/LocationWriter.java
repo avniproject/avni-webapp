@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @StepScope
@@ -80,7 +81,7 @@ public class LocationWriter implements ItemWriter<Row> {
         List<Map.Entry<String, String>> allNonEmptyLocations = new ArrayList<>(nonEmptyLocations.entrySet());
         Map.Entry<String, String> parentEntry = ensureAllParentExists(allErrorMsgs, allNonEmptyLocations);
         Map.Entry<String, String> locationEntry = allNonEmptyLocations.get(allNonEmptyLocations.size() - 1);
-        String id = row.get("id");
+        String id = row.get(getIdColumnHeaderName(row));
         AddressLevel parent = parentEntry == null ? null : locationRepository.findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(parentEntry.getValue(), parentEntry.getKey());
         AddressLevel existingLocation = !S.isEmpty(id) ? locationRepository.findByLegacyIdOrUuid(id) :
                 locationRepository.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, locationEntry.getValue());
@@ -90,6 +91,10 @@ public class LocationWriter implements ItemWriter<Row> {
             AddressLevel location = createAddressLevel(row, parent, locationEntry.getKey());
             updateLocationProperties(row, allErrorMsgs, location, locationEntry.getKey());
         }
+    }
+
+    private String getIdColumnHeaderName(Row row) {
+        return Arrays.stream(row.getHeaders()).filter(s -> s.equalsIgnoreCase("id")).findAny().orElse("");
     }
 
     private void relaxedWriter(Row row, List<String> allErrorMsgs) throws Exception {
@@ -166,6 +171,10 @@ public class LocationWriter implements ItemWriter<Row> {
             parentEntry = locationEntry;
         }
         return parentEntry;
+    }
+
+    public void setLocationUploadMode(String locationUploadMode) {
+        this.locationUploadMode = locationUploadMode;
     }
 
     private enum LocationUploadMode {
