@@ -2,9 +2,6 @@ package org.avni.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.avni.application.FormMapping;
 import org.avni.application.KeyType;
 import org.avni.application.OrganisationConfigSettingKeys;
@@ -18,31 +15,39 @@ import org.avni.domain.SubjectType;
 import org.avni.framework.security.UserContextHolder;
 import org.avni.projection.ConceptProjection;
 import org.avni.util.ObjectMapperSingleton;
+import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.OrganisationConfigRequest;
 import org.avni.web.request.webapp.SubjectTypeSetting;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import org.joda.time.DateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 public class OrganisationConfigService implements NonScopeAwareService {
-
+    public static final String EMPTY_STRING = "";
+    public static final String INDIVIDUAL = "individual";
+    public static final String UUID = "uuid";
     private final OrganisationConfigRepository organisationConfigRepository;
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
     private final LocationHierarchyService locationHierarchyService;
     private final FormMappingRepository formMappingRepository;
-    private ObjectMapper objectMapper;
     private final Logger logger;
+    private ObjectMapper objectMapper;
 
 
     @Autowired
@@ -67,7 +72,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
             organisationConfig = new OrganisationConfig();
         }
         organisationConfig.setOrganisationId(organisation.getId());
-        organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
+        organisationConfig.setUuid(request.getUuid() == null ? java.util.UUID.randomUUID().toString() : request.getUuid());
         organisationConfig.setSettings(request.getSettings());
         organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
         organisationConfig.updateLastModifiedDateTime();
@@ -91,7 +96,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
             for (int i = 0; i < jsonArray.length(); i++) {
                 if (jsonArray.getJSONObject(i).has("conceptUUID")) {
                     String uuid = jsonArray.getJSONObject(i).getString("conceptUUID");
-                    if (null != uuid && !"".equals(uuid.trim()))
+                    if (null != uuid && !EMPTY_STRING.equals(uuid.trim()))
                         conceptUuidList.add(uuid.trim());
                 }
             }
@@ -149,7 +154,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
             organisationConfig = new OrganisationConfig();
         }
         organisationConfig.setOrganisationId(organisationId);
-        organisationConfig.setUuid(UUID.randomUUID().toString());
+        organisationConfig.setUuid(java.util.UUID.randomUUID().toString());
         organisationConfig.updateLastModifiedDateTime();
 
         organisationConfig.setSettings(updateOrganisationConfigSettings(settings, organisationConfig.getSettings()));
@@ -207,7 +212,8 @@ public class OrganisationConfigService implements NonScopeAwareService {
     }
 
     private List<SubjectTypeSetting> getUpdatedCustomRegistrationLocations(List<String> locationTypeUUIDs, SubjectType subjectType, JsonObject organisationConfigSettings, String settingsKeyName) {
-        List<SubjectTypeSetting> savedSettings = objectMapper.convertValue(organisationConfigSettings.getOrDefault(settingsKeyName, Collections.EMPTY_LIST), new TypeReference<List<SubjectTypeSetting>>() {});
+        List<SubjectTypeSetting> savedSettings = objectMapper.convertValue(organisationConfigSettings.getOrDefault(settingsKeyName, Collections.EMPTY_LIST), new TypeReference<List<SubjectTypeSetting>>() {
+        });
         List<SubjectTypeSetting> otherSubjectTypeSettings = filterSubjectTypeSettingsBasedOn(savedSettings, setting -> !setting.getSubjectTypeUUID().equals(subjectType.getUuid()));
         SubjectTypeSetting subjectTypeSetting = new SubjectTypeSetting();
         subjectTypeSetting.setSubjectTypeUUID(subjectType.getUuid());
@@ -245,4 +251,64 @@ public class OrganisationConfigService implements NonScopeAwareService {
         return organisationConfigRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
+    public JsonObject getExportSettings() {
+        Optional<OrganisationConfig> organisationConfig = getOrganisationConfig();
+        if (organisationConfig.isPresent()) {
+            return organisationConfig.get().getExportSettings();
+        }
+        return new JsonObject();
+    }
+
+    public ResponseEntity<?> saveNewExportSettings(String name, JsonObject request) {
+        return saveExportSettings(name, request, false);
+    }
+
+    public ResponseEntity<?> updateExistingExportSettings(String name, JsonObject request) {
+        return saveExportSettings(name, request, true);
+    }
+
+    private ResponseEntity<?> saveExportSettings(String name, JsonObject request, boolean shouldExist) {
+            OrganisationConfig organisationConfig = getOrganisationConfig().orElse(new OrganisationConfig());
+        if (StringUtils.hasText(name)) {
+            JsonObject exportSettings = getExportSettings(organisationConfig);
+            JsonObject exportSettingsForName = (JsonObject) exportSettings.get(name);
+            if(shouldExist && exportSettingsForName == null) {
+                return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("ExportSettings for name %s is not available to update", name)));
+            } else if(!shouldExist && exportSettingsForName != null) {
+                return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("ExportSettings for name %s already exists ", name)));
+            }
+            exportSettings.put(name, request);
+            organisationConfig.assignUUIDIfRequired();
+            organisationConfigRepository.save(organisationConfig);
+            return ResponseEntity.ok(request);
+        }
+        return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("ExportSettings name is not specified in the save request"));
+    }
+
+    private Optional<OrganisationConfig> getOrganisationConfig() {
+        return organisationConfigRepository.findAllByIsVoidedFalse().stream().findFirst();
+    }
+
+    private JsonObject getExportSettings(OrganisationConfig organisationConfig) {
+        JsonObject savedSettings = organisationConfig.getExportSettings();
+        if (savedSettings == null) {
+            savedSettings = new JsonObject();
+            organisationConfig.setSettings(savedSettings);
+        }
+        return savedSettings;
+    }
+
+    public ResponseEntity<?> deleteExportSettings(String name) {
+        if (!StringUtils.hasText(name)) {
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("ExportSettings name is not specified in the save request"));
+        }
+        OrganisationConfig organisationConfig = getOrganisationConfig().orElse(new OrganisationConfig());
+        JsonObject savedSettings = getExportSettings(organisationConfig);
+        if (savedSettings == null || savedSettings.get(name) == null) {
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("ExportSettings for specified name \'%s\' not found", name)));
+        }
+        savedSettings.remove(name);
+        organisationConfigRepository.save(organisationConfig);
+        return ResponseEntity.ok().build();
+    }
 }

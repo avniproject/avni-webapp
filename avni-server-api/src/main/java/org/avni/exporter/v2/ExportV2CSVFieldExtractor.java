@@ -366,13 +366,6 @@ public class ExportV2CSVFieldExtractor implements FieldExtractor<ItemRow>, FlatF
                 .collect(Collectors.toList());
     }
 
-//    private void addAuditFields(Auditable auditable, List<Object> row) {
-//        row.add(auditable.getCreatedBy().getUsername());
-//        row.add(getDateForTimeZone(auditable.getCreatedDateTime()));
-//        row.add(auditable.getLastModifiedBy().getUsername());
-//        row.add(getDateForTimeZone(auditable.getLastModifiedDateTime()));
-//    }
-
     private void addAddressLevels(List<Object> row, AddressLevel addressLevel) {
         Map<String, String> addressLevelMap = addressLevel != null ?
                 getAddressTypeAddressLevelMap(addressLevel, addressLevel.getParentLocationMapping()) : new HashMap<>();
