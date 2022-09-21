@@ -161,6 +161,4 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
             "  and entity_id notnull \n" +
             "  and observations_type_entity_id notnull", nativeQuery = true)
     List<FormMapping> findByProgramNotNullAndEncounterTypeNotNullAndIsVoidedFalse();
-
-    List<FormMapping> findByFormFormType(FormType formType);
 }

@@ -24,7 +24,6 @@ import org.springframework.util.StringUtils;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +63,7 @@ public class FormMappingService implements NonScopeAwareService {
     }
 
     public void voidExistingFormMappings(FormMappingParameterObject mappingsToVoid, Form form) {
-        FormType formType = form !=null? form.getFormType(): null;
+        FormType formType = form != null ? form.getFormType() : null;
         List<FormMapping> formMappingsToVoid = formMappingRepository.findRequiredFormMappings(
                 mappingsToVoid.subjectTypeUuid,
                 mappingsToVoid.programUuid,
@@ -145,23 +144,21 @@ public class FormMappingService implements NonScopeAwareService {
             formMapping.setUuid(formMappingRequest.getUuid());
         }
 
-        Form form =  null;
+        Form form = null;
         if (formMappingRequest.getFormUUID() != null) {
-            form =  formRepository.findByUuid(formMappingRequest.getFormUUID());
+            form = formRepository.findByUuid(formMappingRequest.getFormUUID());
         }
         formMapping.setForm(form);
 
         if (formMappingRequest.getProgramUUID() != null) {
             formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
-        }
-        else{
+        } else {
             formMapping.setProgram(null);
         }
 
         if (formMappingRequest.getEncounterTypeUUID() != null) {
             formMapping.setEncounterType(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()));
-        }
-        else{
+        } else {
             formMapping.setEncounterType(null);
         }
 
@@ -220,13 +217,19 @@ public class FormMappingService implements NonScopeAwareService {
         return formMappingRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
     }
 
-    public Set<SubjectType> getAllSubjectTypesHavingConceptUUID(String conceptUUID) {
-        return formMappingRepository.getAllRegistrationFormMappings()
+    public FormMapping find(EncounterType encounterType, FormType formType) {
+        return formMappingRepository.findByFormFormTypeAndIsVoidedFalse(formType)
                 .stream()
-                .filter(fm ->
-                        fm.getForm().getApplicableFormElements().stream().anyMatch(fe -> fe.getConcept().getUuid().equals(conceptUUID))
-                ).map(FormMapping::getSubjectType)
-                .collect(Collectors.toSet());
+                .filter(fm -> encounterType.equals(fm.getEncounterType()))
+                .findFirst()
+                .orElse(null);
     }
 
+    public FormMapping find(Program program, FormType formType) {
+        return formMappingRepository.findByFormFormTypeAndIsVoidedFalse(formType)
+                .stream()
+                .filter(fm ->  program.equals(fm.getProgram()))
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -39,17 +39,17 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final ProgramEnrolmentService programEnrolmentService;
     private final ProgramRepository programRepository;
     private ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService;
-    private FormMappingRepository formMappingRepository;
+    private FormMappingService formMappingService;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService, FormMappingRepository formMappingRepository) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService, FormMappingRepository formMappingRepository, FormMappingService formMappingService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
         this.projectionFactory = projectionFactory;
         this.programEnrolmentService = programEnrolmentService;
         this.programRepository = programRepository;
         this.scopeBasedSyncService = scopeBasedSyncService;
-        this.formMappingRepository = formMappingRepository;
+        this.formMappingService = formMappingService;
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
@@ -71,11 +71,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         else {
             Program program = programRepository.findByUuid(programUuid);
             if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            FormMapping formMapping = formMappingRepository.findByFormFormType(FormType.ProgramEnrolment)
-                    .stream()
-                    .filter(fm -> fm.getProgramUuid().equals(programUuid))
-                    .findFirst()
-                    .orElse(null);
+            FormMapping formMapping = formMappingService.find(program, FormType.ProgramEnrolment);
             if (formMapping == null)
                 throw new Exception(String.format("No form mapping found for program %s", program.getName()));
             return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Enrolment));

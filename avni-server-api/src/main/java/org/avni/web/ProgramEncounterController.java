@@ -5,10 +5,10 @@ import org.avni.application.FormType;
 import org.avni.dao.EncounterTypeRepository;
 import org.avni.dao.ProgramEncounterRepository;
 import org.avni.dao.SyncParameters;
-import org.avni.dao.application.FormMappingRepository;
 import org.avni.domain.CHSEntity;
 import org.avni.domain.EncounterType;
 import org.avni.domain.ProgramEncounter;
+import org.avni.service.FormMappingService;
 import org.avni.service.ProgramEncounterService;
 import org.avni.service.ScopeBasedSyncService;
 import org.avni.service.UserService;
@@ -38,16 +38,16 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     private UserService userService;
     private final ProgramEncounterService programEncounterService;
     private ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService;
-    private FormMappingRepository formMappingRepository;
+    private FormMappingService formMappingService;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService, ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService, FormMappingRepository formMappingRepository) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, UserService userService, ProgramEncounterService programEncounterService, ScopeBasedSyncService<ProgramEncounter> scopeBasedSyncService, FormMappingService formMappingService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.userService = userService;
         this.programEncounterService = programEncounterService;
         this.scopeBasedSyncService = scopeBasedSyncService;
-        this.formMappingRepository = formMappingRepository;
+        this.formMappingService = formMappingService;
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")
@@ -100,11 +100,8 @@ public class ProgramEncounterController implements RestControllerResourceProcess
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
-        FormMapping formMapping = formMappingRepository.findByFormFormType(FormType.ProgramEncounter)
-                .stream()
-                .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUuid))
-                .findFirst()
-                .orElse(null);
+
+        FormMapping formMapping = formMappingService.find(encounterType, FormType.ProgramEncounter);
         if (formMapping == null)
             throw new Exception(String.format("No form mapping found for program encounter %s", encounterType.getName()));
         return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.ProgramEncounter));
