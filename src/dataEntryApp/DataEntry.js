@@ -12,7 +12,6 @@ import {
 } from "dataEntryApp/reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import Loading from "./components/Loading";
-import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import ViewVisit from "./views/subjectDashBoard/components/ViewVisit";
@@ -68,8 +67,12 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorSt
                   <AppBar />
                 </Grid>
                 <Grid item xs={12}>
-                  <Route path={[path, `${path}/dashboard`]} component={DataEntryDashboard} />
-                  <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
+                  <Route
+                    exact
+                    path={[path, `${path}/searchFilter`]}
+                    component={SearchFilterFormContainer}
+                  />
+                  <Route exact path={`${path}/search`} component={SubjectSearch} />
                   <Route path={`${path}/register`} component={SubjectRegister} />
                   <Route path={`${path}/editSubject`} component={SubjectRegister} />
                   <Route
@@ -128,11 +131,6 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorSt
                     exact
                     path={`${path}/subject/newGeneralVisit`}
                     component={NewGeneralVisit}
-                  />
-                  <Route
-                    exact
-                    path={`${path}/searchFilter`}
-                    component={SearchFilterFormContainer}
                   />
                   <Route exact path={`${path}/subject/encounter`} component={Encounter} />
                   <Route path={`${path}/subject/editEncounter`} component={Encounter} />
