@@ -13,6 +13,7 @@ import org.avni.util.ReactAdminUtil;
 import org.avni.web.request.AddressLevelContractWeb;
 import org.avni.web.request.LocationContract;
 import org.avni.web.request.LocationEditContract;
+import org.avni.web.request.webapp.search.LocationSearchRequest;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,18 +80,18 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     @ResponseBody
     public Page<LocationProjection> find(
-            @RequestParam(value = "title") String title, @RequestParam(value = "addressLevelTypeId", required = false) Integer addressLevelTypeId,
+            @RequestParam(value = "title", defaultValue = "") String title,
+            @RequestParam(value = "typeId", required = false) Integer typeId,
+            @RequestParam(value = "parentId", required = false) Integer parentId,
             Pageable pageable) {
-        return addressLevelTypeId == null ?
-                locationRepository.findByTitle(title, pageable) :
-                locationRepository.findByTitleAndAddressLevelType(title, addressLevelTypeId, pageable);
+        return locationService.find(new LocationSearchRequest(title, typeId, parentId, pageable));
     }
 
     @GetMapping(value = "/locations/search/findAllById")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public List<LocationProjection> findByIdIn(@Param("ids") Long[] ids) {
-        if(ids == null || ids.length == 0) {
+        if (ids == null || ids.length == 0) {
             return new ArrayList<>();
         }
         return locationRepository.findByIdIn(ids);
@@ -166,7 +167,7 @@ public class LocationController implements RestControllerResourceProcessor<Addre
     @ResponseBody
     public ResponseEntity getLocationByParam(@RequestParam("uuid") String uuid) {
         LocationProjection addressLevel = locationRepository.findNonVoidedLocationsByUuid(uuid);
-        if(addressLevel == null) {
+        if (addressLevel == null) {
             return ResponseEntity.notFound().build();
         }
         return new ResponseEntity<>(AddressLevelContractWeb.fromEntity(addressLevel), HttpStatus.OK);

@@ -54,6 +54,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
+    //todo: The below 3 methods are similar queries. They can be combined.
     @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
             "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
             "from address_level al " +
@@ -62,7 +63,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "where (:title is null or lower(al.title) like lower(concat('%', :title,'%'))) " +
             "and al.is_voided = false order by al.title ",
             nativeQuery = true)
-    Page<LocationProjection> findByTitle(String title, Pageable pageable);
+    Page<LocationProjection> find(String title, Pageable pageable);
 
     @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
             "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
@@ -70,10 +71,22 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "left join address_level_type alt on alt.id = al.type_id " +
             "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
             "where (:title is null or lower(al.title) like lower(concat('%', :title,'%'))) " +
-            "and alt.id = :addressLevelTypeId " +
+            "and alt.id = :typeId " +
             "and al.is_voided = false order by al.title ",
             nativeQuery = true)
-    Page<LocationProjection> findByTitleAndAddressLevelType(String title, Integer addressLevelTypeId, Pageable pageable);
+    Page<LocationProjection> find(String title, Integer typeId, Pageable pageable);
+
+    @Query(value = "select al.id, al.uuid, al.title, al.type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
+            "cast(al.lineage as text) as lineage, tll.title_lineage as titleLineage, alt.level " +
+            "from address_level al " +
+            "left join address_level_type alt on alt.id = al.type_id " +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where (:title is null or lower(al.title) like lower(concat('%', :title,'%'))) " +
+            "and alt.id = :typeId " +
+            "and al.is_voided = false " +
+            "and al.parent_id = :parentId order by al.title ",
+            nativeQuery = true)
+    Page<LocationProjection> find(String title, int typeId, Integer parentId, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
 

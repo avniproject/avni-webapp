@@ -3,6 +3,7 @@ package org.avni.service;
 import org.avni.application.FormElement;
 import org.avni.application.FormElementType;
 import org.avni.application.KeyType;
+import org.avni.application.projections.LocationProjection;
 import org.avni.builder.BuilderException;
 import org.avni.builder.LocationBuilder;
 import org.avni.dao.*;
@@ -13,10 +14,12 @@ import org.avni.web.request.AddressLevelTypeContract;
 import org.avni.web.request.LocationContract;
 import org.avni.web.request.LocationEditContract;
 import org.avni.web.request.ReferenceDataContract;
+import org.avni.web.request.webapp.search.LocationSearchRequest;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -279,5 +282,15 @@ public class LocationService implements ScopeAwareService {
         } else {
             return locationRepository.findByTitleIgnoreCaseAndTypeIn(answerValue, lowestLevels).getUuid();
         }
+    }
+
+    public Page<LocationProjection> find(LocationSearchRequest searchRequest) {
+        if (searchRequest.getAddressLevelTypeId() == null) {
+            return locationRepository.find(searchRequest.getTitle(), searchRequest.getPageable());
+        }
+        if (searchRequest.getParentId() == null) {
+            return locationRepository.find(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getPageable());
+        }
+        return locationRepository.find(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getParentId(), searchRequest.getPageable());
     }
 }
