@@ -42,6 +42,7 @@ import TextFormElement from "dataEntryApp/components/TextFormElement";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
+import HeirarchicalLocationSelect from "../../components/HeirarchicalLocationSelect";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -204,7 +205,7 @@ const SubjectRegister = props => {
         <div>
           {props.selectedAddressLevelType.id === -1 ? null : (
             <div>
-              <LocationSelect
+              <HeirarchicalLocationSelect
                 selectedLocation={props.subject.lowestAddressLevel}
                 onSelect={location => {
                   props.setAddress(
