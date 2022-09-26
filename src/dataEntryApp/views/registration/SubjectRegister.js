@@ -1,36 +1,35 @@
 import React, { Fragment } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Typography, Paper } from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { AddressLevel, Individual } from "avni-models";
 import {
+  fetchRegistrationRulesResponse,
   getRegistrationForm,
   onLoad,
-  saveSubject,
-  updateSubject,
-  setSubject,
-  saveCompleteFalse,
-  setValidationResults,
-  selectAddressLevelType,
   onLoadEdit,
-  fetchRegistrationRulesResponse,
+  saveCompleteFalse,
+  saveSubject,
+  selectAddressLevelType,
   selectRegistrationState,
-  setRegistrationDate,
-  setFirstName,
-  setMiddleName,
-  setLastName,
-  setProfilePictureFile,
-  setRemoveProfilePicture,
+  setAddress,
   setDateOfBirth,
+  setFirstName,
   setGender,
-  setAddress
+  setLastName,
+  setMiddleName,
+  setProfilePictureFile,
+  setRegistrationDate,
+  setRemoveProfilePicture,
+  setSubject,
+  setValidationResults,
+  updateSubject
 } from "dataEntryApp/reducers/registrationReducer";
 import { getGenders } from "../../reducers/metadataReducer";
-import _, { get, sortBy, isEmpty, find } from "lodash";
+import _, { find, get, isEmpty, sortBy } from "lodash";
 import { LineBreak, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import LocationSelect from "dataEntryApp/components/LocationSelect";
 import { makeStyles } from "@material-ui/core/styles";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { useTranslation } from "react-i18next";
@@ -42,7 +41,7 @@ import TextFormElement from "dataEntryApp/components/TextFormElement";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
-import HeirarchicalLocationSelect from "../../components/HeirarchicalLocationSelect";
+import HierarchicalLocationSelect from "../../components/HierarchicalLocationSelect";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -205,7 +204,7 @@ const SubjectRegister = props => {
         <div>
           {props.selectedAddressLevelType.id === -1 ? null : (
             <div>
-              <HeirarchicalLocationSelect
+              <HierarchicalLocationSelect
                 selectedLocation={props.subject.lowestAddressLevel}
                 onSelect={location => {
                   props.setAddress(

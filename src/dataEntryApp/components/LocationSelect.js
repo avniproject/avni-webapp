@@ -6,7 +6,7 @@ import { addressLevelService } from "../services/AddressLevelService";
 import AsyncSelect from "react-select/async";
 import httpClient from "../../common/utils/httpClient";
 
-const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => {
+const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, parentId }) => {
   const { t } = useTranslation();
   const [selectedLocationValue, setSelectedLocationValue] = React.useState();
   const [defaultOptions, setDefaultOptions] = React.useState([]);
@@ -25,12 +25,14 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
         value: selectedLocation,
         optionLabel: locationNameRenderer(selectedLocation)
       });
+    } else {
+      setSelectedLocationValue(null);
     }
   }, [selectedLocation]);
 
   React.useEffect(() => {
     fetchLocation("", setDefaultOptions);
-  }, []);
+  }, [parentId]);
 
   const onLocationSelected = location => {
     onSelect(location.value);
@@ -52,10 +54,17 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId }) => 
     return fetchLocation(value, callback);
   };
 
+  const makeParameter = (key, value) => {
+    return value ? `&${key}=${value}` : "";
+  };
+
   function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();
     let title = encodeURIComponent(inputValue);
-    let apiUrl = `/locations/search/find?title=${title}&addressLevelTypeId=${typeId}&size=100&page=0`;
+    let apiUrl = `/locations/search/find?title=${title}${makeParameter(
+      "typeId",
+      typeId
+    )}${makeParameter("parentId", parentId)}&size=100&page=0`;
     return httpClient
       .get(apiUrl)
       .then(response => callback(getLocationOptions(get(response, "data.content", []))))
