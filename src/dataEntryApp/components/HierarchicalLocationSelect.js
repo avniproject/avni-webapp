@@ -1,13 +1,15 @@
 import LocationSelect from "./LocationSelect";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import _ from "lodash";
 import { useSelector } from "react-redux";
 
-const HierarchicalLocationSelect = ({ onSelect }) => {
+const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect }) => {
   const [selectedAddressLevels, setSelectedAddressLevels] = useState([]);
-  const addressLevelTypes = useSelector(
+  const allAddressLevelTypes = useSelector(
     state => state.dataEntry.metadata.operationalModules.allAddressLevels
   );
+  const addressLevelTypes = _.filter(allAddressLevelTypes, al => al.level >= minLevelTypeId);
 
   const logAndSetSelectedAddressLevels = item => {
     console.log(item);
@@ -17,7 +19,7 @@ const HierarchicalLocationSelect = ({ onSelect }) => {
   useEffect(() => {
     const addressLevelType = addressLevelTypes.find(alt => _.isNil(alt.parent));
     logAndSetSelectedAddressLevels([{ addressLevelType }]);
-  }, [addressLevelTypes]);
+  }, [allAddressLevelTypes, minLevelTypeId]);
 
   const onAddressLevelSelect = (addressLevel, addressLevelType) => {
     const selectedAddressLevelsClone = [...selectedAddressLevels];

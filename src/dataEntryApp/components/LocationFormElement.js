@@ -5,10 +5,12 @@ import LocationSelect from "./LocationSelect";
 import RadioButtonsGroup from "./RadioButtonsGroup";
 import { useSelector } from "react-redux";
 import { selectAllAddressLevelTypes } from "../reducers/metadataReducer";
-import { find, filter, includes, isEmpty, head, isNil } from "lodash";
+import { filter, find, head, includes, isEmpty, isNil } from "lodash";
 import { ValidationError } from "./ValidationError";
 import { addressLevelService } from "../services/AddressLevelService";
 import http from "common/utils/httpClient";
+import { selectOrganisationConfig } from "../sagas/selectors";
+import HierarchicalLocationSelect from "./HierarchicalLocationSelect";
 
 export default function LocationFormElement({
   obsHolder,
@@ -21,9 +23,12 @@ export default function LocationFormElement({
   const { mandatory, name, concept } = formElement;
   const observation = obsHolder.findObservation(concept);
   const validationResult = find(validationResults, vr => vr.formIdentifier === uuid);
+  const orgConfig = useSelector(selectOrganisationConfig);
+
   const lowestAddressLevelTypeUUIDs = concept.recordValueByKey(
     Concept.keys.lowestAddressLevelTypeUUIDs
   );
+
   const addressLevelTypes = filter(useSelector(selectAllAddressLevelTypes), alt =>
     includes(lowestAddressLevelTypeUUIDs, alt.uuid)
   );
@@ -56,16 +61,25 @@ export default function LocationFormElement({
     <React.Fragment>
       <RadioButtonsGroup
         label={`${t(name)}${mandatory ? "*" : ""}`}
-        items={addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
+        items={addressLevelTypes.map(a => ({ id: a.id, name: a.name, level: a.level }))}
         value={level.id}
         onChange={setLevel}
       />
-      <LocationSelect
-        selectedLocation={location}
-        onSelect={location => update(location.uuid)}
-        placeholder={level.name}
-        typeId={level.id}
-      />
+      {orgConfig.settings.showHierarchicalLocation ? (
+        <HierarchicalLocationSelect
+          minLevelTypeId={level.level}
+          onSelect={location => {
+            update(location.uuid);
+          }}
+        />
+      ) : (
+        <LocationSelect
+          selectedLocation={location}
+          onSelect={location => update(location.uuid)}
+          placeholder={level.name}
+          typeId={level.id}
+        />
+      )}
       <ValidationError validationResult={validationResult} />
     </React.Fragment>
   );
