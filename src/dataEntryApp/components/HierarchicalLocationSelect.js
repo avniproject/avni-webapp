@@ -1,11 +1,9 @@
 import LocationSelect from "./LocationSelect";
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import _ from "lodash";
 import { useSelector } from "react-redux";
 
-const HierarchicalLocationSelect = ({ typeId, onSelect }) => {
-  const { t } = useTranslation();
+const HierarchicalLocationSelect = ({ onSelect }) => {
   const [selectedAddressLevels, setSelectedAddressLevels] = useState([]);
   const addressLevelTypes = useSelector(
     state => state.dataEntry.metadata.operationalModules.allAddressLevels
