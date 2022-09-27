@@ -8,8 +8,10 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect }) => {
   const allAddressLevelTypes = useSelector(
     state => state.dataEntry.metadata.operationalModules.allAddressLevels
   );
-  const addressLevelTypes = _.filter(allAddressLevelTypes, al => al.level >= minLevelTypeId);
 
+  const addressLevelTypes = !_.isNil(minLevelTypeId)
+    ? _.filter(allAddressLevelTypes, al => al.level >= minLevelTypeId)
+    : allAddressLevelTypes;
   const logAndSetSelectedAddressLevels = item => {
     setSelectedAddressLevels(item);
   };
