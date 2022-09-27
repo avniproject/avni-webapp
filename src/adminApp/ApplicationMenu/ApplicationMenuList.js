@@ -7,6 +7,7 @@ import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import EntityListUtil from "../Util/EntityListUtil";
 import ApplicationMenuService from "../service/ApplicationMenuService";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 const ApplicationMenuList = ({ history }) => {
   const [createTriggered, triggerCreate] = useState(false);
@@ -48,7 +49,7 @@ const ApplicationMenuList = ({ history }) => {
     );
 
   return (
-    <>
+    <DocumentationContainer filename={"ApplicationMenu.md"}>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title="Menu Items" />
 
@@ -89,7 +90,7 @@ const ApplicationMenuList = ({ history }) => {
         </div>
       </Box>
       {createTriggered && <Redirect to={"/appDesigner/applicationMenu/create"} />}
-    </>
+    </DocumentationContainer>
   );
 };
 
