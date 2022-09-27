@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { Paper, Typography } from "@material-ui/core";
 import { AddressLevel, Individual } from "avni-models";
 import {
@@ -42,6 +42,8 @@ import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 import HierarchicalLocationSelect from "../../components/HierarchicalLocationSelect";
+import LocationSelect from "../../components/LocationSelect";
+import { selectOrganisationConfig } from "../../sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -151,6 +153,7 @@ const SubjectRegister = props => {
   const { t } = useTranslation();
   const match = props.match;
   const edit = match.path === "/app/editSubject";
+  const orgConfig = useSelector(selectOrganisationConfig);
 
   React.useEffect(() => {
     if (edit) {
@@ -204,21 +207,41 @@ const SubjectRegister = props => {
         <div>
           {props.selectedAddressLevelType.id === -1 ? null : (
             <div>
-              <HierarchicalLocationSelect
-                onSelect={location => {
-                  props.setAddress(
-                    AddressLevel.create({
-                      name: location.title,
-                      uuid: location.uuid,
-                      title: location.title,
-                      level: location.level,
-                      typeString: location.typeString,
-                      titleLineage: location.titleLineage
-                    })
-                  );
-                }}
-                minLevelTypeId={props.selectedAddressLevelType.id}
-              />
+              {orgConfig.settings.showHierarchicalLocation ? (
+                <HierarchicalLocationSelect
+                  onSelect={location => {
+                    props.setAddress(
+                      AddressLevel.create({
+                        name: location.title,
+                        uuid: location.uuid,
+                        title: location.title,
+                        level: location.level,
+                        typeString: location.typeString,
+                        titleLineage: location.titleLineage
+                      })
+                    );
+                  }}
+                  minLevelTypeId={props.selectedAddressLevelType.id}
+                />
+              ) : (
+                <LocationSelect
+                  selectedLocation={props.subject.lowestAddressLevel}
+                  onSelect={location => {
+                    props.setAddress(
+                      AddressLevel.create({
+                        name: location.title,
+                        uuid: location.uuid,
+                        title: location.title,
+                        level: location.level,
+                        typeString: location.typeString,
+                        titleLineage: location.titleLineage
+                      })
+                    );
+                  }}
+                  placeholder={props.selectedAddressLevelType.name}
+                  typeId={props.selectedAddressLevelType.id}
+                />
+              )}
             </div>
           )}
           {error && <span className={classes.errmsg}>{t(error.messageKey)}</span>}
