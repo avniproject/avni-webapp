@@ -200,7 +200,7 @@ const SubjectRegister = props => {
         <LineBreak num={1} />
         <RadioButtonsGroup
           label={`${t("Address")}${showRequired}`}
-          items={addressLevelTypesToRender.map(a => ({ id: a.id, name: a.name }))}
+          items={addressLevelTypesToRender.map(a => ({ id: a.id, name: a.name, level: a.level }))}
           value={props.selectedAddressLevelType.id}
           onChange={item => props.selectAddressLevelType(item)}
         />
@@ -221,7 +221,7 @@ const SubjectRegister = props => {
                       })
                     );
                   }}
-                  minLevelTypeId={props.selectedAddressLevelType.id}
+                  minLevelTypeId={props.selectedAddressLevelType.level}
                 />
               ) : (
                 <LocationSelect

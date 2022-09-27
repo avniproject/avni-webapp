@@ -11,7 +11,6 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect }) => {
   const addressLevelTypes = _.filter(allAddressLevelTypes, al => al.level >= minLevelTypeId);
 
   const logAndSetSelectedAddressLevels = item => {
-    console.log(item);
     setSelectedAddressLevels(item);
   };
 
@@ -40,9 +39,7 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect }) => {
   };
 
   const finalValueAvailable = newSelectedAddressLevels => {
-    const currentLength = newSelectedAddressLevels.length;
-    const expectedLength = addressLevelTypes.length;
-    return expectedLength <= currentLength;
+    return _.last(newSelectedAddressLevels).value.level === minLevelTypeId;
   };
 
   const addNextLineIfRequired = newSelectedAddressLevels => {
