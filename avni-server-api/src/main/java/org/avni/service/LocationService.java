@@ -286,11 +286,11 @@ public class LocationService implements ScopeAwareService {
 
     public Page<LocationProjection> find(LocationSearchRequest searchRequest) {
         if (searchRequest.getAddressLevelTypeId() == null) {
-            return locationRepository.find(searchRequest.getTitle(), searchRequest.getPageable());
+            return locationRepository.findLocationProjectionByTitleIgnoreCase(searchRequest.getTitle(), searchRequest.getPageable());
         }
         if (searchRequest.getParentId() == null) {
-            return locationRepository.find(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getPageable());
+            return locationRepository.findLocationProjectionByTitleIgnoreCaseAndTypeId(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getPageable());
         }
-        return locationRepository.find(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getParentId(), searchRequest.getPageable());
+        return locationRepository.findLocationProjectionByTitleIgnoreCaseAndTypeIdAndParentId(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getParentId(), searchRequest.getPageable());
     }
 }

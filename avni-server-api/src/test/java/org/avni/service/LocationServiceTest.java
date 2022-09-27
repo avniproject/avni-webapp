@@ -40,7 +40,7 @@ public class LocationServiceTest {
         LocationSearchRequest searchRequest = new LocationSearchRequest(searchString, null, null, mock(Pageable.class));
         locationService.find(searchRequest);
 
-        verify(locationRepository).find(eq(searchString), any(Pageable.class));
+        verify(locationRepository).findLocationProjectionByTitleIgnoreCase(eq(searchString), any(Pageable.class));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class LocationServiceTest {
         LocationSearchRequest searchRequest = new LocationSearchRequest(searchString, addressLevelTypeId, null, mock(Pageable.class));
         locationService.find(searchRequest);
 
-        verify(locationRepository).find(matches(searchString), eq(addressLevelTypeId), any(Pageable.class));
+        verify(locationRepository).findLocationProjectionByTitleIgnoreCaseAndTypeId(matches(searchString), eq(addressLevelTypeId), any(Pageable.class));
     }
 
     @Test
@@ -61,6 +61,6 @@ public class LocationServiceTest {
         LocationSearchRequest searchRequest = new LocationSearchRequest(searchString, addressLevelTypeId, parentId, mock(Pageable.class));
         locationService.find(searchRequest);
 
-        verify(locationRepository).find(eq(searchString), eq(addressLevelTypeId), eq(parentId), any(Pageable.class));
+        verify(locationRepository).findLocationProjectionByTitleIgnoreCaseAndTypeIdAndParentId(eq(searchString), eq(addressLevelTypeId), eq(parentId), any(Pageable.class));
     }
 }
