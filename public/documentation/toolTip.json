@@ -179,5 +179,6 @@
   "APP_DESIGNER_MENU_ITEM_TYPE": "Type of menu item",
   "APP_DESIGNER_MENU_ITEM_GROUP": "Group to which the menu item will belong in the application",
   "APP_DESIGNER_MENU_ITEM_LINK_FUNCTION": "Function executed to provide the link",
-  "APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE": "If the encounter type is marked as immutable then data from the last encounter is copied to the next encounter. Since the encounter is immutable, the edit is not allowed on these encounters."
+  "APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE": "If the encounter type is marked as immutable then data from the last encounter is copied to the next encounter. Since the encounter is immutable, the edit is not allowed on these encounters.",
+  "SHOW_HIERARCHICAL_LOCATION": "Location will shown in hierarchical format"
 }
