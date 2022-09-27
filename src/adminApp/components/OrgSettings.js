@@ -75,7 +75,8 @@ export const OrgSettings = () => {
     useKeycloakAsIDP: "useKeycloakAsIDP",
     useMinioForStorage: "useMinioForStorage",
     skipRuleExecution: "skipRuleExecution",
-    maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount"
+    maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
+    showHierarchicalLocation: "showHierarchicalLocation"
   };
 
   return orgSettings ? (
@@ -141,6 +142,11 @@ export const OrgSettings = () => {
           organisationConfigSettingKeys.skipRuleExecution,
           "Skip rule executions on upload",
           "SKIP_RULE_EXECUTION_ON_UPLOAD"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.showHierarchicalLocation,
+          "Show hierarchical location",
+          "SHOW_HIERARCHICAL_LOCATION"
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}

@@ -56,14 +56,13 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect }) => {
       { addressLevelType: nextAddressLevelType }
     ]);
   };
-
   return (
     <div>
       {_.map(selectedAddressLevels, ({ addressLevelType, value }, index) => {
         const parentId = index > 0 ? selectedAddressLevels[index - 1].value.id : null;
         console.log("in render", addressLevelType, parentId);
         return (
-          <div style={{ marginBottom: "2px" }} key={addressLevelType.uuid}>
+          <div style={{ marginBottom: "2px" }}>
             <LocationSelect
               parentId={parentId}
               selectedLocation={value}
