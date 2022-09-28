@@ -24,7 +24,8 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     public static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     public static final String ORGANISATION_UUID = "ORGANISATION-UUID";
     public static final String AUTH_TOKEN_COOKIE = "auth-token";
-    private static final Pattern AUTH_TOKEN_PATTERN = Pattern.compile("[&;]");
+    public static final Pattern PARAM_SEPARATOR_PATTERN = Pattern.compile("[&;]");
+    public static final String AUTH_TOKEN = "AUTH-TOKEN=";
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private AuthService authService;
@@ -119,10 +120,10 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private String parseAuthToken(String query) {
         if (query != null) {
-            String[] params = AUTH_TOKEN_PATTERN.split(query);
+            String[] params = PARAM_SEPARATOR_PATTERN.split(query);
             for (String param : params) {
-                if (param.startsWith("AUTH-TOKEN=")) {
-                    return param.substring(11);
+                if (param.startsWith(AUTH_TOKEN)) {
+                    return param.substring(AUTH_TOKEN.length());
                 }
             }
         }
