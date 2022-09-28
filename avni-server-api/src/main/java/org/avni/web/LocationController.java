@@ -162,6 +162,15 @@ public class LocationController implements RestControllerResourceProcessor<Addre
                 .collect(Collectors.toList());
     }
 
+    @GetMapping(value = "locations/parents/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @ResponseBody
+    public List<LocationProjection> getParents(@PathVariable("id") Long id,
+                                               @RequestParam(value = "maxLevelTypeId", required = false) Long maxLevelTypeId) {
+        return locationService.getParents(id, maxLevelTypeId);
+    }
+
+
     @GetMapping(value = "/locations/web")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody

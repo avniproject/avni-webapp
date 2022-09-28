@@ -48,8 +48,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "         inner join address_level al on cam.addresslevel_id = al.id\n" +
             "         inner join address_level al1 on al.lineage @> al1.lineage \n" +
             "where c.id = :catchmentId\n" +
-            "  and al1.last_modified_date_time > :lastModifiedDateTime\n" , nativeQuery = true)
-    Long getChangedRowCount(long catchmentId,Date lastModifiedDateTime);
+            "  and al1.last_modified_date_time > :lastModifiedDateTime\n", nativeQuery = true)
+    Long getChangedRowCount(long catchmentId, Date lastModifiedDateTime);
 
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
@@ -106,7 +106,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     }
 
     @Override
-    default boolean isEntityChangedForCatchment(SyncParameters syncParameters){
+    default boolean isEntityChangedForCatchment(SyncParameters syncParameters) {
         return getChangedRowCount(syncParameters.getCatchment().getId(), syncParameters.getLastModifiedDateTime().toDate()) > 0;
     }
 
@@ -118,7 +118,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
         throw new UnsupportedOperationException("No field 'name' in Location. Field 'title' not unique.");
     }
 
-    @Query(value="SELECT * FROM address_level WHERE lineage ~ CAST(:lquery as lquery) \n-- #pageable\n",
+    @Query(value = "SELECT * FROM address_level WHERE lineage ~ CAST(:lquery as lquery) \n-- #pageable\n",
             countQuery = "SELECT count(*) FROM address_level WHERE lineage ~ CAST(:lquery as lquery)",
             nativeQuery = true)
     Page<AddressLevel> getAddressLevelsByLquery(@Param("lquery") String lquery, Pageable pageable);
@@ -144,7 +144,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @RestResource(path = "autocompleteLocationsOfType", rel = "autocompleteLocationsOfType")
     List<AddressLevel> findByType_IdAndTitleIgnoreCaseStartingWithAndIsVoidedFalseOrderByTitleAsc(@Param("typeId") Long typeId,
-                                                                                  @Param("title") String title);
+                                                                                                  @Param("title") String title);
 
     @Query("select a.title from AddressLevel a where a.isVoided = false")
     List<String> getAllNames();
@@ -165,16 +165,16 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByIsVoidedFalseAndTitleIgnoreCaseContains(String title);
 
-    @Query(value="select id from address_level where lineage ~ cast(:lquery as lquery)", nativeQuery = true)
+    @Query(value = "select id from address_level where lineage ~ cast(:lquery as lquery)", nativeQuery = true)
     List<Long> getAllChildrenLocationsIds(@Param("lquery") String lquery);
 
-    @Query(value="select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId", nativeQuery = true)
+    @Query(value = "select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForCatchmentId(@Param("catchmentId") Long catchmentId);
 
-    @Query(value="select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId and type_id in (:typeIds)", nativeQuery = true)
+    @Query(value = "select * from virtual_catchment_address_mapping_table where catchment_id = :catchmentId and type_id in (:typeIds)", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForCatchmentIdAndLocationTypeId(@Param("catchmentId") Long catchmentId, List<Long> typeIds);
 
-    @Query(value="select * from virtual_catchment_address_mapping_table where addresslevel_id in (:addressLevelIds)", nativeQuery = true)
+    @Query(value = "select * from virtual_catchment_address_mapping_table where addresslevel_id in (:addressLevelIds)", nativeQuery = true)
     List<VirtualCatchmentProjection> getVirtualCatchmentsForAddressLevelIds(@Param("addressLevelIds") List<Long> addressLevelIds);
 
     @Query(value = "select title_lineage from title_lineage_locations_function(:addressId)", nativeQuery = true)
@@ -219,4 +219,27 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             nativeQuery = true)
     LocationProjection findNonVoidedLocationsByUuid(String uuid);
 
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId,\n" +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al\n" +
+            "left join address_level_type alt on alt.id = al.type_id\n" +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where lineage @>" +
+            "          (select lineage" +
+            "          from address_level" +
+            "          where lineage ~ cast(concat('*.',:id) as lquery)) and alt.parent_id <= :maxLevelTypeId",
+            nativeQuery = true)
+    List<LocationProjection> getParentsWithMaxLevelTypeId(Long id, Long maxLevelTypeId);
+
+    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId,\n" +
+            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
+            "from address_level al\n" +
+            "left join address_level_type alt on alt.id = al.type_id\n" +
+            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
+            "where lineage @>" +
+            "          (select lineage" +
+            "          from address_level" +
+            "          where lineage ~ cast(concat('*.',:id) as lquery))",
+            nativeQuery = true)
+    List<LocationProjection> getParents(Long id);
 }

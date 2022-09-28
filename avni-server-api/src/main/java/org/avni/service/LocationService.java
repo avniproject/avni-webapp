@@ -293,4 +293,9 @@ public class LocationService implements ScopeAwareService {
         }
         return locationRepository.findLocationProjectionByTitleIgnoreCaseAndTypeIdAndParentId(searchRequest.getTitle(), searchRequest.getAddressLevelTypeId(), searchRequest.getParentId(), searchRequest.getPageable());
     }
+
+    public List<LocationProjection> getParents(Long id, Long maxLevelTypeId) {
+        return maxLevelTypeId == null ?
+         locationRepository.getParents(id) : locationRepository.getParentsWithMaxLevelTypeId(id, maxLevelTypeId);
+    }
 }
