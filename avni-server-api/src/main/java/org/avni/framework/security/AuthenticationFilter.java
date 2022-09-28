@@ -17,12 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class AuthenticationFilter extends BasicAuthenticationFilter {
     public static final String USER_NAME_HEADER = "USER-NAME";
     public static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     public static final String ORGANISATION_UUID = "ORGANISATION-UUID";
     public static final String AUTH_TOKEN_COOKIE = "auth-token";
+    private static final Pattern AUTH_TOKEN_PATTERN = Pattern.compile("[&;]");
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private AuthService authService;
@@ -45,6 +47,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             String method = request.getMethod();
             String requestURI = request.getRequestURI();
             String queryString = request.getQueryString();
+            authToken = getAuthTokenFromQueryString(authToken, queryString);
             Cookie[] cookies = request.getCookies();
             String derivedAuthToken = authToken;
             if (cookies != null) {
@@ -100,4 +103,29 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         logger.error("Exception Message:", exception);
     }
 
+    /**
+     * @param authToken
+     * @param queryString
+     * @return param authToken, if it has content.
+     *         queryAuthToken, if param authToken is empty and param queryString contains an auth-token.
+     *         null, in all other cases.
+     */
+    private String getAuthTokenFromQueryString(String authToken, String queryString) {
+        if(!StringUtils.hasText(authToken) && StringUtils.hasText(queryString)) {
+            return parseAuthToken(queryString);
+        }
+        return authToken;
+    }
+
+    private String parseAuthToken(String query) {
+        if (query != null) {
+            String[] params = AUTH_TOKEN_PATTERN.split(query);
+            for (String param : params) {
+                if (param.startsWith("AUTH-TOKEN=")) {
+                    return param.substring(11);
+                }
+            }
+        }
+        return null;
+    }
 }
