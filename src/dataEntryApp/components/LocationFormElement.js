@@ -56,7 +56,7 @@ export default function LocationFormElement({
         });
     }
   }, [locationUUID]);
-  console.log("location in location--fe", location);
+
   return (
     <React.Fragment>
       <RadioButtonsGroup

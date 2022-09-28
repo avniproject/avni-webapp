@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { deburr, get, isEmpty, isNil, map } from "lodash";
+import { deburr, get, isEmpty, map } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
 import { addressLevelService } from "../services/AddressLevelService";
 import AsyncSelect from "react-select/async";
@@ -34,7 +34,6 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
   }, [parentId, typeId]);
 
   const onLocationSelected = location => {
-    console.log("LocationSelect.onLocationSelected", location.value);
     onSelect(location.value);
     addressLevelService.addAddressLevel(location.value);
   };
@@ -79,17 +78,6 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
       value: location,
       optionLabel: locationNameRenderer(location)
     }));
-  const getLocationValue = selectedLocation => {
-    console.log("selectedLocation======4354325  ", selectedLocation);
-    return !isNil(selectedLocation)
-      ? {
-          label: selectedLocation.name,
-          value: selectedLocation,
-          optionLabel: locationNameRenderer(selectedLocation)
-        }
-      : null;
-  };
-  console.log("In location--->", defaultOptions);
 
   return (
     <div style={{ width: "30%" }}>
