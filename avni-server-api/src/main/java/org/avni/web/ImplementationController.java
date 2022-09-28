@@ -72,6 +72,7 @@ public class ImplementationController implements RestControllerResourceProcessor
             organisationService.addTaskType(zos);
             organisationService.addTaskStatus(zos);
             organisationService.addIcons(zos);
+            organisationService.addApplicationMenus(zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();

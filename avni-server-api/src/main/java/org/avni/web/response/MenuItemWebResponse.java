@@ -15,6 +15,10 @@ public class MenuItemWebResponse extends MenuItemContract {
 
     public MenuItemWebResponse(CHSEntity entity) {
         super(entity);
+        this.setCreatedBy(entity.getCreatedBy().getName());
+        this.setLastModifiedBy(entity.getLastModifiedBy().getName());
+        this.setCreatedDateTime(entity.getCreatedDateTime());
+        this.setLastModifiedDateTime(entity.getLastModifiedDateTime());
     }
 
     public String getCreatedBy() {

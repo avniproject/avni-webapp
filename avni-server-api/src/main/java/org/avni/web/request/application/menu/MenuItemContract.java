@@ -1,5 +1,6 @@
 package org.avni.web.request.application.menu;
 
+import org.avni.application.menu.MenuItem;
 import org.avni.application.menu.MenuItemGroup;
 import org.avni.application.menu.MenuItemType;
 import org.avni.domain.CHSEntity;
@@ -17,6 +18,29 @@ public class MenuItemContract extends CHSRequest {
 
     public MenuItemContract(CHSEntity entity) {
         super(entity);
+        MenuItem menuItem = (MenuItem) entity;
+        this.setGroup(menuItem.getGroup());
+        this.setIcon(menuItem.getIcon());
+        this.setType(menuItem.getType());
+        this.setDisplayKey(menuItem.getDisplayKey());
+        this.setLinkFunction(menuItem.getLinkFunction());
+    }
+
+    public static MenuItem toEntity(MenuItemContract contract, MenuItem entity) {
+        MenuItem menuItem = entity;
+        if (entity == null) {
+            menuItem = new MenuItem();
+        }
+        menuItem.setUuid(contract.getUuid());
+        menuItem.assignUUIDIfRequired();
+
+        menuItem.setGroup(contract.getGroup());
+        menuItem.setIcon(contract.getIcon());
+        menuItem.setType(contract.getType());
+        menuItem.setDisplayKey(contract.getDisplayKey());
+        menuItem.setLinkFunction(contract.getLinkFunction());
+        menuItem.setVoided(contract.isVoided());
+        return menuItem;
     }
 
     public String getDisplayKey() {

@@ -1,18 +1,14 @@
 package org.avni.service.application;
 
-import org.avni.common.EntityHelper;
+import org.avni.application.menu.MenuItem;
 import org.avni.dao.application.MenuItemRepository;
-import org.avni.dao.task.TaskTypeRepository;
-import org.avni.domain.task.TaskType;
-import org.avni.domain.task.TaskTypeName;
 import org.avni.service.NonScopeAwareService;
-import org.avni.web.request.webapp.task.TaskTypeContract;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MenuItemService implements NonScopeAwareService {
@@ -26,5 +22,25 @@ public class MenuItemService implements NonScopeAwareService {
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         return menuItemRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    @Transactional
+    public List<MenuItem> findAll() {
+        return menuItemRepository.findAll();
+    }
+
+    @Transactional
+    public MenuItem save(MenuItem menuItem) {
+        return menuItemRepository.save(menuItem);
+    }
+
+    @Transactional
+    public MenuItem find(String uuid) {
+        return menuItemRepository.findByUuid(uuid);
+    }
+
+    @Transactional
+    public MenuItem find(Long id) {
+        return menuItemRepository.findEntity(id);
     }
 }

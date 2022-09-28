@@ -1,6 +1,7 @@
 package org.avni.importer.batch.zip;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.avni.application.menu.MenuItem;
 import org.avni.builder.BuilderException;
 import org.avni.builder.FormBuilderException;
 import org.avni.dao.SubjectTypeRepository;
@@ -11,10 +12,12 @@ import org.avni.framework.security.UserContextHolder;
 import org.avni.importer.batch.model.BundleFile;
 import org.avni.importer.batch.model.BundleZip;
 import org.avni.service.*;
+import org.avni.service.application.MenuItemService;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.web.request.*;
 import org.avni.web.request.application.ChecklistDetailRequest;
 import org.avni.web.request.application.FormContract;
+import org.avni.web.request.application.menu.MenuItemContract;
 import org.avni.web.request.webapp.IdentifierSourceContractWeb;
 import org.avni.web.request.webapp.documentation.DocumentationContract;
 import org.avni.web.request.webapp.task.TaskStatusContract;
@@ -34,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -72,6 +74,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
     private DocumentationService documentationService;
     private TaskTypeService taskTypeService;
     private TaskStatusService taskStatusService;
+    private MenuItemService menuItemService;
     @Value("#{jobParameters['userId']}")
     private Long userId;
     @Value("#{jobParameters['organisationUUID']}")
@@ -104,6 +107,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         add("reportDashboard.json");
         add("taskType.json");
         add("taskStatus.json");
+        add("menuItem.json");
     }};
 
 
@@ -131,7 +135,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                          DashboardService dashboardService, @Qualifier("BatchS3Service") S3Service s3Service,
                          DocumentationService documentationService,
                          TaskTypeService taskTypeService,
-                         TaskStatusService taskStatusService) {
+                         TaskStatusService taskStatusService, MenuItemService menuItemService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -157,6 +161,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         this.documentationService = documentationService;
         this.taskTypeService = taskTypeService;
         this.taskStatusService = taskStatusService;
+        this.menuItemService = menuItemService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -347,6 +352,13 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                 TaskStatusContract[] taskStatusContracts = convertString(fileData, TaskStatusContract[].class);
                 for (TaskStatusContract taskStatusContract : taskStatusContracts) {
                     taskStatusService.importTaskStatus(taskStatusContract);
+                }
+                break;
+            case "menuItem.json":
+                MenuItemContract[] menuItemContracts = convertString(fileData, MenuItemContract[].class);
+                for (MenuItemContract contract : menuItemContracts) {
+                    MenuItem menuItem = menuItemService.find(contract.getUuid());
+                    menuItemService.save(MenuItemContract.toEntity(contract, menuItem));
                 }
                 break;
         }

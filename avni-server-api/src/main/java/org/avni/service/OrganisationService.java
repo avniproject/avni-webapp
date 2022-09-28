@@ -16,11 +16,13 @@ import org.avni.dao.individualRelationship.IndividualRelationRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipRepository;
 import org.avni.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.avni.domain.*;
+import org.avni.service.application.MenuItemService;
 import org.avni.util.ObjectMapperSingleton;
 import org.avni.util.S;
 import org.avni.web.request.*;
 import org.avni.web.request.application.ChecklistDetailRequest;
 import org.avni.web.request.application.FormContract;
+import org.avni.web.request.application.menu.MenuItemContract;
 import org.avni.web.request.webapp.CatchmentExport;
 import org.avni.web.request.webapp.CatchmentsExport;
 import org.avni.web.request.webapp.ConceptExport;
@@ -83,6 +85,7 @@ public class OrganisationService {
     private final VideoService videoService;
     private final CardService cardService;
     private final DashboardService dashboardService;
+    private final MenuItemService menuItemService;
     private final CardRepository cardRepository;
     private final DashboardRepository dashboardRepository;
     private final DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository;
@@ -150,7 +153,7 @@ public class OrganisationService {
                                VideoService videoService,
                                CardService cardService,
                                DashboardService dashboardService,
-                               CardRepository cardRepository,
+                               MenuItemService menuItemService, CardRepository cardRepository,
                                DashboardRepository dashboardRepository,
                                DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository,
                                DashboardSectionRepository dashboardSectionRepository,
@@ -211,6 +214,7 @@ public class OrganisationService {
         this.videoService = videoService;
         this.cardService = cardService;
         this.dashboardService = dashboardService;
+        this.menuItemService = menuItemService;
         this.cardRepository = cardRepository;
         this.dashboardRepository = dashboardRepository;
         this.dashboardSectionCardMappingRepository = dashboardSectionCardMappingRepository;
@@ -511,6 +515,10 @@ public class OrganisationService {
         }
     }
 
+    public void addApplicationMenus(ZipOutputStream zos) throws IOException {
+        addFileToZip(zos, "menuItem.json", menuItemService.findAll().stream().map(MenuItemContract::new).collect(Collectors.toList()));
+    }
+
     private void addFileToZip(ZipOutputStream zos, String fileName, Object fileContent) throws IOException {
         ZipEntry entry = new ZipEntry(fileName);
         zos.putNextEntry(entry);
@@ -536,6 +544,7 @@ public class OrganisationService {
         zos.putNextEntry(entry);
         zos.closeEntry();
     }
+
 
     public void deleteTransactionalData() {
         JpaRepository[] transactionalRepositories = {
@@ -612,5 +621,4 @@ public class OrganisationService {
             logger.info("Error while deleting the media files, skipping.");
         }
     }
-
 }

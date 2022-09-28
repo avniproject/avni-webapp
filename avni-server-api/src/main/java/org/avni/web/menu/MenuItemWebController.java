@@ -2,6 +2,7 @@ package org.avni.web.menu;
 
 import org.avni.application.menu.MenuItem;
 import org.avni.dao.application.MenuItemRepository;
+import org.avni.service.application.MenuItemService;
 import org.avni.web.AbstractController;
 import org.avni.web.RestControllerResourceProcessor;
 import org.avni.web.request.application.menu.MenuItemContract;
@@ -21,10 +22,12 @@ import java.util.stream.Collectors;
 @RestController
 public class MenuItemWebController extends AbstractController<MenuItem> implements RestControllerResourceProcessor<MenuItemWebResponse> {
     private final MenuItemRepository menuItemRepository;
+    private final MenuItemService menuItemService;
 
     @Autowired
-    public MenuItemWebController(MenuItemRepository menuItemRepository) {
+    public MenuItemWebController(MenuItemRepository menuItemRepository, MenuItemService menuItemService) {
         this.menuItemRepository = menuItemRepository;
+        this.menuItemService = menuItemService;
     }
 
     @RequestMapping(value = "/web/menuItems", method = RequestMethod.POST)
@@ -38,54 +41,29 @@ public class MenuItemWebController extends AbstractController<MenuItem> implemen
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     public AvniEntityResponse post(@RequestBody MenuItemContract request) {
-        MenuItem menuItem = new MenuItem();
-        updateMenuItem(request, menuItem);
-        return new AvniEntityResponse(menuItemRepository.save(menuItem));
-    }
-
-    private void updateMenuItem(MenuItemContract request, MenuItem menuItem) {
-        menuItem.assignUUIDIfRequired();
-        menuItem.setGroup(request.getGroup());
-        menuItem.setIcon(request.getIcon());
-        menuItem.setType(request.getType());
-        menuItem.setDisplayKey(request.getDisplayKey());
-        menuItem.setLinkFunction(request.getLinkFunction());
+        MenuItem menuItem = menuItemService.save(MenuItemContract.toEntity(request, menuItemService.find(request.getUuid())));
+        return new AvniEntityResponse(menuItem);
     }
 
     @PutMapping(value = "/web/menuItem/{id}")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     public ResponseEntity<?> put(@PathVariable("id") Long id, @RequestBody MenuItemContract request) {
-        MenuItem menuItem = menuItemRepository.findEntity(id);
-        updateMenuItem(request, menuItem);
-        return new ResponseEntity<>(menuItemRepository.save(menuItem), HttpStatus.OK);
+        MenuItem menuItem = menuItemService.save(MenuItemContract.toEntity(request, menuItemService.find(id)));
+        return new ResponseEntity<>(menuItem, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/web/menuItem/{id}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public MenuItemContract getOne(@PathVariable("id") Long id) {
-        MenuItem entity = menuItemRepository.findEntity(id);
-        return createResponse(entity);
-    }
-
-    private MenuItemWebResponse createResponse(MenuItem entity) {
-        MenuItemWebResponse response = new MenuItemWebResponse(entity);
-        response.setGroup(entity.getGroup());
-        response.setIcon(entity.getIcon());
-        response.setType(entity.getType());
-        response.setDisplayKey(entity.getDisplayKey());
-        response.setLinkFunction(entity.getLinkFunction());
-        response.setCreatedBy(entity.getCreatedBy().getName());
-        response.setLastModifiedBy(entity.getLastModifiedBy().getName());
-        response.setCreatedDateTime(entity.getCreatedDateTime());
-        response.setLastModifiedDateTime(entity.getLastModifiedDateTime());
-        return response;
+        MenuItem entity = menuItemService.find(id);
+        return new MenuItemWebResponse(entity);
     }
 
     @RequestMapping(value = "/web/menuItem", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public PagedResources<MenuItemWebResponse> getAll() {
-        return wrapListAsPage(menuItemRepository.findAllByIsVoidedFalse().stream().map(this::createResponse).collect(Collectors.toList()));
+        return wrapListAsPage(menuItemRepository.findAllByIsVoidedFalse().stream().map(MenuItemWebResponse::new).collect(Collectors.toList()));
     }
 
     @DeleteMapping(value = "/web/menuItem/{id}")
