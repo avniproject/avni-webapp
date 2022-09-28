@@ -56,7 +56,7 @@ export default function LocationFormElement({
         });
     }
   }, [locationUUID]);
-
+  console.log("location in location--fe", location);
   return (
     <React.Fragment>
       <RadioButtonsGroup
@@ -67,6 +67,7 @@ export default function LocationFormElement({
       />
       {orgConfig.settings.showHierarchicalLocation ? (
         <HierarchicalLocationSelect
+          selectedLocation={location}
           minLevelTypeId={level.level}
           onSelect={location => {
             update(location.uuid);

@@ -209,6 +209,7 @@ const SubjectRegister = props => {
             <div>
               {orgConfig.settings.showHierarchicalLocation ? (
                 <HierarchicalLocationSelect
+                  selectedLocation={props.subject.lowestAddressLevel}
                   onSelect={location => {
                     props.setAddress(
                       AddressLevel.create({
@@ -221,7 +222,7 @@ const SubjectRegister = props => {
                       })
                     );
                   }}
-                  minLevelTypeId={props.selectedAddressLevelType.level}
+                  minLevelTypeId={props.selectedAddressLevelType.id}
                 />
               ) : (
                 <LocationSelect
