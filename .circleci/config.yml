@@ -83,7 +83,8 @@ jobs:
         destination: testReports
   build:
     docker:
-    - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk
+    resource_class: medium
 
     working_directory: ~/avni-server
 
