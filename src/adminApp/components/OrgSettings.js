@@ -73,6 +73,7 @@ export const OrgSettings = () => {
     enableComments: "enableComments",
     showSummaryButton: "showSummaryButton",
     useKeycloakAsIDP: "useKeycloakAsIDP",
+    enableMessaging: "enableMessaging",
     useMinioForStorage: "useMinioForStorage",
     skipRuleExecution: "skipRuleExecution",
     maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
@@ -127,6 +128,11 @@ export const OrgSettings = () => {
           organisationConfigSettingKeys.showSummaryButton,
           "Show summary button",
           "ADMIN_SHOW_SUMMARY_BUTTON"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.enableMessaging,
+          "Enable Messaging",
+          "ENABLE_MESSAGING_BUTTON"
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.useKeycloakAsIDP,

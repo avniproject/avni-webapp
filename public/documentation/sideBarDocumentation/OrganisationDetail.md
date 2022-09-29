@@ -2,8 +2,10 @@ You can delete all the data that is filled using the field app. Also if you sele
 
 **Please note that DELETE ALL DATA action is irreversible, so choose the options very carefully**
 
-You can also enable `save draft` and `approval workflow` features from here.
+Several organisation-wide changes can be enabled from here.
 
-`save draft`: Enabling this feature will enable saving the registration form automatically on every press of next button. All the drafts are available on the register page.
+`Approval Workflow`: Enabling this will allow you to approve/reject all the forms filled by the field users. You'll need to create a [custom dashboard](#/appdesigner/dashboard) and also adjust the [privileges](#/admin/userGroups) accordingly.
 
-`approval workflow`: Enabling this will allow you to approve/reject all the forms filled by the field users. You'll need to create a [custom dashboard](#/appdesigner/dashboard) and also adjust the [privileges](#/admin/userGroups) accordingly.
+`Draft Save`: Enabling this feature will enable saving the registration form automatically on every press of next button. All the drafts are available on the register page.
+
+`Enable Messaging`: Enabling this will introduce the capability of sending messages through Whatsapp. Remember that there is more configuration required for this integration to work.
