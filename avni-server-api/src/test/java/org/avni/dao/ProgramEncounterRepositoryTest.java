@@ -1,13 +1,13 @@
 package org.avni.dao;
 
+import org.avni.server.dao.ProgramEncounterRepository;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.avni.common.DataJpaTest;
-import org.avni.domain.ObservationCollection;
-import org.avni.domain.ProgramEncounter;
-import org.avni.domain.ProgramEnrolment;
+import org.avni.server.domain.ObservationCollection;
+import org.avni.server.domain.ProgramEncounter;
+import org.avni.server.domain.ProgramEnrolment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;

@@ -1,9 +1,10 @@
 package org.avni.web.request.api;
 
-import org.avni.dao.ConceptRepository;
-import org.avni.domain.Concept;
-import org.avni.domain.ConceptDataType;
-import org.avni.domain.ObservationCollection;
+import org.avni.server.dao.ConceptRepository;
+import org.avni.server.domain.Concept;
+import org.avni.server.domain.ConceptDataType;
+import org.avni.server.domain.ObservationCollection;
+import org.avni.server.web.request.api.RequestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

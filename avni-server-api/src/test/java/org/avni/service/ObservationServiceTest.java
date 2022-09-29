@@ -1,16 +1,17 @@
 package org.avni.service;
 
+import org.avni.server.service.ObservationService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.avni.dao.ConceptRepository;
-import org.avni.dao.IndividualRepository;
-import org.avni.dao.LocationRepository;
-import org.avni.domain.Concept;
-import org.avni.domain.ConceptAnswer;
-import org.avni.domain.ObservationCollection;
-import org.avni.web.request.ObservationRequest;
+import org.avni.server.dao.ConceptRepository;
+import org.avni.server.dao.IndividualRepository;
+import org.avni.server.dao.LocationRepository;
+import org.avni.server.domain.Concept;
+import org.avni.server.domain.ConceptAnswer;
+import org.avni.server.domain.ObservationCollection;
+import org.avni.server.web.request.ObservationRequest;
 
 import java.util.Arrays;
 import java.util.HashSet;

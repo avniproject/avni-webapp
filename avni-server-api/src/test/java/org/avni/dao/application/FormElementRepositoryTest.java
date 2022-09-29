@@ -1,13 +1,13 @@
 package org.avni.dao.application;
 
+import org.avni.server.dao.application.FormElementRepository;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.avni.application.FormElement;
-import org.avni.application.NonApplicableFormElement;
-import org.avni.builder.NonApplicableFormElementBuilder;
-import org.avni.common.AbstractControllerIntegrationTest;
-import org.avni.framework.security.UserContextHolder;
+import org.avni.server.application.FormElement;
+import org.avni.server.application.NonApplicableFormElement;
+import org.avni.server.builder.NonApplicableFormElementBuilder;
+import org.avni.server.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

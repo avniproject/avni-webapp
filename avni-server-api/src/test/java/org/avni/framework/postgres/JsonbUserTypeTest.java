@@ -6,11 +6,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.avni.domain.ObservationCollection;
-import org.avni.domain.ProgramEncounter;
-import org.avni.domain.User;
-import org.avni.framework.hibernate.AbstractJsonbUserType;
-import org.avni.framework.hibernate.KeyValuePairsHibernateObject;
+import org.avni.server.domain.ObservationCollection;
+import org.avni.server.domain.ProgramEncounter;
+import org.avni.server.domain.User;
+import org.avni.server.framework.hibernate.AbstractJsonbUserType;
+import org.avni.server.framework.hibernate.KeyValuePairsHibernateObject;
 
 import java.io.IOException;
 import java.util.Map;

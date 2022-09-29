@@ -1,13 +1,14 @@
 package org.avni.web.response;
 
+import org.avni.server.web.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.avni.dao.ConceptRepository;
-import org.avni.domain.Concept;
-import org.avni.domain.ConceptAnswer;
-import org.avni.domain.ObservationCollection;
-import org.avni.service.ConceptService;
+import org.avni.server.dao.ConceptRepository;
+import org.avni.server.domain.Concept;
+import org.avni.server.domain.ConceptAnswer;
+import org.avni.server.domain.ObservationCollection;
+import org.avni.server.service.ConceptService;
 
 import java.util.*;
 

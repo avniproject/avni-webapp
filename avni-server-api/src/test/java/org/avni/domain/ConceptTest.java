@@ -1,5 +1,6 @@
 package org.avni.domain;
 
+import org.avni.server.domain.Concept;
 import org.junit.Test;
 
 import java.util.*;

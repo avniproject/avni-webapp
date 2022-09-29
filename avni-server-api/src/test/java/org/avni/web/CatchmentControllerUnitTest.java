@@ -1,12 +1,13 @@
 package org.avni.web;
 
-import org.avni.service.ResetSyncService;
+import org.avni.server.service.ResetSyncService;
+import org.avni.server.web.CatchmentController;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.avni.dao.CatchmentRepository;
-import org.avni.domain.Catchment;
-import org.avni.web.request.CatchmentContract;
+import org.avni.server.dao.CatchmentRepository;
+import org.avni.server.domain.Catchment;
+import org.avni.server.web.request.CatchmentContract;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;

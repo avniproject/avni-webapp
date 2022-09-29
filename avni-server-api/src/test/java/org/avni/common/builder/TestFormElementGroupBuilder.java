@@ -1,7 +1,7 @@
 package org.avni.common.builder;
 
-import org.avni.web.request.application.FormElementContract;
-import org.avni.web.request.application.FormElementGroupContract;
+import org.avni.server.web.request.application.FormElementContract;
+import org.avni.server.web.request.application.FormElementGroupContract;
 
 public class TestFormElementGroupBuilder {
     private final FormElementGroupContract formElementGroup;

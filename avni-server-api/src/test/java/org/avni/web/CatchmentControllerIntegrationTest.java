@@ -3,11 +3,10 @@ package org.avni.web;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.avni.common.AbstractControllerIntegrationTest;
-import org.avni.dao.LocationRepository;
-import org.avni.dao.CatchmentRepository;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.Catchment;
+import org.avni.server.dao.LocationRepository;
+import org.avni.server.dao.CatchmentRepository;
+import org.avni.server.domain.AddressLevel;
+import org.avni.server.domain.Catchment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 

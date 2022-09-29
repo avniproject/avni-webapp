@@ -1,10 +1,10 @@
 package org.avni.importer.batch.model;
 
+import org.avni.server.importer.batch.model.BundleZip;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 

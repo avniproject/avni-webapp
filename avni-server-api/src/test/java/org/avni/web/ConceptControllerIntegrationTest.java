@@ -2,10 +2,9 @@ package org.avni.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.avni.common.AbstractControllerIntegrationTest;
-import org.avni.dao.ConceptRepository;
-import org.avni.domain.Concept;
-import org.avni.domain.ConceptDataType;
+import org.avni.server.dao.ConceptRepository;
+import org.avni.server.domain.Concept;
+import org.avni.server.domain.ConceptDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 

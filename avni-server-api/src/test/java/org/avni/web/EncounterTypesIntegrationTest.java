@@ -2,9 +2,8 @@ package org.avni.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.avni.common.AbstractControllerIntegrationTest;
-import org.avni.dao.EncounterTypeRepository;
-import org.avni.domain.EncounterType;
+import org.avni.server.dao.EncounterTypeRepository;
+import org.avni.server.domain.EncounterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 

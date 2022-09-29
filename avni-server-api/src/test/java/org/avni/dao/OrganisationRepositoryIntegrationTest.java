@@ -1,7 +1,7 @@
 package org.avni.dao;
 
+import org.avni.server.dao.ImplementationRepository;
 import org.junit.Test;
-import org.avni.common.AbstractControllerIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class OrganisationRepositoryIntegrationTest extends AbstractControllerIntegrationTest {

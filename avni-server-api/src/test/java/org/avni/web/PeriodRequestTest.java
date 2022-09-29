@@ -1,10 +1,10 @@
 package org.avni.web;
 
 import org.junit.Assert;
-import org.avni.web.request.PeriodRequest;
-import org.avni.web.request.IntervalUnit;
+import org.avni.server.web.request.PeriodRequest;
+import org.avni.server.web.request.IntervalUnit;
 import org.junit.Test;
-import org.avni.web.validation.ValidationException;
+import org.avni.server.web.validation.ValidationException;
 
 
 import static org.hamcrest.CoreMatchers.containsString;

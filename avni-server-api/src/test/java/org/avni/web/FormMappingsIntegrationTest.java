@@ -2,9 +2,8 @@ package org.avni.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.avni.application.FormMapping;
-import org.avni.common.AbstractControllerIntegrationTest;
-import org.avni.dao.application.FormMappingRepository;
+import org.avni.server.application.FormMapping;
+import org.avni.server.dao.application.FormMappingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 

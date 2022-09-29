@@ -1,10 +1,11 @@
 package org.avni.web.request.application;
 
+import org.avni.server.web.request.application.FormElementContract;
 import org.junit.Before;
 import org.junit.Test;
-import org.avni.application.KeyValues;
-import org.avni.domain.ConceptDataType;
-import org.avni.web.request.ConceptContract;
+import org.avni.server.application.KeyValues;
+import org.avni.server.domain.ConceptDataType;
+import org.avni.server.web.request.ConceptContract;
 
 import static org.junit.Assert.assertEquals;
 

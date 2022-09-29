@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.avni.dao.OrganisationRepository;
-import org.avni.dao.UserRepository;
-import org.avni.domain.User;
-import org.avni.domain.UserContext;
-import org.avni.framework.security.UserContextHolder;
+import org.avni.server.dao.OrganisationRepository;
+import org.avni.server.dao.UserRepository;
+import org.avni.server.domain.User;
+import org.avni.server.domain.UserContext;
+import org.avni.server.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -30,10 +30,10 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertTrue;
-import static org.avni.framework.security.AuthService.ADMIN_AUTHORITY;
-import static org.avni.framework.security.AuthService.ORGANISATION_ADMIN_AUTHORITY;
-import static org.avni.framework.security.AuthService.USER_AUTHORITY;
-import static org.avni.framework.security.AuthenticationFilter.USER_NAME_HEADER;
+import static org.avni.server.framework.security.AuthService.ADMIN_AUTHORITY;
+import static org.avni.server.framework.security.AuthService.ORGANISATION_ADMIN_AUTHORITY;
+import static org.avni.server.framework.security.AuthService.USER_AUTHORITY;
+import static org.avni.server.framework.security.AuthenticationFilter.USER_NAME_HEADER;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)

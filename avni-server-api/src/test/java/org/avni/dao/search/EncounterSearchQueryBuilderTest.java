@@ -1,9 +1,11 @@
 package org.avni.dao.search;
 
-import org.avni.domain.Organisation;
-import org.avni.domain.UserContext;
-import org.avni.framework.security.UserContextHolder;
-import org.avni.web.api.EncounterSearchRequest;
+import org.avni.server.dao.search.EncounterSearchQueryBuilder;
+import org.avni.server.dao.search.SqlQuery;
+import org.avni.server.domain.Organisation;
+import org.avni.server.domain.UserContext;
+import org.avni.server.framework.security.UserContextHolder;
+import org.avni.server.web.api.EncounterSearchRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;

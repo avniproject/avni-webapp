@@ -1,10 +1,11 @@
 package org.avni.service;
 
-import org.avni.dao.AddressLevelTypeRepository;
-import org.avni.dao.LocationMappingRepository;
-import org.avni.dao.LocationRepository;
-import org.avni.dao.OrganisationRepository;
-import org.avni.web.request.webapp.search.LocationSearchRequest;
+import org.avni.server.dao.AddressLevelTypeRepository;
+import org.avni.server.dao.LocationMappingRepository;
+import org.avni.server.dao.LocationRepository;
+import org.avni.server.dao.OrganisationRepository;
+import org.avni.server.service.LocationService;
+import org.avni.server.web.request.webapp.search.LocationSearchRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

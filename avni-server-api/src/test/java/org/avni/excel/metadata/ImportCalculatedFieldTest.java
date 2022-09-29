@@ -1,5 +1,6 @@
 package org.avni.excel.metadata;
 
+import org.avni.server.excel.metadata.ImportCalculatedField;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

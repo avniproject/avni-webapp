@@ -1,13 +1,14 @@
 package org.avni.web;
 
+import org.avni.server.web.AddressLevelTypeController;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.avni.dao.AddressLevelTypeRepository;
-import org.avni.dao.LocationRepository;
-import org.avni.domain.AddressLevelType;
-import org.avni.service.LocationService;
-import org.avni.web.request.AddressLevelTypeContract;
+import org.avni.server.dao.AddressLevelTypeRepository;
+import org.avni.server.dao.LocationRepository;
+import org.avni.server.domain.AddressLevelType;
+import org.avni.server.service.LocationService;
+import org.avni.server.web.request.AddressLevelTypeContract;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.ResponseEntity;
 

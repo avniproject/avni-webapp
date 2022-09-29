@@ -1,12 +1,13 @@
 package org.avni.importer.batch.csv.writer;
 
-import org.avni.dao.AddressLevelTypeRepository;
-import org.avni.dao.LocationRepository;
-import org.avni.domain.AddressLevel;
-import org.avni.domain.AddressLevelType;
-import org.avni.importer.batch.csv.creator.ObservationCreator;
-import org.avni.importer.batch.model.Row;
-import org.avni.service.LocationService;
+import org.avni.server.dao.AddressLevelTypeRepository;
+import org.avni.server.dao.LocationRepository;
+import org.avni.server.domain.AddressLevel;
+import org.avni.server.domain.AddressLevelType;
+import org.avni.server.importer.batch.csv.creator.ObservationCreator;
+import org.avni.server.importer.batch.csv.writer.LocationWriter;
+import org.avni.server.importer.batch.model.Row;
+import org.avni.server.service.LocationService;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -1,6 +1,7 @@
 package org.avni.web.request.application.menu;
 
-import org.avni.application.menu.MenuItem;
+import org.avni.server.application.menu.MenuItem;
+import org.avni.server.web.request.application.menu.MenuItemContract;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.*;

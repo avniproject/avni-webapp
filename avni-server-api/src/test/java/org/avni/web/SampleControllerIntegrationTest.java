@@ -2,7 +2,6 @@ package org.avni.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.avni.common.AbstractControllerIntegrationTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 

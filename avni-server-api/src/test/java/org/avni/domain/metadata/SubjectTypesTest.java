@@ -1,9 +1,10 @@
 package org.avni.domain.metadata;
 
+import org.avni.server.domain.metadata.SubjectTypes;
 import org.junit.Test;
-import org.avni.domain.EncounterType;
-import org.avni.domain.Program;
-import org.avni.domain.SubjectType;
+import org.avni.server.domain.EncounterType;
+import org.avni.server.domain.Program;
+import org.avni.server.domain.SubjectType;
 
 import java.util.Collections;
 import java.util.List;

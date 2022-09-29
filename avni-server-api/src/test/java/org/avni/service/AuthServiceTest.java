@@ -2,17 +2,18 @@ package org.avni.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
+import org.avni.server.service.CognitoAuthServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.avni.dao.AccountAdminRepository;
-import org.avni.dao.OrganisationRepository;
-import org.avni.dao.UserRepository;
-import org.avni.domain.Organisation;
-import org.avni.domain.User;
-import org.avni.domain.UserContext;
-import org.avni.domain.AccountAdmin;
-import org.avni.framework.security.AuthService;
+import org.avni.server.dao.AccountAdminRepository;
+import org.avni.server.dao.OrganisationRepository;
+import org.avni.server.dao.UserRepository;
+import org.avni.server.domain.Organisation;
+import org.avni.server.domain.User;
+import org.avni.server.domain.UserContext;
+import org.avni.server.domain.AccountAdmin;
+import org.avni.server.framework.security.AuthService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

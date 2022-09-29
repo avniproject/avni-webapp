@@ -1,9 +1,12 @@
 package org.avni.identifier;
 
+import org.avni.server.identifier.IdentifierGenerator;
+import org.avni.server.identifier.PrefixedUserPoolBasedIdentifierGenerator;
+import org.avni.server.identifier.UserBasedIdentifierGenerator;
 import org.junit.Test;
-import org.avni.domain.IdentifierSource;
-import org.avni.domain.JsonObject;
-import org.avni.domain.User;
+import org.avni.server.domain.IdentifierSource;
+import org.avni.server.domain.JsonObject;
+import org.avni.server.domain.User;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

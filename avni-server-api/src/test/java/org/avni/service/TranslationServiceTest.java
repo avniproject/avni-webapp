@@ -1,13 +1,14 @@
 package org.avni.service;
 
+import org.avni.server.domain.*;
+import org.avni.server.service.TranslationService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.avni.application.Platform;
-import org.avni.dao.PlatformTranslationRepository;
-import org.avni.dao.TranslationRepository;
-import org.avni.domain.*;
+import org.avni.server.application.Platform;
+import org.avni.server.dao.PlatformTranslationRepository;
+import org.avni.server.dao.TranslationRepository;
 
 import java.util.ArrayList;
 import java.util.List;

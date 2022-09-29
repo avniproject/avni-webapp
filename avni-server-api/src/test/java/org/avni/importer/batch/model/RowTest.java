@@ -1,5 +1,6 @@
 package org.avni.importer.batch.model;
 
+import org.avni.server.importer.batch.model.Row;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

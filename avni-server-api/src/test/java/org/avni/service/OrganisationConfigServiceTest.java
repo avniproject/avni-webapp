@@ -1,10 +1,11 @@
 package org.avni.service;
 
-import org.avni.application.OrganisationConfigSettingKeys;
-import org.avni.dao.OrganisationConfigRepository;
-import org.avni.domain.JsonObject;
-import org.avni.domain.Organisation;
-import org.avni.domain.OrganisationConfig;
+import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.dao.OrganisationConfigRepository;
+import org.avni.server.domain.JsonObject;
+import org.avni.server.domain.Organisation;
+import org.avni.server.domain.OrganisationConfig;
+import org.avni.server.service.OrganisationConfigService;
 import org.junit.Test;
 
 import java.util.Optional;

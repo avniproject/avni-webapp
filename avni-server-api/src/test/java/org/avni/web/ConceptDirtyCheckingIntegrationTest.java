@@ -1,7 +1,6 @@
 package org.avni.web;
 
-import org.avni.common.AbstractControllerIntegrationTest;
-import org.avni.dao.ConceptRepository;
+import org.avni.server.dao.ConceptRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

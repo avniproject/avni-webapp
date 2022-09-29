@@ -1,5 +1,7 @@
 package org.avni.web.request;
 
+import org.avni.server.web.request.IndividualRequest;
+import org.avni.server.web.request.ObservationRequest;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -1,9 +1,11 @@
 package org.avni.dao.search;
 
+import org.avni.server.dao.search.SqlQuery;
+import org.avni.server.dao.search.SubjectSearchQueryBuilder;
 import org.junit.Test;
-import org.avni.web.request.webapp.search.Concept;
-import org.avni.web.request.webapp.search.DateRange;
-import org.avni.web.request.webapp.search.IntegerRange;
+import org.avni.server.web.request.webapp.search.Concept;
+import org.avni.server.web.request.webapp.search.DateRange;
+import org.avni.server.web.request.webapp.search.IntegerRange;
 
 import java.util.ArrayList;
 import java.util.Arrays;

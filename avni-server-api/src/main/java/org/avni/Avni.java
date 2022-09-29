@@ -1,15 +1,15 @@
 package org.avni;
 
-import org.avni.application.Form;
-import org.avni.application.FormElement;
-import org.avni.application.FormElementGroup;
-import org.avni.application.FormMapping;
-import org.avni.domain.*;
-import org.avni.domain.individualRelationship.IndividualRelationGenderMapping;
-import org.avni.domain.individualRelationship.IndividualRelationshipType;
-import org.avni.domain.task.TaskStatus;
-import org.avni.importer.batch.JobService;
-import org.avni.service.EntityApprovalStatusService;
+import org.avni.server.application.Form;
+import org.avni.server.application.FormElement;
+import org.avni.server.application.FormElementGroup;
+import org.avni.server.application.FormMapping;
+import org.avni.server.domain.*;
+import org.avni.server.domain.individualRelationship.IndividualRelationGenderMapping;
+import org.avni.server.domain.individualRelationship.IndividualRelationshipType;
+import org.avni.server.domain.task.TaskStatus;
+import org.avni.server.importer.batch.JobService;
+import org.avni.server.service.EntityApprovalStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
