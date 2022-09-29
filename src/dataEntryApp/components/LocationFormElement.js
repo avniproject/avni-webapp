@@ -68,7 +68,7 @@ export default function LocationFormElement({
       {orgConfig.settings.showHierarchicalLocation ? (
         <HierarchicalLocationSelect
           selectedLocation={location}
-          minLevelTypeId={level.level}
+          minLevelTypeId={level.id}
           onSelect={location => {
             update(location.uuid);
           }}

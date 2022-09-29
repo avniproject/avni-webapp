@@ -8,9 +8,10 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation
   const allAddressLevelTypes = useSelector(
     state => state.dataEntry.metadata.operationalModules.allAddressLevels
   );
-  const selectedAddressLevelType = _.isEqual(selectedLocation.uuid, "")
-    ? _.find(allAddressLevelTypes, alt => _.isNil(alt.parent))
-    : _.find(allAddressLevelTypes, alt => alt.name === selectedLocation.type);
+  const selectedAddressLevelType =
+    _.isNil(selectedLocation) || _.isEqual(selectedLocation.uuid, "")
+      ? _.find(allAddressLevelTypes, alt => _.isNil(alt.parent))
+      : _.find(allAddressLevelTypes, alt => alt.name === selectedLocation.type);
   const [selectedAddressLevels, setSelectedAddressLevels] = useState([
     {
       addressLevelType: selectedAddressLevelType
