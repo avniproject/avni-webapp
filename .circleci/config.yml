@@ -162,7 +162,7 @@ workflows:
     - STAGING_deploy:
         filters:
           branches:
-            only: master
+            only: 3.34 #TODO Revert to master once we are done with avni-server repo refactoring
         requires:
           - build
     - UAT_approve:
