@@ -227,9 +227,9 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "where lineage @>" +
             "          (select lineage" +
             "          from address_level" +
-            "          where lineage ~ cast(concat('*.',:id) as lquery)) and alt.parent_id <= :maxLevelTypeId",
+            "          where uuid = :uuid) and alt.parent_id <= :maxLevelTypeId",
             nativeQuery = true)
-    List<LocationProjection> getParentsWithMaxLevelTypeId(Long id, Long maxLevelTypeId);
+    List<LocationProjection> getParentsWithMaxLevelTypeId(String uuid, Long maxLevelTypeId);
 
     @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId,\n" +
             "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
@@ -239,7 +239,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "where lineage @>" +
             "          (select lineage" +
             "          from address_level" +
-            "          where lineage ~ cast(concat('*.',:id) as lquery))",
+            "         where uuid = :uuid)",
             nativeQuery = true)
-    List<LocationProjection> getParents(Long id);
+    List<LocationProjection> getParents(String uuid);
 }

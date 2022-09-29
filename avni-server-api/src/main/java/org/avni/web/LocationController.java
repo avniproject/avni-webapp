@@ -162,12 +162,12 @@ public class LocationController implements RestControllerResourceProcessor<Addre
                 .collect(Collectors.toList());
     }
 
-    @GetMapping(value = "locations/parents/{id}")
+    @GetMapping(value = "locations/parents/{uuid}")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     @ResponseBody
-    public List<LocationProjection> getParents(@PathVariable("id") Long id,
+    public List<LocationProjection> getParents(@PathVariable("uuid") String uuid,
                                                @RequestParam(value = "maxLevelTypeId", required = false) Long maxLevelTypeId) {
-        return locationService.getParents(id, maxLevelTypeId);
+        return locationService.getParents(uuid, maxLevelTypeId);
     }
 
 
