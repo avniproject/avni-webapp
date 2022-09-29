@@ -49,7 +49,7 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation
     } else {
       setSelectedLocationWithParents(selectedLocation);
     }
-  }, [allAddressLevelTypes, minLevelTypeId]);
+  }, [allAddressLevelTypes, minLevelTypeId, selectedLocation]);
 
   const onAddressLevelSelect = (addressLevel, addressLevelType) => {
     const selectedAddressLevelsClone = [...selectedAddressLevels];
@@ -95,7 +95,7 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation
               parentId={parentId}
               selectedLocation={value}
               onSelect={addressLevel => onAddressLevelSelect(addressLevel, addressLevelType)}
-              placeholder={"Select" + addressLevelType.name}
+              placeholder={"Select " + addressLevelType.name}
               typeId={addressLevelType.id}
             />
           </div>
