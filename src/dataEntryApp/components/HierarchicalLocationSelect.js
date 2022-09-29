@@ -40,7 +40,7 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation
 
   const addressLevelTypes = allAddressLevelTypes;
   useEffect(() => {
-    if (_.isNil(selectedLocation)) {
+    if (_.isNil(selectedLocation) || selectedAddressLevelType.id !== minLevelTypeId) {
       setSelectedAddressLevels([
         {
           addressLevelType: addressLevelTypes.find(alt => _.isNil(alt.parent))
