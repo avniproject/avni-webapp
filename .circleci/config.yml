@@ -37,7 +37,6 @@ jobs:
   app_test:
     docker:
       - image: circleci/node:10.15.1
-    resource_class: medium
 
     working_directory: ~/openchs-webapp
 
@@ -59,6 +58,7 @@ jobs:
   app_build:
     docker:
       - image: circleci/node:10.15.1
+    resource_class: medium
 
     working_directory: ~/openchs-webapp
 
@@ -129,7 +129,7 @@ workflows:
       - STAGING_deploy:
           filters:
             branches:
-              only: 3.34 #TODO Revert to master once we are done with avni-server repo refactoring
+              only: "3.34" #TODO Revert to master once we are done with avni-server repo refactoring
           requires:
             - app_build
       - cypress/run:
