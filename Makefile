@@ -100,7 +100,7 @@ _create_demo_organisation:
 	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
 
 build_testdb: ## Creates new empty database of test database
-	make _build_db database=openchs_test
+	make _build_db database=openchs_test su=openchs
 #	make _create_demo_organisation database=openchs_test
 
 rebuild_testdb: clean_testdb build_testdb ## clean + build test db
