@@ -68,7 +68,7 @@ jobs:
     - run: sudo apt-get update
 
     - run: sudo apt-get install make postgresql-client
-
+    - run: make rebuild_testdb
     - run: make ci-test
 
     - save_cache:
