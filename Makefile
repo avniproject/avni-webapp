@@ -100,7 +100,7 @@ _create_demo_organisation:
 	-psql -h $(dbServer) -p $(dbPort) -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
 
 build_testdb: ## Creates new empty database of test database
-	make _build_db database=openchs_test su=openchs
+	make _build_db database=openchs_test
 #	make _create_demo_organisation database=openchs_test
 
 rebuild_testdb: clean_testdb build_testdb ## clean + build test db
@@ -205,7 +205,7 @@ ci-test:
 	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
 	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "hstore"';
 
-	./gradlew clean test --stacktrace
+	make test_server
 
 open_test_results:
 	open avni-server-api/build/reports/tests/test/index.html

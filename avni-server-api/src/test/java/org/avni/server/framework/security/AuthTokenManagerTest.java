@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.avni.framework.security.AuthTokenManager.AUTH_TOKEN;
+import static org.avni.server.framework.security.AuthTokenManager.AUTH_TOKEN;
 
 public class AuthTokenManagerTest {
 
