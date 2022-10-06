@@ -1,7 +1,7 @@
 package org.avni.server.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.avni.application.projections.BaseProjection;
+import org.avni.server.application.projections.BaseProjection;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.data.rest.core.config.Projection;
 
