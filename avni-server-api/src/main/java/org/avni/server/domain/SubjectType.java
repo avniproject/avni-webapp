@@ -369,5 +369,7 @@ public class SubjectType extends OrganisationAwareEntity {
         Format getValidFirstNameFormat();
         Format getValidMiddleNameFormat();
         Format getValidLastNameFormat();
+
+        List<GroupRole.GroupRoleProjection> getGroupRoles();
     }
 }
