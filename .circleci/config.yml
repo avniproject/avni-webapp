@@ -129,7 +129,7 @@ workflows:
       - STAGING_deploy:
           filters:
             branches:
-              only: "3.34" #TODO Revert to master once we are done with avni-server repo refactoring
+              only: master
           requires:
             - app_build
       - cypress/run:
