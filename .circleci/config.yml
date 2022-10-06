@@ -58,7 +58,7 @@ jobs:
   app_build:
     docker:
       - image: circleci/node:10.15.1
-    resource_class: medium
+    resource_class: medium+
 
     working_directory: ~/openchs-webapp
 
