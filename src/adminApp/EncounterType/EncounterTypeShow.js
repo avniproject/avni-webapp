@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
-import { get } from "lodash";
+import { get, identity } from "lodash";
 import {
   findProgramEncounterCancellationForm,
   findProgramEncounterForm
@@ -16,6 +16,9 @@ import {
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
 import RuleDisplay from "../components/RuleDisplay";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageRules, getMessageTemplates } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const EncounterTypeShow = props => {
   const [encounterType, setEncounterType] = useState({});
@@ -23,6 +26,21 @@ const EncounterTypeShow = props => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
   const [program, setProgram] = useState([]);
+  const [entityType, setEntityType] = useState();
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+
+  useEffect(() => {
+    getMessageRules(entityType, encounterType.encounterTypeId, rulesDispatch);
+    return identity;
+  }, [encounterType, entityType]);
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
 
   useEffect(() => {
     http
@@ -40,6 +58,10 @@ const EncounterTypeShow = props => {
         setFormMappings(formMap);
         setSubjectType(response.data.subjectTypes);
         setProgram(response.data.programs);
+        const isProgramEncounter = formMap.find(
+          mapping => mapping.encounterTypeUUID === encounterType.uuid
+        );
+        setEntityType(isProgramEncounter ? "ProgramEncounter" : "Encounter");
       })
       .catch(error => {});
   }, []);
@@ -126,6 +148,15 @@ const EncounterTypeShow = props => {
           <RuleDisplay
             fieldLabel={"Encounter Eligibility Check Rule"}
             ruleText={encounterType.encounterEligibilityCheckRule}
+          />
+          <p />
+          <MessageRules
+            rules={rules}
+            templates={templates}
+            onChange={identity}
+            entityType={entityType}
+            entityTypeId={encounterType.encounterTypeId}
+            readOnly={true}
           />
           <p />
           <Audit {...encounterType} />

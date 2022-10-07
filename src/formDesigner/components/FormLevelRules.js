@@ -4,8 +4,6 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import PropTypes from "prop-types";
@@ -21,6 +19,7 @@ import Box from "@material-ui/core/Box";
 import RuleDesigner from "./DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../util";
 import { get } from "lodash";
+import { JSEditor } from "../../common/components/JSEditor";
 
 const RulePanel = ({ title, details }) => {
   const [expanded, setExpanded] = useState(false);
@@ -209,19 +208,9 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         <RulePanel
           title={"Checklist Rule"}
           details={
-            <Editor
+            <JSEditor
               value={form.checklistsRule || sampleChecklistRule()}
               onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                width: "100%",
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
               disabled={disabled}
             />
           }

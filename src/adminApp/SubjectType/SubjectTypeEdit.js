@@ -13,11 +13,14 @@ import { subjectTypeReducer } from "../Reducers";
 import { validateGroup } from "./GroupHandlers";
 import { useFormMappings, useLocationType } from "./effects";
 import { findRegistrationForm } from "../domain/formMapping";
-import _ from "lodash";
+import _, { identity } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AdvancedSettings } from "./AdvancedSettings";
 import { bucketName, uploadImage } from "../../common/utils/S3Client";
 import EditSubjectTypeFields from "./EditSubjectTypeFields";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -34,6 +37,24 @@ const SubjectTypeEdit = props => {
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
   const [removeFile, setRemoveFile] = React.useState(false);
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+  const entityType = "Subject";
+  useEffect(() => {
+    getMessageRules(entityType, subjectType.id, rulesDispatch);
+    return identity;
+  }, [subjectType]);
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
+
+  const onRulesChange = rules => {
+    rulesDispatch({ type: "setRules", payload: rules });
+  };
 
   const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
@@ -96,9 +117,10 @@ const SubjectTypeEdit = props => {
           .then(response => {
             if (response.status === 200) {
               setError("");
-              setRedirectShow(true);
             }
           })
+          .then(() => saveMessageRules(entityType, subjectType.id, rules))
+          .then(() => setRedirectShow(true))
           .catch(error => {
             setError(error.response.data.message);
           });
@@ -154,6 +176,13 @@ const SubjectTypeEdit = props => {
             formList={formList}
             groupValidationError={groupValidationError}
             dispatch={dispatch}
+          />
+          <MessageRules
+            rules={rules}
+            templates={templates}
+            onChange={onRulesChange}
+            entityType={entityType}
+            entityTypeId={subjectType.id}
           />
           <p />
           <AdvancedSettings

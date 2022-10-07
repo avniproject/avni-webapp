@@ -1,5 +1,4 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import { chain, find, get, isEmpty, map } from "lodash";
 import Button from "@material-ui/core/Button";
@@ -11,6 +10,7 @@ import SingleSelectSearch from "../../common/components/SingleSelectSearch";
 import BarGraph from "../components/BarGraph";
 import PieGraph from "../components/PieGraph";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
+import BorderBox from "../../formDesigner/components/BorderBox";
 
 const AggregateReport = ({ operationalModules, getOperationalModules }) => {
   const [selectedForm, setForm] = React.useState({});
@@ -73,7 +73,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
   return (
     <React.Fragment>
       {operationalModules && (
-        <Box border={1} m={2} borderColor={"#ddd"} p={2}>
+        <BorderBox>
           <Grid container direction={"column"} spacing={2}>
             <Grid item xs={8}>
               <SingleSelectSearch
@@ -96,7 +96,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
             </Grid>
           </Grid>
           <div style={{ marginTop: 10 }}>{renderReports()}</div>
-        </Box>
+        </BorderBox>
       )}
       <CustomizedBackdrop load={!loading} />
     </React.Fragment>

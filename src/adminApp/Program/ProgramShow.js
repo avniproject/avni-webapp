@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -8,17 +8,35 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
-import { get } from "lodash";
+import { get, identity } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "../../formDesigner/components/Audit";
 import RuleDisplay from "../components/RuleDisplay";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageRules, getMessageTemplates } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+  const entityType = "ProgramEnrolment";
+
+  useEffect(() => {
+    getMessageRules(entityType, program.programId, rulesDispatch);
+    return identity;
+  }, [program]);
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
 
   useEffect(() => {
     http
@@ -141,6 +159,14 @@ const ProgramShow = props => {
             ruleText={program.manualEnrolmentEligibilityCheckRule}
           />
           <p />
+          <MessageRules
+            rules={rules}
+            templates={templates}
+            onChange={identity}
+            entityType={entityType}
+            entityTypeId={program.programId}
+            readOnly={true}
+          />
           <Audit {...program} />
         </div>
 

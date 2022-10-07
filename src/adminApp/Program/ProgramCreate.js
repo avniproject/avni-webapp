@@ -10,6 +10,10 @@ import "material-ui-rc-color-picker/assets/index.css";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import ProgramService from "../service/ProgramService";
 import EditProgramFields from "./EditProgramFields";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
+import { identity } from "lodash";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -19,6 +23,21 @@ const ProgramCreate = props => {
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [subjectType, setSubjectType] = useState(null);
   const [formList, setFormList] = useState([]);
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+
+  const entityType = "ProgramEnrolment";
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
+
+  const onRulesChange = rules => {
+    rulesDispatch({ type: "setRules", payload: rules });
+  };
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
@@ -41,11 +60,16 @@ const ProgramCreate = props => {
       return;
     }
 
-    ProgramService.saveProgram(program, subjectType).then(saveResponse => {
-      setErrors(saveResponse.errors);
-      setSaved(saveResponse.status === 200);
-      if (saveResponse.errors.size === 0) setId(saveResponse.id);
-    });
+    ProgramService.saveProgram(program, subjectType)
+      .then(saveResponse => {
+        setErrors(saveResponse.errors);
+        setSaved(saveResponse.status === 200);
+        if (saveResponse.errors.size === 0) setId(saveResponse.id);
+        return saveResponse.programId;
+      })
+      .then(programId => {
+        saveMessageRules(entityType, programId, rules);
+      });
   };
 
   return (
@@ -64,6 +88,13 @@ const ProgramCreate = props => {
                 dispatch={dispatch}
                 onSubjectTypeChange={setSubjectType}
                 subjectType={subjectType}
+              />
+              <MessageRules
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={program.programId}
               />
               <br />
               <br />

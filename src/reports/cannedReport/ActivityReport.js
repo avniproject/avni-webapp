@@ -1,10 +1,10 @@
 import React from "react";
 import ActivityCard from "../components/ActivityCard";
 import { Grid } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
 import { getActivityReport } from "../reducers";
 import { withRouter } from "react-router-dom";
+import BorderBox from "../../formDesigner/components/BorderBox";
 
 const ActivityReport = ({ activityReport, getActivityReport }) => {
   React.useEffect(() => {
@@ -24,7 +24,7 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
   };
 
   return (
-    <Box border={1} m={2} borderColor={"#ddd"} p={2}>
+    <BorderBox>
       {activityReport && (
         <Grid container direction="row" alignItems="baseline" spacing={4}>
           <Grid item>{renderActivityCard("Registrations", "registrations")}</Grid>
@@ -32,7 +32,7 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
           <Grid item>{renderActivityCard("Completed Visits", "completedVisits")}</Grid>
         </Grid>
       )}
-    </Box>
+    </BorderBox>
   );
 };
 

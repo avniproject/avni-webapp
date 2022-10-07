@@ -6,11 +6,14 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import _ from "lodash";
+import _, { identity } from "lodash";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { validateRule } from "../../formDesigner/util";
 import EditEncounterTypeFields from "./EditEncounterTypeFields";
 import EncounterTypeErrors from "./EncounterTypeErrors";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -25,6 +28,20 @@ const EncounterTypeCreate = props => {
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
   const [ruleValidationError, setRuleValidationError] = useState();
+  const [entityType, setEntityType] = useState();
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+
+  const onRulesChange = rules => {
+    rulesDispatch({ type: "setRules", payload: rules });
+  };
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
@@ -84,8 +101,10 @@ const EncounterTypeCreate = props => {
           setError("");
           setAlert(true);
           setId(response.data.id);
+          return response.data;
         }
       })
+      .then(encounterType => saveMessageRules(entityType, encounterType.encounterTypeId, rules))
       .catch(error => {
         setError(error.response.data.message);
       });
@@ -104,6 +123,7 @@ const EncounterTypeCreate = props => {
     const cancelFormType = _.get(encounterType, "programEncounterCancellationForm.formType");
 
     if (_.isEmpty(programT)) {
+      setEntityType("ProgramEncounter");
       if (formType === "ProgramEncounter") {
         resetValue("programEncounterForm");
       }
@@ -111,6 +131,7 @@ const EncounterTypeCreate = props => {
         resetValue("programEncounterCancellationForm");
       }
     } else {
+      setEntityType("Encounter");
       if (formType === "Encounter") {
         resetValue("programEncounterForm");
       }
@@ -138,6 +159,13 @@ const EncounterTypeCreate = props => {
                 program={program}
                 formList={formList}
                 ruleValidationError={ruleValidationError}
+              />
+              <MessageRules
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={encounterType.encounterTypeId}
               />
               <EncounterTypeErrors
                 nameValidation={nameValidation}

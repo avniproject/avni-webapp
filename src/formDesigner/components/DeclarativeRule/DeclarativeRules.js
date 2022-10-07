@@ -29,7 +29,6 @@ const DeclarativeRules = ({
   const summary = isEmpty(validationError) ? declarativeRuleHolder.generateRuleSummary() : null;
   const [summaries, setSummaries] = useState(summary);
   const { declarativeRules } = declarativeRuleHolder;
-  console.log(JSON.stringify(rulesJson, null, 2));
   const errorMessage = error || validationError;
 
   const updateProps = state => {
@@ -89,6 +88,7 @@ const DeclarativeRules = ({
       )}
       {map(declarativeRules, (declarativeRule, index) => (
         <DeclarativeRuleComponent
+          key={index}
           declarativeRuleIndex={index}
           declarativeRule={declarativeRule}
           getApplicableActions={getApplicableActions}

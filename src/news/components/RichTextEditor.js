@@ -2,7 +2,7 @@ import React from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
-const DraftEditor = ({ editorState, setEditorState }) => {
+const RichTextEditor = ({ editorState, setEditorState }) => {
   const handleEditorChange = state => {
     setEditorState(state);
   };
@@ -27,4 +27,4 @@ const DraftEditor = ({ editorState, setEditorState }) => {
     />
   );
 };
-export default DraftEditor;
+export default RichTextEditor;

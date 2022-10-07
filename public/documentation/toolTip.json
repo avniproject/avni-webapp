@@ -30,6 +30,8 @@
   "APP_DESIGNER_PROGRAM_SUMMARY_RULE": "Program summary is dynamically computed when user opens subject dashboard",
   "SUBJECT_SUMMARY_RULE": "Subject summary is dynamically computed when user opens subject profile",
   "SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE": "To be run when user manually checks eligibility for multiple programs and fills the form for additional input",
+  "APP_DESIGNER_MESSAGE_SCHEDULE_RULE": "Message Schedule Rule is used to schedule sending messages to a beneficiary on save of a subject",
+  "APP_DESIGNER_MESSAGE_RULE": "Message Rule is used to provide parameters in a message template. It is run just before sending of that message",
   "APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE": "This hides/shows the program enrolment option",
   "APP_DESIGNER_MANUAL_ENROLMENT_ELIGIBILITY_CHECK_RULE": "This checks for eligibility of program after manual enrolment eligibility form is filled",
   "APP_DESIGNER_PROGRAM_ACTIVE": "Switch off program if you don't want to use it anymore.",
@@ -181,5 +183,7 @@
   "APP_DESIGNER_MENU_ITEM_LINK_FUNCTION": "Function executed to provide the link",
   "APP_DESIGNER_ENCOUNTER_TYPE_IMMUTABLE": "If the encounter type is marked as immutable then data from the last encounter is copied to the next encounter. Since the encounter is immutable, the edit is not allowed on these encounters.",
   "SHOW_HIERARCHICAL_LOCATION": "Location will shown in hierarchical format",
-  "ENABLE_MESSAGING_BUTTON": "Enable messaging through WhatsApp. Requires a Glific account"
+  "ENABLE_MESSAGING_BUTTON": "Enable messaging through WhatsApp. Requires a Glific account",
+  "APP_DESIGNER_MESSAGE_RULE_NAME": "Name",
+  "APP_DESIGNER_SELECT_MESSAGE_TEMPLATE": "Choose the message template"
 }

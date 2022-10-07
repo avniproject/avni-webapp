@@ -8,12 +8,11 @@ import Box from "@material-ui/core/Box";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { sampleWorkListUpdationRule } from "../formDesigner/common/SampleRule";
+import { JSEditor } from "../common/components/JSEditor";
 
 export const WorklistUpdationRule = () => {
   const emptyOrgSettings = {
@@ -94,19 +93,9 @@ export const WorklistUpdationRule = () => {
               </span>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <Editor
+              <JSEditor
                 value={worklistUpdationRule ? worklistUpdationRule : sampleWorkListUpdationRule()}
                 onValueChange={event => setRule(event)}
-                highlight={code => highlight(code, languages.js)}
-                padding={10}
-                style={{
-                  fontFamily: '"Fira code", "Fira Mono", monospace',
-                  fontSize: 15,
-                  width: "100%",
-                  height: "auto",
-                  borderStyle: "solid",
-                  borderWidth: "1px"
-                }}
               />
             </ExpansionPanelDetails>
 

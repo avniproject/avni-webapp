@@ -45,6 +45,7 @@ class ProgramService {
       enrolmentEligibilityCheckDeclarativeRule: program.enrolmentEligibilityCheckDeclarativeRule,
       manualEligibilityCheckRequired: program.manualEligibilityCheckRequired,
       manualEnrolmentEligibilityCheckRule: program.manualEnrolmentEligibilityCheckRule,
+      programId: program.programId,
       manualEnrolmentEligibilityCheckDeclarativeRule:
         program.manualEnrolmentEligibilityCheckDeclarativeRule
     })
@@ -52,6 +53,7 @@ class ProgramService {
         saveResponse.status = response.status;
         if (response.status === 200) {
           saveResponse.id = response.data.id;
+          saveResponse.programId = response.data.programId;
         }
         return saveResponse;
       })

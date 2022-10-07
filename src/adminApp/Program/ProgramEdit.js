@@ -15,6 +15,10 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import ProgramService from "../service/ProgramService";
 import EditProgramFields from "./EditProgramFields";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
+import { identity } from "lodash";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -24,6 +28,24 @@ const ProgramEdit = props => {
   const [subjectType, setSubjectType] = useState(null);
   const [formList, setFormList] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+  const entityType = "ProgramEnrolment";
+  useEffect(() => {
+    getMessageRules(entityType, program.programId, rulesDispatch);
+    return identity;
+  }, [program]);
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
+
+  const onRulesChange = rules => {
+    rulesDispatch({ type: "setRules", payload: rules });
+  };
 
   useEffect(() => {
     http
@@ -62,10 +84,12 @@ const ProgramEdit = props => {
       return;
     }
 
-    ProgramService.saveProgram(program, subjectType, props.match.params.id).then(saveResponse => {
-      setErrors(saveResponse.errors);
-      setRedirectShow(saveResponse.status === 200);
-    });
+    ProgramService.saveProgram(program, subjectType, props.match.params.id)
+      .then(saveResponse => {
+        setErrors(saveResponse.errors);
+        setRedirectShow(saveResponse.status === 200);
+      })
+      .then(() => saveMessageRules(entityType, program.programId, rules));
   };
 
   const onDelete = () => {
@@ -108,6 +132,14 @@ const ProgramEdit = props => {
             onChange={event => dispatch({ type: "active", payload: event.target.checked })}
             name="Active"
             toolTipKey={"APP_DESIGNER_PROGRAM_ACTIVE"}
+          />
+          <br />
+          <MessageRules
+            rules={rules}
+            templates={templates}
+            onChange={onRulesChange}
+            entityType={entityType}
+            entityTypeId={program.programId}
           />
           <br />
           <br />

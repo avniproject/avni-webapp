@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import _ from "lodash";
+import _, { identity } from "lodash";
 import {
   findProgramEncounterCancellationForm,
   findProgramEncounterForm
@@ -18,6 +18,9 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { validateRule } from "../../formDesigner/util";
 import EditEncounterTypeFields from "./EditEncounterTypeFields";
 import EncounterTypeErrors from "./EncounterTypeErrors";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -33,6 +36,25 @@ const EncounterTypeEdit = props => {
   const [formList, setFormList] = useState([]);
   const [subjectValidation, setSubjectValidation] = useState(false);
   const [ruleValidationError, setRuleValidationError] = useState();
+  const [entityType, setEntityType] = useState();
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+
+  useEffect(() => {
+    getMessageRules(entityType, encounterType.encounterTypeId, rulesDispatch);
+    return identity;
+  }, [encounterType, entityType]);
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
+
+  const onRulesChange = rules => {
+    rulesDispatch({ type: "setRules", payload: rules });
+  };
 
   useEffect(() => {
     http
@@ -49,6 +71,11 @@ const EncounterTypeEdit = props => {
             setFormList(response.data.forms);
             setSubjectType(response.data.subjectTypes);
             setProgram(response.data.programs);
+            const isProgramEncounter = formMap.find(
+              mapping => mapping.encounterTypeUUID === encounterType.uuid
+            );
+            setEntityType(isProgramEncounter ? "ProgramEncounter" : "Encounter");
+
             const temp = response.data.formMappings.filter(
               l => l.encounterTypeUUID === result.uuid
             );
@@ -116,9 +143,10 @@ const EncounterTypeEdit = props => {
       .then(response => {
         if (response.status === 200) {
           setError("");
-          setRedirectShow(true);
         }
-      });
+      })
+      .then(() => saveMessageRules(entityType, encounterType.encounterTypeId, rules))
+      .then(() => setRedirectShow(true));
   };
 
   const onDelete = () => {
@@ -134,7 +162,6 @@ const EncounterTypeEdit = props => {
     }
   };
 
-  console.log("encounterType", encounterType);
   function resetValue(type) {
     dispatch({
       type,
@@ -175,18 +202,27 @@ const EncounterTypeEdit = props => {
         </Grid>
         <div className="container" style={{ float: "left" }}>
           {encounterType.loaded && (
-            <EditEncounterTypeFields
-              encounterType={encounterType}
-              dispatch={dispatch}
-              subjectT={subjectT}
-              setSubjectT={setSubjectT}
-              subjectType={subjectType}
-              programT={programT}
-              updateProgram={updateProgram}
-              program={program}
-              formList={formList}
-              ruleValidationError={ruleValidationError}
-            />
+            <>
+              <EditEncounterTypeFields
+                encounterType={encounterType}
+                dispatch={dispatch}
+                subjectT={subjectT}
+                setSubjectT={setSubjectT}
+                subjectType={subjectType}
+                programT={programT}
+                updateProgram={updateProgram}
+                program={program}
+                formList={formList}
+                ruleValidationError={ruleValidationError}
+              />
+              <MessageRules
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={encounterType.encounterTypeId}
+              />
+            </>
           )}
           <EncounterTypeErrors
             nameValidation={nameValidation}

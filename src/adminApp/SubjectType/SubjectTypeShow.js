@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -7,7 +7,7 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
-import _, { get } from "lodash";
+import _, { get, identity } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings, useLocationType } from "./effects";
@@ -15,6 +15,9 @@ import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow
 import { Audit } from "../../formDesigner/components/Audit";
 import { AdvancedSettingShow } from "./AdvancedSettingShow";
 import RuleDisplay from "../components/RuleDisplay";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageRules, getMessageTemplates } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -22,6 +25,20 @@ const SubjectTypeShow = props => {
   const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+  const entityType = "Subject";
+  useEffect(() => {
+    getMessageRules(entityType, subjectType.id, rulesDispatch);
+    return identity;
+  }, [subjectType]);
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
 
   useFormMappings(setFormMappings);
   useLocationType(types => setLocationsTypes(types));
@@ -50,7 +67,7 @@ const SubjectTypeShow = props => {
       <>
         <Box boxShadow={2} p={3} bgcolor="background.paper">
           <Title title={"Subject Type: " + subjectType.name} />
-          <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+          <Grid container style={{ justifyContent: "flex-end" }}>
             <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
               <EditIcon />
               Edit
@@ -114,6 +131,14 @@ const SubjectTypeShow = props => {
               ruleText={subjectType.programEligibilityCheckRule}
             />
             <p />
+            <MessageRules
+              rules={rules}
+              templates={templates}
+              onChange={identity}
+              entityType={entityType}
+              entityTypeId={subjectType.id}
+              readOnly={true}
+            />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
             <AdvancedSettingShow locationTypes={locationTypes} subjectType={subjectType} />
             <Audit {...subjectType} />

@@ -1,38 +1,23 @@
 import React from "react";
 import FormLabel from "@material-ui/core/FormLabel";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import PropTypes from "prop-types";
+import { JSEditor } from "../../common/components/JSEditor";
 
 const RuleDisplay = props => {
-  const { fieldLabel, ruleText, toolTipKey } = props;
+  const { fieldLabel, ruleText = "" } = props;
 
   return (
     <div>
-      <FormLabel style={{ fontSize: "13px" }} toolTipKey={toolTipKey}>
-        {fieldLabel}
-      </FormLabel>
+      <FormLabel style={{ fontSize: "13px" }}>{fieldLabel}</FormLabel>
       <br />
-      <Editor
-        readOnly
-        value={ruleText || ""}
-        highlight={code => highlight(code, languages.js)}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 15,
-          height: "auto",
-          borderStyle: "solid",
-          borderWidth: "1px"
-        }}
-      />
+      <JSEditor readOnly value={ruleText} />
     </div>
   );
 };
 
 RuleDisplay.propTypes = {
   fieldLabel: PropTypes.string.isRequired,
-  ruleText: PropTypes.string.isRequired,
+  ruleText: PropTypes.string,
   toolTipKey: PropTypes.string
 };
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { getDocumentationState, useDocumentationDispatch } from "../hooks";
-import DraftEditor from "../../news/components/DraftEditor";
+import RichTextEditor from "../../news/components/RichTextEditor";
 import { isEmpty } from "lodash";
 import { Box } from "@material-ui/core";
 
@@ -20,7 +20,7 @@ export const DocumentationItem = ({ documentationItem, language }) => {
   return documentationItem ? (
     <div>
       <Box border={1} mt={2} borderColor={"#ddd"} p={2}>
-        <DraftEditor
+        <RichTextEditor
           editorState={documentationItem.editorState}
           setEditorState={editorState =>
             dispatch({

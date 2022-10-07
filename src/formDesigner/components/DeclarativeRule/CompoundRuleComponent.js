@@ -46,7 +46,7 @@ const CompoundRuleComponent = ({
       </Box>
       <Grid container direction={"column"}>
         {map(rules, (rule, index) => (
-          <Grid item container direction={"column"} spacing={1}>
+          <Grid item container direction={"column"} spacing={1} key={index}>
             {index !== 0 && (
               <Grid item container justify={"center"}>
                 <Chip
@@ -57,7 +57,6 @@ const CompoundRuleComponent = ({
               </Grid>
             )}
             <RuleComponent
-              key={index}
               rule={rule}
               ruleIndex={index}
               conditionIndex={conditionIndex}

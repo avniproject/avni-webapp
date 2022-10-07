@@ -1,5 +1,5 @@
 import { Redirect } from "react-router-dom";
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -9,11 +9,14 @@ import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
 import { validateGroup } from "./GroupHandlers";
 import { useFormMappings, useLocationType } from "./effects";
-import _ from "lodash";
+import _, { identity } from "lodash";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AdvancedSettings } from "./AdvancedSettings";
 import { bucketName, uploadImage } from "../../common/utils/S3Client";
 import EditSubjectTypeFields from "./EditSubjectTypeFields";
+import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
+import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
+import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 
 const SubjectTypeCreate = () => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -27,6 +30,20 @@ const SubjectTypeCreate = () => {
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
   const [removeFile, setRemoveFile] = React.useState(false);
+  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+    rules: [],
+    templates: []
+  });
+  const entityType = "Subject";
+
+  useEffect(() => {
+    getMessageTemplates(rulesDispatch);
+    return identity;
+  }, []);
+
+  const onRulesChange = rules => {
+    rulesDispatch({ type: "setRules", payload: rules });
+  };
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormList(forms);
@@ -71,7 +88,11 @@ const SubjectTypeCreate = () => {
               setError("");
               setAlert(true);
               setId(response.data.id);
+              return response;
             }
+          })
+          .then(response => {
+            saveMessageRules(entityType, response.data.id, rules);
           })
           .catch(error => {
             setError(error.response.data.message);
@@ -96,6 +117,13 @@ const SubjectTypeCreate = () => {
                 formList={formList}
                 groupValidationError={groupValidationError}
                 dispatch={dispatch}
+              />
+              <MessageRules
+                rules={rules}
+                templates={templates}
+                onChange={onRulesChange}
+                entityType={entityType}
+                entityTypeId={subjectType.id}
               />
               <p />
               <AdvancedSettings

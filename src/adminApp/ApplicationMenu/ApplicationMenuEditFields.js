@@ -5,11 +5,10 @@ import _ from "lodash";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { MenuItem } from "openchs-models";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
-import Editor from "react-simple-code-editor";
 import { sampleLinkFunction } from "../../formDesigner/common/SampleRule";
-import { highlight, languages } from "prismjs/components/prism-core";
 import ApplicationMenuReducer from "../Reducers/ApplicationMenuReducer";
 import { MenuItem as MaterialMenuItem } from "@material-ui/core";
+import { JSEditor } from "../../common/components/JSEditor";
 
 const ApplicationMenuEditFields = props => {
   const { menuItem, dispatch } = props;
@@ -83,7 +82,7 @@ const ApplicationMenuEditFields = props => {
       />
       <br />
       <AvniFormLabel label={"Link Function"} toolTipKey={"APP_DESIGNER_MENU_ITEM_LINK_FUNCTION"} />
-      <Editor
+      <JSEditor
         value={menuItem.linkFunction || sampleLinkFunction()}
         onValueChange={event =>
           dispatch({
@@ -91,15 +90,6 @@ const ApplicationMenuEditFields = props => {
             payload: { linkFunction: event }
           })
         }
-        highlight={code => highlight(code, languages.js)}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 15,
-          height: "auto",
-          borderStyle: "solid",
-          borderWidth: "1px"
-        }}
       />
     </>
   );

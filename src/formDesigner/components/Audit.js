@@ -12,7 +12,7 @@ export const Audit = ({
   direction
 }) => {
   return (
-    <Grid container direction={direction || "column"} justify={"space-between"} xs={12} spacing={2}>
+    <Grid container direction={direction || "column"} justify={"space-between"} spacing={2}>
       <Grid item container direction={"column"} spacing={1} xs={6}>
         <Grid item>
           <FormLabel style={{ fontSize: "13px" }}>Created </FormLabel>

@@ -27,7 +27,8 @@ export function programReducer(program, action) {
         manualEnrolmentEligibilityCheckDeclarativeRule:
           action.payload.manualEnrolmentEligibilityCheckDeclarativeRule,
         active: action.payload.active,
-        loaded: true
+        loaded: true,
+        programId: action.payload.programId
       };
     case "":
       return program;

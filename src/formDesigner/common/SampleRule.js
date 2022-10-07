@@ -207,3 +207,21 @@ export const sampleLinkFunction = () => {
   return `'use strict';
   ({params}) => {return "google.com"}`;
 };
+
+export const sampleMessageScheduleRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) => {
+  return new Date();
+};`;
+};
+
+export const sampleMessageRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) => {
+  const individual = params.entity;
+  //Return out all parameters in an array
+  return ['Ramesh'];
+};`;
+};

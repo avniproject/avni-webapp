@@ -28,7 +28,7 @@ const ActionComponent = ({
   };
 
   return (
-    <Grid container xs={12} direction={"row"} spacing={1} alignItems={"center"}>
+    <Grid container direction={"row"} spacing={1} alignItems={"center"}>
       <Grid item xs={3}>
         <Select
           placeholder="Select action type"

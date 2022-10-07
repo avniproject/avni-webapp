@@ -5,14 +5,13 @@ import MaterialTable from "material-table";
 import http from "../../../common/utils/httpClient";
 import { makeStyles } from "@material-ui/core";
 import { cloneDeep, get } from "lodash";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import Modal from "@material-ui/core/Modal";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CustomizedSnackbar from "../CustomizedSnackbar";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Chip from "@material-ui/core/Chip";
+import { JSEditor } from "../../../common/components/JSEditor";
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -148,20 +147,7 @@ const ReportingViews = () => {
               {
                 tooltip: "View definition",
                 render: rowData => {
-                  return (
-                    <Editor
-                      readOnly
-                      value={rowData.viewDefinition}
-                      highlight={code => highlight(code, languages.js)}
-                      padding={10}
-                      style={{
-                        fontFamily: '"Fira code", "Fira Mono", monospace',
-                        fontSize: 12,
-                        height: "auto",
-                        border: "2px solid #6E6E6E"
-                      }}
-                    />
-                  );
+                  return <JSEditor readOnly value={rowData.viewDefinition} />;
                 }
               }
             ]}

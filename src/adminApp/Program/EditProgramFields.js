@@ -11,15 +11,14 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { findProgramEnrolmentForms, findProgramExitForms } from "../domain/formMapping";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
-import Editor from "react-simple-code-editor";
 import {
   sampleEnrolmentEligibilityCheckRule,
   sampleEnrolmentSummaryRule,
   sampleManualEnrolmentEligibilityCheckRule
 } from "../../formDesigner/common/SampleRule";
-import { highlight, languages } from "prismjs/components/prism-core";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
+import { JSEditor } from "../../common/components/JSEditor";
 
 const EditProgramFields = props => {
   const {
@@ -132,18 +131,9 @@ const EditProgramFields = props => {
         label={"Enrolment Summary Rule"}
         toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"}
       />
-      <Editor
+      <JSEditor
         value={program.enrolmentSummaryRule || sampleEnrolmentSummaryRule()}
         onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
-        highlight={code => highlight(code, languages.js)}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 15,
-          height: "auto",
-          borderStyle: "solid",
-          borderWidth: "1px"
-        }}
       />
 
       <br />
@@ -193,7 +183,7 @@ const EditProgramFields = props => {
         toolTipKey={"APP_DESIGNER_MANUAL_ENROLMENT_ELIGIBILITY_CHECK_RULE"}
       />
       {program.loaded && (
-        <Editor
+        <JSEditor
           value={
             program.manualEnrolmentEligibilityCheckRule ||
             sampleManualEnrolmentEligibilityCheckRule()
@@ -201,15 +191,6 @@ const EditProgramFields = props => {
           onValueChange={event =>
             dispatch({ type: "manualEnrolmentEligibilityCheckRule", payload: event })
           }
-          highlight={code => highlight(code, languages.js)}
-          padding={10}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 15,
-            height: "auto",
-            borderStyle: "solid",
-            borderWidth: "1px"
-          }}
         />
       )}
     </>
@@ -222,7 +203,7 @@ EditProgramFields.propTypes = {
   subjectTypes: PropTypes.array.isRequired,
   formList: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
-  subjectType: PropTypes.object.isRequired,
+  subjectType: PropTypes.object,
   onSubjectTypeChange: PropTypes.func.isRequired
 };
 

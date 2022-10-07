@@ -10,13 +10,12 @@ import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { findRegistrationForms } from "../domain/formMapping";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import GroupRoles from "./GroupRoles";
-import Editor from "react-simple-code-editor";
 import {
   sampleSubjectProgramEligibilityCheckRule,
   sampleSubjectSummaryRule
 } from "../../formDesigner/common/SampleRule";
-import { highlight, languages } from "prismjs/components/prism-core";
 import PropTypes from "prop-types";
+import { JSEditor } from "../../common/components/JSEditor";
 
 const EditSubjectTypeFields = props => {
   const { subjectType, onRemoveFile, onSetFile, formList, groupValidationError, dispatch } = props;
@@ -96,38 +95,20 @@ const EditSubjectTypeFields = props => {
       )}
       <p />
       <AvniFormLabel label={"Subject Summary Rule"} toolTipKey={"SUBJECT_SUMMARY_RULE"} />
-      <Editor
+      <JSEditor
         value={subjectType.subjectSummaryRule || sampleSubjectSummaryRule()}
         onValueChange={event => dispatch({ type: "subjectSummaryRule", payload: event })}
-        highlight={code => highlight(code, languages.js)}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 15,
-          height: "auto",
-          borderStyle: "solid",
-          borderWidth: "1px"
-        }}
       />
       <p />
       <AvniFormLabel
         label={"Subject Program Eligibility Check Rule"}
         toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"}
       />
-      <Editor
+      <JSEditor
         value={
           subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()
         }
         onValueChange={event => dispatch({ type: "programEligibilityCheckRule", payload: event })}
-        highlight={code => highlight(code, languages.js)}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 15,
-          height: "auto",
-          borderStyle: "solid",
-          borderWidth: "1px"
-        }}
       />
     </>
   );

@@ -2,7 +2,7 @@ import React from "react";
 import { convertToRaw } from "draft-js";
 import Dialog from "@material-ui/core/Dialog";
 import { Box, DialogContent, Grid, makeStyles, Typography } from "@material-ui/core";
-import DraftEditor from "./components/DraftEditor";
+import RichTextEditor from "./components/RichTextEditor";
 import { ActionButton } from "./components/ActionButton";
 import TextField from "@material-ui/core/TextField";
 import { AvniImageUpload } from "../common/components/AvniImageUpload";
@@ -144,7 +144,7 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
             <Typography style={{ opacity: 0.5 }}>{"News description"}</Typography>
             {open && (
               <Box border={1} mt={2} borderColor={"#ddd"} p={2}>
-                <DraftEditor
+                <RichTextEditor
                   editorState={news.editorState}
                   setEditorState={newState =>
                     dispatchActionAndClearError(

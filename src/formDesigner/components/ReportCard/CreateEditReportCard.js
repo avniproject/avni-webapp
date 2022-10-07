@@ -13,8 +13,6 @@ import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect } from "react-router-dom";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import ColorPicker from "material-ui-rc-color-picker";
 import { colorPickerCSS } from "../../../adminApp/Constant";
 import { sampleCardQuery } from "../../common/SampleRule";
@@ -24,6 +22,7 @@ import { AvniSwitch } from "../../../common/components/AvniSwitch";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 import { bucketName, uploadImage } from "../../../common/utils/S3Client";
 import { getErrorByKey } from "../../common/ErrorUtil";
+import { JSEditor } from "../../../common/components/JSEditor";
 
 const initialState = {
   name: "",
@@ -246,18 +245,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {!isStandardReportCard && (
           <React.Fragment>
             <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
-            <Editor
+            <JSEditor
               value={card.query || sampleCardQuery()}
               onValueChange={event => dispatch({ type: "query", payload: event })}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
             />
           </React.Fragment>
         )}
