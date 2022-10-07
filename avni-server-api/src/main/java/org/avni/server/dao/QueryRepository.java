@@ -16,15 +16,13 @@ import java.util.Map;
 
 @Component
 public class QueryRepository {
-
-    //TODO: this jdbcTemplate should come from custom bean having max rows and query timeout set
-    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate externalQueryJdbcTemplate;
     private final CustomQueryRepository customQueryRepository;
 
     @Autowired
-    public QueryRepository(NamedParameterJdbcTemplate jdbcTemplate,
+    public QueryRepository(NamedParameterJdbcTemplate externalQueryJdbcTemplate,
                            CustomQueryRepository customQueryRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.externalQueryJdbcTemplate = externalQueryJdbcTemplate;
         this.customQueryRepository = customQueryRepository;
     }
 
@@ -34,7 +32,7 @@ public class QueryRepository {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("Query not found with name %s", customQueryRequest.getName()));
         }
         try {
-            List<Map<String, Object>> queryResult = jdbcTemplate.queryForList(customQuery.getQuery(), customQueryRequest.getQueryParams());
+            List<Map<String, Object>> queryResult = externalQueryJdbcTemplate.queryForList(customQuery.getQuery(), customQueryRequest.getQueryParams());
             return ResponseEntity.ok(new CustomQueryResponse(queryResult));
         } catch (DataAccessException e) {
             String errorMessage = ExceptionUtils.getRootCause(e).getMessage();
