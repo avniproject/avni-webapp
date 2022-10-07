@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.joda.time.DateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -39,6 +40,7 @@ public class UserService implements NonScopeAwareService {
         return userContext.getUser();
     }
 
+    @Transactional
     public User save(User user) {
         if (user.getOrganisationId() != null) {
             Organisation organisation = organisationRepository.findOne(user.getOrganisationId());
@@ -51,6 +53,7 @@ public class UserService implements NonScopeAwareService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public void addToDefaultUserGroup(User user) {
         if (user.getOrganisationId() != null) {
             UserGroup userGroup = new UserGroup();
@@ -65,5 +68,10 @@ public class UserService implements NonScopeAwareService {
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         return userRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
+    @Transactional
+    public User findByUuid(String uuid) {
+        return userRepository.findByUuid(uuid);
     }
 }

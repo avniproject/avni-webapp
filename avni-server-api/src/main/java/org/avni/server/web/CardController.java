@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @RestController
 public class CardController {
-
     private final CardRepository cardRepository;
     private final CardService cardService;
 
