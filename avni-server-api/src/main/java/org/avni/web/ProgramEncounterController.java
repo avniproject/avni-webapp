@@ -96,14 +96,17 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "programEncounterTypeUuid", required = false) String encounterTypeUuid,
-            Pageable pageable) throws Exception {
+            Pageable pageable) {
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
 
         FormMapping formMapping = formMappingService.find(encounterType, FormType.ProgramEncounter);
-        if (formMapping == null)
-            throw new Exception(String.format("No form mapping found for program encounter %s", encounterType.getName()));
+        if (formMapping == null) {
+            logger.warn(String.format("No form mapping found for program encounter %s", encounterType.getName()));
+            return wrap(new PageImpl<>(Collections.emptyList()));
+        }
+
         return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(programEncounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.ProgramEncounter));
     }
 

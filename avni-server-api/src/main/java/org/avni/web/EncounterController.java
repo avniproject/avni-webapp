@@ -159,13 +159,17 @@ public class EncounterController extends AbstractController<Encounter> implement
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "encounterTypeUuid", required = false) String encounterTypeUuid,
-            Pageable pageable) throws Exception {
+            Pageable pageable) {
         if (encounterTypeUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
         if (encounterType == null) return wrap(new PageImpl<>(Collections.emptyList()));
         FormMapping formMapping = formMappingService.find(encounterType, FormType.Encounter);
-        if (formMapping == null)
-            throw new Exception(String.format("No form mapping found for encounter %s", encounterType.getName()));
+
+        if (formMapping == null) {
+            logger.warn(String.format("No form mapping found for encounter %s", encounterType.getName()));
+            return wrap(new PageImpl<>(Collections.emptyList()));
+        }
+
         return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(encounterRepository, userService.getCurrentUser(), lastModifiedDateTime, now, encounterType.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Encounter));
     }
 

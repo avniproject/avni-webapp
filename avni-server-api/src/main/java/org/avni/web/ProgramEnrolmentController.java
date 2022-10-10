@@ -42,7 +42,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private FormMappingService formMappingService;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService, FormMappingRepository formMappingRepository, FormMappingService formMappingService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, ProgramEnrolmentRepository programEnrolmentRepository, UserService userService, ProjectionFactory projectionFactory, ProgramEnrolmentService programEnrolmentService, ScopeBasedSyncService<ProgramEnrolment> scopeBasedSyncService, FormMappingService formMappingService) {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.userService = userService;
         this.projectionFactory = projectionFactory;
@@ -66,16 +66,19 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             @RequestParam(value = "programUuid", required = false) String programUuid,
-            Pageable pageable) throws Exception {
+            Pageable pageable) {
         if (programUuid.isEmpty()) return wrap(new PageImpl<>(Collections.emptyList()));
-        else {
-            Program program = programRepository.findByUuid(programUuid);
-            if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
-            FormMapping formMapping = formMappingService.find(program, FormType.ProgramEnrolment);
-            if (formMapping == null)
-                throw new Exception(String.format("No form mapping found for program %s", program.getName()));
-            return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Enrolment));
+
+        Program program = programRepository.findByUuid(programUuid);
+        if (program == null) return wrap(new PageImpl<>(Collections.emptyList()));
+
+        FormMapping formMapping = formMappingService.find(program, FormType.ProgramEnrolment);
+        if (formMapping == null) {
+            logger.warn(String.format("No form mapping found for program %s", program.getName()));
+            return wrap(new PageImpl<>(Collections.emptyList()));
         }
+
+        return wrap(scopeBasedSyncService.getSyncResultsBySubjectTypeRegistrationLocation(programEnrolmentRepository, userService.getCurrentUser(), lastModifiedDateTime, now, program.getId(), pageable, formMapping.getSubjectType(), SyncParameters.SyncEntityName.Enrolment));
     }
 
     @GetMapping("/web/programEnrolment/{uuid}")
