@@ -1,10 +1,10 @@
 package org.avni.messaging.service;
 
 import jdk.nashorn.api.scripting.JSObject;
-import org.avni.messaging.dao.MessageReceiverRepository;
-import org.avni.messaging.dao.MessageRequestRepository;
+import org.avni.messaging.repository.MessageReceiverRepository;
+import org.avni.messaging.repository.MessageRequestRepository;
 import org.avni.messaging.domain.MessageReceiver;
-import org.avni.messaging.dao.MessageRuleRepository;
+import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageRequest;
 import org.avni.messaging.domain.MessageRule;
@@ -79,5 +79,30 @@ public class MessagingService {
 
         MessageRequest messageRequest = new MessageRequest(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
         messageRequestRepository.save(messageRequest);
+    }
+
+    private static DateTime evaluateScheduleRule(MessageRule messageRule) {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("js");
+        DateTime scheduledDateTime = new DateTime();
+        try {
+            JSObject scheduleRuleFunction = (JSObject) engine.eval(messageRule.getScheduleRule());
+            JSONObject arguments = new JSONObject();
+            arguments.put("params", "");
+            arguments.put("imports", "");
+
+            String scheduledDateTimeString = (String) scheduleRuleFunction.call(null, arguments);
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+            scheduledDateTime = formatter.parseDateTime(scheduledDateTimeString);
+        } catch (ScriptException e) {
+            throw new RuntimeException(e);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return scheduledDateTime;
+    }
+
+    public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable) {
+        return messageRuleRepository.findByEntityTypeAndEntityTypeId(entityType, entityTypeId, pageable);
     }
 }

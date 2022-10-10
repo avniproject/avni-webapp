@@ -48,6 +48,7 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-rest:${springBootVersion}"
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.34.0"
     compile "org.postgresql:postgresql:9.4-1200-jdbc41"
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     testImplementation 'org.springframework.batch:spring-batch-test'

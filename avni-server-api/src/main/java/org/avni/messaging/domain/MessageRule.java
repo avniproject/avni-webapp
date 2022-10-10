@@ -23,10 +23,10 @@ public class MessageRule extends OrganisationAwareEntity {
     private EntityType entityType;
 
     @Column
-    private Long entityTypeId;
+    private String entityTypeId;
 
     @Column
-    private Long messageTemplateId;
+    private String messageTemplateId;
 
     public String getName() {
         return name;
@@ -60,19 +60,19 @@ public class MessageRule extends OrganisationAwareEntity {
         this.entityType = entityType;
     }
 
-    public Long getEntityTypeId() {
+    public String getEntityTypeId() {
         return entityTypeId;
     }
 
-    public void setEntityTypeId(Long entityTypeId) {
+    public void setEntityTypeId(String entityTypeId) {
         this.entityTypeId = entityTypeId;
     }
 
-    public Long getMessageTemplateId() {
+    public String getMessageTemplateId() {
         return messageTemplateId;
     }
 
-    public void setMessageTemplateId(Long messageTemplateId) {
+    public void setMessageTemplateId(String messageTemplateId) {
         this.messageTemplateId = messageTemplateId;
     }
 }

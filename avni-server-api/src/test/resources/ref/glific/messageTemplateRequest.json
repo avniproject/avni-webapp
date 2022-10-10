@@ -1,0 +1,19 @@
+{
+  "query": "query sessionTemplates($filter: SessionTemplateFilter, $opts: Opts) { sessionTemplates(filter: $filter, opts:$opts) { id body insertedAt, label shortcode isHsm type isActive translations updatedAt isSource language { label } messageMedia { url } } }",
+  "variables": {
+    "filter": {
+      "isHsm": true,
+      "status": "APPROVED",
+      "dateRange": {
+        "from": "2022-03-01",
+        "to": "2022-05-20",
+        "column": "updated_at"
+      }
+    },
+    "opts": {
+      "order": "ASC",
+      "limit": 10,
+      "offset": 0
+    }
+  }
+}

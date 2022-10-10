@@ -24,6 +24,7 @@ DELETE FROM address_level;
 DELETE FROM catchment;
 DELETE FROM account_admin;
 DELETE FROM user_group;
+DELETE FROM external_system_config;
 DELETE FROM users;
 DELETE FROM subject_type;
 DELETE FROM groups;
@@ -56,6 +57,7 @@ ALTER SEQUENCE individual_relation_gender_mapping_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
 ALTER SEQUENCE audit_id_seq RESTART WITH 1;
+ALTER SEQUENCE external_system_config_id_seq RESTART WITH 1;
 
 INSERT into organisation(id, name, db_user, uuid, media_directory, parent_organisation_id, schema_name)
 values (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884', 'openchs_impl', null, 'openchs')
@@ -303,6 +305,10 @@ VALUES
 INSERT INTO form_mapping (form_id, entity_id, uuid, version, subject_type_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1, 1, 1, now(), now());
 
+INSERT INTO external_system_config (organisation_id, version, created_by_id, last_modified_by_id, created_date_time,
+                                    last_modified_date_time, system_name, config)
+values (3, 0, 3, 3, now(), now(), 'Glific', '{"baseUrl": "http://localhost:9191", "phone": "919693847573", "password": "seecretpass"}');
+
 SELECT setval('non_applicable_form_element_id_seq', COALESCE((SELECT MAX(id) + 1
                                                               FROM non_applicable_form_element), 1), FALSE);
 SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id) + 1
@@ -348,3 +354,6 @@ SELECT setval('users_id_seq', COALESCE((SELECT MAX(id) + 1
 
 SELECT setval('audit_id_seq', COALESCE((SELECT MAX(id) + 1
                                         FROM audit), 1), FALSE);
+
+SELECT setval('external_system_config_id_seq', COALESCE((SELECT MAX(id) + 1
+                                        FROM external_system_config), 1), FALSE);

@@ -8,6 +8,9 @@ public class UserContract {
     private Long id;
     private String uuid;
 
+    public UserContract() {
+    }
+
     public UserContract(User user) {
         setUsername(user.getUsername());
         setName(user.getName());

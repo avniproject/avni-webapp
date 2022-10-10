@@ -2,7 +2,7 @@ package org.avni.messaging.domain;
 
 public enum EntityType {
     Subject,
-    Enrolment,
+    ProgramEnrolment,
     Encounter,
     ProgramEncounter;
 }

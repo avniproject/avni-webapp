@@ -16,8 +16,8 @@ public class MessageRuleContract {
     private String messageRule;
     private String scheduleRule;
     private String entityType;
-    private Long entityTypeId;
-    private Long messageTemplateId;
+    private String entityTypeId;
+    private String messageTemplateId;
 
     private Boolean isVoided;
     private UserContract createdBy;
@@ -106,19 +106,19 @@ public class MessageRuleContract {
         this.entityType = entityType;
     }
 
-    public Long getEntityTypeId() {
+    public String getEntityTypeId() {
         return entityTypeId;
     }
 
-    public void setEntityTypeId(Long entityTypeId) {
+    public void setEntityTypeId(String entityTypeId) {
         this.entityTypeId = entityTypeId;
     }
 
-    public Long getMessageTemplateId() {
+    public String getMessageTemplateId() {
         return messageTemplateId;
     }
 
-    public void setMessageTemplateId(Long messageTemplateId) {
+    public void setMessageTemplateId(String messageTemplateId) {
         this.messageTemplateId = messageTemplateId;
     }
 

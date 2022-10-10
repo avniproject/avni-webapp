@@ -16,8 +16,8 @@ public class MessageRuleContractTest {
         messageRuleContract.setMessageRule("messageRule");
         messageRuleContract.setScheduleRule("scheduleRule");
         messageRuleContract.setEntityType("ProgramEncounter");
-        messageRuleContract.setEntityTypeId(1L);
-        messageRuleContract.setMessageTemplateId(2L);
+        messageRuleContract.setEntityTypeId("1");
+        messageRuleContract.setMessageTemplateId("2");
         MessageRule messageRule = messageRuleContract.toModel(null);
 
         assertEquals(messageRule.getEntityType(), EntityType.ProgramEncounter);

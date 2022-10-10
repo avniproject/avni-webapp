@@ -29,6 +29,7 @@ public class EncounterTypeContractWeb {
     private String programUuid;
     private DeclarativeRule encounterEligibilityCheckDeclarativeRule;
     private boolean isImmutable;
+    private Long encounterTypeId;
 
     public String getName() {
         return name;
@@ -65,6 +66,7 @@ public class EncounterTypeContractWeb {
     public static EncounterTypeContractWeb fromOperationalEncounterType(OperationalEncounterType operationalEncounterType) {
         EncounterTypeContractWeb contract = new EncounterTypeContractWeb();
         contract.setId(operationalEncounterType.getId());
+        contract.setEncounterTypeId(operationalEncounterType.getEncounterType().getId());
         contract.setName(operationalEncounterType.getName());
         contract.setOrganisationId(operationalEncounterType.getOrganisationId());
         contract.setUUID(operationalEncounterType.getEncounterType().getUuid());
@@ -192,5 +194,13 @@ public class EncounterTypeContractWeb {
 
     public void setImmutable(boolean immutable) {
         isImmutable = immutable;
+    }
+
+    public void setEncounterTypeId(Long encounterTypeId) {
+        this.encounterTypeId = encounterTypeId;
+    }
+
+    public Long getEncounterTypeId() {
+        return encounterTypeId;
     }
 }

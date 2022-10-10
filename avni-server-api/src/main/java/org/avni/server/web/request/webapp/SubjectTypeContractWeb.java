@@ -49,6 +49,7 @@ public class SubjectTypeContractWeb {
     private Boolean isSyncRegistrationConcept1Usable;
     private Boolean isSyncRegistrationConcept2Usable;
     private String nameHelpText;
+    private Long subjectTypeId;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -85,6 +86,8 @@ public class SubjectTypeContractWeb {
         contract.setSyncRegistrationConcept1Usable(subjectType.isSyncRegistrationConcept1Usable());
         contract.setSyncRegistrationConcept2Usable(subjectType.isSyncRegistrationConcept2Usable());
         contract.setNameHelpText(subjectType.getNameHelpText());
+        contract.setSubjectTypeId(subjectType.getId());
+
         return contract;
     }
 
@@ -358,5 +361,13 @@ public class SubjectTypeContractWeb {
 
     public void setValidMiddleNameFormat(FormatContract validMiddleNameFormat) {
         this.validMiddleNameFormat = validMiddleNameFormat;
+    }
+
+    public Long getSubjectTypeId() {
+        return subjectTypeId;
+    }
+
+    public void setSubjectTypeId(Long subjectTypeId) {
+        this.subjectTypeId = subjectTypeId;
     }
 }

@@ -22,6 +22,7 @@ public class ProgramContractWeb extends ProgramContract {
     private String subjectTypeUuid;
     private String programEnrolmentFormUuid;
     private String programExitFormUuid;
+    private Long programId;
 
     public String getProgramSubjectLabel() {
         return programSubjectLabel;
@@ -51,6 +52,7 @@ public class ProgramContractWeb extends ProgramContract {
         ProgramContractWeb contract = new ProgramContractWeb();
 
         contract.setId(operationalProgram.getId());
+        contract.setProgramId(operationalProgram.getProgram().getId());
         contract.setName(operationalProgram.getName());
         contract.setUuid(operationalProgram.getProgram().getUuid());
         contract.setColour(operationalProgram.getProgram().getColour());
@@ -134,5 +136,13 @@ public class ProgramContractWeb extends ProgramContract {
 
     public void setSubjectTypeUuid(String subjectTypeUuid) {
         this.subjectTypeUuid = subjectTypeUuid;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }

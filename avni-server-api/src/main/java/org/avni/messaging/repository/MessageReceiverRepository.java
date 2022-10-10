@@ -1,4 +1,4 @@
-package org.avni.messaging.dao;
+package org.avni.messaging.repository;
 
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.server.dao.CHSRepository;
