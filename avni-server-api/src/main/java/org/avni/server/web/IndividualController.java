@@ -1,5 +1,6 @@
 package org.avni.server.web;
 
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.geo.Point;
@@ -53,6 +54,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private final ScopeBasedSyncService<Individual> scopeBasedSyncService;
     private final SubjectMigrationService subjectMigrationService;
+    private final MessagingService messagingService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -67,7 +69,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 ProgramEnrolmentConstructionService programEnrolmentConstructionService,
-                                ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService) {
+                                ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService, MessagingService messagingService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -82,6 +84,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
         this.scopeBasedSyncService = scopeBasedSyncService;
         this.subjectMigrationService = subjectMigrationService;
+        this.messagingService = messagingService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -96,6 +99,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setObservations(observations);
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
         individualService.save(individual);
+        messagingService.saveMessageFor(individual);
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
