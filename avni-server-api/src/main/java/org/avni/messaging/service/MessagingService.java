@@ -72,6 +72,12 @@ public class MessagingService {
         MessageReceiver messageReceiver = new MessageReceiver(EntityType.Subject, individual.getLegacyId());
         messageReceiverRepository.save(messageReceiver);
 
+        DateTime scheduledDateTime = evaluateScheduleRule(messageRule);
+        MessageRequest messageRequest = new MessageRequest(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
+        messageRequestRepository.save(messageRequest);
+    }
+
+    private static DateTime evaluateScheduleRule(MessageRule messageRule) {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("js");
         DateTime scheduledDateTime = new DateTime();
@@ -89,8 +95,6 @@ public class MessagingService {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-
-        MessageRequest messageRequest = new MessageRequest(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
-        messageRequestRepository.save(messageRequest);
+        return scheduledDateTime;
     }
 }
