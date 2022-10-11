@@ -143,11 +143,11 @@ function FormElementDetails(props) {
   }
 
   function groupRoleList() {
-    const selectedGroup = _.find(
+    const selectedGroupSubjectType = _.find(
       props.groupSubjectTypes,
       ({ uuid }) => uuid === props.formElementData.keyValues.groupSubjectTypeUUID
     );
-    return _.map(selectedGroup.groupRoles, ({ role, uuid }) => (
+    return _.map(selectedGroupSubjectType.groupRoles, ({ role, uuid }) => (
       <MenuItem value={uuid}>{role}</MenuItem>
     ));
   }

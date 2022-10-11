@@ -55,7 +55,8 @@ describe("adapters", () => {
   });
 
   it("can map form element", () => {
-    const feg = {};
+    const feg = new FormElementGroup();
+    feg.uuid = "uuid";
     const fe = mapFormElement(sampleFormElement, feg);
 
     assert.equal(fe.mandatory, true);
@@ -66,7 +67,7 @@ describe("adapters", () => {
     assert.equal(fe.validFormat, null);
     assert.equal(fe.name, "Standard upto which schooling completed");
     assert.equal(fe.type, "SingleSelect");
-    assert.equal(fe.formElementGroup, feg);
+    assert.equal(fe.formElementGroup.uuid, feg.uuid);
 
     assert.equal(fe.concept.constructor, Concept);
   });
