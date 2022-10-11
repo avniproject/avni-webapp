@@ -155,7 +155,9 @@ const onNext = ({
       wizard
     );
   }
-  const { filteredFormElements: nextFilteredFormElements } = !isEmpty(nextGroup)
+  const { filteredFormElements: nextFilteredFormElements, formElementStatuses } = !isEmpty(
+    nextGroup
+  )
     ? filterFormElementsWithStatus(nextGroup, entity)
     : { filteredFormElements: null };
 
@@ -174,6 +176,7 @@ const onNext = ({
       )
     );
   } else {
+    obsHolder.updatePrimitiveCodedObs(nextFilteredFormElements, formElementStatuses);
     return nextState(
       nextGroup,
       nextFilteredFormElements,
