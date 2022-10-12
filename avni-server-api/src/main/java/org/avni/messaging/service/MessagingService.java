@@ -9,6 +9,7 @@ import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageRequest;
 import org.avni.messaging.domain.MessageRule;
 import org.avni.server.domain.Individual;
+import org.avni.server.service.RuleService;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -33,12 +34,14 @@ public class MessagingService {
     private final MessageRuleRepository messageRuleRepository;
     private MessageReceiverRepository messageReceiverRepository;
     private MessageRequestRepository messageRequestRepository;
+    private final RuleService ruleService;
 
     @Autowired
-    public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverRepository messageReceiverRepository, MessageRequestRepository messageRequestRepository) {
+    public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverRepository messageReceiverRepository, MessageRequestRepository messageRequestRepository, RuleService ruleService) {
         this.messageRuleRepository = messageRuleRepository;
         this.messageReceiverRepository = messageReceiverRepository;
         this.messageRequestRepository = messageRequestRepository;
+        this.ruleService = ruleService;
     }
 
     @Transactional
@@ -72,29 +75,9 @@ public class MessagingService {
         MessageReceiver messageReceiver = new MessageReceiver(EntityType.Subject, individual.getLegacyId());
         messageReceiverRepository.save(messageReceiver);
 
-        DateTime scheduledDateTime = evaluateScheduleRule(messageRule);
+        DateTime scheduledDateTime = ruleService.executeScheduleRule(individual, messageRule.getScheduleRule());
+
         MessageRequest messageRequest = new MessageRequest(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
         messageRequestRepository.save(messageRequest);
-    }
-
-    private static DateTime evaluateScheduleRule(MessageRule messageRule) {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("js");
-        DateTime scheduledDateTime = new DateTime();
-        try {
-            JSObject scheduleRuleFunction = (JSObject) engine.eval(messageRule.getScheduleRule());
-            JSONObject arguments = new JSONObject();
-            arguments.put("params", "");
-            arguments.put("imports", "");
-
-            String scheduledDateTimeString = (String) scheduleRuleFunction.call(null, arguments);
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-            scheduledDateTime = formatter.parseDateTime(scheduledDateTimeString);
-        } catch (ScriptException e) {
-            throw new RuntimeException(e);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return scheduledDateTime;
     }
 }

@@ -8,6 +8,7 @@ import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.MessageRequest;
 import org.avni.messaging.domain.MessageRule;
 import org.avni.server.domain.Individual;
+import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -34,6 +35,9 @@ public class MessagingServiceTest {
     @Mock
     private MessageRequestRepository messageRequestRepository;
 
+    @Mock
+    private RuleService ruleService;
+
     @Captor
     ArgumentCaptor<MessageReceiver> messageReceiver;
 
@@ -43,7 +47,7 @@ public class MessagingServiceTest {
     @Before
     public void setup() {
         initMocks(this);
-        messagingService = new MessagingService(messageRuleRepository, messageReceiverRepository, messageRequestRepository);
+        messagingService = new MessagingService(messageRuleRepository, messageReceiverRepository, messageRequestRepository, ruleService);
     }
 
     @Test
@@ -59,6 +63,10 @@ public class MessagingServiceTest {
         long messageRuleId = 123L;
         when(messageRule.getId()).thenReturn(messageRuleId);
 
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        DateTime scheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
+        when(ruleService.executeScheduleRule(individual, scheduleRule)).thenReturn(scheduledDateTime);
+
         messagingService.saveMessageFor(individual);
 
         verify(messageReceiverRepository).save(messageReceiver.capture());
@@ -66,13 +74,11 @@ public class MessagingServiceTest {
         assertThat(messageReceiver.getEntityType()).isEqualTo(EntityType.Subject);
         assertThat(messageReceiver.getEntityId()).isEqualTo(subjectTypeId);
 
+        verify(ruleService).executeScheduleRule(eq(individual), eq(scheduleRule));
         verify(messageRequestRepository).save(messageRequest.capture());
         MessageRequest messageRequest = this.messageRequest.getValue();
         assertThat(messageRequest.getMessageRuleId()).isEqualTo(messageRuleId);
         assertThat(messageRequest.getMessageReceiverId()).isEqualTo(messageReceiver.getId());
-
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        DateTime expectedScheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
-        assertThat(messageRequest.getScheduledDateTime()).isEqualTo(expectedScheduledDateTime);
+        assertThat(messageRequest.getScheduledDateTime()).isEqualTo(scheduledDateTime);
     }
 }

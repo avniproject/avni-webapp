@@ -91,6 +91,22 @@ public class RuleService implements NonScopeAwareService {
         this.formRepository = formRepository;
     }
 
+    public RuleService(RestClient restClient) {
+        this.restClient = restClient;
+        logger = null;
+        ruleDependencyRepository = null;
+        ruleRepository = null;
+        ruledEntityRepositories = null;
+        individualConstructionService = null;
+        ruleValidationService = null;
+        programEncounterConstructionService = null;
+        programEnrolmentConstructionService = null;
+        formRepository = null;
+        ruleFailureLogRepository = null;
+        observationService = null;
+        entityApprovalStatusService = null;
+    }
+
     @Transactional
     public RuleDependency createDependency(String ruleCode, String ruleHash) {
         RuleDependency ruleDependency = ruleDependencyRepository
@@ -212,6 +228,13 @@ public class RuleService implements NonScopeAwareService {
         EncounterEligibilityRuleRequestEntity ruleRequest = new EncounterEligibilityRuleRequestEntity(individualContractWrapper, encounterTypeContracts);
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
         return ruleResponseEntity;
+    }
+
+    public DateTime executeScheduleRule(Individual individual, String scheduleRule) {
+        ScheduleRuleResponseEntity scheduleRuleResponseEntity = new ScheduleRuleResponseEntity();
+        ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(individual, scheduleRule);
+        scheduleRuleResponseEntity = createHttpHeaderAndSendRequest("api/scheduleRule", ruleRequest, null, ScheduleRuleResponseEntity.class, scheduleRuleResponseEntity);
+        return scheduleRuleResponseEntity.getScheduledDateTime();
     }
 
     public RuleResponseEntity executeServerSideRules(RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
