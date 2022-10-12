@@ -55,6 +55,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final ScopeBasedSyncService<Individual> scopeBasedSyncService;
     private final SubjectMigrationService subjectMigrationService;
     private final MessagingService messagingService;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -69,6 +70,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 ProgramEnrolmentConstructionService programEnrolmentConstructionService,
+                                OrganisationConfigService organisationConfigService,
                                 ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService, MessagingService messagingService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
@@ -85,6 +87,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.scopeBasedSyncService = scopeBasedSyncService;
         this.subjectMigrationService = subjectMigrationService;
         this.messagingService = messagingService;
+        this.organisationConfigService = organisationConfigService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -99,7 +102,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setObservations(observations);
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
         individualService.save(individual);
-        messagingService.saveMessageFor(individual);
+        if (organisationConfigService.isMessagingEnabled()) messagingService.saveMessageFor(individual);
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));

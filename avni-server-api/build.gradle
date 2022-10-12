@@ -75,6 +75,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.12.6'
     dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
     testCompile "org.mockito:mockito-core:2.23.4"
+    testCompile 'org.powermock:powermock-core:2.0.9'
+    testCompile 'org.powermock:powermock-api-mockito2:2.0.9'
+    testCompile 'org.powermock:powermock-module-junit4:2.0.9'
     runtime("org.springframework.boot:spring-boot-properties-migrator")
 }
 

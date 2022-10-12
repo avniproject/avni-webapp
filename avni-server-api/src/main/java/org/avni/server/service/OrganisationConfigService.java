@@ -240,6 +240,10 @@ public class OrganisationConfigService implements NonScopeAwareService {
         return isFeatureEnabled("enableComments");
     }
 
+    public boolean isMessagingEnabled() {
+        return isFeatureEnabled(OrganisationConfigSettingKeys.enableMessaging.name());
+    }
+
     @Override
     public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
         return organisationConfigRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
