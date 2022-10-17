@@ -1,7 +1,5 @@
 package org.avni.messaging.contract.glific;
 
-import org.avni.messaging.contract.glific.GlificErrorLocation;
-
 import java.util.List;
 
 public class GlificError {

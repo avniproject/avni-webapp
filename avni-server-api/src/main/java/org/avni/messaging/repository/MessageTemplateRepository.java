@@ -15,8 +15,8 @@ import java.util.List;
 
 @Repository
 public class MessageTemplateRepository {
-    private GlificRestClient glificRestClient;
-    private Object MESSAGE_TEMPLATE_REQUEST;
+    private final GlificRestClient glificRestClient;
+    private final Object MESSAGE_TEMPLATE_REQUEST;
 
     public MessageTemplateRepository(GlificRestClient glificRestClient) {
         this.glificRestClient = glificRestClient;

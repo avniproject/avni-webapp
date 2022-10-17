@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RestController
 public class MessageTemplateController {
 
-    private MessageTemplateRepository messageTemplateRepository;
+    private final MessageTemplateRepository messageTemplateRepository;
 
     @Autowired
     public MessageTemplateController(MessageTemplateRepository messageTemplateRepository) {

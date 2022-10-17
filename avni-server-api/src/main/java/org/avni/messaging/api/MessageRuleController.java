@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class MessageRuleController {
 
-    private MessagingService messagingService;
+    private final MessagingService messagingService;
 
     @Autowired
     public MessageRuleController(MessagingService messagingService) {

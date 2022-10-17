@@ -4,5 +4,5 @@ public enum EntityType {
     Subject,
     ProgramEnrolment,
     Encounter,
-    ProgramEncounter;
+    ProgramEncounter
 }

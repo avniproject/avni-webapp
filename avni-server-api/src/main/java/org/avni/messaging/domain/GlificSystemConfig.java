@@ -7,7 +7,7 @@ public class GlificSystemConfig {
     private static final String BASE_URL = "baseUrl";
     private static final String PHONE = "phone";
     private static final String PASSWORD = "password";
-    private ExternalSystemConfig externalSystemConfig;
+    private final ExternalSystemConfig externalSystemConfig;
 
     public GlificSystemConfig(ExternalSystemConfig externalSystemConfig) {
         this.externalSystemConfig = externalSystemConfig;

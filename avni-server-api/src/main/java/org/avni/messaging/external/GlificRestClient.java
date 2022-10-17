@@ -31,7 +31,7 @@ public class GlificRestClient {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final RestTemplate restTemplate;
 
-    private ExternalSystemConfigRepository organisationConfigRepository;
+    private final ExternalSystemConfigRepository organisationConfigRepository;
 
     @Autowired
     public GlificRestClient(RestTemplateBuilder builder, ExternalSystemConfigRepository organisationConfigRepository) {

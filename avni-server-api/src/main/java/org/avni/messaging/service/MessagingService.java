@@ -29,11 +29,11 @@ import javax.script.ScriptException;
 
 @Service
 public class MessagingService {
-    private static Logger logger = LoggerFactory.getLogger(MessagingService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 
     private final MessageRuleRepository messageRuleRepository;
-    private MessageReceiverRepository messageReceiverRepository;
-    private MessageRequestRepository messageRequestRepository;
+    private final MessageReceiverRepository messageReceiverRepository;
+    private final MessageRequestRepository messageRequestRepository;
     private final RuleService ruleService;
 
     @Autowired
