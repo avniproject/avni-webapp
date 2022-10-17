@@ -9,7 +9,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.List;
 
 

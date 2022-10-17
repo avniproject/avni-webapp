@@ -1,9 +1,6 @@
 package org.avni.messaging.external;
 
-import org.avni.messaging.contract.glific.GlificAuth;
-import org.avni.messaging.contract.glific.GlificAuthRequest;
-import org.avni.messaging.contract.glific.GlificResponse;
-import org.avni.messaging.contract.glific.GlificUser;
+import org.avni.messaging.contract.glific.*;
 import org.avni.messaging.domain.exception.GlificConnectException;
 import org.avni.messaging.domain.GlificSystemConfig;
 import org.avni.server.dao.externalSystem.ExternalSystemConfigRepository;
@@ -71,11 +68,14 @@ public class GlificRestClient {
         ResponseEntity<GlificResponse<T>> responseEntity = restTemplate.exchange(fullUrl, HttpMethod.POST, request, responseType);
 
         GlificResponse<T> response = responseEntity.getBody();
+        if (response == null) { //Guard clause against null type responses from Glific
+            return null;
+        }
         if (response.hasErrors()) {
             logger.error("Error while calling Glific API: {}", url);
             logger.error("Request is {}", request.getBody());
             logger.error("Response is {}", response);
-            throw new GlificConnectException(String.join(", ", response.getErrors().stream().map(o -> o.getMessage()).collect(Collectors.toList())));
+            throw new GlificConnectException(response.getErrors().stream().map(GlificError::getMessage).collect(Collectors.joining(", ")));
         }
         return response.getData();
     }
