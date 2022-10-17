@@ -10,10 +10,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
 
 @Sql(scripts = {"/test-data.sql"})
 public class MessageTemplateControllerTest extends AbstractControllerIntegrationTest {
@@ -24,8 +24,9 @@ public class MessageTemplateControllerTest extends AbstractControllerIntegration
     private static WireMockServer wireMockServer = new WireMockServer(9191);
 
     @BeforeClass
-    public static void beforeClass() {
+    public static void beforeClass() throws InterruptedException {
         wireMockServer.start();
+        Thread.sleep(2000);
     }
 
     @Before

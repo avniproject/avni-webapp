@@ -33,8 +33,9 @@ public class GlificRestClientTest extends AbstractControllerIntegrationTest {
     private static WireMockServer wireMockServer = new WireMockServer(9191);
 
     @BeforeClass
-    public static void beforeClass() {
+    public static void beforeClass() throws InterruptedException {
         wireMockServer.start();
+        Thread.sleep(2000);
     }
 
     @Before
