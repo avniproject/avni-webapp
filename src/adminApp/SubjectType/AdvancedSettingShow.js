@@ -46,7 +46,7 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
 
       <BooleanStatusInShow status={subjectType.allowMiddleName} label={"Allow Middle Name"} />
 
-      {subjectType.allowMiddleName && (
+      {subjectType.allowMiddleName && subjectType.validMiddleNameFormat && (
         <TextFormatFieldInShow
           label="Valid Middle Name"
           format={subjectType.validMiddleNameFormat}
