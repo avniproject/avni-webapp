@@ -14,15 +14,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ProgramEnrolmentContractWrapper {
-    private IndividualContractWrapper subject;
+public class ProgramEnrolmentContract {
+    private IndividualContract subject;
     private RuleRequestEntity rule;
     private List<VisitSchedule> visitSchedules = new ArrayList<>();
     private DateTime enrolmentDateTime;
     private DateTime programExitDateTime;
     private String uuid;
     private Boolean voided;
-    private Set<ProgramEncounterContractWrapper> programEncounters = new HashSet<>();
+    private Set<ProgramEncounterContract> programEncounters = new HashSet<>();
     private List<ObservationModelContract> observations = new ArrayList<>();
     private List<ObservationModelContract> exitObservations = new ArrayList<>();
     private String operationalProgramName;
@@ -85,11 +85,11 @@ public class ProgramEnrolmentContractWrapper {
         this.voided = voided;
     }
 
-    public Set<ProgramEncounterContractWrapper> getProgramEncounters() {
+    public Set<ProgramEncounterContract> getProgramEncounters() {
         return programEncounters;
     }
 
-    public void setProgramEncounters(Set<ProgramEncounterContractWrapper> programEncounters) {
+    public void setProgramEncounters(Set<ProgramEncounterContract> programEncounters) {
         this.programEncounters = programEncounters;
     }
 
@@ -117,11 +117,11 @@ public class ProgramEnrolmentContractWrapper {
         this.rule = rule;
     }
 
-    public IndividualContractWrapper getSubject() {
+    public IndividualContract getSubject() {
         return subject;
     }
 
-    public void setSubject(IndividualContractWrapper subject) {
+    public void setSubject(IndividualContract subject) {
         this.subject = subject;
     }
 
@@ -133,8 +133,8 @@ public class ProgramEnrolmentContractWrapper {
         this.visitSchedules = visitSchedules;
     }
 
-    public static ProgramEnrolmentContractWrapper fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
-        ProgramEnrolmentContractWrapper contract = new ProgramEnrolmentContractWrapper();
+    public static ProgramEnrolmentContract fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
+        ProgramEnrolmentContract contract = new ProgramEnrolmentContract();
         contract.setUuid(enrolment.getUuid());
         contract.setVoided(enrolment.isVoided());
         contract.setEnrolmentDateTime(enrolment.getEnrolmentDateTime());

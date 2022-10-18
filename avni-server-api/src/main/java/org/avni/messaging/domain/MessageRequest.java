@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "message_request")
+@Table(name = "message_request_queue")
 public class MessageRequest extends OrganisationAwareEntity {
     @Column
     @NotNull

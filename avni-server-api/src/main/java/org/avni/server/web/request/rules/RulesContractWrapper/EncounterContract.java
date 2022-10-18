@@ -11,10 +11,10 @@ import org.avni.server.web.request.rules.request.RuleRequestEntity;
 
 import java.util.List;
 
-public class EncounterContractWrapper {
+public class EncounterContract {
     private List<ObservationModelContract> observations;
     private RuleRequestEntity rule;
-    private IndividualContractWrapper subject;
+    private IndividualContract subject;
     private String uuid;
     private String name;
     private EncounterTypeContract encounterType;
@@ -123,16 +123,16 @@ public class EncounterContractWrapper {
         this.rule = rule;
     }
 
-    public IndividualContractWrapper getSubject() {
+    public IndividualContract getSubject() {
         return subject;
     }
 
-    public void setSubject(IndividualContractWrapper subject) {
+    public void setSubject(IndividualContract subject) {
         this.subject = subject;
     }
 
-    public static EncounterContractWrapper fromEncounter(Encounter encounter, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
-        EncounterContractWrapper contract = new EncounterContractWrapper();
+    public static EncounterContract fromEncounter(Encounter encounter, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
+        EncounterContract contract = new EncounterContract();
         contract.setUuid(encounter.getUuid());
         contract.setVoided(encounter.isVoided());
         contract.setName(encounter.getName());

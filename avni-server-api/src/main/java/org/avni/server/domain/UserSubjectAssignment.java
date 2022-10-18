@@ -8,7 +8,8 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "user_subject_assignment")
 @BatchSize(size = 100)
-public class UserSubjectAssignment extends OrganisationAwareEntity {
+public class
+UserSubjectAssignment extends OrganisationAwareEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.rules.RulesContractWrapper.*;
+import org.avni.server.web.request.rules.constructWrappers.*;
 import org.avni.server.web.request.rules.request.*;
 import org.avni.server.web.request.rules.response.*;
 import org.codehaus.jettison.json.JSONException;
@@ -16,14 +18,7 @@ import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.util.ObjectMapperSingleton;
 import org.avni.server.web.RestClient;
 import org.avni.server.web.request.RuleRequest;
-import org.avni.server.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
-import org.avni.server.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
-import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEncounterContractWrapper;
-import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
 import org.avni.server.web.request.rules.constant.WorkFlowTypeEnum;
-import org.avni.server.web.request.rules.constructWrappers.IndividualConstructionService;
-import org.avni.server.web.request.rules.constructWrappers.ProgramEncounterConstructionService;
-import org.avni.server.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.avni.server.web.request.rules.validateRules.RuleValidationService;
 import org.avni.server.web.validation.ValidationException;
 import org.slf4j.Logger;
@@ -57,6 +52,8 @@ public class RuleService implements NonScopeAwareService {
     private final RuleFailureLogRepository ruleFailureLogRepository;
     private final ObservationService observationService;
     private final EntityApprovalStatusService entityApprovalStatusService;
+    private final ContractBuilderServices contractBuilderServices;
+    private IndividualService individualService;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -71,10 +68,12 @@ public class RuleService implements NonScopeAwareService {
                        ProgramEnrolmentConstructionService programEnrolmentConstructionService,
                        RuleFailureLogRepository ruleFailureLogRepository,
                        ObservationService observationService,
-                       EntityApprovalStatusService entityApprovalStatusService) {
+                       EntityApprovalStatusService entityApprovalStatusService, ContractBuilderServices contractBuilderServices, IndividualService individualService) {
         this.ruleFailureLogRepository = ruleFailureLogRepository;
         this.observationService = observationService;
         this.entityApprovalStatusService = entityApprovalStatusService;
+        this.contractBuilderServices = contractBuilderServices;
+        this.individualService = individualService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
@@ -91,13 +90,13 @@ public class RuleService implements NonScopeAwareService {
         this.formRepository = formRepository;
     }
 
-    public RuleService(RestClient restClient) {
+    public RuleService(RestClient restClient, IndividualConstructionService individualConstructionService) {
         this.restClient = restClient;
         logger = null;
         ruleDependencyRepository = null;
         ruleRepository = null;
         ruledEntityRepositories = null;
-        individualConstructionService = null;
+        this.individualConstructionService = individualConstructionService;
         ruleValidationService = null;
         programEncounterConstructionService = null;
         programEnrolmentConstructionService = null;
@@ -105,6 +104,8 @@ public class RuleService implements NonScopeAwareService {
         ruleFailureLogRepository = null;
         observationService = null;
         entityApprovalStatusService = null;
+        contractBuilderServices = null;
+        individualService = null;
     }
 
     @Transactional
@@ -189,13 +190,13 @@ public class RuleService implements NonScopeAwareService {
         rule.setWorkFlowType(workFlowType);
         rule.setFormUuid(program.getUuid());
         rule.setRuleType("Program Summary");
-        ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = ProgramEnrolmentContractWrapper.fromEnrolment(programEnrolment, observationService, entityApprovalStatusService);
-        programEnrolmentContractWrapper.setRule(rule);
-        Set<ProgramEncounterContractWrapper> programEncountersContracts = programEnrolment.getProgramEncounters().stream().map(programEncounterConstructionService::constructProgramEncounterContractWrapper).collect(Collectors.toSet());
-        programEnrolmentContractWrapper.setProgramEncounters(programEncountersContracts);
-        programEnrolmentContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
+        ProgramEnrolmentContract programEnrolmentContract = ProgramEnrolmentContract.fromEnrolment(programEnrolment, observationService, entityApprovalStatusService);
+        programEnrolmentContract.setRule(rule);
+        Set<ProgramEncounterContract> programEncountersContracts = programEnrolment.getProgramEncounters().stream().map(programEncounterConstructionService::constructProgramEncounterContractWrapper).collect(Collectors.toSet());
+        programEnrolmentContract.setProgramEncounters(programEncountersContracts);
+        programEnrolmentContract.setSubject(individualConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, programEnrolment.getUuid());
-        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", programEnrolmentContractWrapper, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", programEnrolmentContract, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
         return ruleResponseEntity;
     }
@@ -213,26 +214,27 @@ public class RuleService implements NonScopeAwareService {
         rule.setWorkFlowType(workFlowType);
         rule.setFormUuid(subjectType.getUuid());
         rule.setRuleType("Subject Summary");
-        IndividualContractWrapper individualContractWrapper = programEnrolmentConstructionService.getSubjectInfo(individual);
-        individualContractWrapper.setRule(rule);
+        IndividualContract individualContract = individualConstructionService.getSubjectInfo(individual);
+        individualContract.setRule(rule);
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, individual.getUuid());
-        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", individualContractWrapper, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", individualContract, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
         return ruleResponseEntity;
     }
 
     public EligibilityRuleResponseEntity executeEligibilityRule(Individual individual, List<EncounterType> encounterTypes) {
         EligibilityRuleResponseEntity ruleResponseEntity = new EligibilityRuleResponseEntity();
-        IndividualContractWrapper individualContractWrapper = programEnrolmentConstructionService.getSubjectInfo(individual);
+        IndividualContract individualContract = individualConstructionService.getSubjectInfo(individual);
         List<EncounterTypeContract> encounterTypeContracts = encounterTypes.stream().map(EncounterTypeContract::fromEncounterType).collect(Collectors.toList());
-        EncounterEligibilityRuleRequestEntity ruleRequest = new EncounterEligibilityRuleRequestEntity(individualContractWrapper, encounterTypeContracts);
+        EncounterEligibilityRuleRequestEntity ruleRequest = new EncounterEligibilityRuleRequestEntity(individualContract, encounterTypeContracts);
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
         return ruleResponseEntity;
     }
 
     public DateTime executeScheduleRule(Individual individual, String scheduleRule) {
         ScheduleRuleResponseEntity scheduleRuleResponseEntity = new ScheduleRuleResponseEntity();
-        ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(individual, scheduleRule);
+        RuleContract individualContract = individualConstructionService.getSubjectInfo(individual);
+        ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(individualContract, scheduleRule);
         scheduleRuleResponseEntity = createHttpHeaderAndSendRequest("api/scheduleRule", ruleRequest, null, ScheduleRuleResponseEntity.class, scheduleRuleResponseEntity);
         return scheduleRuleResponseEntity.getScheduledDateTime();
     }
@@ -251,35 +253,35 @@ public class RuleService implements NonScopeAwareService {
             case PROGRAM_ENROLMENT:
                 ProgramEnrolmentRequestEntity programEnrolmentRequestEntity = requestEntityWrapper.getProgramEnrolmentRequestEntity();
                 entityUuid = programEnrolmentRequestEntity.getUuid();
-                ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(programEnrolmentRequestEntity);
-                programEnrolmentContractWrapper.setRule(rule);
-                programEnrolmentContractWrapper.setVisitSchedules(new ArrayList<>());
-                programEnrolmentContractWrapper.setChecklistDetails(programEnrolmentConstructionService.constructChecklistDetailRequest());
-                entity = programEnrolmentContractWrapper;
+                ProgramEnrolmentContract programEnrolmentContract = programEnrolmentConstructionService.constructProgramEnrolmentContract(programEnrolmentRequestEntity);
+                programEnrolmentContract.setRule(rule);
+                programEnrolmentContract.setVisitSchedules(new ArrayList<>());
+                programEnrolmentContract.setChecklistDetails(programEnrolmentConstructionService.constructChecklistDetailRequest());
+                entity = programEnrolmentContract;
                 break;
             case PROGRAM_ENCOUNTER:
                 ProgramEncounterRequestEntity programEncounterRequestEntity = requestEntityWrapper.getProgramEncounterRequestEntity();
                 entityUuid = programEncounterRequestEntity.getUuid();
-                ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(programEncounterRequestEntity);
-                programEncounterContractWrapper.setRule(rule);
-                programEncounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(programEncounterRequestEntity));
-                entity = programEncounterContractWrapper;
+                ProgramEncounterContract programEncounterContract = programEncounterConstructionService.constructProgramEncounterContract(programEncounterRequestEntity);
+                programEncounterContract.setRule(rule);
+                programEncounterContract.setVisitSchedules(programEncounterConstructionService.constructProgramEnrolmentVisitScheduleContract(programEncounterRequestEntity));
+                entity = programEncounterContract;
                 break;
             case ENCOUNTER:
                 EncounterRequestEntity encounterRequestEntity = requestEntityWrapper.getEncounterRequestEntity();
                 entityUuid = encounterRequestEntity.getUuid();
-                EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(encounterRequestEntity);
-                encounterContractWrapper.setRule(rule);
-                encounterContractWrapper.setVisitSchedules(programEncounterConstructionService.constructIndividualVisitScheduleContract(encounterRequestEntity));
-                entity = encounterContractWrapper;
+                EncounterContract encounterContract = programEncounterConstructionService.constructEncounterContract(encounterRequestEntity);
+                encounterContract.setRule(rule);
+                encounterContract.setVisitSchedules(programEncounterConstructionService.constructIndividualVisitScheduleContract(encounterRequestEntity));
+                entity = encounterContract;
                 break;
             case INDIVIDUAL:
                 IndividualRequestEntity individualRequestEntity = requestEntityWrapper.getIndividualRequestEntity();
                 entityUuid = individualRequestEntity.getUuid();
-                IndividualContractWrapper individualContractWrapper = individualConstructionService.constructIndividualContract(individualRequestEntity);
-                individualContractWrapper.setRule(rule);
-                individualContractWrapper.setVisitSchedules(new ArrayList<>());
-                entity = individualContractWrapper;
+                IndividualContract individualContract = new IndividualContractBuilder(contractBuilderServices, individualService).build(individualRequestEntity);
+                individualContract.setRule(rule);
+                individualContract.setVisitSchedules(new ArrayList<>());
+                entity = individualContract;
                 break;
         }
 

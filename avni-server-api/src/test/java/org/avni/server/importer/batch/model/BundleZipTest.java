@@ -1,6 +1,5 @@
 package org.avni.server.importer.batch.model;
 
-import org.avni.server.importer.batch.model.BundleZip;
 import org.junit.Test;
 
 import java.util.HashMap;

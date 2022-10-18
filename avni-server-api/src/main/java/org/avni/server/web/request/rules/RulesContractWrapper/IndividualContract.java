@@ -8,7 +8,7 @@ import org.avni.server.web.request.rules.request.RuleRequestEntity;
 
 import java.util.List;
 
-public class IndividualContractWrapper {
+public class IndividualContract implements RuleContract {
     private String uuid;
 
     private String firstName;
@@ -37,21 +37,21 @@ public class IndividualContractWrapper {
 
     private RuleRequestEntity rule;
 
-    private List<ProgramEnrolmentContractWrapper> enrolments;
+    private List<ProgramEnrolmentContract> enrolments;
 
-    private List<EncounterContractWrapper> encounters;
+    private List<EncounterContract> encounters;
 
     private List<VisitSchedule> visitSchedules;
 
     private EntityApprovalStatusWrapper latestEntityApprovalStatus;
 
-    private List<GroupSubjectContractWrapper> groups;
+    private List<GroupSubjectContract> groups;
 
-    public List<GroupSubjectContractWrapper> getGroups() {
+    public List<GroupSubjectContract> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<GroupSubjectContractWrapper> groups) {
+    public void setGroups(List<GroupSubjectContract> groups) {
         this.groups = groups;
     }
 
@@ -63,19 +63,19 @@ public class IndividualContractWrapper {
         this.latestEntityApprovalStatus = latestEntityApprovalStatus;
     }
 
-    public List<ProgramEnrolmentContractWrapper> getEnrolments() {
+    public List<ProgramEnrolmentContract> getEnrolments() {
         return enrolments;
     }
 
-    public void setEnrolments(List<ProgramEnrolmentContractWrapper> enrolments) {
+    public void setEnrolments(List<ProgramEnrolmentContract> enrolments) {
         this.enrolments = enrolments;
     }
 
-    public List<EncounterContractWrapper> getEncounters() {
+    public List<EncounterContract> getEncounters() {
         return encounters;
     }
 
-    public void setEncounters(List<EncounterContractWrapper> encounters) {
+    public void setEncounters(List<EncounterContract> encounters) {
         this.encounters = encounters;
     }
 

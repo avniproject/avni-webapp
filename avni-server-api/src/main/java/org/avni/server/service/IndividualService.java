@@ -41,6 +41,9 @@ public class IndividualService implements ScopeAwareService {
         this.addressLevelService = addressLevelService;
     }
 
+    public Individual findByUuid(String uuid) {
+        return individualRepository.findByUuid(uuid);
+    }
     public IndividualContract getSubjectEncounters(String individualUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
         if (individual == null) {

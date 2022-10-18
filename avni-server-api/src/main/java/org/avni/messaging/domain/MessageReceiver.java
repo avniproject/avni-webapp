@@ -13,9 +13,9 @@ public class MessageReceiver extends OrganisationAwareEntity {
     private final EntityType entityType;
 
     @Column
-    private final String entityId;
+    private final Long entityId;
 
-    public MessageReceiver(EntityType entityType, String entityId) {
+    public MessageReceiver(EntityType entityType, Long entityId) {
         this.entityType = entityType;
         this.entityId = entityId;
     }
@@ -29,7 +29,7 @@ public class MessageReceiver extends OrganisationAwareEntity {
         return entityType;
     }
 
-    public String getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 }

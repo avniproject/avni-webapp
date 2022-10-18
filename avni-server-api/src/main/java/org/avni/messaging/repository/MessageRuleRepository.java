@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface MessageRuleRepository extends CHSRepository<MessageRule> {
     Page<MessageRule> findAll(Pageable pageable);
 
-    MessageRule findMessageRuleByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId);
+    MessageRule findMessageRuleByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId);
     Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable);
 }

@@ -2,11 +2,11 @@ package org.avni.server.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.DateTime;
 
-public class GroupSubjectContractWrapper {
+public class GroupSubjectContract {
     private String uuid;
-    private IndividualContractWrapper groupSubject;
-    private IndividualContractWrapper memberSubject;
-    private GroupRoleContractWrapper groupRole;
+    private IndividualContract groupSubject;
+    private IndividualContract memberSubject;
+    private GroupRoleContract groupRole;
     private DateTime membershipStartDate;
     private DateTime membershipEndDate;
     private boolean voided;
@@ -19,27 +19,27 @@ public class GroupSubjectContractWrapper {
         this.uuid = uuid;
     }
 
-    public IndividualContractWrapper getGroupSubject() {
+    public IndividualContract getGroupSubject() {
         return groupSubject;
     }
 
-    public void setGroupSubject(IndividualContractWrapper groupSubject) {
+    public void setGroupSubject(IndividualContract groupSubject) {
         this.groupSubject = groupSubject;
     }
 
-    public IndividualContractWrapper getMemberSubject() {
+    public IndividualContract getMemberSubject() {
         return memberSubject;
     }
 
-    public void setMemberSubject(IndividualContractWrapper memberSubject) {
+    public void setMemberSubject(IndividualContract memberSubject) {
         this.memberSubject = memberSubject;
     }
 
-    public GroupRoleContractWrapper getGroupRole() {
+    public GroupRoleContract getGroupRole() {
         return groupRole;
     }
 
-    public void setGroupRole(GroupRoleContractWrapper groupRole) {
+    public void setGroupRole(GroupRoleContract groupRole) {
         this.groupRole = groupRole;
     }
 

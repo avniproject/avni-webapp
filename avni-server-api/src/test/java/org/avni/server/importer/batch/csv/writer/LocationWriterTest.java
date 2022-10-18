@@ -5,7 +5,6 @@ import org.avni.server.dao.LocationRepository;
 import org.avni.server.domain.AddressLevel;
 import org.avni.server.domain.AddressLevelType;
 import org.avni.server.importer.batch.csv.creator.ObservationCreator;
-import org.avni.server.importer.batch.csv.writer.LocationWriter;
 import org.avni.server.importer.batch.model.Row;
 import org.avni.server.service.LocationService;
 import org.junit.Test;

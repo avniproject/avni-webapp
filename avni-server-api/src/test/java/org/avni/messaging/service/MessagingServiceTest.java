@@ -8,6 +8,7 @@ import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.MessageRequest;
 import org.avni.messaging.domain.MessageRule;
 import org.avni.server.domain.Individual;
+import org.avni.server.domain.SubjectType;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -54,13 +55,17 @@ public class MessagingServiceTest {
     public void shouldSaveMessageRequestIfMessageRuleConfiguredOnSaveOfSubjectEntityType() {
         Individual individual = mock(Individual.class);
         MessageRule messageRule = mock(MessageRule.class);
-        String subjectTypeId = "234";
-        when(individual.getLegacyId()).thenReturn(subjectTypeId);
+        SubjectType mockSubjectType = mock(SubjectType.class);
+        Long subjectTypeId = 234L;
+        when(individual.getSubjectType()).thenReturn(mockSubjectType);
+        when(mockSubjectType.getId()).thenReturn(subjectTypeId);
+        Long individualId = 567l;
+        when(individual.getId()).thenReturn(individualId);
         when(messageRuleRepository.findMessageRuleByEntityTypeAndEntityTypeId(EntityType.Subject, subjectTypeId)).thenReturn(messageRule);
 
-        String scheduleRule = "function(params, imports) { return '2013-02-04 10:35:24'; }";
+        String scheduleRule = "function(params, imports) { return {'scheduledDateTime': '2013-02-04 10:35:24'; }}";
         when(messageRule.getScheduleRule()).thenReturn(scheduleRule);
-        long messageRuleId = 123L;
+        Long messageRuleId = 123L;
         when(messageRule.getId()).thenReturn(messageRuleId);
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
@@ -72,7 +77,8 @@ public class MessagingServiceTest {
         verify(messageReceiverRepository).save(messageReceiver.capture());
         MessageReceiver messageReceiver = this.messageReceiver.getValue();
         assertThat(messageReceiver.getEntityType()).isEqualTo(EntityType.Subject);
-        assertThat(messageReceiver.getEntityId()).isEqualTo(subjectTypeId);
+        assertThat(messageReceiver.getEntityId()).isEqualTo(individualId);
+        assertThat(messageReceiver.getUuid()).isNotNull();
 
         verify(ruleService).executeScheduleRule(eq(individual), eq(scheduleRule));
         verify(messageRequestRepository).save(messageRequest.capture());
@@ -80,5 +86,6 @@ public class MessagingServiceTest {
         assertThat(messageRequest.getMessageRuleId()).isEqualTo(messageRuleId);
         assertThat(messageRequest.getMessageReceiverId()).isEqualTo(messageReceiver.getId());
         assertThat(messageRequest.getScheduledDateTime()).isEqualTo(scheduledDateTime);
+        assertThat(messageRequest.getUuid()).isNotNull();
     }
 }

@@ -1,18 +1,19 @@
 package org.avni.server.web.request.rules.request;
 
 import org.avni.server.domain.Individual;
+import org.avni.server.web.request.rules.RulesContractWrapper.RuleContract;
 
 public class ScheduleRuleRequestEntity {
-    private Individual individual;
+    private RuleContract entity;
     private String scheduleRule;
 
-    public ScheduleRuleRequestEntity(Individual individual, String scheduleRule) {
-        this.individual = individual;
+    public ScheduleRuleRequestEntity(RuleContract entity, String scheduleRule) {
+        this.entity = entity;
         this.scheduleRule = scheduleRule;
     }
 
-    public Individual getIndividual() {
-        return individual;
+    public RuleContract getEntity() {
+        return entity;
     }
 
     public String getScheduleRule() {

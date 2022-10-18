@@ -8,8 +8,8 @@ import org.avni.server.projection.IndividualWebProjection;
 import org.avni.server.service.*;
 import org.avni.server.web.request.*;
 import org.avni.server.web.request.rules.RulesContractWrapper.Decisions;
-import org.avni.server.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
-import org.avni.server.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
+import org.avni.server.web.request.rules.RulesContractWrapper.IndividualContract;
+import org.avni.server.web.request.rules.constructWrappers.IndividualConstructionService;
 import org.avni.server.web.request.webapp.search.SubjectSearchRequest;
 import org.avni.server.web.response.AvniEntityResponse;
 import org.joda.time.DateTime;
@@ -51,7 +51,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final EncounterService encounterService;
     private final IndividualSearchService individualSearchService;
     private final IdentifierAssignmentRepository identifierAssignmentRepository;
-    private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
+
+    private final IndividualConstructionService individualConstructionService;
     private final ScopeBasedSyncService<Individual> scopeBasedSyncService;
     private final SubjectMigrationService subjectMigrationService;
     private final MessagingService messagingService;
@@ -69,7 +70,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 EncounterService encounterService,
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
-                                ProgramEnrolmentConstructionService programEnrolmentConstructionService,
+                                IndividualConstructionService individualConstructionService,
                                 OrganisationConfigService organisationConfigService,
                                 ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService, MessagingService messagingService) {
         this.individualRepository = individualRepository;
@@ -83,7 +84,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.encounterService = encounterService;
         this.individualSearchService = individualSearchService;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
-        this.programEnrolmentConstructionService = programEnrolmentConstructionService;
+        this.individualConstructionService = individualConstructionService;
         this.scopeBasedSyncService = scopeBasedSyncService;
         this.subjectMigrationService = subjectMigrationService;
         this.messagingService = messagingService;
@@ -192,16 +193,16 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping(value = "/web/subjectProfile")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
-        IndividualContract individualContract = individualService.getSubjectInfo(uuid);
+    public ResponseEntity<org.avni.server.web.request.IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
+        org.avni.server.web.request.IndividualContract individualContract = individualService.getSubjectInfo(uuid);
         return ResponseEntity.ok(individualContract);
     }
 
     @GetMapping(value = "/web/subject/{subjectUuid}/programs")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
-        IndividualContract individualEnrolmentContract = individualService.getSubjectProgramEnrollment(uuid);
+    public ResponseEntity<org.avni.server.web.request.IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
+        org.avni.server.web.request.IndividualContract individualEnrolmentContract = individualService.getSubjectProgramEnrollment(uuid);
         if (individualEnrolmentContract == null) {
             return ResponseEntity.notFound().build();
         }
@@ -211,8 +212,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping(value = "/web/subject/{uuid}/encounters")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ResponseEntity<IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
-        IndividualContract individualEncounterContract = individualService.getSubjectEncounters(uuid);
+    public ResponseEntity<org.avni.server.web.request.IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
+        org.avni.server.web.request.IndividualContract individualEncounterContract = individualService.getSubjectEncounters(uuid);
         if (individualEncounterContract == null) {
             return ResponseEntity.notFound().build();
         }
@@ -247,12 +248,12 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping("/subject/search")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public List<IndividualContractWrapper> getAllSubjects(@RequestParam String addressLevelUUID,
-                                                          @RequestParam String subjectTypeName) {
+    public List<IndividualContract> getAllSubjects(@RequestParam String addressLevelUUID,
+                                                   @RequestParam String subjectTypeName) {
         AddressLevel addressLevel = locationRepository.findByUuid(addressLevelUUID);
         SubjectType subjectType = subjectTypeRepository.findByName(subjectTypeName);
         List<Individual> individuals = individualRepository.findAllByAddressLevelAndSubjectTypeAndIsVoidedFalse(addressLevel, subjectType);
-        return individuals.stream().map(programEnrolmentConstructionService::getSubjectInfo).collect(Collectors.toList());
+        return individuals.stream().map(individualConstructionService::getSubjectInfo).collect(Collectors.toList());
     }
 
     @GetMapping(value = {"/subjects", "/subjects/search/find"})

@@ -8,10 +8,10 @@ import org.avni.server.web.request.rules.request.RuleRequestEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramEncounterContractWrapper {
+public class ProgramEncounterContract {
     private List<ObservationModelContract> observations = new ArrayList<>();
     private RuleRequestEntity rule;
-    private ProgramEnrolmentContractWrapper programEnrolment;
+    private ProgramEnrolmentContract programEnrolment;
     private List<VisitSchedule> visitSchedules;
     private String name;
     private String uuid;
@@ -111,11 +111,11 @@ public class ProgramEncounterContractWrapper {
         this.visitSchedules = visitSchedules;
     }
 
-    public ProgramEnrolmentContractWrapper getProgramEnrolment() {
+    public ProgramEnrolmentContract getProgramEnrolment() {
         return programEnrolment;
     }
 
-    public void setProgramEnrolment(ProgramEnrolmentContractWrapper programEnrolment) {
+    public void setProgramEnrolment(ProgramEnrolmentContract programEnrolment) {
         this.programEnrolment = programEnrolment;
     }
 

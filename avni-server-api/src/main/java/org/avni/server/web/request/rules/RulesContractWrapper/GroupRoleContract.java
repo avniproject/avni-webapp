@@ -3,7 +3,7 @@ package org.avni.server.web.request.rules.RulesContractWrapper;
 import org.avni.server.domain.GroupRole;
 import org.avni.server.web.request.SubjectTypeContract;
 
-public class GroupRoleContractWrapper {
+public class GroupRoleContract {
     private String uuid;
     private SubjectTypeContract groupSubjectType;
     private SubjectTypeContract memberSubjectType;
@@ -13,17 +13,17 @@ public class GroupRoleContractWrapper {
     private double minimumNumberOfMembers;
     private boolean voided;
 
-    public static GroupRoleContractWrapper fromGroupRole(GroupRole groupRole) {
-        GroupRoleContractWrapper groupRoleContractWrapper = new GroupRoleContractWrapper();
-        groupRoleContractWrapper.setUuid(groupRole.getUuid());
-        groupRoleContractWrapper.setGroupSubjectType(SubjectTypeContract.fromSubjectType(groupRole.getGroupSubjectType()));
-        groupRoleContractWrapper.setMemberSubjectType(SubjectTypeContract.fromSubjectType(groupRole.getMemberSubjectType()));
-        groupRoleContractWrapper.setRole(groupRole.getRole());
-        groupRoleContractWrapper.setPrimary(groupRole.isPrimary());
-        groupRoleContractWrapper.setMaximumNumberOfMembers(groupRole.getMaximumNumberOfMembers());
-        groupRoleContractWrapper.setMinimumNumberOfMembers(groupRole.getMinimumNumberOfMembers());
-        groupRoleContractWrapper.setVoided(groupRole.isVoided());
-        return groupRoleContractWrapper;
+    public static GroupRoleContract fromGroupRole(GroupRole groupRole) {
+        GroupRoleContract groupRoleContract = new GroupRoleContract();
+        groupRoleContract.setUuid(groupRole.getUuid());
+        groupRoleContract.setGroupSubjectType(SubjectTypeContract.fromSubjectType(groupRole.getGroupSubjectType()));
+        groupRoleContract.setMemberSubjectType(SubjectTypeContract.fromSubjectType(groupRole.getMemberSubjectType()));
+        groupRoleContract.setRole(groupRole.getRole());
+        groupRoleContract.setPrimary(groupRole.isPrimary());
+        groupRoleContract.setMaximumNumberOfMembers(groupRole.getMaximumNumberOfMembers());
+        groupRoleContract.setMinimumNumberOfMembers(groupRole.getMinimumNumberOfMembers());
+        groupRoleContract.setVoided(groupRole.isVoided());
+        return groupRoleContract;
     }
 
     public String getUuid() {

@@ -2,19 +2,18 @@ package org.avni.server.web.request.rules.constructWrappers;
 
 import org.avni.server.dao.EncounterTypeRepository;
 import org.avni.server.dao.IndividualRepository;
-import org.avni.server.dao.ProgramEncounterRepository;
 import org.avni.server.dao.ProgramEnrolmentRepository;
 import org.avni.server.domain.*;
 import org.avni.server.service.ObservationService;
-import org.avni.server.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
-import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEncounterContractWrapper;
-import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
-import org.avni.server.web.request.rules.RulesContractWrapper.VisitSchedule;
-import org.avni.server.web.request.rules.request.EncounterRequestEntity;
-import org.avni.server.web.request.rules.request.ProgramEncounterRequestEntity;
 import org.avni.server.web.request.EncounterTypeContract;
 import org.avni.server.web.request.ObservationContract;
 import org.avni.server.web.request.ObservationModelContract;
+import org.avni.server.web.request.rules.RulesContractWrapper.EncounterContract;
+import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEncounterContract;
+import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEnrolmentContract;
+import org.avni.server.web.request.rules.RulesContractWrapper.VisitSchedule;
+import org.avni.server.web.request.rules.request.EncounterRequestEntity;
+import org.avni.server.web.request.rules.request.ProgramEncounterRequestEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class ProgramEncounterConstructionService {
     private final ObservationService observationService;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final EncounterTypeRepository encounterTypeRepository;
-    private final ProgramEncounterRepository programEncounterRepository;
+    private final IndividualConstructionService individualConstructionService;
     private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private final IndividualRepository individualRepository;
 
@@ -45,7 +44,8 @@ public class ProgramEncounterConstructionService {
             EncounterTypeRepository encounterTypeRepository,
             ProgramEnrolmentConstructionService programEnrolmentConstructionService,
             IndividualRepository individualRepository,
-            ProgramEncounterRepository programEncounterRepository) {
+            IndividualConstructionService individualConstructionService) {
+        this.individualConstructionService = individualConstructionService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.observationService = observationService;
         this.observationConstructionService = observationConstructionService;
@@ -53,33 +53,32 @@ public class ProgramEncounterConstructionService {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEnrolmentConstructionService = programEnrolmentConstructionService;
         this.individualRepository = individualRepository;
-        this.programEncounterRepository = programEncounterRepository;
     }
 
-    public ProgramEncounterContractWrapper constructProgramEncounterContract(ProgramEncounterRequestEntity request) {
-        ProgramEncounterContractWrapper programEncounterContractWrapper = new ProgramEncounterContractWrapper();
-        programEncounterContractWrapper.setName(request.getName());
-        programEncounterContractWrapper.setUuid(request.getUuid());
-        programEncounterContractWrapper.setEncounterDateTime(request.getEncounterDateTime());
-        programEncounterContractWrapper.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
-        programEncounterContractWrapper.setMaxVisitDateTime(request.getMaxVisitDateTime());
-        programEncounterContractWrapper.setCancelDateTime(request.getCancelDateTime());
-        programEncounterContractWrapper.setVoided(request.isVoided());
+    public ProgramEncounterContract constructProgramEncounterContract(ProgramEncounterRequestEntity request) {
+        ProgramEncounterContract programEncounterContract = new ProgramEncounterContract();
+        programEncounterContract.setName(request.getName());
+        programEncounterContract.setUuid(request.getUuid());
+        programEncounterContract.setEncounterDateTime(request.getEncounterDateTime());
+        programEncounterContract.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
+        programEncounterContract.setMaxVisitDateTime(request.getMaxVisitDateTime());
+        programEncounterContract.setCancelDateTime(request.getCancelDateTime());
+        programEncounterContract.setVoided(request.isVoided());
         if (request.getObservations() != null) {
-            programEncounterContractWrapper.setObservations(request.getObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+            programEncounterContract.setObservations(request.getObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
         if (request.getCancelObservations() != null) {
-            programEncounterContractWrapper.setCancelObservations(request.getCancelObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+            programEncounterContract.setCancelObservations(request.getCancelObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
         if (request.getProgramEnrolmentUUID() != null) {
             ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID());
-            ProgramEnrolmentContractWrapper enrolmentContract = constructEnrolments(programEnrolment, request.getUuid());
-            programEncounterContractWrapper.setProgramEnrolment(enrolmentContract);
+            ProgramEnrolmentContract enrolmentContract = constructEnrolments(programEnrolment, request.getUuid());
+            programEncounterContract.setProgramEnrolment(enrolmentContract);
         }
         if (request.getEncounterTypeUUID() != null) {
-            programEncounterContractWrapper.setEncounterType(constructEncounterType(request.getEncounterTypeUUID()));
+            programEncounterContract.setEncounterType(constructEncounterType(request.getEncounterTypeUUID()));
         }
-        return programEncounterContractWrapper;
+        return programEncounterContract;
     }
 
     public List<VisitSchedule> constructProgramEnrolmentVisitScheduleContract(ProgramEncounterRequestEntity requestEntity) {
@@ -116,37 +115,37 @@ public class ProgramEncounterConstructionService {
         return encounterTypeContract.fromEncounterType(encounterType);
     }
 
-    private Set<ProgramEncounterContractWrapper> constructEncountersExcludingSelf(Set<ProgramEncounter> encounters, String selfEncounterUuid) {
+    private Set<ProgramEncounterContract> constructEncountersExcludingSelf(Set<ProgramEncounter> encounters, String selfEncounterUuid) {
         return encounters.stream()
                 .filter(encounter -> !encounter.getUuid().equalsIgnoreCase(selfEncounterUuid))
                 .map(this::constructProgramEncounterContractWrapper)
                 .collect(Collectors.toSet());
     }
 
-    public ProgramEncounterContractWrapper constructProgramEncounterContractWrapper(ProgramEncounter encounter) {
-        ProgramEncounterContractWrapper programEncounterContractWrapper = new ProgramEncounterContractWrapper();
+    public ProgramEncounterContract constructProgramEncounterContractWrapper(ProgramEncounter encounter) {
+        ProgramEncounterContract programEncounterContract = new ProgramEncounterContract();
         EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
         encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
-        programEncounterContractWrapper.setUuid(encounter.getUuid());
-        programEncounterContractWrapper.setName(encounter.getName());
-        programEncounterContractWrapper.setEncounterType(encounterTypeContract);
-        programEncounterContractWrapper.setEncounterDateTime(encounter.getEncounterDateTime());
-        programEncounterContractWrapper.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
-        programEncounterContractWrapper.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
-        programEncounterContractWrapper.setVoided(encounter.isVoided());
+        programEncounterContract.setUuid(encounter.getUuid());
+        programEncounterContract.setName(encounter.getName());
+        programEncounterContract.setEncounterType(encounterTypeContract);
+        programEncounterContract.setEncounterDateTime(encounter.getEncounterDateTime());
+        programEncounterContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
+        programEncounterContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
+        programEncounterContract.setVoided(encounter.isVoided());
         if (encounter.getObservations() != null) {
             List<ObservationContract> observationContracts = observationService.constructObservations(encounter.getObservations());
-            programEncounterContractWrapper.setObservations(getObservationModelContracts(observationContracts));
+            programEncounterContract.setObservations(getObservationModelContracts(observationContracts));
         }
         if (encounter.getCancelObservations() != null) {
             List<ObservationContract> observationContracts = observationService.constructObservations(encounter.getCancelObservations());
-            programEncounterContractWrapper.setCancelObservations(getObservationModelContracts(observationContracts));
+            programEncounterContract.setCancelObservations(getObservationModelContracts(observationContracts));
         }
-        return programEncounterContractWrapper;
+        return programEncounterContract;
     }
 
-    public ProgramEnrolmentContractWrapper constructEnrolments(ProgramEnrolment programEnrolment, String currentProgramEncounterUUID) {
-        ProgramEnrolmentContractWrapper enrolmentContract = new ProgramEnrolmentContractWrapper();
+    public ProgramEnrolmentContract constructEnrolments(ProgramEnrolment programEnrolment, String currentProgramEncounterUUID) {
+        ProgramEnrolmentContract enrolmentContract = new ProgramEnrolmentContract();
         enrolmentContract.setUuid(programEnrolment.getUuid());
         enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
         enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
@@ -161,9 +160,9 @@ public class ProgramEncounterConstructionService {
             List<ObservationContract> observationContracts = observationService.constructObservations(programEnrolment.getProgramExitObservations());
             enrolmentContract.setExitObservations(getObservationModelContracts(observationContracts));
         }
-        Set<ProgramEncounterContractWrapper> encountersContractList = constructEncountersExcludingSelf(programEnrolment.getProgramEncounters(), currentProgramEncounterUUID);
+        Set<ProgramEncounterContract> encountersContractList = constructEncountersExcludingSelf(programEnrolment.getProgramEncounters(), currentProgramEncounterUUID);
         enrolmentContract.setProgramEncounters(encountersContractList);
-        enrolmentContract.setSubject(programEnrolmentConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
+        enrolmentContract.setSubject(individualConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
         return enrolmentContract;
     }
 
@@ -176,34 +175,34 @@ public class ProgramEncounterConstructionService {
 
 
     //Encounter Contract Construction
-    public EncounterContractWrapper constructEncounterContract(EncounterRequestEntity encounterRequestEntity) {
-        EncounterContractWrapper encounterContractWrapper = new EncounterContractWrapper();
-        encounterContractWrapper.setUuid(encounterRequestEntity.getUuid());
-        encounterContractWrapper.setName(encounterRequestEntity.getName());
-        encounterContractWrapper.setEncounterDateTime(encounterRequestEntity.getEncounterDateTime());
-        encounterContractWrapper.setCancelDateTime(encounterRequestEntity.getCancelDateTime());
-        encounterContractWrapper.setEarliestVisitDateTime(encounterRequestEntity.getEarliestVisitDateTime());
-        encounterContractWrapper.setMaxVisitDateTime(encounterRequestEntity.getMaxVisitDateTime());
-        encounterContractWrapper.setVoided(encounterRequestEntity.isVoided());
+    public EncounterContract constructEncounterContract(EncounterRequestEntity encounterRequestEntity) {
+        EncounterContract encounterContract = new EncounterContract();
+        encounterContract.setUuid(encounterRequestEntity.getUuid());
+        encounterContract.setName(encounterRequestEntity.getName());
+        encounterContract.setEncounterDateTime(encounterRequestEntity.getEncounterDateTime());
+        encounterContract.setCancelDateTime(encounterRequestEntity.getCancelDateTime());
+        encounterContract.setEarliestVisitDateTime(encounterRequestEntity.getEarliestVisitDateTime());
+        encounterContract.setMaxVisitDateTime(encounterRequestEntity.getMaxVisitDateTime());
+        encounterContract.setVoided(encounterRequestEntity.isVoided());
         if (encounterRequestEntity.getObservations() != null) {
-            encounterContractWrapper.setObservations(encounterRequestEntity.getObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+            encounterContract.setObservations(encounterRequestEntity.getObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
         if (encounterRequestEntity.getCancelObservations() != null) {
-            encounterContractWrapper.setCancelObservations(encounterRequestEntity.getCancelObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
+            encounterContract.setCancelObservations(encounterRequestEntity.getCancelObservations().stream().map(x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
         if (encounterRequestEntity.getEncounterTypeUUID() != null) {
-            encounterContractWrapper.setEncounterType(constructEncounterType(encounterRequestEntity.getEncounterTypeUUID()));
+            encounterContract.setEncounterType(constructEncounterType(encounterRequestEntity.getEncounterTypeUUID()));
         }
         if (encounterRequestEntity.getIndividualUUID() != null) {
             Individual individual = individualRepository.findByUuid(encounterRequestEntity.getIndividualUUID());
-            encounterContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(individual));
+            encounterContract.setSubject(individualConstructionService.getSubjectInfo(individual));
         }
-        return encounterContractWrapper;
+        return encounterContract;
     }
 
-    public List<ProgramEnrolmentContractWrapper> mapEnrolments(Set<ProgramEnrolment> programEnrolments) {
+    public List<ProgramEnrolmentContract> mapEnrolments(Set<ProgramEnrolment> programEnrolments) {
         return programEnrolments.stream().map(programEnrolment -> {
-            ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = new ProgramEnrolmentContractWrapper();
+            ProgramEnrolmentContract programEnrolmentContractWrapper = new ProgramEnrolmentContract();
             programEnrolmentContractWrapper.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
             programEnrolmentContractWrapper.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
             programEnrolmentContractWrapper.setUuid(programEnrolment.getUuid());
@@ -212,17 +211,17 @@ public class ProgramEncounterConstructionService {
         }).collect(Collectors.toList());
     }
 
-    public List<EncounterContractWrapper> mapEncounters(Set<Encounter> encounters) {
+    public List<EncounterContract> mapEncounters(Set<Encounter> encounters) {
         return encounters.stream().map(encounter -> {
-            EncounterContractWrapper encounterContractWrapper = new EncounterContractWrapper();
-            encounterContractWrapper.setUuid(encounter.getUuid());
-            encounterContractWrapper.setName(encounter.getName());
-            encounterContractWrapper.setEncounterDateTime(encounter.getEncounterDateTime());
-            encounterContractWrapper.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
-            encounterContractWrapper.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
-            encounterContractWrapper.setVoided(encounter.isVoided());
-            encounterContractWrapper.setEncounterType(EncounterTypeContract.fromEncounterType(encounter.getEncounterType()));
-            return encounterContractWrapper;
+            EncounterContract encounterContract = new EncounterContract();
+            encounterContract.setUuid(encounter.getUuid());
+            encounterContract.setName(encounter.getName());
+            encounterContract.setEncounterDateTime(encounter.getEncounterDateTime());
+            encounterContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
+            encounterContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
+            encounterContract.setVoided(encounter.isVoided());
+            encounterContract.setEncounterType(EncounterTypeContract.fromEncounterType(encounter.getEncounterType()));
+            return encounterContract;
         }).collect(Collectors.toList());
     }
 }
