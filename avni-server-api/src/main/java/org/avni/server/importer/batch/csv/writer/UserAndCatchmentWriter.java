@@ -86,6 +86,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setName(nameOfUser);
         user.setCatchment(catchment);
         user.setOperatingIndividualScope(ByCatchment);
+        user.setSyncSettings(new JsonObject());
 
         user.setSettings(new JsonObject()
                 .with("locale", locale)

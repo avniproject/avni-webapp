@@ -27,12 +27,11 @@ import java.util.List;
 
 @Component
 public class RuleServerInvoker {
-
-    private RestClient restClient;
-    private ProgramEnrolmentConstructionService programEnrolmentConstructionService;
-    private ObservationService observationService;
-    private ProgramEncounterConstructionService programEncounterConstructionService;
-    private EntityApprovalStatusService entityApprovalStatusService;
+    private final RestClient restClient;
+    private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
+    private final ObservationService observationService;
+    private final ProgramEncounterConstructionService programEncounterConstructionService;
+    private final EntityApprovalStatusService entityApprovalStatusService;
 
     @Autowired
     public RuleServerInvoker(RestClient restClient,
