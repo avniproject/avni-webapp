@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "message_request_queue")
-public class MessageRequest extends OrganisationAwareEntity {
+public class MessageRequestQueue extends OrganisationAwareEntity {
     @Column
     @NotNull
     private final Long messageRuleId;
@@ -24,14 +24,14 @@ public class MessageRequest extends OrganisationAwareEntity {
     @NotNull
     private final MessageDeliveryStatus deliveryStatus;
 
-    public MessageRequest(Long messageRuleId, Long messageReceiverId, DateTime scheduledDateTime) {
+    public MessageRequestQueue(Long messageRuleId, Long messageReceiverId, DateTime scheduledDateTime) {
         this.messageRuleId = messageRuleId;
         this.messageReceiverId = messageReceiverId;
         this.scheduledDateTime = scheduledDateTime;
         this.deliveryStatus = MessageDeliveryStatus.NotSent;
     }
 
-    public MessageRequest() {
+    public MessageRequestQueue() {
         this.messageReceiverId = null;
         this.scheduledDateTime = null;
         this.deliveryStatus = null;

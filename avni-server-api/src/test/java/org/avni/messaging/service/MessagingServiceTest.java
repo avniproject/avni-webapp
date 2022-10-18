@@ -5,7 +5,7 @@ import org.avni.messaging.repository.MessageRequestRepository;
 import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
-import org.avni.messaging.domain.MessageRequest;
+import org.avni.messaging.domain.MessageRequestQueue;
 import org.avni.messaging.domain.MessageRule;
 import org.avni.server.domain.Individual;
 import org.avni.server.domain.SubjectType;
@@ -43,7 +43,7 @@ public class MessagingServiceTest {
     ArgumentCaptor<MessageReceiver> messageReceiver;
 
     @Captor
-    ArgumentCaptor<MessageRequest> messageRequest;
+    ArgumentCaptor<MessageRequestQueue> messageRequest;
 
     @Before
     public void setup() {
@@ -82,7 +82,7 @@ public class MessagingServiceTest {
 
         verify(ruleService).executeScheduleRule(eq(individual), eq(scheduleRule));
         verify(messageRequestRepository).save(messageRequest.capture());
-        MessageRequest messageRequest = this.messageRequest.getValue();
+        MessageRequestQueue messageRequest = this.messageRequest.getValue();
         assertThat(messageRequest.getMessageRuleId()).isEqualTo(messageRuleId);
         assertThat(messageRequest.getMessageReceiverId()).isEqualTo(messageReceiver.getId());
         assertThat(messageRequest.getScheduledDateTime()).isEqualTo(scheduledDateTime);

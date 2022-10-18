@@ -5,7 +5,7 @@ import org.avni.messaging.repository.MessageRequestRepository;
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.messaging.domain.EntityType;
-import org.avni.messaging.domain.MessageRequest;
+import org.avni.messaging.domain.MessageRequestQueue;
 import org.avni.messaging.domain.MessageRule;
 import org.avni.server.domain.Individual;
 import org.avni.server.service.RuleService;
@@ -69,9 +69,9 @@ public class MessagingService {
 
         DateTime scheduledDateTime = ruleService.executeScheduleRule(individual, messageRule.getScheduleRule());
 
-        MessageRequest messageRequest = new MessageRequest(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
-        messageRequest.assignUUIDIfRequired();
-        messageRequestRepository.save(messageRequest);
+        MessageRequestQueue messageRequestQueue = new MessageRequestQueue(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
+        messageRequestQueue.assignUUIDIfRequired();
+        messageRequestRepository.save(messageRequestQueue);
     }
 
     public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable) {
