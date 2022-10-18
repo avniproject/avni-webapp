@@ -25,6 +25,9 @@ public class RuleServiceTest {
     @Mock
     private IndividualConstructionService individualConstructionService;
 
+    @Mock
+    private IndividualService individualService;
+
     private RestClient restClient;
 
     private RuleService ruleService;
@@ -37,20 +40,22 @@ public class RuleServiceTest {
     public void setUp() throws Exception {
         initMocks(this);
         restClient = mock(RestClient.class);
-        ruleService = new RuleService(restClient, individualConstructionService);
+        ruleService = new RuleService(restClient, individualConstructionService, individualService);
     }
 
     @Test
     public void shouldExecuteScheduleRule() {
+        Long individualId = 123L;
         Individual individual = mock(Individual.class);
         IndividualContract individualContract = mock(IndividualContract.class);
         String scheduleRule = "function(params, imports) { return {'scheduledDateTime': '2013-02-04 10:35:24'; }}";
-
         String scheduledDateTimeResponse = "{\"scheduledDateTime\": \"2013-02-04 10:35:24\", \"status\": \"success\"}";
+
+        when(individualService.findById(individualId)).thenReturn(individual);
         when(individualConstructionService.getSubjectInfo(individual)).thenReturn(individualContract);
         when(restClient.post(anyString(), any())).thenReturn(scheduledDateTimeResponse);
 
-        DateTime dateTime = ruleService.executeScheduleRule(individual, scheduleRule);
+        DateTime dateTime = ruleService.executeScheduleRule(individualId, scheduleRule);
 
         verify(restClient).post(eq("api/scheduleRule"), scheduleRuleRequestEntity.capture());
         ScheduleRuleRequestEntity scheduleRuleRequestEntity = this.scheduleRuleRequestEntity.getValue();

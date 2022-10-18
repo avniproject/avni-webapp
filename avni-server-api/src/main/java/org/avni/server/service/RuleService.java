@@ -90,7 +90,7 @@ public class RuleService implements NonScopeAwareService {
         this.formRepository = formRepository;
     }
 
-    public RuleService(RestClient restClient, IndividualConstructionService individualConstructionService) {
+    public RuleService(RestClient restClient, IndividualConstructionService individualConstructionService, IndividualService individualService) {
         this.restClient = restClient;
         logger = null;
         ruleDependencyRepository = null;
@@ -105,7 +105,7 @@ public class RuleService implements NonScopeAwareService {
         observationService = null;
         entityApprovalStatusService = null;
         contractBuilderServices = null;
-        individualService = null;
+        this.individualService = individualService;
     }
 
     @Transactional
@@ -231,7 +231,8 @@ public class RuleService implements NonScopeAwareService {
         return ruleResponseEntity;
     }
 
-    public DateTime executeScheduleRule(Individual individual, String scheduleRule) {
+    public DateTime executeScheduleRule(Long entityId, String scheduleRule) {
+        Individual individual = individualService.findById(entityId);
         ScheduleRuleResponseEntity scheduleRuleResponseEntity = new ScheduleRuleResponseEntity();
         RuleContract individualContract = individualConstructionService.getSubjectInfo(individual);
         ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(individualContract, scheduleRule);

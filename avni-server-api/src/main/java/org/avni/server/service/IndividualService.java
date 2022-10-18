@@ -44,6 +44,11 @@ public class IndividualService implements ScopeAwareService {
     public Individual findByUuid(String uuid) {
         return individualRepository.findByUuid(uuid);
     }
+
+    public Individual findById(Long id) {
+      return individualRepository.findEntity(id);
+    }
+
     public IndividualContract getSubjectEncounters(String individualUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
         if (individual == null) {

@@ -7,7 +7,6 @@ import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageRequestQueue;
 import org.avni.messaging.domain.MessageRule;
-import org.avni.server.domain.Individual;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -61,13 +60,13 @@ public class MessagingService {
     }
 
     @Transactional
-    public void saveMessageFor(Individual individual) {
-        MessageRule messageRule = messageRuleRepository.findMessageRuleByEntityTypeAndEntityTypeId(EntityType.Subject, individual.getSubjectType().getId());
-        MessageReceiver messageReceiver = new MessageReceiver(EntityType.Subject, individual.getId());
+    public void onEntityCreated(Long entityId, Long entityTypeId) {
+        MessageRule messageRule = messageRuleRepository.findMessageRuleByEntityTypeAndEntityTypeId(EntityType.Subject, entityTypeId);
+        MessageReceiver messageReceiver = new MessageReceiver(EntityType.Subject, entityId);
         messageReceiver.assignUUIDIfRequired();
         messageReceiverRepository.save(messageReceiver);
 
-        DateTime scheduledDateTime = ruleService.executeScheduleRule(individual, messageRule.getScheduleRule());
+        DateTime scheduledDateTime = ruleService.executeScheduleRule(entityId, messageRule.getScheduleRule());
 
         MessageRequestQueue messageRequestQueue = new MessageRequestQueue(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
         messageRequestQueue.assignUUIDIfRequired();
