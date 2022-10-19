@@ -66,7 +66,7 @@ public class MessagingServiceTest {
         DateTime scheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
         when(ruleService.executeScheduleRule(individualId, scheduleRule)).thenReturn(scheduledDateTime);
 
-        messagingService.onEntityCreated(individualId, subjectTypeId);
+        messagingService.onEntityCreated(individualId, subjectTypeId, EntityType.Subject);
 
         verify(messageReceiverService).saveReceiverIfRequired(eq(EntityType.Subject), eq(individualId));
         verify(ruleService).executeScheduleRule(eq(individualId), eq(scheduleRule));
@@ -110,7 +110,7 @@ public class MessagingServiceTest {
         DateTime scheduledDateTimeOfAnotherRule = formatter.parseDateTime("2019-02-04 10:35:24");
         when(ruleService.executeScheduleRule(individualId, scheduleRuleAnother)).thenReturn(scheduledDateTimeOfAnotherRule);
 
-        messagingService.onEntityCreated(individualId, subjectTypeId);
+        messagingService.onEntityCreated(individualId, subjectTypeId, EntityType.Subject);
 
         verify(messageReceiverService, times(1)).saveReceiverIfRequired(eq(EntityType.Subject), eq(individualId));
         verify(ruleService).executeScheduleRule(eq(individualId), eq(scheduleRule));

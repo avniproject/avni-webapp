@@ -1,6 +1,7 @@
 package org.avni.server.web;
 
 import org.avni.messaging.service.MessagingService;
+import org.avni.messaging.domain.EntityType;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.geo.Point;
@@ -104,7 +105,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
         individualService.save(individual);
         if (organisationConfigService.isMessagingEnabled())
-            messagingService.onEntityCreated(individual.getId(), individual.getSubjectType().getId());
+            messagingService.onEntityCreated(individual.getId(), individual.getSubjectType().getId(), EntityType.Subject);
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));

@@ -59,9 +59,9 @@ public class MessagingService {
     }
 
     @Transactional
-    public void onEntityCreated(Long entityId, Long entityTypeId) {
-        List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(EntityType.Subject, entityTypeId);
-        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(EntityType.Subject, entityId);
+    public void onEntityCreated(Long entityId, Long entityTypeId, EntityType entityType) {
+        List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
+        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(entityType, entityId);
 
         for (MessageRule messageRule : messageRules) {
             DateTime scheduledDateTime = ruleService.executeScheduleRule(entityId, messageRule.getScheduleRule());
