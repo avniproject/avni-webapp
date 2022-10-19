@@ -1,11 +1,9 @@
 package org.avni.messaging.service;
 
-import org.avni.messaging.repository.MessageRequestRepository;
-import org.avni.messaging.domain.MessageReceiver;
-import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.messaging.domain.EntityType;
-import org.avni.messaging.domain.MessageRequestQueue;
+import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.MessageRule;
+import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -16,20 +14,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class MessagingService {
     private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 
     private final MessageRuleRepository messageRuleRepository;
     private final MessageReceiverService messageReceiverService;
-    private final MessageRequestRepository messageRequestRepository;
+    private final MessageRequestService messageRequestService;
     private final RuleService ruleService;
 
     @Autowired
-    public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverService messageReceiverService, MessageRequestRepository messageRequestRepository, RuleService ruleService) {
+    public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverService messageReceiverService, MessageRequestService messageRequestService, RuleService ruleService) {
         this.messageRuleRepository = messageRuleRepository;
         this.messageReceiverService = messageReceiverService;
-        this.messageRequestRepository = messageRequestRepository;
+        this.messageRequestService = messageRequestService;
         this.ruleService = ruleService;
     }
 
@@ -60,13 +60,13 @@ public class MessagingService {
 
     @Transactional
     public void onEntityCreated(Long entityId, Long entityTypeId) {
-        MessageRule messageRule = messageRuleRepository.findMessageRuleByEntityTypeAndEntityTypeId(EntityType.Subject, entityTypeId);
+        List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(EntityType.Subject, entityTypeId);
         MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(EntityType.Subject, entityId);
-        DateTime scheduledDateTime = ruleService.executeScheduleRule(entityId, messageRule.getScheduleRule());
 
-        MessageRequestQueue messageRequestQueue = new MessageRequestQueue(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
-        messageRequestQueue.assignUUIDIfRequired();
-        messageRequestRepository.save(messageRequestQueue);
+        for (MessageRule messageRule : messageRules) {
+            DateTime scheduledDateTime = ruleService.executeScheduleRule(entityId, messageRule.getScheduleRule());
+            messageRequestService.createMessageRequest(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
+        }
     }
 
     public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable) {

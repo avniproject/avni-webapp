@@ -1,6 +1,5 @@
 package org.avni.messaging.service;
 
-
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.repository.MessageReceiverRepository;

@@ -7,10 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MessageRuleRepository extends CHSRepository<MessageRule> {
     Page<MessageRule> findAll(Pageable pageable);
 
-    MessageRule findMessageRuleByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId);
+    List<MessageRule> findAllByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId);
     Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable);
 }
