@@ -10,12 +10,12 @@ import javax.persistence.Table;
 @Table(name = "message_receiver")
 public class MessageReceiver extends OrganisationAwareEntity {
     @Column
-    private final EntityType entityType;
+    private final ReceiverEntityType entityType;
 
     @Column
     private final Long entityId;
 
-    public MessageReceiver(EntityType entityType, Long entityId) {
+    public MessageReceiver(ReceiverEntityType entityType, Long entityId) {
         this.entityType = entityType;
         this.entityId = entityId;
     }
@@ -25,11 +25,11 @@ public class MessageReceiver extends OrganisationAwareEntity {
         entityId = null;
     }
 
-    public EntityType getEntityType() {
-        return entityType;
-    }
-
     public Long getEntityId() {
         return entityId;
+    }
+
+    public ReceiverEntityType getEntityType() {
+        return entityType;
     }
 }

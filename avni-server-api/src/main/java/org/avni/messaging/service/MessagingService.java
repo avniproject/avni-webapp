@@ -3,6 +3,7 @@ package org.avni.messaging.service;
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.MessageRule;
+import org.avni.messaging.domain.ReceiverEntityType;
 import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
@@ -61,7 +62,7 @@ public class MessagingService {
     @Transactional
     public void onEntityCreated(Long entityId, Long entityTypeId, EntityType entityType) {
         List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
-        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(entityType, entityId);
+        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, entityId);
 
         for (MessageRule messageRule : messageRules) {
             DateTime scheduledDateTime = ruleService.executeScheduleRule(entityId, messageRule.getScheduleRule());

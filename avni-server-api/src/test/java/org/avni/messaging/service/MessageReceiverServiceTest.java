@@ -2,6 +2,7 @@ package org.avni.messaging.service;
 
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
+import org.avni.messaging.domain.ReceiverEntityType;
 import org.avni.messaging.repository.MessageReceiverRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class MessageReceiverServiceTest {
         Long entityId = 123L;
         when(messageReceiverRepository.findByEntityId(entityId)).thenReturn(null);
 
-        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(EntityType.Subject, entityId);
+        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, entityId);
 
         verify(messageReceiverRepository).save(messageReceiver.capture());
 
@@ -51,7 +52,7 @@ public class MessageReceiverServiceTest {
         MessageReceiver messageReceiver = mock(MessageReceiver.class);
         when(messageReceiverRepository.findByEntityId(entityId)).thenReturn(messageReceiver);
 
-        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(EntityType.Subject, entityId);
+        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, entityId);
 
         verify(messageReceiverRepository, never()).save(any());
         assertThat(actualMessageReceiver).isEqualTo(messageReceiver);

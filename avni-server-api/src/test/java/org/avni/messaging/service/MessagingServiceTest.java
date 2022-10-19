@@ -3,6 +3,7 @@ package org.avni.messaging.service;
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.MessageRule;
+import org.avni.messaging.domain.ReceiverEntityType;
 import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
@@ -53,7 +54,7 @@ public class MessagingServiceTest {
         when(messageRuleRepository.findAllByEntityTypeAndEntityTypeId(EntityType.Subject, subjectTypeId)).thenReturn(messageRuleList);
 
         MessageReceiver messageReceiver = mock(MessageReceiver.class);
-        when(messageReceiverService.saveReceiverIfRequired(EntityType.Subject, individualId)).thenReturn(messageReceiver);
+        when(messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, individualId)).thenReturn(messageReceiver);
         Long messageReceiverId = 890L;
         when(messageReceiver.getId()).thenReturn(messageReceiverId);
 
@@ -68,7 +69,7 @@ public class MessagingServiceTest {
 
         messagingService.onEntityCreated(individualId, subjectTypeId, EntityType.Subject);
 
-        verify(messageReceiverService).saveReceiverIfRequired(eq(EntityType.Subject), eq(individualId));
+        verify(messageReceiverService).saveReceiverIfRequired(eq(ReceiverEntityType.Subject), eq(individualId));
         verify(ruleService).executeScheduleRule(eq(individualId), eq(scheduleRule));
         verify(messageRequestService).createMessageRequest(messageRuleId, messageReceiverId, scheduledDateTime);
     }
@@ -89,7 +90,7 @@ public class MessagingServiceTest {
         when(messageRuleRepository.findAllByEntityTypeAndEntityTypeId(EntityType.Subject, subjectTypeId)).thenReturn(messageRuleList);
 
         MessageReceiver messageReceiver = mock(MessageReceiver.class);
-        when(messageReceiverService.saveReceiverIfRequired(EntityType.Subject, individualId)).thenReturn(messageReceiver);
+        when(messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, individualId)).thenReturn(messageReceiver);
         Long messageReceiverId = 890L;
         when(messageReceiver.getId()).thenReturn(messageReceiverId);
 
@@ -112,7 +113,7 @@ public class MessagingServiceTest {
 
         messagingService.onEntityCreated(individualId, subjectTypeId, EntityType.Subject);
 
-        verify(messageReceiverService, times(1)).saveReceiverIfRequired(eq(EntityType.Subject), eq(individualId));
+        verify(messageReceiverService, times(1)).saveReceiverIfRequired(eq(ReceiverEntityType.Subject), eq(individualId));
         verify(ruleService).executeScheduleRule(eq(individualId), eq(scheduleRule));
         verify(messageRequestService).createMessageRequest(messageRuleId, messageReceiverId, scheduledDateTime);
 
