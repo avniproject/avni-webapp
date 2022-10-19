@@ -4,7 +4,9 @@ import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.repository.MessageReceiverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MessageReceiverService {
 
     private final MessageReceiverRepository messageReceiverRepository;
