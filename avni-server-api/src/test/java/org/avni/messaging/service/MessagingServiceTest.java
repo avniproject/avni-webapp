@@ -1,6 +1,5 @@
 package org.avni.messaging.service;
 
-import org.avni.messaging.repository.MessageReceiverRepository;
 import org.avni.messaging.repository.MessageRequestRepository;
 import org.avni.messaging.repository.MessageRuleRepository;
 import org.avni.messaging.domain.EntityType;
@@ -29,7 +28,7 @@ public class MessagingServiceTest {
     private MessageRuleRepository messageRuleRepository;
 
     @Mock
-    private MessageReceiverRepository messageReceiverRepository;
+    private MessageReceiverService messageReceiverService;
 
     @Mock
     private MessageRequestRepository messageRequestRepository;
@@ -38,23 +37,25 @@ public class MessagingServiceTest {
     private RuleService ruleService;
 
     @Captor
-    ArgumentCaptor<MessageReceiver> messageReceiver;
-
-    @Captor
     ArgumentCaptor<MessageRequestQueue> messageRequest;
 
     @Before
     public void setup() {
         initMocks(this);
-        messagingService = new MessagingService(messageRuleRepository, messageReceiverRepository, messageRequestRepository, ruleService);
+        messagingService = new MessagingService(messageRuleRepository, messageReceiverService, messageRequestRepository, ruleService);
     }
 
     @Test
     public void shouldSaveMessageRequestIfMessageRuleConfiguredOnSaveOfSubjectEntityType() {
         MessageRule messageRule = mock(MessageRule.class);
         Long subjectTypeId = 234L;
-        Long individualId = 567l;
+        Long individualId = 567L;
         when(messageRuleRepository.findMessageRuleByEntityTypeAndEntityTypeId(EntityType.Subject, subjectTypeId)).thenReturn(messageRule);
+
+        MessageReceiver messageReceiver = mock(MessageReceiver.class);
+        when(messageReceiverService.saveReceiverIfRequired(EntityType.Subject, individualId)).thenReturn(messageReceiver);
+        Long messageReceiverId = 890L;
+        when(messageReceiver.getId()).thenReturn(messageReceiverId);
 
         String scheduleRule = "function(params, imports) { return {'scheduledDateTime': '2013-02-04 10:35:24'; }}";
         when(messageRule.getScheduleRule()).thenReturn(scheduleRule);
@@ -67,17 +68,14 @@ public class MessagingServiceTest {
 
         messagingService.onEntityCreated(individualId, subjectTypeId);
 
-        verify(messageReceiverRepository).save(messageReceiver.capture());
-        MessageReceiver messageReceiver = this.messageReceiver.getValue();
-        assertThat(messageReceiver.getEntityType()).isEqualTo(EntityType.Subject);
-        assertThat(messageReceiver.getEntityId()).isEqualTo(individualId);
-        assertThat(messageReceiver.getUuid()).isNotNull();
+        verify(messageReceiverService).saveReceiverIfRequired(eq(EntityType.Subject), eq(individualId));
 
         verify(ruleService).executeScheduleRule(eq(individualId), eq(scheduleRule));
+
         verify(messageRequestRepository).save(messageRequest.capture());
         MessageRequestQueue messageRequest = this.messageRequest.getValue();
         assertThat(messageRequest.getMessageRuleId()).isEqualTo(messageRuleId);
-        assertThat(messageRequest.getMessageReceiverId()).isEqualTo(messageReceiver.getId());
+        assertThat(messageRequest.getMessageReceiverId()).isEqualTo(messageReceiverId);
         assertThat(messageRequest.getScheduledDateTime()).isEqualTo(scheduledDateTime);
         assertThat(messageRequest.getUuid()).isNotNull();
     }

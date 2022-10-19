@@ -1,6 +1,5 @@
 package org.avni.messaging.service;
 
-import org.avni.messaging.repository.MessageReceiverRepository;
 import org.avni.messaging.repository.MessageRequestRepository;
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.repository.MessageRuleRepository;
@@ -22,14 +21,14 @@ public class MessagingService {
     private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 
     private final MessageRuleRepository messageRuleRepository;
-    private final MessageReceiverRepository messageReceiverRepository;
+    private final MessageReceiverService messageReceiverService;
     private final MessageRequestRepository messageRequestRepository;
     private final RuleService ruleService;
 
     @Autowired
-    public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverRepository messageReceiverRepository, MessageRequestRepository messageRequestRepository, RuleService ruleService) {
+    public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverService messageReceiverService, MessageRequestRepository messageRequestRepository, RuleService ruleService) {
         this.messageRuleRepository = messageRuleRepository;
-        this.messageReceiverRepository = messageReceiverRepository;
+        this.messageReceiverService = messageReceiverService;
         this.messageRequestRepository = messageRequestRepository;
         this.ruleService = ruleService;
     }
@@ -62,10 +61,7 @@ public class MessagingService {
     @Transactional
     public void onEntityCreated(Long entityId, Long entityTypeId) {
         MessageRule messageRule = messageRuleRepository.findMessageRuleByEntityTypeAndEntityTypeId(EntityType.Subject, entityTypeId);
-        MessageReceiver messageReceiver = new MessageReceiver(EntityType.Subject, entityId);
-        messageReceiver.assignUUIDIfRequired();
-        messageReceiverRepository.save(messageReceiver);
-
+        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(EntityType.Subject, entityId);
         DateTime scheduledDateTime = ruleService.executeScheduleRule(entityId, messageRule.getScheduleRule());
 
         MessageRequestQueue messageRequestQueue = new MessageRequestQueue(messageRule.getId(), messageReceiver.getId(), scheduledDateTime);
