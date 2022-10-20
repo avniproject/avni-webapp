@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MessageRuleContractTest {
+public class MessageRuleServerEntityContractTest {
 
     @Test
     public void shouldConvertContractToNewModel() {

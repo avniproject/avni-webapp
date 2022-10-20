@@ -1,4 +1,4 @@
-package org.avni.server.web;
+package org.avni.server.web.external;
 
 import org.avni.server.domain.UserContext;
 import org.avni.server.framework.security.AuthenticationFilter;
@@ -15,10 +15,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class RestClient {
+public class RuleServiceClient {
     @Value("${node.server.url}")
     private String NODE_SERVER_HOST;
-    private Logger logger = LoggerFactory.getLogger(RestClient.class);
+    private Logger logger = LoggerFactory.getLogger(RuleServiceClient.class);
 
     public <T> String post(String api, T jsonObj) throws HttpClientErrorException {
         String uri = NODE_SERVER_HOST.concat(api);

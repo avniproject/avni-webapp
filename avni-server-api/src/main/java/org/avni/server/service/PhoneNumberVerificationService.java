@@ -4,7 +4,7 @@ import org.avni.server.dao.Msg91ConfigRepository;
 import org.avni.server.domain.Msg91Config;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.util.ObjectMapperSingleton;
-import org.avni.server.web.external.Msg91RestClient;
+import org.avni.server.web.external.Msg91Client;
 import org.avni.server.web.request.Msg91Request;
 import org.avni.server.web.request.PhoneNumberVerificationRequest;
 import org.avni.server.web.response.Msg91Response;
@@ -26,7 +26,7 @@ import static java.lang.String.format;
 @Service
 public class PhoneNumberVerificationService {
 
-    private final Msg91RestClient msg91RestClient;
+    private final Msg91Client msg91Client;
     private final Msg91ConfigRepository msg91ConfigRepository;
     private final Msg91ConfigService msg91ConfigService;
     private final Logger logger;
@@ -40,8 +40,8 @@ public class PhoneNumberVerificationService {
     private final Boolean isDev;
 
     @Autowired
-    public PhoneNumberVerificationService(Msg91RestClient msg91RestClient, Msg91ConfigRepository msg91ConfigRepository, Msg91ConfigService msg91ConfigService, Boolean isDev) {
-        this.msg91RestClient = msg91RestClient;
+    public PhoneNumberVerificationService(Msg91Client msg91Client, Msg91ConfigRepository msg91ConfigRepository, Msg91ConfigService msg91ConfigService, Boolean isDev) {
+        this.msg91Client = msg91Client;
         this.msg91ConfigRepository = msg91ConfigRepository;
         this.msg91ConfigService = msg91ConfigService;
         this.isDev = isDev;
@@ -126,7 +126,7 @@ public class PhoneNumberVerificationService {
 
     private PhoneNumberVerificationResponse processMsg91Request(HttpMethod method, String uri, Msg91Request msg91Request, boolean convertResponseStringToObject) throws IOException {
         try {
-            String apiResponse = msg91RestClient.callAPI(method, uri, msg91Request);
+            String apiResponse = msg91Client.callAPI(method, uri, msg91Request);
             if (convertResponseStringToObject) {
                 Msg91Response msg91Response = mapStringResponseToObject(apiResponse);
                 return processMsg91Response(msg91Response);

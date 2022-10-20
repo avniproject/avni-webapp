@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ProgramEnrolmentContract {
+public class ProgramEnrolmentContract implements RuleServerEntityContract {
     private IndividualContract subject;
     private RuleRequestEntity rule;
     private List<VisitSchedule> visitSchedules = new ArrayList<>();

@@ -2,7 +2,6 @@ package org.avni.server.service;
 
 import org.avni.server.dao.IndividualRepository;
 import org.avni.server.domain.Individual;
-import org.avni.server.web.RestClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

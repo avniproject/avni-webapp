@@ -24,14 +24,14 @@ import java.util.Map;
 import static java.lang.String.format;
 
 @Service
-public class ExotelRestClient {
+public class ExotelClient {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final Bugsnag bugsnag;
 
     @Autowired
-    public ExotelRestClient(RestTemplateBuilder builder, Bugsnag bugsnag) {
+    public ExotelClient(RestTemplateBuilder builder, Bugsnag bugsnag) {
         this.restTemplate = builder.build();
         this.bugsnag = bugsnag;
         this.objectMapper = ObjectMapperSingleton.getObjectMapper();

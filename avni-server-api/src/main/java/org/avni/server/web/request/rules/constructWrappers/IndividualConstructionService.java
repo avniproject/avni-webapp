@@ -73,29 +73,29 @@ public class IndividualConstructionService {
     }
 
     public IndividualContract constructBasicSubject(Individual individual) {
-        IndividualContract individualContractWrapper = new IndividualContract();
+        IndividualContract individualContract = new IndividualContract();
         if (individual == null) {
             return null;
         }
         List<ObservationModelContract> observationModelContracts =
                 observationService.constructObservationModelContracts(individual.getObservations());
-        individualContractWrapper.setObservations(observationModelContracts);
-        individualContractWrapper.setUuid(individual.getUuid());
-        individualContractWrapper.setFirstName(individual.getFirstName());
-        individualContractWrapper.setMiddleName(individual.getMiddleName());
-        individualContractWrapper.setLastName(individual.getLastName());
+        individualContract.setObservations(observationModelContracts);
+        individualContract.setUuid(individual.getUuid());
+        individualContract.setFirstName(individual.getFirstName());
+        individualContract.setMiddleName(individual.getMiddleName());
+        individualContract.setLastName(individual.getLastName());
         if (individual.getSubjectType().isAllowProfilePicture()) {
-            individualContractWrapper.setProfilePicture(individual.getProfilePicture());
+            individualContract.setProfilePicture(individual.getProfilePicture());
         }
-        individualContractWrapper.setDateOfBirth(individual.getDateOfBirth());
+        individualContract.setDateOfBirth(individual.getDateOfBirth());
         if (individual.getSubjectType().getType().equals(Subject.Person)) {
-            individualContractWrapper.setGender(constructGenderContract(individual.getGender()));
+            individualContract.setGender(constructGenderContract(individual.getGender()));
         }
-        individualContractWrapper.setLowestAddressLevel(constructAddressLevel(individual.getAddressLevel()));
-        individualContractWrapper.setRegistrationDate(individual.getRegistrationDate());
-        individualContractWrapper.setVoided(individual.isVoided());
-        individualContractWrapper.setSubjectType(constructSubjectType(individual.getSubjectType()));
-        return individualContractWrapper;
+        individualContract.setLowestAddressLevel(constructAddressLevel(individual.getAddressLevel()));
+        individualContract.setRegistrationDate(individual.getRegistrationDate());
+        individualContract.setVoided(individual.isVoided());
+        individualContract.setSubjectType(constructSubjectType(individual.getSubjectType()));
+        return individualContract;
     }
     public IndividualContract constructIndividualContract(IndividualRequestEntity individualRequestEntity, Individual individual){
         IndividualContract individualContract = new IndividualContract();

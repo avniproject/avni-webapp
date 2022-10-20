@@ -4,19 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
+import org.avni.server.web.external.RuleServiceClient;
 import org.avni.server.web.request.EncounterTypeContract;
 import org.avni.server.web.request.rules.RulesContractWrapper.*;
 import org.avni.server.web.request.rules.constructWrappers.*;
 import org.avni.server.web.request.rules.request.*;
 import org.avni.server.web.request.rules.response.*;
-import org.codehaus.jettison.json.JSONException;
 import org.avni.server.application.Form;
 import org.avni.server.application.RuleType;
 import org.avni.server.dao.application.FormRepository;
 import org.avni.server.dao.individualRelationship.RuleFailureLogRepository;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.util.ObjectMapperSingleton;
-import org.avni.server.web.RestClient;
 import org.avni.server.web.request.RuleRequest;
 import org.avni.server.web.request.rules.constant.WorkFlowTypeEnum;
 import org.avni.server.web.request.rules.validateRules.RuleValidationService;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.joda.time.DateTime;
@@ -43,7 +41,7 @@ public class RuleService implements NonScopeAwareService {
     private final RuleDependencyRepository ruleDependencyRepository;
     private final RuleRepository ruleRepository;
     private final Map<RuledEntityType, CHSRepository> ruledEntityRepositories;
-    private final RestClient restClient;
+    private final RuleServiceClient restClient;
     private final IndividualConstructionService individualConstructionService;
     private final RuleValidationService ruleValidationService;
     private final ProgramEncounterConstructionService programEncounterConstructionService;
@@ -51,9 +49,10 @@ public class RuleService implements NonScopeAwareService {
     private final FormRepository formRepository;
     private final RuleFailureLogRepository ruleFailureLogRepository;
     private final ObservationService observationService;
-    private final EntityApprovalStatusService entityApprovalStatusService;
-    private final ContractBuilderServices contractBuilderServices;
-    private IndividualService individualService;
+    private final IndividualContractBuilderServices contractBuilderServices;
+    private final EntityRetrieverService entityRetrieverService;
+    private final IndividualService individualService;
+    private final RuleServiceEntityContractBuilder ruleServiceEntityContractBuilder;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -61,19 +60,21 @@ public class RuleService implements NonScopeAwareService {
                        FormRepository formRepository,
                        ProgramRepository programRepository,
                        EncounterTypeRepository encounterTypeRepository,
-                       RestClient restClient,
+                       RuleServiceClient restClient,
                        IndividualConstructionService individualConstructionService,
                        RuleValidationService ruleValidationService,
                        ProgramEncounterConstructionService programEncounterConstructionService,
                        ProgramEnrolmentConstructionService programEnrolmentConstructionService,
                        RuleFailureLogRepository ruleFailureLogRepository,
                        ObservationService observationService,
-                       EntityApprovalStatusService entityApprovalStatusService, ContractBuilderServices contractBuilderServices, IndividualService individualService) {
+                       IndividualContractBuilderServices contractBuilderServices,
+                       EntityRetrieverService entityRetrieverService, IndividualService individualService, RuleServiceEntityContractBuilder ruleServiceEntityContractBuilder) {
         this.ruleFailureLogRepository = ruleFailureLogRepository;
         this.observationService = observationService;
-        this.entityApprovalStatusService = entityApprovalStatusService;
         this.contractBuilderServices = contractBuilderServices;
+        this.entityRetrieverService = entityRetrieverService;
         this.individualService = individualService;
+        this.ruleServiceEntityContractBuilder = ruleServiceEntityContractBuilder;
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
@@ -90,8 +91,11 @@ public class RuleService implements NonScopeAwareService {
         this.formRepository = formRepository;
     }
 
-    public RuleService(RestClient restClient, IndividualConstructionService individualConstructionService, IndividualService individualService) {
+    //Testing only. Do not use
+    public RuleService(RuleServiceClient restClient, IndividualConstructionService individualConstructionService,
+                       EntityRetrieverService entityRetrieverService, IndividualService individualService) {
         this.restClient = restClient;
+        this.entityRetrieverService = entityRetrieverService;
         logger = null;
         ruleDependencyRepository = null;
         ruleRepository = null;
@@ -103,8 +107,8 @@ public class RuleService implements NonScopeAwareService {
         formRepository = null;
         ruleFailureLogRepository = null;
         observationService = null;
-        entityApprovalStatusService = null;
         contractBuilderServices = null;
+        ruleServiceEntityContractBuilder = null;
         this.individualService = individualService;
     }
 
@@ -141,7 +145,6 @@ public class RuleService implements NonScopeAwareService {
         if (rule == null) rule = new Rule();
         rule.setRuleDependency(ruleDependency);
         rule = this._setCommonAttributes(rule, ruleRequest);
-        String entityUUID = ruleRequest.getEntityUUID();
 
         checkEntityExists(ruleRequest);
 
@@ -151,17 +154,6 @@ public class RuleService implements NonScopeAwareService {
                 rule.getUuid(), rule.getName(), rule.getType(), ruleRequest.getEntityType()));
 
         return ruleRepository.save(rule);
-    }
-
-    private void checkEntityExists(RuleRequest ruleRequest) {
-        String entityUUID = ruleRequest.getEntityUUID();
-        if (!RuledEntityType.isNone(ruleRequest.getEntityType())) {
-            CHSRepository chsRepository = ruledEntityRepositories.get(ruleRequest.getEntityType());
-            if (chsRepository.findByUuid(entityUUID) == null) {
-                throw new ValidationException(String.format("%s with uuid: %s not found for rule with uuid: %s",
-                        ruleRequest.getEntityType(), entityUUID, ruleRequest.getUuid()));
-            }
-        }
     }
 
     @Transactional
@@ -190,11 +182,8 @@ public class RuleService implements NonScopeAwareService {
         rule.setWorkFlowType(workFlowType);
         rule.setFormUuid(program.getUuid());
         rule.setRuleType("Program Summary");
-        ProgramEnrolmentContract programEnrolmentContract = ProgramEnrolmentContract.fromEnrolment(programEnrolment, observationService, entityApprovalStatusService);
+        ProgramEnrolmentContract programEnrolmentContract = ruleServiceEntityContractBuilder.toContract(programEnrolment);
         programEnrolmentContract.setRule(rule);
-        Set<ProgramEncounterContract> programEncountersContracts = programEnrolment.getProgramEncounters().stream().map(programEncounterConstructionService::constructProgramEncounterContractWrapper).collect(Collectors.toSet());
-        programEnrolmentContract.setProgramEncounters(programEncountersContracts);
-        programEnrolmentContract.setSubject(individualConstructionService.getSubjectInfo(programEnrolment.getIndividual()));
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, programEnrolment.getUuid());
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", programEnrolmentContract, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
         setObservationsOnResponse(workFlowType, ruleResponseEntity);
@@ -214,7 +203,7 @@ public class RuleService implements NonScopeAwareService {
         rule.setWorkFlowType(workFlowType);
         rule.setFormUuid(subjectType.getUuid());
         rule.setRuleType("Subject Summary");
-        IndividualContract individualContract = individualConstructionService.getSubjectInfo(individual);
+        IndividualContract individualContract = ruleServiceEntityContractBuilder.toContract(individual);
         individualContract.setRule(rule);
         RuleFailureLog ruleFailureLog = ruleValidationService.generateRuleFailureLog(rule, "Web", "Rules : " + workFlowType, individual.getUuid());
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/summaryRule", individualContract, ruleFailureLog, RuleResponseEntity.class, ruleResponseEntity);
@@ -224,23 +213,31 @@ public class RuleService implements NonScopeAwareService {
 
     public EligibilityRuleResponseEntity executeEligibilityRule(Individual individual, List<EncounterType> encounterTypes) {
         EligibilityRuleResponseEntity ruleResponseEntity = new EligibilityRuleResponseEntity();
-        IndividualContract individualContract = individualConstructionService.getSubjectInfo(individual);
+        IndividualContract individualContract = ruleServiceEntityContractBuilder.toContract(individual);
         List<EncounterTypeContract> encounterTypeContracts = encounterTypes.stream().map(EncounterTypeContract::fromEncounterType).collect(Collectors.toList());
-        EncounterEligibilityRuleRequestEntity ruleRequest = new EncounterEligibilityRuleRequestEntity(individualContract, encounterTypeContracts);
+        EncounterEligibilityRuleRequest ruleRequest = new EncounterEligibilityRuleRequest(individualContract, encounterTypeContracts);
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
         return ruleResponseEntity;
     }
 
-    public DateTime executeScheduleRule(Long entityId, String scheduleRule) {
-        Individual individual = individualService.findById(entityId);
+    public DateTime executeScheduleRule(String entityType, Long entityId, String scheduleRule) {
+        CHSEntity entity = entityRetrieverService.getEntity(entityType, entityId);
         ScheduleRuleResponseEntity scheduleRuleResponseEntity = new ScheduleRuleResponseEntity();
-        RuleContract individualContract = individualConstructionService.getSubjectInfo(individual);
-        ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(individualContract, scheduleRule);
+        RuleServerEntityContract contract = ruleServiceEntityContractBuilder.toContract(entityType, entity);
+        ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(contract, scheduleRule);
         scheduleRuleResponseEntity = createHttpHeaderAndSendRequest("api/scheduleRule", ruleRequest, null, ScheduleRuleResponseEntity.class, scheduleRuleResponseEntity);
         return scheduleRuleResponseEntity.getScheduledDateTime();
     }
 
-    public RuleResponseEntity executeServerSideRules(RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
+    public String[] executeMessageRule(String entityType, Long entityId, String messageRule) {
+        CHSEntity entity = entityRetrieverService.getEntity(entityType, entityId);
+        RuleServerEntityContract contract = ruleServiceEntityContractBuilder.toContract(entityType, entity);
+        MessageRuleRequestEntity ruleRequest = new MessageRuleRequestEntity(contract, messageRule);
+        MessageRuleResponseEntity messageRuleResponseEntity = createHttpHeaderAndSendRequest("api/scheduleRule", ruleRequest, null,  MessageRuleResponseEntity.class, new MessageRuleResponseEntity());
+        return messageRuleResponseEntity.getParameters();
+    }
+
+    public RuleResponseEntity executeServerSideRules(RequestEntityWrapper requestEntityWrapper) {
         RuleRequestEntity rule = requestEntityWrapper.getRule();
         Form form = formRepository.findByUuid(rule.getFormUuid());
         rule.setDecisionCode(form.getDecisionRule());
@@ -292,6 +289,11 @@ public class RuleService implements NonScopeAwareService {
         return ruleResponseEntity;
     }
 
+    @Override
+    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
+        return ruleRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    }
+
     private void setObservationsOnResponse(String workFlowType, RuleResponseEntity ruleResponseEntity) {
         DecisionResponseEntity decisions = ruleResponseEntity.getDecisions();
         List<KeyValueResponse> summaries = ruleResponseEntity.getSummaries();
@@ -321,12 +323,6 @@ public class RuleService implements NonScopeAwareService {
         }
     }
 
-    private RuleResponseEntity emptySuccessEntity() {
-        RuleResponseEntity entity = new RuleResponseEntity();
-        entity.setStatus("success");
-        return entity;
-    }
-
     private <R extends BaseRuleResponseEntity> R createHttpHeaderAndSendRequest(String url, Object contractObject, RuleFailureLog ruleFailureLog, Class<R> responseType, R newInstance) {
         try {
             ObjectMapper mapper = ObjectMapperSingleton.getObjectMapper();
@@ -343,8 +339,6 @@ public class RuleService implements NonScopeAwareService {
             return getFailureRuleResponseEntity(e, newInstance);
         }
     }
-
-
 
     private <R extends BaseRuleResponseEntity> R getFailureRuleResponseEntity(Exception e, R ruleResponseEntity) {
         RuleError ruleError = new RuleError();
@@ -370,9 +364,14 @@ public class RuleService implements NonScopeAwareService {
         }
     }
 
-    @Override
-    public boolean isNonScopeEntityChanged(DateTime lastModifiedDateTime) {
-        return ruleRepository.existsByLastModifiedDateTimeGreaterThan(lastModifiedDateTime);
+    private void checkEntityExists(RuleRequest ruleRequest) {
+        String entityUUID = ruleRequest.getEntityUUID();
+        if (!RuledEntityType.isNone(ruleRequest.getEntityType())) {
+            CHSRepository chsRepository = ruledEntityRepositories.get(ruleRequest.getEntityType());
+            if (chsRepository.findByUuid(entityUUID) == null) {
+                throw new ValidationException(String.format("%s with uuid: %s not found for rule with uuid: %s",
+                        ruleRequest.getEntityType(), entityUUID, ruleRequest.getUuid()));
+            }
+        }
     }
-
 }

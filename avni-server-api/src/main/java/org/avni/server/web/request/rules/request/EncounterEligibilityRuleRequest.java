@@ -5,12 +5,12 @@ import org.avni.server.web.request.EncounterTypeContract;
 
 import java.util.List;
 
-public class EncounterEligibilityRuleRequestEntity extends BaseRuleRequest {
+public class EncounterEligibilityRuleRequest extends BaseRuleRequest {
 
     private IndividualContract individual;
     private List<EncounterTypeContract> encounterTypes;
 
-    public EncounterEligibilityRuleRequestEntity(IndividualContract individual, List<EncounterTypeContract> encounterTypes) {
+    public EncounterEligibilityRuleRequest(IndividualContract individual, List<EncounterTypeContract> encounterTypes) {
         this.individual = individual;
         this.encounterTypes = encounterTypes;
     }

@@ -11,7 +11,7 @@ import org.avni.server.web.request.rules.request.RuleRequestEntity;
 
 import java.util.List;
 
-public class EncounterContract {
+public class EncounterContract implements RuleServerEntityContract{
     private List<ObservationModelContract> observations;
     private RuleRequestEntity rule;
     private IndividualContract subject;

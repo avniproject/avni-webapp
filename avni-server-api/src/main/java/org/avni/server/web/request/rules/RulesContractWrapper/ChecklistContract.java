@@ -5,7 +5,7 @@ import org.avni.server.web.request.CHSRequest;
 
 import java.util.List;
 
-public class ChecklistContract {
+public class ChecklistContract implements RuleServerEntityContract {
 
     private DateTime baseDate;
     private CHSRequest detail;

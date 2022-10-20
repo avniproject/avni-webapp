@@ -13,7 +13,7 @@ import org.avni.server.importer.batch.model.Row;
 import org.avni.server.service.EntityApprovalStatusService;
 import org.avni.server.service.ObservationService;
 import org.avni.server.util.ObjectMapperSingleton;
-import org.avni.server.web.RestClient;
+import org.avni.server.web.external.RuleServiceClient;
 import org.avni.server.web.request.rules.RulesContractWrapper.EncounterContract;
 import org.avni.server.web.request.rules.RulesContractWrapper.IndividualContract;
 import org.avni.server.web.request.rules.RulesContractWrapper.ProgramEncounterContract;
@@ -28,7 +28,7 @@ import java.util.List;
 
 @Component
 public class RuleServerInvoker {
-    private RestClient restClient;
+    private RuleServiceClient restClient;
     private ProgramEnrolmentConstructionService programEnrolmentConstructionService;
     private IndividualConstructionService individualConstructionService;
     private ObservationService observationService;
@@ -36,7 +36,7 @@ public class RuleServerInvoker {
     private EntityApprovalStatusService entityApprovalStatusService;
 
     @Autowired
-    public RuleServerInvoker(RestClient restClient,
+    public RuleServerInvoker(RuleServiceClient restClient,
                              ProgramEnrolmentConstructionService programEnrolmentConstructionService,
                              IndividualConstructionService individualConstructionService, ObservationService observationService,
                              ProgramEncounterConstructionService programEncounterConstructionService,
@@ -64,27 +64,23 @@ public class RuleServerInvoker {
 
     public UploadRuleServerResponseContract getRuleServerResult(Row row, Form form, Individual individual, List<String> allErrorMsgs) throws Exception {
         IndividualContract entity = individualConstructionService.constructBasicSubject(individual);
-        UploadRuleServerResponseContract ruleResponse = invokeRuleServer(row, form, entity, allErrorMsgs);
-        return ruleResponse;
+        return invokeRuleServer(row, form, entity, allErrorMsgs);
     }
 
     public UploadRuleServerResponseContract getRuleServerResult(Row row, Form form, ProgramEnrolment programEnrolment, List<String> allErrorMsgs) throws Exception {
         ProgramEnrolmentContract entity = programEnrolmentConstructionService.constructProgramEnrolmentContract(programEnrolment);
-        UploadRuleServerResponseContract ruleResponse = invokeRuleServer(row, form, entity, allErrorMsgs);
-        return ruleResponse;
+        return invokeRuleServer(row, form, entity, allErrorMsgs);
     }
 
     public UploadRuleServerResponseContract getRuleServerResult(Row row, Form form, ProgramEncounter programEncounter, List<String> allErrorMsgs) throws Exception {
         ProgramEncounterContract entity = programEncounterConstructionService.constructProgramEncounterContractWrapper(programEncounter);
         entity.setProgramEnrolment(programEncounterConstructionService.constructEnrolments(programEncounter.getProgramEnrolment(), programEncounter.getUuid()));
-        UploadRuleServerResponseContract ruleResponse = invokeRuleServer(row, form, entity, allErrorMsgs);
-        return ruleResponse;
+        return invokeRuleServer(row, form, entity, allErrorMsgs);
     }
 
     public UploadRuleServerResponseContract getRuleServerResult(Row row, Form form, Encounter encounter, List<String> allErrorMsgs) throws Exception {
         EncounterContract entity = EncounterContract.fromEncounter(encounter, observationService, entityApprovalStatusService);
         entity.setSubject(individualConstructionService.getSubjectInfo(encounter.getIndividual()));
-        UploadRuleServerResponseContract ruleResponse = invokeRuleServer(row, form, entity, allErrorMsgs);
-        return ruleResponse;
+        return invokeRuleServer(row, form, entity, allErrorMsgs);
     }
 }

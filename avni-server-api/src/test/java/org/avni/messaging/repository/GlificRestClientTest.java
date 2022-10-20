@@ -12,6 +12,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.jdbc.Sql;
@@ -21,6 +23,7 @@ import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 @Sql(scripts = {"/test-data.sql"})
 public class GlificRestClientTest extends AbstractControllerIntegrationTest {
@@ -28,7 +31,6 @@ public class GlificRestClientTest extends AbstractControllerIntegrationTest {
 
     @Autowired
     private GlificRestClient glificRestClient;
-
 
     private static WireMockServer wireMockServer = new WireMockServer(9191);
 
@@ -97,6 +99,12 @@ public class GlificRestClientTest extends AbstractControllerIntegrationTest {
             assertThat(glificConnectException).hasMessage("Cannot query field \"nonExistentItemKey\" on type \"SessionTemplate\".");
             throw glificConnectException;
         }
+    }
+
+    @Test
+    public void abc() {
+        GlificRestClient glificRestClient = mock(GlificRestClient.class);
+        new GlificMessageRepository(glificRestClient).sendMessage("templateId", "1233", new String[]{"1", "2"});
     }
 
     private void stubRequest(String url, String sessionTemplates) {

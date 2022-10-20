@@ -3,7 +3,7 @@ package org.avni.server.web.request.rules.RulesContractWrapper;
 import org.avni.server.domain.GroupRole;
 import org.avni.server.web.request.SubjectTypeContract;
 
-public class GroupRoleContract {
+public class GroupRoleContract implements RuleServerEntityContract {
     private String uuid;
     private SubjectTypeContract groupSubjectType;
     private SubjectTypeContract memberSubjectType;

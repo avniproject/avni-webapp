@@ -16,14 +16,14 @@ import java.util.Collections;
 import static java.lang.String.format;
 
 @Service
-public class Msg91RestClient {
+public class Msg91Client {
     @Value("${msg91.server.url}")
     private String MSG91_SERVER_HOST;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final RestTemplate restTemplate;
 
     @Autowired
-    public Msg91RestClient(RestTemplateBuilder builder) {
+    public Msg91Client(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
     }
 

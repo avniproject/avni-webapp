@@ -13,11 +13,11 @@ import java.util.List;
 
 
 @Repository
-public class MessageTemplateRepository {
+public class GlificMessageTemplateRepository {
     private final GlificRestClient glificRestClient;
     private final Object MESSAGE_TEMPLATE_REQUEST;
 
-    public MessageTemplateRepository(GlificRestClient glificRestClient) {
+    public GlificMessageTemplateRepository(GlificRestClient glificRestClient) {
         this.glificRestClient = glificRestClient;
         try {
             MESSAGE_TEMPLATE_REQUEST = new ObjectMapper().readValue(this.getClass().getResource("/external/glific/messageTemplateRequest.json"), Object.class);

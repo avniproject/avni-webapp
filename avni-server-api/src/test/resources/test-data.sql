@@ -26,6 +26,9 @@ DELETE FROM account_admin;
 DELETE FROM user_group;
 DELETE FROM external_system_config;
 DELETE FROM organisation_config;
+DELETE from message_request_queue;
+DELETE from message_receiver;
+DELETE from message_rule;
 DELETE FROM users;
 DELETE FROM subject_type;
 DELETE FROM groups;
@@ -59,6 +62,9 @@ ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
 ALTER SEQUENCE audit_id_seq RESTART WITH 1;
 ALTER SEQUENCE external_system_config_id_seq RESTART WITH 1;
+ALTER SEQUENCE message_receiver_id_seq RESTART WITH 1;
+ALTER SEQUENCE message_request_queue_id_seq RESTART WITH 1;
+ALTER SEQUENCE message_rule_id_seq RESTART WITH 1;
 
 INSERT into organisation(id, name, db_user, uuid, media_directory, parent_organisation_id, schema_name)
 values (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884', 'openchs_impl', null, 'openchs')
@@ -147,6 +153,8 @@ INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modifie
 VALUES ('Ringworm', 'N/A', '122cb9cb-3fdc-48e7-a68f-682c5e744c22', 1, 1, 1, now(), now());
 INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Boils', 'N/A', 'aee32344-0ea0-4833-9387-2cb21586f1a9', 1, 1, 1, now(), now());
+INSERT INTO concept (NAME, data_type, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Phone Number', 'Text', '[{"key": "contact_number", "value": "yes"}]', '7c39cb04-4f02-4c49-8f94-a5b697d40365', 1, 1, 1, now(), now());
 
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 3, 1, '00828291-c2fe-415f-a51e-ba8a02607da0', 1, 1, 1, now(), now());
@@ -229,9 +237,10 @@ INSERT INTO catchment_address_mapping (catchment_id, addresslevel_id)
 VALUES (1, 1), (1, 2), (2, 2);
 
 INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, organisation_id,
-                        subject_type_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+                        subject_type_id, observations, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 2,
-        (select id from subject_type where name = 'Individual'), 1, 1, now(), now());
+        (select id from subject_type where name = 'Individual'), '{"7c39cb04-4f02-4c49-8f94-a5b697d40365": "9282738493"}'::jsonb, 1, 1, now(), now());
+
 
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, address_id)
 VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, now(), now(), 1);
@@ -312,6 +321,18 @@ VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1, 1, 1, now(), now());
 INSERT INTO external_system_config (organisation_id, version, created_by_id, last_modified_by_id, created_date_time,
                                     last_modified_date_time, system_name, config)
 values (3, 0, 3, 3, now(), now(), 'Glific', '{"baseUrl": "http://localhost:9191", "phone": "919693847573", "password": "seecretpass"}');
+
+insert into message_rule (id, uuid, name, message_rule, schedule_rule, entity_type, entity_type_id, message_template_id, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, organisation_id)
+values (1, '15e766d8-3d8b-4777-8f55-1b171ac9872d', 'Individual message rule', null, '() => ([1, 2, 3])', 'Subject', (select id from subject_type where name = 'Individual'), 1, 0, 1, 2, now(), now(), 1);
+
+insert into message_receiver(id, uuid, entity_type, entity_id, organisation_id, is_voided, external_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
+values (1, 'c48d7ae7-d0a9-4f79-aede-19297db736f9', 'Subject', (select id from individual where uuid = '4378dce3-247e-4393-8dd5-032c6eb0a655'), 1, false, '1', 1, 1, now(), now(), 1);
+
+insert into message_request_queue(uuid, organisation_id, message_rule_id, message_receiver_id, scheduled_date_time, delivered_date_time, delivery_status, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
+values ('75925823-109f-41a5-89e3-9c719c88155d', 1, 1, 1, now(), null, 'NotSent', 1, 1, now(), now(), 0);
+
+insert into message_request_queue(uuid, organisation_id, message_rule_id, message_receiver_id, scheduled_date_time, delivered_date_time, delivery_status, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
+values ('647bb6bb-99f1-4921-809e-26f2c730fc09', 1, 1, 1, now(), now(), 'Sent', 1, 1, now(), now(), 0);
 
 SELECT setval('non_applicable_form_element_id_seq', COALESCE((SELECT MAX(id) + 1
                                                               FROM non_applicable_form_element), 1), FALSE);

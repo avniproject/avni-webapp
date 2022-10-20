@@ -1,7 +1,9 @@
 package org.avni.messaging.service;
 
-import org.avni.messaging.domain.MessageRequestQueue;
-import org.avni.messaging.repository.MessageRequestRepository;
+import org.avni.messaging.domain.MessageReceiver;
+import org.avni.messaging.domain.MessageRequest;
+import org.avni.messaging.domain.MessageRule;
+import org.avni.messaging.repository.MessageRequestQueueRepository;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -17,10 +19,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MessageRequestServiceTest {
     @Mock
-    private MessageRequestRepository messageRequestRepository;
+    private MessageRequestQueueRepository messageRequestRepository;
 
     @Captor
-    ArgumentCaptor<MessageRequestQueue> messageRequest;
+    ArgumentCaptor<MessageRequest> messageRequest;
 
     private MessageRequestService messageRequestService;
 
@@ -32,17 +34,17 @@ public class MessageRequestServiceTest {
 
     @Test
     public void shouldSaveMessageRequest() {
-        Long messageRuleId = 12L;
-        Long messageReceiverId = 34L;
+        MessageRule messageRule = new MessageRule();
+        MessageReceiver messageReceiver = new MessageReceiver();
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTime scheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
 
-        messageRequestService.createMessageRequest(messageRuleId, messageReceiverId, scheduledDateTime);
+        messageRequestService.createMessageRequest(messageRule, messageReceiver, scheduledDateTime);
 
         verify(messageRequestRepository).save(messageRequest.capture());
-        MessageRequestQueue messageRequest = this.messageRequest.getValue();
-        assertThat(messageRequest.getMessageRuleId()).isEqualTo(messageRuleId);
-        assertThat(messageRequest.getMessageReceiverId()).isEqualTo(messageReceiverId);
+        MessageRequest messageRequest = this.messageRequest.getValue();
+        assertThat(messageRequest.getMessageRule()).isEqualTo(messageRule);
+        assertThat(messageRequest.getMessageReceiver()).isEqualTo(messageReceiver);
         assertThat(messageRequest.getScheduledDateTime()).isEqualTo(scheduledDateTime);
         assertThat(messageRequest.getUuid()).isNotNull();
     }

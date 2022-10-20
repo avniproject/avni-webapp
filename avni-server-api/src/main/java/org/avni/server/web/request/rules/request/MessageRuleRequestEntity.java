@@ -2,20 +2,20 @@ package org.avni.server.web.request.rules.request;
 
 import org.avni.server.web.request.rules.RulesContractWrapper.RuleServerEntityContract;
 
-public class ScheduleRuleRequestEntity {
+public class MessageRuleRequestEntity {
     private RuleServerEntityContract entity;
-    private String scheduleRule;
+    private String messageRule;
 
-    public ScheduleRuleRequestEntity(RuleServerEntityContract entity, String scheduleRule) {
+    public MessageRuleRequestEntity(RuleServerEntityContract entity, String messageRule) {
         this.entity = entity;
-        this.scheduleRule = scheduleRule;
+        this.messageRule = messageRule;
     }
 
     public RuleServerEntityContract getEntity() {
         return entity;
     }
 
-    public String getScheduleRule() {
-        return scheduleRule;
+    public String getMessageRule() {
+        return messageRule;
     }
 }

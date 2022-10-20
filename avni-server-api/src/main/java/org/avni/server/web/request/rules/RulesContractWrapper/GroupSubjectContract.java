@@ -2,7 +2,7 @@ package org.avni.server.web.request.rules.RulesContractWrapper;
 
 import org.joda.time.DateTime;
 
-public class GroupSubjectContract {
+public class GroupSubjectContract implements RuleServerEntityContract {
     private String uuid;
     private IndividualContract groupSubject;
     private IndividualContract memberSubject;

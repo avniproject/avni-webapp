@@ -8,7 +8,7 @@ import org.avni.server.web.request.rules.request.RuleRequestEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramEncounterContract {
+public class ProgramEncounterContract implements RuleServerEntityContract {
     private List<ObservationModelContract> observations = new ArrayList<>();
     private RuleRequestEntity rule;
     private ProgramEnrolmentContract programEnrolment;

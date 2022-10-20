@@ -85,7 +85,7 @@ public class RuleController {
 
     @RequestMapping(value = "/web/rules", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    ResponseEntity<?> executeServerSideRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
+    ResponseEntity<?> executeServerSideRules(@RequestBody RequestEntityWrapper requestEntityWrapper) {
         RuleResponseEntity ruleResponseEntity = ruleService.executeServerSideRules(requestEntityWrapper);
         if (ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);

@@ -8,7 +8,7 @@ import org.avni.server.web.request.rules.request.RuleRequestEntity;
 
 import java.util.List;
 
-public class IndividualContract implements RuleContract {
+public class IndividualContract implements RuleServerEntityContract {
     private String uuid;
 
     private String firstName;

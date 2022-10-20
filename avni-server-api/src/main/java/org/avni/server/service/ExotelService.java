@@ -5,7 +5,7 @@ import org.avni.server.domain.User;
 import org.avni.server.domain.extenalSystem.ExternalSystemConfig;
 import org.avni.server.domain.extenalSystem.SystemName;
 import org.avni.server.framework.security.UserContextHolder;
-import org.avni.server.web.external.ExotelRestClient;
+import org.avni.server.web.external.ExotelClient;
 import org.avni.server.web.request.ExotelRequest;
 import org.avni.server.web.response.ExotelResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,17 +17,17 @@ import java.net.ConnectException;
 public class ExotelService {
 
     private final ExternalSystemConfigRepository externalSystemConfigRepository;
-    private final ExotelRestClient exotelRestClient;
+    private final ExotelClient exotelClient;
 
     @Value("${avni.connectToExotelInDev}")
     private boolean connectToExotelInDev;
 
     private boolean isDev;
 
-    public ExotelService(boolean isDev, ExternalSystemConfigRepository externalSystemConfigRepository, ExotelRestClient exotelRestClient) {
+    public ExotelService(boolean isDev, ExternalSystemConfigRepository externalSystemConfigRepository, ExotelClient exotelClient) {
         this.isDev = isDev;
         this.externalSystemConfigRepository = externalSystemConfigRepository;
-        this.exotelRestClient = exotelRestClient;
+        this.exotelClient = exotelClient;
     }
 
     public ExotelResponse makeMaskedCall(String to) throws ConnectException {
@@ -42,6 +42,6 @@ public class ExotelService {
         String from = UserContextHolder.getUser().getPhoneNumber();
         ExotelRequest exotelRequest = new ExotelRequest(from, to, callerId);
 
-        return exotelRestClient.callMasking(externalSystemConfig.getConfig(), exotelRequest);
+        return exotelClient.callMasking(externalSystemConfig.getConfig(), exotelRequest);
     }
 }

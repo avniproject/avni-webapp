@@ -3,15 +3,13 @@ package org.avni.server.web.request.rules.constructWrappers;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ContractBuilderServices {
+public class IndividualContractBuilderServices {
     private IndividualConstructionService individualConstructionService;
     private ProgramEncounterConstructionService programEncounterConstructionService;
-    private ProgramEnrolmentConstructionService programEnrolmentConstructionService;
 
-    public ContractBuilderServices(IndividualConstructionService individualConstructionService, ProgramEncounterConstructionService programEncounterConstructionService, ProgramEnrolmentConstructionService programEnrolmentConstructionService) {
+    public IndividualContractBuilderServices(IndividualConstructionService individualConstructionService, ProgramEncounterConstructionService programEncounterConstructionService) {
         this.individualConstructionService = individualConstructionService;
         this.programEncounterConstructionService = programEncounterConstructionService;
-        this.programEnrolmentConstructionService = programEnrolmentConstructionService;
     }
 
     public IndividualConstructionService getIndividualConstructionService() {
@@ -20,9 +18,5 @@ public class ContractBuilderServices {
 
     public ProgramEncounterConstructionService getProgramEncounterConstructionService() {
         return programEncounterConstructionService;
-    }
-
-    public ProgramEnrolmentConstructionService getProgramEnrolmentConstructionService() {
-        return programEnrolmentConstructionService;
     }
 }

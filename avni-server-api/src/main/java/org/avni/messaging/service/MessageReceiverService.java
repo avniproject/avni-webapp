@@ -19,7 +19,7 @@ public class MessageReceiverService {
     public MessageReceiver saveReceiverIfRequired(ReceiverEntityType entityType, Long entityId) {
         MessageReceiver messageReceiver = messageReceiverRepository.findByEntityId(entityId);
         if (messageReceiver == null) {
-            messageReceiver = new MessageReceiver(entityType, entityId);
+            messageReceiver = new MessageReceiver(entityType, entityId, null);
             messageReceiver.assignUUIDIfRequired();
             messageReceiverRepository.save(messageReceiver);
         }
