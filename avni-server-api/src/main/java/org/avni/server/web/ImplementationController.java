@@ -43,10 +43,10 @@ public class ImplementationController implements RestControllerResourceProcessor
         //ZipOutputStream will be automatically closed because we are using try-with-resources.
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             if (includeLocations) {
-                organisationService.addAddressLevelTypesJson(orgId, zos);
                 organisationService.addAddressLevelsJson(orgId, zos);
                 organisationService.addCatchmentsJson(organisation, zos);
             }
+            organisationService.addAddressLevelTypesJson(orgId, zos);
             organisationService.addSubjectTypesJson(orgId, zos);
             organisationService.addOperationalSubjectTypesJson(organisation, zos);
             organisationService.addEncounterTypesJson(organisation, zos);
