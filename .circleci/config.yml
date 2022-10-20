@@ -161,6 +161,7 @@ workflows:
         requires:
           - test
     - STAGING_deploy:
+        type: approval
         filters:
           branches:
             only:
