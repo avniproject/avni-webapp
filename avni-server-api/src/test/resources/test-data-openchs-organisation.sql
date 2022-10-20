@@ -22,6 +22,7 @@ DELETE FROM catchment;
 DELETE FROM account_admin;
 delete from user_group;
 DELETE FROM external_system_config;
+DELETE FROM organisation_config;
 DELETE FROM users;
 DELETE FROM subject_type;
 DELETE FROM groups;
