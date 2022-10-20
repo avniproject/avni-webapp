@@ -69,6 +69,9 @@ INSERT INTO organisation(id, name, db_user, media_directory, uuid, parent_organi
 VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5', 1, 'demo')
 ON CONFLICT (uuid) DO NOTHING;
 
+insert into organisation_config (uuid, organisation_id, settings, version, is_voided, worklist_updation_rule, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+values ('5bd9c67e-c949-4872-9763-daeab7b48b1b', 1, '{"enableMessaging": true}', 0, false, '', 1, 1, now(), now());
+
 select create_db_user('a_demo', 'password');
 
 INSERT INTO organisation (id, name, db_user, media_directory, uuid, parent_organisation_id, schema_name)
