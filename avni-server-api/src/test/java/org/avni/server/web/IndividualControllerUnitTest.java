@@ -51,7 +51,7 @@ public class IndividualControllerUnitTest {
     }
 
     @Test
-    public void shouldCallMessagingServiceIfMessagingEnabled() {
+    public void shouldCallMessagingServiceIfMessagingEnabledOnSave() {
         IndividualRequest individualRequest = mock(IndividualRequest.class);
         Individual individual = mock(Individual.class);
         SubjectType subjectType = mock(SubjectType.class);
@@ -69,7 +69,7 @@ public class IndividualControllerUnitTest {
 
         when(organisationConfigService.isMessagingEnabled()).thenReturn(true).thenReturn(false);
         individualController.save(individualRequest);
-        verify(messagingService).onEntityCreated(individualId, subjectId, EntityType.Subject);
+        verify(messagingService).onEntityCreated(individualId, subjectId, EntityType.Subject, individualId);
         verifyNoMoreInteractions(messagingService);
 
         individualController.save(individualRequest);

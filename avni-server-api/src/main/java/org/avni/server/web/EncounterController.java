@@ -1,6 +1,8 @@
 package org.avni.server.web;
 
 import com.bugsnag.Bugsnag;
+import org.avni.messaging.domain.EntityType;
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.application.FormMapping;
 import org.avni.server.application.FormType;
 import org.avni.server.dao.EncounterRepository;
@@ -42,6 +44,8 @@ public class EncounterController extends AbstractController<Encounter> implement
     private final EncounterService encounterService;
     private ScopeBasedSyncService<Encounter> scopeBasedSyncService;
     private FormMappingService formMappingService;
+    private final MessagingService messagingService;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
     public EncounterController(IndividualRepository individualRepository,
@@ -50,7 +54,8 @@ public class EncounterController extends AbstractController<Encounter> implement
                                ObservationService observationService,
                                UserService userService,
                                Bugsnag bugsnag,
-                               EncounterService encounterService, ScopeBasedSyncService<Encounter> scopeBasedSyncService, FormMappingService formMappingService) {
+                               EncounterService encounterService, ScopeBasedSyncService<Encounter> scopeBasedSyncService, FormMappingService formMappingService,
+                               MessagingService messagingService, OrganisationConfigService organisationConfigService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
@@ -60,6 +65,8 @@ public class EncounterController extends AbstractController<Encounter> implement
         this.encounterService = encounterService;
         this.scopeBasedSyncService = scopeBasedSyncService;
         this.formMappingService = formMappingService;
+        this.messagingService = messagingService;
+        this.organisationConfigService = organisationConfigService;
     }
 
     @GetMapping(value = "/web/encounter/{uuid}")
@@ -131,6 +138,8 @@ public class EncounterController extends AbstractController<Encounter> implement
         if (request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
             encounterService.saveVisitSchedules(individual.getUuid(), request.getVisitSchedules(), request.getUuid());
         }
+        if (organisationConfigService.isMessagingEnabled())
+            messagingService.onEntityCreated(encounter.getId(), encounterType.getId(), EntityType.Encounter, individual.getId());
         logger.info(String.format("Saved encounter with uuid %s", request.getUuid()));
     }
 
