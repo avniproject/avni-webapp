@@ -1,5 +1,7 @@
 package org.avni.server.web.api;
 
+import org.avni.messaging.domain.EntityType;
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.service.*;
@@ -37,13 +39,18 @@ public class SubjectApiController {
     private final IndividualService individualService;
     private final S3Service s3Service;
 
+    private final OrganisationConfigService organisationConfigService;
+
+    private final MessagingService messagingService;
+
     @Autowired
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
                                 ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
                                 LocationRepository locationRepository, GenderRepository genderRepository,
                                 SubjectMigrationService subjectMigrationService, IndividualService individualService,
-                                S3Service s3Service) {
+                                S3Service s3Service, OrganisationConfigService organisationConfigService,
+                                MessagingService messagingService) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
@@ -55,6 +62,8 @@ public class SubjectApiController {
         this.subjectMigrationService = subjectMigrationService;
         this.individualService = individualService;
         this.s3Service = s3Service;
+        this.organisationConfigService = organisationConfigService;
+        this.messagingService = messagingService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -100,6 +109,8 @@ public class SubjectApiController {
         Individual subject = createIndividual(request.getExternalId());
         try {
             updateSubject(subject, request);
+            if (organisationConfigService.isMessagingEnabled())
+                messagingService.onEntityCreated(subject.getId(), subject.getSubjectType().getId(), EntityType.Subject, subject.getId());
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
