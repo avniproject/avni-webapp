@@ -40,7 +40,7 @@ public class MessageReceiverServiceTest {
         verify(messageReceiverRepository).save(messageReceiver.capture());
 
         MessageReceiver messageReceiver = this.messageReceiver.getValue();
-        assertThat(messageReceiver.getEntityType()).isEqualTo(EntityType.Subject);
+        assertThat(messageReceiver.getEntityType()).isEqualTo(ReceiverEntityType.Subject);
         assertThat(messageReceiver.getEntityId()).isEqualTo(entityId);
         assertThat(messageReceiver.getUuid()).isNotNull();
         assertThat(actualMessageReceiver).isEqualToComparingFieldByFieldRecursively(messageReceiver);

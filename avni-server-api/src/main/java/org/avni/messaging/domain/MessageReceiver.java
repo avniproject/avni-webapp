@@ -2,17 +2,19 @@ package org.avni.messaging.domain;
 
 import org.avni.server.domain.OrganisationAwareEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "message_receiver")
 public class MessageReceiver extends OrganisationAwareEntity {
     @Column
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private final ReceiverEntityType entityType;
 
     @Column
+    @NotNull
     private final Long entityId;
 
     public MessageReceiver(ReceiverEntityType entityType, Long entityId) {
