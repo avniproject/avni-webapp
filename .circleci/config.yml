@@ -127,9 +127,12 @@ workflows:
           requires:
             - app_test
       - STAGING_deploy:
+          type: approval
           filters:
             branches:
-              only: master
+              only:
+                - master
+                - /^3\..*/
           requires:
             - app_build
       - cypress/run:
