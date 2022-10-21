@@ -14,6 +14,7 @@ import org.avni.server.domain.task.TaskStatus;
 import org.avni.server.domain.task.TaskType;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.projection.UserWebProjection;
+import org.avni.server.util.CircularList;
 import org.avni.server.web.request.TaskRequest;
 import org.avni.server.web.request.task.TaskAssignmentRequest;
 import org.avni.server.web.request.task.TaskFilterCriteria;
@@ -26,6 +27,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -135,44 +138,16 @@ public class TaskService implements NonScopeAwareService {
     private void assignmentForSelectedAll(TaskAssignmentRequest taskAssignmentRequest) {
         Page<Task> taskPage = searchTaskByCriteria(taskAssignmentRequest.getTaskFilterCriteria(), PageRequest.of(0, 1000));
         List<User> users = userRepository.findByIdIn(taskAssignmentRequest.getAssignedToUserIdArray());
-        List<Task> tasksToUpdate = taskPage.getContent();
-        TaskStatus taskStatus = null;
-        if (taskAssignmentRequest.getStatusId() != null) {
-            taskStatus = taskStatusRepository.findOne(taskAssignmentRequest.getStatusId());
-        }
-        assignTasksEquallyToUsers(taskPage.getTotalElements(), users, tasksToUpdate, taskStatus);
-        taskRepository.saveAll(tasksToUpdate);
-    }
-
-    private void assignTasksEquallyToUsers(long totalTasks, List<User> users, List<Task> tasksToUpdate, TaskStatus taskStatus) {
-        int totalUsers = users.size();
-        int userIndex = 0;
-        for (int i = 0; i < totalTasks; i++) {
-            Task task = tasksToUpdate.get(i);
-            User newAssignment = users.get(userIndex);
-            populateTaskUnAssignment(task.getAssignedTo(), newAssignment, task);
-            task.setAssignedTo(newAssignment);
-            if (taskStatus != null) {
-                task.setTaskStatus(taskStatus);
-                if (taskStatus.isTerminal()) {
-                    task.setCompletedOn(new DateTime());
-                }
-            }
-            if (userIndex + 1 != totalUsers && (i + 1) == ((userIndex + 1) * (totalTasks / totalUsers))) {
-                userIndex++;
-            }
-        }
-    }
-
-    private void populateTaskUnAssignment(User olderUser, User newUser, Task task) {
-        if (olderUser != null && !olderUser.getId().equals(newUser.getId())) {
-            taskUnAssigmentService.saveTaskUnAssignment(task, olderUser);
-        }
+        performAssignment(users, taskPage.getContent(), taskAssignmentRequest);
     }
 
     private void assignmentForSelectedTaskIds(TaskAssignmentRequest taskAssignmentRequest) {
         List<User> users = userRepository.findByIdIn(taskAssignmentRequest.getAssignedToUserIdArray());
         List<Task> tasksToUpdate = taskRepository.findAllByIdIn(taskAssignmentRequest.getTaskIds());
+        performAssignment(users, tasksToUpdate, taskAssignmentRequest);
+    }
+
+    private void performAssignment(List<User> users, List<Task> tasksToUpdate, TaskAssignmentRequest taskAssignmentRequest) {
         if (users.size() > tasksToUpdate.size()) {
             throw new IllegalArgumentException("Users cannot be more than the selected tasks");
         }
@@ -180,7 +155,25 @@ public class TaskService implements NonScopeAwareService {
         if (taskAssignmentRequest.getStatusId() != null) {
             taskStatus = taskStatusRepository.findOne(taskAssignmentRequest.getStatusId());
         }
-        assignTasksEquallyToUsers(tasksToUpdate.size(), users, tasksToUpdate, taskStatus);
+        assignTasksEquallyToUsers(users, tasksToUpdate, taskStatus);
         taskRepository.saveAll(tasksToUpdate);
+    }
+
+    private void assignTasksEquallyToUsers(List<User> userList, List<Task> tasksToUpdate, TaskStatus taskStatus) {
+        Iterator<User> users = new CircularList<>(userList).iterator();
+        tasksToUpdate.forEach(task -> {
+            User newUser = users.next();
+            populateTaskUnAssignment(task.getAssignedTo(), newUser, task);
+            task.setAssignedTo(users.next());
+            if (taskStatus != null) {
+                task.updateTaskStatus(taskStatus);
+            }
+        });
+    }
+
+    private void populateTaskUnAssignment(User olderUser, User newUser, Task task) {
+        if (olderUser != null && !olderUser.getId().equals(newUser.getId())) {
+            taskUnAssigmentService.saveTaskUnAssignment(task, olderUser);
+        }
     }
 }

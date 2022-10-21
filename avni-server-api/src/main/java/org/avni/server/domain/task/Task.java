@@ -77,6 +77,12 @@ public class Task extends OrganisationAwareEntity {
     public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
+    public void updateTaskStatus(TaskStatus taskStatus) {
+        setTaskStatus(taskStatus);
+        if (taskStatus.isTerminal()) {
+            setCompletedOn(new DateTime());
+        }
+    }
 
     public DateTime getScheduledOn() {
         return scheduledOn;
