@@ -31,11 +31,11 @@ public class LocationWriter implements ItemWriter<Row> {
     private static final LocationHeaders headers = new LocationHeaders();
     @Value("#{jobParameters['locationUploadMode']}")
     private String locationUploadMode;
-    private LocationService locationService;
-    private LocationRepository locationRepository;
-    private AddressLevelTypeRepository addressLevelTypeRepository;
-    private LocationCreator locationCreator;
-    private ObservationCreator observationCreator;
+    private final LocationService locationService;
+    private final LocationRepository locationRepository;
+    private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private final LocationCreator locationCreator;
+    private final ObservationCreator observationCreator;
     private List<String> locationTypeNames;
 
     @Autowired
@@ -82,8 +82,9 @@ public class LocationWriter implements ItemWriter<Row> {
         Map.Entry<String, String> locationEntry = allNonEmptyLocations.get(allNonEmptyLocations.size() - 1);
         String id = row.get(getIdColumnHeaderName(row));
         AddressLevel parent = parentEntry == null ? null : locationRepository.findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(parentEntry.getValue(), parentEntry.getKey());
-        AddressLevel existingLocation = !S.isEmpty(id) ? locationRepository.findByLegacyIdOrUuid(id) :
-                locationRepository.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, locationEntry.getValue());
+        AddressLevel existingLocation = S.isEmpty(id) ?
+                locationRepository.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, locationEntry.getValue()) :
+                locationRepository.findByLegacyIdOrUuid(id);
         if (existingLocation != null) {
             updateExistingLocation(existingLocation, parent, row, allErrorMsgs, id);
         } else {

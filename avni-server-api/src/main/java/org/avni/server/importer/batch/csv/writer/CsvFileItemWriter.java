@@ -36,8 +36,7 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
                              ProgramEnrolmentWriter programEnrolmentWriter,
                              ProgramEncounterWriter programEncounterWriter,
                              EncounterWriter encounterWriter,
-                             GroupSubjectWriter groupSubjectWriter
-    ) {
+                             GroupSubjectWriter groupSubjectWriter) {
         this.authService = authService;
         writers.put("locations", locationWriter);
         writers.put("usersAndCatchments", userAndCatchmentWriter);
@@ -53,7 +52,7 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
         if (writers.containsKey(primaryType)) {
             return writers.get(primaryType);
         } else {
-            throw new RuntimeException(format("Unknown bulkupload type: '%s'", primaryType));
+            throw new RuntimeException(format("Unknown bulk upload type: '%s'", primaryType));
         }
     }
 

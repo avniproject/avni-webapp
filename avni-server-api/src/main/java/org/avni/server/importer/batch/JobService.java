@@ -30,25 +30,22 @@ import static org.springframework.batch.core.BatchStatus.*;
 
 @Service
 public class JobService {
-    private Logger logger;
-    private JobExplorer jobExplorer;
-    private JobRepository jobRepository;
-    private Job importJob;
-    private Job importZipJob;
-    private JobLauncher bgJobLauncher;
-    private UserService userService;
-    private AvniJobRepository avniJobRepository;
+    private final static Logger logger = LoggerFactory.getLogger(JobService.class);
+    private final JobExplorer jobExplorer;
+    private final JobRepository jobRepository;
+    private final Job importJob;
+    private final Job importZipJob;
+    private final JobLauncher bgJobLauncher;
+    private final AvniJobRepository avniJobRepository;
 
     @Autowired
-    public JobService(JobExplorer jobExplorer, JobRepository jobRepository, Job importJob, Job importZipJob, JobLauncher bgJobLauncher, UserService userService, AvniJobRepository avniJobRepository) {
+    public JobService(JobExplorer jobExplorer, JobRepository jobRepository, Job importJob, Job importZipJob, JobLauncher bgJobLauncher, AvniJobRepository avniJobRepository) {
         this.jobExplorer = jobExplorer;
         this.jobRepository = jobRepository;
         this.importJob = importJob;
         this.importZipJob = importZipJob;
         this.bgJobLauncher = bgJobLauncher;
-        this.userService = userService;
         this.avniJobRepository = avniJobRepository;
-        logger = LoggerFactory.getLogger(getClass());
     }
 
     public void retryJobsFailedInLast2Hours() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
