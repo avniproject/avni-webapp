@@ -1,5 +1,7 @@
 package org.avni.server.web.api;
 
+import org.avni.messaging.domain.EntityType;
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.dao.ConceptRepository;
 import org.avni.server.dao.EncounterRepository;
 import org.avni.server.dao.EncounterTypeRepository;
@@ -7,6 +9,7 @@ import org.avni.server.dao.IndividualRepository;
 import org.avni.server.domain.*;
 import org.avni.server.service.ConceptService;
 import org.avni.server.service.EncounterService;
+import org.avni.server.service.OrganisationConfigService;
 import org.avni.server.web.request.api.RequestUtils;
 import org.avni.server.web.response.EncounterResponse;
 import org.avni.server.web.response.ResponsePage;
@@ -35,14 +38,20 @@ public class GeneralEncounterApiController {
     private final EncounterTypeRepository encounterTypeRepository;
     private final EncounterService encounterService;
 
+    private final OrganisationConfigService organisationConfigService;
+
+    private final MessagingService messagingService;
+
     @Autowired
-    public GeneralEncounterApiController(ConceptService conceptService, EncounterRepository encounterRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterService encounterService) {
+    public GeneralEncounterApiController(ConceptService conceptService, EncounterRepository encounterRepository, ConceptRepository conceptRepository, IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterService encounterService, OrganisationConfigService organisationConfigService, MessagingService messagingService) {
         this.conceptService = conceptService;
         this.encounterRepository = encounterRepository;
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterService = encounterService;
+        this.organisationConfigService = organisationConfigService;
+        this.messagingService = messagingService;
     }
 
     @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
@@ -86,6 +95,8 @@ public class GeneralEncounterApiController {
         try {
             initializeIndividual(request, encounter);
             updateEncounter(encounter, request);
+            if(organisationConfigService.isMessagingEnabled())
+             messagingService.onEntityCreated(encounter.getId(), encounter.getEncounterType().getId(), EntityType.Encounter, encounter.getIndividual().getId());
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }
