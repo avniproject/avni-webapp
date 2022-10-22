@@ -77,10 +77,11 @@ create_base_local_test_data:
 	@echo 'Creating base data'
 	psql -h $(dbServer) -p $(dbPort) -U $(su) $(DB) -f avni-server-api/src/main/resources/database/createBaseLocalTestData.sql
 
-create_local_test_data:
+create_local_test_data_only:
 	newman run postman/local_test_data_setup.json -e postman/localhost.postman_environment.json
 
-recreate_local_test_data: rebuild_db deploy_schema create_base_local_test_data create_local_test_data
+create_local_test_data: create_base_local_test_data create_local_test_data_only
+recreate_local_test_data: rebuild_db deploy_schema create_local_test_data
 
 rebuild_db: clean_db build_db ## clean + build db
 

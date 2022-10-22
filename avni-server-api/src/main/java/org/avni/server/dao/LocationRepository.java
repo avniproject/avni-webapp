@@ -125,6 +125,10 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByParentAndTitleIgnoreCaseAndIsVoidedFalse(AddressLevel parent, String title);
 
+    default AddressLevel findChildLocation(AddressLevel parent, String title) {
+        return this.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, title);
+    }
+
     @Query("select a from AddressLevel a where a.uuid =:id or a.legacyId = :id")
     AddressLevel findByLegacyIdOrUuid(String id);
 
@@ -137,7 +141,14 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "and case when :parentName isnull then true else parent.title = cast(:parentName as text) end;", nativeQuery = true)
     AddressLevel findLocationByTitleTypeAndParentName(String title, String type, String parentName);
 
-    AddressLevel findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(String title, String typeString);
+    default AddressLevel findChildLocation(String title, String type, String parentName) {
+        return this.findLocationByTitleTypeAndParentName(title, type, parentName);
+    }
+
+    AddressLevel findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(String title, String type);
+    default AddressLevel findLocation(String title, String type) {
+        return this.findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(title, type);
+    }
 
     @RestResource(path = "findByParent", rel = "findByParent")
     Page<AddressLevel> findByIsVoidedFalseAndParent_Id(@Param("parentId") Long parentId, Pageable pageable);

@@ -78,12 +78,12 @@ public class LocationWriter implements ItemWriter<Row> {
             }
         }
         List<Map.Entry<String, String>> allNonEmptyLocations = new ArrayList<>(nonEmptyLocations.entrySet());
-        Map.Entry<String, String> parentEntry = ensureAllParentExists(allErrorMsgs, allNonEmptyLocations);
+        Map.Entry<String, String> parentEntry = ensureAllParentsExist(allErrorMsgs, allNonEmptyLocations);
         Map.Entry<String, String> locationEntry = allNonEmptyLocations.get(allNonEmptyLocations.size() - 1);
         String id = row.get(getIdColumnHeaderName(row));
-        AddressLevel parent = parentEntry == null ? null : locationRepository.findByTitleIgnoreCaseAndTypeNameAndIsVoidedFalse(parentEntry.getValue(), parentEntry.getKey());
+        AddressLevel parent = parentEntry == null ? null : locationRepository.findLocation(parentEntry.getValue(), parentEntry.getKey());
         AddressLevel existingLocation = S.isEmpty(id) ?
-                locationRepository.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, locationEntry.getValue()) :
+                locationRepository.findChildLocation(parent, locationEntry.getValue()) :
                 locationRepository.findByLegacyIdOrUuid(id);
         if (existingLocation != null) {
             updateExistingLocation(existingLocation, parent, row, allErrorMsgs, id);
@@ -127,7 +127,7 @@ public class LocationWriter implements ItemWriter<Row> {
 
     private AddressLevel createAddressLevel(Row row, AddressLevel parent, String header) throws BuilderException {
         AddressLevel location;
-        location = locationRepository.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, row.get(header));
+        location = locationRepository.findChildLocation(parent, row.get(header));
         if (location == null) {
             LocationContract locationContract = new LocationContract();
             locationContract.setupUuidIfNeeded();
@@ -156,14 +156,14 @@ public class LocationWriter implements ItemWriter<Row> {
         updateLocationProperties(row, allErrorMsgs, location, header);
     }
 
-    private Map.Entry<String, String> ensureAllParentExists(List<String> allErrorMsgs, List<Map.Entry<String, String>> allNonEmptyLocations) throws Exception {
+    private Map.Entry<String, String> ensureAllParentsExist(List<String> allErrorMsgs, List<Map.Entry<String, String>> allNonEmptyLocations) throws Exception {
         Map.Entry<String, String> parentEntry = null;
         for (int i = 0; i < allNonEmptyLocations.size() - 1; i++) {
             Map.Entry<String, String> locationEntry = allNonEmptyLocations.get(i);
             String type = locationEntry.getKey();
             String title = locationEntry.getValue();
             String parent = parentEntry == null ? null : parentEntry.getValue();
-            AddressLevel location = locationRepository.findLocationByTitleTypeAndParentName(title, type, parent);
+            AddressLevel location = locationRepository.findChildLocation(title, type, parent);
             if (location == null) {
                 allErrorMsgs.add(String.format("No location found with name %s, type %s and parent %s", title, type, parent));
                 throw new Exception(String.join(", ", allErrorMsgs));
