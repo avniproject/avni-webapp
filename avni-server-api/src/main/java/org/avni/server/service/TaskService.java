@@ -164,7 +164,7 @@ public class TaskService implements NonScopeAwareService {
         tasksToUpdate.forEach(task -> {
             User newUser = users.next();
             populateTaskUnAssignment(task.getAssignedTo(), newUser, task);
-            task.setAssignedTo(users.next());
+            task.setAssignedTo(newUser);
             if (taskStatus != null) {
                 task.updateTaskStatus(taskStatus);
             }
