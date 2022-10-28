@@ -67,7 +67,7 @@ public class EncounterControllerUnitTest {
 
         when(organisationConfigService.isMessagingEnabled()).thenReturn(true).thenReturn(false);
         encounterController.save(encounterRequest);
-        verify(messagingService).onEntityCreated(encounterId, encounterTypeId, EntityType.Encounter, individualId);
+        verify(messagingService).onEntityCreateOrUpdate(encounterId, encounterTypeId, EntityType.Encounter, individualId);
         verifyNoMoreInteractions(messagingService);
 
         encounterController.save(encounterRequest);

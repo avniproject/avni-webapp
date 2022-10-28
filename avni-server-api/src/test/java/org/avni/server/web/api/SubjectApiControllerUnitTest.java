@@ -70,7 +70,7 @@ public class SubjectApiControllerUnitTest {
 
         when(organisationConfigService.isMessagingEnabled()).thenReturn(true).thenReturn(false);
         subjectApiController.post(apiSubjectRequest);
-        verify(messagingService).onEntityCreated(subjectId, subjectTypeId, EntityType.Subject, subjectId);
+        verify(messagingService).onEntityCreateOrUpdate(subjectId, subjectTypeId, EntityType.Subject, subjectId);
         verifyNoMoreInteractions(messagingService);
 
         subjectApiController.post(apiSubjectRequest);

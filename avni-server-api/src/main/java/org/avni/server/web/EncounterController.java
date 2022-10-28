@@ -139,7 +139,7 @@ public class EncounterController extends AbstractController<Encounter> implement
             encounterService.saveVisitSchedules(individual.getUuid(), request.getVisitSchedules(), request.getUuid());
         }
         if (organisationConfigService.isMessagingEnabled())
-            messagingService.onEntityCreated(encounter.getId(), encounterType.getId(), EntityType.Encounter, individual.getId());
+            messagingService.onEntityCreateOrUpdate(encounter.getId(), encounterType.getId(), EntityType.Encounter, individual.getId());
         logger.info(String.format("Saved encounter with uuid %s", request.getUuid()));
     }
 

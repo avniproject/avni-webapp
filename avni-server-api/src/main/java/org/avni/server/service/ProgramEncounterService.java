@@ -1,6 +1,8 @@
 package org.avni.server.service;
 
 import com.bugsnag.Bugsnag;
+import org.avni.messaging.domain.EntityType;
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.common.EntityHelper;
 import org.avni.server.dao.*;
 import org.avni.server.dao.application.FormMappingRepository;
@@ -37,9 +39,11 @@ public class ProgramEncounterService implements ScopeAwareService {
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private FormMappingRepository formMappingRepository;
     private EncounterService encounterService;
+    private OrganisationConfigService organisationConfigService;
+    private MessagingService messagingService;
 
     @Autowired
-    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository, FormMappingRepository formMappingRepository, EncounterService encounterService) {
+    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository, FormMappingRepository formMappingRepository, EncounterService encounterService, OrganisationConfigService organisationConfigService, MessagingService messagingService) {
         this.programEncounterRepository = programEncounterRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
@@ -47,6 +51,8 @@ public class ProgramEncounterService implements ScopeAwareService {
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.formMappingRepository = formMappingRepository;
         this.encounterService = encounterService;
+        this.organisationConfigService = organisationConfigService;
+        this.messagingService = messagingService;
     }
 
     public ProgramEncountersContract getProgramEncounterByUuid(String uuid) {
@@ -217,7 +223,10 @@ public class ProgramEncounterService implements ScopeAwareService {
         if (individual.getAddressLevel() != null) {
             programEncounter.setAddressId(individual.getAddressLevel().getId());
         }
-        return programEncounterRepository.save(programEncounter);
-    }
+        programEncounter = programEncounterRepository.save(programEncounter);
+        if (organisationConfigService.isMessagingEnabled())
+            messagingService.onEntityCreateOrUpdate(programEncounter.getId(), programEncounter.getEncounterType().getId(), EntityType.ProgramEncounter, programEncounter.getIndividual().getId());
 
+        return programEncounter;
+    }
 }

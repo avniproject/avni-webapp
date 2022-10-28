@@ -105,7 +105,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
         individualService.save(individual);
         if (organisationConfigService.isMessagingEnabled())
-            messagingService.onEntityCreated(individual.getId(), individual.getSubjectType().getId(), EntityType.Subject, individual.getId());
+            messagingService.onEntityCreateOrUpdate(individual.getId(), individual.getSubjectType().getId(), EntityType.Subject, individual.getId());
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));

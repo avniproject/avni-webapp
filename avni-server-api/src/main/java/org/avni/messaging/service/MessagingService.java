@@ -53,7 +53,7 @@ public class MessagingService {
         return messageRuleRepository.findAll(pageable);
     }
 
-    public void onEntityCreated(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
+    public void onEntityCreateOrUpdate(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
         List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
         MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, receiverId);
 

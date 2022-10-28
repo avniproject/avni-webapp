@@ -69,7 +69,7 @@ public class IndividualControllerUnitTest {
 
         when(organisationConfigService.isMessagingEnabled()).thenReturn(true).thenReturn(false);
         individualController.save(individualRequest);
-        verify(messagingService).onEntityCreated(individualId, subjectId, EntityType.Subject, individualId);
+        verify(messagingService).onEntityCreateOrUpdate(individualId, subjectId, EntityType.Subject, individualId);
         verifyNoMoreInteractions(messagingService);
 
         individualController.save(individualRequest);

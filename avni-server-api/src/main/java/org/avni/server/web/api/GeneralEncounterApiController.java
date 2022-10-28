@@ -96,7 +96,7 @@ public class GeneralEncounterApiController {
             initializeIndividual(request, encounter);
             updateEncounter(encounter, request);
             if(organisationConfigService.isMessagingEnabled())
-             messagingService.onEntityCreated(encounter.getId(), encounter.getEncounterType().getId(), EntityType.Encounter, encounter.getIndividual().getId());
+             messagingService.onEntityCreateOrUpdate(encounter.getId(), encounter.getEncounterType().getId(), EntityType.Encounter, encounter.getIndividual().getId());
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }

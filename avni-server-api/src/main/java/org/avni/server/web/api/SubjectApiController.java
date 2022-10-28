@@ -110,7 +110,7 @@ public class SubjectApiController {
         try {
             updateSubject(subject, request);
             if (organisationConfigService.isMessagingEnabled())
-                messagingService.onEntityCreated(subject.getId(), subject.getSubjectType().getId(), EntityType.Subject, subject.getId());
+                messagingService.onEntityCreateOrUpdate(subject.getId(), subject.getSubjectType().getId(), EntityType.Subject, subject.getId());
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }

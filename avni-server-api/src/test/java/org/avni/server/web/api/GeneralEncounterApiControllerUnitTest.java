@@ -73,7 +73,7 @@ public class GeneralEncounterApiControllerUnitTest {
 
         when(organisationConfigService.isMessagingEnabled()).thenReturn(true).thenReturn(false);
         generalEncounterApiController.post(apiEncounterRequest);
-        verify(messagingService).onEntityCreated(encounterId, encounterTypeId, EntityType.Encounter, individualId);
+        verify(messagingService).onEntityCreateOrUpdate(encounterId, encounterTypeId, EntityType.Encounter, individualId);
         verifyNoMoreInteractions(messagingService);
 
         generalEncounterApiController.post(apiEncounterRequest);
