@@ -1,6 +1,8 @@
 package org.avni.server.service;
 
+import org.avni.server.domain.OrganisationConfig;
 import org.avni.server.domain.User;
+import org.avni.server.framework.context.SpringProfiles;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -9,6 +11,8 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -17,33 +21,38 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("KeycloakIdpService")
 @ConditionalOnProperty(value = "avni.connectToKeycloak", havingValue = "true")
 public class KeycloakIdpService extends IdpServiceImpl {
-
     public static final String KEYCLOAK_ADMIN_API_CLIENT_ID = "admin-api";
+
+    private static final Logger logger = LoggerFactory.getLogger(KeycloakIdpService.class);
+
     @Autowired
     private AdapterConfig adapterConfig;
-
-    private Keycloak keycloak;
 
     private RealmResource realmResource;
 
     @Autowired
-    public KeycloakIdpService(Boolean isDev) {
-        super(isDev);
+    public KeycloakIdpService(SpringProfiles springProfiles) {
+        super(springProfiles);
+    }
+
+    private boolean skipCallingKeycloak() {
+        return springProfiles.isDev() && !this.idpInDev();
+    }
+
+    private boolean doCallKeycloak() {
+        return !springProfiles.isDev() || this.idpInDev();
     }
 
     @PostConstruct
     public void init() {
-        if (!isDev || this.idpInDev()) {
+        if (doCallKeycloak()) {
             //Is the appending "/auth" required, we cannot set getAuthServerUrl() property with the auth, as its used in KeycloakAuthService without to get certs
-            keycloak = KeycloakBuilder.builder().serverUrl(adapterConfig.getAuthServerUrl())
+            Keycloak keycloak = KeycloakBuilder.builder().serverUrl(adapterConfig.getAuthServerUrl())
                     .grantType(OAuth2Constants.CLIENT_CREDENTIALS).realm(adapterConfig.getRealm())
                     .clientId(KEYCLOAK_ADMIN_API_CLIENT_ID)
                     .clientSecret((String) adapterConfig.getCredentials().get("secret"))
@@ -55,13 +64,13 @@ public class KeycloakIdpService extends IdpServiceImpl {
     }
 
     @Override
-    public void createUser(User user) {
-        createUserWithPassword(user, TEMPORARY_PASSWORD);
+    public void createUser(User user, OrganisationConfig organisationConfig) {
+        createUserWithPassword(user, getDefaultPassword(user), null);
     }
 
     @Override
-    public void createUserWithPassword(User user, String password) {
-        if (isDev && !idpInDev()) {
+    public void createUserWithPassword(User user, String password, OrganisationConfig organisationConfig) {
+        if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak create user in dev mode...");
             return;
         }
@@ -78,7 +87,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     @Override
     public void updateUser(User user) {
-        if (isDev && !idpInDev()) {
+        if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak update user in dev mode...");
             return;
         }
@@ -96,7 +105,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     @Override
     public void deleteUser(User user) {
-        if (isDev && !idpInDev()) {
+        if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak delete user in dev mode...");
             return;
         }
@@ -117,7 +126,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     @Override
     public void resetPassword(User user, String password) {
-        if (isDev && !idpInDev()) {
+        if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak reset password in dev mode...");
             return;
         }
@@ -128,7 +137,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     @Override
     public boolean idpInDev() {
-        return isDev;
+        return springProfiles.isDev();
     }
 
     @Override
@@ -140,10 +149,6 @@ public class KeycloakIdpService extends IdpServiceImpl {
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setType(CredentialRepresentation.PASSWORD);
         cred.setTemporary(false);
-        if(password == null || !StringUtils.hasLength(password)) {
-            password = TEMPORARY_PASSWORD;
-            cred.setTemporary(true);
-        }
         cred.setValue(password);
         return cred;
     }
@@ -157,10 +162,10 @@ public class KeycloakIdpService extends IdpServiceImpl {
 
     private void updateUserRepresentation(User user, UserRepresentation userRep) {
         userRep.setUsername(user.getUsername());
-        Map attrs = new HashMap<String, List<String>>();
-        attrs.put("phone_number", Arrays.asList(user.getPhoneNumber()));
-        attrs.put("phone_number_verified", Arrays.asList("true"));
-        attrs.put("custom:userUUID", Arrays.asList(user.getUuid()));
+        Map<String, List<String>> attrs = new HashMap<>();
+        attrs.put("phone_number", Collections.singletonList(user.getPhoneNumber()));
+        attrs.put("phone_number_verified", Collections.singletonList("true"));
+        attrs.put("custom:userUUID", Collections.singletonList(user.getUuid()));
         userRep.setAttributes(attrs);
         userRep.setEmail(user.getEmail());
         userRep.setEnabled(!user.isVoided());
@@ -168,7 +173,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
     }
 
     private void enableOrDisableUser(User user, boolean enable) {
-        if (isDev && !idpInDev()) {
+        if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak reset password in dev mode...");
             return;
         }

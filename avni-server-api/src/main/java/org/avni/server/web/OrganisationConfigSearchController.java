@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.LoggerFactory;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -25,17 +26,17 @@ public class OrganisationConfigSearchController {
     public OrganisationConfigSearchController(OrganisationConfigService organisationConfigService, AddressLevelService addressLevelService) {
         this.organisationConfigService = organisationConfigService;
         logger = LoggerFactory.getLogger(this.getClass());
-        this.addressLevelService=addressLevelService;
+        this.addressLevelService = addressLevelService;
     }
 
     @GetMapping(value = "/web/organisationConfig")
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @ResponseBody
-    public ResponseEntity<LinkedHashMap<String, Object>> getOrganisationSearchConfig()  {
+    public ResponseEntity<LinkedHashMap<String, Object>> getOrganisationSearchConfig() {
         Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
-        try{
-            return new ResponseEntity<>( organisationConfigService.getOrganisationSettings(organisationId), HttpStatus.OK);
-        }catch (Exception e){
+        try {
+            return new ResponseEntity<>(organisationConfigService.getOrganisationSettings(organisationId), HttpStatus.OK);
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
         return ResponseEntity.status(500).build();
@@ -45,6 +46,6 @@ public class OrganisationConfigSearchController {
     @PreAuthorize(value = "hasAnyAuthority('user','admin')")
     @ResponseBody
     public ResponseEntity<List<AddressLevelContract>> getAll() {
-        return new ResponseEntity(addressLevelService.getAllLocations(),HttpStatus.OK) ;
+        return new ResponseEntity(addressLevelService.getAllLocations(), HttpStatus.OK);
     }
 }

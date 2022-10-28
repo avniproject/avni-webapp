@@ -1,6 +1,6 @@
 package org.avni.server.service;
 
-import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.application.OrganisationConfigSettingKey;
 import org.avni.server.dao.OrganisationConfigRepository;
 import org.avni.server.domain.JsonObject;
 import org.avni.server.domain.Organisation;
@@ -29,15 +29,15 @@ public class OrganisationConfigServiceTest {
     public void shouldRetrieveOptionalObjectFromOrganisationSettings() {
         OrganisationConfigRepository organisationRepository = mock(OrganisationConfigRepository.class);
         OrganisationConfig organisationConfig = new OrganisationConfig();
-        JsonObject settings = new JsonObject().with(OrganisationConfigSettingKeys.enableApprovalWorkflow.name(), true);
+        JsonObject settings = new JsonObject().with(OrganisationConfigSettingKey.enableApprovalWorkflow.name(), true);
         organisationConfig.setSettings(settings);
         when(organisationRepository.findByOrganisationId(25l)).thenReturn(organisationConfig);
         OrganisationConfigService organisationConfigService = new OrganisationConfigService(organisationRepository, null, null, null, null);
 
         Organisation organisation = new Organisation();
         organisation.setId(25l);
-        Optional<Object> enableComments = organisationConfigService.getOrganisationSettingsValue(organisation, OrganisationConfigSettingKeys.enableComments);
-        Optional<Object> enableApprovalWorkflow = organisationConfigService.getOrganisationSettingsValue(organisation, OrganisationConfigSettingKeys.enableApprovalWorkflow);
+        Optional<Object> enableComments = organisationConfigService.getOrganisationSettingsValue(organisation, OrganisationConfigSettingKey.enableComments);
+        Optional<Object> enableApprovalWorkflow = organisationConfigService.getOrganisationSettingsValue(organisation, OrganisationConfigSettingKey.enableApprovalWorkflow);
 
         assertThat(enableComments.isPresent(), is(false));
         assertThat(enableApprovalWorkflow.isPresent(), is(true));
@@ -56,7 +56,7 @@ public class OrganisationConfigServiceTest {
         OrganisationConfig organisationConfigWithoutMessagingEnabled = new OrganisationConfig();
         organisationConfigWithoutMessagingEnabled.setSettings(new JsonObject());
         OrganisationConfig organisationConfigWithMessagingEnabled = new OrganisationConfig();
-        JsonObject settings = new JsonObject().with(OrganisationConfigSettingKeys.enableMessaging.name(), true);
+        JsonObject settings = new JsonObject().with(OrganisationConfigSettingKey.enableMessaging.name(), true);
         organisationConfigWithMessagingEnabled.setSettings(settings);
         when(organisationConfigRepository.findByOrganisationId(organisationId)).thenReturn(organisationConfigWithoutMessagingEnabled).thenReturn(organisationConfigWithMessagingEnabled);
         OrganisationConfigService organisationConfigService = new OrganisationConfigService(organisationConfigRepository, null, null, null, null);

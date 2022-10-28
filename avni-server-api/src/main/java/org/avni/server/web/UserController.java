@@ -4,16 +4,10 @@ import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderExcepti
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.avni.server.dao.*;
-import org.avni.server.domain.Account;
-import org.avni.server.domain.OperatingIndividualScope;
-import org.avni.server.domain.Organisation;
-import org.avni.server.domain.User;
+import org.avni.server.domain.*;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.projection.UserWebProjection;
-import org.avni.server.service.AccountAdminService;
-import org.avni.server.service.IdpService;
-import org.avni.server.service.ResetSyncService;
-import org.avni.server.service.UserService;
+import org.avni.server.service.*;
 import org.avni.server.web.request.UserContract;
 import org.avni.server.web.request.syncAttribute.UserSyncSettings;
 import org.avni.server.web.validation.ValidationException;
@@ -42,15 +36,16 @@ import java.util.stream.Collectors;
 public class UserController {
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
-    private UserRepository userRepository;
-    private OrganisationRepository organisationRepository;
-    private UserService userService;
-    private IdpService idpService;
-    private AccountAdminService accountAdminService;
-    private AccountRepository accountRepository;
-    private AccountAdminRepository accountAdminRepository;
-    private ResetSyncService resetSyncService;
+    private final UserRepository userRepository;
+    private final OrganisationRepository organisationRepository;
+    private final UserService userService;
+    private final IdpService idpService;
+    private final AccountAdminService accountAdminService;
+    private final AccountRepository accountRepository;
+    private final AccountAdminRepository accountAdminRepository;
+    private final ResetSyncService resetSyncService;
     private final SubjectTypeRepository subjectTypeRepository;
+    private final OrganisationConfigService organisationConfigService;
 
     @Value("${avni.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -61,7 +56,10 @@ public class UserController {
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           IdpService idpService,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, ResetSyncService resetSyncService, SubjectTypeRepository subjectTypeRepository) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository,
+                          AccountAdminRepository accountAdminRepository, ResetSyncService resetSyncService,
+                          SubjectTypeRepository subjectTypeRepository,
+                          OrganisationConfigService organisationConfigService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
@@ -72,6 +70,7 @@ public class UserController {
         this.accountAdminRepository = accountAdminRepository;
         this.resetSyncService = resetSyncService;
         this.subjectTypeRepository = subjectTypeRepository;
+        this.organisationConfigService = organisationConfigService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -99,7 +98,10 @@ public class UserController {
 
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
-            idpService.createUserWithPassword(user, userContract.getPassword());
+
+            Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+            OrganisationConfig organisationConfig = organisationConfigService.getOrganisationConfig(organisation);
+            idpService.createUserWithPassword(user, userContract.getPassword(), organisationConfig);
             userService.save(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             userService.addToDefaultUserGroup(user);

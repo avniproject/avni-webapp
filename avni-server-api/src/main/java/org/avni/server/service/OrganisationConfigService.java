@@ -7,7 +7,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.avni.server.application.FormMapping;
 import org.avni.server.application.KeyType;
-import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.application.OrganisationConfigSettingKey;
 import org.avni.server.dao.ConceptRepository;
 import org.avni.server.dao.OrganisationConfigRepository;
 import org.avni.server.dao.application.FormMappingRepository;
@@ -41,7 +41,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
     private final ConceptRepository conceptRepository;
     private final LocationHierarchyService locationHierarchyService;
     private final FormMappingRepository formMappingRepository;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
     private final Logger logger;
 
 
@@ -111,7 +111,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
         return organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
     }
 
-    public Optional<Object> getOrganisationSettingsValue(Organisation organisation, OrganisationConfigSettingKeys settingKey) {
+    public Optional<Object> getOrganisationSettingsValue(Organisation organisation, OrganisationConfigSettingKey settingKey) {
         JsonObject jsonObject = this.getOrganisationSettingsJson(organisation.getId());
         return Optional.ofNullable(jsonObject.get(settingKey.name()));
     }
@@ -122,7 +122,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
             JsonObject organisationSettings = getOrganisationSettingsJson(UserContextHolder.getUserContext().getOrganisationId());
 
             JsonObject settings = new JsonObject();
-            settings.put(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType), locationHierarchyService.determineAddressHierarchiesToBeSaved(organisationSettings, locationConceptUuids));
+            settings.put(String.valueOf(OrganisationConfigSettingKey.lowestAddressLevelType), locationHierarchyService.determineAddressHierarchiesToBeSaved(organisationSettings, locationConceptUuids));
             return updateOrganisationSettings(settings);
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -160,7 +160,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
     public JsonObject updateOrganisationConfigSettings(JsonObject newSettings, JsonObject currentSettings) {
         newSettings.keySet().forEach(key -> {
             currentSettings.put(key, newSettings.get(key));
-            if (key.equals(OrganisationConfigSettingKeys.enableApprovalWorkflow.toString())) {
+            if (key.equals(OrganisationConfigSettingKey.enableApprovalWorkflow.toString())) {
                 boolean enableApprovalWorkflow = (boolean) newSettings.get(key);
                 updateEnableApprovalForAllForms(enableApprovalWorkflow);
             }
@@ -241,7 +241,7 @@ public class OrganisationConfigService implements NonScopeAwareService {
     }
 
     public boolean isMessagingEnabled() {
-        return isFeatureEnabled(OrganisationConfigSettingKeys.enableMessaging.name());
+        return isFeatureEnabled(OrganisationConfigSettingKey.enableMessaging.name());
     }
 
     @Override

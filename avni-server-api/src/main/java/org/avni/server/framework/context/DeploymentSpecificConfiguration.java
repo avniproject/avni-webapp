@@ -1,11 +1,12 @@
 package org.avni.server.framework.context;
 
-import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.application.OrganisationConfigSettingKey;
 import org.avni.server.config.AvniKeycloakConfig;
 import org.avni.server.config.CognitoConfig;
 import org.avni.server.dao.UserRepository;
 import org.avni.server.domain.JsonObject;
 import org.avni.server.domain.Organisation;
+import org.avni.server.domain.OrganisationConfig;
 import org.avni.server.domain.User;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.service.*;
@@ -81,10 +82,8 @@ public class DeploymentSpecificConfiguration {
         Organisation organisation = UserContextHolder.getOrganisation();
         boolean isMinioConfiguredOrgUser = false;
         if (user != null && organisation != null) {
-            JsonObject organisationSettings = organisationConfigService
-                    .getOrganisationSettingsJson(organisation.getId());
-            Object useMinioForStorage = organisationSettings
-                    .get(OrganisationConfigSettingKeys.useMinioForStorage.toString());
+            OrganisationConfig organisationConfig = organisationConfigService.getOrganisationConfig(organisation);
+            Object useMinioForStorage = organisationConfig.getConfigValue(OrganisationConfigSettingKey.useMinioForStorage);
             if (useMinioForStorage != null && Boolean.parseBoolean((String) useMinioForStorage)) {
                 isMinioConfiguredOrgUser = true;
             }
@@ -137,7 +136,7 @@ public class DeploymentSpecificConfiguration {
         boolean isKeycloakConfiguredOrgUser = false;
         if (organisation != null) {
             JsonObject organisationSettings = organisationConfigService.getOrganisationSettingsJson(organisation.getId());
-            Object useKeycloakAsIDP = organisationSettings.get(OrganisationConfigSettingKeys.useKeycloakAsIDP.toString());
+            Object useKeycloakAsIDP = organisationSettings.get(OrganisationConfigSettingKey.useKeycloakAsIDP.toString());
             isKeycloakConfiguredOrgUser = (useKeycloakAsIDP != null && Boolean.parseBoolean((String) useKeycloakAsIDP));
         }
 

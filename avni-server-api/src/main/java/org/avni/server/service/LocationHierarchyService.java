@@ -1,11 +1,12 @@
 package org.avni.server.service;
 
-import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.application.OrganisationConfigSettingKey;
 import org.avni.server.dao.AddressLevelTypeRepository;
 import org.avni.server.dao.LocationRepository;
 import org.avni.server.domain.AddressLevelType;
 import org.avni.server.domain.CHSEntity;
 import org.avni.server.domain.JsonObject;
+import org.avni.server.domain.OrganisationConfig;
 import org.avni.server.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,8 @@ public class LocationHierarchyService implements NonScopeAwareService {
     }
 
     public List<Long> getLowestAddressLevelTypeHierarchiesForOrganisation() {
-        JsonObject organisationSettings = organisationConfigService.getOrganisationSettingsJson(UserContextHolder.getUserContext().getOrganisationId());
-        ArrayList<String> lowestLevelAddressLevelTypeHierarchies = (ArrayList<String>) organisationSettings.get(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType));
+        OrganisationConfig organisationConfig = organisationConfigService.getOrganisationConfig(UserContextHolder.getUserContext().getOrganisation());
+        ArrayList<String> lowestLevelAddressLevelTypeHierarchies = (ArrayList<String>) organisationConfig.getConfigValue(OrganisationConfigSettingKey.lowestAddressLevelType);
 
         if (lowestLevelAddressLevelTypeHierarchies != null) {
             String[] addressLevelTypeIds = new String[lowestLevelAddressLevelTypeHierarchies.size() * 5];
@@ -61,8 +62,8 @@ public class LocationHierarchyService implements NonScopeAwareService {
 
         TreeSet<String> addressLevelTypeHierarchies = buildHierarchyForAddressLevelTypes(addressLevelTypes);
 
-        if (organisationSettings.containsKey(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType))) {
-            ArrayList<String> currentAddressLevelTypeHierarchies = (ArrayList<String>) organisationSettings.get(String.valueOf(OrganisationConfigSettingKeys.lowestAddressLevelType));
+        if (organisationSettings.containsKey(String.valueOf(OrganisationConfigSettingKey.lowestAddressLevelType))) {
+            ArrayList<String> currentAddressLevelTypeHierarchies = (ArrayList<String>) organisationSettings.get(String.valueOf(OrganisationConfigSettingKey.lowestAddressLevelType));
             if (currentAddressLevelTypeHierarchies != null)
                 addressLevelTypeHierarchies.addAll(currentAddressLevelTypeHierarchies);
         }

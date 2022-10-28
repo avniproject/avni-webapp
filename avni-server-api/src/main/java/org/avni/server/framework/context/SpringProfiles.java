@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 @Component
 public class SpringProfiles {
     public static final String STAGING = "staging";
-    public static final String LIVE = "live";
     public static final String DEV = "dev";
     public static final String DEFAULT = "default";
     public static final String ON_PREMISE = "onPremise";
@@ -24,6 +23,7 @@ public class SpringProfiles {
     public boolean isDev() {
         return isProfile(SpringProfiles.DEV);
     }
+
     public boolean isStaging() {
         return isProfile(SpringProfiles.STAGING);
     }
@@ -34,10 +34,6 @@ public class SpringProfiles {
 
     private boolean isProfile(String profileName) {
         return Arrays.asList(environment.getActiveProfiles()).contains(profileName);
-    }
-
-    public boolean isLive() {
-        return isProfile(SpringProfiles.LIVE);
     }
 
     public String getProfiles() {

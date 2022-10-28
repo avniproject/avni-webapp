@@ -359,6 +359,9 @@ public class User {
         if (username == null || !username.contains("@") || username.length() < 7) {
             throw new ValidationException(String.format("Invalid username '%s'. It must be at least 7 characters.", username));
         }
+        if (username.indexOf("@") < 4) {
+            throw new ValidationException(String.format("Invalid username '%s'. Name part should be at least 4 characters", username));
+        }
         if (!username.endsWith(userSuffix)) {
             throw new ValidationException(String.format("Invalid username '%s'. Include correct userSuffix %s at the end", username, userSuffix));
         }

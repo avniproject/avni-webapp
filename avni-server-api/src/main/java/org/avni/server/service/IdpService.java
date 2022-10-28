@@ -1,9 +1,10 @@
 package org.avni.server.service;
 
+import org.avni.server.domain.OrganisationConfig;
 import org.avni.server.domain.User;
 
 public interface IdpService {
-    void createUser(User user);
+    void createUser(User user, OrganisationConfig organisationConfig);
 
     void updateUser(User user);
 
@@ -15,7 +16,7 @@ public interface IdpService {
 
     void resetPassword(User user, String password);
 
-    void createUserWithPassword(User user, String password);
+    void createUserWithPassword(User user, String password, OrganisationConfig organisationConfig);
 
     boolean idpInDev();
 
@@ -23,5 +24,5 @@ public interface IdpService {
 
     Boolean exists(User user);
 
-    void createUserIfNotExists(User user);
+    void createUserIfNotExists(User user, OrganisationConfig organisationConfig);
 }

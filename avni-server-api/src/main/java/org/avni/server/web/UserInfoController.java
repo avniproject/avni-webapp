@@ -6,6 +6,7 @@ import org.avni.server.dao.UserRepository;
 import org.avni.server.domain.*;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.service.IdpService;
+import org.avni.server.service.OrganisationConfigService;
 import org.avni.server.service.UserService;
 import org.avni.server.web.request.UserBulkUploadContract;
 import org.avni.server.web.request.UserInfo;
@@ -32,18 +33,20 @@ import java.util.UUID;
 public class UserInfoController implements RestControllerResourceProcessor<UserInfo> {
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
-    private UserRepository userRepository;
-    private OrganisationRepository organisationRepository;
-    private UserService userService;
-    private IdpService idpService;
+    private final UserRepository userRepository;
+    private final OrganisationRepository organisationRepository;
+    private final UserService userService;
+    private final IdpService idpService;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, OrganisationRepository organisationRepository, UserService userService, IdpService idpService) {
+    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, OrganisationRepository organisationRepository, UserService userService, IdpService idpService, OrganisationConfigService organisationConfigService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
         this.idpService = idpService;
+        this.organisationConfigService = organisationConfigService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -148,7 +151,8 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             User savedUser = userService.save(user);
             if (newUser) userService.addToDefaultUserGroup(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
-            idpService.createUserIfNotExists(savedUser);
+            OrganisationConfig organisationConfig = organisationConfigService.getOrganisationConfig(UserContextHolder.getOrganisation());
+            idpService.createUserIfNotExists(savedUser, organisationConfig);
         });
     }
 

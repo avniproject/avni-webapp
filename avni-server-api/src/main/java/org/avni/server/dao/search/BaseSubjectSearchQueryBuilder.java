@@ -2,7 +2,7 @@ package org.avni.server.dao.search;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.application.OrganisationConfigSettingKey;
 import org.avni.server.dao.ConceptRepository;
 import org.avni.server.dao.SubjectTypeRepository;
 import org.avni.server.domain.ConceptDataType;
@@ -126,7 +126,7 @@ public class BaseSubjectSearchQueryBuilder<T> {
     public T withCustomFields(String subjectType) {
         OrganisationConfigService organisationConfigService = ApplicationContextProvider.getContext().getBean(OrganisationConfigService.class);
         ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
-        Object searchResultFields = organisationConfigService.getSettingsByKey(OrganisationConfigSettingKeys.searchResultFields.toString());
+        Object searchResultFields = organisationConfigService.getSettingsByKey(OrganisationConfigSettingKey.searchResultFields.toString());
         List<CustomSearchFields> customSearchFields = objectMapper.convertValue(searchResultFields, new TypeReference<List<CustomSearchFields>>() {
         });
         if (customSearchFields.isEmpty()) {

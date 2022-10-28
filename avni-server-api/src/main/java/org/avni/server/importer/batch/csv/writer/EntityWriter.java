@@ -1,6 +1,7 @@
 package org.avni.server.importer.batch.csv.writer;
 
-import org.avni.server.application.OrganisationConfigSettingKeys;
+import org.avni.server.application.OrganisationConfigSettingKey;
+import org.avni.server.domain.OrganisationConfig;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.service.OrganisationConfigService;
 
@@ -12,6 +13,7 @@ public abstract class EntityWriter {
     }
 
     protected boolean skipRuleExecution() {
-        return (Boolean) organisationConfigService.getOrganisationSettingsValue(UserContextHolder.getOrganisation(), OrganisationConfigSettingKeys.skipRuleExecution).orElse(false);
+        OrganisationConfig organisationConfig = organisationConfigService.getOrganisationConfig(UserContextHolder.getOrganisation());
+        return (Boolean) organisationConfig.getConfigValueOptional(OrganisationConfigSettingKey.skipRuleExecution).orElse(false);
     }
 }

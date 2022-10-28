@@ -8,6 +8,7 @@ import org.avni.server.framework.context.DeploymentSpecificConfiguration;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.importer.batch.model.Row;
 import org.avni.server.service.CatchmentService;
+import org.avni.server.service.OrganisationConfigService;
 import org.avni.server.service.UserService;
 import org.avni.server.util.S;
 import org.springframework.batch.item.ItemWriter;
@@ -27,18 +28,21 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final DeploymentSpecificConfiguration deploymentSpecificConfiguration;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
     public UserAndCatchmentWriter(CatchmentService catchmentService,
                                   LocationRepository locationRepository,
                                   UserService userService,
                                   UserRepository userRepository,
-                                  DeploymentSpecificConfiguration deploymentSpecificConfiguration) {
+                                  DeploymentSpecificConfiguration deploymentSpecificConfiguration,
+                                  OrganisationConfigService organisationConfigService) {
         this.catchmentService = catchmentService;
         this.locationRepository = locationRepository;
         this.userService = userService;
         this.userRepository = userRepository;
         this.deploymentSpecificConfiguration = deploymentSpecificConfiguration;
+        this.organisationConfigService = organisationConfigService;
     }
 
     @Override
@@ -97,7 +101,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
 
         user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
-        deploymentSpecificConfiguration.getIdpService(organisation).createUser(user);
+        deploymentSpecificConfiguration.getIdpService(organisation).createUser(user, organisationConfigService.getOrganisationConfig(organisation));
         userService.save(user);
         userService.addToDefaultUserGroup(user);
     }
