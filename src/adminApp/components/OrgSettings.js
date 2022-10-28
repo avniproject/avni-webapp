@@ -77,7 +77,8 @@ export const OrgSettings = () => {
     useMinioForStorage: "useMinioForStorage",
     skipRuleExecution: "skipRuleExecution",
     maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
-    showHierarchicalLocation: "showHierarchicalLocation"
+    showHierarchicalLocation: "showHierarchicalLocation",
+    donotRequirePasswordChangeOnFirstLogin: "donotRequirePasswordChangeOnFirstLogin"
   };
 
   return orgSettings ? (
@@ -153,6 +154,11 @@ export const OrgSettings = () => {
           organisationConfigSettingKeys.showHierarchicalLocation,
           "Show hierarchical location",
           "SHOW_HIERARCHICAL_LOCATION"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.donotRequirePasswordChangeOnFirstLogin,
+          "Do not require password change for new user",
+          "DO_NOT_REQUIRE_PASSWORD_CHANGE_FOR_NEW_USER"
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}
