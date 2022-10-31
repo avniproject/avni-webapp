@@ -65,6 +65,10 @@ public class MessageRequest extends OrganisationAwareEntity {
         return deliveredDateTime;
     }
 
+    public void setScheduledDateTime(DateTime scheduledDateTime) {
+        this.scheduledDateTime = scheduledDateTime;
+    }
+
     public void markComplete() {
         deliveryStatus = MessageDeliveryStatus.Sent;
         deliveredDateTime = DateTime.now();

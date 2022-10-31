@@ -18,7 +18,10 @@ public class MessageRequestService {
     }
 
     public MessageRequest createMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, DateTime scheduledDateTime) {
-        MessageRequest messageRequest = new MessageRequest(messageRule, messageReceiver, scheduledDateTime);
+        MessageRequest messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
+                messageReceiver, messageRule)
+                .orElse(new MessageRequest(messageRule, messageReceiver, scheduledDateTime));
+        messageRequest.setScheduledDateTime(scheduledDateTime);
         messageRequest.assignUUIDIfRequired();
         return messageRequestRepository.save(messageRequest);
     }
