@@ -1,5 +1,6 @@
 package org.avni.server.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
@@ -14,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "encounter")
 @JsonIgnoreProperties({"individual"})
 @BatchSize(size = 100)
-public class Encounter extends AbstractEncounter {
+public class Encounter extends AbstractEncounter implements MessageableEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "individual_id")
@@ -26,6 +27,18 @@ public class Encounter extends AbstractEncounter {
 
     public void setIndividual(Individual individual) {
         this.individual = individual;
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityTypeId() {
+        return getEncounterType().getId();
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityId() {
+        return getId();
     }
 
     @Projection(name = "EncounterProjectionMinimal", types = {Encounter.class})

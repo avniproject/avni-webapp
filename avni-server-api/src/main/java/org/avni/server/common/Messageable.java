@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Messagable {
+public @interface Messageable {
     EntityType value() default EntityType.Subject;
 
 }

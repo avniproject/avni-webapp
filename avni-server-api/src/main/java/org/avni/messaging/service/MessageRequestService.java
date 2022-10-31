@@ -20,13 +20,11 @@ public class MessageRequestService {
     public MessageRequest createMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, DateTime scheduledDateTime) {
         MessageRequest messageRequest = new MessageRequest(messageRule, messageReceiver, scheduledDateTime);
         messageRequest.assignUUIDIfRequired();
-        messageRequestRepository.save(messageRequest);
-        return messageRequest;
+        return messageRequestRepository.save(messageRequest);
     }
 
     public MessageRequest markComplete(MessageRequest messageRequest) {
         messageRequest.markComplete();
-        messageRequestRepository.save(messageRequest);
-        return messageRequest;
+        return messageRequestRepository.save(messageRequest);
     }
 }

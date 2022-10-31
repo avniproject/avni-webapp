@@ -1,15 +1,13 @@
 package org.avni.server.web.api;
 
-import org.avni.messaging.domain.EntityType;
-import org.avni.messaging.service.MessagingService;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.service.*;
+import org.avni.server.util.S;
+import org.avni.server.web.request.api.ApiSubjectRequest;
 import org.avni.server.web.request.api.RequestUtils;
 import org.avni.server.web.response.ResponsePage;
 import org.avni.server.web.response.SubjectResponse;
-import org.avni.server.util.S;
-import org.avni.server.web.request.api.ApiSubjectRequest;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,19 +36,13 @@ public class SubjectApiController {
     private final SubjectMigrationService subjectMigrationService;
     private final IndividualService individualService;
     private final S3Service s3Service;
-
-    private final OrganisationConfigService organisationConfigService;
-
-    private final MessagingService messagingService;
-
     @Autowired
     public SubjectApiController(ConceptService conceptService, IndividualRepository individualRepository,
                                 ConceptRepository conceptRepository, GroupSubjectRepository groupSubjectRepository,
                                 LocationService locationService, SubjectTypeRepository subjectTypeRepository,
                                 LocationRepository locationRepository, GenderRepository genderRepository,
                                 SubjectMigrationService subjectMigrationService, IndividualService individualService,
-                                S3Service s3Service, OrganisationConfigService organisationConfigService,
-                                MessagingService messagingService) {
+                                S3Service s3Service) {
         this.conceptService = conceptService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
@@ -62,8 +54,6 @@ public class SubjectApiController {
         this.subjectMigrationService = subjectMigrationService;
         this.individualService = individualService;
         this.s3Service = s3Service;
-        this.organisationConfigService = organisationConfigService;
-        this.messagingService = messagingService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -109,8 +99,6 @@ public class SubjectApiController {
         Individual subject = createIndividual(request.getExternalId());
         try {
             updateSubject(subject, request);
-            if (organisationConfigService.isMessagingEnabled())
-                messagingService.onEntityCreateOrUpdate(subject.getId(), subject.getSubjectType().getId(), EntityType.Subject, subject.getId());
         } catch (ValidationException ve) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ve.getMessage());
         }

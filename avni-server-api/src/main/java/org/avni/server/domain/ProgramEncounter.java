@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "program_encounter")
 @JsonIgnoreProperties({"programEnrolment", "individual"})
 @BatchSize(size = 100)
-public class ProgramEncounter extends AbstractEncounter {
+public class ProgramEncounter extends AbstractEncounter implements MessageableEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,6 +41,18 @@ public class ProgramEncounter extends AbstractEncounter {
 
     public void setIndividual(Individual individual) {
         this.individual = individual;
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityTypeId() {
+        return this.getEncounterType().getId();
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityId() {
+        return getId();
     }
 
     @Projection(name = "ProgramEncounterProjectionMinimal", types = {ProgramEncounter.class})
