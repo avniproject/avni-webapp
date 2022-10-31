@@ -60,15 +60,25 @@ public class MessagingService {
         return messageRuleRepository.findAll(pageable);
     }
 
-    public void onEntityCreateOrUpdate(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
+    public void onEntitySave(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
         List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
-        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, receiverId);
+        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, receiverId);
 
         for (MessageRule messageRule : messageRules) {
             DateTime scheduledDateTime = ruleService.executeScheduleRule(messageRule.getEntityType().name(), entityId, messageRule.getScheduleRule());
-            messageRequestService.createMessageRequest(messageRule, messageReceiver, scheduledDateTime);
+            messageRequestService.createMessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime);
         }
     }
+
+    public void onEntityDelete(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
+        List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
+        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, receiverId);
+
+        for (MessageRule messageRule : messageRules) {
+            messageRequestService.deleteMessageRequests(messageRule, messageReceiver);
+        }
+    }
+
 
     @Transactional
     public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable) {
@@ -93,7 +103,7 @@ public class MessagingService {
     private void sendMessageToGlific(MessageRequest messageRequest) {
         MessageReceiver messageReceiver = messageRequest.getMessageReceiver();
         MessageRule messageRule = messageRequest.getMessageRule();
-        String[] response = ruleService.executeMessageRule(messageRule.getEntityType().name(), messageReceiver.getEntityId(), messageRule.getMessageRule());
+        String[] response = ruleService.executeMessageRule(messageRule.getEntityType().name(), messageRequest.getEntityId(), messageRule.getMessageRule());
         glificMessageRepository.sendMessage(messageRule.getMessageTemplateId(), messageReceiver.getExternalId(), response);
     }
 }

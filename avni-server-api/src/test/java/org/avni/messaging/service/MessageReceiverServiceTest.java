@@ -1,8 +1,7 @@
 package org.avni.messaging.service;
 
-import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageReceiver;
-import org.avni.messaging.domain.ReceiverEntityType;
+import org.avni.messaging.domain.ReceiverType;
 import org.avni.messaging.repository.MessageReceiverRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,15 +32,15 @@ public class MessageReceiverServiceTest {
     @Test
     public void shouldSaveMessageReceiverIfNotExist() {
         Long entityId = 123L;
-        when(messageReceiverRepository.findByEntityId(entityId)).thenReturn(null);
+        when(messageReceiverRepository.findByReceiverId(entityId)).thenReturn(null);
 
-        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, entityId);
+        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, entityId);
 
         verify(messageReceiverRepository).save(messageReceiver.capture());
 
         MessageReceiver messageReceiver = this.messageReceiver.getValue();
-        assertThat(messageReceiver.getEntityType()).isEqualTo(ReceiverEntityType.Subject);
-        assertThat(messageReceiver.getEntityId()).isEqualTo(entityId);
+        assertThat(messageReceiver.getReceiverType()).isEqualTo(ReceiverType.Subject);
+        assertThat(messageReceiver.getReceiverId()).isEqualTo(entityId);
         assertThat(messageReceiver.getUuid()).isNotNull();
         assertThat(actualMessageReceiver).isEqualToComparingFieldByFieldRecursively(messageReceiver);
     }
@@ -50,9 +49,9 @@ public class MessageReceiverServiceTest {
     public void shouldReturnExistingMessageReceiverIfExist() {
         Long entityId = 123L;
         MessageReceiver messageReceiver = mock(MessageReceiver.class);
-        when(messageReceiverRepository.findByEntityId(entityId)).thenReturn(messageReceiver);
+        when(messageReceiverRepository.findByReceiverId(entityId)).thenReturn(messageReceiver);
 
-        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverEntityType.Subject, entityId);
+        MessageReceiver actualMessageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, entityId);
 
         verify(messageReceiverRepository, never()).save(any());
         assertThat(actualMessageReceiver).isEqualTo(messageReceiver);

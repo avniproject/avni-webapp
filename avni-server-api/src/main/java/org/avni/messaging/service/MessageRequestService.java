@@ -8,6 +8,8 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class MessageRequestService {
     private final MessageRequestQueueRepository messageRequestRepository;
@@ -17,10 +19,10 @@ public class MessageRequestService {
         this.messageRequestRepository = messageRequestRepository;
     }
 
-    public MessageRequest createMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, DateTime scheduledDateTime) {
+    public MessageRequest createMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, Long entityId, DateTime scheduledDateTime) {
         MessageRequest messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
                 messageReceiver, messageRule)
-                .orElse(new MessageRequest(messageRule, messageReceiver, scheduledDateTime));
+                .orElse(new MessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime));
         messageRequest.setScheduledDateTime(scheduledDateTime);
         messageRequest.assignUUIDIfRequired();
         return messageRequestRepository.save(messageRequest);
@@ -29,5 +31,11 @@ public class MessageRequestService {
     public MessageRequest markComplete(MessageRequest messageRequest) {
         messageRequest.markComplete();
         return messageRequestRepository.save(messageRequest);
+    }
+
+    public void deleteMessageRequests(MessageRule messageRule, MessageReceiver messageReceiver) {
+        Optional<MessageRequest> messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
+                messageReceiver, messageRule);
+        messageRequest.ifPresent(messageRequestRepository::delete);
     }
 }

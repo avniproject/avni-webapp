@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MessageReceiverRepository  extends CHSRepository<MessageReceiver> {
-    MessageReceiver findByEntityId(Long entityId);
+    MessageReceiver findByReceiverId(Long receiverId);
 }

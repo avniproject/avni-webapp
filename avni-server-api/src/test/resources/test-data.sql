@@ -325,14 +325,14 @@ values (3, 0, 3, 3, now(), now(), 'Glific', '{"baseUrl": "http://localhost:9191"
 insert into message_rule (id, uuid, name, message_rule, schedule_rule, entity_type, entity_type_id, message_template_id, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, organisation_id)
 values (1, '15e766d8-3d8b-4777-8f55-1b171ac9872d', 'Individual message rule', null, '() => ([1, 2, 3])', 'Subject', (select id from subject_type where name = 'Individual'), 1, 0, 1, 2, now(), now(), 1);
 
-insert into message_receiver(id, uuid, entity_type, entity_id, organisation_id, is_voided, external_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
+insert into message_receiver(id, uuid, receiver_type, receiver_id, organisation_id, is_voided, external_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
 values (1, 'c48d7ae7-d0a9-4f79-aede-19297db736f9', 'Subject', (select id from individual where uuid = '4378dce3-247e-4393-8dd5-032c6eb0a655'), 1, false, '1', 1, 1, now(), now(), 1);
 
-insert into message_request_queue(uuid, organisation_id, message_rule_id, message_receiver_id, scheduled_date_time, delivered_date_time, delivery_status, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
-values ('75925823-109f-41a5-89e3-9c719c88155d', 1, 1, 1, now(), null, 'NotSent', 1, 1, now(), now(), 0);
+insert into message_request_queue(uuid, organisation_id, message_rule_id, message_receiver_id, scheduled_date_time, delivered_date_time, delivery_status, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version, entity_id)
+values ('75925823-109f-41a5-89e3-9c719c88155d', 1, 1, 1, now(), null, 'NotSent', 1, 1, now(), now(), 0, (select id from individual where uuid = '4378dce3-247e-4393-8dd5-032c6eb0a655'));
 
-insert into message_request_queue(uuid, organisation_id, message_rule_id, message_receiver_id, scheduled_date_time, delivered_date_time, delivery_status, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version)
-values ('647bb6bb-99f1-4921-809e-26f2c730fc09', 1, 1, 1, now(), now(), 'Sent', 1, 1, now(), now(), 0);
+insert into message_request_queue(uuid, organisation_id, message_rule_id, message_receiver_id, scheduled_date_time, delivered_date_time, delivery_status, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, version, entity_id)
+values ('647bb6bb-99f1-4921-809e-26f2c730fc09', 1, 1, 1, now(), now(), 'Sent', 1, 1, now(), now(), 0, (select id from individual where uuid = '4378dce3-247e-4393-8dd5-032c6eb0a655'));
 
 SELECT setval('non_applicable_form_element_id_seq', COALESCE((SELECT MAX(id) + 1
                                                               FROM non_applicable_form_element), 1), FALSE);

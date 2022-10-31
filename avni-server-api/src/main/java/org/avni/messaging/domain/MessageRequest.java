@@ -19,6 +19,10 @@ public class MessageRequest extends OrganisationAwareEntity {
     @JoinColumn(name = "message_receiver_id")
     private MessageReceiver messageReceiver;
 
+    @NotNull
+    @Column
+    private Long entityId;
+
     @Column
     @NotNull
     private DateTime scheduledDateTime;
@@ -31,30 +35,59 @@ public class MessageRequest extends OrganisationAwareEntity {
     @Column
     private DateTime deliveredDateTime;
 
-    public MessageRequest(MessageRule messageRule, MessageReceiver messageReceiverId, DateTime scheduledDateTime) {
+    public void setMessageRule(MessageRule messageRule) {
         this.messageRule = messageRule;
-        this.messageReceiver = messageReceiverId;
+    }
+
+    public void setMessageReceiver(MessageReceiver messageReceiver) {
+        this.messageReceiver = messageReceiver;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public void setScheduledDateTime(DateTime scheduledDateTime) {
         this.scheduledDateTime = scheduledDateTime;
-        this.deliveryStatus = MessageDeliveryStatus.NotSent;
+    }
+
+    public void setDeliveryStatus(MessageDeliveryStatus deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public void setDeliveredDateTime(DateTime deliveredDateTime) {
+        this.deliveredDateTime = deliveredDateTime;
     }
 
     public MessageRequest() {
-        this.messageReceiver = null;
-        this.scheduledDateTime = null;
-        this.deliveryStatus = null;
-        messageRule = null;
+    }
+
+    public MessageRequest(MessageRule messageRule, MessageReceiver messageReceiverId, Long entityId, DateTime scheduledDateTime) {
+        this.messageRule = messageRule;
+        this.messageReceiver = messageReceiverId;
+        this.entityId = entityId;
+        this.scheduledDateTime = scheduledDateTime;
+        this.deliveryStatus = MessageDeliveryStatus.NotSent;
+    }
+    public void markComplete() {
+        deliveryStatus = MessageDeliveryStatus.Sent;
+        deliveredDateTime = DateTime.now();
     }
 
     public MessageRule getMessageRule() {
         return messageRule;
     }
 
-    public DateTime getScheduledDateTime() {
-        return scheduledDateTime;
-    }
-
     public MessageReceiver getMessageReceiver() {
         return messageReceiver;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public DateTime getScheduledDateTime() {
+        return scheduledDateTime;
     }
 
     public MessageDeliveryStatus getDeliveryStatus() {
@@ -63,14 +96,5 @@ public class MessageRequest extends OrganisationAwareEntity {
 
     public DateTime getDeliveredDateTime() {
         return deliveredDateTime;
-    }
-
-    public void setScheduledDateTime(DateTime scheduledDateTime) {
-        this.scheduledDateTime = scheduledDateTime;
-    }
-
-    public void markComplete() {
-        deliveryStatus = MessageDeliveryStatus.Sent;
-        deliveredDateTime = DateTime.now();
     }
 }

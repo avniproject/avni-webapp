@@ -1,6 +1,6 @@
 package org.avni.messaging.domain;
 
-public enum ReceiverEntityType {
+public enum ReceiverType {
     User,
     Subject
 }

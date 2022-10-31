@@ -11,32 +11,32 @@ public class MessageReceiver extends OrganisationAwareEntity {
     @Column
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ReceiverEntityType entityType;
+    private ReceiverType receiverType;
 
     @Column
     @NotNull
-    private Long entityId;
+    private Long receiverId;
 
     @Column
     private String externalId;
 
-    public MessageReceiver(ReceiverEntityType entityType, Long entityId, String externalId) {
-        this.entityType = entityType;
-        this.entityId = entityId;
+    public MessageReceiver(ReceiverType receiverType, Long receiverId, String externalId) {
+        this.receiverType = receiverType;
+        this.receiverId = receiverId;
         this.externalId = externalId;
     }
 
     public MessageReceiver() {
-        entityType = null;
-        entityId = null;
+        receiverType = null;
+        receiverId = null;
     }
 
-    public Long getEntityId() {
-        return entityId;
+    public Long getReceiverId() {
+        return receiverId;
     }
 
-    public ReceiverEntityType getEntityType() {
-        return entityType;
+    public ReceiverType getReceiverType() {
+        return receiverType;
     }
 
     public String getExternalId() {

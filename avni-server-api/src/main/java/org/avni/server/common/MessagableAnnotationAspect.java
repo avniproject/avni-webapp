@@ -44,7 +44,11 @@ public class MessagableAnnotationAspect {
 
         try {
             EntityType entityType = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(Messageable.class).value();
-            messagingService.onEntityCreateOrUpdate(entity.getEntityId(), entity.getEntityTypeId(), entityType, entity.getIndividual().getId());
+            if (entity.isVoided()) {
+                messagingService.onEntityDelete(entity.getEntityId(), entity.getEntityTypeId(), entityType, entity.getIndividual().getId());
+            } else {
+                messagingService.onEntitySave(entity.getEntityId(), entity.getEntityTypeId(), entityType, entity.getIndividual().getId());
+            }
         } catch (Exception e) {
             bugsnag.notify(e);
             logger.error("Could not send message for entity " + entity.getEntityId() + " with type id " + entity.getEntityTypeId(), e);

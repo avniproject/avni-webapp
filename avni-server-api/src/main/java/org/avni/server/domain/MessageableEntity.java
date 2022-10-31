@@ -6,4 +6,6 @@ public interface MessageableEntity {
     public Long getEntityId();
 
     public Individual getIndividual();
+
+    public boolean isVoided();
 }

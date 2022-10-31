@@ -39,13 +39,14 @@ public class MessageRequestServiceTest {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTime scheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
 
-        messageRequestService.createMessageRequest(messageRule, messageReceiver, scheduledDateTime);
+        messageRequestService.createMessageRequest(messageRule, messageReceiver, 1L, scheduledDateTime);
 
         verify(messageRequestRepository).save(messageRequest.capture());
         MessageRequest messageRequest = this.messageRequest.getValue();
         assertThat(messageRequest.getMessageRule()).isEqualTo(messageRule);
         assertThat(messageRequest.getMessageReceiver()).isEqualTo(messageReceiver);
         assertThat(messageRequest.getScheduledDateTime()).isEqualTo(scheduledDateTime);
+        assertThat(messageRequest.getEntityId()).isEqualTo(1L);
         assertThat(messageRequest.getUuid()).isNotNull();
     }
 }
