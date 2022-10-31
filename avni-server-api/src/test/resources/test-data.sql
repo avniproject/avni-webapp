@@ -114,47 +114,47 @@ VALUES (2, 'Male', '840de9fb-e565-4d7d-b751-90335ba20490', 1, 1, 1, 1, now(), no
 INSERT INTO gender (id, name, uuid, version, organisation_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (3, 'Other', '188ad77e-fe46-4328-b0e2-98f3a05c554c', 1, 1, 1, 1, now(), now());
 
-INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept (id, name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES
-('Temperature', 'Numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1, 1, 1, now(), now());
+(1, 'Temperature', 'Numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1, 1, 1, now(), now());
 
 /* muliselect */
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Complaint', 'Coded', '9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Fever', 'N/A', 'd2e35080-ec9b-46f6-bf8c-7087fcf0ecfd', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Vomiting', 'N/A', '627c8cbc-a03d-4e3f-9e4d-7059e60f3225', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Chloroquine Resistant', 'N/A', '9d9e3cab-3a45-4f85-bc19-2d2d736bb17a', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Cough', 'N/A', '002173d4-2f59-4a6c-b315-049ecdb7cf68', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Bodyache', 'N/A', '6c9cd213-0822-42d5-8ef3-47f0da1738f9', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Cold', 'N/A', '7eae07be-a340-4ced-ac8d-c910cf91a672', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Headache', 'N/A', '5f14ae60-1ae4-4d1e-ae10-d312d47e529a', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Acidity', 'N/A', '637c8ae1-f6a8-45f7-bd8f-10964632c05a', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Giddyness', 'N/A', 'f9498304-50a8-4725-8071-04f623ddacf4', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Abdominal Pain', 'N/A', 'db848b92-dda9-4510-988e-a06b71acbaf5', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Diarrhoea', 'N/A', 'e491b590-2f34-4fb7-8b46-7e533a9903f1', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Pregnancy', 'N/A', '74a4ed09-f9a9-4647-8e48-a00432a65c35', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Wound', 'N/A', '18e30591-41e0-4da0-9e78-ee52c6f6c4fe', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Scabies', 'N/A', '57e2e29f-9691-4f2d-a4db-4df4a17a9255', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Ringworm', 'N/A', '122cb9cb-3fdc-48e7-a68f-682c5e744c22', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Boils', 'N/A', 'aee32344-0ea0-4833-9387-2cb21586f1a9', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Phone Number', 'Text', '[{"key": "contact_number", "value": "yes"}]', '7c39cb04-4f02-4c49-8f94-a5b697d40365', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 'Complaint', 'Coded', '9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (3, 'Fever', 'N/A', 'd2e35080-ec9b-46f6-bf8c-7087fcf0ecfd', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (4, 'Vomiting', 'N/A', '627c8cbc-a03d-4e3f-9e4d-7059e60f3225', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (5, 'Chloroquine Resistant', 'N/A', '9d9e3cab-3a45-4f85-bc19-2d2d736bb17a', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (6, 'Cough', 'N/A', '002173d4-2f59-4a6c-b315-049ecdb7cf68', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (7, 'Bodyache', 'N/A', '6c9cd213-0822-42d5-8ef3-47f0da1738f9', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (8, 'Cold', 'N/A', '7eae07be-a340-4ced-ac8d-c910cf91a672', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (9, 'Headache', 'N/A', '5f14ae60-1ae4-4d1e-ae10-d312d47e529a', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (10, 'Acidity', 'N/A', '637c8ae1-f6a8-45f7-bd8f-10964632c05a', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (11, 'Giddyness', 'N/A', 'f9498304-50a8-4725-8071-04f623ddacf4', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (12, 'Abdominal Pain', 'N/A', 'db848b92-dda9-4510-988e-a06b71acbaf5', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (13, 'Diarrhoea', 'N/A', 'e491b590-2f34-4fb7-8b46-7e533a9903f1', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (14, 'Pregnancy', 'N/A', '74a4ed09-f9a9-4647-8e48-a00432a65c35', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (15, 'Wound', 'N/A', '18e30591-41e0-4da0-9e78-ee52c6f6c4fe', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (16, 'Scabies', 'N/A', '57e2e29f-9691-4f2d-a4db-4df4a17a9255', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (17, 'Ringworm', 'N/A', '122cb9cb-3fdc-48e7-a68f-682c5e744c22', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (18, 'Boils', 'N/A', 'aee32344-0ea0-4833-9387-2cb21586f1a9', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (19, 'Phone Number', 'Text', '[{"key": "contact_number", "value": "yes"}]', '7c39cb04-4f02-4c49-8f94-a5b697d40365', 1, 1, 1, now(), now());
 
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 3, 1, '00828291-c2fe-415f-a51e-ba8a02607da0', 1, 1, 1, now(), now());
@@ -190,37 +190,37 @@ INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, v
 VALUES (2, 18, 16, 'a9ca3096-6f4d-4af2-8b91-9cf87f5d4d13', 1, 1, 1, now(), now());
 
 /* single select */
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES
-('Paracheck', 'Coded', '405f25bb-4553-4b7c-b6bc-a44082ef576f', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Negative', 'N/A', '782d6227-b815-4fed-aef1-52354e1dcf77', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+(20, 'Paracheck', 'Coded', '405f25bb-4553-4b7c-b6bc-a44082ef576f', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (21, 'Negative', 'N/A', '782d6227-b815-4fed-aef1-52354e1dcf77', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES
-('Positive for PV', 'N/A', '3bdd6dfe-1113-4930-90df-a20cff9ea0f4', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+(22, 'Positive for PV', 'N/A', '3bdd6dfe-1113-4930-90df-a20cff9ea0f4', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES
-('Positive for PF', 'N/A', '6c71b496-7df2-4ee2-afa7-248d622b9760', 1, 1, 1, now(), now());
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Positive for PV and PF', 'N/A', '0d6f3dbd-c758-4b03-aa45-fd40699d6138', 1, 1, 1, now(), now());
+(23, 'Positive for PF', 'N/A', '6c71b496-7df2-4ee2-afa7-248d622b9760', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (24, 'Positive for PV and PF', 'N/A', '0d6f3dbd-c758-4b03-aa45-fd40699d6138', 1, 1, 1, now(), now());
 
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (19, 20, 1, '2e91c2ea-ca5f-4674-b98b-9c0f8cb48069', 1, 1, 1, now(), now());
+VALUES (20, 20, 1, '2e91c2ea-ca5f-4674-b98b-9c0f8cb48069', 1, 1, 1, now(), now());
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (19, 21, 2, '0a4d1804-7404-4f29-be18-eaff80c3d503', 1, 1, 1, now(), now());
+VALUES (20, 21, 2, '0a4d1804-7404-4f29-be18-eaff80c3d503', 1, 1, 1, now(), now());
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (19, 22, 3, '676c358d-0d21-46cf-bb38-c3a5bfb5ead1', 1, 1, 1, now(), now());
+VALUES (20, 22, 3, '676c358d-0d21-46cf-bb38-c3a5bfb5ead1', 1, 1, 1, now(), now());
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (19, 23, 4, '7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1, 1, 1, now(), now());
+VALUES (20, 23, 4, '7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1, 1, 1, now(), now());
 
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Some random concept', 'N/A', '6f83d3e4-0e25-4f51-8b5e-5421322f3ffe', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (25, 'Some random concept', 'N/A', '6f83d3e4-0e25-4f51-8b5e-5421322f3ffe', 1, 1, 1, now(), now());
 
-INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Some random concept for voided ConceptAnswer', 'N/A', '766eb773-942e-4874-819d-29039d6794b9', 1, 1, 1, now(), now());
+INSERT INTO concept (id, NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (26, 'Some random concept for voided ConceptAnswer', 'N/A', '766eb773-942e-4874-819d-29039d6794b9', 1, 1, 1, now(), now());
 
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, is_voided, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (2, 25, 100, '734f93e8-0bd8-4457-bdbe-e3514a2600ea', 1, true, 1, 1, now(), now());
+VALUES (2, 26, 100, '734f93e8-0bd8-4457-bdbe-e3514a2600ea', 1, true, 1, 1, now(), now());
 
 INSERT INTO encounter_type (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Sample Encounter Type', '3a1535d0-81fd-48fc-85b5-dc9da81064a3', 1, 1, 1, now(), now());

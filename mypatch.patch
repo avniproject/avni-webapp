@@ -1,0 +1,186 @@
+diff --git a/avni-server-api/src/main/java/org/avni/messaging/dao/MessageRuleRepository.java b/avni-server-api/src/main/java/org/avni/messaging/dao/MessageRuleRepository.java
+new file mode 100644
+index 00000000..5d8e2e75
+--- /dev/null
++++ b/avni-server-api/src/main/java/org/avni/messaging/dao/MessageRuleRepository.java
+@@ -0,0 +1,14 @@
++package org.avni.messaging.dao;
++
++import org.avni.messaging.domain.MessageRule;
++import org.springframework.data.repository.CrudRepository;
++import org.springframework.data.rest.core.annotation.RepositoryRestResource;
++import org.springframework.stereotype.Repository;
++
++@Repository
++@RepositoryRestResource(collectionResourceRel = "messageRule", path = "messageRule")
++public interface MessageRuleRepository extends CrudRepository<MessageRule, Long> {
++
++    @Override
++    public <S extends MessageRule> S save(S s);
++}
+diff --git a/avni-server-api/src/main/java/org/avni/messaging/domain/MessageRule.java b/avni-server-api/src/main/java/org/avni/messaging/domain/MessageRule.java
+new file mode 100644
+index 00000000..fd35b7b1
+--- /dev/null
++++ b/avni-server-api/src/main/java/org/avni/messaging/domain/MessageRule.java
+@@ -0,0 +1,133 @@
++package org.avni.messaging.domain;
++
++import org.avni.server.domain.EntityType;
++import org.avni.server.domain.OrganisationAwareEntity;
++
++import javax.persistence.*;
++import javax.validation.constraints.NotNull;
++
++@Entity
++@Table(name = "account_admin")
++public class MessageRule extends OrganisationAwareEntity {
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    @Column(name = "id", updatable = false, nullable = false)
++    @Id
++    private Long id;
++
++    @Column
++    @NotNull
++    private String uuid;
++
++    @Column
++    @NotNull
++    private String name;
++
++    @Column
++    private String messageRule;
++
++    @Column
++    private String scheduleRule;
++
++    @Column
++    private boolean isVoided;
++
++    @Column
++    @Enumerated(EnumType.STRING)
++    private EntityType entityType;
++
++    @Column
++    private Long entityId;
++
++    @Column
++    private Long messageTemplateId;
++
++    @Column
++    private int version;
++
++    public void setId(Long id) {
++        this.id = id;
++    }
++
++    @Id
++    public Long getId() {
++        return id;
++    }
++
++    @Override
++    public String getUuid() {
++        return uuid;
++    }
++
++    @Override
++    public void setUuid(String uuid) {
++        this.uuid = uuid;
++    }
++
++    public String getName() {
++        return name;
++    }
++
++    public void setName(String name) {
++        this.name = name;
++    }
++
++    public String getMessageRule() {
++        return messageRule;
++    }
++
++    public void setMessageRule(String messageRule) {
++        this.messageRule = messageRule;
++    }
++
++    public String getScheduleRule() {
++        return scheduleRule;
++    }
++
++    public void setScheduleRule(String scheduleRule) {
++        this.scheduleRule = scheduleRule;
++    }
++
++    @Override
++    public boolean isVoided() {
++        return isVoided;
++    }
++
++    @Override
++    public void setVoided(boolean voided) {
++        isVoided = voided;
++    }
++
++    public EntityType getEntityType() {
++        return entityType;
++    }
++
++    public void setEntityType(EntityType entityType) {
++        this.entityType = entityType;
++    }
++
++    public Long getEntityId() {
++        return entityId;
++    }
++
++    public void setEntityId(Long entityId) {
++        this.entityId = entityId;
++    }
++
++    public Long getMessageTemplateId() {
++        return messageTemplateId;
++    }
++
++    public void setMessageTemplateId(Long messageTemplateId) {
++        this.messageTemplateId = messageTemplateId;
++    }
++
++    @Override
++    public int getVersion() {
++        return version;
++    }
++
++    @Override
++    public void setVersion(int version) {
++        this.version = version;
++    }
++}
+diff --git a/avni-server-api/src/main/java/org/avni/messaging/service/MessagingService.java b/avni-server-api/src/main/java/org/avni/messaging/service/MessagingService.java
+new file mode 100644
+index 00000000..637eeca8
+--- /dev/null
++++ b/avni-server-api/src/main/java/org/avni/messaging/service/MessagingService.java
+@@ -0,0 +1,21 @@
++package org.avni.messaging.service;
++
++import org.avni.messaging.dao.MessageRuleRepository;
++import org.avni.messaging.domain.MessageRule;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++public class MessagingService {
++    private final Logger logger;
++
++    private final MessageRuleRepository messageRuleRepository;
++
++    public MessagingService(MessageRuleRepository messageRuleRepository) {
++        this.messageRuleRepository = messageRuleRepository;
++        logger = LoggerFactory.getLogger(this.getClass());
++    }
++
++    public void saveRule(MessageRule messageRule) {
++        messageRuleRepository.save(messageRule);
++    }
++}

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @Table(name = "program_enrolment")
 @JsonIgnoreProperties({"programEncounters", "individual"})
 @BatchSize(size = 100)
-public class ProgramEnrolment extends SyncAttributeEntity {
+public class ProgramEnrolment extends SyncAttributeEntity implements MessageableEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id")
@@ -74,10 +74,6 @@ public class ProgramEnrolment extends SyncAttributeEntity {
 
     public Individual getIndividual() {
         return individual;
-    }
-
-    public Program getEntityType() {
-        return getProgram();
     }
 
     public void setIndividual(Individual individual) {
@@ -197,4 +193,15 @@ public class ProgramEnrolment extends SyncAttributeEntity {
         this.addressId = addressId;
     }
 
+    @Override
+    @JsonIgnore
+    public Long getEntityTypeId() {
+        return getProgram().getId();
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityId() {
+        return getId();
+    }
 }

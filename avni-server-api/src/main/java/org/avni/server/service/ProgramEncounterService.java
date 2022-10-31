@@ -2,10 +2,9 @@ package org.avni.server.service;
 
 import com.bugsnag.Bugsnag;
 import org.avni.messaging.domain.EntityType;
-import org.avni.messaging.service.MessagingService;
 import org.avni.server.common.EntityHelper;
+import org.avni.server.common.Messageable;
 import org.avni.server.dao.*;
-import org.avni.server.dao.application.FormMappingRepository;
 import org.avni.server.domain.*;
 import org.avni.server.geo.Point;
 import org.avni.server.util.BadRequestError;
@@ -37,22 +36,14 @@ public class ProgramEncounterService implements ScopeAwareService {
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private ObservationService observationService;
     private ProgramEnrolmentRepository programEnrolmentRepository;
-    private FormMappingRepository formMappingRepository;
-    private EncounterService encounterService;
-    private OrganisationConfigService organisationConfigService;
-    private MessagingService messagingService;
 
     @Autowired
-    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository, FormMappingRepository formMappingRepository, EncounterService encounterService, OrganisationConfigService organisationConfigService, MessagingService messagingService) {
+    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository, EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, ObservationService observationService, ProgramEnrolmentRepository programEnrolmentRepository) {
         this.programEncounterRepository = programEncounterRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.observationService = observationService;
         this.programEnrolmentRepository = programEnrolmentRepository;
-        this.formMappingRepository = formMappingRepository;
-        this.encounterService = encounterService;
-        this.organisationConfigService = organisationConfigService;
-        this.messagingService = messagingService;
     }
 
     public ProgramEncountersContract getProgramEncounterByUuid(String uuid) {
@@ -198,16 +189,6 @@ public class ProgramEncounterService implements ScopeAwareService {
     @Override
     public boolean isScopeEntityChanged(DateTime lastModifiedDateTime, String encounterTypeUUID) {
         return true;
-//        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
-//        FormMapping formMapping = formMappingRepository.getAllProgramEncounterFormMappings()
-//                .stream()
-//                .filter(fm -> fm.getEncounterTypeUuid().equals(encounterTypeUUID))
-//                .findFirst()
-//                .orElse(null);
-//        User user = UserContextHolder.getUserContext().getUser();
-//        return encounterType != null &&
-//                formMapping != null &&
-//                isChanged(user, lastModifiedDateTime, encounterType.getId(), formMapping.getSubjectType());
     }
 
     @Override
@@ -215,6 +196,7 @@ public class ProgramEncounterService implements ScopeAwareService {
         return programEncounterRepository;
     }
 
+    @Messageable(EntityType.ProgramEncounter)
     public ProgramEncounter save(ProgramEncounter programEncounter) {
         ProgramEnrolment programEnrolment = programEncounter.getProgramEnrolment();
         Individual individual = programEnrolment.getIndividual();
@@ -224,8 +206,6 @@ public class ProgramEncounterService implements ScopeAwareService {
             programEncounter.setAddressId(individual.getAddressLevel().getId());
         }
         programEncounter = programEncounterRepository.save(programEncounter);
-        if (organisationConfigService.isMessagingEnabled())
-            messagingService.onEntityCreateOrUpdate(programEncounter.getId(), programEncounter.getEncounterType().getId(), EntityType.ProgramEncounter, programEncounter.getIndividual().getId());
 
         return programEncounter;
     }

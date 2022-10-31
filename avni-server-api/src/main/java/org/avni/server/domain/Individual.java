@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Table(name = "individual")
 @JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf", "userSubjectAssignments"})
 @BatchSize(size = 100)
-public class Individual extends SyncAttributeEntity {
+public class Individual extends SyncAttributeEntity implements MessageableEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -147,11 +147,6 @@ public class Individual extends SyncAttributeEntity {
     public void setEncounters(Set<Encounter> encounters) {
         this.encounters = encounters;
     }
-
-    public SubjectType getEntityType() {
-        return getSubjectType();
-    }
-
     public Set<UserSubjectAssignment> getUserSubjectAssignments() {
         return userSubjectAssignments;
     }
@@ -318,5 +313,23 @@ public class Individual extends SyncAttributeEntity {
         HashSet<ProgramEncounter> programEncounters = new HashSet<>();
         this.programEnrolments.forEach(programEnrolment -> programEncounters.addAll(programEnrolment.getProgramEncounters()));
         return programEncounters;
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityTypeId() {
+        return getSubjectType().getId();
+    }
+
+    @Override
+    @JsonIgnore
+    public Long getEntityId() {
+        return getId();
+    }
+
+    @Override
+    @JsonIgnore
+    public Individual getIndividual() {
+        return this;
     }
 }

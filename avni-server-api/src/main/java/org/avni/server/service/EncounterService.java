@@ -1,6 +1,8 @@
 package org.avni.server.service;
 
 import com.bugsnag.Bugsnag;
+import org.avni.messaging.domain.EntityType;
+import org.avni.server.common.Messageable;
 import org.avni.server.dao.*;
 import org.avni.server.dao.application.FormMappingRepository;
 import org.avni.server.domain.Encounter;
@@ -162,6 +164,7 @@ public class EncounterService implements ScopeAwareService {
         return encounterRepository;
     }
 
+    @Messageable(EntityType.Encounter)
     public Encounter save(Encounter encounter) {
         Individual individual = encounter.getIndividual();
         encounter.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());

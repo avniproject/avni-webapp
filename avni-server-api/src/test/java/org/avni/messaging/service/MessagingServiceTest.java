@@ -42,9 +42,6 @@ public class MessagingServiceTest {
     @Mock
     private GlificMessageRepository glificMessageRepository;
 
-    @Mock
-    private MessageReceiverService messageReceiverRepository;
-
     @Captor
     ArgumentCaptor<MessageReceiver> messageReceiver;
 
@@ -54,7 +51,7 @@ public class MessagingServiceTest {
     @Before
     public void setup() {
         initMocks(this);
-        messagingService = new MessagingService(messageRuleRepository, messageReceiverRepository, messageRequestService, glificMessageRepository, messageRequestQueueRepository, ruleService);
+        messagingService = new MessagingService(messageRuleRepository, messageReceiverService, messageRequestService, glificMessageRepository, messageRequestQueueRepository, ruleService);
     }
 
     @Test
@@ -79,6 +76,7 @@ public class MessagingServiceTest {
         when(messageRule.getScheduleRule()).thenReturn(scheduleRule);
         Long messageRuleId = 123L;
         when(messageRule.getId()).thenReturn(messageRuleId);
+        when(messageRule.getEntityType()).thenReturn(EntityType.Subject);
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTime scheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
@@ -87,7 +85,7 @@ public class MessagingServiceTest {
         messagingService.onEntityCreateOrUpdate(individualId, subjectTypeId, EntityType.Subject, individualId);
 
         verify(messageReceiverService).saveReceiverIfRequired(eq(ReceiverEntityType.Subject), eq(individualId));
-        verify(ruleService).executeScheduleRule(messageRule.getEntityType().name(), eq(individualId), eq(scheduleRule));
+        verify(ruleService).executeScheduleRule(eq(messageRule.getEntityType().name()), eq(individualId), eq(scheduleRule));
         verify(messageRequestService).createMessageRequest(messageRule, messageReceiver, scheduledDateTime);
     }
 
@@ -115,6 +113,7 @@ public class MessagingServiceTest {
         when(messageRule.getScheduleRule()).thenReturn(scheduleRule);
         Long messageRuleId = 123L;
         when(messageRule.getId()).thenReturn(messageRuleId);
+        when(messageRule.getEntityType()).thenReturn(EntityType.Subject);
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         DateTime scheduledDateTime = formatter.parseDateTime("2013-02-04 10:35:24");
@@ -124,6 +123,7 @@ public class MessagingServiceTest {
         when(messageRuleAnother.getScheduleRule()).thenReturn(scheduleRuleAnother);
         Long messageRuleAnotherId = 124L;
         when(messageRuleAnother.getId()).thenReturn(messageRuleAnotherId);
+        when(messageRuleAnother.getEntityType()).thenReturn(EntityType.Subject);
 
         DateTime scheduledDateTimeOfAnotherRule = formatter.parseDateTime("2019-02-04 10:35:24");
         when(ruleService.executeScheduleRule(messageRule.getEntityType().name(), individualId, scheduleRuleAnother)).thenReturn(scheduledDateTimeOfAnotherRule);
@@ -131,10 +131,10 @@ public class MessagingServiceTest {
         messagingService.onEntityCreateOrUpdate(individualId, subjectTypeId, EntityType.Subject, individualId);
 
         verify(messageReceiverService, times(1)).saveReceiverIfRequired(eq(ReceiverEntityType.Subject), eq(individualId));
-        verify(ruleService).executeScheduleRule(messageRule.getEntityType().name(), eq(individualId), eq(scheduleRule));
+        verify(ruleService).executeScheduleRule(eq(messageRule.getEntityType().name()), eq(individualId), eq(scheduleRule));
         verify(messageRequestService).createMessageRequest(messageRule, messageReceiver, scheduledDateTime);
 
-        verify(ruleService).executeScheduleRule(messageRule.getEntityType().name(), eq(individualId), eq(scheduleRuleAnother));
+        verify(ruleService).executeScheduleRule(eq(messageRule.getEntityType().name()), eq(individualId), eq(scheduleRuleAnother));
         verify(messageRequestService).createMessageRequest(messageRuleAnother, messageReceiver, scheduledDateTimeOfAnotherRule);
     }
 
@@ -144,13 +144,14 @@ public class MessagingServiceTest {
         messageRule.setId(10L);
         messageRule.setMessageRule("I am a message rule");
         messageRule.setMessageTemplateId("messageTemplateId");
+        messageRule.setEntityType(EntityType.Subject);
         MessageReceiver messageReceiver = new MessageReceiver(ReceiverEntityType.Subject, 1L, "1234");
         MessageRequest request = new MessageRequest(messageRule, messageReceiver, DateTime.now());
         String[] parameters = new String[]{"someParam"};
 
         when(messageRequestQueueRepository.findNotSentMessageRequests()).thenReturn(Stream.<MessageRequest>builder().add(request).build());
-
         when(ruleService.executeMessageRule(request.getMessageReceiver().getEntityType().name(), request.getMessageReceiver().getEntityId(), messageRule.getMessageRule())).thenReturn(parameters);
+        when(messageRequestService.markComplete(request)).thenReturn(request);
 
         messagingService.sendMessages();
 
