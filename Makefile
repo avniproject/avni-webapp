@@ -36,6 +36,10 @@ port:= $(if $(port),$(port),8021)
 server:= $(if $(server),$(server),http://localhost)
 
 auth:
+ifndef password
+	@echo "Please provide password for the admin user"
+	exit 1
+endif
 	$(if $(password),$(eval token:=$(shell node scripts/token.js '$(server):$(port)' $(username) $(password))))
 
 upload = \
@@ -59,9 +63,6 @@ deploy_platform_translations: auth
 
 deploy_platform_translations_staging:
 	make deploy_platform_translations poolId=$(OPENCHS_STAGING_USER_POOL_ID) clientId=$(OPENCHS_STAGING_APP_CLIENT_ID) server=https://staging.openchs.org port=443 username=admin password=$(password)
-
-deploy_platform_translations_uat:
-	make deploy_platform_translations poolId=$(OPENCHS_UAT_USER_POOL_ID) clientId=$(OPENCHS_UAT_APP_CLIENT_ID) server=https://uat.openchs.org port=443 username=admin password=$(password)
 
 deploy_platform_translations_live:
 	make deploy_platform_translations poolId=$(OPENCHS_PROD_USER_POOL_ID) clientId=$(OPENCHS_PROD_APP_CLIENT_ID) server=https://server.openchs.org port=443 username=admin password=$(password)
