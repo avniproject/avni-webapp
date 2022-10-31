@@ -18,3 +18,6 @@ alter table export_job_parameters
     add unique (uuid, organisation_id);
 
 select enable_rls_on_tx_table('export_job_parameters');
+
+alter table organisation_config
+    add column export_settings jsonb default '{}'::jsonb;
