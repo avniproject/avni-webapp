@@ -1,0 +1,9 @@
+{
+  "query": "mutation createContact($input:ContactInput!) { createContact(input: $input) { contact { id name optinTime optoutTime phone bspStatus status tags { id label } } errors { key message } } }",
+  "variables": {
+    "input": {
+      "name": "This is a new contact for this example",
+      "phone": "${phoneNumber}"
+    }
+  }
+}

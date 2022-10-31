@@ -12,8 +12,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.jdbc.Sql;
@@ -99,12 +97,6 @@ public class GlificRestClientTest extends AbstractControllerIntegrationTest {
             assertThat(glificConnectException).hasMessage("Cannot query field \"nonExistentItemKey\" on type \"SessionTemplate\".");
             throw glificConnectException;
         }
-    }
-
-    @Test
-    public void abc() {
-        GlificRestClient glificRestClient = mock(GlificRestClient.class);
-        new GlificMessageRepository(glificRestClient).sendMessage("templateId", "1233", new String[]{"1", "2"});
     }
 
     private void stubRequest(String url, String sessionTemplates) {

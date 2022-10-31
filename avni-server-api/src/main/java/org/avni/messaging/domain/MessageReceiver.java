@@ -42,4 +42,16 @@ public class MessageReceiver extends OrganisationAwareEntity {
     public String getExternalId() {
         return externalId;
     }
+
+    public void setReceiverType(ReceiverType receiverType) {
+        this.receiverType = receiverType;
+    }
+
+    public void setReceiverId(Long receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
 }

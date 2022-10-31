@@ -241,6 +241,11 @@ INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_
 VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 2,
         (select id from subject_type where name = 'Individual'), '{"7c39cb04-4f02-4c49-8f94-a5b697d40365": "9282738493"}'::jsonb, 1, 1, now(), now());
 
+INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, organisation_id,
+                        subject_type_id, observations, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('5378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 2,
+        (select id from subject_type where name = 'Individual'), '{}'::jsonb, 1, 1, now(), now());
+
 
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, address_id)
 VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, now(), now(), 1);

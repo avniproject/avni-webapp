@@ -104,6 +104,7 @@ public class MessagingService {
         MessageReceiver messageReceiver = messageRequest.getMessageReceiver();
         MessageRule messageRule = messageRequest.getMessageRule();
         String[] response = ruleService.executeMessageRule(messageRule.getEntityType().name(), messageRequest.getEntityId(), messageRule.getMessageRule());
+        messageReceiverService.ensureExternalIdPresent(messageReceiver);
         glificMessageRepository.sendMessage(messageRule.getMessageTemplateId(), messageReceiver.getExternalId(), response);
     }
 }

@@ -1,10 +1,7 @@
 package org.avni.server.service;
 
 import org.avni.messaging.domain.EntityType;
-import org.avni.server.application.FormElement;
-import org.avni.server.application.FormElementType;
-import org.avni.server.application.KeyType;
-import org.avni.server.application.Subject;
+import org.avni.server.application.*;
 import org.avni.server.common.Messageable;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,15 +27,17 @@ public class IndividualService implements ScopeAwareService {
     private final IndividualRepository individualRepository;
     private final ObservationService observationService;
     private final GroupSubjectRepository groupSubjectRepository;
+    private final ConceptRepository conceptRepository;
     private final GroupRoleRepository groupRoleRepository;
     private final SubjectTypeRepository subjectTypeRepository;
     private final AddressLevelService addressLevelService;
 
     @Autowired
-    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService) {
+    public IndividualService(IndividualRepository individualRepository, ObservationService observationService, GroupSubjectRepository groupSubjectRepository, ConceptRepository conceptRepository, GroupRoleRepository groupRoleRepository, SubjectTypeRepository subjectTypeRepository, AddressLevelService addressLevelService) {
         this.individualRepository = individualRepository;
         this.observationService = observationService;
         this.groupSubjectRepository = groupSubjectRepository;
+        this.conceptRepository = conceptRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.addressLevelService = addressLevelService;
@@ -340,5 +340,23 @@ public class IndividualService implements ScopeAwareService {
     public Individual save(Individual individual) {
         individual.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
         return individualRepository.save(individual);
+    }
+
+    public String findPhoneNumber(Long individualId) {
+        return findPhoneNumber(findById(individualId));
+    }
+
+    public String findPhoneNumber(Individual individual) {
+        assert individual != null;
+
+        Optional<String> phoneNumber = individual.getObservations().entrySet().stream().filter(entrySet -> {
+            Concept concept = conceptRepository.findByUuid(entrySet.getKey());
+            KeyValues keyValues = concept.getKeyValues();
+            ValueType[] valueTypes = {ValueType.yes};
+            return (keyValues != null && (keyValues.containsOneOfTheValues(KeyType.contact_number, valueTypes) ||
+                    keyValues.containsOneOfTheValues(KeyType.primary_contact, valueTypes)));
+        }).map(stringObjectEntry -> (String)stringObjectEntry.getValue()).findFirst();
+
+        return phoneNumber.orElse(null);
     }
 }

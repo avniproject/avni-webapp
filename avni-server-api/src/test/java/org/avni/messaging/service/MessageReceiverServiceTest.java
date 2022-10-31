@@ -2,6 +2,7 @@ package org.avni.messaging.service;
 
 import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.ReceiverType;
+import org.avni.messaging.repository.GlificContactRepository;
 import org.avni.messaging.repository.MessageReceiverRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +23,13 @@ public class MessageReceiverServiceTest {
 
     @Captor
     ArgumentCaptor<MessageReceiver> messageReceiver;
+    @Mock
+    private GlificContactRepository glificContactRepository;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        messageReceiverService = new MessageReceiverService(messageReceiverRepository);
+        messageReceiverService = new MessageReceiverService(messageReceiverRepository, glificContactRepository, individualService);
     }
 
     @Test
