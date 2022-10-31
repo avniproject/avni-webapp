@@ -1,9 +1,11 @@
 package org.avni.server.service;
 
+import org.avni.messaging.domain.EntityType;
 import org.avni.server.application.FormElement;
 import org.avni.server.application.FormElementType;
 import org.avni.server.application.KeyType;
 import org.avni.server.application.Subject;
+import org.avni.server.common.Messagable;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.domain.individualRelationship.IndividualRelation;
@@ -334,6 +336,7 @@ public class IndividualService implements ScopeAwareService {
         }
     }
 
+    @Messagable(EntityType.Subject)
     public Individual save(Individual individual) {
         individual.addConceptSyncAttributeValues(individual.getSubjectType(), individual.getObservations());
         return individualRepository.save(individual);

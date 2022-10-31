@@ -76,6 +76,10 @@ public class ProgramEnrolment extends SyncAttributeEntity {
         return individual;
     }
 
+    public Program getEntityType() {
+        return getProgram();
+    }
+
     public void setIndividual(Individual individual) {
         this.individual = individual;
     }

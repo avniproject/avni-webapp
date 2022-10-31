@@ -47,6 +47,10 @@ public class AbstractEncounter extends SyncAttributeEntity {
         return encounterType;
     }
 
+    public EncounterType getEntityType() {
+        return getEncounterType();
+    }
+
     public void setEncounterType(EncounterType encounterType) {
         this.encounterType = encounterType;
     }

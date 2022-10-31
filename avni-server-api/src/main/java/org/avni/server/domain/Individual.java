@@ -140,6 +140,10 @@ public class Individual extends SyncAttributeEntity {
         this.encounters = encounters;
     }
 
+    public SubjectType getEntityType() {
+        return getSubjectType();
+    }
+
     public Set<UserSubjectAssignment> getUserSubjectAssignments() {
         return userSubjectAssignments;
     }

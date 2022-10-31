@@ -1,7 +1,5 @@
 package org.avni.server.web;
 
-import org.avni.messaging.service.MessagingService;
-import org.avni.messaging.domain.EntityType;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.geo.Point;
@@ -56,8 +54,6 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualConstructionService individualConstructionService;
     private final ScopeBasedSyncService<Individual> scopeBasedSyncService;
     private final SubjectMigrationService subjectMigrationService;
-    private final MessagingService messagingService;
-    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository,
@@ -72,8 +68,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                 IndividualSearchService individualSearchService,
                                 IdentifierAssignmentRepository identifierAssignmentRepository,
                                 IndividualConstructionService individualConstructionService,
-                                OrganisationConfigService organisationConfigService,
-                                ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService, MessagingService messagingService) {
+                                ScopeBasedSyncService<Individual> scopeBasedSyncService, SubjectMigrationService subjectMigrationService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -88,8 +83,6 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.individualConstructionService = individualConstructionService;
         this.scopeBasedSyncService = scopeBasedSyncService;
         this.subjectMigrationService = subjectMigrationService;
-        this.messagingService = messagingService;
-        this.organisationConfigService = organisationConfigService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -104,8 +97,6 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setObservations(observations);
         addObservationsFromDecisions(individual, individualRequest.getDecisions());
         individualService.save(individual);
-        if (organisationConfigService.isMessagingEnabled())
-            messagingService.onEntityCreateOrUpdate(individual.getId(), individual.getSubjectType().getId(), EntityType.Subject, individual.getId());
         saveVisitSchedules(individualRequest);
         saveIdentifierAssignments(individual, individualRequest);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));

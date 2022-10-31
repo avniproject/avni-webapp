@@ -40,4 +40,12 @@ public class SyncAttributeEntity extends OrganisationAwareEntity {
             this.setSyncConcept2Value(observations.getStringValue(subjectType.getSyncRegistrationConcept2()));
         }
     }
+
+    public Individual getIndividual() {
+        return null;
+    }
+
+    public OrganisationAwareEntity getEntityType() {
+       return null;
+    }
 }
