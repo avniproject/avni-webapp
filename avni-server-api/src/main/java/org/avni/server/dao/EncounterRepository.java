@@ -59,7 +59,21 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
             "group by enc.individual_id " +
             "order by count desc " +
             "limit 1", nativeQuery = true)
-    Long getMaxEncounterCount(String encounterTypeUUID, Calendar startDate, Calendar endDate);
+    Long getMaxEncounterCountBetween(String encounterTypeUUID, Calendar startDate, Calendar endDate);
+
+    @Query(value = "select count(enc.id) as count " +
+            "from encounter enc " +
+            "join encounter_type t on t.id = enc.encounter_type_id " +
+            "where t.uuid = :encounterTypeUUID and (enc.encounter_date_time notnull or enc.cancel_date_time notnull) " +
+            "group by enc.individual_id " +
+            "order by count desc " +
+            "limit 1", nativeQuery = true)
+    Long getMaxEncounterCount(String encounterTypeUUID);
+
+    default Long getMaxEncounterCount(String encounterTypeUUID, Calendar startDate, Calendar endDate) {
+        return startDate == null ? getMaxEncounterCount(encounterTypeUUID) :
+                getMaxEncounterCountBetween(encounterTypeUUID, startDate, endDate);
+    }
 
     @Query("select e from Encounter e where e.uuid =:id or e.legacyId = :id")
     Encounter findByLegacyIdOrUuid(String id);

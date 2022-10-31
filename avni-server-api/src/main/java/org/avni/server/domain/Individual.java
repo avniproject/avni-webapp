@@ -51,6 +51,9 @@ public class Individual extends SyncAttributeEntity implements MessageableEntity
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupSubject")
     private Set<GroupSubject> groupSubjects  = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "memberSubject")
+    private Set<GroupSubject> memberGroupSubjects  = new HashSet<>();
+
     @NotNull
     private LocalDate registrationDate;
 
@@ -110,6 +113,11 @@ public class Individual extends SyncAttributeEntity implements MessageableEntity
 
     public Gender getGender() {
         return gender;
+    }
+
+    @JsonIgnore
+    public String getGenderName() {
+        return gender == null ? "" : gender.getName();
     }
 
     public void setGender(Gender gender) {
@@ -246,6 +254,15 @@ public class Individual extends SyncAttributeEntity implements MessageableEntity
 
     public void setGroupSubjects(Set<GroupSubject> groupSubjects) {
         this.groupSubjects = groupSubjects;
+    }
+
+    @JsonIgnore
+    public Set<GroupSubject> getMemberGroupSubjects() {
+        return memberGroupSubjects;
+    }
+
+    public void setMemberGroupSubjects(Set<GroupSubject> memberGroupSubjects) {
+        this.memberGroupSubjects = memberGroupSubjects;
     }
 
     @JsonIgnore

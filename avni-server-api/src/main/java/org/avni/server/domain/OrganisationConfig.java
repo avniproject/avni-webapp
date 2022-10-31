@@ -1,6 +1,7 @@
 package org.avni.server.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.avni.server.application.OrganisationConfigSettingKey;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
@@ -23,6 +24,10 @@ public class OrganisationConfig extends OrganisationAwareEntity {
     @Column(name = "worklist_updation_rule")
     private String worklistUpdationRule;
 
+    @Column(name = "export_settings")
+    @Type(type = "jsonObject")
+    private JsonObject exportSettings;
+
     public JsonObject getSettings() {
         return settings;
     }
@@ -44,5 +49,14 @@ public class OrganisationConfig extends OrganisationAwareEntity {
 
     public Optional<Object> getConfigValueOptional(OrganisationConfigSettingKey organisationConfigSettingKey) {
         return Optional.ofNullable(this.getConfigValue(organisationConfigSettingKey));
+    }
+
+    @JsonIgnore
+    public JsonObject getExportSettings() {
+        return exportSettings;
+    }
+
+    public void setExportSettings(JsonObject exportSettings) {
+        this.exportSettings = exportSettings;
     }
 }
