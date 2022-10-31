@@ -8,7 +8,6 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("com.netflix.nebula:gradle-ospackage-plugin:${osPackageVersion}")
     }
-
 }
 
 plugins {
@@ -49,6 +48,7 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-rest:${springBootVersion}"
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.34.0"
     compile "org.postgresql:postgresql:9.4-1200-jdbc41"
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     testImplementation 'org.springframework.batch:spring-batch-test'
@@ -76,6 +76,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.12.6'
     dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
     testCompile "org.mockito:mockito-core:2.23.4"
+    testCompile 'org.powermock:powermock-core:2.0.9'
+    testCompile 'org.powermock:powermock-api-mockito2:2.0.9'
+    testCompile 'org.powermock:powermock-module-junit4:2.0.9'
     runtime("org.springframework.boot:spring-boot-properties-migrator")
 }
 

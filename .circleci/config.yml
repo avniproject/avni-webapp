@@ -83,7 +83,8 @@ jobs:
         destination: testReports
   build:
     docker:
-    - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk
+    resource_class: medium
 
     working_directory: ~/avni-server
 
@@ -159,12 +160,23 @@ workflows:
     - build:
         requires:
           - test
+    - STAGING_approve:
+        type: approval
+        filters:
+          branches:
+            only:
+              - master
+              - /^3\..*/
+        requires:
+          - build
     - STAGING_deploy:
         filters:
           branches:
-            only: master
+            only:
+              - master
+              - /^3\..*/
         requires:
-          - build
+          - STAGING_approve
     - UAT_approve:
         type: approval
         requires:

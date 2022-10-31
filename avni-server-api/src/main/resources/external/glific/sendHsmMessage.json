@@ -1,0 +1,8 @@
+{
+  "query": "mutation sendHsmMessage($templateId: ID!, $receiverId: ID!, $parameters: [String]) {sendHsmMessage(templateId: $templateId, receiverId: $receiverId, parameters: $parameters) {message{id body isHsm } errors {key message } } }",
+  "variables": {
+    "templateId": "${templateId}",
+    "receiverId": "${receiverId}",
+    "parameters": "${parameters}"
+  }
+}

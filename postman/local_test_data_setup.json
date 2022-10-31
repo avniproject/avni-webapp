@@ -10,7 +10,7 @@
 			"name": "Location",
 			"item": [
 				{
-					"name": "Create Location Type - State",
+					"name": "H1 - Create Location Type - State",
 					"event": [
 						{
 							"listen": "test",
@@ -29,7 +29,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"State\",\n    \"level\": \"3\"\n}",
+							"raw": "{\n    \"name\": \"State-Example\",\n    \"level\": \"2003\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -49,7 +49,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Location Type - District",
+					"name": "H1 - Create Location Type - Sub Division",
 					"event": [
 						{
 							"listen": "test",
@@ -68,7 +68,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"District\",\n    \"level\": \"2\",\n    \"parent\": {\n        \"name\": \"State\"\n    }\n}",
+							"raw": "{\n    \"name\": \"Sub Division-Example\",\n    \"level\": \"2002\",\n    \"parent\": {\n        \"name\": \"State-Example\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -88,7 +88,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Location Type - City",
+					"name": "H1 - Create Location Type - City",
 					"event": [
 						{
 							"listen": "test",
@@ -107,7 +107,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"City\",\n    \"level\": \"1\",\n    \"parent\": {\n        \"name\": \"District\"\n    }\n}",
+							"raw": "{\n    \"name\": \"City-Example\",\n    \"level\": \"2001\",\n    \"parent\": {\n        \"name\": \"Sub Division-Example\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -127,7 +127,124 @@
 					"response": []
 				},
 				{
-					"name": "Create Location - State 1",
+					"name": "H2 - Create Location Type - Union",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Union-Example\",\n    \"level\": \"2006\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/addressLevelType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"addressLevelType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "H2 - Create Location Type - Rajya",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Rajya-Example\",\n    \"level\": \"2005\",\n    \"parent\": {\n        \"name\": \"Union-Example\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/addressLevelType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"addressLevelType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "H2 - Create Location Type - Municipal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Municipal-Example\",\n    \"level\": \"2005\",\n    \"parent\": {\n        \"name\": \"Rajya-Example\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/addressLevelType",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"addressLevelType"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "H1 - Create Location - State 1",
 					"event": [
 						{
 							"listen": "test",
@@ -138,7 +255,7 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"State 1\", response[\"id\"]);"
+									"pm.collectionVariables.set(\"State 1\", response[\"id\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -149,7 +266,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\n        \"name\": \"State 1\",\n        \"level\": 1,\n        \"type\": \"State\",\n        \"parents\": [\n            {}\n        ]\n    }\n]",
+							"raw": "[\n    {\n        \"name\": \"State 1\",\n        \"level\": 1,\n        \"type\": \"State-Example\",\n        \"parents\": [\n            {}\n        ]\n    }\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -169,7 +286,7 @@
 					"response": []
 				},
 				{
-					"name": "Create Location - District 1",
+					"name": "H1 - Create Location - Sub Division 1",
 					"event": [
 						{
 							"listen": "test",
@@ -180,7 +297,7 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"District 1\", response[\"id\"]);"
+									"pm.collectionVariables.set(\"Sub Division 1\", response[\"id\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -191,7 +308,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\n        \"name\": \"District 1\",\n        \"level\": 2,\n        \"type\": \"District\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
+							"raw": "[\n    {\n        \"name\": \"Sub Division 1\",\n        \"level\": 2002,\n        \"type\": \"Sub Division-Example\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -222,8 +339,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"City 1\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"City 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"City 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"City 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -234,7 +351,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\n        \"name\": \"City 1\",\n        \"level\": 3,\n        \"type\": \"City\",\n        \"parent\": {\n            \"id\": {{State 1}}\n        }\n    }\n]",
+							"raw": "[\n    {\n        \"name\": \"City 1\",\n        \"level\": 2003,\n        \"type\": \"City-Example\",\n        \"parent\": {\n            \"id\": {{Sub Division 1}}\n        }\n    }\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -348,7 +465,7 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Catchment 1\", response[\"id\"]);"
+									"pm.collectionVariables.set(\"Catchment 1\", response[\"id\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -438,7 +555,7 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Menu Item 1\", response[0][\"id\"]);"
+									"pm.collectionVariables.set(\"Menu Item 1\", response[0][\"id\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -531,6 +648,37 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get All Menu Items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{origin}}/web/menuItem",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"menuItem"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -557,7 +705,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\"name\": \"Male\", \"uuid\": \"6a15b2bc-a556-41f0-b8c1-a4895ceacb88\"},\n    {\"name\": \"Female\", \"uuid\": \"a8997040-2d01-46b9-899e-03359dafd228\"},\n    {\"name\": \"Other\", \"uuid\": \"a4db848e-45cb-4466-98fe-c195804f2dae\"}\n]",
+							"raw": "[\n    {\"name\": \"Male-Example\", \"uuid\": \"6a15b2bc-a556-41f0-b8c1-a4895ceacb88\"},\n    {\"name\": \"Female-Example\", \"uuid\": \"a8997040-2d01-46b9-899e-03359dafd228\"},\n    {\"name\": \"Other-Example\", \"uuid\": \"a4db848e-45cb-4466-98fe-c195804f2dae\"}\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -588,7 +736,7 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Subject Type 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Subject Type 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -631,8 +779,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Subject Type 2\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Subject Type 2 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Subject Type 2\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Subject Type 2 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -715,8 +863,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Program 1\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Program 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Program 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Program 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -759,8 +907,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Program Encounter Type 1\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Program Encounter Type 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Program Encounter Type 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Program Encounter Type 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -848,8 +996,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Subject 1\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Subject 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Subject 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Subject 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -891,8 +1039,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Subject 2\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Subject 2 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Subject 2\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Subject 2 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -934,8 +1082,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Enrolment 1\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Enrolment 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Enrolment 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Enrolment 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -977,8 +1125,8 @@
 									"});",
 									"",
 									"const response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"Enrolment 1\", response[\"id\"]);",
-									"postman.setEnvironmentVariable(\"Enrolment 1 UUID\", response[\"uuid\"]);"
+									"pm.collectionVariables.set(\"Enrolment 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Enrolment 1 UUID\", response[\"uuid\"]);"
 								],
 								"type": "text/javascript"
 							}
@@ -1218,6 +1366,99 @@
 			]
 		},
 		{
+			"name": "Mobile Reports",
+			"item": [
+				{
+					"name": "Create Standard Report 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"pm.collectionVariables.set(\"Standard Report 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Standard Report 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Standard Report - 1\",\n    \"description\": \"\",\n    \"color\": \"#ff0000\",\n    \"query\": null,\n    \"standardReportCardTypeId\": 1,\n    \"iconFileS3Key\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/card",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Dashboard 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response should be okay\", function () {",
+									"    pm.response.to.not.be.error;",
+									"});",
+									"",
+									"const response = JSON.parse(responseBody);",
+									"pm.collectionVariables.set(\"Dashboard 1\", response[\"id\"]);",
+									"pm.collectionVariables.set(\"Dashboard 1 UUID\", response[\"uuid\"]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Dashboard - 1\",\n    \"description\": \"\",\n    \"sections\": [\n        {\n            \"name\": \"Section 1\",\n            \"description\": \"Section 1 Desc\",\n            \"viewType\": \"Tile\",\n            \"displayOrder\": 1,\n            \"cards\": [\n                {\n                    \"uuid\": \"{{Standard Report 1 UUID}}\",\n                    \"id\": {{Standard Report 1}},\n                    \"displayOrder\": 1\n                }\n            ],\n            \"uuid\": \"ec159068-2f3e-41b1-aa7b-db8719fde24a\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{origin}}/web/dashboard",
+							"host": [
+								"{{origin}}"
+							],
+							"path": [
+								"web",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Assign Subject 1 to User",
 			"event": [
 				{
@@ -1237,7 +1478,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"admin@example\",\n    \"name\": \"Example ka Admin\",\n    \"id\": 2,\n    \"organisationId\": 2,\n    \"email\": \"foo@example.com\",\n    \"phoneNumber\": \"+919090909090\",\n    \"disabledInCognito\": false,\n    \"operatingIndividualScope\": \"None\",\n    \"settings\": null,\n    \"syncSettings\": {},\n    \"roles\": [\n        \"organisation_admin\",\n        \"user\"\n    ],\n    \"catchmentId\": {{Catchment 1}},\n    \"voided\": false,\n    \"admin\": false,\n    \"orgAdmin\": true\n}",
+					"raw": "{\n    \"username\": \"admin@example\",\n    \"name\": \"Example ka Admin\",\n    \"id\": 2,\n    \"organisationId\": 2,\n    \"email\": \"foo@example.com\",\n    \"phoneNumber\": \"+919090909090\",\n    \"disabledInCognito\": false,\n    \"operatingIndividualScope\": \"None\",\n    \"settings\": null,\n    \"syncSettings\": {},\n    \"roles\": [\n        \"organisation_admin\",\n        \"user\"\n    ],\n    \"catchmentId\": {{Catchment 1}},\n    \"voided\": false,\n    \"admin\": false,\n    \"orgAdmin\": true,\n    \"directAssignmentIds\": [\n        {{Subject 1}}\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1304,6 +1545,130 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Organisation Config",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"settings\": {\n        \"languages\": [\"en\"]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}/organisationConfig",
+					"host": [
+						"{{origin}}"
+					],
+					"path": [
+						"organisationConfig"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "State 1",
+			"value": ""
+		},
+		{
+			"key": "District 1",
+			"value": ""
+		},
+		{
+			"key": "Sub Division 1",
+			"value": ""
+		},
+		{
+			"key": "City 1",
+			"value": ""
+		},
+		{
+			"key": "City 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Catchment 1",
+			"value": ""
+		},
+		{
+			"key": "Menu Item 1",
+			"value": ""
+		},
+		{
+			"key": "Subject Type 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Subject Type 2",
+			"value": ""
+		},
+		{
+			"key": "Subject Type 2 UUID",
+			"value": ""
+		},
+		{
+			"key": "Program 1",
+			"value": ""
+		},
+		{
+			"key": "Program 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Program Encounter Type 1",
+			"value": ""
+		},
+		{
+			"key": "Program Encounter Type 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Subject 1",
+			"value": ""
+		},
+		{
+			"key": "Subject 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Subject 2",
+			"value": ""
+		},
+		{
+			"key": "Subject 2 UUID",
+			"value": ""
+		},
+		{
+			"key": "Enrolment 1",
+			"value": ""
+		},
+		{
+			"key": "Enrolment 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Standard Report 1",
+			"value": ""
+		},
+		{
+			"key": "Standard Report 1 UUID",
+			"value": ""
+		},
+		{
+			"key": "Dashboard 1",
+			"value": ""
+		},
+		{
+			"key": "Dashboard 1 UUID",
+			"value": ""
 		}
 	]
 }

@@ -1,0 +1,14 @@
+{
+  "query": "query sessionTemplates($filter: SessionTemplateFilter, $opts: Opts) { sessionTemplates(filter: $filter, opts:$opts) { id body label } }",
+  "variables": {
+    "filter": {
+      "isHsm": true,
+      "status": "APPROVED"
+    },
+    "opts": {
+      "order": "ASC",
+      "limit": 100,
+      "offset": 0
+    }
+  }
+}

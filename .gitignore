@@ -28,7 +28,7 @@ write.lock
 
 # Lucene files
 **/_*.*
-**/segments_f
+**/segments*
 
 #Local files
 dev-commands.txt

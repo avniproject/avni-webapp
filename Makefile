@@ -13,7 +13,6 @@ help:
 	done
 # </makefile>
 
-
 define _deploy_schema
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:./avni-server-api/src/main/resources/db/migration/ -table=schema_version migrate
 endef
@@ -22,6 +21,9 @@ su:=$(shell id -un)
 DB=openchs
 dbServer=localhost
 dbPort=5432
+
+include makefiles/staging.mk
+include makefiles/util.mk
 
 # <postgres>
 clean_db_server: _clean_db_server _clean_test_server _drop_roles
@@ -75,10 +77,11 @@ create_base_local_test_data:
 	@echo 'Creating base data'
 	psql -h $(dbServer) -p $(dbPort) -U $(su) $(DB) -f avni-server-api/src/main/resources/database/createBaseLocalTestData.sql
 
-create_local_test_data:
+create_local_test_data_only:
 	newman run postman/local_test_data_setup.json -e postman/localhost.postman_environment.json
 
-recreate_local_test_data: rebuild_db deploy_schema create_base_local_test_data create_local_test_data
+create_local_test_data: create_base_local_test_data create_local_test_data_only
+recreate_local_test_data: rebuild_db deploy_schema create_local_test_data
 
 rebuild_db: clean_db build_db ## clean + build db
 
@@ -153,48 +156,8 @@ log_live:
 	tail -f /var/log/openchs/openchs.log
 # /LIVE
 
-# STAGING
-# I have setup the environment variables in my bash_profile so that I can just run it whenever I want in live mode. You could do that too (Vivek).
-tunnel_staging_db:
-	ssh avni-server-staging -L 6015:stagingdb.openchs.org:5432
-
-
-tunnel_staging_server_for_debug:
-	ssh avni-server-staging -L 5005:127.0.0.1:5005
-
-start_server_staging: build_server
-	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
-
-	OPENCHS_MODE=staging \
-	OPENCHS_COGNITO_IN_DEV=false \
-	OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) \
-	OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) \
-	OPENCHS_IAM_USER=$(OPENCHS_STAGING_IAM_USER) \
-	OPENCHS_IAM_USER_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_ACCESS_KEY) \
-	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY) \
-	OPENCHS_BUCKET_NAME=staging-user-media \
-  OPENCHS_DATABASE_URL=jdbc:postgresql://localhost:6015/openchs \
-    java -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
-
-debug_server_staging: build_server
-	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
-	OPENCHS_DATABASE_URL=jdbc:postgresql://localhost:6015/openchs \
-	OPENCHS_MODE=staging \
-	OPENCHS_COGNITO_IN_DEV=false \
-	OPENCHS_CLIENT_ID=$(OPENCHS_STAGING_APP_CLIENT_ID) \
-	OPENCHS_USER_POOL=$(OPENCHS_STAGING_USER_POOL_ID) \
-	OPENCHS_IAM_USER=$(OPENCHS_STAGING_IAM_USER) \
-	OPENCHS_IAM_USER_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_ACCESS_KEY) \
-	OPENCHS_IAM_USER_SECRET_ACCESS_KEY=$(OPENCHS_STAGING_IAM_USER_SECRET_ACCESS_KEY) \
-	OPENCHS_BUCKET_NAME=staging-user-media \
-		java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
-
-tail-staging-log:
-	ssh avni-server-staging "tail -f -n1000 /var/log/openchs/openchs.log"
-
 tail-local-log:
 	tail -f -n1000 /var/log/openchs/openchs.log
-# /STAGING
 
 debug_server_live: build_server
 	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(STAGING_USER_POOL_ID) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar avni-server-api/build/libs/avni-server-0.0.1-SNAPSHOT.jar
@@ -204,8 +167,7 @@ ci-test:
 	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
 	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
 	-psql -h $(dbServer) -p $(dbPort) -Uopenchs openchs_test -c 'create extension if not exists "hstore"';
-
-	./gradlew clean test --stacktrace
+	make test_server
 
 open_test_results:
 	open avni-server-api/build/reports/tests/test/index.html

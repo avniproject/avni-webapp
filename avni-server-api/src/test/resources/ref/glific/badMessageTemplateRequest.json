@@ -1,0 +1,3 @@
+{
+  "query": "query sessionTemplates($filter: SessionTemplateFilter, $opts: Opts) { sessionTemplates(filter: $filter, opts:$opts) { id nonExistentItemKey body insertedAt, label shortcode isHsm type isActive translations updatedAt isSource language { label } messageMedia { url } } }"
+}
