@@ -95,6 +95,7 @@ public class ExportJobService {
                 .convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {}).getUuid();
         JobParameters jobParameters = getCommonJobParams(UserContextHolder.getUserContext())
                 .addString("subjectTypeUUID", subjectTypeUUID, false)
+                .addString("reportType", "Custom")
                 .addString("exportJobParamsUUID", exportJobParameters.getUuid()).toJobParameters();
         return launchJob(jobParameters, exportV2Job);
     }
