@@ -26,8 +26,8 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
         return this;
     }
 
-    public FormElementBuilder withIsVoided(boolean isVoided) {
-        this.set("Voided", isVoided, Boolean.class);
+    public FormElementBuilder withIsVoided(boolean isVoided, boolean isFormElementGroupVoided) {
+        this.set("Voided", isVoided || isFormElementGroupVoided, Boolean.class);
         return this;
     }
 

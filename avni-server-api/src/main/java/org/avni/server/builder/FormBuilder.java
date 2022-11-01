@@ -94,7 +94,7 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
                         .withRule(formElementGroupContract.getRule())
                         .withDeclarativeRule(formElementGroupContract.getDeclarativeRule())
                         .withIsVoided(formElementGroupContract.isVoided())
-                        .makeFormElements(formElementGroupContract.getFormElements())
+                        .makeFormElements(formElementGroupContract)
                         .build();
         }
         return this;

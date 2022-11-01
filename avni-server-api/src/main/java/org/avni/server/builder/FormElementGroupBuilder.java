@@ -8,6 +8,7 @@ import org.avni.server.framework.ApplicationContextProvider;
 import org.avni.server.service.ConceptService;
 import org.avni.server.service.DocumentationService;
 import org.avni.server.web.request.application.FormElementContract;
+import org.avni.server.web.request.application.FormElementGroupContract;
 
 import java.util.List;
 
@@ -15,13 +16,18 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
     private final ConceptService conceptService;
     private final DocumentationService documentationService;
 
-    public FormElementGroupBuilder(Form form, FormElementGroup existingFormElementGroup, FormElementGroup newFormElementGroup) {
+    public FormElementGroupBuilder(Form form, FormElementGroup existingFormElementGroup, FormElementGroup newFormElementGroup, ConceptService conceptService, DocumentationService documentationService) {
         super(existingFormElementGroup, newFormElementGroup);
         this.get().setForm(form);
         if (existingFormElementGroup == null)
             form.addFormElementGroup(newFormElementGroup);
-        conceptService = ApplicationContextProvider.getContext().getBean(ConceptService.class);
-        documentationService = ApplicationContextProvider.getContext().getBean(DocumentationService.class);
+        this.conceptService = conceptService;
+        this.documentationService = documentationService;
+    }
+
+    public FormElementGroupBuilder(Form form, FormElementGroup existingFormElementGroup, FormElementGroup newFormElementGroup) {
+        this(form, existingFormElementGroup, newFormElementGroup,
+                ApplicationContextProvider.getContext().getBean(ConceptService.class), ApplicationContextProvider.getContext().getBean(DocumentationService.class));
     }
 
     public FormElementGroupBuilder withName(String name) {
@@ -94,9 +100,10 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return concept;
     }
 
-    public FormElementGroupBuilder makeFormElements(List<FormElementContract> formElementContracts) throws FormBuilderException {
+    public FormElementGroupBuilder makeFormElements(FormElementGroupContract formElementGroupContract) throws FormBuilderException {
+        List<FormElementContract> formElementContracts = formElementGroupContract.getFormElements();
         for (FormElementContract formElementContract : formElementContracts) {
-            makeFormElement(formElementContract);
+            makeFormElement(formElementContract, formElementGroupContract);
         }
         return this;
     }
@@ -106,7 +113,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return documentationService.get((String) documentationOption.get("value"));
     }
 
-    private FormElement makeFormElement(FormElementContract formElementContract) throws FormBuilderException {
+    private FormElement makeFormElement(FormElementContract formElementContract, FormElementGroupContract formElementGroupContract) throws FormBuilderException {
         FormElement existingFormElement = getExistingFormElement(formElementContract.getUuid());
         FormElement newFormElement = new FormElement();
         Concept existingConcept = getExistingConcept(formElementContract.getConcept().getUuid(), existingFormElement == null ? newFormElement : existingFormElement);
@@ -114,7 +121,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         FormElement formElement = formElementBuilder
                 .withName(formElementContract.getName())
                 .withDisplayOrder(formElementContract.getDisplayOrder())
-                .withIsVoided(formElementContract.isVoided())
+                .withIsVoided(formElementContract.isVoided(), formElementGroupContract.isVoided())
                 .withKeyValues(formElementContract.getKeyValues())
                 .withType(formElementContract.getType())
                 .withUUID(formElementContract.getUuid())

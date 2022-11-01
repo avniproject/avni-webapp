@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class FormElementGroupContract extends ReferenceDataContract {
     private Double displayOrder;
     private String display;
-    private List<FormElementContract> formElements;
+    private List<FormElementContract> formElements = formElements = new ArrayList<>();
     private Long organisationId;
     private String rule;
     private DeclarativeRule declarativeRule;
@@ -31,7 +31,6 @@ public class FormElementGroupContract extends ReferenceDataContract {
     public FormElementGroupContract(String uuid, String name, Double displayOrder) {
         super(uuid, name);
         this.displayOrder = displayOrder;
-        formElements = new ArrayList<>();
     }
 
     public String getRule() {
