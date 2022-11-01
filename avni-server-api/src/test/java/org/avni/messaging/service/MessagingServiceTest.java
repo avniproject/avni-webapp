@@ -4,6 +4,9 @@ import org.avni.messaging.domain.*;
 import org.avni.messaging.repository.GlificMessageRepository;
 import org.avni.messaging.repository.MessageRequestQueueRepository;
 import org.avni.messaging.repository.MessageRuleRepository;
+import org.avni.server.domain.Organisation;
+import org.avni.server.domain.UserContext;
+import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -51,7 +54,7 @@ public class MessagingServiceTest {
     @Before
     public void setup() {
         initMocks(this);
-        messagingService = new MessagingService(messageRuleRepository, messageReceiverService, messageRequestService, glificMessageRepository, messageRequestQueueRepository, ruleService);
+        messagingService = new MessagingService(messageRuleRepository, messageReceiverService, messageRequestService, glificMessageRepository, messageRequestQueueRepository, ruleService, null);
     }
 
     @Test
@@ -148,6 +151,10 @@ public class MessagingServiceTest {
         MessageReceiver messageReceiver = new MessageReceiver(ReceiverType.Subject, 1L, "1234");
         MessageRequest request = new MessageRequest(messageRule, messageReceiver, 3L, DateTime.now());
         String[] parameters = new String[]{"someParam"};
+
+        UserContext context = new UserContext();
+        context.setOrganisation(new Organisation());
+        UserContextHolder.create(context);
 
         when(messageRequestQueueRepository.findNotSentMessageRequests()).thenReturn(Stream.<MessageRequest>builder().add(request).build());
         when(ruleService.executeMessageRule(request.getMessageReceiver().getReceiverType().name(), request.getEntityId(), messageRule.getMessageRule())).thenReturn(parameters);

@@ -59,4 +59,7 @@ public class OrganisationConfig extends OrganisationAwareEntity {
     public void setExportSettings(JsonObject exportSettings) {
         this.exportSettings = exportSettings;
     }
+    public Boolean isFeatureEnabled(String feature) {
+        return (Boolean) getSettings().getOrDefault(feature, false);
+    }
 }

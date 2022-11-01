@@ -97,4 +97,8 @@ public class MessageRequest extends OrganisationAwareEntity {
     public DateTime getDeliveredDateTime() {
         return deliveredDateTime;
     }
+
+    public boolean isDelivered() {
+        return getDeliveredDateTime() != null;
+    }
 }

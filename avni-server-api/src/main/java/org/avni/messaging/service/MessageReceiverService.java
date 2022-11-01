@@ -5,6 +5,8 @@ import org.avni.messaging.domain.ReceiverType;
 import org.avni.messaging.repository.GlificContactRepository;
 import org.avni.messaging.repository.MessageReceiverRepository;
 import org.avni.server.service.IndividualService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ public class MessageReceiverService {
     private final GlificContactRepository glificContactRepository;
 
     private final IndividualService individualService;
+    private static final Logger logger = LoggerFactory.getLogger(MessageReceiverService.class);
 
     @Autowired
     public MessageReceiverService(MessageReceiverRepository messageReceiverRepository, GlificContactRepository glificContactRepository, IndividualService individualService) {
@@ -39,7 +42,12 @@ public class MessageReceiverService {
         if (messageReceiver.getExternalId() != null) {
             return messageReceiver;
         }
-        String externalId = glificContactRepository.getOrCreateGlificContactId(individualService.findPhoneNumber(messageReceiver.getReceiverId()));
+        String phoneNumber = individualService.findPhoneNumber(messageReceiver.getReceiverId());
+        if (phoneNumber == null) {
+            throw new PhoneNumberNotAvailableException();
+        }
+
+        String externalId = glificContactRepository.getOrCreateGlificContactId(phoneNumber);
         messageReceiver.setExternalId(externalId);
         return messageReceiverRepository.save(messageReceiver);
     }

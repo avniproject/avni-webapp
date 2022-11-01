@@ -1,9 +1,11 @@
 package org.avni.messaging.service;
 
+import com.bugsnag.Bugsnag;
 import org.avni.messaging.domain.*;
 import org.avni.messaging.repository.GlificMessageRepository;
 import org.avni.messaging.repository.MessageRequestQueueRepository;
 import org.avni.messaging.repository.MessageRuleRepository;
+import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.service.RuleService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -29,15 +31,18 @@ public class MessagingService {
     private final RuleService ruleService;
     private MessageRequestQueueRepository messageRequestQueueRepository;
 
+    private Bugsnag bugsnag;
+
     @Autowired
     public MessagingService(MessageRuleRepository messageRuleRepository, MessageReceiverService messageReceiverService,
-                            MessageRequestService messageRequestService, GlificMessageRepository glificMessageRepository, MessageRequestQueueRepository messageRequestQueueRepository, RuleService ruleService) {
+                            MessageRequestService messageRequestService, GlificMessageRepository glificMessageRepository, MessageRequestQueueRepository messageRequestQueueRepository, RuleService ruleService, Bugsnag bugsnag) {
         this.messageRuleRepository = messageRuleRepository;
         this.messageReceiverService = messageReceiverService;
         this.messageRequestService = messageRequestService;
         this.glificMessageRepository = glificMessageRepository;
         this.messageRequestQueueRepository = messageRequestQueueRepository;
         this.ruleService = ruleService;
+        this.bugsnag = bugsnag;
     }
 
     public MessageRule find(Long id) {
@@ -70,7 +75,7 @@ public class MessagingService {
         }
     }
 
-    public void onEntityDelete(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
+    public void onEntityDelete(Long entityTypeId, EntityType entityType, Long receiverId) {
         List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
         MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, receiverId);
 
@@ -81,21 +86,31 @@ public class MessagingService {
 
 
     @Transactional
-    public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, String entityTypeId, Pageable pageable) {
+    public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId, Pageable pageable) {
         return messageRuleRepository.findByEntityTypeAndEntityTypeId(entityType, entityTypeId, pageable);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public MessageRequest sendMessage(MessageRequest messageRequest) {
         logger.debug(String.format("Sending message for %d", messageRequest.getId()));
-        sendMessageToGlific(messageRequest);
-        messageRequest = messageRequestService.markComplete(messageRequest);
-        logger.debug(String.format("Sent message for %d", messageRequest.getId()));
+        try {
+            sendMessageToGlific(messageRequest);
+            messageRequest = messageRequestService.markComplete(messageRequest);
+            logger.debug(String.format("Sent message for %d", messageRequest.getId()));
+        } catch (PhoneNumberNotAvailableException p) {
+            logger.warn("Phone number not available for receiver: " + messageRequest.getMessageReceiver().getReceiverId());
+        }
+        catch (Exception e) {
+            logger.error("Could not send message for message request id: " + messageRequest.getId(), e);
+            bugsnag.notify(e);
+        }
+
         return messageRequest;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendMessages() {
+        logger.info("Sending messages for organisation " + UserContextHolder.getOrganisation().getName());
         Stream<MessageRequest> requests = messageRequestQueueRepository.findNotSentMessageRequests();
         requests.forEach(this::sendMessage);
     }

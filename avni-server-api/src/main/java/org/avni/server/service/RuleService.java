@@ -224,16 +224,16 @@ public class RuleService implements NonScopeAwareService {
         CHSEntity entity = entityRetrieverService.getEntity(entityType, entityId);
         ScheduleRuleResponseEntity scheduleRuleResponseEntity = new ScheduleRuleResponseEntity();
         RuleServerEntityContract contract = ruleServiceEntityContractBuilder.toContract(entityType, entity);
-        ScheduleRuleRequestEntity ruleRequest = new ScheduleRuleRequestEntity(contract, scheduleRule);
-        scheduleRuleResponseEntity = createHttpHeaderAndSendRequest("api/scheduleRule", ruleRequest, null, ScheduleRuleResponseEntity.class, scheduleRuleResponseEntity);
+        MessageRequestEntity ruleRequest = new MessageRequestEntity(contract, scheduleRule, entityType);
+        scheduleRuleResponseEntity = createHttpHeaderAndSendRequest("/api/messagingRule", ruleRequest, null, ScheduleRuleResponseEntity.class, scheduleRuleResponseEntity);
         return scheduleRuleResponseEntity.getScheduledDateTime();
     }
 
     public String[] executeMessageRule(String entityType, Long entityId, String messageRule) {
         CHSEntity entity = entityRetrieverService.getEntity(entityType, entityId);
         RuleServerEntityContract contract = ruleServiceEntityContractBuilder.toContract(entityType, entity);
-        MessageRuleRequestEntity ruleRequest = new MessageRuleRequestEntity(contract, messageRule);
-        MessageRuleResponseEntity messageRuleResponseEntity = createHttpHeaderAndSendRequest("api/scheduleRule", ruleRequest, null,  MessageRuleResponseEntity.class, new MessageRuleResponseEntity());
+        MessageRequestEntity ruleRequest = new MessageRequestEntity(contract, messageRule, entityType);
+        MessageRuleResponseEntity messageRuleResponseEntity = createHttpHeaderAndSendRequest("/api/messagingRule", ruleRequest, null,  MessageRuleResponseEntity.class, new MessageRuleResponseEntity());
         return messageRuleResponseEntity.getParameters();
     }
 

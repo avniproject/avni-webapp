@@ -11,9 +11,7 @@ public class ScheduleRuleResponseEntity extends BaseRuleResponseEntity {
         return scheduledDateTime;
     }
 
-    public void setScheduledDateTime(String scheduledDateTimeString) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        DateTime scheduledDateTime = formatter.parseDateTime(scheduledDateTimeString);
+    public void setScheduledDateTime(DateTime scheduledDateTime) {
         this.scheduledDateTime = scheduledDateTime;
     }
 }

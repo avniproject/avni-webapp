@@ -23,6 +23,9 @@ public class MessageRequestService {
         MessageRequest messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
                 messageReceiver, messageRule)
                 .orElse(new MessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime));
+        if (messageRequest.isDelivered()) {
+            return messageRequest;
+        }
         messageRequest.setScheduledDateTime(scheduledDateTime);
         messageRequest.assignUUIDIfRequired();
         return messageRequestRepository.save(messageRequest);

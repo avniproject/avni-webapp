@@ -5,7 +5,6 @@ import org.avni.messaging.domain.ReceiverType;
 import org.avni.messaging.repository.GlificContactRepository;
 import org.avni.messaging.repository.MessageReceiverRepository;
 import org.avni.server.service.IndividualService;
-import org.avni.server.service.RuleService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

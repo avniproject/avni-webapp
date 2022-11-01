@@ -1,6 +1,7 @@
 package org.avni.messaging.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.avni.messaging.contract.glific.GlificMessageResponse;
 import org.avni.messaging.contract.glific.GlificResponse;
 import org.avni.messaging.external.GlificRestClient;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,11 +23,11 @@ public class GlificMessageRepository {
         }
     }
 
-    public String sendMessage(String messageTemplateId, String externalId, String[] parameters ) {
+    public GlificMessageResponse sendMessage(String messageTemplateId, String externalId, String[] parameters ) {
         String message = SEND_HSM_MESSAGE_JSON.replace("\"${templateId}\"", messageTemplateId)
                 .replace("\"${receiverId}\"", externalId)
                 .replace("\"${parameters}\"", arrayToString(parameters));
-        return glificRestClient.callAPI(message,new ParameterizedTypeReference<GlificResponse<String>>() {});
+        return glificRestClient.callAPI(message,new ParameterizedTypeReference<GlificResponse<GlificMessageResponse>>() {});
     }
 
     public String arrayToString(String[] items) {

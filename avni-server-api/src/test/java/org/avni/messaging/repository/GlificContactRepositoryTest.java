@@ -32,7 +32,7 @@ public class GlificContactRepositoryTest {
         String responseId = repository.getOrCreateGlificContactId("9182738475");
 
         assertThat(responseId).isEqualTo("1234");
-        verify(glificRestClient).callAPI(eq("{\"query\":\"query contacts($filter: ContactFilter, $opts: Opts) { contacts(filter: $filter, opts:$opts) { id name optinTime optoutTime optinMethod optoutMethod phone maskedPhone bspStatus status tags { id label } groups { id label } }\",\"variables\":{\"filter\":{\"phone\":\"9182738475\"},\"opts\":{\"order\":\"ASC\",\"limit\":10,\"offset\":0}}}"), any());
+        verify(glificRestClient).callAPI(eq("{\"query\":\"query contacts($filter: ContactFilter, $opts: Opts) { contacts(filter: $filter, opts:$opts) { id name optinTime optoutTime optinMethod optoutMethod phone maskedPhone bspStatus status tags { id label } groups { id label } }}\",\"variables\":{\"filter\":{\"phone\":\"9182738475\"},\"opts\":{\"order\":\"ASC\",\"limit\":10,\"offset\":0}}}"), any());
         verify(glificRestClient).callAPI(eq("{\"query\":\"mutation createContact($input:ContactInput!) { createContact(input: $input) { contact { id name optinTime optoutTime phone bspStatus status tags { id label } } errors { key message } } }\",\"variables\":{\"input\":{\"name\":\"This is a new contact for this example\",\"phone\":\"9182738475\"}}}"), any());
     }
 }

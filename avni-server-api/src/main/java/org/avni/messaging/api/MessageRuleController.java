@@ -46,8 +46,8 @@ public class MessageRuleController {
     @RequestMapping(value = "/web/messageRule", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
-    public Page<MessageRuleContract> find(@RequestParam(required = false) String entityType, @RequestParam (required = false) String entityTypeId, Pageable pageable) {
-        if (isAString(entityType) && isAString(entityTypeId)) {
+    public Page<MessageRuleContract> find(@RequestParam(required = false) String entityType, @RequestParam (required = false) Long entityTypeId, Pageable pageable) {
+        if (isAString(entityType) && entityTypeId != null) {
             EntityType entityTypeValue = EntityType.valueOf(entityType);
             return messagingService.findByEntityTypeAndEntityTypeId(entityTypeValue, entityTypeId, pageable).map(MessageRuleContract::new);
         }

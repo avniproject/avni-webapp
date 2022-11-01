@@ -233,7 +233,14 @@ public class OrganisationConfigService implements NonScopeAwareService {
         if (organisationConfig == null) {
             return false;
         }
-        return (Boolean) organisationConfig.getSettings().getOrDefault(feature, false);
+        return organisationConfig.isFeatureEnabled(feature);
+    }
+
+    public List<OrganisationConfig> findAllWithFeatureEnabled(String feature) {
+        return organisationConfigRepository.findAll()
+                .stream()
+                .filter(organisationConfig -> organisationConfig.isFeatureEnabled(feature))
+                .collect(Collectors.toList());
     }
 
     public Boolean isApprovalWorkflowEnabled() {

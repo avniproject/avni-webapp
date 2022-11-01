@@ -25,6 +25,6 @@ public class MessageRuleControllerTest {
     @Test (expected = IllegalArgumentException.class)
     public void shouldThrowErrorForNonExistentEntityType() {
         MessageRuleController messageRuleController = new MessageRuleController(null);
-        messageRuleController.find("Non existent entity type", "5", PageRequest.of(0,10));
+        messageRuleController.find("Non existent entity type", 5L, PageRequest.of(0,10));
     }
 }
