@@ -1,6 +1,7 @@
 package org.avni.server.exporter;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.avni.server.dao.AvniJobRepository;
 import org.avni.server.dao.ExportJobParametersRepository;
 import org.avni.server.dao.JobStatus;
@@ -10,7 +11,9 @@ import org.avni.server.domain.User;
 import org.avni.server.domain.UserContext;
 import org.avni.server.framework.security.UserContextHolder;
 import org.avni.server.service.ExportS3Service;
+import org.avni.server.util.ObjectMapperSingleton;
 import org.avni.server.web.external.request.export.ExportJobRequest;
+import org.avni.server.web.external.request.export.ExportOutput;
 import org.avni.server.web.external.request.export.ExportV2JobRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +91,10 @@ public class ExportJobService {
     public ResponseEntity<?> runExportV2Job(ExportV2JobRequest exportJobRequest) {
         ExportJobParameters exportJobParameters = exportJobRequest.buildJobParameters();
         exportJobParametersRepository.save(exportJobParameters);
+        String subjectTypeUUID = ObjectMapperSingleton.getObjectMapper()
+                .convertValue(exportJobParameters.getReportFormat(), new TypeReference<ExportOutput>() {}).getUuid();
         JobParameters jobParameters = getCommonJobParams(UserContextHolder.getUserContext())
+                .addString("subjectTypeUUID", subjectTypeUUID, false)
                 .addString("exportJobParamsUUID", exportJobParameters.getUuid()).toJobParameters();
         return launchJob(jobParameters, exportV2Job);
     }
