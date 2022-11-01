@@ -1,0 +1,71 @@
+{
+  "individual": {
+    "uuid": "<Specify Individual Subject Type's UUID>",
+    "fields": ["id", "uuid", "firstName", "registrationDate", "gender", "dateOfBirth"],
+    "filters": {
+      "addressLevelIds": [],
+      "date": {
+        "from": "2020-01-12",
+        "to": "2022-05-04"
+      }
+    },
+    "encounters": [
+      {
+        "uuid": "<Specify Individual Encounter type's UUID>",
+        "fields": [
+          "id",
+          "encounterDateTime",
+          "cancelDateTime",
+          "uuid",
+          "name",
+          "voided",
+          "<Specify Encounter's Concept UUID>"
+        ],
+        "filters": {
+          "includeVoided": true,
+          "date": {
+            "from": "2020-01-12",
+            "to": "2022-05-04"
+          }
+        }
+      }
+    ],
+    "groups": [
+      {
+        "uuid": "<Specify Group Subject Type's UUID>",
+        "fields": ["id", "uuid", "firstName"],
+        "encounters": [
+          {
+            "uuid": "<Specify Group Subject's Encounter Type UUID>",
+            "fields": ["id"]
+          }
+        ]
+      }
+    ],
+    "programs": [
+      {
+        "uuid": "<Specify Program's UUID>",
+        "fields": ["id", "uuid", "enrolmentDateTime"],
+        "encounters": [
+          {
+            "uuid": "<Specify Program Encounter's UUID>",
+            "fields": [
+              "id",
+              "uuid",
+              "name",
+              "encounterDateTime",
+              "cancelDateTime",
+              "voided",
+              "<Specify Program Encounter's Concept 1 UUID>",
+              "<Specify Program Encounter's Concept 2 UUID>"
+            ],
+            "filters": {
+              "includeVoided": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "timezone": "Asia/Calcutta"
+}

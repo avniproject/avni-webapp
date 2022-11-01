@@ -9,6 +9,11 @@ export default {
       .postJson("/export", body)
       .then(r => [r.text, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  startExportV2Job: body =>
+    httpClient
+      .postJson("/export/v2", body)
+      .then(r => [r.text, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchUploadJobStatuses: params =>
     httpClient
       .fetchJson(httpClient.withParams("/export/status", { size: 10, ...params }))
