@@ -37,6 +37,6 @@ public class IndividualServiceIntegrationTest  extends AbstractControllerIntegra
 
     @Test (expected = AssertionError.class)
     public void shouldNotAcceptNullIndividuals() {
-        String phoneNumber = individualService.findPhoneNumber(null);
+        String phoneNumber = individualService.findPhoneNumber((Individual) null);
     }
 }
