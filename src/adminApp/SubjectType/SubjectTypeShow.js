@@ -31,7 +31,7 @@ const SubjectTypeShow = props => {
   });
   const entityType = "Subject";
   useEffect(() => {
-    getMessageRules(entityType, subjectType.id, rulesDispatch);
+    getMessageRules(entityType, subjectType.subjectTypeId, rulesDispatch);
     return identity;
   }, [subjectType]);
 
@@ -136,7 +136,7 @@ const SubjectTypeShow = props => {
               templates={templates}
               onChange={identity}
               entityType={entityType}
-              entityTypeId={subjectType.id}
+              entityTypeId={subjectType.subjectTypeId}
               readOnly={true}
             />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}

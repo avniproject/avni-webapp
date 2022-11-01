@@ -92,7 +92,7 @@ const SubjectTypeCreate = () => {
             }
           })
           .then(response => {
-            saveMessageRules(entityType, response.data.id, rules);
+            saveMessageRules(entityType, response.data.subjectTypeId, rules);
           })
           .catch(error => {
             setError(error.response.data.message);
@@ -123,7 +123,7 @@ const SubjectTypeCreate = () => {
                 templates={templates}
                 onChange={onRulesChange}
                 entityType={entityType}
-                entityTypeId={subjectType.id}
+                entityTypeId={subjectType.subjectTypeId}
               />
               <p />
               <AdvancedSettings

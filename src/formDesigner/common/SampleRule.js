@@ -211,9 +211,9 @@ export const sampleLinkFunction = () => {
 export const sampleMessageScheduleRule = () => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';
-({params, imports}) => {
-  return new Date();
-};`;
+({params, imports}) => ({
+  scheduledDateTime: new Date()
+});`;
 };
 
 export const sampleMessageRule = () => {
@@ -221,7 +221,8 @@ export const sampleMessageRule = () => {
 'use strict';
 ({params, imports}) => {
   const individual = params.entity;
-  //Return out all parameters in an array
-  return ['Ramesh'];
+  return {
+    parameters: ['Ramesh']
+  }
 };`;
 };

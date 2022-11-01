@@ -43,7 +43,7 @@ const SubjectTypeEdit = props => {
   });
   const entityType = "Subject";
   useEffect(() => {
-    getMessageRules(entityType, subjectType.id, rulesDispatch);
+    getMessageRules(entityType, subjectType.subjectTypeId, rulesDispatch);
     return identity;
   }, [subjectType]);
 
@@ -119,7 +119,7 @@ const SubjectTypeEdit = props => {
               setError("");
             }
           })
-          .then(() => saveMessageRules(entityType, subjectType.id, rules))
+          .then(() => saveMessageRules(entityType, subjectType.subjectTypeId, rules))
           .then(() => setRedirectShow(true))
           .catch(error => {
             setError(error.response.data.message);
@@ -182,7 +182,7 @@ const SubjectTypeEdit = props => {
             templates={templates}
             onChange={onRulesChange}
             entityType={entityType}
-            entityTypeId={subjectType.id}
+            entityTypeId={subjectType.subjectTypeId}
           />
           <p />
           <AdvancedSettings
