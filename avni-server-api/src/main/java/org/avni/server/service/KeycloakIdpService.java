@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
@@ -64,15 +63,16 @@ public class KeycloakIdpService extends IdpServiceImpl {
     }
 
     @Override
-    public void createUser(User user, OrganisationConfig organisationConfig) {
+    public UserCreateStatus createUser(User user, OrganisationConfig organisationConfig) {
         createUserWithPassword(user, getDefaultPassword(user), null);
+        return null;
     }
 
     @Override
-    public void createUserWithPassword(User user, String password, OrganisationConfig organisationConfig) {
+    public UserCreateStatus createUserWithPassword(User user, String password, OrganisationConfig organisationConfig) {
         if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak create user in dev mode...");
-            return;
+            return null;
         }
         logger.info(String.format("Initiating create keycloak-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
 
@@ -83,6 +83,7 @@ public class KeycloakIdpService extends IdpServiceImpl {
             resetPassword(user, password); //Just set password using same resetPassword method
         }
         logger.info(String.format("created keycloak-user | username '%s'", user.getUsername()));
+        return null;
     }
 
     @Override
@@ -125,14 +126,15 @@ public class KeycloakIdpService extends IdpServiceImpl {
     }
 
     @Override
-    public void resetPassword(User user, String password) {
+    public boolean resetPassword(User user, String password) {
         if (skipCallingKeycloak()) {
             logger.info("Skipping keycloak reset password in dev mode...");
-            return;
+            return false;
         }
         logger.info(String.format("Initiating reset password keycloak-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
         realmResource.users().get(getUser(user).getId()).resetPassword(getCredentialRepresentation(password));
         logger.info(String.format("password reset for keycloak-user | username '%s'", user.getUsername()));
+        return true;
     }
 
     @Override

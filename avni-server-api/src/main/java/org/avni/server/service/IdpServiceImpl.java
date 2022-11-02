@@ -2,12 +2,9 @@ package org.avni.server.service;
 
 import org.avni.server.domain.OrganisationConfig;
 import org.avni.server.domain.User;
-import org.avni.server.domain.ValidationException;
 import org.avni.server.framework.context.SpringProfiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.StringTokenizer;
 
 public abstract class IdpServiceImpl implements IdpService {
     private static final Logger logger = LoggerFactory.getLogger(IdpServiceImpl.class);
@@ -27,10 +24,11 @@ public abstract class IdpServiceImpl implements IdpService {
     }
 
     @Override
-    public void createUserIfNotExists(User user, OrganisationConfig organisationConfig) {
+    public UserCreateStatus createUserIfNotExists(User user, OrganisationConfig organisationConfig) {
         if (!this.exists(user)) {
-            this.createUser(user, organisationConfig);
+            return this.createUser(user, organisationConfig);
         }
+        return null;
     }
 
     public static String getDefaultPassword(User user) {
