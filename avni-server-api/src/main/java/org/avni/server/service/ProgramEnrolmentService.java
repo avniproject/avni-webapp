@@ -1,6 +1,8 @@
 package org.avni.server.service;
 
+import org.avni.messaging.domain.EntityType;
 import org.avni.server.common.EntityHelper;
+import org.avni.server.common.Messageable;
 import org.avni.server.dao.*;
 import org.avni.server.dao.application.FormMappingRepository;
 import org.avni.server.domain.*;
@@ -239,6 +241,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         return savedChecklist;
     }
 
+    @Messageable(EntityType.ProgramEnrolment)
     public ProgramEnrolment voidEnrolment(ProgramEnrolment programEnrolment) {
         assertNoUnVoidedProgramEncounters(programEnrolment);
         programEnrolment.setVoided(true);

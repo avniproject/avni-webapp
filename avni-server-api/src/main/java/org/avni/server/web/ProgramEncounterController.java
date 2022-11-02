@@ -111,13 +111,13 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     @Transactional
-    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+    public ResponseEntity<?> voidProgramEncounter(@PathVariable String uuid) {
         ProgramEncounter programEncounter = programEncounterRepository.findByUuid(uuid);
         if (programEncounter == null) {
             return ResponseEntity.notFound().build();
         }
         programEncounter.setVoided(true);
-        ProgramEncounter voidedEncounter = programEncounterRepository.save(programEncounter);
+        ProgramEncounter voidedEncounter = programEncounterService.save(programEncounter);
         return ResponseEntity.ok(voidedEncounter);
     }
 

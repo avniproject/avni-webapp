@@ -140,8 +140,7 @@ public class ProgramEnrolmentApiController {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyIdOrUuid(legacyIdOrUuid);
         if (programEnrolment == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        programEnrolment.setVoided(true);
-        programEnrolment = programEnrolmentService.save(programEnrolment);
+        programEnrolment = programEnrolmentService.voidEnrolment(programEnrolment);
         return new ResponseEntity<>(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService), HttpStatus.OK);
     }
 

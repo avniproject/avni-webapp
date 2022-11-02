@@ -117,7 +117,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     @Transactional
-    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+    public ResponseEntity<?> voidProgramEnrolment(@PathVariable String uuid) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
         if (programEnrolment == null) {
             return ResponseEntity.notFound().build();

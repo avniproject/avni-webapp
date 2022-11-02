@@ -39,6 +39,9 @@ public class MessageRequestService {
     public void deleteMessageRequests(MessageRule messageRule, MessageReceiver messageReceiver) {
         Optional<MessageRequest> messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
                 messageReceiver, messageRule);
-        messageRequest.ifPresent(messageRequestRepository::delete);
+        messageRequest.ifPresent(presentMessageRequest -> {
+            presentMessageRequest.setVoided(true);
+            messageRequestRepository.save(presentMessageRequest);
+        });
     }
 }

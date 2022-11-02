@@ -13,11 +13,11 @@ import java.util.stream.Stream;
 @Repository
 public interface MessageRequestQueueRepository extends CHSRepository<MessageRequest> {
 
-    Stream<MessageRequest> findAllByDeliveryStatus(MessageDeliveryStatus messageDeliveryStatus);
+    Stream<MessageRequest> findAllByDeliveryStatusAndIsVoidedFalse(MessageDeliveryStatus messageDeliveryStatus);
 
     Optional<MessageRequest> findByMessageReceiverAndMessageRule(MessageReceiver messageReceiver, MessageRule messageRule);
 
     default Stream<MessageRequest> findNotSentMessageRequests() {
-        return findAllByDeliveryStatus(MessageDeliveryStatus.NotSent);
+        return findAllByDeliveryStatusAndIsVoidedFalse(MessageDeliveryStatus.NotSent);
     }
 }

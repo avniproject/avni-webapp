@@ -173,13 +173,13 @@ public class EncounterController extends AbstractController<Encounter> implement
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     @Transactional
-    public ResponseEntity<?> voidSubject(@PathVariable String uuid) {
+    public ResponseEntity<?> voidEncounter(@PathVariable String uuid) {
         Encounter encounter = encounterRepository.findByUuid(uuid);
         if (encounter == null) {
             return ResponseEntity.notFound().build();
         }
         encounter.setVoided(true);
-        Encounter voidedEncounter = encounterRepository.save(encounter);
+        Encounter voidedEncounter = encounterService.save(encounter);
         return ResponseEntity.ok(voidedEncounter);
     }
 

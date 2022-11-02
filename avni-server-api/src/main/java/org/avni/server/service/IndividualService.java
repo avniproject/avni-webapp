@@ -287,6 +287,7 @@ public class IndividualService implements ScopeAwareService {
         return encounterMetadataContract;
     }
 
+    @Messageable(EntityType.Subject)
     public Individual voidSubject(Individual individual) {
         assertNoUnVoidedEncounters(individual);
         assertNoUnVoidedEnrolments(individual);

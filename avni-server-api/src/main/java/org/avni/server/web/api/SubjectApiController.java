@@ -134,8 +134,7 @@ public class SubjectApiController {
         if (subject == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         List<GroupSubject> groupsOfAllMemberSubjects = groupSubjectRepository.findAllByMemberSubjectIn(Collections.singletonList(subject));
-        subject.setVoided(true);
-        subject = individualService.save(subject);
+        subject = individualService.voidSubject(subject);
         return new ResponseEntity<>(SubjectResponse.fromSubject(subject,
                 true, conceptRepository, conceptService, groupsOfAllMemberSubjects, s3Service), HttpStatus.OK);
     }
