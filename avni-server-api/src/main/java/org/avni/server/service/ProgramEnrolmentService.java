@@ -132,6 +132,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         return programEncountersContract;
     }
 
+    @Messageable(EntityType.ProgramEnrolment)
     public ProgramEnrolment programEnrolmentSave(ProgramEnrolmentRequest request){
         logger.info(String.format("Saving programEnrolment with uuid %s", request.getUuid()));
         Program program;
@@ -170,9 +171,9 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         programEnrolment.setIndividual(individual);
         this.addSyncAttributes(programEnrolment);
         if (programEnrolment.isNew()) {
-            individual.addEnrolment(programEnrolment);
+            programEnrolment.setIndividual(individual);
             saveIdentifierAssignments(programEnrolment, request);
-            individualRepository.save(individual);
+            programEnrolmentRepository.save(programEnrolment);
         } else {
             programEnrolmentRepository.save(programEnrolment);
         }
@@ -190,6 +191,7 @@ public class ProgramEnrolmentService implements ScopeAwareService {
         return programEnrolment;
     }
 
+    @Messageable(EntityType.ProgramEnrolment)
     public ProgramEnrolment save(ProgramEnrolment programEnrolment) {
         this.addSyncAttributes(programEnrolment);
        return programEnrolmentRepository.save(programEnrolment);
