@@ -131,14 +131,15 @@ public class ProgramEncounterService implements ScopeAwareService {
         return programEncounter;
     }
 
-    public void saveProgramEncounter(ProgramEncounterRequest request) {
+    @Messageable(EntityType.ProgramEncounter)
+    public ProgramEncounter saveProgramEncounter(ProgramEncounterRequest request) {
         logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
         checkForSchedulingCompleteConstraintViolation(request);
         EncounterType encounterType = encounterTypeRepository.findByUuidOrName(request.getEncounterType(), request.getEncounterTypeUUID());
         ProgramEncounter encounter = EntityHelper.newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
         //Planned visit can not overwrite completed encounter
         if (encounter.isCompleted() && request.isPlanned())
-            return;
+            return null;
 
         encounter.setEncounterDateTime(request.getEncounterDateTime());
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID());
@@ -173,8 +174,9 @@ public class ProgramEncounterService implements ScopeAwareService {
             }
 
         }
-        this.save(encounter);
+        encounter = this.save(encounter);
         logger.info(String.format("Saved programEncounter with uuid %s", request.getUuid()));
+        return encounter;
     }
 
     private void checkForSchedulingCompleteConstraintViolation(ProgramEncounterRequest request) {

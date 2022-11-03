@@ -89,7 +89,7 @@ public class MessagingServiceTest {
 
         verify(messageReceiverService).saveReceiverIfRequired(eq(ReceiverType.Subject), eq(individualId));
         verify(ruleService).executeScheduleRule(eq(messageRule.getEntityType().name()), eq(individualId), eq(scheduleRule));
-        verify(messageRequestService).createMessageRequest(messageRule, messageReceiver, individualId, scheduledDateTime);
+        verify(messageRequestService).createOrUpdateMessageRequest(messageRule, messageReceiver, individualId, scheduledDateTime);
     }
 
     @Test
@@ -135,10 +135,10 @@ public class MessagingServiceTest {
 
         verify(messageReceiverService, times(1)).saveReceiverIfRequired(eq(ReceiverType.Subject), eq(individualId));
         verify(ruleService).executeScheduleRule(eq(messageRule.getEntityType().name()), eq(individualId), eq(scheduleRule));
-        verify(messageRequestService).createMessageRequest(messageRule, messageReceiver, individualId, scheduledDateTime);
+        verify(messageRequestService).createOrUpdateMessageRequest(messageRule, messageReceiver, individualId, scheduledDateTime);
 
         verify(ruleService).executeScheduleRule(eq(messageRule.getEntityType().name()), eq(individualId), eq(scheduleRuleAnother));
-        verify(messageRequestService).createMessageRequest(messageRuleAnother, messageReceiver, individualId, scheduledDateTimeOfAnotherRule);
+        verify(messageRequestService).createOrUpdateMessageRequest(messageRuleAnother, messageReceiver, individualId, scheduledDateTimeOfAnotherRule);
     }
 
     @Test

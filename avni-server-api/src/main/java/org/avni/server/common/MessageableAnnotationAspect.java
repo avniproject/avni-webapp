@@ -18,17 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Aspect
-public class MessagableAnnotationAspect {
+public class MessageableAnnotationAspect {
 
     private MessagingService messagingService;
 
     private OrganisationConfigService organisationConfigService;
 
     private Bugsnag bugsnag;
-    private static Logger logger = LoggerFactory.getLogger(MessagableAnnotationAspect.class);
+    private static Logger logger = LoggerFactory.getLogger(MessageableAnnotationAspect.class);
 
     @Autowired
-    public MessagableAnnotationAspect(MessagingService messagingService, OrganisationConfigService organisationConfigService, Bugsnag bugsnag) {
+    public MessageableAnnotationAspect(MessagingService messagingService, OrganisationConfigService organisationConfigService, Bugsnag bugsnag) {
         this.messagingService = messagingService;
         this.organisationConfigService = organisationConfigService;
         this.bugsnag = bugsnag;

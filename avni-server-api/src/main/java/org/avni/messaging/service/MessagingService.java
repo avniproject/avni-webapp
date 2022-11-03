@@ -71,7 +71,7 @@ public class MessagingService {
 
         for (MessageRule messageRule : messageRules) {
             DateTime scheduledDateTime = ruleService.executeScheduleRule(messageRule.getEntityType().name(), entityId, messageRule.getScheduleRule());
-            messageRequestService.createMessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime);
+            messageRequestService.createOrUpdateMessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime);
         }
     }
 

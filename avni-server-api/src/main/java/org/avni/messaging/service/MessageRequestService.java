@@ -19,7 +19,7 @@ public class MessageRequestService {
         this.messageRequestRepository = messageRequestRepository;
     }
 
-    public MessageRequest createMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, Long entityId, DateTime scheduledDateTime) {
+    public MessageRequest createOrUpdateMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, Long entityId, DateTime scheduledDateTime) {
         MessageRequest messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
                 messageReceiver, messageRule)
                 .orElse(new MessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime));
