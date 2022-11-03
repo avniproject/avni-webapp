@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
+import _ from "lodash";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -48,22 +49,26 @@ const EncounterTypeShow = props => {
       .then(response => response.data)
       .then(result => {
         setEncounterType(result);
-      });
 
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setFormMappings(formMap);
-        setSubjectType(response.data.subjectTypes);
-        setProgram(response.data.programs);
-        const isProgramEncounter = formMap.find(
-          mapping => mapping.encounterTypeUUID === encounterType.uuid
-        );
-        setEntityType(isProgramEncounter ? "ProgramEncounter" : "Encounter");
-      })
-      .catch(error => {});
+        http
+          .get("/web/operationalModules")
+          .then(response => {
+            const formMap = response.data.formMappings;
+            formMap.map(l => (l["isVoided"] = false));
+
+            const encounterTypeMappings = response.data.formMappings.filter(
+              l => l.encounterTypeUUID === result.uuid
+            );
+            _.isNil(encounterTypeMappings[0].programUUID)
+              ? setEntityType("Encounter")
+              : setEntityType("ProgramEncounter");
+
+            setFormMappings(formMap);
+            setSubjectType(response.data.subjectTypes);
+            setProgram(response.data.programs);
+          })
+          .catch(error => {});
+      });
   }, []);
 
   return (

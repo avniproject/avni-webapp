@@ -28,7 +28,7 @@ const EncounterTypeCreate = props => {
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
   const [ruleValidationError, setRuleValidationError] = useState();
-  const [entityType, setEntityType] = useState();
+  const [entityType, setEntityType] = useState("Encounter");
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []

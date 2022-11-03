@@ -71,22 +71,22 @@ const EncounterTypeEdit = props => {
             setFormList(response.data.forms);
             setSubjectType(response.data.subjectTypes);
             setProgram(response.data.programs);
-            const isProgramEncounter = formMap.find(
-              mapping => mapping.encounterTypeUUID === encounterType.uuid
-            );
-            setEntityType(isProgramEncounter ? "ProgramEncounter" : "Encounter");
 
-            const temp = response.data.formMappings.filter(
+            const encounterTypeMappings = response.data.formMappings.filter(
               l => l.encounterTypeUUID === result.uuid
             );
 
-            setSubjectT(
-              response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
-            );
-            setProgramT(response.data.programs.filter(l => l.uuid === temp[0].programUUID)[0]);
+            _.isNil(encounterTypeMappings[0].programUUID)
+              ? setEntityType("Encounter")
+              : setEntityType("ProgramEncounter");
 
             setSubjectT(
-              response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
+              response.data.subjectTypes.filter(
+                l => l.uuid === encounterTypeMappings[0].subjectTypeUUID
+              )[0]
+            );
+            setProgramT(
+              response.data.programs.filter(l => l.uuid === encounterTypeMappings[0].programUUID)[0]
             );
 
             const form = findProgramEncounterForm(formMap, result);
