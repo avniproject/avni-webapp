@@ -1,0 +1,7 @@
+{
+  "query": "mutation optinContact($phone: String!, $name: String) {optinContact(phone: $phone, name: $name) {contact {id phone name lastMessageAt optinTime bspStatus} errors {key message}}}",
+  "variables": {
+    "phone": "${phoneNumber}",
+    "name": "${fullName}"
+  }
+}

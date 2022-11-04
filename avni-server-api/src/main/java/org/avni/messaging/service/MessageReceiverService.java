@@ -4,6 +4,7 @@ import org.avni.messaging.domain.MessageReceiver;
 import org.avni.messaging.domain.ReceiverType;
 import org.avni.messaging.repository.GlificContactRepository;
 import org.avni.messaging.repository.MessageReceiverRepository;
+import org.avni.server.domain.Individual;
 import org.avni.server.service.IndividualService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +43,14 @@ public class MessageReceiverService {
         if (messageReceiver.getExternalId() != null) {
             return messageReceiver;
         }
-        String phoneNumber = individualService.findPhoneNumber(messageReceiver.getReceiverId());
+
+        Individual individual = individualService.findById(messageReceiver.getReceiverId());
+        String phoneNumber = individualService.findPhoneNumber(individual);
         if (phoneNumber == null) {
             throw new PhoneNumberNotAvailableException();
         }
 
-        String externalId = glificContactRepository.getOrCreateGlificContactId(phoneNumber);
+        String externalId = glificContactRepository.getOrCreateGlificContactId(phoneNumber, individual.getFullName());
         messageReceiver.setExternalId(externalId);
         return messageReceiverRepository.save(messageReceiver);
     }

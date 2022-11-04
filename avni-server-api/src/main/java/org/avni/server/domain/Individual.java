@@ -332,4 +332,9 @@ public class Individual extends SyncAttributeEntity implements MessageableEntity
     public Individual getIndividual() {
         return this;
     }
+
+    @JsonIgnore
+    public String getFullName() {
+        return firstName + " " + middleName + " " + lastName;
+    }
 }

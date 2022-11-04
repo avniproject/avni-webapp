@@ -1,7 +1,7 @@
 package org.avni.messaging.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.avni.messaging.contract.glific.GlificCreateContactResponse;
+import org.avni.messaging.contract.glific.GlificOptinContactResponse;
 import org.avni.messaging.contract.glific.GlificGetContactsResponse;
 import org.avni.messaging.contract.glific.GlificResponse;
 import org.avni.messaging.external.GlificRestClient;
@@ -13,7 +13,7 @@ import java.io.IOException;
 @Repository
 public class GlificContactRepository {
 
-    private final String CREATE_CONTACT_JSON;
+    private final String OPTIN_CONTACT_JSON;
     private final GlificRestClient glificRestClient;
     private final String GET_CONTACT_JSON;
 
@@ -21,23 +21,25 @@ public class GlificContactRepository {
         this.glificRestClient = glificRestClient;
         try {
             GET_CONTACT_JSON = new ObjectMapper().readTree(this.getClass().getResource("/external/glific/getContact.json")).toString();
-            CREATE_CONTACT_JSON = new ObjectMapper().readTree(this.getClass().getResource("/external/glific/createContact.json")).toString();
+            OPTIN_CONTACT_JSON = new ObjectMapper().readTree(this.getClass().getResource("/external/glific/optinContact.json")).toString();
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }
     }
 
-    public String getOrCreateGlificContactId(String phoneNumber) {
+    public String getOrCreateGlificContactId(String phoneNumber, String fullName) {
         GlificGetContactsResponse glificContacts = getGlificContact(phoneNumber);
         return glificContacts.getContacts().isEmpty() ?
-                createGlificContact(phoneNumber) :
+                createGlificContact(phoneNumber, fullName) :
                 glificContacts.getContacts().get(0).getId();
     }
 
-    private String createGlificContact(String phoneNumber) {
-        String message = CREATE_CONTACT_JSON.replace("${phoneNumber}", phoneNumber);
-        return glificRestClient.callAPI(message, new ParameterizedTypeReference<GlificResponse<GlificCreateContactResponse>>() {
-        }).getCreateContact().getId();
+    private String createGlificContact(String phoneNumber, String fullName) {
+        String message = OPTIN_CONTACT_JSON.replace("${phoneNumber}", phoneNumber)
+                .replace("${fullName}", fullName);
+        GlificOptinContactResponse glificOptinContactResponse = glificRestClient.callAPI(message, new ParameterizedTypeReference<GlificResponse<GlificOptinContactResponse>>() {
+        });
+        return glificOptinContactResponse.getOptinContact().getContact().getId();
     }
 
     private GlificGetContactsResponse getGlificContact(String phoneNumber) {
