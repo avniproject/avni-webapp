@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class MessageReceiverService {
 
@@ -53,5 +55,18 @@ public class MessageReceiverService {
         String externalId = glificContactRepository.getOrCreateGlificContactId(phoneNumber, individual.getFullName());
         messageReceiver.setExternalId(externalId);
         return messageReceiverRepository.save(messageReceiver);
+    }
+
+    public void voidMessageReceiver(Long receiverId) {
+        Optional<MessageReceiver> messageReceiver = getReceiverById(receiverId);
+
+        messageReceiver.ifPresent(presentMessageReceiver -> {
+            presentMessageReceiver.setVoided(true);
+            messageReceiverRepository.save(presentMessageReceiver);
+        });
+    }
+
+    public Optional<MessageReceiver> getReceiverById(Long receiverId) {
+        return messageReceiverRepository.findById(receiverId);
     }
 }

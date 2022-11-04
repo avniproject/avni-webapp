@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -75,15 +76,13 @@ public class MessagingService {
         }
     }
 
-    public void onEntityDelete(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
-        List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
-        MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, receiverId);
+    public void onEntityDelete(Long entityId, EntityType entityType, Long receiverId) {
+        messageRequestService.voidMessageRequests(entityId);
 
-        for (MessageRule messageRule : messageRules) {
-            messageRequestService.deleteMessageRequests(entityId, messageRule, messageReceiver);
+        if (entityType.equals(EntityType.Subject)) {
+            messageReceiverService.voidMessageReceiver(receiverId);
         }
     }
-
 
     @Transactional
     public Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId, Pageable pageable) {
