@@ -20,8 +20,7 @@ public class MessageRequestService {
     }
 
     public MessageRequest createOrUpdateMessageRequest(MessageRule messageRule, MessageReceiver messageReceiver, Long entityId, DateTime scheduledDateTime) {
-        MessageRequest messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
-                messageReceiver, messageRule)
+        MessageRequest messageRequest = messageRequestRepository.findByEntityIdAndMessageReceiverAndMessageRule(entityId, messageReceiver, messageRule)
                 .orElse(new MessageRequest(messageRule, messageReceiver, entityId, scheduledDateTime));
         if (messageRequest.isDelivered()) {
             return messageRequest;
@@ -36,9 +35,9 @@ public class MessageRequestService {
         return messageRequestRepository.save(messageRequest);
     }
 
-    public void deleteMessageRequests(MessageRule messageRule, MessageReceiver messageReceiver) {
-        Optional<MessageRequest> messageRequest = messageRequestRepository.findByMessageReceiverAndMessageRule(
-                messageReceiver, messageRule);
+    public void deleteMessageRequests(Long entityId, MessageRule messageRule, MessageReceiver messageReceiver) {
+        Optional<MessageRequest> messageRequest = messageRequestRepository.findByEntityIdAndMessageReceiverAndMessageRule(
+                entityId, messageReceiver, messageRule);
         messageRequest.ifPresent(presentMessageRequest -> {
             presentMessageRequest.setVoided(true);
             messageRequestRepository.save(presentMessageRequest);

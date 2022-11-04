@@ -75,12 +75,12 @@ public class MessagingService {
         }
     }
 
-    public void onEntityDelete(Long entityTypeId, EntityType entityType, Long receiverId) {
+    public void onEntityDelete(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
         List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
         MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, receiverId);
 
         for (MessageRule messageRule : messageRules) {
-            messageRequestService.deleteMessageRequests(messageRule, messageReceiver);
+            messageRequestService.deleteMessageRequests(entityId, messageRule, messageReceiver);
         }
     }
 

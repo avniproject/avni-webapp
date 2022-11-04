@@ -15,7 +15,7 @@ public interface MessageRequestQueueRepository extends CHSRepository<MessageRequ
 
     Stream<MessageRequest> findAllByDeliveryStatusAndIsVoidedFalse(MessageDeliveryStatus messageDeliveryStatus);
 
-    Optional<MessageRequest> findByMessageReceiverAndMessageRule(MessageReceiver messageReceiver, MessageRule messageRule);
+    Optional<MessageRequest> findByEntityIdAndMessageReceiverAndMessageRule(Long entityId, MessageReceiver messageReceiver, MessageRule messageRule);
 
     default Stream<MessageRequest> findNotSentMessageRequests() {
         return findAllByDeliveryStatusAndIsVoidedFalse(MessageDeliveryStatus.NotSent);
