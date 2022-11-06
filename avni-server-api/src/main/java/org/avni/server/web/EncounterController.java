@@ -179,8 +179,8 @@ public class EncounterController extends AbstractController<Encounter> implement
             return ResponseEntity.notFound().build();
         }
         encounter.setVoided(true);
-        Encounter voidedEncounter = encounterService.save(encounter);
-        return ResponseEntity.ok(voidedEncounter);
+        encounterService.save(encounter);
+        return ResponseEntity.ok().build();
     }
 
     @Override

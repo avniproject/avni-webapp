@@ -117,8 +117,8 @@ public class ProgramEncounterController implements RestControllerResourceProcess
             return ResponseEntity.notFound().build();
         }
         programEncounter.setVoided(true);
-        ProgramEncounter voidedEncounter = programEncounterService.save(programEncounter);
-        return ResponseEntity.ok(voidedEncounter);
+        programEncounterService.save(programEncounter);
+        return ResponseEntity.ok().build();
     }
 
     @Override

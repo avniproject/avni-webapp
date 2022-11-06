@@ -35,12 +35,11 @@ public class MessageableAnnotationAspect {
     }
 
     @AfterReturning(value = "@annotation(org.avni.server.common.Messageable)", returning = "entity")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendMessage(JoinPoint joinPoint, MessageableEntity entity) {
+    public MessageableEntity sendMessage(JoinPoint joinPoint, MessageableEntity entity) {
         logger.info("MessageableAnnotationAspect invoked.");
 
         if (!organisationConfigService.isMessagingEnabled())
-            return;
+            return entity;
 
         try {
             EntityType entityType = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(Messageable.class).value();
@@ -49,9 +48,12 @@ public class MessageableAnnotationAspect {
             } else {
                 messagingService.onEntitySave(entity.getEntityId(), entity.getEntityTypeId(), entityType, entity.getIndividual().getId());
             }
+
+            return entity;
         } catch (Exception e) {
             bugsnag.notify(e);
             logger.error("Could not save/delete message request for entity " + entity.getEntityId() + " with type id " + entity.getEntityTypeId(), e);
+            return entity;
         }
     }
 }

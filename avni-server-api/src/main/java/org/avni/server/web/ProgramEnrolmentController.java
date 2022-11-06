@@ -122,8 +122,8 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         if (programEnrolment == null) {
             return ResponseEntity.notFound().build();
         }
-        ProgramEnrolment voidedEnrolment = programEnrolmentService.voidEnrolment(programEnrolment);
-        return ResponseEntity.ok(voidedEnrolment);
+        programEnrolmentService.voidEnrolment(programEnrolment);
+        return ResponseEntity.ok().build();
     }
 
     @Override

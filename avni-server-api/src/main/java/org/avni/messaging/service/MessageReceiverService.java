@@ -58,15 +58,6 @@ public class MessageReceiverService {
     }
 
     public void voidMessageReceiver(Long receiverId) {
-        Optional<MessageReceiver> messageReceiver = getReceiverById(receiverId);
-
-        messageReceiver.ifPresent(presentMessageReceiver -> {
-            presentMessageReceiver.setVoided(true);
-            messageReceiverRepository.save(presentMessageReceiver);
-        });
-    }
-
-    public Optional<MessageReceiver> getReceiverById(Long receiverId) {
-        return messageReceiverRepository.findById(receiverId);
+        messageReceiverRepository.updateVoided(true, receiverId);
     }
 }

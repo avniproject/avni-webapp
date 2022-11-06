@@ -236,8 +236,8 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (individual == null) {
             ResponseEntity.notFound().build();
         }
-        Individual voidedIndividual = individualService.voidSubject(individual);
-        return ResponseEntity.ok(voidedIndividual);
+        individualService.voidSubject(individual);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/subject/search")
