@@ -109,6 +109,8 @@ public class MessagingService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendMessages() {
+        logger.info("Sending messages for organisation ");
+
         logger.info("Sending messages for organisation " + UserContextHolder.getOrganisation().getName());
         Stream<MessageRequest> requests = messageRequestQueueRepository.findNotSentMessageRequests();
         requests.forEach(this::sendMessage);
