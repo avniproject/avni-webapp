@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -110,7 +109,7 @@ public class MessagingService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendMessages() {
         logger.info("Sending messages for organisation " + UserContextHolder.getOrganisation().getName());
-        Stream<MessageRequest> requests = messageRequestQueueRepository.findNotSentMessageRequests();
+        Stream<MessageRequest> requests = messageRequestQueueRepository.findDueMessageRequests();
         requests.forEach(this::sendMessage);
     }
 

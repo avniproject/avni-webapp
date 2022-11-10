@@ -156,7 +156,7 @@ public class MessagingServiceTest {
         context.setOrganisation(new Organisation());
         UserContextHolder.create(context);
 
-        when(messageRequestQueueRepository.findNotSentMessageRequests()).thenReturn(Stream.<MessageRequest>builder().add(request).build());
+        when(messageRequestQueueRepository.findDueMessageRequests()).thenReturn(Stream.<MessageRequest>builder().add(request).build());
         when(ruleService.executeMessageRule(request.getMessageReceiver().getReceiverType().name(), request.getEntityId(), messageRule.getMessageRule())).thenReturn(parameters);
         when(messageRequestService.markComplete(request)).thenReturn(request);
 
