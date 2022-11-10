@@ -44,7 +44,7 @@ public class MessageSenderJob {
                 .findAllWithFeatureEnabled(OrganisationConfigSettingKey.enableMessaging.name());
 
         logger.info("enabledOrganisations:");
-        logger.info("enabledOrganisations: {}", enabledOrganisations.get(0).getOrganisationId());
+        logger.info("enabledOrganisations:", enabledOrganisations.get(0).getOrganisationId());
 
         for (OrganisationConfig enabledOrganisation : enabledOrganisations) {
             sendMessages(enabledOrganisation);
@@ -57,7 +57,7 @@ public class MessageSenderJob {
         authService.authenticateByUserName(glificConfig.getAvniSystemUser(), null);
 
         logger.info("authenticated by AvniSystemUser:");
-        logger.info("authenticated by AvniSystemUser: {}", glificConfig.getAvniSystemUser());
+        logger.info("authenticated by AvniSystemUser:", glificConfig.getAvniSystemUser());
         messagingService.sendMessages();
     }
 }
