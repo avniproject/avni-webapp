@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.avni.messaging.contract.glific.GlificMessageResponse;
 import org.avni.messaging.contract.glific.GlificResponse;
 import org.avni.messaging.external.GlificRestClient;
+import org.avni.server.util.ObjectMapperSingleton;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ public class GlificMessageRepository {
     public GlificMessageRepository(GlificRestClient glificRestClient) {
         this.glificRestClient = glificRestClient;
         try {
-            SEND_HSM_MESSAGE_JSON = new ObjectMapper().readTree(this.getClass().getResource("/external/glific/sendHsmMessage.json")).toString();
+            SEND_HSM_MESSAGE_JSON = ObjectMapperSingleton.getObjectMapper().readTree(this.getClass().getResource("/external/glific/sendHsmMessage.json")).toString();
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }

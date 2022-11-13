@@ -5,6 +5,7 @@ import org.avni.messaging.contract.glific.GlificOptinContactResponse;
 import org.avni.messaging.contract.glific.GlificGetContactsResponse;
 import org.avni.messaging.contract.glific.GlificResponse;
 import org.avni.messaging.external.GlificRestClient;
+import org.avni.server.util.ObjectMapperSingleton;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +21,8 @@ public class GlificContactRepository {
     public GlificContactRepository(GlificRestClient glificRestClient) {
         this.glificRestClient = glificRestClient;
         try {
-            GET_CONTACT_JSON = new ObjectMapper().readTree(this.getClass().getResource("/external/glific/getContact.json")).toString();
-            OPTIN_CONTACT_JSON = new ObjectMapper().readTree(this.getClass().getResource("/external/glific/optinContact.json")).toString();
+            GET_CONTACT_JSON = ObjectMapperSingleton.getObjectMapper().readTree(this.getClass().getResource("/external/glific/getContact.json")).toString();
+            OPTIN_CONTACT_JSON = ObjectMapperSingleton.getObjectMapper().readTree(this.getClass().getResource("/external/glific/optinContact.json")).toString();
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }

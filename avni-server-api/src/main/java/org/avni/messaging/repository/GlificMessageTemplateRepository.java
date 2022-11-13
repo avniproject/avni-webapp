@@ -5,6 +5,7 @@ import org.avni.messaging.contract.glific.GlificMessageTemplate;
 import org.avni.messaging.contract.glific.GlificMessageTemplateResponse;
 import org.avni.messaging.contract.glific.GlificResponse;
 import org.avni.messaging.external.GlificRestClient;
+import org.avni.server.util.ObjectMapperSingleton;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +22,7 @@ public class GlificMessageTemplateRepository {
     public GlificMessageTemplateRepository(GlificRestClient glificRestClient) {
         this.glificRestClient = glificRestClient;
         try {
-            MESSAGE_TEMPLATE_REQUEST = new ObjectMapper().readValue(this.getClass().getResource("/external/glific/messageTemplateRequest.json"), Object.class);
+            MESSAGE_TEMPLATE_REQUEST = ObjectMapperSingleton.getObjectMapper().readValue(this.getClass().getResource("/external/glific/messageTemplateRequest.json"), Object.class);
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }
