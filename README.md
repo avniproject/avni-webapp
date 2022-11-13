@@ -2,7 +2,7 @@
 
 ## Build Status
 
-[![CircleCI](https://circleci.com/gh/avniproject/avni-server/tree/master.svg?style=svg)](https://circleci.com/gh/avniproject/avni-server/tree/master)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/avniproject/avni-server/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/avniproject/avni-server/tree/master)
 
 ## Environment Link
 
