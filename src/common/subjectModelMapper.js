@@ -128,6 +128,7 @@ export const mapProgramEnrolment = (json, subject) => {
   programEnrolment.observations = mapObservations(json.observations) || [];
   const program = new Program();
   program.uuid = json.programUuid;
+  program.name = json.operationalProgramName;
   programEnrolment.program = program;
   programEnrolment.voided = false;
   if (subject) programEnrolment.individual = subject;
