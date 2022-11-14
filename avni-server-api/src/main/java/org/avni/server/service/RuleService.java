@@ -91,27 +91,6 @@ public class RuleService implements NonScopeAwareService {
         this.formRepository = formRepository;
     }
 
-    //Testing only. Do not use
-    public RuleService(RuleServiceClient restClient, IndividualConstructionService individualConstructionService,
-                       EntityRetrieverService entityRetrieverService, IndividualService individualService) {
-        this.restClient = restClient;
-        this.entityRetrieverService = entityRetrieverService;
-        logger = null;
-        ruleDependencyRepository = null;
-        ruleRepository = null;
-        ruledEntityRepositories = null;
-        this.individualConstructionService = individualConstructionService;
-        ruleValidationService = null;
-        programEncounterConstructionService = null;
-        programEnrolmentConstructionService = null;
-        formRepository = null;
-        ruleFailureLogRepository = null;
-        observationService = null;
-        contractBuilderServices = null;
-        ruleServiceEntityContractBuilder = null;
-        this.individualService = individualService;
-    }
-
     @Transactional
     public RuleDependency createDependency(String ruleCode, String ruleHash) {
         RuleDependency ruleDependency = ruleDependencyRepository

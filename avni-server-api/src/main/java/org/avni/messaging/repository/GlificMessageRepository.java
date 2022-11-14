@@ -31,7 +31,7 @@ public class GlificMessageRepository {
         return glificRestClient.callAPI(message,new ParameterizedTypeReference<GlificResponse<GlificMessageResponse>>() {});
     }
 
-    public String arrayToString(String[] items) {
+    private String arrayToString(String[] items) {
         StringBuffer result = new StringBuffer();
         result.append("[");
         for (String item : items) {
