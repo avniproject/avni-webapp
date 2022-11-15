@@ -1,7 +1,6 @@
 import {
   setGenders,
   setOperationalModules,
-  setAllLocations,
   setOrganisationConfig,
   setLegacyRulesBundle,
   setLegacyRules,
@@ -49,15 +48,6 @@ export function* getGendersWorker() {
   yield put(setGenders(genders.content.map(mapGender)));
 }
 
-export function* getAllLocationWatcher() {
-  yield takeLatest(types.GET_ALL_LOCATION, getAllLocationsWorker);
-}
-
-export function* getAllLocationsWorker() {
-  const allLocations = yield call(api.fetchAllLocation);
-  yield put(setAllLocations(allLocations));
-}
-
 export function* getOrganisationConfigWatcher() {
   yield takeLatest(types.GET_ORGANISATION_CONFIG, getOrganisationConfigWorker);
 }
@@ -73,7 +63,6 @@ export default function* referenceDataSaga() {
     [
       dataEntryLoadOperationalModulesWatcher,
       getGendersWatcher,
-      getAllLocationWatcher,
       getOrganisationConfigWatcher,
       legacyRulesBundleWatcher,
       legacyRulesWatcher

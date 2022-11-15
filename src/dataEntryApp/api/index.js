@@ -6,8 +6,6 @@ export default {
     httpClient.fetchJson("/web/operationalModules").then(response => response.json),
   fetchForm: uuid => httpClient.fetchJson(`/web/form/${uuid}`).then(response => response.json),
   fetchGenders: () => httpClient.fetchJson("/web/gender").then(response => response.json),
-  fetchAllLocation: () =>
-    httpClient.fetchJson("/locations/web/getAll").then(response => response.json),
   fetchOrganisationConfigs: () =>
     httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
 
