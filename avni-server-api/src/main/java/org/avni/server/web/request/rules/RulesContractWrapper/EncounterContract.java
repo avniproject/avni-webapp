@@ -5,7 +5,7 @@ import org.avni.server.domain.Encounter;
 import org.avni.server.domain.EntityApprovalStatus;
 import org.avni.server.service.EntityApprovalStatusService;
 import org.avni.server.service.ObservationService;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.ObservationModelContract;
 import org.avni.server.web.request.rules.request.RuleRequestEntity;
 
@@ -17,7 +17,7 @@ public class EncounterContract implements RuleServerEntityContract{
     private IndividualContract subject;
     private String uuid;
     private String name;
-    private EncounterTypeContract encounterType;
+    private EntityTypeContract encounterType;
     private DateTime cancelDateTime;
     private DateTime earliestVisitDateTime;
     private DateTime maxVisitDateTime;
@@ -59,11 +59,11 @@ public class EncounterContract implements RuleServerEntityContract{
         this.name = name;
     }
 
-    public EncounterTypeContract getEncounterType() {
+    public EntityTypeContract getEncounterType() {
         return encounterType;
     }
 
-    public void setEncounterType(EncounterTypeContract encounterType) {
+    public void setEncounterType(EntityTypeContract encounterType) {
         this.encounterType = encounterType;
     }
 
@@ -141,7 +141,7 @@ public class EncounterContract implements RuleServerEntityContract{
         contract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
         contract.setCancelDateTime(encounter.getCancelDateTime());
         contract.setObservations(observationService.constructObservationModelContracts(encounter.getObservations()));
-        contract.setEncounterType(EncounterTypeContract.fromEncounterType(encounter.getEncounterType()));
+        contract.setEncounterType(EntityTypeContract.fromEncounterType(encounter.getEncounterType()));
         EntityApprovalStatusWrapper latestEntityApprovalStatus = entityApprovalStatusService.getLatestEntityApprovalStatus(encounter.getId(), EntityApprovalStatus.EntityType.Encounter, encounter.getUuid());
         contract.setLatestEntityApprovalStatus(latestEntityApprovalStatus);
         return contract;

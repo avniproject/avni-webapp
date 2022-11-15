@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.web.external.RuleServiceClient;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.rules.RulesContractWrapper.*;
 import org.avni.server.web.request.rules.constructWrappers.*;
 import org.avni.server.web.request.rules.request.*;
@@ -193,8 +193,17 @@ public class RuleService implements NonScopeAwareService {
     public EligibilityRuleResponseEntity executeEligibilityRule(Individual individual, List<EncounterType> encounterTypes) {
         EligibilityRuleResponseEntity ruleResponseEntity = new EligibilityRuleResponseEntity();
         IndividualContract individualContract = ruleServiceEntityContractBuilder.toContract(individual);
-        List<EncounterTypeContract> encounterTypeContracts = encounterTypes.stream().map(EncounterTypeContract::fromEncounterType).collect(Collectors.toList());
-        EncounterEligibilityRuleRequest ruleRequest = new EncounterEligibilityRuleRequest(individualContract, encounterTypeContracts);
+        List<EntityTypeContract> entityTypeContracts = encounterTypes.stream().map(EntityTypeContract::fromEncounterType).collect(Collectors.toList());
+        EntityEligibilityRuleRequest ruleRequest = new EntityEligibilityRuleRequest(individualContract, entityTypeContracts, RuleEntityType.EncounterType.name());
+        ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
+        return ruleResponseEntity;
+    }
+
+    public EligibilityRuleResponseEntity executeProgramEligibilityCheckRule(Individual individual, List<Program> programs) {
+        EligibilityRuleResponseEntity ruleResponseEntity = new EligibilityRuleResponseEntity();
+        IndividualContract individualContract = ruleServiceEntityContractBuilder.toContract(individual);
+        List<EntityTypeContract> entityTypeContracts = programs.stream().map(EntityTypeContract::fromProgram).collect(Collectors.toList());
+        EntityEligibilityRuleRequest ruleRequest = new EntityEligibilityRuleRequest(individualContract, entityTypeContracts, RuleEntityType.Program.name());
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
         return ruleResponseEntity;
     }

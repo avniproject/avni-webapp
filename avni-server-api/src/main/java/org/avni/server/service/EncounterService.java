@@ -12,7 +12,7 @@ import org.avni.server.domain.ObservationCollection;
 import org.avni.server.util.S;
 import org.avni.server.web.api.EncounterSearchRequest;
 import org.avni.server.web.request.EncounterContract;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.joda.time.DateTime;
 import org.avni.server.dao.individualRelationship.RuleFailureLogRepository;
 import org.avni.server.util.BadRequestError;
@@ -85,13 +85,13 @@ public class EncounterService implements ScopeAwareService {
 
     public EncounterContract constructEncounters(Encounter encounter) {
             EncounterContract encountersContract = new EncounterContract();
-            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-            encounterTypeContract.setName(encounter.getEncounterType().getName());
-            encounterTypeContract.setUuid(encounter.getEncounterType().getUuid());
-            encounterTypeContract.setEncounterEligibilityCheckRule(encounter.getEncounterType().getEncounterEligibilityCheckRule());
+            EntityTypeContract entityTypeContract = new EntityTypeContract();
+            entityTypeContract.setName(encounter.getEncounterType().getName());
+            entityTypeContract.setUuid(encounter.getEncounterType().getUuid());
+            entityTypeContract.setEntityEligibilityCheckRule(encounter.getEncounterType().getEncounterEligibilityCheckRule());
             encountersContract.setUuid(encounter.getUuid());
             encountersContract.setName(encounter.getName());
-            encountersContract.setEncounterType(encounterTypeContract);
+            encountersContract.setEncounterType(entityTypeContract);
             encountersContract.setSubjectUUID(encounter.getIndividual().getUuid());
             encountersContract.setEncounterDateTime(encounter.getEncounterDateTime());
             encountersContract.setCancelDateTime(encounter.getCancelDateTime());

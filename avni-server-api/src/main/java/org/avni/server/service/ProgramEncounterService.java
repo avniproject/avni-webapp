@@ -8,7 +8,7 @@ import org.avni.server.dao.*;
 import org.avni.server.domain.*;
 import org.avni.server.geo.Point;
 import org.avni.server.util.BadRequestError;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.PointRequest;
 import org.avni.server.web.request.ProgramEncounterRequest;
 import org.avni.server.web.request.ProgramEncountersContract;
@@ -53,13 +53,13 @@ public class ProgramEncounterService implements ScopeAwareService {
 
     public ProgramEncountersContract constructProgramEncounters(ProgramEncounter programEncounter) {
         ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
-        EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-        encounterTypeContract.setName(programEncounter.getEncounterType().getName());
-        encounterTypeContract.setUuid(programEncounter.getEncounterType().getUuid());
-        encounterTypeContract.setEncounterEligibilityCheckRule(programEncounter.getEncounterType().getEncounterEligibilityCheckRule());
+        EntityTypeContract entityTypeContract = new EntityTypeContract();
+        entityTypeContract.setName(programEncounter.getEncounterType().getName());
+        entityTypeContract.setUuid(programEncounter.getEncounterType().getUuid());
+        entityTypeContract.setEntityEligibilityCheckRule(programEncounter.getEncounterType().getEncounterEligibilityCheckRule());
         programEncountersContract.setUuid(programEncounter.getUuid());
         programEncountersContract.setName(programEncounter.getName());
-        programEncountersContract.setEncounterType(encounterTypeContract);
+        programEncountersContract.setEncounterType(entityTypeContract);
         programEncountersContract.setSubjectUUID(programEncounter.getProgramEnrolment().getIndividual().getUuid());
         programEncountersContract.setEncounterDateTime(programEncounter.getEncounterDateTime());
         programEncountersContract.setCancelDateTime(programEncounter.getCancelDateTime());

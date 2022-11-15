@@ -12,7 +12,7 @@ public class ProgramEncountersContract extends CHSRequest {
     private DateTime cancelDateTime;
     private DateTime earliestVisitDateTime;
     private DateTime maxVisitDateTime;
-    private EncounterTypeContract encounterType;
+    private EntityTypeContract encounterType;
     private DateTime encounterDateTime;
     private List<ObservationContract> observations = new ArrayList<>();
     private List<ObservationContract> cancelObservations = new ArrayList<>();
@@ -60,11 +60,11 @@ public class ProgramEncountersContract extends CHSRequest {
         this.maxVisitDateTime = maxVisitDateTime;
     }
 
-    public EncounterTypeContract getEncounterType() {
+    public EntityTypeContract getEncounterType() {
         return encounterType;
     }
 
-    public void setEncounterType(EncounterTypeContract encounterType) {
+    public void setEncounterType(EntityTypeContract encounterType) {
         this.encounterType = encounterType;
     }
 

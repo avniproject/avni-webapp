@@ -363,7 +363,7 @@ public class OrganisationService {
 
     public void addEncounterTypesJson(Organisation organisation, ZipOutputStream zos) throws IOException {
         List<EncounterType> encounterTypes = encounterTypeRepository.findAllByOrganisationId(organisation.getId());
-        List<EncounterTypeContract> contracts = encounterTypes.stream().map(EncounterTypeContract::fromEncounterType)
+        List<EntityTypeContract> contracts = encounterTypes.stream().map(EntityTypeContract::fromEncounterType)
                 .collect(Collectors.toList());
         addFileToZip(zos, "encounterTypes.json", contracts);
     }

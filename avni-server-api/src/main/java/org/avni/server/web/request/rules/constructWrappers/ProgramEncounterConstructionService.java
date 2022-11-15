@@ -5,7 +5,7 @@ import org.avni.server.dao.IndividualRepository;
 import org.avni.server.dao.ProgramEnrolmentRepository;
 import org.avni.server.domain.*;
 import org.avni.server.service.ObservationService;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.ObservationContract;
 import org.avni.server.web.request.ObservationModelContract;
 import org.avni.server.web.request.rules.RulesContractWrapper.EncounterContract;
@@ -109,10 +109,10 @@ public class ProgramEncounterConstructionService {
         }).collect(Collectors.toList());
     }
 
-    private EncounterTypeContract constructEncounterType(String encounterTypeUuid) {
+    private EntityTypeContract constructEncounterType(String encounterTypeUuid) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
-        EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-        return encounterTypeContract.fromEncounterType(encounterType);
+        EntityTypeContract entityTypeContract = new EntityTypeContract();
+        return entityTypeContract.fromEncounterType(encounterType);
     }
 
     private Set<ProgramEncounterContract> constructEncountersExcludingSelf(Set<ProgramEncounter> encounters, String selfEncounterUuid) {
@@ -124,11 +124,11 @@ public class ProgramEncounterConstructionService {
 
     public ProgramEncounterContract constructProgramEncounterContractWrapper(ProgramEncounter encounter) {
         ProgramEncounterContract programEncounterContract = new ProgramEncounterContract();
-        EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-        encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
+        EntityTypeContract entityTypeContract = new EntityTypeContract();
+        entityTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
         programEncounterContract.setUuid(encounter.getUuid());
         programEncounterContract.setName(encounter.getName());
-        programEncounterContract.setEncounterType(encounterTypeContract);
+        programEncounterContract.setEncounterType(entityTypeContract);
         programEncounterContract.setEncounterDateTime(encounter.getEncounterDateTime());
         programEncounterContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
         programEncounterContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
@@ -220,7 +220,7 @@ public class ProgramEncounterConstructionService {
             encounterContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
             encounterContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
             encounterContract.setVoided(encounter.isVoided());
-            encounterContract.setEncounterType(EncounterTypeContract.fromEncounterType(encounter.getEncounterType()));
+            encounterContract.setEncounterType(EntityTypeContract.fromEncounterType(encounter.getEncounterType()));
             return encounterContract;
         }).collect(Collectors.toList());
     }

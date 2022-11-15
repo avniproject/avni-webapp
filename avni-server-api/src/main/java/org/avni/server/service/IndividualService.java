@@ -149,13 +149,13 @@ public class IndividualService implements ScopeAwareService {
     public Set<EncounterContract> constructEncounters(Stream<Encounter> encounters) {
         return encounters.map(encounter -> {
             EncounterContract encounterContract = new EncounterContract();
-            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-            encounterTypeContract.setUuid(encounter.getEncounterType().getUuid());
-            encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
+            EntityTypeContract entityTypeContract = new EntityTypeContract();
+            entityTypeContract.setUuid(encounter.getEncounterType().getUuid());
+            entityTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
             encounterContract.setId(encounter.getId());
             encounterContract.setUuid(encounter.getUuid());
             encounterContract.setName(encounter.getName());
-            encounterContract.setEncounterType(encounterTypeContract);
+            encounterContract.setEncounterType(entityTypeContract);
             encounterContract.setEncounterDateTime(encounter.getEncounterDateTime());
             encounterContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
             encounterContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
@@ -169,12 +169,12 @@ public class IndividualService implements ScopeAwareService {
     public Set<ProgramEncountersContract> constructProgramEncounters(Stream<ProgramEncounter> programEncounters) {
         return programEncounters.map(programEncounter -> {
             ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
-            EncounterTypeContract encounterTypeContract =
-                    EncounterTypeContract.fromEncounterType(programEncounter.getEncounterType());
+            EntityTypeContract entityTypeContract =
+                    EntityTypeContract.fromEncounterType(programEncounter.getEncounterType());
             programEncountersContract.setUuid(programEncounter.getUuid());
             programEncountersContract.setId(programEncounter.getId());
             programEncountersContract.setName(programEncounter.getName());
-            programEncountersContract.setEncounterType(encounterTypeContract);
+            programEncountersContract.setEncounterType(entityTypeContract);
             programEncountersContract.setEncounterDateTime(programEncounter.getEncounterDateTime());
             programEncountersContract.setCancelDateTime(programEncounter.getCancelDateTime());
             programEncountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());

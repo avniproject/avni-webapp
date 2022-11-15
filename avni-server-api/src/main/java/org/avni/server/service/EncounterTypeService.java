@@ -7,7 +7,7 @@ import org.avni.server.dao.application.FormMappingRepository;
 import org.avni.server.domain.EncounterType;
 import org.avni.server.domain.OperationalEncounterType;
 import org.avni.server.domain.Organisation;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.OperationalEncounterTypeContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,17 +33,17 @@ public class EncounterTypeService implements NonScopeAwareService {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public void createEncounterType(EncounterTypeContract encounterTypeRequest) {
+    public void createEncounterType(EntityTypeContract encounterTypeRequest) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeRequest.getUuid());
         if (encounterType == null) {
             encounterType = new EncounterType();
             encounterType.setUuid(encounterTypeRequest.getUuid());
         }
         encounterType.setName(encounterTypeRequest.getName());
-        encounterType.setEncounterEligibilityCheckRule(encounterTypeRequest.getEncounterEligibilityCheckRule());
+        encounterType.setEncounterEligibilityCheckRule(encounterTypeRequest.getEntityEligibilityCheckRule());
         encounterType.setVoided(encounterTypeRequest.isVoided());
         encounterType.setActive(encounterTypeRequest.getActive());
-        encounterType.setEncounterEligibilityCheckDeclarativeRule(encounterTypeRequest.getEncounterEligibilityCheckDeclarativeRule());
+        encounterType.setEncounterEligibilityCheckDeclarativeRule(encounterTypeRequest.getEntityEligibilityCheckDeclarativeRule());
         encounterTypeRepository.save(encounterType);
     }
 

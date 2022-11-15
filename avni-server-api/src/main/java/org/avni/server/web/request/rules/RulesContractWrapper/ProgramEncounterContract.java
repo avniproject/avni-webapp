@@ -1,6 +1,6 @@
 package org.avni.server.web.request.rules.RulesContractWrapper;
 
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.ObservationModelContract;
 import org.joda.time.DateTime;
 import org.avni.server.web.request.rules.request.RuleRequestEntity;
@@ -19,7 +19,7 @@ public class ProgramEncounterContract implements RuleServerEntityContract {
     private DateTime earliestVisitDateTime;
     private DateTime maxVisitDateTime;
     private List<ObservationModelContract> cancelObservations = new ArrayList<>();
-    private EncounterTypeContract encounterType;
+    private EntityTypeContract encounterType;
     private DateTime encounterDateTime;
     private EntityApprovalStatusWrapper latestEntityApprovalStatus;
     private boolean voided;
@@ -95,11 +95,11 @@ public class ProgramEncounterContract implements RuleServerEntityContract {
         this.cancelObservations = cancelObservations;
     }
 
-    public EncounterTypeContract getEncounterType() {
+    public EntityTypeContract getEncounterType() {
         return encounterType;
     }
 
-    public void setEncounterType(EncounterTypeContract encounterType) {
+    public void setEncounterType(EntityTypeContract encounterType) {
         this.encounterType = encounterType;
     }
 

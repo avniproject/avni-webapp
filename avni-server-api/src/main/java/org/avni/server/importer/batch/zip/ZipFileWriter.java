@@ -248,9 +248,9 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                 }
                 break;
             case "encounterTypes.json":
-                EncounterTypeContract[] encounterTypeContracts = convertString(fileData, EncounterTypeContract[].class);
-                for (EncounterTypeContract encounterTypeContract : encounterTypeContracts) {
-                    encounterTypeService.createEncounterType(encounterTypeContract);
+                EntityTypeContract[] entityTypeContracts = convertString(fileData, EntityTypeContract[].class);
+                for (EntityTypeContract entityTypeContract : entityTypeContracts) {
+                    encounterTypeService.createEncounterType(entityTypeContract);
                 }
                 break;
             case "operationalEncounterTypes.json":

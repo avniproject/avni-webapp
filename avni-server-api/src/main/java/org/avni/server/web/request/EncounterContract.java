@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EncounterContract extends CHSRequest {
     String name;
-    EncounterTypeContract encounterType;
+    EntityTypeContract encounterType;
     DateTime cancelDateTime;
     DateTime earliestVisitDateTime;
     DateTime maxVisitDateTime;
@@ -75,11 +75,11 @@ public class EncounterContract extends CHSRequest {
         this.maxVisitDateTime = maxVisitDateTime;
     }
 
-    public EncounterTypeContract getEncounterType() {
+    public EntityTypeContract getEncounterType() {
         return encounterType;
     }
 
-    public void setEncounterType(EncounterTypeContract encounterType) {
+    public void setEncounterType(EntityTypeContract encounterType) {
         this.encounterType = encounterType;
     }
 

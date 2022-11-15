@@ -11,7 +11,7 @@ import org.avni.server.service.FormMappingParameterObject;
 import org.avni.server.service.FormMappingService;
 import org.avni.server.service.FormService;
 import org.avni.server.util.ReactAdminUtil;
-import org.avni.server.web.request.EncounterTypeContract;
+import org.avni.server.web.request.EntityTypeContract;
 import org.avni.server.web.request.webapp.EncounterTypeContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +53,8 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     @RequestMapping(value = "/encounterTypes", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    void save(@RequestBody List<EncounterTypeContract> encounterTypeRequests) {
-        for (EncounterTypeContract encounterTypeRequest : encounterTypeRequests) {
+    void save(@RequestBody List<EntityTypeContract> encounterTypeRequests) {
+        for (EntityTypeContract encounterTypeRequest : encounterTypeRequests) {
             encounterTypeService.createEncounterType(encounterTypeRequest);
         }
     }

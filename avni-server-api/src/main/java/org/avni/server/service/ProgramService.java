@@ -12,6 +12,8 @@ import org.avni.server.domain.Program;
 import org.avni.server.web.contract.ProgramContract;
 import org.avni.server.web.request.OperationalProgramContract;
 import org.avni.server.web.request.ProgramRequest;
+import org.avni.server.web.request.rules.response.EligibilityRuleEntity;
+import org.avni.server.web.request.rules.response.EligibilityRuleResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +31,14 @@ public class ProgramService implements NonScopeAwareService {
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
     private final FormMappingRepository formMappingRepository;
+    private final RuleService ruleService;
 
     @Autowired
-    public ProgramService(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, FormMappingRepository formMappingRepository) {
+    public ProgramService(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, FormMappingRepository formMappingRepository, RuleService ruleService) {
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.formMappingRepository = formMappingRepository;
+        this.ruleService = ruleService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -69,16 +73,29 @@ public class ProgramService implements NonScopeAwareService {
         List<Program> availablePrograms = formMappings.stream()
                 .map(formMapping -> formMapping.getProgram())
                 .collect(Collectors.toList());
+
         List<Program> activePrograms = individual.getActivePrograms();
 
         //If the subject is not enrolled in any program then return all available programs
         if (activePrograms.isEmpty()) return availablePrograms;
 
         //Remove programs that the subject is already enrolled in.
-        List<Program> eligiblePrograms = formMappings.stream()
+        List<Program> inactivePrograms = formMappings.stream()
                 .filter(formMapping -> !activePrograms.stream().anyMatch(program -> Objects.equals(formMapping.getProgramUuid(), program.getUuid())))
                 .map(formMapping -> formMapping.getProgram())
                 .collect(Collectors.toList());
+
+        EligibilityRuleResponseEntity eligibilityRuleResponseEntity = ruleService.executeProgramEligibilityCheckRule(individual, inactivePrograms);
+
+        List<EligibilityRuleEntity> eligibilityRuleEntities = eligibilityRuleResponseEntity.getEligibilityRuleEntities().stream()
+                .filter(EligibilityRuleEntity::isEligible)
+                .collect(Collectors.toList());
+
+        List<Program> eligiblePrograms = inactivePrograms.stream()
+                .filter(inactiveProgram -> eligibilityRuleEntities.stream()
+                        .anyMatch(eligibilityRuleEntity -> eligibilityRuleEntity.getTypeUUID().equals(inactiveProgram.getUuid())))
+                .collect(Collectors.toList());
+
         return eligiblePrograms;
     }
 
