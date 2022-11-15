@@ -1,35 +1,36 @@
-check-node-v:
-ifneq ($(shell node -v),$(shell cat .nvmrc))
-	@echo -e '\nPlease run `nvm use` in your terminal to change node version\n'
-	@exit 1
-endif
-	@node -v
+set-node-version:
+	. ${NVM_DIR}/nvm.sh && nvm use
 
 clean:
 	rm -rf node_modules
 
-deps:
+deps: set-node-version
 	yarn install
 
-start:
+start: set-node-version
+	rm .env.development.local
 	yarn start
 
-storybook: check-node-v
+start-with-staging:
+	cp env_templates/.env.staging.local.template .env.development.local
+	yarn start-with-staging
+
+storybook: set-node-version
 	yarn storybook
 
-test:
+test: set-node-version build-app
 	yarn test --watchAll
 
-build:
+build-app: set-node-version
 	yarn run build
 
-prettier-all: check-node-v
+prettier-all: set-node-version
 	yarn prettier-all
 
-cy-run: check-node-v
+cy-run: set-node-version
 	yarn cy:run
 
-cy-open: check-node-v
+cy-open: set-node-version
 	yarn cy:open
 
 port:= $(if $(port),$(port),8021)

@@ -2,7 +2,6 @@
   "name": "avni-webapp",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8021",
   "dependencies": {
     "@date-io/date-fns": "1.x",
     "@material-ui/core": "4.3.0",
@@ -76,7 +75,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts --max_old_space_size=2048 start",
+    "start": "BACKEND_URL=http://localhost:8021 react-scripts --max_old_space_size=2048 start",
+    "start-with-staging": "BACKEND_URL=https://staging.avniproject.org react-scripts --max_old_space_size=2048 start",
     "start:production:local": "env-cmd -f .env.production.local yarn start",
     "build": "react-scripts --max_old_space_size=3584 build",
     "build:development": "env-cmd -f .env.development yarn run build",
@@ -103,6 +103,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "http-proxy-middleware": "2.0.6",
     "@fortawesome/fontawesome-free": "^5.1.0",
     "@storybook/addon-actions": "^6.1.11",
     "@storybook/addon-essentials": "^6.1.11",
