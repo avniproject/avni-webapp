@@ -144,15 +144,6 @@ public class LocationController implements RestControllerResourceProcessor<Addre
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping(value = "/locations/web/getAll")
-    @PreAuthorize(value = "hasAnyAuthority('admin','user')")
-    @ResponseBody
-    public List<AddressLevelContractWeb> getAllLocations() {
-        return locationRepository.findAllNonVoided().stream()
-                .map(AddressLevelContractWeb::fromEntity)
-                .collect(Collectors.toList());
-    }
-
     @GetMapping(value = "/locations/search/typeId/{typeId}")
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @ResponseBody

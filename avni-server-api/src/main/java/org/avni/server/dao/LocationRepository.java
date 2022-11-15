@@ -216,15 +216,6 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             "from address_level al " +
             "left join address_level_type alt on alt.id = al.type_id " +
             "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
-            "where al.is_voided = false ",
-            nativeQuery = true)
-    List<LocationProjection> findAllNonVoided();
-
-    @Query(value = "select al.id, al.uuid, title, type_id as typeId, alt.name as typeString, al.parent_id as parentId, " +
-            "cast(lineage as text) as lineage, title_lineage as titleLineage, alt.level " +
-            "from address_level al " +
-            "left join address_level_type alt on alt.id = al.type_id " +
-            "left join title_lineage_locations_view tll on tll.lowestpoint_id = al.id " +
             "where al.is_voided = false " +
             "and al.uuid = :uuid ",
             nativeQuery = true)
