@@ -11,9 +11,12 @@ import org.jadira.usertype.spi.utils.lang.StringUtils;
 import java.net.URL;
 import java.util.*;
 
-import static java.lang.String.format;
+import static org.avni.server.web.api.CommonFieldNames.EXTERNAL_ID;
 
 public class SubjectResponse extends LinkedHashMap<String, Object> {
+
+    public static final String LOCATION_EXTERNAL_ID_DELIMITER = " ";
+
     public static SubjectResponse fromSubject(Individual subject, boolean includeSubjectType, ConceptRepository conceptRepository, ConceptService conceptService, S3Service s3Service) {
         SubjectResponse subjectResponse = new SubjectResponse();
         if (includeSubjectType) subjectResponse.put("Subject type", subject.getSubjectType().getName());
@@ -68,6 +71,7 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
 
     private static void putAddressLevel(Map<String, String> map, AddressLevel addressLevel) {
         map.put(addressLevel.getTypeString(), addressLevel.getTitle());
+        map.put(String.join(LOCATION_EXTERNAL_ID_DELIMITER, addressLevel.getTypeString(), EXTERNAL_ID), addressLevel.getLegacyId());
     }
 
     public static SubjectResponse fromSubject(Individual subject, boolean subjectTypeRequested, ConceptRepository conceptRepository, ConceptService conceptService, List<GroupSubject> groups, S3Service s3Service) {
