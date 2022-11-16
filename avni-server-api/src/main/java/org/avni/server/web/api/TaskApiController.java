@@ -17,10 +17,10 @@ import org.avni.server.domain.task.TaskStatus;
 import org.avni.server.domain.task.TaskType;
 import org.avni.server.domain.task.TaskTypeName;
 import org.avni.server.service.ConceptService;
+import org.avni.server.web.request.api.ApiTaskRequest;
 import org.avni.server.web.request.api.RequestUtils;
 import org.avni.server.web.response.ResponsePage;
 import org.avni.server.web.response.api.ApiTaskResponse;
-import org.avni.server.web.request.api.ApiTaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -102,6 +102,7 @@ public class TaskApiController {
 
     @RequestMapping(value = "/api/tasks", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
+    @Transactional(readOnly = true)
     public ResponsePage getSubjects(@RequestParam(value = "type") String type,
                                     @RequestParam(value = "isTerminalStatus") boolean isTerminalStatus,
                                     @RequestParam(value = "metadata") String metadataConcepts,
