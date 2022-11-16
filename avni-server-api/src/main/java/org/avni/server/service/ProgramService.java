@@ -67,36 +67,16 @@ public class ProgramService implements NonScopeAwareService {
     }
 
     public List<Program> getEligiblePrograms(Individual individual) {
-        //get all program uuids using form mappings and form type
         List<FormMapping> formMappings = formMappingRepository
                 .findBySubjectTypeAndFormFormTypeAndIsVoidedFalse(individual.getSubjectType(), FormType.ProgramEnrolment);
-        List<Program> availablePrograms = formMappings.stream()
-                .map(formMapping -> formMapping.getProgram())
-                .collect(Collectors.toList());
 
         List<Program> activePrograms = individual.getActivePrograms();
-
-        //If the subject is not enrolled in any program then return all available programs
-        if (activePrograms.isEmpty()) return availablePrograms;
-
-        //Remove programs that the subject is already enrolled in.
         List<Program> inactivePrograms = formMappings.stream()
                 .filter(formMapping -> !activePrograms.stream().anyMatch(program -> Objects.equals(formMapping.getProgramUuid(), program.getUuid())))
                 .map(formMapping -> formMapping.getProgram())
                 .collect(Collectors.toList());
 
-        EligibilityRuleResponseEntity eligibilityRuleResponseEntity = ruleService.executeProgramEligibilityCheckRule(individual, inactivePrograms);
-
-        List<EligibilityRuleEntity> eligibilityRuleEntities = eligibilityRuleResponseEntity.getEligibilityRuleEntities().stream()
-                .filter(EligibilityRuleEntity::isEligible)
-                .collect(Collectors.toList());
-
-        List<Program> eligiblePrograms = inactivePrograms.stream()
-                .filter(inactiveProgram -> eligibilityRuleEntities.stream()
-                        .anyMatch(eligibilityRuleEntity -> eligibilityRuleEntity.getTypeUUID().equals(inactiveProgram.getUuid())))
-                .collect(Collectors.toList());
-
-        return eligiblePrograms;
+        return getEligibleProgramsFromInactivePrograms(individual, inactivePrograms);
     }
 
     public void createOperationalProgram(OperationalProgramContract operationalProgramContract, Organisation organisation) {
@@ -139,5 +119,20 @@ public class ProgramService implements NonScopeAwareService {
 
     public Stream<Program> getAll() {
         return operationalProgramRepository.findAllByIsVoidedFalse().stream().map(OperationalProgram::getProgram);
+    }
+
+    private List<Program> getEligibleProgramsFromInactivePrograms(Individual individual, List<Program> inactivePrograms) {
+        EligibilityRuleResponseEntity eligibilityRuleResponseEntity = ruleService.executeProgramEligibilityCheckRule(individual, inactivePrograms);
+
+        List<EligibilityRuleEntity> eligibilityRuleEntities = eligibilityRuleResponseEntity.getEligibilityRuleEntities().stream()
+                .filter(EligibilityRuleEntity::isEligible)
+                .collect(Collectors.toList());
+
+        List<Program> eligiblePrograms = inactivePrograms.stream()
+                .filter(inactiveProgram -> eligibilityRuleEntities.stream()
+                        .anyMatch(eligibilityRuleEntity -> eligibilityRuleEntity.getTypeUUID().equals(inactiveProgram.getUuid())))
+                .collect(Collectors.toList());
+
+        return eligiblePrograms;
     }
 }
