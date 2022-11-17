@@ -35,4 +35,34 @@ public class ArrayUserType extends AbstractUserType implements UserType {
             st.setNull(index, sqlTypes()[0]);
         }
     }
+
+    @Override
+    public boolean equals(Object x, Object y) throws HibernateException {
+        if (x == null && y == null) {
+            return true;
+        }
+        if (x == null || y == null) {
+            return false;
+        }
+
+        if (x == y) {
+            return true;
+        }
+
+        if (!(x instanceof String[] || y instanceof String[])) {
+            return false;
+        }
+
+        String[] xArray = (String[]) x;
+        String[] yArray = (String[]) y;
+        if (xArray.length != yArray.length) {
+            return false;
+        }
+        for (int i = 0; i < xArray.length; i++) {
+            if (!xArray[i].equals(yArray[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
