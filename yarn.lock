@@ -5722,7 +5722,7 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.18:
+avni-health-modules@latest:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.18.tgz#18d2b6f5447158b50fabf75773071e66a81e10c0"
   integrity sha512-ub0E2bhbFXrLm1j8RhmX467ZWViSZ782gwoUYYW5dX4R6VHUxfLkV9VXJzV1qL5yI79sfHJw2ADSzUXoUsXlYQ==
@@ -15458,14 +15458,6 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.25.5:
-  version "1.25.5"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.25.5.tgz#257a8616be6f983f2095b5bb2ef91dd3230b1739"
-  integrity sha512-wn1DdkUPxG9XjT+WuwlQlD2uAPvQEjckallwXwzZNAJFkdplLDT+W7cwgFEKsA6W00G9uqCwv8e3BcTR+wHskg==
-  dependencies:
-    lodash "^4.17.11"
-    moment "^2.22.2"
-
 openchs-models@^0.2.25:
   version "0.2.86"
   resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
@@ -15473,6 +15465,11 @@ openchs-models@^0.2.25:
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
+
+openchs-models@latest:
+  version "1.27.9"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.27.9.tgz#4d874c9aff2d5f374607560a694dec46762636e5"
+  integrity sha512-qW4ikPnjwZCmPBslTCHrUVfkYbz3z36Bc0L4qbuPp7XIbb/wTaNZJZjKLxZFMBUwNK7v9JtiEjLh740V6JMOQA==
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
