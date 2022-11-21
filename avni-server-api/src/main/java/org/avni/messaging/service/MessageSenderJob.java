@@ -44,6 +44,7 @@ public class MessageSenderJob {
 
         for (OrganisationConfig enabledOrganisation : enabledOrganisations) {
             sendMessages(enabledOrganisation);
+            authService.authenticateByUserName("admin", null);
         }
         logger.info("Job ended");
     }
