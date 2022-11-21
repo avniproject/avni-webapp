@@ -13,7 +13,6 @@ import java.io.IOException;
 
 @Repository
 public class GlificContactRepository {
-
     private final String OPTIN_CONTACT_JSON;
     private final GlificRestClient glificRestClient;
     private final String GET_CONTACT_JSON;
@@ -36,7 +35,9 @@ public class GlificContactRepository {
     }
 
     private String createGlificContact(String phoneNumber, String fullName) {
-        String message = OPTIN_CONTACT_JSON.replace("${phoneNumber}", phoneNumber)
+        final int NO_OF_DIGITS_IN_INDIAN_MOBILE_NO = 10;
+        String phoneNoWithCountryCode = "+91" + phoneNumber.substring(phoneNumber.length() - NO_OF_DIGITS_IN_INDIAN_MOBILE_NO);
+        String message = OPTIN_CONTACT_JSON.replace("${phoneNumber}", phoneNoWithCountryCode)
                 .replace("${fullName}", fullName);
         GlificOptinContactResponse glificOptinContactResponse = glificRestClient.callAPI(message, new ParameterizedTypeReference<GlificResponse<GlificOptinContactResponse>>() {
         });
