@@ -65,6 +65,10 @@ public class MessagingService {
         return messageRuleRepository.findAll(pageable);
     }
 
+    public List<MessageRule> findAll() {
+        return messageRuleRepository.findAll();
+    }
+
     public void onEntitySave(Long entityId, Long entityTypeId, EntityType entityType, Long receiverId) {
         List<MessageRule> messageRules = messageRuleRepository.findAllByEntityTypeAndEntityTypeId(entityType, entityTypeId);
         MessageReceiver messageReceiver = messageReceiverService.saveReceiverIfRequired(ReceiverType.Subject, receiverId);

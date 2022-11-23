@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.AmazonS3URI;
 import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import org.apache.commons.io.IOUtils;
+import org.avni.messaging.contract.MessageRuleContract;
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.application.Form;
 import org.avni.server.application.FormMapping;
 import org.avni.server.dao.*;
@@ -86,6 +88,8 @@ public class OrganisationService {
     private final CardService cardService;
     private final DashboardService dashboardService;
     private final MenuItemService menuItemService;
+
+    private final MessagingService messagingService;
     private final CardRepository cardRepository;
     private final DashboardRepository dashboardRepository;
     private final DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository;
@@ -115,6 +119,7 @@ public class OrganisationService {
     private final DocumentationService documentationService;
     private final TaskTypeService taskTypeService;
     private final TaskStatusService taskStatusService;
+    private final EntityTypeRetrieverService entityTypeRetrieverService;
     private final Logger logger;
 
     @Autowired
@@ -153,7 +158,9 @@ public class OrganisationService {
                                VideoService videoService,
                                CardService cardService,
                                DashboardService dashboardService,
-                               MenuItemService menuItemService, CardRepository cardRepository,
+                               MenuItemService menuItemService,
+                               MessagingService messagingService,
+                               CardRepository cardRepository,
                                DashboardRepository dashboardRepository,
                                DashboardSectionCardMappingRepository dashboardSectionCardMappingRepository,
                                DashboardSectionRepository dashboardSectionRepository,
@@ -178,7 +185,8 @@ public class OrganisationService {
                                SubjectMigrationRepository subjectMigrationRepository,
                                DocumentationService documentationService,
                                TaskTypeService taskTypeService,
-                               TaskStatusService taskStatusService) {
+                               TaskStatusService taskStatusService,
+                               EntityTypeRetrieverService entityTypeRetrieverService) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -215,6 +223,7 @@ public class OrganisationService {
         this.cardService = cardService;
         this.dashboardService = dashboardService;
         this.menuItemService = menuItemService;
+        this.messagingService = messagingService;
         this.cardRepository = cardRepository;
         this.dashboardRepository = dashboardRepository;
         this.dashboardSectionCardMappingRepository = dashboardSectionCardMappingRepository;
@@ -242,6 +251,7 @@ public class OrganisationService {
         this.documentationService = documentationService;
         this.taskTypeService = taskTypeService;
         this.taskStatusService = taskStatusService;
+        this.entityTypeRetrieverService = entityTypeRetrieverService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -517,6 +527,9 @@ public class OrganisationService {
 
     public void addApplicationMenus(ZipOutputStream zos) throws IOException {
         addFileToZip(zos, "menuItem.json", menuItemService.findAll().stream().map(MenuItemContract::new).collect(Collectors.toList()));
+    }
+    public void addMessageRules(ZipOutputStream zos) throws IOException {
+        addFileToZip(zos, "messageRule.json", messagingService.findAll().stream().map(messageRule -> new MessageRuleContract(messageRule, entityTypeRetrieverService)).collect(Collectors.toList()));
     }
 
     private void addFileToZip(ZipOutputStream zos, String fileName, Object fileContent) throws IOException {

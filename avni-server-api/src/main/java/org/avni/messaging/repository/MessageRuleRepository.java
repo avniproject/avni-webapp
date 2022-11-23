@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface MessageRuleRepository extends CHSRepository<MessageRule> {
     Page<MessageRule> findAll(Pageable pageable);
-
+    List<MessageRule> findAll();
     List<MessageRule> findAllByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId);
     Page<MessageRule> findByEntityTypeAndEntityTypeId(EntityType entityType, Long entityTypeId, Pageable pageable);
 }

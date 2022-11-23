@@ -30,7 +30,7 @@ public class MessageRuleController {
         MessageRule messageRule = messageRuleContract.toModel(existingEntity);
 
         messageRule = messagingService.saveRule(messageRule);
-        return ResponseEntity.ok(new MessageRuleContract(messageRule));
+        return ResponseEntity.ok(new MessageRuleContract(messageRule, null));
     }
 
     /**
@@ -49,10 +49,10 @@ public class MessageRuleController {
     public Page<MessageRuleContract> find(@RequestParam(required = false) String entityType, @RequestParam (required = false) Long entityTypeId, Pageable pageable) {
         if (isAString(entityType) && entityTypeId != null) {
             EntityType entityTypeValue = EntityType.valueOf(entityType);
-            return messagingService.findByEntityTypeAndEntityTypeId(entityTypeValue, entityTypeId, pageable).map(MessageRuleContract::new);
+            return messagingService.findByEntityTypeAndEntityTypeId(entityTypeValue, entityTypeId, pageable).map(messageRule -> new MessageRuleContract(messageRule, null));
         }
 
-        return messagingService.findAll(pageable).map(MessageRuleContract::new);
+        return messagingService.findAll(pageable).map(messageRule -> new MessageRuleContract(messageRule, null));
     }
 
     @RequestMapping(value = "/web/messageRule/{id}", method = RequestMethod.GET)
@@ -60,7 +60,7 @@ public class MessageRuleController {
     @Transactional
     public ResponseEntity<MessageRuleContract> findOne(@PathVariable("id") Long id ) {
         MessageRule messageRule = messagingService.find(id);
-        return messageRule == null? ResponseEntity.notFound().build() : ResponseEntity.ok(new MessageRuleContract(messageRule));
+        return messageRule == null? ResponseEntity.notFound().build() : ResponseEntity.ok(new MessageRuleContract(messageRule, null));
     }
 
     private boolean isAString(String s) {

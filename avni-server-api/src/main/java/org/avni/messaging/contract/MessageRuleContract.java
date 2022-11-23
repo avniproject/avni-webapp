@@ -2,6 +2,8 @@ package org.avni.messaging.contract;
 
 import org.avni.messaging.domain.EntityType;
 import org.avni.messaging.domain.MessageRule;
+import org.avni.server.domain.CHSEntity;
+import org.avni.server.service.EntityTypeRetrieverService;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
@@ -17,6 +19,7 @@ public class MessageRuleContract {
     private String scheduleRule;
     private String entityType;
     private Long entityTypeId;
+    private String entityTypeUuid;
     private String messageTemplateId;
 
     private Boolean isVoided;
@@ -28,9 +31,13 @@ public class MessageRuleContract {
     public MessageRuleContract() {
     }
 
-    public MessageRuleContract(MessageRule messageRule) {
-        BeanUtils.copyProperties(messageRule, this);
+    public MessageRuleContract(MessageRule messageRule, EntityTypeRetrieverService entityTypeRetrieverService) {
+        if(entityTypeRetrieverService != null ) {
+            CHSEntity entity = entityTypeRetrieverService.getEntityType(messageRule.getEntityType().toString(), messageRule.getEntityTypeId());
+            setEntityTypeUuid(entity.getUuid());
+        }
 
+        BeanUtils.copyProperties(messageRule, this);
         setEntityType(messageRule.getEntityType().toString());
         setCreatedBy(new UserContract(messageRule.getCreatedBy()));
         setLastModifiedBy(new UserContract(messageRule.getLastModifiedBy()));
@@ -160,5 +167,13 @@ public class MessageRuleContract {
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public String getEntityTypeUuid() {
+        return entityTypeUuid;
+    }
+
+    public void setEntityTypeUuid(String entityTypeUuid) {
+        this.entityTypeUuid = entityTypeUuid;
     }
 }
