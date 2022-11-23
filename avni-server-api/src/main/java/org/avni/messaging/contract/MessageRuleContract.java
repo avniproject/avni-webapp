@@ -65,6 +65,23 @@ public class MessageRuleContract {
         return result;
     }
 
+    public static MessageRule toModel(MessageRuleContract messageRuleContract, MessageRule messageRule, EntityTypeRetrieverService entityTypeRetrieverService) {
+        if(messageRule == null) {
+            messageRule = new MessageRule();
+        }
+
+        messageRule.setName(messageRuleContract.getName());
+        messageRule.setUuid(messageRuleContract.getUuid());
+        CHSEntity entityType = entityTypeRetrieverService.getEntityType(messageRuleContract.getEntityType(), messageRuleContract.getEntityTypeUuid());
+        messageRule.setEntityTypeId(entityType.getId());
+        messageRule.setEntityType(EntityType.valueOf(messageRuleContract.getEntityType()));
+        messageRule.setScheduleRule(messageRuleContract.getScheduleRule());
+        messageRule.setMessageRule(messageRuleContract.getMessageRule());
+        messageRule.setMessageTemplateId(messageRuleContract.getMessageTemplateId());
+        messageRule.setVoided(messageRuleContract.getVoided());
+        return messageRule;
+    }
+
     public Long getId() {
         return id;
     }

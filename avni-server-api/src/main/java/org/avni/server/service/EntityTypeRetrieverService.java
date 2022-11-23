@@ -22,6 +22,10 @@ public class EntityTypeRetrieverService {
         return findRepository(entityType).findEntity(entityTypeId);
     }
 
+    public CHSEntity getEntityType(String entityType, String entityTypeUuid) {
+        return findRepository(entityType).findByUuid(entityTypeUuid);
+    }
+
     private CHSRepository findRepository(String entityType) {
         switch (entityType) {
             case "Subject":

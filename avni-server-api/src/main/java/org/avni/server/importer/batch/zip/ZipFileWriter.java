@@ -1,6 +1,9 @@
 package org.avni.server.importer.batch.zip;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.avni.messaging.contract.MessageRuleContract;
+import org.avni.messaging.domain.MessageRule;
+import org.avni.messaging.service.MessagingService;
 import org.avni.server.application.menu.MenuItem;
 import org.avni.server.builder.BuilderException;
 import org.avni.server.builder.FormBuilderException;
@@ -75,6 +78,8 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
     private TaskTypeService taskTypeService;
     private TaskStatusService taskStatusService;
     private MenuItemService menuItemService;
+    private EntityTypeRetrieverService entityTypeRetrieverService;
+    private MessagingService messagingService;
     @Value("#{jobParameters['userId']}")
     private Long userId;
     @Value("#{jobParameters['organisationUUID']}")
@@ -108,6 +113,7 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         add("taskType.json");
         add("taskStatus.json");
         add("menuItem.json");
+        add("messageRule.json");
     }};
 
 
@@ -135,7 +141,10 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                          DashboardService dashboardService, @Qualifier("BatchS3Service") S3Service s3Service,
                          DocumentationService documentationService,
                          TaskTypeService taskTypeService,
-                         TaskStatusService taskStatusService, MenuItemService menuItemService) {
+                         TaskStatusService taskStatusService,
+                         MenuItemService menuItemService,
+                         EntityTypeRetrieverService entityTypeRetrieverService,
+                         MessagingService messagingService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -162,6 +171,8 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
         this.taskTypeService = taskTypeService;
         this.taskStatusService = taskStatusService;
         this.menuItemService = menuItemService;
+        this.entityTypeRetrieverService = entityTypeRetrieverService;
+        this.messagingService = messagingService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -361,6 +372,13 @@ public class ZipFileWriter implements ItemWriter<BundleFile> {
                     menuItemService.save(MenuItemContract.toEntity(contract, menuItem));
                 }
                 break;
+            case "messageRule.json":
+                MessageRuleContract[] messageRuleContracts = convertString(fileData, MessageRuleContract[].class);
+                for (MessageRuleContract messageRuleContract : messageRuleContracts) {
+                    MessageRule messageRule = messagingService.find(messageRuleContract.getUuid());
+                    messageRule = MessageRuleContract.toModel(messageRuleContract, messageRule, entityTypeRetrieverService);
+                    messagingService.saveRule(messageRule);
+                }
         }
     }
 
