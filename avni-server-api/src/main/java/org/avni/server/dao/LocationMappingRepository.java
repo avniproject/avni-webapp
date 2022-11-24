@@ -16,10 +16,11 @@ import java.util.List;
 public interface LocationMappingRepository extends ReferenceDataRepository<ParentLocationMapping>, FindByLastModifiedDateTime<ParentLocationMapping>, OperatingIndividualScopeAwareRepository<ParentLocationMapping> {
 
     @Query(value = "select llm.*\n" +
-            "from location_location_mapping llm\n" +
-            "         left outer join address_level al on llm.parent_location_id = al.id\n" +
-            "         left outer join catchment_address_mapping cam on al.lineage ~ cast((cam.addresslevel_id || '.*') as lquery)\n" +
-            "         left outer join catchment c on cam.catchment_id = c.id\n" +
+            "from catchment c\n" +
+            "         inner join catchment_address_mapping cam on c.id = cam.catchment_id\n" +
+            "         inner join address_level al on cam.addresslevel_id = al.id\n" +
+            "         inner join address_level al1 on al.lineage @> al1.lineage and al.id <> al1.id\n" +
+            "         inner join location_location_mapping llm on al1.id = llm.location_id\n" +
             "where c.id = :catchmentId\n" +
             "  and llm.last_modified_date_time between :lastModifiedDateTime and :now\n" +
             "order by llm.last_modified_date_time asc, llm.id asc", nativeQuery = true)
@@ -31,12 +32,13 @@ public interface LocationMappingRepository extends ReferenceDataRepository<Paren
     );
 
     @Query(value = "select count(*)\n" +
-            "from location_location_mapping llm\n" +
-            "         left outer join address_level al on llm.parent_location_id = al.id\n" +
-            "         left outer join catchment_address_mapping cam on al.lineage ~ cast((cam.addresslevel_id || '.*') as lquery)\n" +
-            "         left outer join catchment c on cam.catchment_id = c.id\n" +
-            "where c.id = :catchmentId\n" +
-            "  and llm.last_modified_date_time > :lastModifiedDateTime\n", nativeQuery = true)
+            "from catchment c\n" +
+            "         inner join catchment_address_mapping cam on c.id = cam.catchment_id\n" +
+            "         inner join address_level al on cam.addresslevel_id = al.id\n" +
+            "         inner join address_level al1 on al.lineage @> al1.lineage and al.id <> al1.id\n" +
+            "         inner join location_location_mapping llm on al1.id = llm.location_id\n" +
+            "where c.id = :catchmentId \n" +
+            "  and llm.last_modified_date_time > :lastModifiedDateTime ;", nativeQuery = true)
     Long getChangedRowCount(long catchmentId, Date lastModifiedDateTime);
 
     @Override
