@@ -33,6 +33,7 @@ public class SubjectAssignmentSearchQueryBuilder extends BaseSubjectSearchQueryB
 
     public SubjectAssignmentSearchQueryBuilder withSubjectSearchFilter(SubjectSearchRequest request) {
         return this
+                .withIncludeVoidedFilter(false)
                 .withNameFilter(request.getName())
                 .withSubjectTypeFilter(request.getSubjectType())
                 .withAddressIdsFilter(request.getAddressIds())
