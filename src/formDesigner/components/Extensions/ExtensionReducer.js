@@ -4,7 +4,8 @@ export const extensionScopeTypes = Object.freeze({
   subjectDashboard: "Subject Dashboard",
   programEnrolment: "Program Enrolment",
   searchResults: "Search Results",
-  fieldAppHomeScreen: "Field App Home Screen"
+  fieldAppHomeScreen: "Field App Home Screen",
+  generic: "Generic"
 });
 
 export const ExtensionReducer = (extension, action) => {
@@ -59,13 +60,19 @@ export const ExtensionReducer = (extension, action) => {
         name: "Field App Home Screen",
         uuid: ""
       };
+      const genericOption = {
+        scopeType: extensionScopeTypes.generic,
+        name: "Generic",
+        uuid: ""
+      };
       return {
         ...extension,
         scopeOptions: [
           ...dashboardOptions,
           ...programOptions,
           searchResultOption,
-          fieldAppHomeScreenOption
+          fieldAppHomeScreenOption,
+          genericOption
         ]
       };
     default:
