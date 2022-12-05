@@ -4,6 +4,10 @@ set-node-version:
 clean:
 	rm -rf node_modules
 
+check-project-versions:
+	npm search openchs-models
+	npm search avni-health-modules
+
 deps: set-node-version
 	yarn install
 
