@@ -19,6 +19,10 @@ start-with-staging:
 	cp env_templates/.env.staging.local.template .env.development.local
 	yarn start-with-staging
 
+start-with-prod:
+	cp env_templates/.env.prod.local.template .env.development.local
+	yarn start-with-prod
+
 storybook: set-node-version
 	yarn storybook
 
