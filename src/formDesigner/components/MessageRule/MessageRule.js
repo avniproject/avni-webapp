@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import Select from "react-select";
 import { map } from "lodash";
+import RadioButtonsGroup from "../../../dataEntryApp/components/RadioButtonsGroup";
 
 const MessageRule = ({
   scheduleRule,
@@ -14,10 +15,13 @@ const MessageRule = ({
   name,
   template,
   templates,
+  receiverType,
   onChange,
   onDelete,
   readOnly = false
 }) => {
+  const receiverTypes = [{id: 'Subject', name: 'Subject'}, {id: 'User', name: 'User'}]
+
   return (
     <BorderBox>
       <Button
@@ -46,6 +50,15 @@ const MessageRule = ({
         isDisabled={readOnly}
         options={map(templates, template => ({ label: template.label, value: template }))}
         onChange={({ value }) => onChange({ messageTemplateId: value.id })}
+      />
+      <RadioButtonsGroup
+        label={'Receiver Type'}
+        items={receiverTypes}
+        value={receiverType}
+        onChange={(value)=> {
+          onChange({receiverType: value.id})
+         }
+        }
       />
       <AvniFormLabel label={"Schedule"} toolTipKey={"APP_DESIGNER_MESSAGE_SCHEDULE_RULE"} />
       <JSEditor

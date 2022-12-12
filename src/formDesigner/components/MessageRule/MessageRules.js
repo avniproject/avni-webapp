@@ -34,7 +34,7 @@ const MessageRules = ({
       <div>
         <FormLabel style={{ fontSize: "13px" }}>Message Rules</FormLabel>
       </div>
-      {rules.map(({ scheduleRule, messageRule, name, messageTemplateId, voided }, index) => {
+      {rules.map(({ scheduleRule, messageRule, name, messageTemplateId, receiverType, voided }, index) => {
         const template = find(templates, template => template.id === messageTemplateId);
         return voided === false ? (
           <MessageRule
@@ -45,6 +45,7 @@ const MessageRules = ({
             scheduleRule={scheduleRule}
             messageRule={messageRule}
             name={name}
+            receiverType={receiverType}
             onChange={updateRules(index)}
             onDelete={onDelete(index)}
           />

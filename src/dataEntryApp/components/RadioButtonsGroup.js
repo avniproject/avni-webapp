@@ -5,13 +5,18 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { useTranslation } from "react-i18next";
+import _ from 'lodash';
 
 export default function RadioButtonsGroup({ items, value, label, onChange }) {
   const { t } = useTranslation();
 
   const handleChange = event => {
     const selectedValue = parseInt(event.target.value);
-    const item = items.find(i => i.id === selectedValue);
+    let item = items.find(i => i.id === selectedValue);
+
+    if(_.isUndefined(item))
+      item = items.find(i => i.id === event.target.value);
+
     onChange(item);
   };
 
