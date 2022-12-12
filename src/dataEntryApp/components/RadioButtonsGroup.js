@@ -3,11 +3,11 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import { useTranslation } from "react-i18next";
 import _ from 'lodash';
+import {AvniFormLabel} from "../../common/components/AvniFormLabel";
 
-export default function RadioButtonsGroup({ items, value, label, onChange }) {
+export default function RadioButtonsGroup({ items, value, label, onChange, toolTipKey }) {
   const { t } = useTranslation();
 
   const handleChange = event => {
@@ -22,7 +22,7 @@ export default function RadioButtonsGroup({ items, value, label, onChange }) {
 
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend">{label}</FormLabel>
+      <AvniFormLabel label={label} toolTipKey={toolTipKey}/>
       <RadioGroup
         row
         aria-label="addressTypes"

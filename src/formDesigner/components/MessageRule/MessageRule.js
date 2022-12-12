@@ -55,10 +55,8 @@ const MessageRule = ({
         label={'Receiver Type'}
         items={receiverTypes}
         value={receiverType}
-        onChange={(value)=> {
-          onChange({receiverType: value.id})
-         }
-        }
+        onChange={(value)=> onChange({receiverType: value.id})}
+        toolTipKey={"APP_DESIGNER_SELECT_RECEIVER_TYPE"}
       />
       <AvniFormLabel label={"Schedule"} toolTipKey={"APP_DESIGNER_MESSAGE_SCHEDULE_RULE"} />
       <JSEditor
