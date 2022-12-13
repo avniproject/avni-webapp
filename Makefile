@@ -12,7 +12,7 @@ deps: set-node-version
 	yarn install
 
 start: set-node-version
-	rm .env.development.local
+	rm .env.development.local || true
 	yarn start
 
 start-with-staging:
