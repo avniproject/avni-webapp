@@ -193,6 +193,12 @@ public class RuleService implements NonScopeAwareService {
     public EligibilityRuleResponseEntity executeEligibilityRule(Individual individual, List<EncounterType> encounterTypes) {
         EligibilityRuleResponseEntity ruleResponseEntity = new EligibilityRuleResponseEntity();
         IndividualContract individualContract = ruleServiceEntityContractBuilder.toContract(individual);
+        individualContract.setEnrolments(individual
+                .getProgramEnrolments()
+                .stream()
+                .map(programEnrolment -> ruleServiceEntityContractBuilder.toContract(programEnrolment))
+                .collect(Collectors.toList())
+        );
         List<EntityTypeContract> entityTypeContracts = encounterTypes.stream().map(EntityTypeContract::fromEncounterType).collect(Collectors.toList());
         EntityEligibilityRuleRequest ruleRequest = new EntityEligibilityRuleRequest(individualContract, entityTypeContracts, RuleEntityType.EncounterType.name());
         ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounterEligibility", ruleRequest, null, EligibilityRuleResponseEntity.class, ruleResponseEntity);
