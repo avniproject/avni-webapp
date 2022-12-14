@@ -135,6 +135,7 @@ public class ProgramEnrolmentContract implements RuleServerEntityContract {
 
     public static ProgramEnrolmentContract fromEnrolment(ProgramEnrolment enrolment, ObservationService observationService, EntityApprovalStatusService entityApprovalStatusService) {
         ProgramEnrolmentContract contract = new ProgramEnrolmentContract();
+        contract.setOperationalProgramName(enrolment.getProgram().getOperationalProgramName());
         contract.setUuid(enrolment.getUuid());
         contract.setVoided(enrolment.isVoided());
         contract.setEnrolmentDateTime(enrolment.getEnrolmentDateTime());
