@@ -20,6 +20,7 @@ import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import ReportProblemIcon from "@material-ui/icons/ReportProblem";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -272,7 +273,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       : renderNormalView(observation);
   };
 
-  const rows = orderedObs.map((obs, index) => renderObservationValue(obs, index));
+  const rows = _.map(orderedObs, renderObservationValue);
 
   additionalRows &&
     additionalRows.forEach((row, index) => {
