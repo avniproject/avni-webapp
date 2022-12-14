@@ -15,17 +15,6 @@ make deps
 
 ## Setup
 
-#### Pre-requisites
-
-Install following on your machine
-
-1. NPM (v6.X.X)
-2. Node (v12.X.X)
-3. Python 2.7
-   Configure python2 as default using command "npm config set python python2"
-
-#### Target backend server
-
 There are two possible ways to setup Avni Webapp for developement:
 
 1. You can setup the webapp in a way that it directly connects to the hosted API server so you don't have to setup local postgres database and Java API server. This is an easy way to get started as you don't have to worry about having to install Java and API Server. Also this will consume less resources on your system as you are not running API server.
