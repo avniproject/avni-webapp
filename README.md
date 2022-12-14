@@ -22,19 +22,7 @@ There are two possible ways to setup Avni Webapp for developement:
 
 #### 1. Setup to connect to hosted API Server (Samanvay hosted staging server)
 
-1. Create a file named .env.development.local in root directory of avni-webapp
-2. Put the below content in this file:
-
-```
-REACT_APP_COGNITO_IN_DEV=true
-REACT_APP_AWS_REGION=ap-south-1
-REACT_APP_COGNITO_USER_POOL_ID=ap-south-1_hWEOvjZUH
-REACT_APP_COGNITO_APP_CLIENT_ID=7dbsrgg56mptr4ue1g65nv3s86
-```
-
-3. Set the value of "proxy" field in package.json to "https://staging.avniproject.org".
-4. Run `make start`
-5. It will start the app on http://http://localhost:6010/. It will ask you for login. If you dont' know the credentials ping us on #openchs channel on Gitter.
+make start-with-staging
 
 #### 2. Setup to connect to your local API Server
 
