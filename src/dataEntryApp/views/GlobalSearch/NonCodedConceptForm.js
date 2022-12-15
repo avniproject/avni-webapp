@@ -69,7 +69,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </Typography>
                     <KeyboardDatePicker
                       id="date-picker-dialog"
-                      placeholder="Form"
+                      placeholder="From"
                       format={dateFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
@@ -101,7 +101,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </Typography>
                     <KeyboardDateTimePicker
                       id="date-picker-dialog"
-                      placeholder="Form"
+                      placeholder="From"
                       format={dateTimeFormat}
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
@@ -133,7 +133,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </Typography>
                     <KeyboardTimePicker
                       id="date-picker-dialog"
-                      placeholder="Form"
+                      placeholder="From"
                       value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
@@ -165,7 +165,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     id={searchFilterForm.titleKey}
                     autoComplete="off"
                     type="number"
-                    placeholder="Form"
+                    placeholder="From"
                     style={{ width: "14%", marginRight: "1%" }}
                     onChange={event => {
                       event.persist();

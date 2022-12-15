@@ -65,7 +65,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                 <KeyboardDatePicker
                   id="date-picker-dialog"
                   format={dateFormat}
-                  placeholder="Form"
+                  placeholder="From"
                   value={selectedDate[`${searchFilterForm.type}`].minValue}
                   onChange={minDate =>
                     onDateChange(
