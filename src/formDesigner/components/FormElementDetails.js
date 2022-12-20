@@ -720,7 +720,7 @@ function FormElementDetails(props) {
         {props.formElementData.concept.dataType === "Time" &&
           showPicker("time", cssClasses, props, disableFormElement)}
 
-        {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
+        {["Text"].includes(props.formElementData.concept.dataType) && (
           <Grid item sm={12}>
             {props.formElementData.errorMessage &&
               props.formElementData.errorMessage.validFormat && (
