@@ -54,6 +54,15 @@ const DeclarativeRules = ({
       updateProps(declarativeRuleHolder);
       setSummaries(declarativeRuleHolder.generateRuleSummary());
       updateJsCode(declarativeRuleHolder);
+
+      // Adding new action
+      const declarativeRule = declarativeRuleHolder.getDeclarativeRuleAtIndex(0);
+      if (declarativeRule.actions.length > 0) {
+        dispatch({
+          type: "newAction",
+          payload: { declarativeRuleIndex: 0 }
+        });
+      }
     } else {
       setValidationError(errorMessage);
     }
