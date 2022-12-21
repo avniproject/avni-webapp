@@ -1,8 +1,9 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import MaterialTable from "material-table";
+import TablePagination from "@material-ui/core/TablePagination";
 import http from "common/utils/httpClient";
 import _ from "lodash";
-import { withRouter } from "react-router-dom";
+import { withRouter, useLocation } from "react-router-dom";
 import { FormTypeEntities } from "../common/constants";
 
 import Dialog from "@material-ui/core/Dialog";
@@ -17,7 +18,10 @@ import moment from "moment";
 const FormListing = ({ history }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
-
+  const [initialPage, setInitialPage] = useState(0);
+  const { search } = useLocation();
+  const query = React.useMemo(() => new URLSearchParams(search), [search]);
+  const tablePage = Number(query.get("page") || 0);
   const onCloseEvent = () => {
     setCloneFormIndicator(false);
   };
@@ -66,7 +70,7 @@ const FormListing = ({ history }) => {
     new Promise(resolve => {
       let apiUrl = "/web/forms?";
       apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
+      apiUrl += "&page=" + initialPage; // This is a hack, we need to come back to it when we update the libarary.
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
       if (!_.isEmpty(query.orderBy.field)) {
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
@@ -144,17 +148,37 @@ const FormListing = ({ history }) => {
     disabled: rowData.organisationId === 1
   });
 
+  useEffect(() => {
+    tableRef.current.onChangePage({}, tablePage);
+    setInitialPage(tablePage);
+  }, [tablePage]);
+
   return (
     <>
       <MaterialTable
         title=""
         components={{
-          Container: props => <Fragment>{props.children}</Fragment>
+          Container: props => <Fragment>{props.children}</Fragment>,
+          Pagination: paginationProps => {
+            const { ActionsComponent, onChangePage, ...tablePaginationProps } = paginationProps;
+            return (
+              <TablePagination
+                {...tablePaginationProps}
+                onChangePage={(event, page) => {
+                  history.push(`/appdesigner/forms?page=${page}`);
+                  setInitialPage(Number(page));
+                  onChangePage(event, page);
+                }}
+                ActionsComponent={subprops => <ActionsComponent {...subprops} />}
+              />
+            );
+          }
         }}
         tableRef={tableRef}
         columns={columns}
         data={fetchData}
         options={{
+          initialPage: initialPage,
           pageSize: 10,
           pageSizeOptions: [10, 15, 20],
           addRowPosition: "first",

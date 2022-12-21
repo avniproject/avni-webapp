@@ -1,13 +1,18 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
+import TablePagination from "@material-ui/core/TablePagination";
 import http from "common/utils/httpClient";
 import _ from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect, useLocation } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 
 const Concepts = ({ history }) => {
+  const [initialPage, setInitialPage] = useState(0);
+  const { search } = useLocation();
+  const query = React.useMemo(() => new URLSearchParams(search), [search]);
+  const tablePage = Number(query.get("page") || 0);
   const columns = [
     {
       title: "Name",
@@ -27,7 +32,7 @@ const Concepts = ({ history }) => {
     new Promise(resolve => {
       let apiUrl = "/web/concepts?";
       apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
+      apiUrl += "&page=" + initialPage; // This is a hack, we need to come back to it when we update the libarary.
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
@@ -70,6 +75,11 @@ const Concepts = ({ history }) => {
     setRedirect(true);
   };
 
+  useEffect(() => {
+    tableRef.current.onChangePage({}, tablePage);
+    setInitialPage(tablePage);
+  }, [tablePage]);
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -84,12 +94,31 @@ const Concepts = ({ history }) => {
             <MaterialTable
               title=""
               components={{
-                Container: props => <Fragment>{props.children}</Fragment>
+                Container: props => <Fragment>{props.children}</Fragment>,
+                Pagination: paginationProps => {
+                  const {
+                    ActionsComponent,
+                    onChangePage,
+                    ...tablePaginationProps
+                  } = paginationProps;
+                  return (
+                    <TablePagination
+                      {...tablePaginationProps}
+                      onChangePage={(event, page) => {
+                        history.push(`/appdesigner/forms?page=${page}`);
+                        setInitialPage(Number(page));
+                        onChangePage(event, page);
+                      }}
+                      ActionsComponent={subprops => <ActionsComponent {...subprops} />}
+                    />
+                  );
+                }
               }}
               tableRef={tableRef}
               columns={columns}
               data={fetchData}
               options={{
+                initialPage: initialPage,
                 pageSize: 10,
                 pageSizeOptions: [10, 15, 20],
                 addRowPosition: "first",
