@@ -1,6 +1,3 @@
-set-node-version:
-	. ${NVM_DIR}/nvm.sh && nvm use
-
 clean:
 	rm -rf node_modules
 
@@ -8,10 +5,10 @@ check-project-versions:
 	npm search openchs-models
 	npm search avni-health-modules
 
-deps: set-node-version
+deps:
 	yarn install
 
-start: set-node-version
+start:
 	rm .env.development.local || true
 	yarn start
 
@@ -23,22 +20,24 @@ start-with-prod:
 	cp env_templates/.env.prod.local.template .env.development.local
 	yarn start-with-prod
 
-storybook: set-node-version
+storybook:
 	yarn storybook
 
-test: set-node-version build-app
+test-only:
 	yarn test --watchAll
 
-build-app: set-node-version
+test: build-app test-only
+
+build-app:
 	yarn run build
 
-prettier-all: set-node-version
+prettier-all:
 	yarn prettier-all
 
-cy-run: set-node-version
+cy-run:
 	yarn cy:run
 
-cy-open: set-node-version
+cy-open:
 	yarn cy:open
 
 port:= $(if $(port),$(port),8021)

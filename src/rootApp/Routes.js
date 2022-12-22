@@ -20,6 +20,7 @@ import Assignment from "../assignment/Assignment";
 import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment";
 import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
 import NewExport from "../reports/export/NewExport";
+import Communication from "../news/Communication";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -152,7 +153,12 @@ const Routes = ({ user, organisation }) => (
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, News)}
     />
-    news
+    <RestrictedRoute
+      path="/communication"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, Communication)}
+    />
     <Route
       component={() => (
         <div>

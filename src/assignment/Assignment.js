@@ -30,12 +30,12 @@ const renderOptions = () => {
       <HomePageCard
         href={"/#/assignment/task"}
         name={"Task Assignment"}
-        customicon={"assignment_turned_in"}
+        customIcon={"assignment_turned_in"}
       />
       <HomePageCard
         href={"/#/assignment/subject"}
         name={"Subject Assignment"}
-        customicon={"assignment_turned_in"}
+        customIcon={"assignment_turned_in"}
       />
     </AppBarContainer>
   );

@@ -11,24 +11,24 @@ const Homepage = ({ user }) => {
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
-        <HomePageCard href={"/#/admin/user"} name={"Admin"} customicon={"supervisor_account"} />
-        <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customicon={"architecture"} />
-        <HomePageCard href={"/#/documentation"} name={"Documentation"} customicon={"article"} />
+        <HomePageCard href={"/#/admin/user"} name={"Admin"} customIcon={"supervisor_account"} />
+        <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customIcon={"architecture"} />
+        <HomePageCard href={"/#/documentation"} name={"Documentation"} customIcon={"article"} />
         <HomePageCard
           href={"/#/assignment"}
           name={"Assignment"}
-          customicon={"assignment_turned_in"}
+          customIcon={"assignment_turned_in"}
         />
-        <HomePageCard href={"/#/news"} name={"News Broadcasts"} customicon={"speaker"} />
-        <HomePageCard href={"/#/translations"} name={"Translations"} customicon={"translate"} />
-        <HomePageCard href={"/#/export"} name={"Reports"} customicon={"assessment"} />
-        <HomePageCard href={"/#/app"} name={"Data Entry App"} customicon={"keyboard"} />
-        <HomePageCard href={"/#/help"} name={"Support And Training"} customicon={"help"} />
+        <HomePageCard href={"/#/communication"} name={"Communication"} customIcon={"speaker"} />
+        <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
+        <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
+        <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
+        <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
         {isProdEnv && (
           <HomePageCard
             href={"/analytics/activities"}
             name={"Canned Reports"}
-            customicon={"assessment"}
+            customIcon={"assessment"}
           />
         )}
       </Grid>
