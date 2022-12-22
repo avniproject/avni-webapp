@@ -3,9 +3,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import AppBar from "../../common/components/AppBar";
-import { CreateComponent } from "../../common/components/CreateComponent";
 import MaterialTable from "material-table";
-import ApplicationMenuService from "../../adminApp/service/ApplicationMenuService";
 
 const columns = [
   {
