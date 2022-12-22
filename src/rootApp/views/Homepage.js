@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import httpClient from "../../common/utils/httpClient";
 import { isProdEnv } from "../../common/constants";
 import { HomePageCard } from "./HomePageCard";
+import SurroundSound from "@material-ui/icons/SurroundSound";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
@@ -19,7 +20,11 @@ const Homepage = ({ user }) => {
           name={"Assignment"}
           customIcon={"assignment_turned_in"}
         />
-        <HomePageCard href={"/#/communication"} name={"Communication"} customIcon={"speaker"} />
+        <HomePageCard
+          href={"/#/broadcast"}
+          name={"Broadcast"}
+          customIconComponent={<SurroundSound color="primary" style={{ fontSize: 100 }} />}
+        />
         <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
