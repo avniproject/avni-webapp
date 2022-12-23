@@ -2,36 +2,41 @@ import React, { Fragment } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
-import AppBar from "../../common/components/AppBar";
 import MaterialTable from "material-table";
+import GlificService from "../../adminApp/service/GlificService";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 const columns = [
   {
     title: "Name",
     defaultSort: "asc",
     sorting: false,
-    field: "name"
+    field: "label"
   },
   {
-    title: "Receiver Type",
+    title: "Description",
+    defaultSort: "asc",
     sorting: false,
-    field: "receiverType"
+    field: "description"
   },
   {
     title: "No of members",
     sorting: false,
-    field: "numberOfMembers"
+    field: "contactsCount"
   }
 ];
 
 const tableRef = React.createRef();
 
-const fetchData = query => new Promise(resolve => resolve([]));
+const fetchData = query => {
+  return new Promise(resolve =>
+    GlificService.getContactGroups(query.page, query.pageSize).then(data => resolve(data))
+  );
+};
 
 const WhatsAppHome = () => {
   return (
-    <React.Fragment>
-      <AppBar title={"Communication"} position={"sticky"} />
+    <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
@@ -68,7 +73,7 @@ const WhatsAppHome = () => {
           </div>
         </div>
       </Box>
-    </React.Fragment>
+    </ScreenWithAppBar>
   );
 };
 
