@@ -7,7 +7,6 @@ import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { withRouter } from "react-router-dom";
 import { withParams } from "../../common/components/utils";
-import { connect } from "react-redux";
 
 const columns = [
   {
