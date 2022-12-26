@@ -22,6 +22,7 @@ import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
 import NewExport from "../reports/export/NewExport";
 import Broadcast from "../news/Broadcast";
 import WhatsAppHome from "../news/whatsapp/WhatsAppHome";
+import WhatsAppContactGroup from "../news/whatsapp/WhatsAppContactGroup";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -161,10 +162,18 @@ const Routes = ({ user, organisation }) => (
       component={WithProps({ user, organisation }, Broadcast)}
     />
     <RestrictedRoute
+      exact
       path="/whatsApp"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, WhatsAppHome)}
+    />
+    <RestrictedRoute
+      exact
+      path="/whatsApp/contactGroup/:contactGroupId"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, WhatsAppContactGroup)}
     />
     <Route
       component={() => (

@@ -5,41 +5,36 @@ import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
 import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import { withRouter } from "react-router-dom";
+import { withParams } from "../../common/components/utils";
+import { connect } from "react-redux";
 
 const columns = [
   {
     title: "Name",
-    defaultSort: "asc",
     sorting: false,
-    field: "label"
+    field: "name"
   },
   {
-    title: "Description",
-    defaultSort: "asc",
+    title: "Masked phone",
     sorting: false,
-    field: "description"
-  },
-  {
-    title: "No of contacts",
-    sorting: false,
-    field: "contactsCount",
-    render: rowData => (
-      <a href={`#/whatsApp/contactGroup/${rowData["id"]}`}>{rowData["contactsCount"]}</a>
-    )
+    field: "maskedPhone"
   }
 ];
 
 const tableRef = React.createRef();
 
-const fetchData = query => {
+const fetchData = (query, contactGroupId) => {
   return new Promise(resolve =>
-    GlificService.getContactGroups(query.page, query.pageSize).then(data => resolve(data))
+    GlificService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(data =>
+      resolve(data)
+    )
   );
 };
 
-const WhatsAppHome = () => {
+const WhatsAppContactGroup = props => {
   return (
-    <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
+    <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
@@ -48,8 +43,8 @@ const WhatsAppHome = () => {
           onChange={() => {}}
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
-          <Tab label="Groups" value={1} />
-          <Tab label="Messages" value={2} />
+          <Tab label="Members" value={1} />
+          <Tab label="Messages Sent" value={2} />
         </Tabs>
 
         <div className="container">
@@ -61,7 +56,7 @@ const WhatsAppHome = () => {
               }}
               tableRef={tableRef}
               columns={columns}
-              data={fetchData}
+              data={query => fetchData(query, props.match.params["contactGroupId"])}
               options={{
                 addRowPosition: "first",
                 sorting: false,
@@ -80,4 +75,4 @@ const WhatsAppHome = () => {
   );
 };
 
-export default WhatsAppHome;
+export default withRouter(withParams(WhatsAppContactGroup));
