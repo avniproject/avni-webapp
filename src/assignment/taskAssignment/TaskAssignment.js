@@ -11,7 +11,7 @@ import {
 import MaterialTable from "material-table";
 import { getTableColumns } from "./TableColumns";
 import { fetchTasks } from "./FetchTasks";
-import { includes, isEmpty, mapValues } from "lodash";
+import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid, makeStyles } from "@material-ui/core";
 import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
@@ -19,7 +19,7 @@ import { AssignmentAction } from "../components/AssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
 import Paper from "@material-ui/core/Paper";
-import { refreshTable } from "../util/util";
+import { labelValue, refreshTable } from "../util/util";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,10 +33,19 @@ const tableRef = React.createRef();
 const TaskAssignment = ({ history, ...props }) => {
   const classes = useStyles();
   const [state, dispatch] = React.useReducer(TaskAssignmentReducer, initialState);
-  const { filterCriteria, taskMetadata, displayAction, assignmentCriteria } = state;
+  const {
+    filterCriteria,
+    taskMetadata,
+    displayAction,
+    assignmentCriteria,
+    applyableTaskStatuses
+  } = state;
   const { taskTypeOptions, taskStatusOptions, userOptions } = getMetadataOptions(
     taskMetadata,
     filterCriteria
+  );
+  const applyableTaskStatusesOptions = map(applyableTaskStatuses, ({ name, id }) =>
+    labelValue(name, id)
   );
 
   useEffect(() => {
@@ -112,7 +121,7 @@ const TaskAssignment = ({ history, ...props }) => {
           openAction={displayAction}
           dispatch={dispatch}
           onDone={onActionDone}
-          taskStatusOptions={taskStatusOptions}
+          taskStatusOptions={applyableTaskStatusesOptions}
           userOptions={userOptions}
           assignmentCriteria={assignmentCriteria}
         />

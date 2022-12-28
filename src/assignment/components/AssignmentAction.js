@@ -15,22 +15,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const AssignmentAction = ({
-  openAction,
-  onDone,
+const SelectAction = function({
   dispatch,
-  userOptions,
-  assignmentCriteria,
-  taskStatusOptions
-}) => {
-  const classes = useStyles();
-  const onClose = () => dispatch({ type: "hideAction" });
+  label,
+  options,
+  assignmentKeyName,
+  isMulti,
+  assignmentCriteria
+}) {
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
-  const selectAction = (label, value, options, assignmentKeyName, isMulti = false) => (
+  return (
     <Grid item spacing={3} alignItems={"center"} xs={12}>
       <Typography variant="body1">{label}</Typography>
       <Select
+        isDisabled={options.length === 0}
         isClearable
         isSearchable
         isMulti={isMulti}
@@ -41,6 +40,18 @@ export const AssignmentAction = ({
       />
     </Grid>
   );
+};
+
+export const AssignmentAction = ({
+  openAction,
+  onDone,
+  dispatch,
+  userOptions,
+  assignmentCriteria,
+  taskStatusOptions
+}) => {
+  const classes = useStyles();
+  const onClose = () => dispatch({ type: "hideAction" });
 
   return (
     <Modal disableBackdropClick open={openAction} onClose={onClose}>
@@ -52,11 +63,25 @@ export const AssignmentAction = ({
         style={{ top: "25%", left: "30%" }}
       >
         <Typography variant={"h6"}>{"Bulk Action"}</Typography>
-        {selectAction("Set user to", null, userOptions, "assignToUserIds", true)}
-        {selectAction("Set status to", null, taskStatusOptions, "statusId")}
+        <SelectAction
+          dispatch={dispatch}
+          label="Set user to"
+          assignmentKeyName="assignToUserIds"
+          isMulti={true}
+          options={userOptions}
+          assignmentCriteria={assignmentCriteria}
+        />
+        <SelectAction
+          options={taskStatusOptions}
+          isMulti={false}
+          dispatch={dispatch}
+          label="Set status to"
+          assignmentKeyName="statusId"
+          assignmentCriteria={assignmentCriteria}
+        />
         <Grid item container spacing={3}>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={onClose}>
+            <Button variant="outlined" color="secondary" onClick={onClose}>
               {"Cancel"}
             </Button>
           </Grid>
