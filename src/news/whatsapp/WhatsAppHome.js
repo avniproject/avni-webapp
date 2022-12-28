@@ -5,6 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
 import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import Button from "@material-ui/core/Button";
 
 const columns = [
   {
@@ -53,27 +54,38 @@ const WhatsAppHome = () => {
         </Tabs>
 
         <div className="container">
-          <div>
-            <MaterialTable
-              title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
-              columns={columns}
-              data={fetchData}
-              options={{
-                addRowPosition: "first",
-                sorting: false,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: "#fff"
-                })
-              }}
-              actions={[]}
-            />
-          </div>
+          <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
+            <Button
+              color="primary"
+              variant="outlined"
+              style={{ marginLeft: 10 }}
+              onClick={event => {}}
+            >
+              Add Subject
+            </Button>
+            <Button color="primary" variant="outlined" onClick={event => {}}>
+              Add User
+            </Button>
+          </Box>
+          <MaterialTable
+            title=""
+            components={{
+              Container: props => <Fragment>{props.children}</Fragment>
+            }}
+            tableRef={tableRef}
+            columns={columns}
+            data={fetchData}
+            options={{
+              addRowPosition: "first",
+              sorting: false,
+              debounceInterval: 500,
+              search: false,
+              rowStyle: rowData => ({
+                backgroundColor: "#fff"
+              })
+            }}
+            actions={[]}
+          />
         </div>
       </Box>
     </ScreenWithAppBar>
