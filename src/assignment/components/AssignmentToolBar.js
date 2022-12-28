@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { isEmpty, map, size } from "lodash";
+import { isEmpty, map, size, uniq } from "lodash";
 import { makeStyles, Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
@@ -31,9 +31,13 @@ export const AssignmentToolBar = ({ assignmentCriteria, dispatch, ...props }) =>
   }, [props]);
 
   const selectedIds = map(selectedRows, "id");
+  const selectedTaskTypeNames = uniq(map(selectedRows, "type"));
 
   const onActionPress = selectedIds => {
-    dispatch({ type: "displayAction", payload: { display: true, selectedIds } });
+    dispatch({
+      type: "displayAction",
+      payload: { display: true, selectedIds, selectedTaskTypeNames }
+    });
   };
 
   const on1000Selected = () =>

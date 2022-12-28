@@ -1,4 +1,4 @@
-import { filter, flatMap, get, isEmpty, map, mapValues } from "lodash";
+import { filter, flatMap, get, isEmpty, map, mapValues, find } from "lodash";
 import { labelValue } from "../util/util";
 
 const initialAssignmentCriteria = {
@@ -7,6 +7,18 @@ const initialAssignmentCriteria = {
   statusId: null,
   allSelected: false
 };
+
+class TaskMetadata {
+  taskStatuses;
+  taskTypes;
+
+  static getTaskStatusesMatching(taskMetadata, name) {
+    return filter(taskMetadata.taskStatuses, ts => {
+      const taskType = find(taskMetadata.taskTypes, tt => ts["taskTypeId"] === tt["id"]);
+      return taskType["name"] === name;
+    });
+  }
+}
 
 export const initialState = {
   taskMetadata: {},
@@ -20,7 +32,8 @@ export const initialState = {
   },
   displayAction: false,
   assignmentCriteria: initialAssignmentCriteria,
-  saving: false
+  saving: false,
+  applyableTaskStatuses: []
 };
 
 const clone = state => {
@@ -30,6 +43,7 @@ const clone = state => {
   newState.displayAction = state.displayAction;
   newState.assignmentCriteria = { ...state.assignmentCriteria };
   newState.saving = state.saving;
+  newState.applyableTaskStatuses = [...state.applyableTaskStatuses];
   return newState;
 };
 
@@ -52,9 +66,13 @@ export const TaskAssignmentReducer = (state, action) => {
       return newState;
     }
     case "displayAction": {
-      const { selectedIds, display } = payload;
+      const { selectedIds, display, selectedTaskTypeNames } = payload;
       newState.displayAction = display;
       newState.assignmentCriteria["taskIds"] = selectedIds;
+      newState.applyableTaskStatuses =
+        selectedTaskTypeNames.length === 1
+          ? TaskMetadata.getTaskStatusesMatching(newState.taskMetadata, selectedTaskTypeNames[0])
+          : [];
       return newState;
     }
     case "hideAction": {
