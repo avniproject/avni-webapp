@@ -254,6 +254,101 @@ const searchResult = function(
   }
 };
 
+//concept (not idea what is the meaning Api here)
+const getSelectedConceptApi = function(selectedConcepts) {
+  return selectedConcepts.filter(selectedConcept => {
+    if (selectedConcept.conceptDataType === null) {
+    } else {
+      if (["Date", "DateTime", "Time"].includes(selectedConcept.conceptDataType)) {
+        if (selectedConcept.widget === "Range") {
+          return selectedConcept.minValue && selectedConcept.maxValue;
+        } else {
+          return selectedConcept.minValue;
+        }
+      } else if (selectedConcept.conceptDataType === "Coded" && selectedConcept.values.length > 0) {
+        return selectedConcept.values;
+      } else if (selectedConcept.conceptDataType === "Text") {
+        return selectedConcept.value;
+      } else if (selectedConcept.conceptDataType === "Numeric") {
+        if (selectedConcept.widget === "Range") {
+          return selectedConcept.minValue && selectedConcept.maxValue;
+        } else {
+          return selectedConcept.minValue;
+        }
+      }
+    }
+    return null;
+  });
+};
+
+const getConceptRequests = function(selectedConcepts) {
+  return getSelectedConceptApi(selectedConcepts).map(conceptRequest => {
+    if (["Date", "DateTime", "Time"].includes(conceptRequest.conceptDataType)) {
+      return {
+        uuid: conceptRequest.conceptUUID,
+        minValue:
+          conceptRequest.minValue !== null
+            ? moment(conceptRequest.minValue).format("YYYY-MM-DD")
+            : null,
+        maxValue:
+          conceptRequest.maxValue !== null
+            ? moment(conceptRequest.maxValue).format("YYYY-MM-DD")
+            : null,
+        searchScope: conceptRequest.scope,
+        dataType: conceptRequest.conceptDataType,
+        widget: conceptRequest.widget
+      };
+    } else if (conceptRequest.conceptDataType === "Coded") {
+      return {
+        uuid: conceptRequest.conceptUUID,
+        searchScope: conceptRequest.scope,
+        dataType: conceptRequest.conceptDataType,
+        widget: conceptRequest.widget,
+        values: conceptRequest.values
+      };
+    } else if (conceptRequest.conceptDataType === "Text") {
+      return {
+        uuid: conceptRequest.conceptUUID,
+        searchScope: conceptRequest.scope,
+        dataType: conceptRequest.conceptDataType,
+        widget: conceptRequest.widget,
+        value: conceptRequest.value
+      };
+    } else if (conceptRequest.conceptDataType === "Numeric") {
+      return {
+        uuid: conceptRequest.conceptUUID,
+        minValue: conceptRequest.minValue,
+        maxValue: conceptRequest.maxValue,
+        searchScope: conceptRequest.scope,
+        dataType: conceptRequest.conceptDataType,
+        widget: conceptRequest.widget
+      };
+    } else {
+      return null;
+    }
+  });
+};
+
+const getInitialConceptList = function(selectedSearchFilter) {
+  const conceptList = selectedSearchFilter.filter(
+    searchElement => searchElement.type === "Concept"
+  );
+
+  return conceptList
+    .filter(concept => concept.conceptDataType !== null)
+    .map(concept => {
+      const defaultState = {
+        Date: { ...concept, minValue: null, maxValue: null },
+        DateTime: { ...concept, minValue: null, maxValue: null },
+        Time: { ...concept, minValue: null, maxValue: null },
+        Numeric: { ...concept, minValue: null, maxValue: null },
+        Coded: { ...concept, values: [] },
+        Text: { ...concept, value: "" }
+      };
+      return defaultState[concept.conceptDataType];
+    });
+};
+
 export const SearchForm = ({
   operationalModules,
   genders,
@@ -356,23 +451,7 @@ export const SearchForm = ({
     });
   };
 
-  const conceptList = selectedSearchFilter.filter(
-    searchElement => searchElement.type === "Concept"
-  );
-
-  const initialConceptList = conceptList
-    .filter(concept => concept.conceptDataType !== null)
-    .map(concept => {
-      const defaultState = {
-        Date: { ...concept, minValue: null, maxValue: null },
-        DateTime: { ...concept, minValue: null, maxValue: null },
-        Time: { ...concept, minValue: null, maxValue: null },
-        Numeric: { ...concept, minValue: null, maxValue: null },
-        Coded: { ...concept, values: [] },
-        Text: { ...concept, value: "" }
-      };
-      return defaultState[concept.conceptDataType];
-    });
+  const initialConceptList = getInitialConceptList(selectedSearchFilter);
 
   const allConceptRelatedFilters = _.map(initialConceptList, item =>
     _.merge(item, _.find(concept, { uuid: item.conceptUUID }))
@@ -385,76 +464,7 @@ export const SearchForm = ({
   const includeVoidedChange = event => {
     setIncludeVoided(event.target.checked);
   };
-  //concept
-  const selectedConceptApi = selectedConcepts.filter(selectedConcept => {
-    if (selectedConcept.conceptDataType === null) {
-    } else {
-      if (["Date", "DateTime", "Time"].includes(selectedConcept.conceptDataType)) {
-        if (selectedConcept.widget === "Range") {
-          return selectedConcept.minValue && selectedConcept.maxValue;
-        } else {
-          return selectedConcept.minValue;
-        }
-      } else if (selectedConcept.conceptDataType === "Coded" && selectedConcept.values.length > 0) {
-        return selectedConcept.values;
-      } else if (selectedConcept.conceptDataType === "Text") {
-        return selectedConcept.value;
-      } else if (selectedConcept.conceptDataType === "Numeric") {
-        if (selectedConcept.widget === "Range") {
-          return selectedConcept.minValue && selectedConcept.maxValue;
-        } else {
-          return selectedConcept.minValue;
-        }
-      }
-    }
-    return null;
-  });
-
-  const conceptRequests = selectedConceptApi.map(conceptRequest => {
-    if (["Date", "DateTime", "Time"].includes(conceptRequest.conceptDataType)) {
-      return {
-        uuid: conceptRequest.conceptUUID,
-        minValue:
-          conceptRequest.minValue !== null
-            ? moment(conceptRequest.minValue).format("YYYY-MM-DD")
-            : null,
-        maxValue:
-          conceptRequest.maxValue !== null
-            ? moment(conceptRequest.maxValue).format("YYYY-MM-DD")
-            : null,
-        searchScope: conceptRequest.scope,
-        dataType: conceptRequest.conceptDataType,
-        widget: conceptRequest.widget
-      };
-    } else if (conceptRequest.conceptDataType === "Coded") {
-      return {
-        uuid: conceptRequest.conceptUUID,
-        searchScope: conceptRequest.scope,
-        dataType: conceptRequest.conceptDataType,
-        widget: conceptRequest.widget,
-        values: conceptRequest.values
-      };
-    } else if (conceptRequest.conceptDataType === "Text") {
-      return {
-        uuid: conceptRequest.conceptUUID,
-        searchScope: conceptRequest.scope,
-        dataType: conceptRequest.conceptDataType,
-        widget: conceptRequest.widget,
-        value: conceptRequest.value
-      };
-    } else if (conceptRequest.conceptDataType === "Numeric") {
-      return {
-        uuid: conceptRequest.conceptUUID,
-        minValue: conceptRequest.minValue,
-        maxValue: conceptRequest.maxValue,
-        searchScope: conceptRequest.scope,
-        dataType: conceptRequest.conceptDataType,
-        widget: conceptRequest.widget
-      };
-    } else {
-      return null;
-    }
-  });
+  const conceptRequests = getConceptRequests(selectedConcepts);
 
   const resetFilters = () => {
     setEnterValue(initialStates.nameAgeSearchAll);
