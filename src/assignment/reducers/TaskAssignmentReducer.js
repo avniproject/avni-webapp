@@ -1,4 +1,4 @@
-import { filter, flatMap, get, isEmpty, map, mapValues, find } from "lodash";
+import { filter, flatMap, get, isEmpty, map, mapValues, find, isNil } from "lodash";
 import { labelValue } from "../util/util";
 
 const initialAssignmentCriteria = {
@@ -100,7 +100,8 @@ export const getMetadataOptions = (taskMetadata, filterCriteria) => {
   const userOptions = map(taskMetadata.users, ({ name, id }) => labelValue(name, id));
   const applicableTaskStatuses = filter(
     taskMetadata.taskStatuses,
-    ({ taskTypeId }) => taskTypeId === get(filterCriteria.taskType, "value")
+    ({ taskTypeId }) =>
+      taskTypeId === get(filterCriteria.taskType, "value") || isNil(filterCriteria.taskType)
   );
   const taskStatusOptions = map(applicableTaskStatuses, ({ name, id }) => labelValue(name, id));
   return { taskTypeOptions, userOptions, taskStatusOptions };
