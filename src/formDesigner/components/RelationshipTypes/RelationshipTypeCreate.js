@@ -29,7 +29,6 @@ function RelationshipTypeCreate() {
       .get("/web/subjectType")
       .then(response => {
         response.data._embedded.subjectType.forEach(subjectType => {
-          console.log("subjectType =>>", subjectType);
           if (subjectType.type === "Person") {
             flag = true;
           }

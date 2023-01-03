@@ -195,8 +195,6 @@ const ProfileDetails = ({
     </DialogContent>
   );
 
-  console.log("selectedProgram", selectedProgram);
-  console.log("programs", programs);
   return (
     <div className={classes.tableView}>
       <CommentDrawer open={openComment} setOpen={setOpenComment} subjectUUID={subjectUuid} />

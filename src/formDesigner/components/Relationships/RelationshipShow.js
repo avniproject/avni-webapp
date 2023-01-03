@@ -21,7 +21,6 @@ const RelationshipShow = props => {
     http
       .get("/web/relation/" + props.match.params.id)
       .then(response => {
-        console.log(response);
         setRelationship(response.data);
         const gender = response.data.genders.map(l => l.name);
         setRelationshipGenders(gender);
