@@ -6,15 +6,18 @@ import MaterialTable from "material-table";
 import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { withRouter } from "react-router-dom";
-import { withParams } from "../../common/components/utils";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import { Breadcrumbs } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { SearchForm } from "../../dataEntryApp/views/GlobalSearch/SearchFilterForm";
-import { getGenders, getOperationalModules } from "../../dataEntryApp/reducers/metadataReducer";
-import { getOrgConfigInfo } from "../../i18nTranslations/TranslationReducers";
+import {
+  getGenders,
+  getOperationalModules,
+  getOrganisationConfig
+} from "../reducers/metadataReducer";
 import { useDispatch, connect } from "react-redux";
+import Loading from "../../dataEntryApp/components/Loading";
 
 const columns = [
   {
@@ -42,13 +45,16 @@ const fetchData = (query, contactGroupId, setGroupName) => {
 
 const WhatsAppContactGroup = ({ match, operationalModules, genders, organisationConfigs }) => {
   const [groupName, setGroupName] = React.useState("");
+  const [addingSubjects, setAddingSubject] = React.useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getOperationalModules());
-    dispatch(getOrgConfigInfo());
+    dispatch(getOrganisationConfig());
     dispatch(getGenders());
   }, []);
+
+  if (!(genders && operationalModules && organisationConfigs)) return <Loading />;
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
@@ -60,13 +66,15 @@ const WhatsAppContactGroup = ({ match, operationalModules, genders, organisation
           {groupName}
         </Typography>
       </Breadcrumbs>
-      <SearchForm
-        operationalModules={operationalModules}
-        genders={genders}
-        organisationConfigs={organisationConfigs}
-        searchRequest={{}}
-        onSearch={filterRequest => {}}
-      />
+      {addingSubjects && (
+        <SearchForm
+          operationalModules={operationalModules}
+          genders={genders}
+          organisationConfigs={organisationConfigs}
+          searchRequest={{}}
+          onSearch={filterRequest => {}}
+        />
+      )}
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
@@ -85,7 +93,7 @@ const WhatsAppContactGroup = ({ match, operationalModules, genders, organisation
               color="primary"
               variant="outlined"
               style={{ marginLeft: 10 }}
-              onClick={event => {}}
+              onClick={event => setAddingSubject(true)}
             >
               Add Subject
             </Button>
@@ -119,8 +127,9 @@ const WhatsAppContactGroup = ({ match, operationalModules, genders, organisation
 };
 
 const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  orgConfig: state.translationsReducer.orgConfig
+  operationalModules: state.broadcast.operationalModules,
+  organisationConfigs: state.broadcast.organisationConfigs,
+  genders: state.broadcast.genders
 });
 
-export default withRouter(withParams(connect(mapStateToProps)(WhatsAppContactGroup)));
+export default withRouter(connect(mapStateToProps)(WhatsAppContactGroup));

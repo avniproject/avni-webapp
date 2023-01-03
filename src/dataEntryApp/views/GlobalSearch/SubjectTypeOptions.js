@@ -53,7 +53,7 @@ const SubjectTypeOptions = ({
                   >
                     <Grid container direction={"row"} spacing={1} alignItems={"center"}>
                       <Grid item>
-                        <SubjectTypeIcon size={25} subjectTypeName={subjectType.name} />
+                        <SubjectTypeIcon size={25} subjectType={subjectType} />
                       </Grid>
                       <Grid item>{subjectType.name}</Grid>
                     </Grid>

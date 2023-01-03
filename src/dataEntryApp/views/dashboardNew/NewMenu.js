@@ -50,7 +50,7 @@ function NewMenu({ operationalModules, handleClose }) {
               >
                 <ListItem button onClick={handleClose}>
                   <ListItemIcon>
-                    <SubjectTypeIcon subjectTypeName={element.name} size={25} />
+                    <SubjectTypeIcon subjectType={element} size={25} />
                   </ListItemIcon>
                   <ListItemText primary={t(element.name)} />
                   <ChevronRightIcon />

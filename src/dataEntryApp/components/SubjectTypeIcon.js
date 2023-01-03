@@ -1,11 +1,8 @@
 import React from "react";
 import { isEmpty, toLower } from "lodash";
-import { useSelector } from "react-redux";
-import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
 import http from "../../common/utils/httpClient";
 
-const SubjectTypeIcon = ({ subjectTypeName, size, style }) => {
-  const subjectType = useSelector(selectEnrolSubjectTypeFromName(subjectTypeName));
+const SubjectTypeIcon = ({ subjectType, size, style }) => {
   const label = subjectType.name;
   const isIconSetup = !isEmpty(subjectType.iconFileS3Key);
   const [signedURL, setSignedURL] = React.useState();
@@ -17,7 +14,7 @@ const SubjectTypeIcon = ({ subjectTypeName, size, style }) => {
         .then(res => res.data)
         .then(res => setSignedURL(res));
     }
-  }, [subjectTypeName]);
+  }, [subjectType.name]);
 
   const renderDefaultIcon = () => {
     const defaultIconFileName = `${toLower(subjectType.type)}.png`;
