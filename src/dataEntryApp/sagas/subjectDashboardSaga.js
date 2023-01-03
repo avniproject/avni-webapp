@@ -14,6 +14,7 @@ import {
   mapGeneral
 } from "../../common/subjectModelMapper";
 import api from "../api";
+import commonApi from "../../common/service";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
 import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
@@ -59,7 +60,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   yield put.resolve(setLoad(false));
   yield put.resolve(setRegistrationForm());
   yield put.resolve(setSubjectProfile());
-  const organisationConfigs = yield call(api.fetchOrganisationConfigs);
+  const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
   const subjectType = subjectProfile.subjectType;

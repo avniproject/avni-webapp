@@ -6,6 +6,7 @@ import { cognitoInDev, devEnvUserName, isDevEnv } from "../../../../../common/co
 import Auth from "@aws-amplify/auth";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import api from "../../../../api";
+import commonApi from "../../../../../common/service";
 
 const useStyles = makeStyles(theme => ({
   buttonStyle: {
@@ -33,7 +34,7 @@ export const ExtensionOption = ({
 
   React.useEffect(() => {
     if (!configExtensions) {
-      api.fetchOrganisationConfigs().then(config => {
+      commonApi.fetchOrganisationConfigs().then(config => {
         const extensions = get(config, "organisationConfig.extensions", []);
         setExtensions(extensions);
       });

@@ -2,13 +2,7 @@ import httpClient from "common/utils/httpClient";
 import { get } from "lodash";
 
 export default {
-  fetchOperationalModules: () =>
-    httpClient.fetchJson("/web/operationalModules").then(response => response.json),
   fetchForm: uuid => httpClient.fetchJson(`/web/form/${uuid}`).then(response => response.json),
-  fetchGenders: () => httpClient.fetchJson("/web/gender").then(response => response.json),
-  fetchOrganisationConfigs: () =>
-    httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
-
   fetchRelationshipTypes: () =>
     httpClient.fetchJson("/web/relationshipType").then(response => response.json),
   saveSubject: subject =>

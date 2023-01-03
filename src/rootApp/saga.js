@@ -124,7 +124,6 @@ function* setAdminOrgsWorker() {
 }
 
 function* logoutWorker() {
-  console.log("calling api");
   yield call(api.logout);
   localStorage.clear();
   userLogout() && Auth.signOut().then(() => (document.location.href = "/"));

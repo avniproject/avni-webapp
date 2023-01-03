@@ -8,6 +8,7 @@ import {
 } from "dataEntryApp/reducers/metadataReducer";
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import api from "../api";
+import commonApi from "../../common/service";
 import { mapGender, mapOperationalModules } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
 
@@ -16,7 +17,7 @@ export function* dataEntryLoadOperationalModulesWatcher() {
 }
 
 export function* dataEntryLoadOperationalModulesWorker() {
-  const operationalModules = yield call(api.fetchOperationalModules);
+  const operationalModules = yield call(commonApi.fetchOperationalModules);
 
   yield put(setOperationalModules(yield call(mapOperationalModules, operationalModules)));
 }
@@ -44,7 +45,7 @@ export function* getGendersWatcher() {
 }
 
 export function* getGendersWorker() {
-  const genders = yield call(api.fetchGenders);
+  const genders = yield call(commonApi.fetchGenders);
   yield put(setGenders(genders.content.map(mapGender)));
 }
 
@@ -52,7 +53,7 @@ export function* getOrganisationConfigWatcher() {
   yield takeLatest(types.GET_ORGANISATION_CONFIG, getOrganisationConfigWorker);
 }
 export function* getOrganisationConfigWorker() {
-  const organisationConfigs = yield call(api.fetchOrganisationConfigs);
+  const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
   yield put.resolve(setLoad(false));
   yield put(setOrganisationConfig(organisationConfigs));
   yield put.resolve(setLoad(true));

@@ -10,6 +10,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import api from "../../../dataEntryApp/api";
+import commonApi from "../../../common/service";
 import Select from "react-select";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
 import {
@@ -65,7 +66,7 @@ const SearchResultFields = () => {
   }, []);
 
   useEffect(() => {
-    api.fetchOrganisationConfigs().then(config => {
+    commonApi.fetchOrganisationConfigs().then(config => {
       dispatch({ type: "setData", payload: get(config, `organisationConfig.${orgConfigKey}`, []) });
     });
   }, []);
