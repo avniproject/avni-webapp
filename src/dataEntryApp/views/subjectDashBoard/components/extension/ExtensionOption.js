@@ -5,7 +5,6 @@ import Grid from "@material-ui/core/Grid";
 import { cognitoInDev, devEnvUserName, isDevEnv } from "../../../../../common/constants";
 import Auth from "@aws-amplify/auth";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
-import api from "../../../../api";
 import commonApi from "../../../../../common/service";
 
 const useStyles = makeStyles(theme => ({
