@@ -41,42 +41,57 @@ const fetchData = query => {
   );
 };
 
+function TabContent(props) {
+  const { children, value, index } = props;
+
+  return <React.Fragment>{value === index && children}</React.Fragment>;
+}
+
 const WhatsAppHome = () => {
+  const [value, setValue] = React.useState(1);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
-          value={1}
-          onChange={() => {}}
+          value={value}
+          onChange={handleChange}
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
           <Tab label="Groups" value={1} />
           <Tab label="Messages" value={2} />
         </Tabs>
-
-        <div className="container">
-          <MaterialTable
-            title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
-            columns={columns}
-            data={fetchData}
-            options={{
-              addRowPosition: "first",
-              sorting: false,
-              debounceInterval: 500,
-              search: false,
-              rowStyle: rowData => ({
-                backgroundColor: "#fff"
-              })
-            }}
-            actions={[]}
-          />
-        </div>
+        <TabContent value={value} index={1}>
+          <div className="container">
+            <MaterialTable
+              title=""
+              components={{
+                Container: props => <Fragment>{props.children}</Fragment>
+              }}
+              tableRef={tableRef}
+              columns={columns}
+              data={fetchData}
+              options={{
+                addRowPosition: "first",
+                sorting: false,
+                debounceInterval: 500,
+                search: false,
+                rowStyle: rowData => ({
+                  backgroundColor: "#fff"
+                })
+              }}
+              actions={[]}
+            />
+          </div>
+        </TabContent>
+        <TabContent value={value} index={2}>
+          sending messages
+        </TabContent>
       </Box>
     </ScreenWithAppBar>
   );
