@@ -36,8 +36,7 @@ export const setOrganisationConfig = organisationConfigs => ({
   organisationConfigs
 });
 
-// reducer
-export default function(state = initialState, action) {
+export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_OPERATIONAL_MODULES: {
       return {

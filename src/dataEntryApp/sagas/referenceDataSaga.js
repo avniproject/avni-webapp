@@ -12,7 +12,7 @@ import commonApi from "../../common/service";
 import { mapGender, mapOperationalModules } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
 
-export function* dataEntryLoadOperationalModulesWatcher() {
+function* dataEntryLoadOperationalModulesWatcher() {
   yield takeLatest(types.GET_OPERATIONAL_MODULES, dataEntryLoadOperationalModulesWorker);
 }
 
@@ -22,37 +22,37 @@ export function* dataEntryLoadOperationalModulesWorker() {
   yield put(setOperationalModules(yield call(mapOperationalModules, operationalModules)));
 }
 
-export function* legacyRulesBundleWatcher() {
+function* legacyRulesBundleWatcher() {
   yield takeLatest(types.GET_LEGACY_RULES_BUNDLE, legacyRulesBundleWorker);
 }
 
-export function* legacyRulesBundleWorker() {
+function* legacyRulesBundleWorker() {
   const legacyRulesBundle = yield call(api.getLegacyRulesBundle);
   yield put(setLegacyRulesBundle(legacyRulesBundle));
 }
 
-export function* legacyRulesWatcher() {
+function* legacyRulesWatcher() {
   yield takeLatest(types.GET_LEGACY_RULES, legacyRulesWorker);
 }
 
-export function* legacyRulesWorker() {
+function* legacyRulesWorker() {
   const legacyRules = yield call(api.getLegacyRules);
   yield put(setLegacyRules(legacyRules));
 }
 
-export function* getGendersWatcher() {
+function* getGendersWatcher() {
   yield takeLatest(types.GET_GENDERS, getGendersWorker);
 }
 
-export function* getGendersWorker() {
+function* getGendersWorker() {
   const genders = yield call(commonApi.fetchGenders);
   yield put(setGenders(genders.content.map(mapGender)));
 }
 
-export function* getOrganisationConfigWatcher() {
+function* getOrganisationConfigWatcher() {
   yield takeLatest(types.GET_ORGANISATION_CONFIG, getOrganisationConfigWorker);
 }
-export function* getOrganisationConfigWorker() {
+function* getOrganisationConfigWorker() {
   const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
   yield put.resolve(setLoad(false));
   yield put(setOrganisationConfig(organisationConfigs));

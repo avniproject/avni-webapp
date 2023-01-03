@@ -7,7 +7,7 @@ function News() {
   const { path } = useRouteMatch();
   return (
     <Switch>
-      <Route exact path={`${path}`} component={NewsList} />
+      <Route exact path={path} component={NewsList} />
       <Route exact path={`${path}/:id/details`} component={NewsDetails} />
     </Switch>
   );

@@ -5,7 +5,8 @@ import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
 import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import Button from "@material-ui/core/Button";
+import { getHref } from "../../common/utils/routeUtil";
+import BroadcastPath from "../utils/BroadcastPath";
 
 const columns = [
   {
@@ -25,7 +26,9 @@ const columns = [
     sorting: false,
     field: "contactsCount",
     render: rowData => (
-      <a href={`#/whatsApp/contactGroup/${rowData["id"]}`}>{rowData["contactsCount"]}</a>
+      <a href={getHref(`${BroadcastPath.Root}/${BroadcastPath.ContactGroup}/${rowData["id"]}`)}>
+        {rowData["contactsCount"]}
+      </a>
     )
   }
 ];
@@ -54,19 +57,6 @@ const WhatsAppHome = () => {
         </Tabs>
 
         <div className="container">
-          <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
-            <Button
-              color="primary"
-              variant="outlined"
-              style={{ marginLeft: 10 }}
-              onClick={event => {}}
-            >
-              Add Subject
-            </Button>
-            <Button color="primary" variant="outlined" onClick={event => {}}>
-              Add User
-            </Button>
-          </Box>
           <MaterialTable
             title=""
             components={{

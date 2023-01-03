@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
@@ -10,6 +10,11 @@ import { withParams } from "../../common/components/utils";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import { Breadcrumbs } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import { SearchForm } from "../../dataEntryApp/views/GlobalSearch/SearchFilterForm";
+import { getGenders, getOperationalModules } from "../../dataEntryApp/reducers/metadataReducer";
+import { getOrgConfigInfo } from "../../i18nTranslations/TranslationReducers";
+import { useDispatch, connect } from "react-redux";
 
 const columns = [
   {
@@ -35,8 +40,15 @@ const fetchData = (query, contactGroupId, setGroupName) => {
   );
 };
 
-const WhatsAppContactGroup = props => {
+const WhatsAppContactGroup = ({ match, operationalModules, genders, organisationConfigs }) => {
   const [groupName, setGroupName] = React.useState("");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getOperationalModules());
+    dispatch(getOrgConfigInfo());
+    dispatch(getGenders());
+  }, []);
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
@@ -48,6 +60,13 @@ const WhatsAppContactGroup = props => {
           {groupName}
         </Typography>
       </Breadcrumbs>
+      <SearchForm
+        operationalModules={operationalModules}
+        genders={genders}
+        organisationConfigs={organisationConfigs}
+        searchRequest={{}}
+        onSearch={filterRequest => {}}
+      />
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
@@ -61,31 +80,47 @@ const WhatsAppContactGroup = props => {
         </Tabs>
 
         <div className="container">
-          <div>
-            <MaterialTable
-              title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
-              columns={columns}
-              data={query => fetchData(query, props.match.params["contactGroupId"], setGroupName)}
-              options={{
-                addRowPosition: "first",
-                sorting: false,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: "#fff"
-                })
-              }}
-              actions={[]}
-            />
-          </div>
+          <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
+            <Button
+              color="primary"
+              variant="outlined"
+              style={{ marginLeft: 10 }}
+              onClick={event => {}}
+            >
+              Add Subject
+            </Button>
+            <Button color="primary" variant="outlined" onClick={event => {}}>
+              Add User
+            </Button>
+          </Box>
+          <MaterialTable
+            title=""
+            components={{
+              Container: props => <Fragment>{props.children}</Fragment>
+            }}
+            tableRef={tableRef}
+            columns={columns}
+            data={query => fetchData(query, match.params["contactGroupId"], setGroupName)}
+            options={{
+              addRowPosition: "first",
+              sorting: false,
+              debounceInterval: 500,
+              search: false,
+              rowStyle: rowData => ({
+                backgroundColor: "#fff"
+              })
+            }}
+            actions={[]}
+          />
         </div>
       </Box>
     </ScreenWithAppBar>
   );
 };
 
-export default withRouter(withParams(WhatsAppContactGroup));
+const mapStateToProps = state => ({
+  operationalModules: state.dataEntry.metadata.operationalModules,
+  orgConfig: state.translationsReducer.orgConfig
+});
+
+export default withRouter(withParams(connect(mapStateToProps)(WhatsAppContactGroup)));

@@ -3,6 +3,7 @@ import { reducer as formReducer } from "redux-form";
 import { routerReducer } from "react-router-redux";
 import { adminReducer, defaultI18nProvider, i18nReducer } from "react-admin";
 import dataEntry from "../dataEntryApp/reducers/dataEntryReducer";
+import broadcast from "../news/reducers/metadataReducer";
 import bulkUpload from "../upload/reducers";
 import translations from "../translations/reducers";
 import reports from "../reports/reducers";
@@ -19,6 +20,7 @@ export default combineReducers({
   router: routerReducer,
   app,
   dataEntry,
+  broadcast,
   bulkUpload,
   translations,
   reports,

@@ -1,6 +1,7 @@
 import { all, call, fork } from "redux-saga/effects";
 import { adminSaga, defaultI18nProvider } from "react-admin";
 import dataEntrySaga from "../dataEntryApp/sagas";
+import broadcastSaga from "../news/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
 import reportSagas from "../reports/sagas";
@@ -34,6 +35,7 @@ export default function* rootSaga() {
       logoutWatcher,
       organisationConfigWatcher,
       dataEntrySaga,
+      broadcastSaga,
       translationsSaga,
       uploadSagas,
       reportSagas,
