@@ -7,6 +7,7 @@ import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getHref } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
+import MessagesTab from "./MessagesTab";
 
 const columns = [
   {
@@ -90,7 +91,7 @@ const WhatsAppHome = () => {
           </div>
         </TabContent>
         <TabContent value={value} index={2}>
-          sending messages
+          <MessagesTab groups={fetchData} columns={columns} />
         </TabContent>
       </Box>
     </ScreenWithAppBar>
