@@ -1,23 +1,15 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
 import GlificService from "../../adminApp/service/GlificService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { withRouter } from "react-router-dom";
-import Link from "@material-ui/core/Link";
+import { Link, withRouter } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import { Breadcrumbs } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { SearchForm } from "../../dataEntryApp/views/GlobalSearch/SearchFilterForm";
-import {
-  getGenders,
-  getOperationalModules,
-  getOrganisationConfig
-} from "../reducers/metadataReducer";
-import { useDispatch, connect } from "react-redux";
-import Loading from "../../dataEntryApp/components/Loading";
+import AddContactGroupSubjects from "./AddContactGroupSubjects";
 
 const columns = [
   {
@@ -43,38 +35,21 @@ const fetchData = (query, contactGroupId, setGroupName) => {
   );
 };
 
-const WhatsAppContactGroup = ({ match, operationalModules, genders, organisationConfigs }) => {
+const WhatsAppContactGroup = ({ match }) => {
   const [groupName, setGroupName] = React.useState("");
   const [addingSubjects, setAddingSubject] = React.useState(false);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getOperationalModules());
-    dispatch(getOrganisationConfig());
-    dispatch(getGenders());
-  }, []);
-
-  if (!(genders && operationalModules && organisationConfigs)) return <Loading />;
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
+      {addingSubjects && <AddContactGroupSubjects onClose={() => setAddingSubject(false)} />}
       <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: 40 }}>
-        <Link color="inherit" href={"/#/whatsApp"}>
+        <Link color="inherit" to={"/#/whatsApp"}>
           WhatsApp Groups
         </Link>
         <Typography component={"span"} color="textPrimary">
           {groupName}
         </Typography>
       </Breadcrumbs>
-      {addingSubjects && (
-        <SearchForm
-          operationalModules={operationalModules}
-          genders={genders}
-          organisationConfigs={organisationConfigs}
-          searchRequest={{}}
-          onSearch={filterRequest => {}}
-        />
-      )}
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
@@ -93,7 +68,7 @@ const WhatsAppContactGroup = ({ match, operationalModules, genders, organisation
               color="primary"
               variant="outlined"
               style={{ marginLeft: 10 }}
-              onClick={event => setAddingSubject(true)}
+              onClick={() => setAddingSubject(true)}
             >
               Add Subject
             </Button>
@@ -126,10 +101,4 @@ const WhatsAppContactGroup = ({ match, operationalModules, genders, organisation
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.broadcast.operationalModules,
-  organisationConfigs: state.broadcast.organisationConfigs,
-  genders: state.broadcast.genders
-});
-
-export default withRouter(connect(mapStateToProps)(WhatsAppContactGroup));
+export default withRouter(WhatsAppContactGroup);

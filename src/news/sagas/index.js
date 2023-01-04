@@ -25,7 +25,7 @@ function* getGendersWorker() {
 }
 
 function* getOrganisationConfigWatcher() {
-  yield takeLatest(types.GET_OPERATIONAL_MODULES, getOrganisationConfigWorker);
+  yield takeLatest(types.GET_ORGANISATION_CONFIG, getOrganisationConfigWorker);
 }
 function* getOrganisationConfigWorker() {
   const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);

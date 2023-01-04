@@ -210,7 +210,7 @@ const searchFilterConcept = function(event, searchFilterForm, fieldName, setSele
 const searchResult = function(
   selectedSubjectTypeUUID,
   enterValue,
-  includeVoied,
+  includeVoided,
   addressLevelIds,
   conceptRequests,
   selectedGenderSort,
@@ -224,7 +224,7 @@ const searchResult = function(
       minValue: enterValue.age,
       maxValue: null
     },
-    includeVoided: includeVoied,
+    includeVoided: includeVoided,
     addressIds: addressLevelIds,
     concept: conceptRequests,
     gender: selectedGenderSort,
@@ -254,7 +254,7 @@ const searchResult = function(
   }
 };
 
-//concept (not idea what is the meaning Api here)
+//no idea what is the meaning Api here
 const getSelectedConceptApi = function(selectedConcepts) {
   return selectedConcepts.filter(selectedConcept => {
     if (selectedConcept.conceptDataType === null) {

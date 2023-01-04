@@ -31,9 +31,9 @@ export const getOrganisationConfig = () => ({
   type: types.GET_ORGANISATION_CONFIG
 });
 
-export const setOrganisationConfig = organisationConfigs => ({
+export const setOrganisationConfig = organisationConfig => ({
   type: types.SET_ORGANISATION_CONFIG,
-  organisationConfigs
+  organisationConfig
 });
 
 export default function(state = {}, action) {
@@ -53,7 +53,7 @@ export default function(state = {}, action) {
     case types.SET_ORGANISATION_CONFIG: {
       return {
         ...state,
-        organisationConfigs: action.organisationConfigs
+        organisationConfig: action.organisationConfig
       };
     }
     default:
