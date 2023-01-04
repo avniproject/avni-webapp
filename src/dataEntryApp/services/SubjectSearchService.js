@@ -2,7 +2,7 @@ import { httpClient } from "common/utils/httpClient";
 
 export default {
   search(searchRequest) {
-    let apiUrl = "/web/searchAPI/v2";
+    const apiUrl = "/web/searchAPI/v2";
     const pageElement = {};
     pageElement.numberOfRecordPerPage = 20;
     searchRequest.pageElement = pageElement;

@@ -5,10 +5,11 @@ import Dialog from "@material-ui/core/Dialog";
 import { DialogTitle } from "@material-ui/core";
 import { SearchForm } from "../../dataEntryApp/views/GlobalSearch/SearchFilterForm";
 import {
+  getGenders,
   getOperationalModules,
-  getOrganisationConfig,
-  getGenders
+  getOrganisationConfig
 } from "../reducers/metadataReducer";
+import SubjectSearchService from "../../dataEntryApp/services/SubjectSearchService";
 
 const AddContactGroupSubject = ({
   operationalModules,
@@ -29,7 +30,12 @@ const AddContactGroupSubject = ({
   const allLoaded = operationalModules && genders && organisationConfig;
 
   return (
-    <Dialog onClose={() => onClose()} aria-labelledby="customized-dialog-title" open={true}>
+    <Dialog
+      onClose={() => onClose()}
+      aria-labelledby="customized-dialog-title"
+      open={true}
+      fullScreen
+    >
       <DialogTitle
         id="customized-dialog-title"
         onClose={() => onClose()}
@@ -43,7 +49,7 @@ const AddContactGroupSubject = ({
           genders={genders}
           organisationConfigs={organisationConfig}
           searchRequest={{ includeVoided: false }}
-          onSearch={filterRequest => props.search(filterRequest)}
+          onSearch={searchRequest => SubjectSearchService.search(searchRequest)}
         />
       )}
     </Dialog>
@@ -56,11 +62,4 @@ const mapStateToProps = state => ({
   organisationConfig: state.broadcast.organisationConfig
 });
 
-const mapDispatchToProps = {};
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(AddContactGroupSubject)
-);
+export default withRouter(connect(mapStateToProps)(AddContactGroupSubject));
