@@ -1,8 +1,8 @@
 import http from "../../common/utils/httpClient";
 
-const contactGroupEndpoint = "/web/glificContactGroup";
+const contactGroupEndpoint = "/web/contactGroup";
 
-class GlificService {
+class ContactService {
   static getContactGroups(pageNumber, pageSize) {
     return http.getData(`${contactGroupEndpoint}?page=${pageNumber}&size=${pageSize}`);
   }
@@ -12,6 +12,10 @@ class GlificService {
       `${contactGroupEndpoint}/${contactGroupId}?page=${pageNumber}&size=${pageSize}`
     );
   }
+
+  static addSubjectToContactGroup(contactGroupId, subject) {
+    return http.postJson(`${contactGroupEndpoint}/${contactGroupId}/subject`, { id: subject.id });
+  }
 }
 
-export default GlificService;
+export default ContactService;

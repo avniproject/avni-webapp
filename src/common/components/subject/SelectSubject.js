@@ -74,7 +74,7 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow>
+                  <TableRow key={labelId}>
                     <TableCell padding="checkbox">
                       <Radio
                         checked={selectedValue === row.uuid}

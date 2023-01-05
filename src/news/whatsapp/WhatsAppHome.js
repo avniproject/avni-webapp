@@ -3,7 +3,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
-import GlificService from "../../adminApp/service/GlificService";
+import ContactService from "../../adminApp/service/ContactService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getHref } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
@@ -38,7 +38,7 @@ const tableRef = React.createRef();
 
 const fetchData = query => {
   return new Promise(resolve =>
-    GlificService.getContactGroups(query.page, query.pageSize).then(data => resolve(data))
+    ContactService.getContactGroups(query.page, query.pageSize).then(data => resolve(data))
   );
 };
 

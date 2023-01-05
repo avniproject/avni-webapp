@@ -365,7 +365,6 @@ export const SearchForm = ({
     subjectType,
     name,
     age,
-    includeVoided,
     addressIds,
     concept,
     gender,
@@ -459,7 +458,7 @@ export const SearchForm = ({
   const [selectedConcepts, setSelectedConcept] = useState(allConceptRelatedFilters);
 
   // is voided
-  const [includeVoied, setIncludeVoided] = React.useState(includeVoided || false);
+  const [includeVoided, setIncludeVoided] = React.useState(searchRequest.includeVoided || false);
 
   const includeVoidedChange = event => {
     setIncludeVoided(event.target.checked);
@@ -497,7 +496,7 @@ export const SearchForm = ({
         />
         {selectedSearchFilter ? (
           <div>
-            <Grid container>
+            <Grid container style={{ paddingLeft: 10 }}>
               <Grid item xs={12}>
                 <BasicForm
                   searchFilterForms={selectedSearchFilter}
@@ -538,7 +537,7 @@ export const SearchForm = ({
               </Grid>
               <Grid item xs={12}>
                 <IncludeVoidedForm
-                  includeVoided={includeVoied}
+                  includeVoided={includeVoided}
                   includeVoidedChange={includeVoidedChange}
                 />
               </Grid>
@@ -555,7 +554,7 @@ export const SearchForm = ({
               searchResult(
                 selectedSubjectTypeUUID,
                 enterValue,
-                includeVoied,
+                includeVoided,
                 addressLevelIds,
                 conceptRequests,
                 selectedGenderSort,

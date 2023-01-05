@@ -3,7 +3,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
-import GlificService from "../../adminApp/service/GlificService";
+import ContactService from "../../adminApp/service/ContactService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
@@ -26,28 +26,36 @@ const columns = [
 
 const tableRef = React.createRef();
 
-const fetchData = (query, contactGroupId, setGroupName) => {
+const fetchData = (query, contactGroupId, setGroup) => {
   return new Promise(resolve =>
-    GlificService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(data => {
-      setGroupName(data["group"]["label"]);
-      resolve(data["contacts"]);
-    })
+    ContactService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(
+      data => {
+        setGroup(data["group"]);
+        resolve(data["contacts"]);
+      }
+    )
   );
 };
 
 const WhatsAppContactGroup = ({ match }) => {
-  const [groupName, setGroupName] = React.useState("");
+  const [group, setGroup] = React.useState("");
   const [addingSubjects, setAddingSubject] = React.useState(false);
+  const contactGroupId = match.params["contactGroupId"];
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
-      {addingSubjects && <AddContactGroupSubjects onClose={() => setAddingSubject(false)} />}
+      {addingSubjects && (
+        <AddContactGroupSubjects
+          onClose={() => setAddingSubject(false)}
+          onSubjectAdd={subject => ContactService.addSubjectToContactGroup(contactGroupId, subject)}
+        />
+      )}
       <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: 40 }}>
         <Link color="inherit" to={"/#/whatsApp"}>
           WhatsApp Groups
         </Link>
         <Typography component={"span"} color="textPrimary">
-          {groupName}
+          {group["label"]}
         </Typography>
       </Breadcrumbs>
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
@@ -83,7 +91,7 @@ const WhatsAppContactGroup = ({ match }) => {
             }}
             tableRef={tableRef}
             columns={columns}
-            data={query => fetchData(query, match.params["contactGroupId"], setGroupName)}
+            data={query => fetchData(query, contactGroupId, setGroup)}
             options={{
               addRowPosition: "first",
               sorting: false,

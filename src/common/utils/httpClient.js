@@ -120,10 +120,10 @@ class HttpClient {
     this.setOrgUuidHeader();
   }
 
-  _wrapAxiosMethod(methodname) {
+  _wrapAxiosMethod(methodName) {
     return async (...args) => {
       await this.setTokenAndOrgUuidHeaders();
-      return axios[methodname](...args);
+      return axios[methodName](...args);
     };
   }
 
