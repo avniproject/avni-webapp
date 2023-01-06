@@ -44,7 +44,7 @@ const SelectSubject = function({ subjectData, errormsg, onSelectedItem, t = _.id
 
   return (
     <div className={classes.root}>
-      <Typography variant="subtitle2" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         {subjectData ? (subjectData.length === 0 ? "No" : subjectData.length) : ""} Results found
       </Typography>
       <Typography variant="subtitle2" gutterBottom>

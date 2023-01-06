@@ -7,10 +7,12 @@ import TableBody from "@material-ui/core/TableBody";
 import Radio from "@material-ui/core/Radio";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: "100%"
+    width: "100%",
+    marginTop: 20
   },
   paper: {
     width: "100%",
@@ -32,9 +34,9 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
   };
 
   return (
-    <div className={classes.root}>
+    <Box className={classes.root}>
       {users && (
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           {users.length === 0 ? "No users found" : `${users.length} - users found`}
         </Typography>
       )}
@@ -85,7 +87,7 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
       ) : (
         ""
       )}
-    </div>
+    </Box>
   );
 };
 

@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
-import { Card, DialogActions, DialogTitle, TextField, Typography } from "@material-ui/core";
+import {
+  Card,
+  DialogActions,
+  DialogTitle,
+  LinearProgress,
+  TextField,
+  Typography
+} from "@material-ui/core";
 import _ from "lodash";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
@@ -11,17 +18,24 @@ import IconButton from "@material-ui/core/IconButton";
 import SelectUser from "../../common/components/subject/SelectUser";
 import UserService from "../../common/service/UserService";
 
+const workflowStates = {
+  Start: "Start",
+  Searching: "Searching",
+  SearchCompleted: "SearchCompleted"
+};
+
 const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [users, setUsers] = useState(null);
+  const [workflowState, setWorkflowState] = useState(workflowStates.Start);
 
   return (
     <Box style={{ flexDirection: "column", display: "flex" }}>
       <Card
-        elevation={5}
+        elevation={3}
         style={{
           flexDirection: "row",
           display: "flex",
@@ -60,21 +74,35 @@ const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
         <Button
           color="primary"
           variant="contained"
-          onClick={() =>
-            UserService.searchUsers(name, phoneNumber, email).then(usersPage =>
-              setUsers(usersPage.data)
-            )
-          }
+          onClick={() => {
+            setWorkflowState(workflowStates.Searching);
+            UserService.searchUsers(name, phoneNumber, email)
+              .then(usersPage => setUsers(usersPage.data))
+              .then(() => setWorkflowState(workflowStates.SearchCompleted));
+          }}
         >
           Search
         </Button>
       </Card>
       <hr />
+      {workflowState === workflowStates.Searching && <LinearProgress />}
       <SelectUser users={users} onSelectedUser={setSelectedUser} />
       {users && (
-        <Box style={{ flexDirection: "row-reverse", display: "flex" }}>
-          <Button onClick={() => onCancel()}>Cancel</Button>
-          <Button disabled={_.isNil(selectedUser)} onClick={() => onUserAdd(selectedUser)}>
+        <Box style={{ flexDirection: "row-reverse", display: "flex", marginTop: 20 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => onCancel()}
+            style={{ marginLeft: 15 }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={_.isNil(selectedUser)}
+            onClick={() => onUserAdd(selectedUser)}
+          >
             Add
           </Button>
         </Box>

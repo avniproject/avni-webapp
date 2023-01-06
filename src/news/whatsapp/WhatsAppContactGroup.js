@@ -11,6 +11,8 @@ import { Breadcrumbs } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
+import { getHref, getLinkTo } from "../../common/utils/routeUtil";
+import BroadcastPath from "../utils/BroadcastPath";
 
 const columns = [
   {
@@ -59,7 +61,7 @@ const WhatsAppContactGroup = ({ match }) => {
         />
       )}
       <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: 40 }}>
-        <Link color="inherit" to={"/#/whatsApp"}>
+        <Link color="inherit" to={getLinkTo(BroadcastPath.WhatsAppFullPath)}>
           WhatsApp Groups
         </Link>
         <Typography component={"span"} color="textPrimary">

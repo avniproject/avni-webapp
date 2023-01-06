@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { withRouter } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
-import { DialogActions, DialogTitle } from "@material-ui/core";
+import { DialogActions, DialogTitle, LinearProgress } from "@material-ui/core";
 import { SearchForm } from "../../dataEntryApp/views/GlobalSearch/SearchFilterForm";
 import {
   getGenders,
@@ -23,14 +23,41 @@ const SelectSubjectAndConfirm = function({ subjects, onSubjectAdd, onCancel }) {
   return (
     <Box style={{ flexDirection: "column", display: "flex" }}>
       <SelectSubject subjectData={subjects} onSelectedItem={setSelectedSubject} errormsg={null} />
-      <Box style={{ flexDirection: "row-reverse", display: "flex" }}>
-        <Button onClick={() => onCancel()}>Cancel</Button>
-        <Button disabled={_.isNil(selectedSubject)} onClick={() => onSubjectAdd(selectedSubject)}>
+      <Box style={{ flexDirection: "row-reverse", display: "flex", marginTop: 20 }}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => onCancel()}
+          style={{ marginLeft: 15 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={_.isNil(selectedSubject)}
+          onClick={() => onSubjectAdd(selectedSubject)}
+        >
           Add
         </Button>
       </Box>
     </Box>
   );
+};
+
+const workflowStates = {
+  Start: "Start",
+  Searching: "Searching",
+  SearchCompleted: "SearchCompleted",
+  AddingSubject: "AddingSubject"
+};
+
+const searchSubject = function(setWorkflowState, searchRequest, setSubjects) {
+  setWorkflowState(workflowStates.Searching);
+  SubjectSearchService.search(searchRequest).then(subjects => {
+    setSubjects(subjects["listOfRecords"]);
+    setWorkflowState(workflowStates.SearchCompleted);
+  });
 };
 
 const AddContactGroupSubject = ({
@@ -44,6 +71,7 @@ const AddContactGroupSubject = ({
 }) => {
   const dispatch = useDispatch();
   const [subjects, setSubjects] = useState(null);
+  const [workflowState, setWorkflowState] = useState(workflowStates.Start);
 
   useEffect(() => {
     dispatch(getOperationalModules());
@@ -51,8 +79,7 @@ const AddContactGroupSubject = ({
     dispatch(getGenders());
   }, []);
 
-  const showSearchSubjects =
-    operationalModules && genders && organisationConfig && _.isNil(subjects);
+  const loading = !(operationalModules && genders && organisationConfig);
   const onCloseHandler = () => onClose();
 
   return (
@@ -75,26 +102,34 @@ const AddContactGroupSubject = ({
         </IconButton>
       </DialogActions>
       <Box style={{ padding: 20 }}>
-        {showSearchSubjects && (
-          <SearchForm
-            operationalModules={operationalModules}
-            genders={genders}
-            organisationConfigs={organisationConfig}
-            searchRequest={{ includeVoided: false }}
-            onSearch={searchRequest =>
-              SubjectSearchService.search(searchRequest).then(subjects =>
-                setSubjects(subjects["listOfRecords"])
-              )
-            }
-          />
-        )}
-        {subjects && (
-          <SelectSubjectAndConfirm
-            subjects={subjects}
-            onSubjectAdd={x => onSubjectAdd(x)}
-            onCancel={onCloseHandler}
-          />
-        )}
+        {!loading &&
+          (workflowState === workflowStates.Start ||
+            workflowState === workflowStates.Searching) && (
+            <SearchForm
+              operationalModules={operationalModules}
+              genders={genders}
+              organisationConfigs={organisationConfig}
+              searchRequest={{ includeVoided: false }}
+              onSearch={searchRequest =>
+                searchSubject(setWorkflowState, searchRequest, setSubjects)
+              }
+            />
+          )}
+        {(loading ||
+          workflowState === workflowStates.Searching ||
+          workflowState === workflowStates.AddingSubject) && <LinearProgress />}
+        {!loading &&
+          (workflowState === workflowStates.AddingSubject ||
+            workflowState === workflowStates.SearchCompleted) && (
+            <SelectSubjectAndConfirm
+              subjects={subjects}
+              onSubjectAdd={x => {
+                setWorkflowState(workflowStates.AddingSubject);
+                onSubjectAdd(x);
+              }}
+              onCancel={onCloseHandler}
+            />
+          )}
       </Box>
     </Dialog>
   );

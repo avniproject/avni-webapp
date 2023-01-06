@@ -27,7 +27,7 @@ const columns = [
     sorting: false,
     field: "contactsCount",
     render: rowData => (
-      <a href={getHref(`${BroadcastPath.Root}/${BroadcastPath.ContactGroup}/${rowData["id"]}`)}>
+      <a href={getHref(`${BroadcastPath.ContactGroupFullPath}/${rowData["id"]}`)}>
         {rowData["contactsCount"]}
       </a>
     )

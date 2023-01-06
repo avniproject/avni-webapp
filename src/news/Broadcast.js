@@ -40,11 +40,17 @@ const Broadcast = ({ match: { path } }) => {
       <Route exact path={getRoutePath(path, BroadcastPath.WhatsApp)} component={WhatsAppHome} />
       <Route
         exact
-        path={getRoutePath(path, `${BroadcastPath.ContactGroup}/:contactGroupId`)}
+        path={getRoutePath(
+          path,
+          `${BroadcastPath.WhatsApp}/${BroadcastPath.ContactGroup}/:contactGroupId`
+        )}
         component={WhatsAppContactGroup}
       />
-      <Route exact path={getRoutePath(path, BroadcastPath.SendMessage)}
-             component={ComposeMessageView}></Route>
+      <Route
+        exact
+        path={getRoutePath(path, BroadcastPath.SendMessage)}
+        component={ComposeMessageView}
+      />
     </React.Fragment>
   );
 };
