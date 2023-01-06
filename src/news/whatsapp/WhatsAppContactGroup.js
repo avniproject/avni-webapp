@@ -11,7 +11,7 @@ import { Breadcrumbs } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
-import { getHref, getLinkTo } from "../../common/utils/routeUtil";
+import { getLinkTo } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
 
 const columns = [
