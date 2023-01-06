@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import { Breadcrumbs } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
+import AddContactGroupUsers from "./AddContactGroupUsers";
 
 const columns = [
   {
@@ -40,6 +41,7 @@ const fetchData = (query, contactGroupId, setGroup) => {
 const WhatsAppContactGroup = ({ match }) => {
   const [group, setGroup] = React.useState("");
   const [addingSubjects, setAddingSubject] = React.useState(false);
+  const [addingUsers, setAddingUser] = React.useState(false);
   const contactGroupId = match.params["contactGroupId"];
 
   return (
@@ -48,6 +50,12 @@ const WhatsAppContactGroup = ({ match }) => {
         <AddContactGroupSubjects
           onClose={() => setAddingSubject(false)}
           onSubjectAdd={subject => ContactService.addSubjectToContactGroup(contactGroupId, subject)}
+        />
+      )}
+      {addingUsers && (
+        <AddContactGroupUsers
+          onClose={() => setAddingUser(false)}
+          onUserAdd={user => ContactService.addUserToContactGroup(contactGroupId, user)}
         />
       )}
       <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: 40 }}>
@@ -80,7 +88,7 @@ const WhatsAppContactGroup = ({ match }) => {
             >
               Add Subject
             </Button>
-            <Button color="primary" variant="outlined" onClick={event => {}}>
+            <Button color="primary" variant="outlined" onClick={event => setAddingUser(true)}>
               Add User
             </Button>
           </Box>

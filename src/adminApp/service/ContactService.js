@@ -16,6 +16,10 @@ class ContactService {
   static addSubjectToContactGroup(contactGroupId, subject) {
     return http.postJson(`${contactGroupEndpoint}/${contactGroupId}/subject`, { id: subject.id });
   }
+
+  static addUserToContactGroup(contactGroupId, user) {
+    return http.postJson(`${contactGroupEndpoint}/${contactGroupId}/user`, { id: user.id });
+  }
 }
 
 export default ContactService;
