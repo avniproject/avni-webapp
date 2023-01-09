@@ -1,9 +1,8 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import MaterialTable from "material-table";
-import ContactService from "../../adminApp/service/ContactService";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
@@ -13,6 +12,7 @@ import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
 import { getLinkTo } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
+import ContactService from "../api/ContactService";
 
 const columns = [
   {
@@ -41,23 +41,27 @@ const fetchData = (query, contactGroupId, setGroup) => {
 };
 
 const WhatsAppContactGroup = ({ match }) => {
-  const [group, setGroup] = React.useState("");
-  const [addingSubjects, setAddingSubject] = React.useState(false);
-  const [addingUsers, setAddingUser] = React.useState(false);
+  const [group, setGroup] = useState({ label: "..." });
+  const [addingSubjects, setAddingSubject] = useState(false);
+  const [addingUsers, setAddingUser] = useState(false);
   const contactGroupId = match.params["contactGroupId"];
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
       {addingSubjects && (
         <AddContactGroupSubjects
+          contactGroupId={contactGroupId}
           onClose={() => setAddingSubject(false)}
-          onSubjectAdd={subject => ContactService.addSubjectToContactGroup(contactGroupId, subject)}
+          onSubjectAdd={subject => setAddingSubject(false)}
         />
       )}
       {addingUsers && (
         <AddContactGroupUsers
+          contactGroupId={contactGroupId}
           onClose={() => setAddingUser(false)}
-          onUserAdd={user => ContactService.addUserToContactGroup(contactGroupId, user)}
+          onUserAdd={user => {
+            setAddingUser(false);
+          }}
         />
       )}
       <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: 40 }}>

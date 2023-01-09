@@ -16,6 +16,8 @@ import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import { Close } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
+import ErrorMessage from "../../common/components/ErrorMessage";
+import ContactService from "../api/ContactService";
 
 const SelectSubjectAndConfirm = function({ subjects, onSubjectAdd, onCancel }) {
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -45,33 +47,35 @@ const SelectSubjectAndConfirm = function({ subjects, onSubjectAdd, onCancel }) {
   );
 };
 
-const workflowStates = {
+const WorkflowStates = {
   Start: "Start",
   Searching: "Searching",
+  SearchError: "SearchError",
   SearchCompleted: "SearchCompleted",
-  AddingSubject: "AddingSubject"
+  AddingSubject: "AddingSubject",
+  AddSubjectError: "AddSubjectError"
 };
 
 const searchSubject = function(setWorkflowState, searchRequest, setSubjects) {
-  setWorkflowState(workflowStates.Searching);
-  SubjectSearchService.search(searchRequest).then(subjects => {
+  setWorkflowState(WorkflowStates.Searching);
+  return SubjectSearchService.search(searchRequest).then(subjects => {
     setSubjects(subjects["listOfRecords"]);
-    setWorkflowState(workflowStates.SearchCompleted);
+    setWorkflowState(WorkflowStates.SearchCompleted);
   });
 };
 
 const AddContactGroupSubject = ({
+  contactGroupId,
   operationalModules,
   genders,
   organisationConfig,
   onClose,
-  onSubjectAdd,
-  setError,
-  ...props
+  onSubjectAdd
 }) => {
   const dispatch = useDispatch();
   const [subjects, setSubjects] = useState(null);
-  const [workflowState, setWorkflowState] = useState(workflowStates.Start);
+  const [workflowState, setWorkflowState] = useState(WorkflowStates.Start);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     dispatch(getOperationalModules());
@@ -81,6 +85,23 @@ const AddContactGroupSubject = ({
 
   const loading = !(operationalModules && genders && organisationConfig);
   const onCloseHandler = () => onClose();
+
+  const displayProgress =
+    loading || _.includes([WorkflowStates.Searching, WorkflowStates.AddingSubject], workflowState);
+  const displaySelectSubject =
+    !loading &&
+    _.includes(
+      [
+        WorkflowStates.AddingSubject,
+        WorkflowStates.SearchCompleted,
+        WorkflowStates.AddSubjectError
+      ],
+      workflowState
+    );
+  const displayError = _.includes(
+    [WorkflowStates.SearchError, WorkflowStates.AddSubjectError],
+    workflowState
+  );
 
   return (
     <Dialog
@@ -103,33 +124,40 @@ const AddContactGroupSubject = ({
       </DialogActions>
       <Box style={{ padding: 20 }}>
         {!loading &&
-          (workflowState === workflowStates.Start ||
-            workflowState === workflowStates.Searching) && (
+          _.includes(
+            [WorkflowStates.Start, WorkflowStates.Searching, WorkflowStates.SearchError],
+            workflowState
+          ) && (
             <SearchForm
               operationalModules={operationalModules}
               genders={genders}
               organisationConfigs={organisationConfig}
               searchRequest={{ includeVoided: false }}
               onSearch={searchRequest =>
-                searchSubject(setWorkflowState, searchRequest, setSubjects)
+                searchSubject(setWorkflowState, searchRequest, setSubjects).catch(error => {
+                  setWorkflowState(WorkflowStates.SearchError);
+                  setError(error);
+                })
               }
             />
           )}
-        {(loading ||
-          workflowState === workflowStates.Searching ||
-          workflowState === workflowStates.AddingSubject) && <LinearProgress />}
-        {!loading &&
-          (workflowState === workflowStates.AddingSubject ||
-            workflowState === workflowStates.SearchCompleted) && (
-            <SelectSubjectAndConfirm
-              subjects={subjects}
-              onSubjectAdd={x => {
-                setWorkflowState(workflowStates.AddingSubject);
-                onSubjectAdd(x);
-              }}
-              onCancel={onCloseHandler}
-            />
-          )}
+        {displayProgress && <LinearProgress />}
+        {displayError && <ErrorMessage error={error} />}
+        {displaySelectSubject && (
+          <SelectSubjectAndConfirm
+            subjects={subjects}
+            onSubjectAdd={subject => {
+              setWorkflowState(WorkflowStates.AddingSubject);
+              ContactService.addSubjectToContactGroup(contactGroupId, subject)
+                .then(x => onSubjectAdd(x))
+                .catch(error => {
+                  setError(error);
+                  setWorkflowState(WorkflowStates.AddSubjectError);
+                });
+            }}
+            onCancel={onCloseHandler}
+          />
+        )}
       </Box>
     </Dialog>
   );

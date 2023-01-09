@@ -21,7 +21,8 @@ import UserService from "../../common/service/UserService";
 const workflowStates = {
   Start: "Start",
   Searching: "Searching",
-  SearchCompleted: "SearchCompleted"
+  SearchCompleted: "SearchCompleted",
+  Adding: "Adding"
 };
 
 const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
@@ -85,7 +86,9 @@ const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
         </Button>
       </Card>
       <hr />
-      {workflowState === workflowStates.Searching && <LinearProgress />}
+      {(workflowState === workflowStates.Searching || workflowState === workflowStates.Adding) && (
+        <LinearProgress />
+      )}
       <SelectUser users={users} onSelectedUser={setSelectedUser} />
       {users && (
         <Box style={{ flexDirection: "row-reverse", display: "flex", marginTop: 20 }}>
@@ -100,8 +103,11 @@ const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
           <Button
             variant="contained"
             color="primary"
-            disabled={_.isNil(selectedUser)}
-            onClick={() => onUserAdd(selectedUser)}
+            disabled={_.isNil(selectedUser) || workflowState === workflowStates.Adding}
+            onClick={() => {
+              setWorkflowState(workflowStates.Adding);
+              onUserAdd(selectedUser);
+            }}
           >
             Add
           </Button>
