@@ -1,4 +1,4 @@
-import React, {useEffect, useReducer} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import { getMessageTemplates } from "../../adminApp/service/MessageService";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import _ from "lodash";
@@ -8,6 +8,10 @@ import {useLocation} from "react-router-dom";
 import {KeyboardDateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import {AvniTextField} from "../../common/components/AvniTextField";
+import Button from "@material-ui/core/Button";
+import { sendBroadcastMessage } from "../../adminApp/service/MessageService";
+
+
 const ComposeMessageView = () => {
 
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
@@ -50,8 +54,20 @@ const ComposeMessageView = () => {
 
   const dateTimeFormat = "dd/MM/yyyy HH:mm";
 
+  const [error, setError] = useState("");
+
+  const onSubmit = async event => {
+    event.preventDefault();
+    try {
+      await sendBroadcastMessage(groupIds, rules[0]);
+    } catch (e) {
+      setError(error.response.data.message);
+    }
+  }
+
   return (<div className="container">
-      <AvniFormLabel
+    <form onSubmit={onSubmit}>
+    <AvniFormLabel
         label={"Select Template"}
         toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"}
       />
@@ -105,6 +121,10 @@ const ComposeMessageView = () => {
         }}
       />
       </MuiPickersUtilsProvider>
+      <Button color="primary" variant="contained" type="submit">
+        Send Message
+      </Button>
+      </form>
     </div>
     )
 }
