@@ -22,12 +22,12 @@ class ContactService {
     return http.postJson(`${contactGroupEndpoint}/${contactGroupId}/user`, { id: user.id });
   }
 
-  static addEditContactGroup(contactGroup, name, description) {
+  static addEditContactGroup(contactGroup, label, description) {
     if (_.isNil(contactGroup))
-      return http.postJson(`${contactGroupEndpoint}`, { name: name, description: description });
+      return http.postJson(`${contactGroupEndpoint}`, { label: label, description: description });
     else
       return http.putJson(`${contactGroupEndpoint}/${contactGroup.id}`, {
-        name: name,
+        label: label,
         description: description
       });
   }

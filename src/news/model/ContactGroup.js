@@ -1,6 +1,6 @@
 class ContactGroup {
   id;
-  name;
+  label;
   description;
 }
 

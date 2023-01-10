@@ -13,6 +13,9 @@ import AddContactGroupUsers from "./AddContactGroupUsers";
 import { getLinkTo } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
 import ContactService from "../api/ContactService";
+import { Edit } from "@material-ui/icons";
+import IconButton from "@material-ui/core/IconButton";
+import AddEditContactGroup from "./AddEditContactGroup";
 
 const columns = [
   {
@@ -44,7 +47,9 @@ const WhatsAppContactGroup = ({ match }) => {
   const [group, setGroup] = useState({ label: "..." });
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
+  const [editingContactGroup, setEditingContactGroup] = useState(false);
   const contactGroupId = match.params["contactGroupId"];
+  const [contactGroupVersionKey, setContactGroupVersionKey] = useState(0);
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
@@ -52,7 +57,10 @@ const WhatsAppContactGroup = ({ match }) => {
         <AddContactGroupSubjects
           contactGroupId={contactGroupId}
           onClose={() => setAddingSubject(false)}
-          onSubjectAdd={subject => setAddingSubject(false)}
+          onSubjectAdd={subject => {
+            setContactGroupVersionKey(contactGroupVersionKey + 1);
+            setAddingSubject(false);
+          }}
         />
       )}
       {addingUsers && (
@@ -60,17 +68,33 @@ const WhatsAppContactGroup = ({ match }) => {
           contactGroupId={contactGroupId}
           onClose={() => setAddingUser(false)}
           onUserAdd={user => {
+            setContactGroupVersionKey(contactGroupVersionKey + 1);
             setAddingUser(false);
           }}
+        />
+      )}
+      {editingContactGroup && (
+        <AddEditContactGroup
+          onSave={() => {
+            setContactGroupVersionKey(contactGroupVersionKey + 1);
+            setEditingContactGroup(false);
+          }}
+          onClose={() => setEditingContactGroup(false)}
+          contactGroup={group}
         />
       )}
       <Breadcrumbs aria-label="breadcrumb" style={{ marginBottom: 40 }}>
         <Link color="inherit" to={getLinkTo(BroadcastPath.WhatsAppFullPath)}>
           WhatsApp Groups
         </Link>
-        <Typography component={"span"} color="textPrimary">
-          {group["label"]}
-        </Typography>
+        <Box>
+          <Typography component={"span"} color="textPrimary">
+            {group["label"]}
+          </Typography>
+          <IconButton onClick={() => setEditingContactGroup(true)}>
+            <Edit />
+          </IconButton>
+        </Box>
       </Breadcrumbs>
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
@@ -99,6 +123,7 @@ const WhatsAppContactGroup = ({ match }) => {
             </Button>
           </Box>
           <MaterialTable
+            key={contactGroupVersionKey}
             title=""
             components={{
               Container: props => <Fragment>{props.children}</Fragment>

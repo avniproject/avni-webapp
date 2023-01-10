@@ -17,21 +17,35 @@ import { Close } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import SelectUser from "../../common/components/subject/SelectUser";
 import UserService from "../../common/service/UserService";
+import ContactService from "../api/ContactService";
+import ErrorMessage from "../../common/components/ErrorMessage";
 
-const workflowStates = {
+const WorkflowStates = {
   Start: "Start",
   Searching: "Searching",
+  SearchError: "SearchError",
   SearchCompleted: "SearchCompleted",
-  Adding: "Adding"
+  Adding: "Adding",
+  AddError: "AddError"
 };
 
-const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
+const SearchUserAndConfirm = function({ contactGroupId, onUserAdd, onCancel }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [users, setUsers] = useState(null);
-  const [workflowState, setWorkflowState] = useState(workflowStates.Start);
+  const [error, setError] = useState(null);
+  const [workflowState, setWorkflowState] = useState(WorkflowStates.Start);
+
+  const displayError = _.includes(
+    [WorkflowStates.SearchError, WorkflowStates.AddError],
+    workflowState
+  );
+  const displayProgress = _.includes(
+    [WorkflowStates.Searching, WorkflowStates.Adding],
+    workflowState
+  );
 
   return (
     <Box style={{ flexDirection: "column", display: "flex" }}>
@@ -76,19 +90,18 @@ const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
           color="primary"
           variant="contained"
           onClick={() => {
-            setWorkflowState(workflowStates.Searching);
+            setWorkflowState(WorkflowStates.Searching);
             UserService.searchUsers(name, phoneNumber, email)
               .then(usersPage => setUsers(usersPage.data))
-              .then(() => setWorkflowState(workflowStates.SearchCompleted));
+              .then(() => setWorkflowState(WorkflowStates.SearchCompleted));
           }}
         >
           Search
         </Button>
       </Card>
       <hr />
-      {(workflowState === workflowStates.Searching || workflowState === workflowStates.Adding) && (
-        <LinearProgress />
-      )}
+      {displayProgress && <LinearProgress />}
+      {displayError && <ErrorMessage error={error} />}
       <SelectUser users={users} onSelectedUser={setSelectedUser} />
       {users && (
         <Box style={{ flexDirection: "row-reverse", display: "flex", marginTop: 20 }}>
@@ -103,10 +116,15 @@ const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
           <Button
             variant="contained"
             color="primary"
-            disabled={_.isNil(selectedUser) || workflowState === workflowStates.Adding}
+            disabled={_.isNil(selectedUser) || workflowState === WorkflowStates.Adding}
             onClick={() => {
-              setWorkflowState(workflowStates.Adding);
-              onUserAdd(selectedUser);
+              setWorkflowState(WorkflowStates.Adding);
+              ContactService.addUserToContactGroup(contactGroupId, selectedUser)
+                .then(() => onUserAdd(selectedUser))
+                .catch(error => {
+                  setError(error);
+                  setWorkflowState(WorkflowStates.AddError);
+                });
             }}
           >
             Add
@@ -117,7 +135,7 @@ const SearchUserAndConfirm = function({ onUserAdd, onCancel }) {
   );
 };
 
-const AddContactGroupUser = ({ onClose, onUserAdd, ...props }) => {
+const AddContactGroupUser = ({ contactGroupId, onClose, onUserAdd }) => {
   const onCloseHandler = () => onClose();
 
   return (
@@ -141,7 +159,11 @@ const AddContactGroupUser = ({ onClose, onUserAdd, ...props }) => {
         </IconButton>
       </DialogActions>
       <Box style={{ padding: 20 }}>
-        <SearchUserAndConfirm onUserAdd={x => onUserAdd(x)} onCancel={onCloseHandler} />
+        <SearchUserAndConfirm
+          onUserAdd={x => onUserAdd(x)}
+          onCancel={onCloseHandler}
+          contactGroupId={contactGroupId}
+        />
       </Box>
     </Dialog>
   );

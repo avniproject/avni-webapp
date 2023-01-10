@@ -8,19 +8,8 @@ import { getHref } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
 import MessagesTab from "./MessagesTab";
 import Button from "@material-ui/core/Button";
-import {
-  DialogActions,
-  DialogTitle,
-  Input,
-  LinearProgress,
-  TextField,
-  Typography
-} from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import { Close } from "@material-ui/icons";
-import ErrorMessage from "../../common/components/ErrorMessage";
-import Dialog from "@material-ui/core/Dialog";
 import ContactService from "../api/ContactService";
+import AddEditContactGroup from "./AddEditContactGroup";
 
 const columns = [
   {
@@ -61,69 +50,6 @@ function TabContent(props) {
   return <React.Fragment>{value === index && children}</React.Fragment>;
 }
 
-function AddContactGroup({ onClose, contactGroup }) {
-  const onCloseHandler = () => onClose();
-  const [name, setName] = useState(contactGroup.name);
-  const [description, setDescription] = useState(contactGroup.description);
-  const [error] = useState(null);
-  const displayError = false;
-  const displayProgress = false;
-
-  return (
-    <Dialog
-      onClose={onCloseHandler}
-      aria-labelledby="customized-dialog-title"
-      open={true}
-      fullScreen
-    >
-      <DialogTitle
-        id="customized-dialog-title"
-        onClose={onCloseHandler}
-        style={{ backgroundColor: "black", color: "white" }}
-      >
-        Add Contact Group
-      </DialogTitle>
-      <DialogActions>
-        <IconButton onClick={onCloseHandler}>
-          <Close />
-        </IconButton>
-      </DialogActions>
-      <Box style={{ padding: 20 }}>
-        {displayError && <ErrorMessage error={error} />}
-        <Box>
-          <Typography variant="body1">Name</Typography>
-          <TextField
-            name="name"
-            autoComplete="off"
-            type="text"
-            onChange={e => setName(e.target.value)}
-          />
-        </Box>
-        <Box>
-          <Typography variant="body1">Description</Typography>
-          <Input
-            multiline
-            style={{ width: "100%" }}
-            onChange={e => setDescription(e.target.value)}
-          />
-        </Box>
-        {displayProgress && <LinearProgress />}
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={() =>
-            ContactService.addEditContactGroup(contactGroup, name, description).then(() =>
-              onCloseHandler()
-            )
-          }
-        >
-          Save
-        </Button>
-      </Box>
-    </Dialog>
-  );
-}
-
 const WhatsAppHome = () => {
   const [value, setValue] = React.useState(1);
   const [addingContactGroup, setAddingContactGroup] = useState(false);
@@ -146,7 +72,12 @@ const WhatsAppHome = () => {
         </Tabs>
         <TabContent value={value} index={1}>
           <div className="container">
-            {addingContactGroup && <AddContactGroup />}
+            {addingContactGroup && (
+              <AddEditContactGroup
+                onClose={() => setAddingContactGroup(false)}
+                onSave={() => setAddingContactGroup(false)}
+              />
+            )}
             <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
               <Button
                 color="primary"
