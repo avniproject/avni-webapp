@@ -50,7 +50,7 @@ const ComposeMessageView = () => {
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const groupIds = queryParams.get('groupIds');
+  const groupIds = queryParams.get('groupIds').split(',');
 
   const dateTimeFormat = "dd/MM/yyyy HH:mm";
 
@@ -112,7 +112,7 @@ const ComposeMessageView = () => {
         id="date-picker-dialog"
         placeholder="Date and Time"
         format={dateTimeFormat}
-        value={rules[0] && rules[0].scheduledDateTime}
+        value={rules[0].scheduledDateTime}
         onChange={(value) => onRuleChange({scheduledDateTime: value})}
         style={{ width: "14%", marginRight: "1%" }}
         KeyboardButtonProps={{

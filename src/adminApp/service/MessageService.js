@@ -39,7 +39,7 @@ export const saveMessageRules = (entityType, entityTypeId, rules = []) => {
 };
 
 export const sendBroadcastMessage =  (groupIds, rule) => {
-  return http.post("/web/sendBroadcastMessage", {
+  return http.post("/web/scheduleManualBroadcastMessage", {
     groupIds,
     ...rule
   });
