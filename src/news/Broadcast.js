@@ -10,7 +10,6 @@ import WhatsAppContactGroup from "./whatsapp/WhatsAppContactGroup";
 import { WithProps } from "../common/components/utils";
 import { getHref, getRoutePath } from "../common/utils/routeUtil";
 import BroadcastPath from "./utils/BroadcastPath";
-import ComposeMessageView from "./whatsapp/ComposeMessageView";
 
 const BroadcastPage = function({ path }) {
   return (
@@ -45,11 +44,6 @@ const Broadcast = ({ match: { path } }) => {
           `${BroadcastPath.WhatsApp}/${BroadcastPath.ContactGroup}/:contactGroupId`
         )}
         component={WhatsAppContactGroup}
-      />
-      <Route
-        exact
-        path={getRoutePath(path, BroadcastPath.SendMessage)}
-        component={ComposeMessageView}
       />
     </React.Fragment>
   );

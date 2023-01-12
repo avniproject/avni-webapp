@@ -1,11 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import MaterialTable from "material-table";
 import { isEmpty, map } from "lodash";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core";
 
-import {useHistory} from "react-router-dom";
-import BroadcastPath from "../utils/BroadcastPath";
+import ComposeMessageView from "./ComposeMessageView";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -20,21 +19,20 @@ const useStyle = makeStyles(theme => ({
 
 const SendMessageToolBar = ({ ...props }) => {
   const classes = useStyle();
-  let history = useHistory();
+  const [sendingMessage, setSendingMessage] = useState(false);
 
   const { selectedRows } = props;
   const selectedIds = map(selectedRows, "id");
 
-  function navigateToComposeMessageComponent() {
-    history.push(`/${BroadcastPath.Root}/${BroadcastPath.SendMessage}?groupIds=${selectedIds}`);
-  }
-
   return (
     <div className={classes.root}>
+      {sendingMessage && <ComposeMessageView selectedGroupIds={selectedIds}
+                                             onClose={() => setSendingMessage(false)}
+      />}
       <Button
         variant="contained"
         color="primary"
-        onClick={navigateToComposeMessageComponent}
+        onClick={() => setSendingMessage(true)}
         disabled={isEmpty(selectedIds)}
       >
         {"Send Message"}

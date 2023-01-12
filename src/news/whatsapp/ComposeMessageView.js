@@ -4,15 +4,15 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import _ from "lodash";
 import {AvniFormLabel} from "../../common/components/AvniFormLabel";
 import Select from "react-select";
-import {useLocation} from "react-router-dom";
 import {KeyboardDateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import {AvniTextField} from "../../common/components/AvniTextField";
-import Button from "@material-ui/core/Button";
 import { sendBroadcastMessage } from "../../adminApp/service/MessageService";
+import {Box, Dialog, DialogActions, DialogTitle, Button} from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import {Close} from "@material-ui/icons";
 
-
-const ComposeMessageView = () => {
+const ComposeMessageView = ({selectedGroupIds, onClose}) => {
 
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [{}],
@@ -48,24 +48,37 @@ const ComposeMessageView = () => {
     return _.find(templates, template => template.id === selectedTemplateId);
   }
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const groupIds = queryParams.get('groupIds').split(',');
-
   const dateTimeFormat = "dd/MM/yyyy HH:mm";
-
   const [error, setError] = useState("");
 
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      await sendBroadcastMessage(groupIds, rules[0]);
+      await sendBroadcastMessage(selectedGroupIds, rules[0]);
     } catch (e) {
       setError(error.response.data.message);
     }
   }
 
-  return (<div className="container">
+  return (<Dialog
+      onClose={()=> {}}
+      aria-labelledby="customized-dialog-title"
+      open={true}
+      fullScreen
+    >
+      <DialogTitle
+        id="customized-dialog-title"
+        onClose={onClose}
+        style={{ backgroundColor: "black", color: "white" }}
+      >
+        Send Message
+      </DialogTitle>
+      <DialogActions>
+        <IconButton onClick={onClose}>
+          <Close />
+        </IconButton>
+      </DialogActions>
+    <Box style={{ padding: 40 }}>
     <form onSubmit={onSubmit}>
     <AvniFormLabel
         label={"Select Template"}
@@ -125,7 +138,8 @@ const ComposeMessageView = () => {
         Send Message
       </Button>
       </form>
-    </div>
+      </Box>
+    </Dialog>
     )
 }
 
