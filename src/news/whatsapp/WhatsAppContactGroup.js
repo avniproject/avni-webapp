@@ -6,7 +6,7 @@ import MaterialTable from "material-table";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
-import { Breadcrumbs } from "@material-ui/core";
+import { Breadcrumbs, Snackbar } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
@@ -50,6 +50,7 @@ const WhatsAppContactGroup = ({ match }) => {
   const [editingContactGroup, setEditingContactGroup] = useState(false);
   const contactGroupId = match.params["contactGroupId"];
   const [contactGroupVersionKey, setContactGroupVersionKey] = useState(0);
+  const [updatedContactGroup, setUpdatedContactGroup] = useState(false);
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
@@ -78,6 +79,7 @@ const WhatsAppContactGroup = ({ match }) => {
           onSave={() => {
             setContactGroupVersionKey(contactGroupVersionKey + 1);
             setEditingContactGroup(false);
+            setUpdatedContactGroup(true);
           }}
           onClose={() => setEditingContactGroup(false)}
           contactGroup={group}
@@ -143,6 +145,12 @@ const WhatsAppContactGroup = ({ match }) => {
             actions={[]}
           />
         </div>
+        <Snackbar
+          open={updatedContactGroup}
+          autoHideDuration={3000}
+          onClose={() => setUpdatedContactGroup(false)}
+          message="Updated contact group"
+        />
       </Box>
     </ScreenWithAppBar>
   );

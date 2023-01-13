@@ -10,13 +10,23 @@ import MessagesTab from "./MessagesTab";
 import Button from "@material-ui/core/Button";
 import ContactService from "../api/ContactService";
 import AddEditContactGroup from "./AddEditContactGroup";
+import { Snackbar } from "@material-ui/core";
+
+function ContactGroupLink({ rowData, column }) {
+  return (
+    <a href={getHref(`${BroadcastPath.ContactGroupFullPath}/${rowData["id"]}`)}>
+      {rowData[column]}
+    </a>
+  );
+}
 
 const columns = [
   {
     title: "Name",
     defaultSort: "asc",
     sorting: false,
-    field: "label"
+    field: "label",
+    render: rowData => <ContactGroupLink rowData={rowData} column="label" />
   },
   {
     title: "Description",
@@ -28,11 +38,7 @@ const columns = [
     title: "No of contacts",
     sorting: false,
     field: "contactsCount",
-    render: rowData => (
-      <a href={getHref(`${BroadcastPath.ContactGroupFullPath}/${rowData["id"]}`)}>
-        {rowData["contactsCount"]}
-      </a>
-    )
+    render: rowData => <ContactGroupLink rowData={rowData} column="contactsCount" />
   }
 ];
 
@@ -53,6 +59,7 @@ function TabContent(props) {
 const WhatsAppHome = () => {
   const [value, setValue] = React.useState(1);
   const [addingContactGroup, setAddingContactGroup] = useState(false);
+  const [savedContactGroup, setSavedContactGroup] = useState(false);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -75,7 +82,10 @@ const WhatsAppHome = () => {
             {addingContactGroup && (
               <AddEditContactGroup
                 onClose={() => setAddingContactGroup(false)}
-                onSave={() => setAddingContactGroup(false)}
+                onSave={() => {
+                  setAddingContactGroup(false);
+                  setSavedContactGroup(true);
+                }}
               />
             )}
             <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
@@ -112,6 +122,12 @@ const WhatsAppHome = () => {
         <TabContent value={value} index={2}>
           <MessagesTab groups={fetchData} columns={columns} />
         </TabContent>
+        <Snackbar
+          open={savedContactGroup}
+          autoHideDuration={3000}
+          onClose={() => setSavedContactGroup(false)}
+          message="Created new contact group"
+        />
       </Box>
     </ScreenWithAppBar>
   );

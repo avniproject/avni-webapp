@@ -32,7 +32,6 @@ const useStyles1 = makeStyles(theme => ({
 function MySnackbarContentWrapper(props) {
   const classes = useStyles1();
   const { className, message, variant, ...other } = props;
-  //const { className, message, onClose, variant, ...other } = props;
   const Icon = variantIcon[variant];
 
   return (
@@ -45,11 +44,6 @@ function MySnackbarContentWrapper(props) {
           {message}
         </span>
       }
-      // action={[
-      //   <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-      //     <CloseIcon className={classes.icon} />
-      //   </IconButton>
-      // ]}
       {...other}
     />
   );
@@ -58,19 +52,10 @@ function MySnackbarContentWrapper(props) {
 MySnackbarContentWrapper.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
-  //onClose: PropTypes.func,
   variant: PropTypes.oneOf(["success"]).isRequired
 };
 
 export default function CustomizedSnackbar(props) {
-  // function handleClose(event, reason) {
-  //   if (reason === "clickaway") {
-  //     props.getDefaultSnackbarStatus(false);
-  //     return;
-  //   }
-  //   props.getDefaultSnackbarStatus(false);
-  // }
-
   return (
     <div>
       <Snackbar
@@ -80,10 +65,8 @@ export default function CustomizedSnackbar(props) {
         }}
         open={props.defaultSnackbarStatus}
         autoHideDuration={2000}
-        // onClose={handleClose}
       >
         <MySnackbarContentWrapper variant="success" message={props.message} />
-        {/* <MySnackbarContentWrapper onClose={handleClose} variant="success" message={props.message} /> */}
       </Snackbar>
     </div>
   );
