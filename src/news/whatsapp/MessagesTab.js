@@ -5,6 +5,7 @@ import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core";
 
 import ComposeMessageView from "./ComposeMessageView";
+import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -20,6 +21,7 @@ const useStyle = makeStyles(theme => ({
 const SendMessageToolBar = ({ ...props }) => {
   const classes = useStyle();
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [scheduled, setScheduled] = useState(false);
 
   const { selectedRows } = props;
   const selectedIds = map(selectedRows, "id");
@@ -28,7 +30,16 @@ const SendMessageToolBar = ({ ...props }) => {
     <div className={classes.root}>
       {sendingMessage && <ComposeMessageView selectedGroupIds={selectedIds}
                                              onClose={() => setSendingMessage(false)}
-      />}
+                                             onScheduled={() => {setSendingMessage(false)
+                                               setScheduled(true)
+                                                }}/>}
+
+      {scheduled && <CustomizedSnackbar
+        message={"Message scheduled"}
+        getDefaultSnackbarStatus={snackbarStatus =>
+          setScheduled(snackbarStatus)
+        }
+        defaultSnackbarStatus={scheduled}/>}
       <Button
         variant="contained"
         color="primary"

@@ -12,7 +12,7 @@ import {Box, Dialog, DialogActions, DialogTitle, Button} from "@material-ui/core
 import IconButton from "@material-ui/core/IconButton";
 import {Close} from "@material-ui/icons";
 
-const ComposeMessageView = ({selectedGroupIds, onClose}) => {
+const ComposeMessageView = ({selectedGroupIds, onClose, onScheduled}) => {
 
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [{}],
@@ -55,6 +55,7 @@ const ComposeMessageView = ({selectedGroupIds, onClose}) => {
     event.preventDefault();
     try {
       await sendBroadcastMessage(selectedGroupIds, rules[0]);
+      onScheduled();
     } catch (e) {
       setError(error.response.data.message);
     }
