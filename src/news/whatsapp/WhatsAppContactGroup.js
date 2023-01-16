@@ -111,8 +111,6 @@ function Members({
   );
 }
 
-function Messages() {}
-
 const ContactGroupTabs = {
   members: 1,
   messages: 2
