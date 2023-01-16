@@ -32,34 +32,34 @@ const columns = [
 
 const tableRef = React.createRef();
 
-const fetchData = (query, contactGroupId, setGroup) => {
+const fetchData = (query, contactGroupId, onContactGroupLoaded) => {
   return new Promise(resolve =>
     ContactService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(
       data => {
-        setGroup(data["group"]);
+        onContactGroupLoaded(data);
         resolve(data["contacts"]);
       }
     )
   );
 };
 
-const WhatsAppContactGroup = ({ match }) => {
-  const [group, setGroup] = useState({ label: "..." });
+function Members({
+  contactGroupId,
+  contactGroupMembersUpdated,
+  contactGroupVersion,
+  onContactGroupLoaded
+}) {
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
-  const [editingContactGroup, setEditingContactGroup] = useState(false);
-  const contactGroupId = match.params["contactGroupId"];
-  const [contactGroupVersionKey, setContactGroupVersionKey] = useState(0);
-  const [updatedContactGroup, setUpdatedContactGroup] = useState(false);
 
   return (
-    <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
+    <div className="container">
       {addingSubjects && (
         <AddContactGroupSubjects
           contactGroupId={contactGroupId}
           onClose={() => setAddingSubject(false)}
           onSubjectAdd={subject => {
-            setContactGroupVersionKey(contactGroupVersionKey + 1);
+            contactGroupMembersUpdated();
             setAddingSubject(false);
           }}
         />
@@ -69,15 +69,69 @@ const WhatsAppContactGroup = ({ match }) => {
           contactGroupId={contactGroupId}
           onClose={() => setAddingUser(false)}
           onUserAdd={user => {
-            setContactGroupVersionKey(contactGroupVersionKey + 1);
+            contactGroupMembersUpdated();
             setAddingUser(false);
           }}
         />
       )}
+      <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
+        <Button
+          color="primary"
+          variant="outlined"
+          style={{ marginLeft: 10 }}
+          onClick={() => setAddingSubject(true)}
+        >
+          Add Subject
+        </Button>
+        <Button color="primary" variant="outlined" onClick={event => setAddingUser(true)}>
+          Add User
+        </Button>
+      </Box>
+      <MaterialTable
+        key={contactGroupVersion}
+        title=""
+        components={{
+          Container: props => <Fragment>{props.children}</Fragment>
+        }}
+        tableRef={tableRef}
+        columns={columns}
+        data={query => fetchData(query, contactGroupId, onContactGroupLoaded)}
+        options={{
+          addRowPosition: "first",
+          sorting: false,
+          debounceInterval: 500,
+          search: false,
+          rowStyle: rowData => ({
+            backgroundColor: "#fff"
+          })
+        }}
+        actions={[]}
+      />
+    </div>
+  );
+}
+
+function Messages() {}
+
+const ContactGroupTabs = {
+  members: 1,
+  messages: 2
+};
+
+const WhatsAppContactGroup = ({ match }) => {
+  const [group, setGroup] = useState({ label: "..." });
+  const contactGroupId = match.params["contactGroupId"];
+  const [selectedTab, setSelectedTab] = useState(ContactGroupTabs.members);
+  const [editingContactGroup, setEditingContactGroup] = useState(false);
+  const [updatedContactGroup, setUpdatedContactGroup] = useState(false);
+  const [contactGroupVersion, updateContactGroupVersion] = useState(0);
+
+  return (
+    <ScreenWithAppBar appbarTitle={"WhatsApp Contact Group"}>
       {editingContactGroup && (
         <AddEditContactGroup
           onSave={() => {
-            setContactGroupVersionKey(contactGroupVersionKey + 1);
+            updateContactGroupVersion(contactGroupVersion + 1);
             setEditingContactGroup(false);
             setUpdatedContactGroup(true);
           }}
@@ -102,49 +156,27 @@ const WhatsAppContactGroup = ({ match }) => {
         <Tabs
           orientation="vertical"
           variant="scrollable"
-          value={1}
+          value={selectedTab}
           onChange={() => {}}
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
-          <Tab label="Members" value={1} />
-          <Tab label="Messages Sent" value={2} />
+          <Tab label="Members" value={ContactGroupTabs.members} onClick={() => setSelectedTab(1)} />
+          <Tab
+            label="Messages Sent"
+            value={ContactGroupTabs.messages}
+            onClick={() => setSelectedTab(2)}
+          />
         </Tabs>
 
-        <div className="container">
-          <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
-            <Button
-              color="primary"
-              variant="outlined"
-              style={{ marginLeft: 10 }}
-              onClick={() => setAddingSubject(true)}
-            >
-              Add Subject
-            </Button>
-            <Button color="primary" variant="outlined" onClick={event => setAddingUser(true)}>
-              Add User
-            </Button>
-          </Box>
-          <MaterialTable
-            key={contactGroupVersionKey}
-            title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
-            columns={columns}
-            data={query => fetchData(query, contactGroupId, setGroup)}
-            options={{
-              addRowPosition: "first",
-              sorting: false,
-              debounceInterval: 500,
-              search: false,
-              rowStyle: rowData => ({
-                backgroundColor: "#fff"
-              })
-            }}
-            actions={[]}
+        {selectedTab === ContactGroupTabs.members && (
+          <Members
+            contactGroupId={contactGroupId}
+            onContactGroupLoaded={contactGroup => setGroup(contactGroup["group"])}
+            contactGroupMembersUpdated={() => updateContactGroupVersion(contactGroupVersion + 1)}
+            contactGroupVersion={contactGroupVersion}
           />
-        </div>
+        )}
+
         <Snackbar
           open={updatedContactGroup}
           autoHideDuration={3000}
