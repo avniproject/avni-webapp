@@ -36,6 +36,7 @@
   "APP_DESIGNER_MANUAL_ENROLMENT_ELIGIBILITY_CHECK_RULE": "This checks for eligibility of program after manual enrolment eligibility form is filled",
   "APP_DESIGNER_PROGRAM_ACTIVE": "Switch off program if you don't want to use it anymore.",
   "APP_DESIGNER_PROGRAM_MANUAL_ELIGIBILITY_CHECK_REQUIRED": "For enrolment the user must perform manual eligibility check by filling a form.",
+  "APP_DESIGNER_ALLOW_MULTIPLE_ENROLMENTS": "Allow multiple active enrolments.",
   "APP_DESIGNER_ENCOUNTER_TYPE_NAME": "Encounter type name",
   "APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT": "Subject type for which this encounter type should show up",
   "APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM": "Associating with a program will make it a program encounter",

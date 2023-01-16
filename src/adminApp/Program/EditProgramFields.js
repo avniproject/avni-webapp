@@ -118,7 +118,17 @@ const EditProgramFields = props => {
 
       <br />
       <AvniSwitch
-        checked={program.manualEligibilityCheckRequired}
+        checked={program.allowMultipleEnrolments}
+        onChange={event =>
+          dispatch({ type: "allowMultipleEnrolments", payload: event.target.checked })
+        }
+        name="Allow multiple enrolments"
+        toolTipKey={"APP_DESIGNER_ALLOW_MULTIPLE_ENROLMENTS"}
+      />
+
+      <br />
+      <AvniSwitch
+        checked={program.allow}
         onChange={event =>
           dispatch({ type: "manualEligibilityCheckRequired", payload: event.target.checked })
         }

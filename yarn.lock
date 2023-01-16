@@ -15432,6 +15432,11 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
+openchs-models@1.27.15:
+  version "1.27.15"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.27.15.tgz#55b5c1f0fc62e38f1ef8ffdfad80c16ec6d8ad6e"
+  integrity sha512-6D77fjWeudZrZPk3arLu403gnOijQgGiIgl93GNQ9eA0ody1xFxU6nV9ozEDgAUmndDPDQnL63V8yHLQOukdjA==
+
 openchs-models@^0.2.25:
   version "0.2.86"
   resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
@@ -15439,11 +15444,6 @@ openchs-models@^0.2.25:
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
-
-openchs-models@latest:
-  version "1.27.9"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.27.9.tgz#4d874c9aff2d5f374607560a694dec46762636e5"
-  integrity sha512-qW4ikPnjwZCmPBslTCHrUVfkYbz3z36Bc0L4qbuPp7XIbb/wTaNZJZjKLxZFMBUwNK7v9JtiEjLh740V6JMOQA==
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"

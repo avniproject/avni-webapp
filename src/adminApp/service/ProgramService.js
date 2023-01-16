@@ -44,6 +44,7 @@ class ProgramService {
       enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
       enrolmentEligibilityCheckDeclarativeRule: program.enrolmentEligibilityCheckDeclarativeRule,
       manualEligibilityCheckRequired: program.manualEligibilityCheckRequired,
+      allowMultipleEnrolments: program.allowMultipleEnrolments,
       manualEnrolmentEligibilityCheckRule: program.manualEnrolmentEligibilityCheckRule,
       programId: program.programId,
       manualEnrolmentEligibilityCheckDeclarativeRule:
