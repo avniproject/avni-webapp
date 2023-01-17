@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
 import SubjectSearchTable from "dataEntryApp/views/search/SubjectSearchTable";
 import { useTranslation } from "react-i18next";
-import { store } from "../../../common/store/createStore";
+import { store } from "../../../common/store";
 import { types } from "../../reducers/searchFilterReducer";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";

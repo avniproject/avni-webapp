@@ -3,7 +3,20 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import { filter, get, isEmpty, join, map, flatten, find, reject, isNil, size, head } from "lodash";
+import {
+  filter,
+  uniqBy,
+  get,
+  isEmpty,
+  join,
+  map,
+  flatten,
+  find,
+  reject,
+  isNil,
+  size,
+  head
+} from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import { Grid } from "@material-ui/core";
@@ -94,7 +107,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       sorting: false,
       render: row => {
         return row.enrolments
-          ? row.enrolments.map((p, key) => (
+          ? uniqBy(row.enrolments, enr => enr.operationalProgramName).map((p, key) => (
               <Chip
                 key={key}
                 size="small"

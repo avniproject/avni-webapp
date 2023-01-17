@@ -195,6 +195,9 @@ const ProfileDetails = ({
     </DialogContent>
   );
 
+  const allowEnrolment =
+    tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided && isMultipleProgramEligible;
+
   return (
     <div className={classes.tableView}>
       <CommentDrawer open={openComment} setOpen={setOpenComment} subjectUUID={subjectUuid} />
@@ -275,10 +278,7 @@ const ProfileDetails = ({
             )}
           </Grid>
           <Grid item>
-            {tabsStatus &&
-            tabsStatus.showProgramTab &&
-            !profileDetails.voided &&
-            isMultipleProgramEligible ? (
+            {allowEnrolment ? (
               <div>
                 <Modal
                   content={content}
