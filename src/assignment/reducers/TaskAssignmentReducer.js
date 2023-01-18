@@ -1,4 +1,4 @@
-import { filter, flatMap, get, isEmpty, map, mapValues, find, isNil } from "lodash";
+import { filter, flatMap, get, isEmpty, map, mapValues, find, isNil, toPairs } from "lodash";
 import { labelValue } from "../util/util";
 
 const initialAssignmentCriteria = {
@@ -8,9 +8,13 @@ const initialAssignmentCriteria = {
   allSelected: false
 };
 
-class TaskMetadata {
+export class TaskMetadata {
   taskStatuses;
   taskTypes;
+
+  static getAllSearchFields(taskMetadata) {
+    return flatMap(taskMetadata.taskTypes, taskType => toPairs(taskType.metadataSearchFields));
+  }
 
   static getTaskStatusesMatching(taskMetadata, name) {
     return filter(taskMetadata.taskStatuses, ts => {
@@ -105,10 +109,6 @@ export const getMetadataOptions = (taskMetadata, filterCriteria) => {
   );
   const taskStatusOptions = map(applicableTaskStatuses, ({ name, id }) => labelValue(name, id));
   return { taskTypeOptions, userOptions, taskStatusOptions };
-};
-
-export const getAllSearchFields = taskMetadata => {
-  return flatMap(taskMetadata.taskTypes, ({ metadataSearchFields }) => metadataSearchFields);
 };
 
 export const getAssignmentValue = (key, assignmentCriteria) => {

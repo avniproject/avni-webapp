@@ -1,14 +1,16 @@
-import { flatMap, get, isNil, map, reject } from "lodash";
+import { get, isNil, reject } from "lodash";
+import { TaskMetadata } from "../reducers/TaskAssignmentReducer";
 
-export const getTableColumns = ({ taskTypes }) => {
-  const metaSearchColumns = flatMap(taskTypes, ({ metadataSearchFields }) =>
-    map(metadataSearchFields, field => ({
-      title: field,
-      field,
+export const getTableColumns = taskMetadata => {
+  const metaSearchColumns = TaskMetadata.getAllSearchFields(taskMetadata).map(([name]) => {
+    const column = {
+      title: name,
       sorting: false,
-      render: rowData => get(rowData, ["metadata", field])
-    }))
-  );
+      render: rowData => get(rowData, ["metadata", name])
+    };
+    column[name] = name;
+    return column;
+  });
 
   const columns = [
     {

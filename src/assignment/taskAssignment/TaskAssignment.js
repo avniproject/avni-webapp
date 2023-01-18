@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import api from "../api";
 import {
-  getAllSearchFields,
   getAssignmentValue,
   getFilterPayload,
   getMetadataOptions,
   initialState,
-  TaskAssignmentReducer
+  TaskAssignmentReducer,
+  TaskMetadata
 } from "../reducers/TaskAssignmentReducer";
 import MaterialTable from "material-table";
 import { getTableColumns } from "./TableColumns";
@@ -114,7 +114,7 @@ const TaskAssignment = ({ history, ...props }) => {
             taskStatusOptions={taskStatusOptions}
             taskTypeOptions={taskTypeOptions}
             userOptions={userOptions}
-            searchFields={getAllSearchFields(taskMetadata)}
+            conceptNameAnswerPairs={TaskMetadata.getAllSearchFields(taskMetadata)}
           />
         </Grid>
         <AssignmentAction

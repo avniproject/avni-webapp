@@ -7,6 +7,7 @@ import { dateFilterFieldOptions } from "../util/DateFilterOptions";
 import { useStyle } from "../util/FilterStyles";
 import { labelValue } from "../util/util";
 import TextFilter from "./TextFilter";
+import _ from "lodash";
 
 export const TaskAssignmentFilter = ({
   filterCriteria,
@@ -15,7 +16,7 @@ export const TaskAssignmentFilter = ({
   userOptions,
   taskTypeOptions,
   taskStatusOptions,
-  searchFields
+  conceptNameAnswerPairs
 }) => {
   const classes = useStyle();
   const allUserOptions = [labelValue("Unassigned", 0), ...userOptions];
@@ -30,14 +31,25 @@ export const TaskAssignmentFilter = ({
         <Typography variant={"h6"} className={classes.header}>
           {"Filters"}
         </Typography>
-        {map(searchFields, name => (
-          <TextFilter
-            label={name}
-            value={filterCriteria.metadata[name]}
-            filterCriteria={filterCriteria}
-            onFilterChange={value => onMetadataFilterChange(name, value)}
-          />
-        ))}
+        {map(conceptNameAnswerPairs, conceptNameAnswerPair => {
+          const [name, answers] = conceptNameAnswerPair;
+          return _.isNil(answers) ? (
+            <TextFilter
+              label={name}
+              value={filterCriteria.metadata[name]}
+              filterCriteria={filterCriteria}
+              onFilterChange={value => onMetadataFilterChange(name, value)}
+            />
+          ) : (
+            <SelectFilter
+              label={name}
+              options={taskTypeOptions}
+              filter={"taskType"}
+              filterCriteria={filterCriteria}
+              onFilterChange={value => onMetadataFilterChange(name, value)}
+            />
+          );
+        })}
         <SelectFilter
           label={"Task type"}
           options={taskTypeOptions}
