@@ -43,10 +43,10 @@ export const TaskAssignmentFilter = ({
           ) : (
             <SelectFilter
               label={name}
-              options={taskTypeOptions}
-              filter={"taskType"}
+              options={answers.map(x => labelValue(x))}
+              filter={filterCriteria.metadata[name]}
               filterCriteria={filterCriteria}
-              onFilterChange={value => onMetadataFilterChange(name, value)}
+              onFilterChange={(filter, event) => onMetadataFilterChange(name, event && event.value)}
             />
           );
         })}

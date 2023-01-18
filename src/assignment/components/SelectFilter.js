@@ -25,7 +25,6 @@ const SelectFilter = ({
       <FormLabel component="legend">{label}</FormLabel>
       <Select
         isClearable={isClearable}
-        isSearchable
         maxMenuHeight={120}
         isMulti={isMulti}
         value={filterCriteria[filter]}
