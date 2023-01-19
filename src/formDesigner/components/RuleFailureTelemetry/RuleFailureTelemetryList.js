@@ -1,12 +1,12 @@
 import React, { Fragment } from "react";
 import Box from "@material-ui/core/Box";
-import MaterialTable from "material-table";
 import { Title } from "react-admin";
 import fetchData from "common/material-table/fetch";
 import http from "common/utils/httpClient";
 import moment from "moment";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const tableRef = React.createRef();
 const refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -136,7 +136,7 @@ const RuleFailureTelemetryList = () => {
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title="Rule Failures" />
         <div className="container">
-          <MaterialTable
+          <AvniMaterialTable
             title=""
             components={{
               Container: props => <Fragment>{props.children}</Fragment>,
@@ -161,7 +161,7 @@ const RuleFailureTelemetryList = () => {
                   statusFilter(selectedStatus, onSelect)
                 )
             }}
-            tableRef={tableRef}
+            ref={tableRef}
             columns={columns}
             actions={buildActions()}
             data={fetchData(resourceName, resourceUrl, queryParams)}
@@ -186,6 +186,7 @@ const RuleFailureTelemetryList = () => {
                 backgroundColor: rowData["closed"] ? "#DBDBDB" : "#fff"
               })
             }}
+            route={"/appdesigner/ruleFailures"}
           />
         </div>
       </Box>

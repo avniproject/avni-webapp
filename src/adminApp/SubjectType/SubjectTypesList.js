@@ -1,5 +1,4 @@
-import React, { Fragment, useState } from "react";
-import MaterialTable from "material-table";
+import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import { get, isEmpty, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
@@ -8,6 +7,7 @@ import { Title } from "react-admin";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import { CreateComponent } from "../../common/components/CreateComponent";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -106,14 +106,11 @@ const SubjectTypesList = ({ history }) => {
               <CreateComponent onSubmit={addNewConcept} name="New Subject type" />
             </div>
 
-            <MaterialTable
+            <AvniMaterialTable
               title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
+              ref={tableRef}
               columns={columns}
-              data={fetchData}
+              fetchData={fetchData}
               options={{
                 addRowPosition: "first",
                 sorting: true,
@@ -123,6 +120,7 @@ const SubjectTypesList = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
+              route={"/appdesigner/subjectType"}
               actions={[editSubjectType, voidSubjectType]}
             />
           </div>

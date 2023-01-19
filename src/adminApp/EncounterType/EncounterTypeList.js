@@ -1,5 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
-import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import _, { get } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
@@ -11,6 +10,7 @@ import {
   findProgramEncounterForm
 } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const EncounterTypeList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
@@ -159,15 +159,11 @@ const EncounterTypeList = ({ history }) => {
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
               <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />
             </div>
-
-            <MaterialTable
+            <AvniMaterialTable
               title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
+              ref={tableRef}
               columns={columns}
-              data={fetchData}
+              fetchData={fetchData}
               options={{
                 addRowPosition: "first",
                 sorting: true,
@@ -178,6 +174,7 @@ const EncounterTypeList = ({ history }) => {
                 })
               }}
               actions={[editEncounterType, voidEncounterType]}
+              route={"/appDesigner/encounterType"}
             />
           </div>
         </div>

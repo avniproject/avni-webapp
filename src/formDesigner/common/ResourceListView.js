@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cloneDeep, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { CreateComponent } from "../../common/components/CreateComponent";
-import MaterialTable from "material-table";
 import { Title } from "react-admin";
 import http from "common/utils/httpClient";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const ResourceListView = ({ history, title, resourceName, resourceURLName, columns }) => {
   const [redirect, setRedirect] = useState(false);
@@ -57,14 +57,11 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
             <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
           </div>
-          <MaterialTable
+          <AvniMaterialTable
             title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
+            ref={tableRef}
             columns={columns}
-            data={result}
+            fetchData={result}
             options={{
               addRowPosition: "first",
               sorting: true,
@@ -75,6 +72,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
               })
             }}
             actions={[editResource, voidResource]}
+            route={`/appdesigner/${resourceURLName}`}
           />
         </div>
       </Box>

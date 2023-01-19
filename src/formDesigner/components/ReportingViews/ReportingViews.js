@@ -1,7 +1,6 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import MaterialTable from "material-table";
 import http from "../../../common/utils/httpClient";
 import { makeStyles } from "@material-ui/core";
 import { cloneDeep, get } from "lodash";
@@ -12,6 +11,7 @@ import CustomizedSnackbar from "../CustomizedSnackbar";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Chip from "@material-ui/core/Chip";
 import { JSEditor } from "../../../common/components/JSEditor";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -123,12 +123,9 @@ const ReportingViews = () => {
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
             <CreateComponent onSubmit={() => confirmViewCreation()} name="Create/Refresh view" />
           </div>
-          <MaterialTable
+          <AvniMaterialTable
             title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
+            ref={tableRef}
             columns={columns}
             data={result}
             options={{
@@ -152,6 +149,7 @@ const ReportingViews = () => {
               }
             ]}
             actions={[deleteView]}
+            route={"/appdesigner/reportingViews"}
           />
         </div>
         <Modal disableBackdropClick open={loading}>

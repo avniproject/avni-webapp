@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cloneDeep, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { CreateComponent } from "../../../common/components/CreateComponent";
-import MaterialTable from "material-table";
 import { Title } from "react-admin";
 import http from "common/utils/httpClient";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 export const VideoList = ({ history }) => {
   const columns = [
@@ -76,14 +76,11 @@ export const VideoList = ({ history }) => {
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
             <CreateComponent onSubmit={() => setRedirect(true)} name="New Video" />
           </div>
-          <MaterialTable
+          <AvniMaterialTable
             title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
+            ref={tableRef}
             columns={columns}
-            data={result}
+            fetchData={result}
             options={{
               addRowPosition: "first",
               sorting: true,
@@ -94,6 +91,7 @@ export const VideoList = ({ history }) => {
               })
             }}
             actions={[editVideo, voidVideo]}
+            route={"/appdesigner/video"}
           />
         </div>
       </Box>

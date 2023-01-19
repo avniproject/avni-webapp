@@ -1,5 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
-import MaterialTable from "material-table";
+import React, { useState, useEffect } from "react";
 import http from "common/utils/httpClient";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
@@ -8,6 +7,7 @@ import { cloneDeep } from "lodash";
 
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const Relationships = ({ history }) => {
   const columns = [
@@ -105,14 +105,11 @@ const Relationships = ({ history }) => {
                 <CreateComponent onSubmit={addNewConcept} name="New Relationship" />
               </div>
 
-              <MaterialTable
+              <AvniMaterialTable
                 title=""
-                components={{
-                  Container: props => <Fragment>{props.children}</Fragment>
-                }}
-                tableRef={tableRef}
+                ref={tableRef}
                 columns={columns}
-                data={result}
+                fetchData={result}
                 options={{
                   addRowPosition: "first",
                   sorting: true,
@@ -123,6 +120,7 @@ const Relationships = ({ history }) => {
                   })
                 }}
                 actions={[editRelationship, voidRelationship]}
+                route={"/appdesigner/relationship"}
               />
             </div>
           )}

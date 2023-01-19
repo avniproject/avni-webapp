@@ -1,5 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
-import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import _, { get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
@@ -8,6 +7,7 @@ import { Title } from "react-admin";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const ProgramList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -154,14 +154,11 @@ const ProgramList = ({ history }) => {
               <CreateComponent onSubmit={addNewConcept} name="New Program" />
             </div>
 
-            <MaterialTable
+            <AvniMaterialTable
               title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
+              ref={tableRef}
               columns={columns}
-              data={fetchData}
+              fetchData={fetchData}
               options={{
                 addRowPosition: "first",
                 sorting: true,
@@ -172,6 +169,7 @@ const ProgramList = ({ history }) => {
                 })
               }}
               actions={[editProgram, voidProgram]}
+              route={"/appdesigner/program"}
             />
           </div>
         </div>

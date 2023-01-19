@@ -1,5 +1,4 @@
-import React, { Fragment, useState } from "react";
-import MaterialTable from "material-table";
+import React, { useState } from "react";
 import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -8,6 +7,7 @@ import { CreateComponent } from "../../common/components/CreateComponent";
 import EntityListUtil from "../Util/EntityListUtil";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const ApplicationMenuList = ({ history }) => {
   const [createTriggered, triggerCreate] = useState(false);
@@ -59,14 +59,11 @@ const ApplicationMenuList = ({ history }) => {
               <CreateComponent onSubmit={() => triggerCreate(true)} name="New Menu Item" />
             </div>
 
-            <MaterialTable
+            <AvniMaterialTable
               title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
+              ref={tableRef}
               columns={columns}
-              data={fetchData}
+              fetchData={fetchData}
               options={{
                 addRowPosition: "first",
                 sorting: false,
@@ -85,6 +82,7 @@ const ApplicationMenuList = ({ history }) => {
                   "displayKey"
                 )
               ]}
+              route={"/appdesigner/applicationMenu"}
             />
           </div>
         </div>

@@ -1,18 +1,13 @@
-import React, { Fragment, useState, useEffect } from "react";
-import MaterialTable from "material-table";
-import TablePagination from "@material-ui/core/TablePagination";
+import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import _ from "lodash";
-import { withRouter, Redirect, useLocation } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
+import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 
 const Concepts = ({ history }) => {
-  const [initialPage, setInitialPage] = useState(0);
-  const { search } = useLocation();
-  const query = React.useMemo(() => new URLSearchParams(search), [search]);
-  const tablePage = Number(query.get("page") || 0);
   const columns = [
     {
       title: "Name",
@@ -32,7 +27,7 @@ const Concepts = ({ history }) => {
     new Promise(resolve => {
       let apiUrl = "/web/concepts?";
       apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + initialPage; // This is a hack, we need to come back to it when we update the libarary.
+      apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
@@ -75,11 +70,6 @@ const Concepts = ({ history }) => {
     setRedirect(true);
   };
 
-  useEffect(() => {
-    tableRef.current.onChangePage({}, tablePage);
-    setInitialPage(tablePage);
-  }, [tablePage]);
-
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -90,35 +80,12 @@ const Concepts = ({ history }) => {
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
               <CreateComponent onSubmit={addNewConcept} name="New Concept" />
             </div>
-
-            <MaterialTable
+            <AvniMaterialTable
               title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>,
-                Pagination: paginationProps => {
-                  const {
-                    ActionsComponent,
-                    onChangePage,
-                    ...tablePaginationProps
-                  } = paginationProps;
-                  return (
-                    <TablePagination
-                      {...tablePaginationProps}
-                      onChangePage={(event, page) => {
-                        history.push(`/appdesigner/forms?page=${page}`);
-                        setInitialPage(Number(page));
-                        onChangePage(event, page);
-                      }}
-                      ActionsComponent={subprops => <ActionsComponent {...subprops} />}
-                    />
-                  );
-                }
-              }}
-              tableRef={tableRef}
+              ref={tableRef}
               columns={columns}
-              data={fetchData}
+              fetchData={fetchData}
               options={{
-                initialPage: initialPage,
                 pageSize: 10,
                 pageSizeOptions: [10, 15, 20],
                 addRowPosition: "first",
@@ -131,6 +98,7 @@ const Concepts = ({ history }) => {
                 })
               }}
               actions={[editConcept, voidConcept]}
+              route={"/appdesigner/concepts"}
             />
           </div>
         </div>
