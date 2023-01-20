@@ -12,7 +12,7 @@ import {Box, Dialog, DialogActions, DialogTitle, Button} from "@material-ui/core
 import IconButton from "@material-ui/core/IconButton";
 import {Close} from "@material-ui/icons";
 
-const ComposeMessageView = ({selectedGroupIds, onClose, onScheduled}) => {
+const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) => {
 
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [{}],
@@ -49,15 +49,15 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onScheduled}) => {
   }
 
   const dateTimeFormat = "dd/MM/yyyy HH:mm";
-  const [error, setError] = useState("");
 
   const onSubmit = async event => {
     event.preventDefault();
     try {
       await sendBroadcastMessage(selectedGroupIds, rules[0]);
-      onScheduled();
-    } catch (e) {
-      setError(error.response.data.message);
+      onSchedulingAttempted("success");
+    } catch (error) {
+      console.log("Message scheduling failed:", error);
+      onSchedulingAttempted("error");
     }
   }
 

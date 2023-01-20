@@ -26,16 +26,21 @@ const SendMessageToolBar = ({ ...props }) => {
   const { selectedRows } = props;
   const selectedIds = map(selectedRows, "id");
 
+  const onSchedulingAttempted = (status) => {
+    setSendingMessage(false)
+    setScheduled(status)
+  }
+
   return (
     <div className={classes.root}>
       {sendingMessage && <ComposeMessageView selectedGroupIds={selectedIds}
                                              onClose={() => setSendingMessage(false)}
-                                             onScheduled={() => {setSendingMessage(false)
-                                               setScheduled(true)
-                                                }}/>}
+                                             onSchedulingAttempted={onSchedulingAttempted}
+      />}
 
       {scheduled && <CustomizedSnackbar
-        message={"Message scheduled"}
+        variant={scheduled}
+        message={scheduled === "success" ? "Message scheduling successful" : "Message scheduling failed"}
         getDefaultSnackbarStatus={snackbarStatus =>
           setScheduled(snackbarStatus)
         }
