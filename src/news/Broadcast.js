@@ -36,7 +36,7 @@ const Broadcast = ({ match: { path } }) => {
     <React.Fragment>
       <Route exact path={path} component={WithProps({ path: path }, BroadcastPage)} />
       <Route exact path={getRoutePath(path, BroadcastPath.News)} component={News} />
-      <Route exact path={getRoutePath(path, BroadcastPath.WhatsApp)} component={WhatsAppHome} />
+      <Route exact path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab?`)} component={WhatsAppHome} />
       <Route
         exact
         path={getRoutePath(

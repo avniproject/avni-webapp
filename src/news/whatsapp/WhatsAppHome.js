@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
@@ -11,6 +11,7 @@ import Button from "@material-ui/core/Button";
 import ContactService from "../api/ContactService";
 import AddEditContactGroup from "./AddEditContactGroup";
 import { Snackbar } from "@material-ui/core";
+import {useHistory, useParams} from "react-router-dom";
 
 function ContactGroupLink({ rowData, column }) {
   return (
@@ -51,18 +52,27 @@ const fetchData = query => {
 };
 
 function TabContent(props) {
-  const { children, value, index } = props;
-
-  return <React.Fragment>{value === index && children}</React.Fragment>;
+  const { children, activeTab, currentTab } = props;
+  return <React.Fragment>{activeTab === currentTab && children}</React.Fragment>;
 }
 
 const WhatsAppHome = () => {
-  const [value, setValue] = React.useState(1);
+  const defaultActiveTab = "groups";
+  const {activeTab} = useParams();
+  const history = useHistory();
+
   const [addingContactGroup, setAddingContactGroup] = useState(false);
   const [savedContactGroup, setSavedContactGroup] = useState(false);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+
+  useEffect(() => {
+    if(!activeTab){
+      history.push(`/${BroadcastPath.WhatsAppFullPath}/${defaultActiveTab}`);
+    }
+  }, []);
+
+  const toggle = (event, tab) => {
+    if (activeTab !== tab)  history.push(`/${BroadcastPath.WhatsAppFullPath}/${tab}`);
+  }
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
@@ -70,14 +80,14 @@ const WhatsAppHome = () => {
         <Tabs
           orientation="vertical"
           variant="scrollable"
-          value={value}
-          onChange={handleChange}
+          value={activeTab}
+          onChange={toggle}
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
-          <Tab label="Groups" value={1} />
-          <Tab label="Messages" value={2} />
+          <Tab label="Groups" value="groups" />
+          <Tab label="Messages" value="messages" />
         </Tabs>
-        <TabContent value={value} index={1}>
+        <TabContent activeTab={activeTab} currentTab={"groups"}>
           <div className="container">
             {addingContactGroup && (
               <AddEditContactGroup
@@ -119,7 +129,7 @@ const WhatsAppHome = () => {
             />
           </div>
         </TabContent>
-        <TabContent value={value} index={2}>
+        <TabContent activeTab={activeTab} currentTab={"messages"}>
           <MessagesTab groups={fetchData} columns={columns} />
         </TabContent>
         <Snackbar
