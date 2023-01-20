@@ -79,11 +79,12 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onScheduled}) => {
           <Close />
         </IconButton>
       </DialogActions>
-    <Box style={{ padding: 40 }}>
+    <Box style={{ padding: 20 }}>
     <form onSubmit={onSubmit}>
-    <AvniFormLabel
+
+      <Box style={{ marginLeft: 10 }}>
+      <AvniFormLabel
         label={"Select Template"}
-        toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"}
       />
       <Select
         placeholder={"Message template"}
@@ -92,53 +93,62 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onScheduled}) => {
         options={_.map(templates, template => ({ label: template.label, value: template }))}
         onChange={({ value }) => onRuleChange({ messageTemplateId: value.id })}
       />
+      </Box>
 
-      {rules[0].messageTemplateId &&
-        <AvniFormLabel
-          label={"Selected message template"}
-          toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"}
+        <Box style={{ marginTop: 20, marginLeft: 10 }}>
+        {rules[0].messageTemplateId &&
+          <AvniFormLabel
+            label={"Selected message template"}
+          />}
+        {rules[0].messageTemplateId && getSelectedTemplate(rules[0].messageTemplateId).body}
+      </Box>
+
+      <Box style={{ marginTop: 20, marginLeft: 10 }}>
+        {_.size(rules[0].parameters) > 0 && <AvniFormLabel
+          label={"Enter variables for the selected template"}
         />}
-      {rules[0].messageTemplateId && getSelectedTemplate(rules[0].messageTemplateId).body}
+        {_.map(rules[0].parameters, (parameter, index) => {
+          return <AvniTextField
+            id={`variable_${index + 1}`}
+            label={`Variable ${index + 1}`}
+            required
+            autoComplete="off"
+            value={parameter}
+            onChange={(event) => onVariableChange(index, event.target.value)}
+          />
+        })
+        }
+      </Box>
 
-      {_.size(rules[0].parameters) > 0 && <AvniFormLabel
-        label={"Enter variables for the selected template"}
-        toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"}
-      />}
-      {_.map(rules[0].parameters, (parameter, index) => {
-        return <AvniTextField
-          id={`variable_${index + 1}`}
-          label={`Variable ${index + 1}`}
-          required
-          autoComplete="off"
-          value={parameter}
-          onChange={(event) => onVariableChange(index, event.target.value)}
-          toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
+      <Box style={{ marginTop: 20, marginLeft: 10 }}>
+        <AvniFormLabel
+          label={"Schedule time to send message"}
         />
-      })
-      }
+       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDateTimePicker
+          id="date-picker-dialog"
+          placeholder="Date and Time"
+          format={dateTimeFormat}
+          value={rules[0].scheduledDateTime}
+          onChange={(value) => onRuleChange({scheduledDateTime: value})}
+          style={{ width: "14%", marginRight: "1%" }}
+          KeyboardButtonProps={{
+            "aria-label": "change date",
+            color: "primary"
+          }}
+        />
+        </MuiPickersUtilsProvider>
+      </Box>
 
-      <AvniFormLabel
-        label={"Schedule time to send message"}
-        toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"}
-      />
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDateTimePicker
-        id="date-picker-dialog"
-        placeholder="Date and Time"
-        format={dateTimeFormat}
-        value={rules[0].scheduledDateTime}
-        onChange={(value) => onRuleChange({scheduledDateTime: value})}
-        style={{ width: "14%", marginRight: "1%" }}
-        KeyboardButtonProps={{
-          "aria-label": "change date",
-          color: "primary"
-        }}
-      />
-      </MuiPickersUtilsProvider>
-      <Button color="primary" variant="contained" type="submit">
-        Send Message
-      </Button>
-      </form>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
+          Cancel
+        </Button>
+        <Button color="primary" variant="contained" type="submit">
+          Send Message
+        </Button>
+      </DialogActions>
+    </form>
       </Box>
     </Dialog>
     )
