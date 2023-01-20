@@ -1,4 +1,4 @@
-import React, {useEffect, useReducer, useState} from "react";
+import React, {useEffect, useReducer} from "react";
 import { getMessageTemplates } from "../../adminApp/service/MessageService";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import _ from "lodash";
@@ -13,9 +13,8 @@ import IconButton from "@material-ui/core/IconButton";
 import {Close} from "@material-ui/icons";
 
 const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) => {
-
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
-    rules: [{}],
+    rules: [{scheduledDateTime: new Date()}],
     templates: []
   });
 
