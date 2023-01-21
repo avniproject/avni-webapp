@@ -60,6 +60,14 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) 
     }
   }
 
+  const allFilled = () => {
+    return rules[0].messageTemplateId
+    && rules[0].scheduledDateTime
+    && (_.reduce(rules[0].parameters, (allFilled, parameter) => {
+          return allFilled && !_.isNil(parameter) && !_.isEmpty(parameter)
+      }, true));
+  }
+
   return (<Dialog
       onClose={()=> {}}
       aria-labelledby="customized-dialog-title"
@@ -78,12 +86,13 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) 
           <Close />
         </IconButton>
       </DialogActions>
-    <Box style={{ padding: 20 }}>
+    <Box style={{ margin: 60 }}>
     <form onSubmit={onSubmit}>
 
       <Box style={{ marginLeft: 10 }}>
       <AvniFormLabel
         label={"Select Template"}
+        required={true}
       />
       <Select
         placeholder={"Message template"}
@@ -105,6 +114,7 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) 
       <Box style={{ marginTop: 20, marginLeft: 10 }}>
         {_.size(rules[0].parameters) > 0 && <AvniFormLabel
           label={"Enter variables for the selected template"}
+          required={true}
         />}
         {_.map(rules[0].parameters, (parameter, index) => {
           return <AvniTextField
@@ -122,6 +132,7 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) 
       <Box style={{ marginTop: 20, marginLeft: 10 }}>
         <AvniFormLabel
           label={"Schedule time to send message"}
+          required={true}
         />
        <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDateTimePicker
@@ -143,7 +154,7 @@ const ComposeMessageView = ({selectedGroupIds, onClose, onSchedulingAttempted}) 
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button color="primary" variant="contained" type="submit">
+        <Button color="primary" variant="contained" disabled={!allFilled()} type="submit">
           Send Message
         </Button>
       </DialogActions>

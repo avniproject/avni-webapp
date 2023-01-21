@@ -1,11 +1,14 @@
 import FormLabel from "@material-ui/core/FormLabel";
 import React from "react";
 import { ToolTipContainer } from "./ToolTipContainer";
+import _ from "lodash";
 
-export const AvniFormLabel = ({ label, toolTipKey, style, position }) => {
+export const AvniFormLabel = ({ label, toolTipKey, style, position, ...props }) => {
+  const copy = { ...props };
+  copy.value = _.isNil(copy.value) ? "" : copy.value;
   return (
     <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10 }} position={position}>
-      <FormLabel style={style || {}}>{label} </FormLabel>
+      <FormLabel style={style || {}} {...copy}>{label} </FormLabel>
     </ToolTipContainer>
   );
 };

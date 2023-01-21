@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import MaterialTable from "material-table";
 import { isEmpty, map } from "lodash";
 import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 
 import ComposeMessageView from "./ComposeMessageView";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -59,8 +59,8 @@ const SendMessageToolBar = ({ ...props }) => {
 
 const MessagesTab = ({ groups, columns }) => {
   return (
-    <div className="container">
-      <MaterialTable
+    <div style={{width: "90%", margin: "20px"}}>
+    <MaterialTable
         title=""
         columns={columns}
         data={groups}

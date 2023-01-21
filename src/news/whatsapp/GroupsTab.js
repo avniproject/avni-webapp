@@ -40,6 +40,8 @@ const GroupsTab = ({groups, columns}) => {
       columns={columns}
       data={groups}
       options={{
+        pageSize: 10,
+        pageSizeOptions: [10, 15, 25],
         addRowPosition: "first",
         sorting: false,
         debounceInterval: 500,
