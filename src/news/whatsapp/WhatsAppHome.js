@@ -1,16 +1,13 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useEffect} from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
-import MaterialTable from "material-table";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getHref } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
 import MessagesTab from "./MessagesTab";
-import Button from "@material-ui/core/Button";
+import GroupsTab from "./GroupsTab";
 import ContactService from "../api/ContactService";
-import AddEditContactGroup from "./AddEditContactGroup";
-import { Snackbar } from "@material-ui/core";
 import {useHistory, useParams} from "react-router-dom";
 
 function ContactGroupLink({ rowData, column }) {
@@ -43,8 +40,6 @@ const columns = [
   }
 ];
 
-const tableRef = React.createRef();
-
 const fetchData = query => {
   return new Promise(resolve =>
     ContactService.getContactGroups(query.page, query.pageSize).then(data => resolve(data))
@@ -53,16 +48,13 @@ const fetchData = query => {
 
 function TabContent(props) {
   const { children, activeTab, currentTab } = props;
-  return <React.Fragment>{activeTab === currentTab && children}</React.Fragment>;
+  return <Fragment>{activeTab === currentTab && children}</Fragment>;
 }
 
 const WhatsAppHome = () => {
   const defaultActiveTab = "groups";
   const {activeTab} = useParams();
   const history = useHistory();
-
-  const [addingContactGroup, setAddingContactGroup] = useState(false);
-  const [savedContactGroup, setSavedContactGroup] = useState(false);
 
   useEffect(() => {
     if(!activeTab){
@@ -88,56 +80,11 @@ const WhatsAppHome = () => {
           <Tab label="Messages" value="messages" />
         </Tabs>
         <TabContent activeTab={activeTab} currentTab={"groups"}>
-          <div className="container">
-            {addingContactGroup && (
-              <AddEditContactGroup
-                onClose={() => setAddingContactGroup(false)}
-                onSave={() => {
-                  setAddingContactGroup(false);
-                  setSavedContactGroup(true);
-                }}
-              />
-            )}
-            <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
-              <Button
-                color="primary"
-                variant="outlined"
-                style={{ marginLeft: 10 }}
-                onClick={() => setAddingContactGroup(true)}
-              >
-                Add Contact Group
-              </Button>
-            </Box>
-            <MaterialTable
-              title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
-              columns={columns}
-              data={fetchData}
-              options={{
-                addRowPosition: "first",
-                sorting: false,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: "#fff"
-                })
-              }}
-              actions={[]}
-            />
-          </div>
+          <GroupsTab groups={fetchData} columns={columns} />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"messages"}>
           <MessagesTab groups={fetchData} columns={columns} />
         </TabContent>
-        <Snackbar
-          open={savedContactGroup}
-          autoHideDuration={3000}
-          onClose={() => setSavedContactGroup(false)}
-          message="Created new contact group"
-        />
       </Box>
     </ScreenWithAppBar>
   );
