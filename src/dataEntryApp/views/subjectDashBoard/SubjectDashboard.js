@@ -32,6 +32,7 @@ const SubjectDashboard = ({
   subjectGeneral,
   getSubjectProgram,
   subjectProgram,
+  msgs,
   voidSubject,
   unVoidSubject,
   load,
@@ -62,6 +63,7 @@ const SubjectDashboard = ({
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
+          msgs={msgs}
           handleUpdateComponent={handleUpdateComponent}
           voidSubject={voidSubject}
           voidError={voidError}
@@ -98,7 +100,8 @@ const mapStateToProps = state => ({
   registrationForm: state.dataEntry.registration.registrationForm,
   tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
   groupMembers: state.dataEntry.subjectProfile.groupMembers,
-  voidError: state.dataEntry.subjectProfile.voidError
+  voidError: state.dataEntry.subjectProfile.voidError,
+  msgs: state.dataEntry.msgs
 });
 
 const mapDispatchToProps = {

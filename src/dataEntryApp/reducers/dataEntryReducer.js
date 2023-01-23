@@ -18,6 +18,7 @@ import comment from "./CommentReducer";
 import searchFilterReducer from "./searchFilterReducer";
 import serverSideRulesReducer from "./serverSideRulesReducer";
 import sagaErrorState from "./SagaErrorReducer";
+import msgs from "./messagesReducer";
 
 export default combineReducers({
   search,
@@ -36,6 +37,7 @@ export default combineReducers({
   loadReducer,
   searchFilterReducer,
   serverSideRulesReducer,
+  msgs,
   news,
   comment,
   sagaErrorState

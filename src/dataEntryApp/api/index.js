@@ -175,5 +175,15 @@ export default {
   getSubjectSummary: subjectUUID =>
     httpClient
       .get(`/web/subjectSummaryRule?subjectUUID=${subjectUUID}`)
-      .then(response => response.data)
+      .then(response => response.data),
+  getAllMessagesForSubject: subjectID =>
+    httpClient.get(`/web/contact/subject/${subjectID}/msgs`).then(response => response.data),
+  getAllMessagesForUser: userID =>
+    httpClient.get(`/web/contact/user/${userID}/msgs`).then(response => response.data),
+  getAllMessagesNotYetSentForSubject: subjectID =>
+    httpClient
+      .get(`/web/message/subject/${subjectID}/msgsNotYetSent`)
+      .then(response => response.data),
+  getAllMessagesNotYetSentForUser: userID =>
+    httpClient.get(`/web/message/user/${userID}/msgsNotYetSent`).then(response => response.data)
 };

@@ -24,6 +24,7 @@ import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { setPrograms } from "../reducers/programReducer";
 import { subjectGeneralFetchWorker } from "./generalSubjectDashboardSaga";
 import { subjectProgramFetchWorker } from "./programSubjectDashboardSaga";
+import { getMsgsNotYetSent, getMsgsSent } from "../reducers/messagesReducer";
 
 export default function*() {
   yield all(
@@ -63,6 +64,8 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
+  yield put.resolve(getMsgsSent(subjectProfileJson.id));
+  yield put.resolve(getMsgsNotYetSent(subjectProfileJson.id));
   const subjectType = subjectProfile.subjectType;
   const operationalModules = yield select(selectOperationalModules);
   const programUUIDs = map(operationalModules.programs, ({ uuid }) => uuid);
@@ -90,6 +93,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
   const registrationTabIndex = showProgramTab ? 1 : 0;
   const generalTabIndex = showProgramTab ? 2 : 1;
+  const showMessagesTab = get(organisationConfigs, "organisationConfig.enableMessaging", false);
   const hideDOB = get(organisationConfigs, "organisationConfig.hideDateOfBirth", false);
   yield put(
     setTabsStatus({
@@ -101,6 +105,7 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
       generalTabIndex,
       showGroupMembers,
       hideDOB,
+      showMessagesTab,
       displayGeneralInfoInProfileTab
     })
   );

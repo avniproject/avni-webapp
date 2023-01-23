@@ -32,6 +32,7 @@ import { RuleSummary } from "./RuleSummary";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import { Individual } from "avni-models";
+import SubjectDashboardMessagesTab from "./SubjectDashboardMessagesTab";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -108,7 +109,9 @@ const SubjectDashboardProfileTab = ({
   clearVoidServerError,
   hideDOB,
   general,
-  displayGeneralInfoInProfileTab
+  displayGeneralInfoInProfileTab,
+  msgs,
+  showMessagesTab
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -372,6 +375,14 @@ const SubjectDashboardProfileTab = ({
               subjectTypeUuid={profile.subjectType.uuid}
               subjectVoided={profile.voided}
               displayGeneralInfoInProfileTab={displayGeneralInfoInProfileTab}
+            />
+          )}
+          {showMessagesTab && (
+            <SubjectDashboardMessagesTab
+              sentMessages={msgs.msgsSent}
+              msgsYetToBeSent={msgs.msgsNotYetSent}
+              isMsgsSentAvailable={msgs.isMsgsSentAvailable}
+              isMsgsNotYetSentAvailable={msgs.isMsgsNotYetSentAvailable}
             />
           )}
         </Paper>

@@ -14,6 +14,7 @@ import completedVisitSaga from "./completedVisitSaga";
 import relationshipSaga from "./relationshipSaga";
 import NewsSaga from "./NewsSaga";
 import CommentSaga from "./CommentSaga";
+import messagesSaga from "./messagesSaga";
 
 export default function* rootSaga() {
   yield all(
@@ -32,6 +33,7 @@ export default function* rootSaga() {
       relationshipSaga,
       encounterSaga,
       NewsSaga,
+      messagesSaga,
       CommentSaga
     ].map(fork)
   );

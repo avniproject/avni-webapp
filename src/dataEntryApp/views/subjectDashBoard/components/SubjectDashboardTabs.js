@@ -70,6 +70,7 @@ export default ({
   profile,
   general,
   program,
+  msgs,
   handleUpdateComponent,
   voidSubject,
   unVoidSubject,
@@ -92,7 +93,8 @@ export default ({
     generalTabIndex,
     showGroupMembers,
     hideDOB,
-    displayGeneralInfoInProfileTab
+    displayGeneralInfoInProfileTab,
+    showMessagesTab
   } = tabsStatus;
 
   const [value, setValue] = React.useState(
@@ -173,6 +175,8 @@ export default ({
             hideDOB={hideDOB}
             displayGeneralInfoInProfileTab={displayGeneralInfoInProfileTab}
             general={general}
+            msgs={msgs}
+            showMessagesTab={showMessagesTab}
           />
         </Paper>
       </TabContent>
