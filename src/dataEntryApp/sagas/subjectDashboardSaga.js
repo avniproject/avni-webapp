@@ -64,8 +64,6 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
-  yield put.resolve(getMsgsSent(subjectProfileJson.id));
-  yield put.resolve(getMsgsNotYetSent(subjectProfileJson.id));
   const subjectType = subjectProfile.subjectType;
   const operationalModules = yield select(selectOperationalModules);
   const programUUIDs = map(operationalModules.programs, ({ uuid }) => uuid);
@@ -93,8 +91,12 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   const defaultTabIndex = showGeneralTab && !showProgramTab ? 1 : 0;
   const registrationTabIndex = showProgramTab ? 1 : 0;
   const generalTabIndex = showProgramTab ? 2 : 1;
-  const showMessagesTab = get(organisationConfigs, "organisationConfig.enableMessaging", false);
   const hideDOB = get(organisationConfigs, "organisationConfig.hideDateOfBirth", false);
+  const showMessagesTab = get(organisationConfigs, "organisationConfig.enableMessaging", false);
+  if (showMessagesTab) {
+    yield put(getMsgsSent(subjectProfileJson.id));
+    yield put(getMsgsNotYetSent(subjectProfileJson.id));
+  }
   yield put(
     setTabsStatus({
       showProgramTab,
