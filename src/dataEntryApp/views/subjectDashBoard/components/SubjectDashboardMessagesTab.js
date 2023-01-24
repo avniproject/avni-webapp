@@ -10,6 +10,7 @@ import { Paper } from "@material-ui/core";
 import YetToBeSentMessagesTable from "../YetToBeSentMessagesTable";
 import SentMessagesTable from "../SentMessagesTable";
 import { useTranslation } from "react-i18next";
+import InfoIcon from "@material-ui/icons/Info";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -69,6 +70,15 @@ const useStyles = makeStyles(theme => ({
   },
   expandMoreIcon: {
     color: "#0e6eff"
+  },
+  outlinedInfo: {
+    color: "rgb(13,60,97)",
+    border: "1px solid #2196f3",
+    icon: {
+      color: "#2196f3"
+    },
+    padding: theme.spacing(1),
+    marginBottom: "10px"
   }
 }));
 
@@ -90,8 +100,16 @@ const SubjectDashboardMessagesTab = ({
             style={{ paddingBottom: 10, display: "block" }}
             className={classes.expansionHeading}
           >
-            {t("Glific Messages")}
+            {t("Messages")}
           </Typography>
+          <Paper elevation={0} className={classes.outlinedInfo}>
+            <div>
+              {<InfoIcon />}{" "}
+              {
+                "Group scheduled messages are not included in either of the messages sections listed below"
+              }
+            </div>
+          </Paper>
           <ExpansionPanel className={classes.expansionPanel}>
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
@@ -99,7 +117,7 @@ const SubjectDashboardMessagesTab = ({
               id="yet-to-be-sent-messages"
             >
               <Typography component={"span"} className={classes.expansionHeading}>
-                {t("Messages Yet To Be Sent")}
+                {t("Scheduled Messages")}
               </Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
