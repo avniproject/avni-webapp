@@ -68,7 +68,6 @@ const EditEncounterTypeFields = ({
         value={_.isEmpty(programT) ? "" : programT}
         onChange={event => updateProgram(event.target.value)}
         style={{ width: "200px" }}
-        required
         options={program.map(option => (
           <MenuItem value={option} key={option.uuid}>
             {option.name}
