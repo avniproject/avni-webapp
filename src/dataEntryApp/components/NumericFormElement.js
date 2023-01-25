@@ -75,6 +75,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
         {rangeText(fe.concept.lowNormal, fe.concept.hiNormal)}
       </Typography>
       <TextField
+        type="number"
         autoComplete="off"
         required={fe.mandatory}
         name={fe.name}

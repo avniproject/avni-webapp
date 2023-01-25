@@ -39,6 +39,7 @@ export const FileOptions = ({ keyValues, handleChange, groupIndex, index }) => {
       <FormControl>
         <AvniFormLabel label={"Allowed max size in MB"} toolTipKey={"APP_DESIGNER_FILE_MAX_SIZE"} />
         <TextField
+          type="number"
           value={keyValues.allowedMaxSize}
           onChange={e => {
             const value = e.target.value.replace(/[^0-9.]/g, "");
