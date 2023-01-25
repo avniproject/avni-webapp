@@ -46,7 +46,7 @@ const fetchData = (query, contactGroupId, onContactGroupLoaded) => {
 function Members({
   contactGroupId,
   contactGroupMembersUpdated,
-  contactGroupVersion,
+  contactGroupMembersVersion,
   onContactGroupLoaded
 }) {
   const [addingSubjects, setAddingSubject] = useState(false);
@@ -88,7 +88,7 @@ function Members({
         </Button>
       </Box>
       <MaterialTable
-        key={contactGroupVersion}
+        // key={contactGroupMembersVersion} refreshing slows down UX
         title=""
         components={{
           Container: props => <Fragment>{props.children}</Fragment>
