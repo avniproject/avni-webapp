@@ -310,7 +310,6 @@ class FormDetails extends Component {
   }
 
   updateSkipLogicRule = (index, elementIndex, value) => {
-    console.log("updateSkipLogic");
     this.setState(
       produce(draft => {
         formDesignerHandleGroupElementChange(
@@ -320,8 +319,7 @@ class FormDetails extends Component {
           value,
           elementIndex
         );
-      }),
-      () => console.log("After setting state updateSkipLogicRule", this.state)
+      })
     );
   };
 
@@ -335,8 +333,7 @@ class FormDetails extends Component {
           value,
           elementIndex
         );
-      }),
-      () => console.log("After setting state updateSkipLogicJSON", this.state)
+      })
     );
   };
 
@@ -350,8 +347,7 @@ class FormDetails extends Component {
           value,
           -1
         );
-      }),
-      () => console.log("After setting state updateFormElementGroupRule", this.state)
+      })
     );
   };
 
@@ -365,8 +361,7 @@ class FormDetails extends Component {
           value,
           -1
         );
-      }),
-      () => console.log("After setting state updateFormElementGroupRuleJSON", this.state)
+      })
     );
   };
 
