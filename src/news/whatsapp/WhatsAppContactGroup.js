@@ -146,7 +146,7 @@ function Members({
           Container: props => <Fragment>{props.children}</Fragment>,
           Toolbar: props => (
             <MemberActionToolBar
-              onSubjectAdd={() => setAddingSubject(true)}
+              onSubjectAdd={() => addingSubject()}
               onUserAdd={() => addingUser()}
               onContactsRemove={contactRows => removeContactFromGroup(contactRows)}
               {...props}
