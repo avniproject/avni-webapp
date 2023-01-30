@@ -126,7 +126,7 @@ function Members({
       {addingSubjects && (
         <AddContactGroupSubjects
           contactGroupId={contactGroupId}
-          onClose={() => addingSubject()}
+          onClose={() => setAddingSubject(false)}
           onSubjectAdd={subject => onSubjectAdd()}
         />
       )}
