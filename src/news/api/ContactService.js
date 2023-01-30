@@ -4,6 +4,10 @@ import _ from "lodash";
 const contactGroupEndpoint = "/web/contactGroup";
 
 class ContactService {
+  static removeContactsFromGroup(contactGroupId, contactIds) {
+    return http.delete(`${contactGroupEndpoint}/${contactGroupId}/contact`, { data: contactIds });
+  }
+
   static getContactGroups(pageNumber, pageSize) {
     return http.getData(`${contactGroupEndpoint}?page=${pageNumber}&size=${pageSize}`);
   }

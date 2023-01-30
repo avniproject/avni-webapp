@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useCallback, useState } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
@@ -6,7 +6,7 @@ import MaterialTable from "material-table";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
-import { Breadcrumbs, Snackbar } from "@material-ui/core";
+import { Breadcrumbs, LinearProgress, Snackbar } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
@@ -16,6 +16,9 @@ import ContactService from "../api/ContactService";
 import { Edit } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import AddEditContactGroup from "./AddEditContactGroup";
+import { size } from "lodash";
+import ErrorMessage from "../../common/components/ErrorMessage";
+import _ from "lodash";
 
 const columns = [
   {
@@ -43,6 +46,39 @@ const fetchData = (query, contactGroupId, onContactGroupLoaded) => {
   );
 };
 
+function MemberActionToolBar({ onSubjectAdd, onUserAdd, onContactsRemove, ...props }) {
+  const { selectedRows } = props;
+  const selectedRowSize = size(selectedRows);
+  const deleteEnabled = selectedRowSize > 0;
+
+  return (
+    <Box style={{ display: "flex", flexDirection: "row-reverse", marginBottom: 30 }}>
+      {deleteEnabled && (
+        <Button
+          color="primary"
+          variant="outlined"
+          style={{ marginLeft: 10 }}
+          disabled={!deleteEnabled}
+          onClick={() => onContactsRemove(selectedRows)}
+        >
+          Remove
+        </Button>
+      )}
+      <Button
+        color="primary"
+        variant="outlined"
+        style={{ marginLeft: 10 }}
+        onClick={() => onSubjectAdd()}
+      >
+        Add Subject
+      </Button>
+      <Button color="primary" variant="outlined" onClick={event => onUserAdd()}>
+        Add User
+      </Button>
+    </Box>
+  );
+}
+
 function Members({
   contactGroupId,
   contactGroupMembersUpdated,
@@ -51,47 +87,71 @@ function Members({
 }) {
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
+  const [error, setError] = useState(null);
+  const [displayProgress, setDisplayProgress] = useState(false);
+
+  const removeContactFromGroup = useCallback(
+    contactRows => {
+      ContactService.removeContactsFromGroup(contactGroupId, contactRows.map(x => x.id))
+        .then(() => contactGroupMembersUpdated())
+        .catch(error => setError(error))
+        .finally(() => setDisplayProgress(false));
+      setDisplayProgress(true);
+    },
+    [error]
+  );
+
+  const addingSubject = useCallback(() => {
+    setAddingSubject(true);
+    setError(false);
+  }, []);
+
+  const addingUser = useCallback(() => {
+    setAddingUser(true);
+    setError(false);
+  }, []);
+
+  const onSubjectAdd = useCallback(() => {
+    contactGroupMembersUpdated();
+    setAddingSubject(false);
+  }, []);
+
+  const onUserAdd = useCallback(() => {
+    contactGroupMembersUpdated();
+    setAddingUser(false);
+  }, []);
 
   return (
     <div className="container">
       {addingSubjects && (
         <AddContactGroupSubjects
           contactGroupId={contactGroupId}
-          onClose={() => setAddingSubject(false)}
-          onSubjectAdd={subject => {
-            contactGroupMembersUpdated();
-            setAddingSubject(false);
-          }}
+          onClose={() => addingSubject()}
+          onSubjectAdd={subject => onSubjectAdd()}
         />
       )}
       {addingUsers && (
         <AddContactGroupUsers
           contactGroupId={contactGroupId}
           onClose={() => setAddingUser(false)}
-          onUserAdd={user => {
-            contactGroupMembersUpdated();
-            setAddingUser(false);
-          }}
+          onUserAdd={user => onUserAdd()}
         />
       )}
-      <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
-        <Button
-          color="primary"
-          variant="outlined"
-          style={{ marginLeft: 10 }}
-          onClick={() => setAddingSubject(true)}
-        >
-          Add Subject
-        </Button>
-        <Button color="primary" variant="outlined" onClick={event => setAddingUser(true)}>
-          Add User
-        </Button>
-      </Box>
+      {!_.isNil(error) && <ErrorMessage error={error} />}
+      {displayProgress && <LinearProgress />}
       <MaterialTable
         // key={contactGroupMembersVersion} refreshing slows down UX
         title=""
         components={{
-          Container: props => <Fragment>{props.children}</Fragment>
+          Container: props => <Fragment>{props.children}</Fragment>,
+          Toolbar: props => (
+            <MemberActionToolBar
+              onSubjectAdd={() => setAddingSubject(true)}
+              onUserAdd={() => addingUser()}
+              onContactsRemove={contactRows => removeContactFromGroup(contactRows)}
+              {...props}
+            />
+          )
         }}
         tableRef={tableRef}
         columns={columns}
@@ -101,6 +161,7 @@ function Members({
           sorting: false,
           debounceInterval: 500,
           search: false,
+          selection: true,
           rowStyle: rowData => ({
             backgroundColor: "#fff"
           })

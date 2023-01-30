@@ -50,6 +50,7 @@ const GroupsTab = ({ groups, columns }) => {
           sorting: false,
           debounceInterval: 500,
           search: false,
+          selection: true,
           rowStyle: rowData => ({
             backgroundColor: "#fff"
           })
