@@ -7,7 +7,6 @@ import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Link, withRouter } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import { Breadcrumbs, LinearProgress, Snackbar } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
 import AddContactGroupSubjects from "./AddContactGroupSubjects";
 import AddContactGroupUsers from "./AddContactGroupUsers";
 import { getLinkTo } from "../../common/utils/routeUtil";
@@ -16,9 +15,12 @@ import ContactService from "../api/ContactService";
 import { Edit } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import AddEditContactGroup from "./AddEditContactGroup";
-import { size } from "lodash";
-import ErrorMessage from "../../common/components/ErrorMessage";
 import _ from "lodash";
+import ErrorMessage from "../../common/components/ErrorMessage";
+import {
+  MaterialTableToolBar,
+  MaterialTableToolBarButton
+} from "../../common/material-table/MaterialTableToolBar";
 
 const columns = [
   {
@@ -46,39 +48,6 @@ const fetchData = (query, contactGroupId, onContactGroupLoaded) => {
   );
 };
 
-function MemberActionToolBar({ onSubjectAdd, onUserAdd, onContactsRemove, ...props }) {
-  const { selectedRows } = props;
-  const selectedRowSize = size(selectedRows);
-  const deleteEnabled = selectedRowSize > 0;
-
-  return (
-    <Box style={{ display: "flex", flexDirection: "row-reverse", marginBottom: 30 }}>
-      {deleteEnabled && (
-        <Button
-          color="primary"
-          variant="outlined"
-          style={{ marginLeft: 10 }}
-          disabled={!deleteEnabled}
-          onClick={() => onContactsRemove(selectedRows)}
-        >
-          Remove
-        </Button>
-      )}
-      <Button
-        color="primary"
-        variant="outlined"
-        style={{ marginLeft: 10 }}
-        onClick={() => onSubjectAdd()}
-      >
-        Add Subject
-      </Button>
-      <Button color="primary" variant="outlined" onClick={event => onUserAdd()}>
-        Add User
-      </Button>
-    </Box>
-  );
-}
-
 function Members({
   contactGroupId,
   contactGroupMembersUpdated,
@@ -98,7 +67,7 @@ function Members({
         .finally(() => setDisplayProgress(false));
       setDisplayProgress(true);
     },
-    [error]
+    [error, contactGroupMembersVersion]
   );
 
   const addingSubject = useCallback(() => {
@@ -117,8 +86,8 @@ function Members({
   }, []);
 
   const onUserAdd = useCallback(() => {
-    contactGroupMembersUpdated();
     setAddingUser(false);
+    contactGroupMembersUpdated();
   }, []);
 
   return (
@@ -138,17 +107,23 @@ function Members({
         />
       )}
       {!_.isNil(error) && <ErrorMessage error={error} />}
-      {displayProgress && <LinearProgress />}
+      {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
-        // key={contactGroupMembersVersion} refreshing slows down UX
+        key={contactGroupMembersVersion}
         title=""
         components={{
           Container: props => <Fragment>{props.children}</Fragment>,
           Toolbar: props => (
-            <MemberActionToolBar
-              onSubjectAdd={() => addingSubject()}
-              onUserAdd={() => addingUser()}
-              onContactsRemove={contactRows => removeContactFromGroup(contactRows)}
+            <MaterialTableToolBar
+              toolBarButtons={[
+                new MaterialTableToolBarButton(
+                  contactRows => removeContactFromGroup(contactRows),
+                  true,
+                  "Delete"
+                ),
+                new MaterialTableToolBarButton(() => addingSubject(), false, "Add Subject"),
+                new MaterialTableToolBarButton(() => addingUser(), false, "Add User")
+              ]}
               {...props}
             />
           )
@@ -232,7 +207,7 @@ const WhatsAppContactGroup = ({ match }) => {
             contactGroupId={contactGroupId}
             onContactGroupLoaded={contactGroup => setGroup(contactGroup["group"])}
             contactGroupMembersUpdated={() => updateContactGroupVersion(contactGroupVersion + 1)}
-            contactGroupVersion={contactGroupVersion}
+            contactGroupMembersVersion={contactGroupVersion}
           />
         )}
 

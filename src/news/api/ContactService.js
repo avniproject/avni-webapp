@@ -35,6 +35,10 @@ class ContactService {
         description: description
       });
   }
+
+  static deleteContactGroup(contactGroupIds) {
+    return http.delete(`${contactGroupEndpoint}`, { data: contactGroupIds });
+  }
 }
 
 export default ContactService;

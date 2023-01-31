@@ -1,9 +1,14 @@
 import AddEditContactGroup from "./AddEditContactGroup";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
 import MaterialTable from "material-table";
-import React, { Fragment, useState } from "react";
-import { Snackbar } from "@material-ui/core";
+import React, { Fragment, useCallback, useState } from "react";
+import { LinearProgress, Snackbar } from "@material-ui/core";
+import {
+  MaterialTableToolBar,
+  MaterialTableToolBarButton
+} from "../../common/material-table/MaterialTableToolBar";
+import ContactService from "../api/ContactService";
+import _ from "lodash";
+import ErrorMessage from "../../common/components/ErrorMessage";
 
 const tableRef = React.createRef();
 
@@ -11,34 +16,57 @@ const GroupsTab = ({ groups, columns }) => {
   const [contactGroupsVersion, setContactGroupsVersion] = useState(1);
   const [addingContactGroup, setAddingContactGroup] = useState(false);
   const [savedContactGroup, setSavedContactGroup] = useState(false);
+  const [displayProgress, setShowProgressBar] = useState(false);
+  const [error, setError] = useState(null);
+
+  const onContactSaved = useCallback(() => {
+    setAddingContactGroup(false);
+    setSavedContactGroup(true);
+    setContactGroupsVersion(contactGroupsVersion + 1);
+  }, [contactGroupsVersion]);
+
+  const onDelete = useCallback(
+    contactGroupRows => {
+      ContactService.deleteContactGroup(contactGroupRows.map(x => x.id))
+        .then(() => {
+          setError(null);
+          setContactGroupsVersion(contactGroupsVersion + 1);
+        })
+        .catch(error => setError(error))
+        .finally(() => setShowProgressBar(false));
+      setShowProgressBar(true);
+    },
+    [contactGroupsVersion]
+  );
 
   return (
     <div className="container">
       {addingContactGroup && (
         <AddEditContactGroup
           onClose={() => setAddingContactGroup(false)}
-          onSave={() => {
-            setAddingContactGroup(false);
-            setSavedContactGroup(true);
-            setContactGroupsVersion(contactGroupsVersion + 1);
-          }}
+          onSave={() => onContactSaved()}
         />
       )}
-      <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
-        <Button
-          color="primary"
-          variant="outlined"
-          style={{ marginLeft: 10 }}
-          onClick={() => setAddingContactGroup(true)}
-        >
-          Add Contact Group
-        </Button>
-      </Box>
+      {!_.isNil(error) && <ErrorMessage error={error} />}
+      {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
         key={contactGroupsVersion}
         title=""
         components={{
-          Container: props => <Fragment>{props.children}</Fragment>
+          Container: props => <Fragment>{props.children}</Fragment>,
+          Toolbar: props => (
+            <MaterialTableToolBar
+              toolBarButtons={[
+                new MaterialTableToolBarButton(rows => onDelete(rows), true, "Delete"),
+                new MaterialTableToolBarButton(
+                  () => setAddingContactGroup(true),
+                  false,
+                  "Add Contact Group"
+                )
+              ]}
+              {...props}
+            />
+          )
         }}
         tableRef={tableRef}
         columns={columns}
