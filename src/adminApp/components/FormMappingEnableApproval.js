@@ -3,9 +3,8 @@ import { find, get, map } from "lodash";
 import Checkbox from "@material-ui/core/Checkbox";
 import MaterialTable from "material-table";
 import Typography from "@material-ui/core/Typography";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import { CustomisedExpansionPanelSummary } from "./CustomisedExpansionPanelSummary";
+import {Accordion, AccordionDetails} from "@material-ui/core";
+import { CustomisedAccordionSummary } from "./CustomisedExpansionPanelSummary";
 import http from "common/utils/httpClient";
 
 export const FormMappingEnableApproval = ({
@@ -59,11 +58,11 @@ export const FormMappingEnableApproval = ({
   }
 
   return (
-    <ExpansionPanel square expanded={expanded} onChange={() => setExpanded(!expanded)}>
-      <CustomisedExpansionPanelSummary>
+    <Accordion square expanded={expanded} onChange={() => setExpanded((expanded) => !expanded)}>
+      <CustomisedAccordionSummary>
         <Typography>Form wise approval settings</Typography>
-      </CustomisedExpansionPanelSummary>
-      <ExpansionPanelDetails>
+      </CustomisedAccordionSummary>
+      <AccordionDetails>
         <div style={{ width: "100%" }}>
           <MaterialTable
             columns={columns}
@@ -84,7 +83,7 @@ export const FormMappingEnableApproval = ({
             localization={{ header: { actions: "Enable Approval" } }}
           />
         </div>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
-import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ValidFormat } from "./ValidFormat";
-import { CustomisedExpansionPanelSummary } from "../components/CustomisedExpansionPanelSummary";
+import {
+  CustomisedAccordionSummary,
+} from "../components/CustomisedExpansionPanelSummary";
 import { findFormUuidForSubjectType } from "../domain/formMapping";
 import http from "../../common/utils/httpClient";
 import { forEach, get, includes } from "lodash";
 import { OptionSelect } from "./OptionSelect";
-import { Box, Input } from "@material-ui/core";
+import {Accordion, AccordionDetails, Box, Input} from "@material-ui/core";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
-const ExpansionPanel = withStyles({
+const CustomAccordion = withStyles({
   root: {
     border: "1px solid rgba(0,0,0,.125)",
     boxShadow: "none"
@@ -22,16 +22,18 @@ const ExpansionPanel = withStyles({
   expanded: {
     margin: "auto"
   }
-})(MuiExpansionPanel);
+})(props => <Accordion {...props}/>);
+CustomAccordion.muiName = "Accordion";
 
-const ExpansionPanelDetails = withStyles(theme => ({
+const CustomAccordianDetails = withStyles(theme => ({
   root: {
     marginTop: 10,
     marginBottom: 10,
     padding: theme.spacing.unit * 2,
     display: "block"
   }
-}))(MuiExpansionPanelDetails);
+}))(props => <AccordionDetails {...props}/>);
+CustomAccordianDetails.muiName = "AccordionDetails"
 
 const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
 export const AdvancedSettings = ({
@@ -84,11 +86,12 @@ export const AdvancedSettings = ({
   }, [formUuid]);
 
   return (
-    <ExpansionPanel square expanded={expanded} onChange={() => setExpanded(!expanded)}>
-      <CustomisedExpansionPanelSummary>
+    <CustomAccordion square expanded={expanded} onChange={() => setExpanded((expanded) => !expanded)
+    }>
+      <CustomisedAccordionSummary>
         <Typography>Advanced settings</Typography>
-      </CustomisedExpansionPanelSummary>
-      <ExpansionPanelDetails>
+      </CustomisedAccordionSummary>
+      <CustomAccordianDetails>
         <div style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <AddressLevelSetting
             levelUUIDs={subjectType.locationTypeUUIDs}
@@ -220,7 +223,7 @@ export const AdvancedSettings = ({
             />
           </Box>
         </div>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </CustomAccordianDetails>
+    </CustomAccordion>
   );
 };

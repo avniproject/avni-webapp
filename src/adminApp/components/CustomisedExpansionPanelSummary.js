@@ -1,8 +1,8 @@
 import { withStyles } from "@material-ui/core";
-import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary/ExpansionPanelSummary";
+import {AccordionSummary} from "@material-ui/core";
 import React from "react";
 
-export const CustomisedExpansionPanelSummary = withStyles({
+export const CustomisedAccordionSummary = withStyles({
   root: {
     backgroundColor: "rgba(0,0,0,0.07)",
     borderBottom: "1px solid rgba(0,0,0,.125)",
@@ -18,6 +18,6 @@ export const CustomisedExpansionPanelSummary = withStyles({
     }
   },
   expanded: {}
-})(props => <MuiExpansionPanelSummary {...props} />);
+})(props => <AccordionSummary {...props} />);
 
-CustomisedExpansionPanelSummary.muiName = "CustomisedExpansionPanelSummary";
+CustomisedAccordionSummary.muiName = "AccordionSummary";
