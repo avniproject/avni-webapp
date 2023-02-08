@@ -348,7 +348,7 @@ export const mapEncounter = (encounterDetails, observations) => {
 
 export const getLatestEncounterOfType = (allEncounters, encounterTypeUUID) => {
   return chain(allEncounters)
-    .filter(enc => enc.encounterType.uuid == encounterTypeUUID)
+    .filter(enc => enc.encounterType.uuid === encounterTypeUUID)
     .sortBy("encounterDateTime")
     .last()
     .value();
