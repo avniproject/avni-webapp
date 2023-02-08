@@ -328,7 +328,7 @@ export const mapProgramEncounter = (programEncounter, observations, isImmutable)
   }
 };
 
-export const mapEncounter = encounterDetails => {
+export const mapEncounter = (encounterDetails, observations) => {
   if (encounterDetails) {
     const encounter = General.assignFields(
       encounterDetails,
@@ -337,7 +337,9 @@ export const mapEncounter = encounterDetails => {
       ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
-    encounter.observations = mapObservations(encounterDetails["observations"]);
+    encounter.observations = mapObservations(
+      encounterDetails.encounterType.immutable ? observations : encounterDetails["observations"]
+    );
     encounter.cancelObservations = mapObservations(encounterDetails["cancelObservations"]);
     encounter.subjectUuid = encounterDetails["subjectUUID"];
     return encounter;

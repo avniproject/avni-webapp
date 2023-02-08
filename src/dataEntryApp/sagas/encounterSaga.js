@@ -18,7 +18,11 @@ import { mapForm } from "../../common/adapters";
 import { Encounter, ModelGeneral as General, ObservationsHolder } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
-import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
+import {
+  mapProfile,
+  mapEncounter,
+  getLatestEncounterOfType
+} from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import {
   selectDecisions,
@@ -99,10 +103,16 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
 export function* createEncounterForScheduledWatcher() {
   yield takeLatest(types.CREATE_ENCOUNTER_FOR_SCHEDULED, createEncounterForScheduledWorker);
 }
+
 export function* createEncounterForScheduledWorker({ encounterUuid }) {
   const encounterJson = yield call(api.fetchEncounter, encounterUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
-  const encounter = mapEncounter(encounterJson);
+  const allEncounters = yield call(api.fetchCompletedEncounters, encounterJson.subjectUUID, null);
+  const latestEncounter = getLatestEncounterOfType(
+    allEncounters.content,
+    encounterJson.encounterType.uuid
+  );
+  const encounter = mapEncounter(encounterJson, latestEncounter.observations);
   encounter.encounterDateTime = new Date();
   yield setEncounterDetails(encounter, subjectProfileJson);
 }
