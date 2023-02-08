@@ -28,7 +28,8 @@ import {
   mapProgramEncounter,
   mapProgramEnrolment,
   mapProfile,
-  getLatestEncounterOfType
+  getLatestEncounterOfType,
+  mapObservations
 } from "common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import {
@@ -98,12 +99,19 @@ export function* createProgramEncounterWatcher() {
 export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) {
   const programEnrolmentJson = yield call(api.fetchProgramEnrolments, enrolUuid);
   const state = yield select();
-
+  const programEncounters = yield call(api.fetchCompletedProgramEncounters, enrolUuid, null);
+  const latestProgramEncounter = getLatestEncounterOfType(
+    programEncounters.content,
+    encounterTypeUuid
+  );
+  const encounterTypeDetails = yield call(api.fetchEncounterTypeDetails, encounterTypeUuid);
   /*create new encounter obj */
   const programEncounter = new ProgramEncounter();
   programEncounter.uuid = General.randomUUID();
   programEncounter.encounterDateTime = new Date();
-  programEncounter.observations = [];
+  programEncounter.observations = encounterTypeDetails.immutable
+    ? mapObservations(latestProgramEncounter.observations)
+    : [];
   programEncounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
     eT => eT.uuid === encounterTypeUuid

@@ -80,6 +80,12 @@ export default {
         return response.json;
       }),
 
+  fetchEncounterTypeDetails: uuid => {
+    return httpClient
+      .fetchJson(`/web/encounterTypeDetails/${uuid}`)
+      .then(response => response.json);
+  },
+
   fetchSubjectProgram: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
   },
