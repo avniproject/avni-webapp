@@ -18,7 +18,7 @@ import {
   ProgramEnrolment,
   QuestionGroup
 } from "avni-models";
-import { isNil, map } from "lodash";
+import { isNil, map, chain } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
 import { subjectService } from "../dataEntryApp/services/SubjectService";
 import { addressLevelService } from "../dataEntryApp/services/AddressLevelService";
@@ -307,7 +307,7 @@ export const mapGeneral = subjectGeneral => {
 };
 
 //To get Program Encounter with observations
-export const mapProgramEncounter = programEncounter => {
+export const mapProgramEncounter = (programEncounter, observations, isImmutable) => {
   if (programEncounter) {
     const programEncounterObj = General.assignFields(
       programEncounter,
@@ -316,7 +316,9 @@ export const mapProgramEncounter = programEncounter => {
       ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
-    programEncounterObj.observations = mapObservations(programEncounter["observations"]);
+    programEncounterObj.observations = mapObservations(
+      isImmutable ? observations : programEncounter["observations"]
+    );
     programEncounterObj.cancelObservations = mapObservations(
       programEncounter["cancelObservations"]
     );
@@ -340,4 +342,12 @@ export const mapEncounter = encounterDetails => {
     encounter.subjectUuid = encounterDetails["subjectUUID"];
     return encounter;
   }
+};
+
+export const getLatestEncounterOfType = (allEncounters, encounterTypeUUID) => {
+  return chain(allEncounters)
+    .filter(enc => enc.encounterType.uuid == encounterTypeUUID)
+    .sortBy("encounterDateTime")
+    .last()
+    .value();
 };

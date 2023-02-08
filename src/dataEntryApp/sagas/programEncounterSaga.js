@@ -24,7 +24,12 @@ import {
   AbstractEncounter
 } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
-import { mapProgramEncounter, mapProgramEnrolment, mapProfile } from "common/subjectModelMapper";
+import {
+  mapProgramEncounter,
+  mapProgramEnrolment,
+  mapProfile,
+  getLatestEncounterOfType
+} from "common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import {
   selectDecisions,
@@ -115,11 +120,24 @@ export function* createProgramEncounterForScheduledWatcher() {
 }
 export function* createProgramEncounterForScheduledWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
+  const programEncounters = yield call(
+    api.fetchCompletedProgramEncounters,
+    programEncounterJson.enrolmentUUID,
+    null
+  );
+  const latestProgramEncounter = getLatestEncounterOfType(
+    programEncounters.content,
+    programEncounterJson.encounterType.uuid
+  );
   const programEnrolmentJson = yield call(
     api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
-  const programEncounter = mapProgramEncounter(programEncounterJson);
+  const programEncounter = mapProgramEncounter(
+    programEncounterJson,
+    latestProgramEncounter.observations,
+    programEncounterJson.encounterType.immutable
+  );
   programEncounter.encounterDateTime = new Date();
   yield setProgramEncounterDetails(programEncounter, programEnrolmentJson);
 }
