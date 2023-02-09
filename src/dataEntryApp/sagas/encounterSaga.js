@@ -21,7 +21,8 @@ import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import {
   mapProfile,
   mapEncounter,
-  getLatestEncounterOfType
+  getLatestEncounterOfType,
+  mapObservations
 } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import {
@@ -82,15 +83,21 @@ export function* encounterEligibilityWorker({ subjectUuid }) {
 export function* createEncounterWatcher() {
   yield takeLatest(types.CREATE_ENCOUNTER, createEncounterWorker);
 }
+
 export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const encounterTypeDetails = yield call(api.fetchEncounterTypeDetails, encounterTypeUuid);
+  const allEncounters = yield call(api.fetchCompletedEncounters, subjectUuid, null);
+  const latestEncounter = getLatestEncounterOfType(allEncounters.content, encounterTypeUuid);
   const state = yield select();
 
   /*create new encounter obj */
   const encounter = new Encounter();
   encounter.uuid = General.randomUUID();
   encounter.encounterDateTime = new Date();
-  encounter.observations = [];
+  encounter.observations = encounterTypeDetails.immutable
+    ? mapObservations(latestEncounter.observations)
+    : [];
   encounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
     eT => eT.uuid === encounterTypeUuid
