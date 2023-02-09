@@ -1,4 +1,4 @@
-import { intersection, isEmpty, map } from "lodash";
+import { intersection, isEmpty, map, sortBy, trim } from "lodash";
 import { ROLES } from "../constants";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -33,10 +33,13 @@ export const OrganisationOptions = ({
 
   const options = [
     { name: "", value: "" },
-    ...map(organisations, ({ name, uuid }) => ({
-      name: name,
-      value: uuid
-    }))
+    ...map(
+      sortBy(organisations, organisation => trim(organisation.name).toLowerCase()),
+      ({ name, uuid }) => ({
+        name: name,
+        value: uuid
+      })
+    )
   ];
 
   const handleChange = event => {
