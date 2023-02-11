@@ -28,7 +28,6 @@ import {
   mapProgramEncounter,
   mapProgramEnrolment,
   mapProfile,
-  getLatestEncounterOfType,
   mapObservations
 } from "common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
@@ -96,21 +95,23 @@ export function* programEncounterEligibilityWorker({ enrolmentUuid }) {
 export function* createProgramEncounterWatcher() {
   yield takeLatest(types.CREATE_PROGRAM_ENCOUNTER, createProgramEncounterWorker);
 }
+
 export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) {
   const programEnrolmentJson = yield call(api.fetchProgramEnrolments, enrolUuid);
   const state = yield select();
-  const programEncounters = yield call(api.fetchCompletedProgramEncounters, enrolUuid, null);
-  const latestProgramEncounter = getLatestEncounterOfType(
-    programEncounters.content,
-    encounterTypeUuid
+  const latestProgramEncounter = yield call(
+    api.fetchCompletedProgramEncounters,
+    enrolUuid,
+    "page=0&&size=1&&sort=encounterDateTime,desc"
   );
+
   const encounterTypeDetails = yield call(api.fetchEncounterTypeDetails, encounterTypeUuid);
   /*create new encounter obj */
   const programEncounter = new ProgramEncounter();
   programEncounter.uuid = General.randomUUID();
   programEncounter.encounterDateTime = new Date();
   programEncounter.observations = encounterTypeDetails.immutable
-    ? mapObservations(latestProgramEncounter.observations)
+    ? mapObservations(latestProgramEncounter.content[0].observations)
     : [];
   programEncounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
@@ -126,24 +127,22 @@ export function* createProgramEncounterForScheduledWatcher() {
     createProgramEncounterForScheduledWorker
   );
 }
+
 export function* createProgramEncounterForScheduledWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
-  const programEncounters = yield call(
+  const latestProgramEncounter = yield call(
     api.fetchCompletedProgramEncounters,
     programEncounterJson.enrolmentUUID,
-    null
+    "page=0&&size=1&&sort=encounterDateTime,desc"
   );
-  const latestProgramEncounter = getLatestEncounterOfType(
-    programEncounters.content,
-    programEncounterJson.encounterType.uuid
-  );
+
   const programEnrolmentJson = yield call(
     api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
   const programEncounter = mapProgramEncounter(
     programEncounterJson,
-    latestProgramEncounter.observations,
+    latestProgramEncounter.content[0].observations,
     programEncounterJson.encounterType.immutable
   );
   programEncounter.encounterDateTime = new Date();
