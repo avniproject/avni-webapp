@@ -18,12 +18,7 @@ import { mapForm } from "../../common/adapters";
 import { Encounter, ModelGeneral as General, ObservationsHolder } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
-import {
-  mapProfile,
-  mapEncounter,
-  getLatestEncounterOfType,
-  mapObservations
-} from "../../common/subjectModelMapper";
+import { mapProfile, mapEncounter, mapObservations } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import {
   selectDecisions,
@@ -87,8 +82,12 @@ export function* createEncounterWatcher() {
 export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const encounterTypeDetails = yield call(api.fetchEncounterTypeDetails, encounterTypeUuid);
-  const allEncounters = yield call(api.fetchCompletedEncounters, subjectUuid, null);
-  const latestEncounter = getLatestEncounterOfType(allEncounters.content, encounterTypeUuid);
+  const latestEncounter = yield call(
+    api.fetchCompletedEncounters,
+    subjectUuid,
+    "page=0&&size=1&&sort=encounterDateTime,desc"
+  );
+
   const state = yield select();
 
   /*create new encounter obj */
@@ -96,7 +95,7 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   encounter.uuid = General.randomUUID();
   encounter.encounterDateTime = new Date();
   encounter.observations = encounterTypeDetails.immutable
-    ? mapObservations(latestEncounter.observations)
+    ? mapObservations(latestEncounter.content[0].observations)
     : [];
   encounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
@@ -114,12 +113,12 @@ export function* createEncounterForScheduledWatcher() {
 export function* createEncounterForScheduledWorker({ encounterUuid }) {
   const encounterJson = yield call(api.fetchEncounter, encounterUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
-  const allEncounters = yield call(api.fetchCompletedEncounters, encounterJson.subjectUUID, null);
-  const latestEncounter = getLatestEncounterOfType(
-    allEncounters.content,
-    encounterJson.encounterType.uuid
+  const latestEncounter = yield call(
+    api.fetchCompletedEncounters,
+    encounterJson.subjectUUID,
+    "page=0&&size=1&&sort=encounterDateTime,desc"
   );
-  const encounter = mapEncounter(encounterJson, latestEncounter.observations);
+  const encounter = mapEncounter(encounterJson, latestEncounter.content[0].observations);
   encounter.encounterDateTime = new Date();
   yield setEncounterDetails(encounter, subjectProfileJson);
 }

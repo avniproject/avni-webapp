@@ -345,11 +345,3 @@ export const mapEncounter = (encounterDetails, observations) => {
     return encounter;
   }
 };
-
-export const getLatestEncounterOfType = (allEncounters, encounterTypeUUID) => {
-  return chain(allEncounters)
-    .filter(enc => enc.encounterType.uuid === encounterTypeUUID)
-    .sortBy("encounterDateTime")
-    .last()
-    .value();
-};
