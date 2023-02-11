@@ -18,7 +18,7 @@ import {
   ProgramEnrolment,
   QuestionGroup
 } from "avni-models";
-import { isNil, map, chain } from "lodash";
+import { isNil, map } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
 import { subjectService } from "../dataEntryApp/services/SubjectService";
 import { addressLevelService } from "../dataEntryApp/services/AddressLevelService";
