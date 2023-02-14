@@ -102,7 +102,7 @@ export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) 
   const latestProgramEncounter = yield call(
     api.fetchCompletedProgramEncounters,
     enrolUuid,
-    "page=0&&size=1&&sort=encounterDateTime,desc"
+    `encounterTypeUuids=${encounterTypeUuid}&&page=0&&size=1&&sort=encounterDateTime,desc`
   );
 
   const encounterTypeDetails = yield call(api.fetchEncounterTypeDetails, encounterTypeUuid);
@@ -110,9 +110,10 @@ export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) 
   const programEncounter = new ProgramEncounter();
   programEncounter.uuid = General.randomUUID();
   programEncounter.encounterDateTime = new Date();
-  programEncounter.observations = encounterTypeDetails.immutable
-    ? mapObservations(latestProgramEncounter.content[0].observations)
-    : [];
+  programEncounter.observations =
+    encounterTypeDetails.immutable && latestProgramEncounter.content[0]
+      ? mapObservations(latestProgramEncounter.content[0].observations)
+      : [];
   programEncounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
     eT => eT.uuid === encounterTypeUuid
@@ -133,7 +134,9 @@ export function* createProgramEncounterForScheduledWorker({ programEncounterUuid
   const latestProgramEncounter = yield call(
     api.fetchCompletedProgramEncounters,
     programEncounterJson.enrolmentUUID,
-    "page=0&&size=1&&sort=encounterDateTime,desc"
+    `encounterTypeUuids=${
+      programEncounterJson.encounterType.uuid
+    }&&page=0&&size=1&&sort=encounterDateTime,desc`
   );
 
   const programEnrolmentJson = yield call(
@@ -142,8 +145,9 @@ export function* createProgramEncounterForScheduledWorker({ programEncounterUuid
   );
   const programEncounter = mapProgramEncounter(
     programEncounterJson,
-    latestProgramEncounter.content[0].observations,
-    programEncounterJson.encounterType.immutable
+    programEncounterJson.encounterType.immutable && latestProgramEncounter.content[0]
+      ? latestProgramEncounter.content[0].observations
+      : programEncounterJson["observations"]
   );
   programEncounter.encounterDateTime = new Date();
   yield setProgramEncounterDetails(programEncounter, programEnrolmentJson);

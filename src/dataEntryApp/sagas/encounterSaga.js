@@ -85,18 +85,18 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   const latestEncounter = yield call(
     api.fetchCompletedEncounters,
     subjectUuid,
-    "page=0&&size=1&&sort=encounterDateTime,desc"
+    `encounterTypeUuids=${encounterTypeUuid}&&page=0&&size=1&&sort=encounterDateTime,desc`
   );
-
   const state = yield select();
 
   /*create new encounter obj */
   const encounter = new Encounter();
   encounter.uuid = General.randomUUID();
   encounter.encounterDateTime = new Date();
-  encounter.observations = encounterTypeDetails.immutable
-    ? mapObservations(latestEncounter.content[0].observations)
-    : [];
+  encounter.observations =
+    encounterTypeDetails.immutable && latestEncounter.content[0]
+      ? mapObservations(latestEncounter.content[0].observations)
+      : [];
   encounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
     eT => eT.uuid === encounterTypeUuid
@@ -116,9 +116,16 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
   const latestEncounter = yield call(
     api.fetchCompletedEncounters,
     encounterJson.subjectUUID,
-    "page=0&&size=1&&sort=encounterDateTime,desc"
+    `encounterTypeUuids=${
+      encounterJson.encounterType.uuid
+    }&&page=0&&size=1&&sort=encounterDateTime,desc`
   );
-  const encounter = mapEncounter(encounterJson, latestEncounter.content[0].observations);
+  const encounter = mapEncounter(
+    encounterJson,
+    encounterJson.encounterType.immutable && latestEncounter.content[0]
+      ? latestEncounter.content[0].observations
+      : encounterJson["observations"]
+  );
   encounter.encounterDateTime = new Date();
   yield setEncounterDetails(encounter, subjectProfileJson);
 }
