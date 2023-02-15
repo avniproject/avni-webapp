@@ -80,7 +80,8 @@ const initialState = {
     authState: undefined,
     cognito: undefined,
     username: undefined,
-    roles: undefined
+    roles: undefined,
+    privileges: []
   },
   organisation: {
     id: undefined,
@@ -111,7 +112,8 @@ export default function(state = initialState, action) {
           ...state.user,
           username: state.user.username || action.payload.username,
           roles: action.payload.roles,
-          name: action.payload.name
+          name: action.payload.name,
+          privileges: action.payload.privileges
         },
         organisation: {
           id: action.payload.organisationId,

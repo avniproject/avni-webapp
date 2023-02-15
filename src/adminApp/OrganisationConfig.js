@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { localeChoices } from "../common/constants";
-import _, { isEmpty } from "lodash";
+import _, { isEmpty, find } from "lodash";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   }
 });
 
-const customConfig = ({ operationalModules, getOperationalModules, history, organisation }) => {
+const customConfig = ({ getOperationalModules, history, organisation, user }) => {
   React.useEffect(() => {
     getOperationalModules();
   }, []);
@@ -95,6 +95,15 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
     </IconButton>
   );
 
+  function hasPrivileges() {
+    return find(
+      user.privileges,
+      privilege =>
+        privilege.privilegeName === "Edit organisation configuration" ||
+        privilege.privilegeName === "Delete organisation configuration"
+    );
+  }
+
   return _.isNil(subjectTypes) ? (
     <div />
   ) : (
@@ -107,7 +116,7 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
             Languages
           </h6>
           <Box>
-            {editLanguage()}
+            {hasPrivileges() ? editLanguage() : ""}
             {renderLanguage(settings.settings.languages)}
           </Box>
         </Box>
@@ -117,7 +126,8 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
   );
 };
 const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
+  operationalModules: state.reports.operationalModules,
+  user: state.app.user
 });
 
 export default withRouter(
