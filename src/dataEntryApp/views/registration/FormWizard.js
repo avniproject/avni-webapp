@@ -146,8 +146,8 @@ const FormWizard = ({
   const isFirstPage = registrationFlow
     ? subject.subjectType.isPerson()
       ? wizard.isNonFormPage()
-      : wizard.isFirstFormPage()
-    : wizard.isFirstFormPage();
+      : wizard.isFirstPage()
+    : wizard.isFirstPage();
   const pageTitleText = onSummaryPage
     ? t("summaryAndRecommendations")
     : t(isRegistrationFirstPage ? "Basic Details" : formElementGroup.name);

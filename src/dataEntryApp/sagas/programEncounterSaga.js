@@ -42,7 +42,7 @@ import { setEligibleProgramEncounters } from "../reducers/programEncounterReduce
 export default function*() {
   yield all(
     [
-      programEncouterOnLoadWatcher,
+      programEncounterOnLoadWatcher,
       updateEncounterObsWatcher,
       saveProgramEncounterWatcher,
       editProgramEncounterWatcher,
@@ -58,11 +58,11 @@ export default function*() {
   );
 }
 
-export function* programEncouterOnLoadWatcher() {
-  yield takeLatest(types.ON_LOAD, programEncouterOnLoadWorker);
+export function* programEncounterOnLoadWatcher() {
+  yield takeLatest(types.ON_LOAD, programEncounterOnLoadWorker);
 }
 
-export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
+export function* programEncounterOnLoadWorker({ enrolmentUuid }) {
   yield put.resolve(setLoad(false));
   yield put.resolve(setFilteredFormElements());
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
@@ -110,10 +110,11 @@ export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) 
   const programEncounter = new ProgramEncounter();
   programEncounter.uuid = General.randomUUID();
   programEncounter.encounterDateTime = new Date();
-  programEncounter.observations =
-    encounterTypeDetails.immutable && latestProgramEncounter.content[0]
-      ? mapObservations(latestProgramEncounter.content[0].observations)
-      : [];
+  let isImmutableAndHasCompletedEncounter =
+    encounterTypeDetails.immutable && latestProgramEncounter.content[0];
+  programEncounter.observations = isImmutableAndHasCompletedEncounter
+    ? mapObservations(latestProgramEncounter.content[0].observations)
+    : [];
   programEncounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
     eT => eT.uuid === encounterTypeUuid
@@ -143,9 +144,11 @@ export function* createProgramEncounterForScheduledWorker({ programEncounterUuid
     api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
+  let isImmutableAndHasCompletedEncounter =
+    programEncounterJson.encounterType.immutable && latestProgramEncounter.content[0];
   const programEncounter = mapProgramEncounter(
     programEncounterJson,
-    programEncounterJson.encounterType.immutable && latestProgramEncounter.content[0]
+    isImmutableAndHasCompletedEncounter
       ? latestProgramEncounter.content[0].observations
       : programEncounterJson["observations"]
   );
@@ -205,10 +208,18 @@ export function* editProgramEncounterWorker({ programEncounterUuid }) {
     api.fetchProgramEnrolments,
     programEncounterJson.enrolmentUUID
   );
-  yield setProgramEncounterDetails(mapProgramEncounter(programEncounterJson), programEnrolmentJson);
+  yield setProgramEncounterDetails(
+    mapProgramEncounter(programEncounterJson),
+    programEnrolmentJson,
+    true
+  );
 }
 
-export function* setProgramEncounterDetails(programEncounter, programEnrolmentJson) {
+export function* setProgramEncounterDetails(
+  programEncounter,
+  programEnrolmentJson,
+  isEdit = false
+) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolmentJson.subjectUuid);
   const subject = mapProfile(subjectProfileJson);
   const formMapping = yield select(
@@ -229,7 +240,7 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
     onSummaryPage,
     wizard,
     isFormEmpty
-  } = commonFormUtil.onLoad(programEncounterForm, programEncounter);
+  } = commonFormUtil.onLoad(programEncounterForm, programEncounter, false, isEdit);
 
   yield put.resolve(
     onLoadSuccess(

@@ -180,10 +180,10 @@ function* editEncounterWatcher() {
 export function* editEncounterWorker({ encounterUuid }) {
   const encounterJson = yield call(api.fetchEncounter, encounterUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
-  yield setEncounterDetails(mapEncounter(encounterJson), subjectProfileJson);
+  yield setEncounterDetails(mapEncounter(encounterJson), subjectProfileJson, true);
 }
 
-export function* setEncounterDetails(encounter, subjectProfileJson) {
+export function* setEncounterDetails(encounter, subjectProfileJson, isEdit = false) {
   const subject = mapProfile(subjectProfileJson);
   const formMapping = yield select(
     selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
@@ -198,7 +198,7 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
     onSummaryPage,
     wizard,
     isFormEmpty
-  } = commonFormUtil.onLoad(encounterForm, encounter);
+  } = commonFormUtil.onLoad(encounterForm, encounter, false, isEdit);
 
   yield put.resolve(
     onLoadSuccess(

@@ -307,7 +307,10 @@ export const mapGeneral = subjectGeneral => {
 };
 
 //To get Program Encounter with observations
-export const mapProgramEncounter = (programEncounter, observations) => {
+export const mapProgramEncounter = (
+  programEncounter,
+  observations = programEncounter["observations"]
+) => {
   if (programEncounter) {
     const programEncounterObj = General.assignFields(
       programEncounter,
@@ -326,7 +329,7 @@ export const mapProgramEncounter = (programEncounter, observations) => {
   }
 };
 
-export const mapEncounter = (encounterDetails, observations) => {
+export const mapEncounter = (encounterDetails, observations = encounterDetails["observations"]) => {
   if (encounterDetails) {
     const encounter = General.assignFields(
       encounterDetails,
