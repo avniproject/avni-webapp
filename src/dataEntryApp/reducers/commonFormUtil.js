@@ -32,11 +32,34 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
   };
 };
 
-const onLoad = (form, entity, isIndividualRegistration = false) => {
+const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
   );
+
+  const lastGroupWithAtLeastOneVisibleElement = find(
+    sortBy(form.nonVoidedFormElementGroups(), "displayOrder").reverse(),
+    formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
+  );
+
+  function isObsPresent(formElement) {
+    return find(entity.that.observations, observation => {
+      return observation.concept.uuid === formElement.concept.uuid;
+    });
+  }
+
+  let formElementGroupWithoutObs = find(
+    sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
+    formElementGroup => {
+      let obsArr = [];
+      formElementGroup.that.formElements.forEach(formElement => {
+        return isObsPresent(formElement) ? obsArr.push(formElement) : "";
+      });
+      return obsArr.length === 0;
+    }
+  );
+
   if (isNil(firstGroupWithAtLeastOneVisibleElement)) {
     const staticFEG = new StaticFormElementGroup(form);
     const nextFEG = staticFEG.next();
@@ -49,17 +72,26 @@ const onLoad = (form, entity, isIndividualRegistration = false) => {
       isFormEmpty: true
     };
   }
-  const filteredFormElements = filterFormElements(firstGroupWithAtLeastOneVisibleElement, entity);
-  const indexOfGroup =
-    findIndex(
-      form.getFormElementGroups(),
-      feg => feg.uuid === firstGroupWithAtLeastOneVisibleElement.uuid
-    ) + 1;
-  return {
-    filteredFormElements,
-    formElementGroup: firstGroupWithAtLeastOneVisibleElement,
-    wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup)
+
+  const getReturnObject = (formElementGroup, entity, isSummaryPage = false) => {
+    const indexOfGroup =
+      findIndex(form.getFormElementGroups(), feg => feg.uuid === formElementGroup.uuid) + 1;
+    return {
+      filteredFormElements: filterFormElements(formElementGroup, entity),
+      formElementGroup: formElementGroup,
+      wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup),
+      onSummaryPage: isSummaryPage
+    };
   };
+  const formElementGroup = isEdit
+    ? firstGroupWithAtLeastOneVisibleElement
+    : formElementGroupWithoutObs;
+
+  if (!!!formElementGroup) {
+    return getReturnObject(lastGroupWithAtLeastOneVisibleElement, entity, true);
+  }
+
+  return getReturnObject(formElementGroup, entity);
 };
 
 function nextState(
