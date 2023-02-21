@@ -42,7 +42,7 @@ import { setEligibleProgramEncounters } from "../reducers/programEncounterReduce
 export default function*() {
   yield all(
     [
-      programEncouterOnLoadWatcher,
+      programEncounterOnLoadWatcher,
       updateEncounterObsWatcher,
       saveProgramEncounterWatcher,
       editProgramEncounterWatcher,
@@ -58,11 +58,11 @@ export default function*() {
   );
 }
 
-export function* programEncouterOnLoadWatcher() {
-  yield takeLatest(types.ON_LOAD, programEncouterOnLoadWorker);
+export function* programEncounterOnLoadWatcher() {
+  yield takeLatest(types.ON_LOAD, programEncounterOnLoadWorker);
 }
 
-export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
+export function* programEncounterOnLoadWorker({ enrolmentUuid }) {
   yield put.resolve(setLoad(false));
   yield put.resolve(setFilteredFormElements());
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
