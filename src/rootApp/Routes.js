@@ -36,14 +36,84 @@ const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest
 
 const Routes = ({ user, organisation }) => (
   <Switch>
+    <RestrictedRoute
+      exact
+      path="/admin/upload"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/language"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/addressLevelType"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/locations"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/catchment"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/user"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/userGroups"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/identifierSource"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/identifierUserAssignment"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/organisationDetails"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
+    <RestrictedRoute
+      exact
+      path="/admin/phoneNumberVerification"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+      currentUserRoles={user.roles}
+      component={OrgManager}
+    />
     <Route path="/admin">
-      <RestrictedRoute
-        exact
-        path="/admin/upload"
-        allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
-        currentUserRoles={user.roles}
-        component={OrgManager}
-      />
       <RestrictedRoute
         path="/"
         allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
