@@ -38,6 +38,13 @@ const Routes = ({ user, organisation }) => (
   <Switch>
     <Route path="/admin">
       <RestrictedRoute
+        exact
+        path="/admin/upload"
+        allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
+        currentUserRoles={user.roles}
+        component={OrgManager}
+      />
+      <RestrictedRoute
         path="/"
         allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
         currentUserRoles={user.roles}

@@ -104,7 +104,7 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
                   <b>{props.organisation.name} </b> ({props.user.username})
                 </div>
                 <IconButton
-                  onClick={() => props.history.push("/home")}
+                  onClick={() => props.history.push("/")}
                   aria-label="Home"
                   color="inherit"
                 >
