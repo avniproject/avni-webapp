@@ -74,7 +74,9 @@ class OrgManager extends Component {
     return (
       <React.Fragment>
         {!isEmpty(httpClient.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
-          ? this.renderOrgAdminResources(user, organisation)
+          ? isEmpty(intersection(user.roles, [ROLES.ORG_ADMIN]))
+            ? this.renderUserResources(user)
+            : this.renderOrgAdminResources(user, organisation)
           : this.renderAdminResources(user)}
       </React.Fragment>
     );
@@ -202,6 +204,21 @@ class OrgManager extends Component {
           options={{ label: "Phone Verification" }}
           list={Msg91Config}
         />
+      </Admin>
+    );
+  }
+
+  renderUserResources(user) {
+    return (
+      <Admin
+        title="Manage Bulk Data"
+        authProvider={authProvider}
+        history={adminHistory}
+        logoutButton={WithProps({ user }, LogoutButton)}
+        customRoutes={customRoutes}
+        appLayout={AdminLayout}
+      >
+        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
       </Admin>
     );
   }

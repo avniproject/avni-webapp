@@ -7,6 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import SettingsIcon from "@material-ui/icons/Settings";
 import LogoutIcon from "@material-ui/icons/Input";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Radio from "@material-ui/core/Radio";
@@ -88,7 +89,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout }) => {
+const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout, history }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -170,6 +171,17 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
             </RadioGroup>
           </FormControl>
         </Collapse>
+        <hr className={classes.horizontalLine} />
+        <ListItem
+          onClick={() => history.push(`/admin/upload`)}
+          button
+          style={{ paddingTop: "5px", paddingBottom: "5px" }}
+        >
+          <ListItemIcon>
+            <ArrowUpwardIcon style={{ color: "blue" }} />
+          </ListItemIcon>
+          <ListItemText primary={t("bulk upload")} />
+        </ListItem>
         <hr className={classes.horizontalLine} />
         <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>

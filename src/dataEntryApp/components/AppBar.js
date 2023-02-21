@@ -159,7 +159,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
   const renderMenu = (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <UserOption />
+        <UserOption history={history} />
       </div>
     </ClickAwayListener>
   );

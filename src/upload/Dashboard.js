@@ -19,6 +19,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
+import { ROLES } from "../common/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes() }) => {
+const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
   const [uploadType, setUploadType] = React.useState("");
   const [entityForDownload, setEntityForDownload] = React.useState("");
@@ -71,7 +72,10 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     getUploadTypes();
   }, []);
 
-  const uploadOptions = () => concat(Types.names, uploadTypes.names);
+  const isAdmin = userRoles.includes(ROLES.ADMIN) || userRoles.includes(ROLES.ORG_ADMIN);
+
+  const uploadOptions = () =>
+    isAdmin ? concat(Types.names, uploadTypes.names) : uploadTypes.names;
 
   const downloadOptions = () =>
     filter(uploadOptions(), ({ name }) => name !== Types.getName("metadataZip"));
@@ -173,7 +177,8 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 };
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
-  uploadTypes: state.bulkUpload.uploadTypes
+  uploadTypes: state.bulkUpload.uploadTypes,
+  userRoles: state.app.user.roles
 });
 
 export default withRouter(
