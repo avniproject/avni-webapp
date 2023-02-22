@@ -45,70 +45,13 @@ const Routes = ({ user, organisation }) => (
     />
     <RestrictedRoute
       exact
-      path="/admin/language"
+      path="/admin/"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={OrgManager}
     />
     <RestrictedRoute
-      exact
-      path="/admin/addressLevelType"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/locations"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/catchment"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/user"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/userGroups"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/identifierSource"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/identifierUserAssignment"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/organisationDetails"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      exact
-      path="/admin/phoneNumberVerification"
+      path="/admin/*"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={OrgManager}
