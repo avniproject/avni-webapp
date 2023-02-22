@@ -118,6 +118,8 @@ export function subjectTypeReducer(subjectType, action) {
       };
     case "subjectSummaryRule":
       return { ...subjectType, subjectSummaryRule: action.payload };
+    case "enableRegistrationApproval":
+      return { ...subjectType, enableRegistrationApproval: action.payload };
     case "programEligibilityCheckRule":
       return { ...subjectType, programEligibilityCheckRule: action.payload };
     case "locationTypes":

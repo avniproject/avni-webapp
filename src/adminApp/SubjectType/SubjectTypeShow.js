@@ -115,6 +115,11 @@ const SubjectTypeShow = props => {
               </span>
             </div>
             <p />
+            <BooleanStatusInShow
+              status={subjectType.enableRegistrationApproval}
+              label={"Enable registration approval"}
+            />
+            <p />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Organisation Id</FormLabel>
               <br />
