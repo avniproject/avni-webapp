@@ -44,7 +44,7 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) 
   );
 
   function isObsPresent(formElement) {
-    return find(entity.that.observations, observation => {
+    return find(entity.observations, observation => {
       return observation.concept.uuid === formElement.concept.uuid;
     });
   }
@@ -53,7 +53,7 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) 
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => {
       let obsArr = [];
-      formElementGroup.that.formElements.forEach(formElement => {
+      formElementGroup.formElements.forEach(formElement => {
         return isObsPresent(formElement) ? obsArr.push(formElement) : "";
       });
       return obsArr.length === 0;
