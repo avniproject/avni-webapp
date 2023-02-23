@@ -55,7 +55,15 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
         <b>{organisation.name} </b> ({user.username})
       </div>
       {(isEmpty(intersection(user.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgUUID())) && (
-        <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
+        <IconButton
+          onClick={() =>
+            isEmpty(intersection(user.roles, [ROLES.USER]))
+              ? history.push("/home")
+              : history.push("/")
+          }
+          aria-label="Home"
+          color="inherit"
+        >
           <HomeIcon />
         </IconButton>
       )}

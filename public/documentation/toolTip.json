@@ -3,6 +3,7 @@
   "APP_DESIGNER_SUBJECT_TYPE_HOUSEHOLD": "When marked true, subject type becomes household.",
   "APP_DESIGNER_SUBJECT_TYPE_GROUP": "When marked true, subject type becomes a group where you can add different members.",
   "APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM": "Registration form for this subject type. Select 'New Form' if you don't already have one",
+  "APP_DESIGNER_SUBJECT_TYPE_ENABLE_REGISTRATION_APPROVAL": "Should registrations for this subject type be followed by approval",
   "APP_DESIGNER_SUBJECT_TYPE_ACTIVE": "Switch off subject type if you don't want to use it anymore.",
   "APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE": "Choose from the existing types. Read the documentation on right to get an idea of which type to use.",
   "APP_DESIGNER_SUBJECT_TYPE_ICON": "Subject type icon",

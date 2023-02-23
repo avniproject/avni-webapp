@@ -45,7 +45,7 @@ export const LocationList = props => (
   <List
     {...props}
     bulkActions={false}
-    sort={{ field: "id", order: "ASC" }}
+    sort={{ field: "title", order: "ASC" }}
     filters={<LocationFilter />}
   >
     <Datagrid rowClick="show">
@@ -95,7 +95,12 @@ export const LocationDetail = props => {
         <TextField source="title" label="Name" />
         <TextField source="typeString" label="Type" />
         <ParentLocationReferenceField label="Part of (location)" />
-        <ReferenceManyField label="Contains locations" reference="locations" target="parentId">
+        <ReferenceManyField
+          label="Contains locations"
+          reference="locations"
+          target="parentId"
+          sort={{ field: "title", order: "ASC" }}
+        >
           <SubLocationsGrid />
         </ReferenceManyField>
         <FunctionField label="Created" render={audit => createdAudit(audit)} />
