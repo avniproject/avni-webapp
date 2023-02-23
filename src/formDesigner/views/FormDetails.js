@@ -181,7 +181,6 @@ class FormDetails extends Component {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
           group.expanded = false;
           group.error = false;
-          group.formElements = group.formElements;
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
