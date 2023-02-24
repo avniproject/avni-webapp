@@ -12,7 +12,12 @@ import { fetchSubjectData } from "./SubjectAssignmentData";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
-import { refreshTable } from "../util/util";
+import { labelValue, refreshTable } from "../util/util";
+import { AssignmentToolBar } from "../components/AssignmentToolBar";
+import Paper from "@material-ui/core/Paper";
+import { AssignmentAction } from "../components/AssignmentAction";
+import { includes, map, mapValues } from "lodash";
+import { getAssignmentValue, getFilterPayload } from "../reducers/TaskAssignmentReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +38,8 @@ const SubjectAssignment = () => {
     userOptions,
     userGroupOptions,
     syncAttribute1,
-    syncAttribute2
+    syncAttribute2,
+    userOptionsWithIds
   } = getMetadataOptions(state.metadata, state.filterCriteria);
 
   useEffect(() => {
@@ -44,6 +50,27 @@ const SubjectAssignment = () => {
 
   const onFilterApply = () => {
     refreshTable(tableRef);
+  };
+
+  const applyableActionsOptions = map(state.applyableActions, ({ name, actionId }) =>
+    labelValue(name, actionId)
+  );
+
+  const onActionDone = async () => {
+    updateState({ type: "onSave", payload: { saveStart: true } });
+    updateState({ type: "hideAction" });
+    const assignmentCriteriaValues = mapValues(state.assignmentCriteria, (v, k) =>
+      includes(["userId", "actionId"], k) ? getAssignmentValue(k, state.assignmentCriteria) : v
+    );
+    const [error] = await api.postUpdateUserAssignmentToSubject({
+      ...assignmentCriteriaValues,
+      taskFilterCriteria: getFilterPayload(state.filterCriteria)
+    });
+    if (error) {
+      alert(error);
+    }
+    refreshTable(tableRef);
+    updateState({ type: "onSave", payload: { saveStart: false } });
   };
 
   const renderData = () => {
@@ -65,7 +92,19 @@ const SubjectAssignment = () => {
                   debounceInterval: 500,
                   search: false,
                   maxBodyHeight: "75vh",
-                  minBodyHeight: "75vh"
+                  minBodyHeight: "75vh",
+                  selection: true
+                }}
+                components={{
+                  Toolbar: props => (
+                    <AssignmentToolBar
+                      dispatch={updateState}
+                      assignmentCriteria={state.assignmentCriteria}
+                      showSelect1000={false}
+                      {...props}
+                    />
+                  ),
+                  Container: props => <Paper {...props} elevation={0} />
                 }}
               />
             </div>
@@ -84,6 +123,17 @@ const SubjectAssignment = () => {
               filterCriteria={state.filterCriteria}
             />
           </Grid>
+          <AssignmentAction
+            openAction={state.displayAction}
+            dispatch={updateState}
+            onDone={onActionDone}
+            taskStatusOptions={applyableActionsOptions}
+            userOptions={userOptionsWithIds}
+            assignmentCriteria={state.assignmentCriteria}
+            isAssignMultiUsers={false}
+            userAssignmentKeyName="userId"
+            statusAssignmentKeyName="actionId"
+          />
         </Grid>
       </div>
     );

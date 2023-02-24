@@ -19,7 +19,12 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-export const AssignmentToolBar = ({ assignmentCriteria, dispatch, ...props }) => {
+export const AssignmentToolBar = ({
+  assignmentCriteria,
+  dispatch,
+  showSelect1000 = true,
+  ...props
+}) => {
   const classes = useStyle();
   const { data, selectedRows } = props;
   const selectedRowSize = size(selectedRows);
@@ -50,7 +55,7 @@ export const AssignmentToolBar = ({ assignmentCriteria, dispatch, ...props }) =>
           {`Selected ${assignmentCriteria.allSelected ? 1000 : selectedRowSize} tasks`}
         </Typography>
       )}
-      {selectedRowSize > 0 && selectedRowSize === size(data) && (
+      {showSelect1000 && selectedRowSize > 0 && selectedRowSize === size(data) && (
         <Button className={classes.space} color="primary" onClick={on1000Selected}>
           {"Click here to select first 1000 tasks"}
         </Button>

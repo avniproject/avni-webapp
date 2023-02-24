@@ -48,7 +48,10 @@ export const AssignmentAction = ({
   dispatch,
   userOptions,
   assignmentCriteria,
-  taskStatusOptions
+  taskStatusOptions,
+  isAssignMultiUsers = true,
+  userAssignmentKeyName = "assignToUserIds",
+  statusAssignmentKeyName = "statusId"
 }) => {
   const classes = useStyles();
   const onClose = () => dispatch({ type: "hideAction" });
@@ -66,8 +69,8 @@ export const AssignmentAction = ({
         <SelectAction
           dispatch={dispatch}
           label="Set user to"
-          assignmentKeyName="assignToUserIds"
-          isMulti={true}
+          assignmentKeyName={userAssignmentKeyName}
+          isMulti={isAssignMultiUsers}
           options={userOptions}
           assignmentCriteria={assignmentCriteria}
         />
@@ -76,7 +79,7 @@ export const AssignmentAction = ({
           isMulti={false}
           dispatch={dispatch}
           label="Set status to"
-          assignmentKeyName="statusId"
+          assignmentKeyName={statusAssignmentKeyName}
           assignmentCriteria={assignmentCriteria}
         />
         <Grid item container spacing={3}>

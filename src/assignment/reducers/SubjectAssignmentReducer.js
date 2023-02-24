@@ -1,6 +1,14 @@
 import { map, get, chain, mapValues, find, isEmpty } from "lodash";
 import { labelValue } from "../util/util";
 
+const initialAssignmentCriteria = {
+  subjectIds: [],
+  userId: null,
+  allSelected: false,
+  voided: false,
+  actionId: null
+};
+
 export const initialState = {
   metadata: {},
   loaded: false,
@@ -14,7 +22,11 @@ export const initialState = {
     userGroup: null,
     assignedTo: { label: "Unassigned", value: "0" },
     createdOn: null
-  }
+  },
+  displayAction: false,
+  assignmentCriteria: initialAssignmentCriteria,
+  saving: false,
+  applyableActions: [{ name: "Assigned", actionId: 1 }, { name: "Unassigned", actionId: 2 }]
 };
 
 const clone = state => {
@@ -22,6 +34,10 @@ const clone = state => {
   newState.metadata = { ...state.metadata };
   newState.loaded = state.loaded;
   newState.filterCriteria = { ...state.filterCriteria };
+  newState.displayAction = state.displayAction;
+  newState.assignmentCriteria = { ...state.assignmentCriteria };
+  newState.saving = state.saving;
+  newState.applyableActions = state.applyableActions;
   return newState;
 };
 
@@ -46,6 +62,30 @@ export const SubjectAssignmentReducer = (state, action) => {
     case "setFilter": {
       const { filter, value } = payload;
       newState.filterCriteria[filter] = value;
+      return newState;
+    }
+    case "displayAction": {
+      const { selectedIds, display } = payload;
+      newState.displayAction = display;
+      newState.assignmentCriteria["subjectIds"] = selectedIds;
+      return newState;
+    }
+    case "hideAction": {
+      newState.displayAction = false;
+      newState.assignmentCriteria = initialAssignmentCriteria;
+      return newState;
+    }
+    case "setAction": {
+      const { key, value } = payload;
+      newState.assignmentCriteria[key] = value;
+      if (key === "actionId") {
+        newState.assignmentCriteria["voided"] = value.value !== 1;
+      }
+      return newState;
+    }
+    case "onSave": {
+      const { saveStart } = payload;
+      newState.saving = saveStart;
       return newState;
     }
     default:
@@ -74,6 +114,7 @@ export const getMetadataOptions = (metadata, filterCriteria) => {
   const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
   const programOptions = map(programs, ({ uuid, name }) => labelValue(name, uuid));
   const userOptions = map(users, ({ uuid, name }) => labelValue(name, uuid));
+  const userOptionsWithIds = map(users, ({ id, name }) => labelValue(name, id));
   const userGroupOptions = map(groups, ({ uuid, name }) => labelValue(name, uuid));
   return {
     subjectOptions,
@@ -81,7 +122,8 @@ export const getMetadataOptions = (metadata, filterCriteria) => {
     userOptions,
     userGroupOptions,
     syncAttribute1,
-    syncAttribute2
+    syncAttribute2,
+    userOptionsWithIds
   };
 };
 
