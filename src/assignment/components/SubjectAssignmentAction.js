@@ -4,11 +4,12 @@ import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import { makeStyles, Typography } from "@material-ui/core";
 import Select from "react-select";
+import RadioGroup from "@material-ui/core/RadioGroup";
 
 const useStyles = makeStyles(theme => ({
   paper: {
     position: "absolute",
-    width: 800,
+    width: "40%",
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3)
@@ -26,7 +27,7 @@ const SelectAction = function({
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
   return (
-    <Grid item spacing={3} alignItems={"center"} xs={12}>
+    <Grid item xs={12}>
       <Typography variant="body1">{label}</Typography>
       <Select
         isDisabled={options.length === 0}
@@ -42,22 +43,33 @@ const SelectAction = function({
   );
 };
 
-export const AssignmentAction = ({
+export const SubjectAssignmentAction = ({
   openAction,
   onDone,
   dispatch,
   userOptions,
   assignmentCriteria,
-  taskStatusOptions,
+  actionOptions,
   isAssignMultiUsers = true,
   userAssignmentKeyName = "assignToUserIds",
-  statusAssignmentKeyName = "statusId"
+  actionAssignmentKeyName = "actionId"
 }) => {
   const classes = useStyles();
   const onClose = () => dispatch({ type: "hideAction" });
 
+  const checkValues = () => {
+    return !!!assignmentCriteria[userAssignmentKeyName];
+  };
+
   return (
-    <Modal disableBackdropClick open={openAction} onClose={onClose}>
+    <Modal
+      open={openAction}
+      onClose={(event, reason) => {
+        if (reason !== "backdropClick") {
+          onClose(event, reason);
+        }
+      }}
+    >
       <Grid
         container
         direction={"column"}
@@ -65,23 +77,34 @@ export const AssignmentAction = ({
         className={classes.paper}
         style={{ top: "25%", left: "30%" }}
       >
-        <Typography variant={"h6"}>{"Bulk Action"}</Typography>
+        <Typography variant={"h6"}>{"Bulk action"}</Typography>
+        <Grid item container spacing={3}>
+          <Grid item>
+            <RadioGroup
+              aria-label="Bulk Action for user"
+              name={actionAssignmentKeyName}
+              value={assignmentCriteria[actionAssignmentKeyName]}
+              onChange={(event, value) =>
+                dispatch({
+                  type: "setAction",
+                  payload: { key: actionAssignmentKeyName, value: parseInt(value) }
+                })
+              }
+              row
+            >
+              {actionOptions}
+            </RadioGroup>
+          </Grid>
+        </Grid>
         <SelectAction
           dispatch={dispatch}
-          label="Set user to"
+          label="User"
           assignmentKeyName={userAssignmentKeyName}
           isMulti={isAssignMultiUsers}
           options={userOptions}
           assignmentCriteria={assignmentCriteria}
         />
-        <SelectAction
-          options={taskStatusOptions}
-          isMulti={false}
-          dispatch={dispatch}
-          label="Set status to"
-          assignmentKeyName={statusAssignmentKeyName}
-          assignmentCriteria={assignmentCriteria}
-        />
+
         <Grid item container spacing={3}>
           <Grid item>
             <Button variant="outlined" color="secondary" onClick={onClose}>
@@ -89,7 +112,7 @@ export const AssignmentAction = ({
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={onDone}>
+            <Button variant="contained" color="primary" onClick={onDone} disabled={checkValues()}>
               {"Done"}
             </Button>
           </Grid>

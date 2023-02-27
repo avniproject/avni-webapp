@@ -15,7 +15,7 @@ import { includes, isEmpty, map, mapValues } from "lodash";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { Grid, makeStyles } from "@material-ui/core";
 import { TaskAssignmentFilter } from "../components/TaskAssignmentFilter";
-import { AssignmentAction } from "../components/AssignmentAction";
+import { TaskAssignmentAction } from "../components/TaskAssignmentAction";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
 import Paper from "@material-ui/core/Paper";
@@ -117,7 +117,7 @@ const TaskAssignment = ({ history, ...props }) => {
             conceptNameAnswerPairs={TaskMetadata.getAllSearchFields(taskMetadata)}
           />
         </Grid>
-        <AssignmentAction
+        <TaskAssignmentAction
           openAction={displayAction}
           dispatch={dispatch}
           onDone={onActionDone}

@@ -10,14 +10,14 @@ import {
 import { getColumns } from "./SubjectAssignmentColumns";
 import { fetchSubjectData } from "./SubjectAssignmentData";
 import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core";
+import { FormControlLabel, makeStyles, Radio } from "@material-ui/core";
 import SubjectAssignmentFilter from "./SubjectAssignmentFilter";
-import { labelValue, refreshTable } from "../util/util";
+import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import Paper from "@material-ui/core/Paper";
-import { AssignmentAction } from "../components/AssignmentAction";
 import { includes, map, mapValues } from "lodash";
-import { getAssignmentValue, getFilterPayload } from "../reducers/TaskAssignmentReducer";
+import { getAssignmentValue, getFilterPayload } from "../reducers/SubjectAssignmentReducer";
+import { SubjectAssignmentAction } from "../components/SubjectAssignmentAction";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -52,9 +52,9 @@ const SubjectAssignment = () => {
     refreshTable(tableRef);
   };
 
-  const applyableActionsOptions = map(state.applyableActions, ({ name, actionId }) =>
-    labelValue(name, actionId)
-  );
+  const applicableActionsOptions = map(state.applicableActions, ({ name, actionId }) => (
+    <FormControlLabel value={actionId} control={<Radio />} label={name} key={actionId} />
+  ));
 
   const onActionDone = async () => {
     updateState({ type: "onSave", payload: { saveStart: true } });
@@ -123,16 +123,16 @@ const SubjectAssignment = () => {
               filterCriteria={state.filterCriteria}
             />
           </Grid>
-          <AssignmentAction
+          <SubjectAssignmentAction
             openAction={state.displayAction}
             dispatch={updateState}
             onDone={onActionDone}
-            taskStatusOptions={applyableActionsOptions}
+            actionOptions={applicableActionsOptions}
             userOptions={userOptionsWithIds}
             assignmentCriteria={state.assignmentCriteria}
             isAssignMultiUsers={false}
             userAssignmentKeyName="userId"
-            statusAssignmentKeyName="actionId"
+            actionAssignmentKeyName="actionId"
           />
         </Grid>
       </div>

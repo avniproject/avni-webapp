@@ -9,6 +9,8 @@ const initialAssignmentCriteria = {
   actionId: null
 };
 
+const assignAction = { name: "Assign", actionId: 1 },
+  unAssignAction = { name: "Unassign", actionId: 2 };
 export const initialState = {
   metadata: {},
   loaded: false,
@@ -26,7 +28,7 @@ export const initialState = {
   displayAction: false,
   assignmentCriteria: initialAssignmentCriteria,
   saving: false,
-  applyableActions: [{ name: "Assigned", actionId: 1 }, { name: "Unassigned", actionId: 2 }]
+  applicableActions: [assignAction, unAssignAction]
 };
 
 const clone = state => {
@@ -37,7 +39,7 @@ const clone = state => {
   newState.displayAction = state.displayAction;
   newState.assignmentCriteria = { ...state.assignmentCriteria };
   newState.saving = state.saving;
-  newState.applyableActions = state.applyableActions;
+  newState.applicableActions = state.applicableActions;
   return newState;
 };
 
@@ -68,6 +70,7 @@ export const SubjectAssignmentReducer = (state, action) => {
       const { selectedIds, display } = payload;
       newState.displayAction = display;
       newState.assignmentCriteria["subjectIds"] = selectedIds;
+      newState.assignmentCriteria["actionId"] = assignAction.actionId;
       return newState;
     }
     case "hideAction": {
@@ -79,7 +82,7 @@ export const SubjectAssignmentReducer = (state, action) => {
       const { key, value } = payload;
       newState.assignmentCriteria[key] = value;
       if (key === "actionId") {
-        newState.assignmentCriteria["voided"] = value.value !== 1;
+        newState.assignmentCriteria["voided"] = value !== assignAction.actionId;
       }
       return newState;
     }
@@ -152,4 +155,8 @@ export const getConceptSearchContract = (concept, selectedValue) => {
     minValue: isNumeric ? selectedValue : null,
     value: selectedValue
   };
+};
+
+export const getAssignmentValue = (key, assignmentCriteria) => {
+  return get(assignmentCriteria[key], "value", null);
 };
