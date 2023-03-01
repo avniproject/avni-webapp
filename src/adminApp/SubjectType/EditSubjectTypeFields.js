@@ -77,15 +77,6 @@ const EditSubjectTypeFields = props => {
         toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
       />
       <p />
-      <AvniSwitch
-        checked={subjectType.enableRegistrationApproval}
-        onChange={event =>
-          dispatch({ type: "enableRegistrationApproval", payload: event.target.checked })
-        }
-        name="Enable registration approval"
-        toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ENABLE_REGISTRATION_APPROVAL"}
-      />
-      <p />
       {Types.isGroup(subjectType.type) && (
         <>
           <AvniFormLabel

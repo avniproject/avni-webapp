@@ -19,8 +19,7 @@ export const subjectTypeInitialState = {
   groupRoles: [],
   subjectSummaryRule: "",
   programEligibilityCheckRule: "",
-  shouldSyncByLocation: true,
-  enableRegistrationApproval: false
+  shouldSyncByLocation: true
 };
 
 export const colorPickerCSS = {

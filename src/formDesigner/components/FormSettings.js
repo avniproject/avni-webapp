@@ -15,6 +15,7 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -36,17 +37,42 @@ class FormSettings extends Component {
     };
   }
 
+  static addSubjectTypeErrorIfMissing(errorsList, formMap, index) {
+    FormSettings.addErrorIfMissing(errorsList, formMap, "subjectTypeUuid", index, "subject type");
+  }
+
+  static addProgramErrorIfMissing(errorsList, formMap, index) {
+    FormSettings.addErrorIfMissing(errorsList, formMap, "programUuid", index, "program");
+  }
+
+  static addEncounterTypeErrorIfMissing(errorsList, formMap, index) {
+    FormSettings.addErrorIfMissing(
+      errorsList,
+      formMap,
+      "encounterTypeUuid",
+      index,
+      "encounter type"
+    );
+  }
+
+  static addErrorIfMissing(errorsList, formMap, fieldKey, index, fieldName) {
+    if (formMap[fieldKey] === "") {
+      errorsList.unselectedData[fieldKey + index] = `Please select ${fieldName}.`;
+    }
+  }
+
   validateForm() {
     if (_.every(this.state.formMappings, fm => fm.voided)) {
       return true;
     }
-    let errorsList = {};
-    let formMapping = this.state.formMappings;
-    let existingMapping = [];
+    const errorsList = {
+      existingMapping: {},
+      unselectedData: {}
+    };
+    const formMappings = this.state.formMappings;
+    const existingMappings = [];
 
     if (_.isNil(this.state.formTypeInfo)) errorsList["formTypeInfo"] = "Please select form type.";
-    errorsList["existingMapping"] = {};
-    errorsList["unselectedData"] = {};
 
     if (this.state.formTypeInfo !== FormTypeEntities.ChecklistItem) {
       let count = 0;
@@ -56,64 +82,37 @@ class FormSettings extends Component {
       if (count === 0) errorsList["name"] = "Please add atleast one form mapping.";
     }
 
-    _.forEach(formMapping, (formMap, index) => {
+    _.forEach(formMappings, (formMap, index) => {
       let uniqueString;
+      const formTypeInfo = this.state.formTypeInfo;
       if (!formMap.voided) {
-        if (this.state.formTypeInfo === FormTypeEntities.IndividualProfile) {
+        if (formTypeInfo === FormTypeEntities.IndividualProfile) {
           uniqueString = formMap.subjectTypeUuid;
-          if (formMap.subjectTypeUuid === "") {
-            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-          }
+          FormSettings.addSubjectTypeErrorIfMissing(errorsList, formMap, index);
         }
 
-        if (
-          this.state.formTypeInfo === FormTypeEntities.ProgramEncounterCancellation ||
-          this.state.formTypeInfo === FormTypeEntities.ProgramEncounter
-        ) {
+        if (FormTypeEntities.isForProgramEncounter(formTypeInfo)) {
           uniqueString = formMap.subjectTypeUuid + formMap.programUuid + formMap.encounterTypeUuid;
-          if (formMap.subjectTypeUuid === "") {
-            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-          }
-          if (formMap.programUuid === "") {
-            errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
-          }
-          if (formMap.encounterTypeUuid === "") {
-            errorsList["unselectedData"]["encounterTypeUuid" + index] =
-              "Please select encounter type.";
-          }
+          FormSettings.addSubjectTypeErrorIfMissing(errorsList, formMap, index);
+          FormSettings.addProgramErrorIfMissing(errorsList, formMap, index);
+          FormSettings.addEncounterTypeErrorIfMissing(errorsList, formMap, index);
         }
 
-        if (
-          this.state.formTypeInfo === FormTypeEntities.ProgramExit ||
-          this.state.formTypeInfo === FormTypeEntities.ProgramEnrolment
-        ) {
+        if (FormTypeEntities.isForProgramEnrolment(formTypeInfo)) {
           uniqueString = formMap.subjectTypeUuid + formMap.programUuid;
-          if (formMap.subjectTypeUuid === "") {
-            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-          }
-          if (formMap.programUuid === "") {
-            errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
-          }
+          FormSettings.addSubjectTypeErrorIfMissing(errorsList, formMap, index);
+          FormSettings.addProgramErrorIfMissing(errorsList, formMap, index);
         }
 
-        if (
-          this.state.formTypeInfo === FormTypeEntities.Encounter ||
-          this.state.formTypeInfo === FormTypeEntities.IndividualEncounterCancellation
-        ) {
+        if (FormTypeEntities.isForSubjectEncounter(formTypeInfo)) {
           uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
-          if (formMap.subjectTypeUuid === "") {
-            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-          }
-
-          if (formMap.encounterTypeUuid === "") {
-            errorsList["unselectedData"]["encounterTypeUuid" + index] =
-              "Please select encounter type.";
-          }
+          FormSettings.addSubjectTypeErrorIfMissing(errorsList, formMap, index);
+          FormSettings.addEncounterTypeErrorIfMissing(errorsList, formMap, index);
         }
-        if (existingMapping.includes(uniqueString)) {
+        if (existingMappings.includes(uniqueString)) {
           errorsList["existingMapping"][index] = "Same mapping already exist";
         }
-        existingMapping.push(uniqueString);
+        existingMappings.push(uniqueString);
       }
     });
 
@@ -151,7 +150,7 @@ class FormSettings extends Component {
             formMappings: this.state.formMappings
           })
           .then(response => {
-            let formMapping = this.state.formMappings;
+            const formMapping = this.state.formMappings;
             _.forEach(formMapping, (formMap, index) => {
               formMap.newFlag = false;
             });
@@ -194,7 +193,7 @@ class FormSettings extends Component {
       .get("/web/operationalModules")
       .then(response => {
         let data = Object.assign({}, response.data);
-        let formMappings = [];
+        const formMappings = [];
         _.forEach(data.formMappings, formMapping => {
           if (formMapping.formUUID === this.props.match.params.id) {
             formMappings.push({
@@ -203,6 +202,7 @@ class FormSettings extends Component {
               subjectTypeUuid: formMapping.subjectTypeUUID,
               encounterTypeUuid: formMapping.encounterTypeUUID,
               taskTypeUuid: formMapping.taskTypeUUID,
+              enableApproval: formMapping.enableApproval,
               voided: false,
               newFlag: false,
               updatedFlag: false
@@ -458,26 +458,41 @@ class FormSettings extends Component {
                     <div key={index}>
                       <Grid container item sm={12} spacing={2}>
                         {!isTaskFormType && (
-                          <Grid item sm={3}>
+                          <Grid item sm={2}>
                             {this.subjectTypeElement(index)}
                           </Grid>
                         )}
                         {isTaskFormType && (
-                          <Grid item sm={3}>
+                          <Grid item sm={2}>
                             {this.taskTypeElement(index)}
                           </Grid>
                         )}
                         {programBased && (
-                          <Grid item sm={4}>
+                          <Grid item sm={3}>
                             {this.programNameElement(index)}
                           </Grid>
                         )}
                         {encounterTypes && (
-                          <Grid item sm={4}>
+                          <Grid item sm={3}>
                             {this.encounterTypesElement(index)}
                           </Grid>
                         )}
-
+                        {!isTaskFormType && (
+                          <Grid item sm={3} style={{ marginTop: 40 }}>
+                            <AvniSwitch
+                              checked={this.state.formMappings[index].enableApproval}
+                              onChange={event =>
+                                this.handleMappingChange(
+                                  index,
+                                  "enableApproval",
+                                  event.target.checked
+                                )
+                              }
+                              name="Enable Approval"
+                              toolTipKey={"APP_DESIGNER_ENABLE_APPROVAL"}
+                            />
+                          </Grid>
+                        )}
                         <Grid item sm={1}>
                           <IconButton
                             aria-label="delete"

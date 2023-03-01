@@ -51,6 +51,27 @@ export const FormTypeEntities = {
 
   getAllFormTypeInfo() {
     return allEntityForms;
+  },
+
+  isForProgramEncounter(formTypeInfo) {
+    return (
+      formTypeInfo === FormTypeEntities.ProgramEncounterCancellation ||
+      formTypeInfo === FormTypeEntities.ProgramEncounter
+    );
+  },
+
+  isForProgramEnrolment(formTypeInfo) {
+    return (
+      formTypeInfo === FormTypeEntities.ProgramEnrolment ||
+      formTypeInfo === FormTypeEntities.ProgramExit
+    );
+  },
+
+  isForSubjectEncounter(formTypeInfo) {
+    return (
+      formTypeInfo === FormTypeEntities.Encounter ||
+      formTypeInfo === FormTypeEntities.IndividualEncounterCancellation
+    );
   }
 };
 
