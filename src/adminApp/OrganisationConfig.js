@@ -50,15 +50,15 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
       const settings = _.filter(
-        res.data._embedded.organisationConfig,
+        res.data["_embedded"].organisationConfig,
         config => config.organisationId === organisation.id
       );
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
-      res.data._embedded.organisationConfig[0] &&
+      res.data["_embedded"].organisationConfig[0] &&
         setWorklistUpdationRule(
-          res.data._embedded.organisationConfig[0].worklistUpdationRule
-            ? res.data._embedded.organisationConfig[0].worklistUpdationRule
+          res.data["_embedded"].organisationConfig[0].worklistUpdationRule
+            ? res.data["_embedded"].organisationConfig[0].worklistUpdationRule
             : ""
         );
     });

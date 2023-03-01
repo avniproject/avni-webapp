@@ -3,32 +3,14 @@ import Typography from "@material-ui/core/Typography";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import React from "react";
 import http from "common/utils/httpClient";
-import { getOperationalModules, selectOperationalModules } from "../../reports/reducers";
-import { useDispatch, useSelector } from "react-redux";
-import { isNil, map, set, sortBy, toNumber } from "lodash";
-import { FormMappingEnableApproval } from "./FormMappingEnableApproval";
+import { getOperationalModules } from "../../reports/reducers";
+import { useDispatch } from "react-redux";
+import { toNumber } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 
 export const OrgSettings = () => {
   const [orgSettings, setOrgSettings] = React.useState();
-  const [formMappingState, setFormMappingState] = React.useState();
   const dispatch = useDispatch();
-  const { formMappings, encounterTypes, programs, subjectTypes } = useSelector(
-    selectOperationalModules
-  );
-  const createFormMappingState = enableApproval =>
-    sortBy(
-      map(formMappings, fm =>
-        set(fm, "enableApproval", isNil(enableApproval) ? fm.enableApproval : enableApproval)
-      ),
-      "subjectTypeUUID",
-      "programUUID",
-      "encounterTypeUUID"
-    );
-
-  React.useEffect(() => {
-    setFormMappingState(createFormMappingState());
-  }, [formMappings]);
 
   React.useEffect(() => {
     dispatch(getOperationalModules());
@@ -45,7 +27,6 @@ export const OrgSettings = () => {
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           setOrgSettings(response.data.settings);
-          setFormMappingState(createFormMappingState(value));
         }
         return response;
       })
@@ -89,27 +70,6 @@ export const OrgSettings = () => {
         </Typography>
       </Grid>
       <Grid item container spacing={1} direction={"column"}>
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.approvalWorkflow,
-          "Approval workflow",
-          "ADMIN_APPROVAL_WORKFLOW"
-        )}
-        {orgSettings[organisationConfigSettingKeys.approvalWorkflow] && (
-          <Grid item>
-            <Typography variant="body2" gutterBottom>
-              Create custom dashboard with standard card types approve, reject and pending to track
-              the approval workflow.
-            </Typography>
-            <FormMappingEnableApproval
-              disableCheckbox={!orgSettings[organisationConfigSettingKeys.approvalWorkflow]}
-              encounterTypes={encounterTypes}
-              formMappingState={formMappingState}
-              programs={programs}
-              setFormMappingState={setFormMappingState}
-              subjectTypes={subjectTypes}
-            />
-          </Grid>
-        )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.draftSave,
           "Draft save",
