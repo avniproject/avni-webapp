@@ -110,6 +110,14 @@ jobs:
       - deploy:
           hostname: "ssh.prerelease.openchs.org"
 
+  PERF_deploy:
+    docker:
+      - image: cimg/node:12.22.12
+    working_directory: ~/
+    steps:
+      - deploy:
+          hostname: "ssh.perf.openchs.org"
+
   PRODUCTION_deploy:
     docker:
       - image: cimg/node:12.22.12
@@ -143,6 +151,13 @@ workflows:
           post-steps:
             - store_test_results:
                 path: cypress/results
+      - PERF_approve:
+          type: approval
+          requires:
+            - app_build
+      - PERF_deploy:
+          requires:
+            - PERF_approve
       - PRERELEASE_approve:
           type: approval
           requires:
