@@ -1,10 +1,10 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { formatDate } from "../../utils/General";
 import MaterialTable from "material-table";
 
 import Typography from "@material-ui/core/Typography";
+import {formatDate} from "../../utils/General";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {

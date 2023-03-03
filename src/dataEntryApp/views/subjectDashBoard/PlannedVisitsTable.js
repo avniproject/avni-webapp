@@ -1,13 +1,13 @@
 import React from "react";
 import { Button, Grid, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { formatDate } from "../../utils/General";
 import MaterialTable from "material-table";
 import { InternalLink } from "../../../common/components/utils";
 import { DeleteButton } from "../../components/DeleteButton";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { size } from "lodash";
+import {formatDate} from "../../../common/utils/General";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
