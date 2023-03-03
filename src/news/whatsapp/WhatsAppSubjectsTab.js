@@ -1,13 +1,18 @@
 import React from "react";
 import ChooseSubject from "./ChooseSubject";
-import _ from 'lodash';
 import {Box} from "@material-ui/core";
+import {withRouter} from "react-router-dom";
+import _ from 'lodash';
 
-export default function () {
+function WhatsAppSubjectsTab({history}) {
   return <Box style={{marginLeft: 20}}>
     <ChooseSubject onCancel={_.noop}
-                   onSubjectChosen={() => {
+                   confirmActionLabel="Open"
+                   onSubjectChosen={(subject) => {
+                     history.push(`/app/subject?uuid=${subject.uuid}`);
                    }}
                    busy={false}/>
   </Box>;
-}
+};
+
+export default withRouter(WhatsAppSubjectsTab);

@@ -39,6 +39,7 @@ const AddContactGroupSubject = ({
       </DialogActions>
       <ErrorMessage error={error}/>
       <ChooseSubject onCancel={() => onCloseHandler()}
+                     confirmActionLabel="Add"
                      busy={isBusy}
                      onSubjectChosen={(subject) => {
                        ContactService.addSubjectToContactGroup(contactGroupId, subject).then(x => onSubjectAdd(x))

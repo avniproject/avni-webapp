@@ -30,7 +30,7 @@ const WorkflowStates = {
   SearchCompleted: "SearchCompleted"
 };
 
-const SelectSubjectAndConfirm = function ({subjects, onSubjectChosen, onCancel}) {
+const SelectSubjectAndConfirm = function ({subjects, onSubjectChosen, onCancel, confirmLabel}) {
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   return (
@@ -51,7 +51,7 @@ const SelectSubjectAndConfirm = function ({subjects, onSubjectChosen, onCancel})
           disabled={_.isNil(selectedSubject)}
           onClick={() => onSubjectChosen(selectedSubject)}
         >
-          Add
+          {confirmLabel}
         </Button>
       </Box>
     </Box>
@@ -64,7 +64,8 @@ function ChooseSubject({
                          organisationConfig,
                          onSubjectChosen,
                          onCancel,
-                         busy
+                         busy,
+                         confirmActionLabel
                        }) {
   const dispatch = useDispatch();
 
@@ -115,6 +116,7 @@ function ChooseSubject({
     {displayError && <ErrorMessage error={error}/>}
     {displaySelectSubject && (
       <SelectSubjectAndConfirm
+        confirmLabel={confirmActionLabel}
         subjects={subjects}
         onSubjectChosen={subject => onSubjectChosen(subject)}
         onCancel={() => onCancel()}
