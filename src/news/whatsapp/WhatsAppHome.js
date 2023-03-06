@@ -5,7 +5,6 @@ import Tab from "@material-ui/core/Tab";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { getHref } from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
-import MessagesTab from "./MessagesTab";
 import GroupsTab from "./GroupsTab";
 import ContactService from "../api/ContactService";
 import { useHistory, useParams } from "react-router-dom";
@@ -86,16 +85,12 @@ const WhatsAppHome = () => {
         >
           <Tab label="Groups" value="groups" />
           <Tab label="Subjects" value="subjects" />
-          <Tab label="Messages" value="messages" />
         </Tabs>
         <TabContent activeTab={activeTab} currentTab={"groups"}>
           <GroupsTab groups={fetchData} columns={columns} />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"subjects"}>
           <WhatsAppSubjectsTab />
-        </TabContent>
-        <TabContent activeTab={activeTab} currentTab={"messages"}>
-          <MessagesTab groups={fetchData} columns={columns} />
         </TabContent>
       </Box>
     </ScreenWithAppBar>

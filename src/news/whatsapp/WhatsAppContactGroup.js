@@ -21,6 +21,7 @@ import {
   MaterialTableToolBar,
   MaterialTableToolBarButton
 } from "../../common/material-table/MaterialTableToolBar";
+import MessagesTab from "./MessagesTab";
 
 const columns = [
   {
@@ -210,7 +211,9 @@ const WhatsAppContactGroup = ({ match }) => {
             contactGroupMembersVersion={contactGroupVersion}
           />
         )}
-
+        {selectedTab === ContactGroupTabs.messages && (
+          <MessagesTab contactGroupId={contactGroupId} />
+        )}
         <Snackbar
           open={updatedContactGroup}
           autoHideDuration={3000}
