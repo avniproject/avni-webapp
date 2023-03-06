@@ -8,8 +8,10 @@ class ContactService {
     return http.delete(`${contactGroupEndpoint}/${contactGroupId}/contact`, { data: contactIds });
   }
 
-  static getContactGroups(pageNumber, pageSize) {
-    return http.getData(`${contactGroupEndpoint}?page=${pageNumber}&size=${pageSize}`);
+  static getContactGroups(labelFilter, pageNumber, pageSize) {
+    return http.getData(
+      `${contactGroupEndpoint}?page=${pageNumber}&size=${pageSize}&label=${labelFilter}`
+    );
   }
 
   static getContactGroupContacts(contactGroupId, pageNumber, pageSize) {

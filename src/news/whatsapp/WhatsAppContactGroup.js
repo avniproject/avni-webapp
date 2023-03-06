@@ -196,7 +196,7 @@ const WhatsAppContactGroup = ({ match }) => {
         >
           <Tab label="Members" value={ContactGroupTabs.members} onClick={() => setSelectedTab(1)} />
           <Tab
-            label="Messages Sent"
+            label="Messages"
             value={ContactGroupTabs.messages}
             onClick={() => setSelectedTab(2)}
           />

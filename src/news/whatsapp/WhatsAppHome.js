@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect} from "react";
+import React, { Fragment, useEffect } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
@@ -8,7 +8,7 @@ import BroadcastPath from "../utils/BroadcastPath";
 import MessagesTab from "./MessagesTab";
 import GroupsTab from "./GroupsTab";
 import ContactService from "../api/ContactService";
-import {useHistory, useParams} from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import WhatsAppSubjectsTab from "./WhatsAppSubjectsTab";
 
 function ContactGroupLink({ rowData, column }) {
@@ -24,6 +24,7 @@ const columns = [
     title: "Name",
     defaultSort: "asc",
     sorting: false,
+    filtering: true,
     field: "label",
     render: rowData => <ContactGroupLink rowData={rowData} column="label" />
   },
@@ -31,19 +32,25 @@ const columns = [
     title: "Description",
     defaultSort: "asc",
     sorting: false,
+    filtering: false,
     field: "description"
   },
   {
     title: "No of contacts",
     sorting: false,
     field: "contactsCount",
+    filtering: false,
     render: rowData => <ContactGroupLink rowData={rowData} column="contactsCount" />
   }
 ];
 
 const fetchData = query => {
   return new Promise(resolve =>
-    ContactService.getContactGroups(query.page, query.pageSize).then(data => resolve(data))
+    ContactService.getContactGroups(
+      query.filters[0] ? query.filters[0].value : "",
+      query.page,
+      query.pageSize
+    ).then(data => resolve(data))
   );
 };
 
@@ -54,18 +61,18 @@ function TabContent(props) {
 
 const WhatsAppHome = () => {
   const defaultActiveTab = "groups";
-  const {activeTab} = useParams();
+  const { activeTab } = useParams();
   const history = useHistory();
 
   useEffect(() => {
-    if(!activeTab){
+    if (!activeTab) {
       history.push(`/${BroadcastPath.WhatsAppFullPath}/${defaultActiveTab}`);
     }
   }, []);
 
   const toggle = (event, tab) => {
-    if (activeTab !== tab)  history.push(`/${BroadcastPath.WhatsAppFullPath}/${tab}`);
-  }
+    if (activeTab !== tab) history.push(`/${BroadcastPath.WhatsAppFullPath}/${tab}`);
+  };
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
@@ -85,7 +92,7 @@ const WhatsAppHome = () => {
           <GroupsTab groups={fetchData} columns={columns} />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"subjects"}>
-          <WhatsAppSubjectsTab/>
+          <WhatsAppSubjectsTab />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"messages"}>
           <MessagesTab groups={fetchData} columns={columns} />
