@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
 const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const styles = useStyles();
   const { organisation, user, history, staticContext, dispatch, organisations, ...rest } = props;
-
+  const isAdmin = user.roles.includes(ROLES.ADMIN) || user.roles.includes(ROLES.ORG_ADMIN);
   return (
     <AppBar {...rest}>
       <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />
@@ -56,11 +56,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
       </div>
       {(isEmpty(intersection(user.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgUUID())) && (
         <IconButton
-          onClick={() =>
-            isEmpty(intersection(user.roles, [ROLES.USER]))
-              ? history.push("/home")
-              : history.push("/")
-          }
+          onClick={() => (isAdmin ? history.push("/home") : history.push("/"))}
           aria-label="Home"
           color="inherit"
         >
