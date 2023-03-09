@@ -1,16 +1,17 @@
-import React, { Fragment, useEffect } from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
 import Tab from "@material-ui/core/Tab";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import { getHref } from "../../common/utils/routeUtil";
+import {getHref} from "../../common/utils/routeUtil";
 import BroadcastPath from "../utils/BroadcastPath";
 import GroupsTab from "./GroupsTab";
 import ContactService from "../api/ContactService";
-import { useHistory, useParams } from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import WhatsAppSubjectsTab from "./WhatsAppSubjectsTab";
+import ErrorMessage from "../../common/components/ErrorMessage";
 
-function ContactGroupLink({ rowData, column }) {
+function ContactGroupLink({rowData, column}) {
   return (
     <a href={getHref(`${BroadcastPath.ContactGroupFullPath}/${rowData["id"]}`)}>
       {rowData[column]}
@@ -25,7 +26,7 @@ const columns = [
     sorting: false,
     filtering: true,
     field: "label",
-    render: rowData => <ContactGroupLink rowData={rowData} column="label" />
+    render: rowData => <ContactGroupLink rowData={rowData} column="label"/>
   },
   {
     title: "Description",
@@ -39,29 +40,33 @@ const columns = [
     sorting: false,
     field: "contactsCount",
     filtering: false,
-    render: rowData => <ContactGroupLink rowData={rowData} column="contactsCount" />
+    render: rowData => <ContactGroupLink rowData={rowData} column="contactsCount"/>
   }
 ];
 
-const fetchData = query => {
-  return new Promise(resolve =>
-    ContactService.getContactGroups(
-      query.filters[0] ? query.filters[0].value : "",
-      query.page,
-      query.pageSize
-    ).then(data => resolve(data))
-  );
-};
+function getDataFetcher(errorHandler) {
+  return query => {
+    return new Promise(resolve =>
+      ContactService.getContactGroups(
+        query.filters[0] ? query.filters[0].value : "",
+        query.page,
+        query.pageSize
+      ).then(data => resolve(data))
+    );
+  };
+}
 
 function TabContent(props) {
-  const { children, activeTab, currentTab } = props;
+  const {children, activeTab, currentTab} = props;
   return <Fragment>{activeTab === currentTab && children}</Fragment>;
 }
 
-const WhatsAppHome = () => {
+const WhatsAppHome = function () {
   const defaultActiveTab = "groups";
-  const { activeTab } = useParams();
+  const {activeTab} = useParams();
   const history = useHistory();
+
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!activeTab) {
@@ -75,22 +80,23 @@ const WhatsAppHome = () => {
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
-      <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
+      <ErrorMessage error={error} additionalStyle={{marginBottom: 20}}/>
+      <Box sx={{flexGrow: 1, bgcolor: "background.paper", display: "flex"}}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
           value={activeTab}
           onChange={toggle}
-          sx={{ borderRight: 1, borderColor: "divider" }}
+          sx={{borderRight: 1, borderColor: "divider"}}
         >
-          <Tab label="Groups" value="groups" />
-          <Tab label="Subjects" value="subjects" />
+          <Tab label="Groups" value="groups"/>
+          <Tab label="Subjects" value="subjects"/>
         </Tabs>
         <TabContent activeTab={activeTab} currentTab={"groups"}>
-          <GroupsTab groups={fetchData} columns={columns} />
+          <GroupsTab groups={getDataFetcher(setError)} columns={columns}/>
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"subjects"}>
-          <WhatsAppSubjectsTab />
+          <WhatsAppSubjectsTab/>
         </TabContent>
       </Box>
     </ScreenWithAppBar>
