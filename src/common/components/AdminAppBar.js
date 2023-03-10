@@ -12,6 +12,7 @@ import { OrganisationOptions } from "./OrganisationOptions";
 import { intersection, isEmpty } from "lodash";
 import http from "common/utils/httpClient";
 import { ROLES } from "../constants";
+import { isAnyAdmin } from "../utils/General";
 
 const styles = {
   title: {
@@ -39,7 +40,6 @@ const useStyles = makeStyles(theme => ({
 const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const styles = useStyles();
   const { organisation, user, history, staticContext, dispatch, organisations, ...rest } = props;
-  const isAdmin = user.roles.includes(ROLES.ADMIN) || user.roles.includes(ROLES.ORG_ADMIN);
   return (
     <AppBar {...rest}>
       <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />
@@ -56,7 +56,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
       </div>
       {(isEmpty(intersection(user.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgUUID())) && (
         <IconButton
-          onClick={() => (isAdmin ? history.push("/home") : history.push("/"))}
+          onClick={() => (isAnyAdmin(user.roles) ? history.push("/home") : history.push("/"))}
           aria-label="Home"
           color="inherit"
         >

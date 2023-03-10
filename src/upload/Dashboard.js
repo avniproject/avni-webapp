@@ -19,7 +19,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
-import { ROLES } from "../common/constants";
+import { isAnyAdmin } from "../common/utils/General";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -72,10 +72,8 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     getUploadTypes();
   }, []);
 
-  const isAdmin = userRoles.includes(ROLES.ADMIN) || userRoles.includes(ROLES.ORG_ADMIN);
-
   const uploadOptions = () =>
-    isAdmin ? concat(Types.names, uploadTypes.names) : uploadTypes.names;
+    isAnyAdmin(userRoles) ? concat(Types.names, uploadTypes.names) : uploadTypes.names;
 
   const downloadOptions = () =>
     filter(uploadOptions(), ({ name }) => name !== Types.getName("metadataZip"));
