@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import MaterialTable from "material-table";
 
 import Typography from "@material-ui/core/Typography";
-import {formatDate} from "../../utils/General";
+import { formatDate } from "../../utils/General";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -26,23 +26,23 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
   const columns = [
     {
       title: t("Entity Type Id"),
-      field: "messageRule.entityTypeId"
+      field: "entityTypeId"
     },
     {
       title: t("Entity Type"),
-      field: "messageRule.entityType"
+      field: "entityType"
     },
     {
       title: t("Receiver Id"),
-      field: "messageReceiver.receiverId"
+      field: "receiverId"
     },
     {
       title: t("Receiver Type"),
-      field: "messageReceiver.receiverType"
+      field: "receiverType"
     },
     {
       title: t("External Id"),
-      field: "messageReceiver.externalId"
+      field: "externalId"
     },
     {
       title: t("Delivery Status"),
@@ -57,11 +57,11 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
     },
     {
       title: t("Message Template Name"),
-      field: "messageRule.name"
+      field: "messageTemplateName"
     },
     {
       title: t("Message Template Id"),
-      field: "messageRule.messageTemplateId"
+      field: "messageTemplateId"
     }
   ];
 
