@@ -26,6 +26,7 @@ function WhatsAppUsersTab({ onClose }) {
             })
           }
           onCancel={onCloseHandler}
+          confirmButtonText={"View Messages"}
         />
       )}
       {workflowState.name === WorkflowStateNames.ViewUserMessages && (

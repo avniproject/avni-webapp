@@ -16,7 +16,7 @@ const WorkflowStates = {
   SearchCompleted: "SearchCompleted"
 };
 
-const SearchUserAndConfirm = function({ onCancel, onUserSelected }) {
+const SearchUserAndConfirm = function({ onCancel, onUserSelected, confirmButtonText = "Confirm" }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -104,7 +104,7 @@ const SearchUserAndConfirm = function({ onCancel, onUserSelected }) {
             disabled={_.isNil(selectedUser)}
             onClick={() => onUserSelected(selectedUser)}
           >
-            Confirm
+            {confirmButtonText}
           </Button>
         </Box>
       )}
