@@ -1,4 +1,4 @@
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
@@ -17,8 +17,9 @@ import EditSubjectTypeFields from "./EditSubjectTypeFields";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
+import { connect } from "react-redux";
 
-const SubjectTypeCreate = () => {
+const SubjectTypeCreate = ({ organisationConfig }) => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
@@ -118,13 +119,17 @@ const SubjectTypeCreate = () => {
                 groupValidationError={groupValidationError}
                 dispatch={dispatch}
               />
-              <MessageRules
-                rules={rules}
-                templates={templates}
-                onChange={onRulesChange}
-                entityType={entityType}
-                entityTypeId={subjectType.subjectTypeId}
-              />
+              {organisationConfig && organisationConfig.enableMessaging ? (
+                <MessageRules
+                  rules={rules}
+                  templates={templates}
+                  onChange={onRulesChange}
+                  entityType={entityType}
+                  entityTypeId={subjectType.subjectTypeId}
+                />
+              ) : (
+                <></>
+              )}
               <p />
               <AdvancedSettings
                 subjectType={subjectType}
@@ -156,4 +161,7 @@ const SubjectTypeCreate = () => {
   );
 };
 
-export default SubjectTypeCreate;
+const mapStateToProps = state => ({
+  organisationConfig: state.app.organisationConfig
+});
+export default withRouter(connect(mapStateToProps)(SubjectTypeCreate));
