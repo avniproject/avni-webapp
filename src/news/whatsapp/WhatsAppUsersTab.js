@@ -5,6 +5,7 @@ import SearchUserAndConfirm from "./SearchUserAndConfirm";
 import { Box } from "@material-ui/core";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
 import Button from "@material-ui/core/Button";
+import ReceiverType from "./ReceiverType";
 
 const WorkflowStateNames = {
   ChooseUser: "ChooseUser",
@@ -31,7 +32,10 @@ function WhatsAppUsersTab({ onClose }) {
       )}
       {workflowState.name === WorkflowStateNames.ViewUserMessages && (
         <Box>
-          <WhatsAppMessagesView userId={workflowState.user.id} />
+          <WhatsAppMessagesView
+            receiverId={workflowState.user.id}
+            receiverType={ReceiverType.User}
+          />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
             <Button
               onClick={() => setWorkflowState({ name: WorkflowStateNames.ChooseUser })}

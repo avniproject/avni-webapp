@@ -21,7 +21,8 @@ import {
   MaterialTableToolBar,
   MaterialTableToolBarButton
 } from "../../common/material-table/MaterialTableToolBar";
-import MessagesTab from "./MessagesTab";
+import SendMessage from "./SendMessage";
+import ReceiverType from "./ReceiverType";
 
 const columns = [
   {
@@ -212,7 +213,7 @@ const WhatsAppContactGroup = ({ match }) => {
           />
         )}
         {selectedTab === ContactGroupTabs.messages && (
-          <MessagesTab contactGroupId={contactGroupId} />
+          <SendMessage receiverId={contactGroupId} receiverType={ReceiverType.Group} />
         )}
         <Snackbar
           open={updatedContactGroup}

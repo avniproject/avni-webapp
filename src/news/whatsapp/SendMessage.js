@@ -16,7 +16,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SendMessageToolBar = ({ contactGroupId }) => {
+const SendMessage = ({ receiverId, receiverType }) => {
   const classes = useStyle();
   const [sendingMessage, setSendingMessage] = useState(false);
   const [scheduled, setScheduled] = useState(false);
@@ -30,7 +30,8 @@ const SendMessageToolBar = ({ contactGroupId }) => {
     <div className={classes.root}>
       {sendingMessage && (
         <ComposeMessageView
-          selectedGroupIds={[contactGroupId]}
+          receiverIds={[receiverId]}
+          receiverType={receiverType}
           onClose={() => setSendingMessage(false)}
           onSchedulingAttempted={onSchedulingAttempted}
         />
@@ -53,12 +54,4 @@ const SendMessageToolBar = ({ contactGroupId }) => {
   );
 };
 
-const MessagesTab = ({ contactGroupId }) => {
-  return (
-    <div style={{ width: "90%", margin: "20px" }}>
-      <SendMessageToolBar contactGroupId={contactGroupId} />
-    </div>
-  );
-};
-
-export default MessagesTab;
+export default SendMessage;

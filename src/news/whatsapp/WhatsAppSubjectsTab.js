@@ -5,6 +5,7 @@ import { withRouter } from "react-router-dom";
 import _ from "lodash";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
 import Button from "@material-ui/core/Button";
+import ReceiverType from "./ReceiverType";
 
 const WorkflowStateNames = {
   ChooseSubject: "ChooseSubject",
@@ -31,7 +32,10 @@ function WhatsAppSubjectsTab() {
       )}
       {workflowState.name === WorkflowStateNames.ViewSubjectMessages && (
         <Box>
-          <WhatsAppMessagesView subjectId={workflowState.subject.id} />
+          <WhatsAppMessagesView
+            receiverId={workflowState.subject.id}
+            receiverType={ReceiverType.Subject}
+          />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
             <Button
               onClick={() => setWorkflowState({ name: WorkflowStateNames.ChooseSubject })}
