@@ -3,7 +3,7 @@ import ChooseSubject from "./ChooseSubject";
 import { Box } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
-import WhatsAppSubjectView from "./WhatsAppSubjectView";
+import WhatsAppMessagesView from "./WhatsAppMessagesView";
 import Button from "@material-ui/core/Button";
 
 const WorkflowStateNames = {
@@ -31,7 +31,7 @@ function WhatsAppSubjectsTab() {
       )}
       {workflowState.name === WorkflowStateNames.ViewSubjectMessages && (
         <Box>
-          <WhatsAppSubjectView subjectId={workflowState.subject.id} />
+          <WhatsAppMessagesView subjectId={workflowState.subject.id} />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
             <Button
               onClick={() => setWorkflowState({ name: WorkflowStateNames.ChooseSubject })}

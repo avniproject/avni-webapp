@@ -184,7 +184,7 @@ export default {
       .get(`/web/subjectSummaryRule?subjectUUID=${subjectUUID}`)
       .then(response => response.data),
   getAllMessagesForSubject: function(subjectID) {
-    return MessageService.getMessages(subjectID).then(response => response.data);
+    return MessageService.getSubjectMessages(subjectID).then(response => response.data);
   },
   getAllMessagesForUser: userID =>
     httpClient.get(`/web/contact/user/${userID}/msgs`).then(response => response.data),

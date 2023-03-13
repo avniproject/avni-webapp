@@ -6,23 +6,36 @@ import ErrorMessage from "../../common/components/ErrorMessage";
 import MessageService from "../../common/service/MessageService";
 import Typography from "@material-ui/core/Typography";
 
-function WhatsAppSubjectView({ subjectId }) {
+function WhatsAppMessagesView({ subjectId, userId }) {
   const [messages, setMessages] = useState([]);
   const [unsentMessages, setUnsentMessages] = useState([]);
   const [error, setError] = useState(null);
   const [userError, setUserError] = useState(null);
 
   useEffect(() => {
-    MessageService.getMessages(subjectId)
-      .then(response => {
-        if (response.status === 204) setUserError("Subject doesn't have phone number");
-        else setMessages(response.data);
-      })
-      .catch(setError);
+    if (subjectId) {
+      MessageService.getSubjectMessages(subjectId)
+        .then(response => {
+          if (response.status === 204) setUserError("Subject doesn't have phone number");
+          else setMessages(response.data);
+        })
+        .catch(setError);
 
-    API.getAllMessagesNotYetSentForSubject(subjectId)
-      .then(unsentMessages => setUnsentMessages(unsentMessages))
-      .catch(setError);
+      API.getAllMessagesNotYetSentForSubject(subjectId)
+        .then(unsentMessages => setUnsentMessages(unsentMessages))
+        .catch(setError);
+    } else if (userId) {
+      MessageService.getUserMessages(userId)
+        .then(response => {
+          if (response.status === 204) setUserError("User doesn't have phone number");
+          else setMessages(response.data);
+        })
+        .catch(setError);
+
+      API.getAllMessagesNotYetSentForUser(userId)
+        .then(unsentMessages => setUnsentMessages(unsentMessages))
+        .catch(setError);
+    }
   }, []);
 
   return (
@@ -43,4 +56,4 @@ function WhatsAppSubjectView({ subjectId }) {
   );
 }
 
-export default WhatsAppSubjectView;
+export default WhatsAppMessagesView;
