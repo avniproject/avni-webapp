@@ -16,7 +16,7 @@ function WhatsAppUsersTab({ onClose }) {
   const onCloseHandler = () => onClose();
 
   return (
-    <Box style={{ marginLeft: 20 }}>
+    <Box style={{ marginLeft: 20, display: "flex", flexGrow: 1 }}>
       {workflowState.name === WorkflowStateNames.ChooseUser && (
         <SearchUserAndConfirm
           onUserSelected={user =>

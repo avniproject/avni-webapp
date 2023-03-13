@@ -29,7 +29,7 @@ const SearchUserAndConfirm = function({ onCancel, onUserSelected }) {
   const displayProgress = _.includes([WorkflowStates.Searching], workflowState);
 
   return (
-    <Box style={{ flexDirection: "column", display: "flex" }}>
+    <Box style={{ flexDirection: "column", display: "flex", flexGrow: 1 }}>
       <Card
         elevation={3}
         style={{
