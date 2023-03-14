@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
@@ -19,8 +19,9 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import { identity } from "lodash";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
+import { connect } from "react-redux";
 
-const ProgramEdit = props => {
+const ProgramEdit = ({ organisationConfig, ...props }) => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
   const [redirectShow, setRedirectShow] = useState(false);
@@ -134,13 +135,17 @@ const ProgramEdit = props => {
             toolTipKey={"APP_DESIGNER_PROGRAM_ACTIVE"}
           />
           <br />
-          <MessageRules
-            rules={rules}
-            templates={templates}
-            onChange={onRulesChange}
-            entityType={entityType}
-            entityTypeId={program.programId}
-          />
+          {organisationConfig && organisationConfig.enableMessaging ? (
+            <MessageRules
+              rules={rules}
+              templates={templates}
+              onChange={onRulesChange}
+              entityType={entityType}
+              entityTypeId={program.programId}
+            />
+          ) : (
+            <></>
+          )}
           <br />
           <br />
         </div>
@@ -162,4 +167,7 @@ const ProgramEdit = props => {
   );
 };
 
-export default ProgramEdit;
+const mapStateToProps = state => ({
+  organisationConfig: state.app.organisationConfig
+});
+export default withRouter(connect(mapStateToProps)(ProgramEdit));

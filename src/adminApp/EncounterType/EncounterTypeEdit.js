@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
@@ -21,8 +21,9 @@ import EncounterTypeErrors from "./EncounterTypeErrors";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
+import { connect } from "react-redux";
 
-const EncounterTypeEdit = props => {
+const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
@@ -215,13 +216,17 @@ const EncounterTypeEdit = props => {
                 formList={formList}
                 ruleValidationError={ruleValidationError}
               />
-              <MessageRules
-                rules={rules}
-                templates={templates}
-                onChange={onRulesChange}
-                entityType={entityType}
-                entityTypeId={encounterType.encounterTypeId}
-              />
+              {organisationConfig && organisationConfig.enableMessaging ? (
+                <MessageRules
+                  rules={rules}
+                  templates={templates}
+                  onChange={onRulesChange}
+                  entityType={entityType}
+                  entityTypeId={encounterType.encounterTypeId}
+                />
+              ) : (
+                <></>
+              )}
             </>
           )}
           <EncounterTypeErrors
@@ -247,4 +252,7 @@ const EncounterTypeEdit = props => {
   );
 };
 
-export default EncounterTypeEdit;
+const mapStateToProps = state => ({
+  organisationConfig: state.app.organisationConfig
+});
+export default withRouter(connect(mapStateToProps)(EncounterTypeEdit));

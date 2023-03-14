@@ -1,4 +1,4 @@
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
@@ -14,8 +14,9 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { identity } from "lodash";
+import { connect } from "react-redux";
 
-const ProgramCreate = props => {
+const ProgramCreate = ({ organisationConfig }) => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
   const [saved, setSaved] = useState(false);
@@ -89,13 +90,17 @@ const ProgramCreate = props => {
                 onSubjectTypeChange={setSubjectType}
                 subjectType={subjectType}
               />
-              <MessageRules
-                rules={rules}
-                templates={templates}
-                onChange={onRulesChange}
-                entityType={entityType}
-                entityTypeId={program.programId}
-              />
+              {organisationConfig && organisationConfig.enableMessaging ? (
+                <MessageRules
+                  rules={rules}
+                  templates={templates}
+                  onChange={onRulesChange}
+                  entityType={entityType}
+                  entityTypeId={program.programId}
+                />
+              ) : (
+                <></>
+              )}
               <br />
               <br />
               <Button color="primary" variant="contained" type="submit">
@@ -110,4 +115,7 @@ const ProgramCreate = props => {
   );
 };
 
-export default ProgramCreate;
+const mapStateToProps = state => ({
+  organisationConfig: state.app.organisationConfig
+});
+export default withRouter(connect(mapStateToProps)(ProgramCreate));

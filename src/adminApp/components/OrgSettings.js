@@ -7,6 +7,7 @@ import { getOperationalModules } from "../../reports/reducers";
 import { useDispatch } from "react-redux";
 import { toNumber } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
+import { setOrganisationConfig } from "../../rootApp/ducks";
 
 export const OrgSettings = () => {
   const [orgSettings, setOrgSettings] = React.useState();
@@ -27,6 +28,7 @@ export const OrgSettings = () => {
       .then(response => {
         if (response.status === 200 || response.status === 201) {
           setOrgSettings(response.data.settings);
+          dispatch(setOrganisationConfig(response.data.settings));
         }
         return response;
       })
