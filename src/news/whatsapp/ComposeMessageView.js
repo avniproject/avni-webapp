@@ -53,7 +53,7 @@ const ComposeMessageView = ({ receiverIds, receiverType, onClose, onSchedulingAt
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      await sendManualMessage(receiverIds, receiverType, rules[0]);
+      await sendManualMessage(receiverId, receiverType, rules[0]);
       onSchedulingAttempted("success");
     } catch (error) {
       console.log("Message scheduling failed:", error);

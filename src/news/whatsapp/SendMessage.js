@@ -30,7 +30,7 @@ const SendMessage = ({ receiverId, receiverType }) => {
     <div className={classes.root}>
       {sendingMessage && (
         <ComposeMessageView
-          receiverIds={[receiverId]}
+          receiverId={receiverId}
           receiverType={receiverType}
           onClose={() => setSendingMessage(false)}
           onSchedulingAttempted={onSchedulingAttempted}
