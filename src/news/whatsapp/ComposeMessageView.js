@@ -11,7 +11,7 @@ import { Box, Button, Dialog, DialogActions, DialogTitle } from "@material-ui/co
 import IconButton from "@material-ui/core/IconButton";
 import { Close } from "@material-ui/icons";
 
-const ComposeMessageView = ({ receiverIds, receiverType, onClose, onSchedulingAttempted }) => {
+const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAttempted }) => {
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [{ scheduledDateTime: new Date() }],
     templates: []
