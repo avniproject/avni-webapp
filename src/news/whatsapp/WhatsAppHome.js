@@ -82,7 +82,13 @@ const WhatsAppHome = function() {
 
   return (
     <ScreenWithAppBar appbarTitle={"WhatsApp Messaging"}>
-      <ErrorMessage error={error} additionalStyle={{ marginBottom: 20 }} />
+      <ErrorMessage
+        error={error}
+        additionalStyle={{ marginBottom: 2000 }}
+        customErrorMessage={
+          "Please set up a Glific Account and configure it correctly for this page to show up."
+        }
+      />
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs
           orientation="vertical"
