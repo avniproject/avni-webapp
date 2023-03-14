@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core";
-
 import ComposeMessageView from "./ComposeMessageView";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
@@ -41,7 +40,7 @@ const SendMessage = ({ receiverId, receiverType }) => {
         <CustomizedSnackbar
           variant={scheduled}
           message={
-            scheduled === "success" ? "Message scheduling successful" : "Message scheduling failed"
+            "success" === scheduled ? "Message scheduling successful" : "Message scheduling failed"
           }
           getDefaultSnackbarStatus={snackbarStatus => setScheduled(snackbarStatus)}
           defaultSnackbarStatus={scheduled}
