@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { getMessageTemplates, sendBroadcastMessage } from "../../adminApp/service/MessageService";
+import { getMessageTemplates, sendManualMessage } from "../../adminApp/service/MessageService";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import _ from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
@@ -53,7 +53,7 @@ const ComposeMessageView = ({ receiverIds, receiverType, onClose, onSchedulingAt
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      await sendBroadcastMessage(receiverIds, receiverType, rules[0]);
+      await sendManualMessage(receiverIds, receiverType, rules[0]);
       onSchedulingAttempted("success");
     } catch (error) {
       console.log("Message scheduling failed:", error);
