@@ -16,7 +16,7 @@ const WorkflowStates = {
   SearchCompleted: "SearchCompleted"
 };
 
-const SearchUserAndConfirm = function({ onCancel, onUserSelected }) {
+const SearchUserAndConfirm = function({ onCancel, onUserSelected, confirmButtonText = "Confirm" }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -29,7 +29,7 @@ const SearchUserAndConfirm = function({ onCancel, onUserSelected }) {
   const displayProgress = _.includes([WorkflowStates.Searching], workflowState);
 
   return (
-    <Box style={{ flexDirection: "column", display: "flex" }}>
+    <Box style={{ flexDirection: "column", display: "flex", flexGrow: 1 }}>
       <Card
         elevation={3}
         style={{
@@ -104,7 +104,7 @@ const SearchUserAndConfirm = function({ onCancel, onUserSelected }) {
             disabled={_.isNil(selectedUser)}
             onClick={() => onUserSelected(selectedUser)}
           >
-            Confirm
+            {confirmButtonText}
           </Button>
         </Box>
       )}

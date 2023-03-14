@@ -10,6 +10,7 @@ import ContactService from "../api/ContactService";
 import { useHistory, useParams } from "react-router-dom";
 import WhatsAppSubjectsTab from "./WhatsAppSubjectsTab";
 import ErrorMessage from "../../common/components/ErrorMessage";
+import WhatsAppUsersTab from "./WhatsAppUsersTab";
 
 function ContactGroupLink({ rowData, column }) {
   return (
@@ -99,12 +100,16 @@ const WhatsAppHome = function() {
         >
           <Tab label="Groups" value="groups" />
           <Tab label="Subjects" value="subjects" />
+          <Tab label="Users" value="users" />
         </Tabs>
         <TabContent activeTab={activeTab} currentTab={"groups"}>
           <GroupsTab groups={getDataFetcher(setError)} columns={columns} />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"subjects"}>
           <WhatsAppSubjectsTab />
+        </TabContent>
+        <TabContent activeTab={activeTab} currentTab={"users"}>
+          <WhatsAppUsersTab />
         </TabContent>
       </Box>
     </ScreenWithAppBar>

@@ -38,9 +38,10 @@ export const saveMessageRules = (entityType, entityTypeId, rules = []) => {
   return Promise.all(savePromises);
 };
 
-export const sendBroadcastMessage =  (groupIds, rule) => {
-  return http.post("/web/scheduleManualBroadcastMessage", {
-    groupIds,
+export const sendManualMessage = (receiverId, receiverType, rule) => {
+  return http.post("/web/scheduleManualMessage", {
+    receiverId,
+    receiverType,
     ...rule
   });
-}
+};

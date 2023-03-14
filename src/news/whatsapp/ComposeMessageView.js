@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { getMessageTemplates, sendBroadcastMessage } from "../../adminApp/service/MessageService";
+import { getMessageTemplates, sendManualMessage } from "../../adminApp/service/MessageService";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import _ from "lodash";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
@@ -11,7 +11,7 @@ import { Box, Button, Dialog, DialogActions, DialogTitle } from "@material-ui/co
 import IconButton from "@material-ui/core/IconButton";
 import { Close } from "@material-ui/icons";
 
-const ComposeMessageView = ({ selectedGroupIds, onClose, onSchedulingAttempted }) => {
+const ComposeMessageView = ({ receiverIds, receiverType, onClose, onSchedulingAttempted }) => {
   const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [{ scheduledDateTime: new Date() }],
     templates: []
@@ -53,7 +53,7 @@ const ComposeMessageView = ({ selectedGroupIds, onClose, onSchedulingAttempted }
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      await sendBroadcastMessage(selectedGroupIds, rules[0]);
+      await sendManualMessage(receiverId, receiverType, rules[0]);
       onSchedulingAttempted("success");
     } catch (error) {
       console.log("Message scheduling failed:", error);

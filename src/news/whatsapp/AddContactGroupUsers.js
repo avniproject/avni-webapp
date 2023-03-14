@@ -61,6 +61,7 @@ const AddContactGroupUser = ({ contactGroupId, onClose, onUserAdd }) => {
                 setWorkflowState(WorkflowStates.AddError);
               });
           }}
+          confirmButtonText={"Add"}
         />
       </Box>
     </Dialog>
