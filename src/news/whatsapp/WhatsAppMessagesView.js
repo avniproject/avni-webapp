@@ -7,7 +7,6 @@ import MessageService from "../../common/service/MessageService";
 import Typography from "@material-ui/core/Typography";
 import SendMessage from "./SendMessage";
 import ReceiverType from "./ReceiverType";
-import { useParams } from "react-router-dom";
 
 function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
   const [messages, setMessages] = useState([]);
