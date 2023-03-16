@@ -9,8 +9,7 @@ import SendMessage from "./SendMessage";
 import ReceiverType from "./ReceiverType";
 import { useParams } from "react-router-dom";
 
-function WhatsAppMessagesView({ receiverType, receiverName }) {
-  const { receiverId } = useParams();
+function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
   const [messages, setMessages] = useState([]);
   const [unsentMessages, setUnsentMessages] = useState([]);
   const [error, setError] = useState(null);
