@@ -9,6 +9,9 @@ class UserService {
       `${userEndpoint}?name=${name}&phoneNumber=${phoneNumber}&email=${email}&page=${0}&size=${30}`
     );
   }
+  static searchUserById(id) {
+    return http.get(`${userEndpoint}/${id}`);
+  }
 }
 
 export default UserService;

@@ -16,7 +16,7 @@ const WorkflowStates = {
   SearchCompleted: "SearchCompleted"
 };
 
-const SearchUserAndConfirm = function({ onCancel, onUserSelected, confirmButtonText = "Confirm" }) {
+const SearchUserAndConfirm = function({ onUserSelected, confirmButtonText = "Confirm" }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -93,7 +93,7 @@ const SearchUserAndConfirm = function({ onCancel, onUserSelected, confirmButtonT
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => onCancel()}
+            onClick={() => setUsers(null)}
             style={{ marginLeft: 15 }}
           >
             Cancel

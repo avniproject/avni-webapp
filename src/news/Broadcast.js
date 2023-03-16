@@ -63,6 +63,11 @@ const Broadcast = ({ match: { path }, organisationConfig }) => {
         )}
         component={WhatsAppContactGroup}
       />
+      <Route
+        exact
+        path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab/:receiverId/messages`)}
+        component={WhatsAppHome}
+      />
     </React.Fragment>
   );
 };

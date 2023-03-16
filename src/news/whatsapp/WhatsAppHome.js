@@ -11,6 +11,7 @@ import { useHistory, useParams } from "react-router-dom";
 import WhatsAppSubjectsTab from "./WhatsAppSubjectsTab";
 import ErrorMessage from "../../common/components/ErrorMessage";
 import WhatsAppUsersTab from "./WhatsAppUsersTab";
+import ReceiverType from "./ReceiverType";
 
 function ContactGroupLink({ rowData, column }) {
   return (
@@ -66,7 +67,7 @@ function TabContent(props) {
 
 const WhatsAppHome = function() {
   const defaultActiveTab = "groups";
-  const { activeTab } = useParams();
+  const { activeTab, receiverId } = useParams();
   const history = useHistory();
 
   const [error, setError] = useState(null);
@@ -106,10 +107,10 @@ const WhatsAppHome = function() {
           <GroupsTab groups={getDataFetcher(setError)} columns={columns} />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"subjects"}>
-          <WhatsAppSubjectsTab />
+          <WhatsAppSubjectsTab receiverType={ReceiverType.Subject} receiverId={receiverId} />
         </TabContent>
         <TabContent activeTab={activeTab} currentTab={"users"}>
-          <WhatsAppUsersTab />
+          <WhatsAppUsersTab receiverType={ReceiverType.User} receiverId={receiverId} />
         </TabContent>
       </Box>
     </ScreenWithAppBar>

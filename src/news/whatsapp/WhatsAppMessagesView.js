@@ -7,8 +7,10 @@ import MessageService from "../../common/service/MessageService";
 import Typography from "@material-ui/core/Typography";
 import SendMessage from "./SendMessage";
 import ReceiverType from "./ReceiverType";
+import { useParams } from "react-router-dom";
 
-function WhatsAppMessagesView({ receiverId, receiverType }) {
+function WhatsAppMessagesView({ receiverType, receiverName }) {
+  const { receiverId } = useParams();
   const [messages, setMessages] = useState([]);
   const [unsentMessages, setUnsentMessages] = useState([]);
   const [error, setError] = useState(null);
@@ -43,6 +45,9 @@ function WhatsAppMessagesView({ receiverId, receiverType }) {
   return (
     <Box>
       <SendMessage receiverId={receiverId} receiverType={receiverType} />
+      <Typography variant={"h6"} style={{ paddingBottom: 10 }}>
+        Messages for: {receiverName}
+      </Typography>
       <ErrorMessage error={error} additionalStyle={{ marginBottom: 20 }} />
       {userError && (
         <Typography variant={"h5"} style={{ color: "red", marginBottom: 20 }}>
