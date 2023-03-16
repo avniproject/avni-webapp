@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useHistory, withRouter } from "react-router-dom";
 import SearchUserAndConfirm from "./SearchUserAndConfirm";
-import { Box } from "@material-ui/core";
+import { Box, LinearProgress } from "@material-ui/core";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
 import Button from "@material-ui/core/Button";
 import ReceiverType from "./ReceiverType";
@@ -10,6 +10,7 @@ import UserService from "../../common/service/UserService";
 import BroadcastPath from "../utils/BroadcastPath";
 
 const WorkflowStateNames = {
+  Searching: "Searching",
   ChooseUser: "ChooseUser",
   ViewUserMessages: "ViewUserMessages"
 };
@@ -18,6 +19,7 @@ function WhatsAppUsersTab({ receiverId }) {
   const [workflowState, setWorkflowState] = useState({ name: WorkflowStateNames.ChooseUser });
   useEffect(() => {
     if (receiverId) {
+      setWorkflowState({ name: WorkflowStateNames.Searching });
       UserService.searchUserById(receiverId).then(user =>
         setWorkflowState({
           name: WorkflowStateNames.ViewUserMessages,
@@ -28,10 +30,11 @@ function WhatsAppUsersTab({ receiverId }) {
   }, [receiverId]);
   const history = useHistory();
   const routeToMessages = user => {
-    history.push(`/${BroadcastPath.UserFullPath}/${user.id}/messages`);
+    history.push(`${BroadcastPath.UserFullPath}/${user.id}/messages`);
   };
   return (
     <Box style={{ marginLeft: 20, display: "flex", flexGrow: 1 }}>
+      {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseUser && (
         <SearchUserAndConfirm
           onUserSelected={user => routeToMessages(user)}
@@ -46,7 +49,10 @@ function WhatsAppUsersTab({ receiverId }) {
             receiverName={workflowState.user.name}
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button onClick={() => history.push("/broadcast/whatsApp/users")} variant="outlined">
+            <Button
+              onClick={() => history.push(`${BroadcastPath.UserFullPath}`)}
+              variant="outlined"
+            >
               Back to search
             </Button>
           </Box>

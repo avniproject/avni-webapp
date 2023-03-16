@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ChooseSubject from "./ChooseSubject";
-import { Box } from "@material-ui/core";
+import { Box, LinearProgress } from "@material-ui/core";
 import { useHistory, withRouter } from "react-router-dom";
 import _ from "lodash";
 import WhatsAppMessagesView from "./WhatsAppMessagesView";
@@ -10,14 +10,17 @@ import SubjectSearchService from "../../dataEntryApp/services/SubjectSearchServi
 import BroadcastPath from "../utils/BroadcastPath";
 
 const WorkflowStateNames = {
+  Searching: "Searching",
   ChooseSubject: "ChooseSubject",
   ViewSubjectMessages: "ViewSubjectMessages"
 };
 
 function WhatsAppSubjectsTab({ receiverId }) {
   const [workflowState, setWorkflowState] = useState({ name: WorkflowStateNames.ChooseSubject });
+
   useEffect(() => {
     if (receiverId) {
+      setWorkflowState({ name: WorkflowStateNames.Searching });
       SubjectSearchService.searchByUuid(receiverId).then(subject =>
         setWorkflowState({
           name: WorkflowStateNames.ViewSubjectMessages,
@@ -28,10 +31,11 @@ function WhatsAppSubjectsTab({ receiverId }) {
   }, [receiverId]);
   const history = useHistory();
   const routeToMessages = subject => {
-    history.push(`/${BroadcastPath.SubjectFullPath}/${subject.uuid}/messages`);
+    history.push(`${BroadcastPath.SubjectFullPath}/${subject.uuid}/messages`);
   };
   return (
     <Box style={{ marginLeft: 20 }}>
+      {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseSubject && (
         <ChooseSubject
           onCancel={_.noop}
@@ -49,7 +53,7 @@ function WhatsAppSubjectsTab({ receiverId }) {
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
             <Button
-              onClick={() => setWorkflowState({ name: WorkflowStateNames.ChooseSubject })}
+              onClick={() => history.push(`${BroadcastPath.SubjectFullPath}`)}
               variant="outlined"
             >
               Back to search
