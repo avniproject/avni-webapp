@@ -40,7 +40,7 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
   };
 
   const onVariableChange = (index, updatedValue) => {
-    rules[0].parameters[index] = updatedValue;
+    rules[0].parameters[index] = updatedValue.replaceAll(",", "");
     rulesDispatch({ type: "setRules", payload: rules });
   };
 

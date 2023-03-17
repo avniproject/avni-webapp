@@ -95,3 +95,12 @@ export const withParams = Comp => ({ match, ...props }) => {
 };
 
 export const WithProps = (extras, Compnent) => props => <Compnent {...extras} {...props} />;
+
+export const formatMsgTemplate = (str, params) => {
+  let replacer = function(value, index) {
+    str = str.replace(new RegExp("\\{\\{" + (index + 1) + "\\}\\}", "g"), value);
+  };
+  let paramsArray = params.replace(new RegExp("\\[|\\]", "g"), "").split(/[,]+/);
+  paramsArray.forEach(replacer);
+  return str;
+};

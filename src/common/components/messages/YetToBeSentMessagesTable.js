@@ -5,6 +5,7 @@ import MaterialTable from "material-table";
 
 import Typography from "@material-ui/core/Typography";
 import { formatDateTime } from "../../utils/General";
+import { formatMsgTemplate } from "../utils";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -29,8 +30,10 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
       field: "createdBy"
     },
     {
-      title: t("Message Template Id"),
-      field: "messageTemplateId",
+      title: t("Message Template"),
+      field: "messageTemplateBody",
+      type: "string",
+      render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),
       cellStyle: {
         minWidth: 200,
         maxWidth: 550
