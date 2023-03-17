@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MessagesView from "../../common/components/messages/MessagesView";
 import API from "../../dataEntryApp/api";
-import Box from "@material-ui/core/Box";
 import ErrorMessage from "../../common/components/ErrorMessage";
 import MessageService from "../../common/service/MessageService";
 import Typography from "@material-ui/core/Typography";
