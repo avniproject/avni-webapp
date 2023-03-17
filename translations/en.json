@@ -442,6 +442,7 @@
     "programExitDetails": "Program Exit Details",
     "visitDate": "Visit Date",
     "reviewBannerText": "Click here to see your 2021 personal highlights",
-    "maskedPhone": "Masked phone number"
+    "maskedPhone": "Masked phone number",
+    "sender": "Sender"
   }
 }

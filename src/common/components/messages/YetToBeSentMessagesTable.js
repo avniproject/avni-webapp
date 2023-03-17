@@ -25,6 +25,10 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
 
   const columns = [
     {
+      title: t("sender"),
+      field: "createdBy"
+    },
+    {
       title: t("Message Template Id"),
       field: "messageTemplateId",
       cellStyle: {
