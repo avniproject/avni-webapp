@@ -23,19 +23,7 @@ import {
 } from "../../common/material-table/MaterialTableToolBar";
 import ReceiverType from "./ReceiverType";
 import GroupMessageTab from "./GroupMessageTab";
-
-const columns = [
-  {
-    title: "Name",
-    sorting: false,
-    field: "name"
-  },
-  {
-    title: "Masked phone",
-    sorting: false,
-    field: "maskedPhone"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const tableRef = React.createRef();
 
@@ -56,10 +44,23 @@ function Members({
   contactGroupMembersVersion,
   onContactGroupLoaded
 }) {
+  const { t } = useTranslation();
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
   const [error, setError] = useState(null);
   const [displayProgress, setDisplayProgress] = useState(false);
+  const columns = [
+    {
+      title: t("name"),
+      sorting: false,
+      field: "name"
+    },
+    {
+      title: t("maskedPhone"),
+      sorting: false,
+      field: "maskedPhone"
+    }
+  ];
 
   const removeContactFromGroup = useCallback(
     contactRows => {

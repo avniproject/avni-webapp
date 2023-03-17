@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import MaterialTable from "material-table";
 
 import Typography from "@material-ui/core/Typography";
-import { formatDate } from "../../utils/General";
+import { formatDateTime } from "../../utils/General";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -25,43 +25,19 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
 
   const columns = [
     {
-      title: t("Entity Type Id"),
-      field: "entityTypeId"
-    },
-    {
-      title: t("Entity Type"),
-      field: "entityType"
-    },
-    {
-      title: t("Receiver Id"),
-      field: "receiverId"
-    },
-    {
-      title: t("Receiver Type"),
-      field: "receiverType"
-    },
-    {
-      title: t("External Id"),
-      field: "externalId"
-    },
-    {
-      title: t("Delivery Status"),
-      field: "deliveryStatus"
-    },
-    {
-      title: t("Scheduled DateTime"),
-      field: "scheduledDateTime",
-      type: "date",
-      render: row => formatDate(row.scheduledDateTime),
-      defaultSort: "desc"
-    },
-    {
-      title: t("Message Template Name"),
-      field: "messageTemplateName"
-    },
-    {
       title: t("Message Template Id"),
-      field: "messageTemplateId"
+      field: "messageTemplateId",
+      cellStyle: {
+        minWidth: 200,
+        maxWidth: 550
+      }
+    },
+    {
+      title: t("Scheduled At"),
+      field: "scheduledAt",
+      type: "date",
+      render: row => formatDateTime(row.scheduledDateTime),
+      defaultSort: "desc"
     }
   ];
 

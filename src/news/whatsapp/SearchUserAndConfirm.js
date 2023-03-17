@@ -49,22 +49,23 @@ const SearchUserAndConfirm = function({ onUserSelected, confirmButtonText = "Con
             onChange={e => setName(e.target.value)}
           />
         </Box>
-        <Box>
-          <Typography variant="body1">Phone number</Typography>
-          <TextField
-            name="name"
-            autoComplete="off"
-            type="text"
-            onChange={e => setPhoneNumber(e.target.value)}
-          />
-        </Box>
-        <Box>
+        <Box width={350}>
           <Typography variant="body1">Email</Typography>
           <TextField
             name="email"
             autoComplete="off"
             type="text"
             onChange={e => setEmail(e.target.value)}
+            fullWidth
+          />
+        </Box>
+        <Box>
+          <Typography variant="body1">Phone number</Typography>
+          <TextField
+            name="phone"
+            autoComplete="off"
+            type="text"
+            onChange={e => setPhoneNumber(e.target.value)}
           />
         </Box>
         <Button

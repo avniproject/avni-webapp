@@ -34,7 +34,7 @@ function WhatsAppSubjectsTab({ receiverId }) {
     history.push(`${BroadcastPath.SubjectFullPath}/${subject.uuid}/messages`);
   };
   return (
-    <Box style={{ marginLeft: 20 }}>
+    <div className="container">
       {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseSubject && (
         <ChooseSubject
@@ -45,7 +45,7 @@ function WhatsAppSubjectsTab({ receiverId }) {
         />
       )}
       {workflowState.name === WorkflowStateNames.ViewSubjectMessages && (
-        <Box>
+        <div>
           <WhatsAppMessagesView
             receiverId={workflowState.subject.id}
             receiverType={ReceiverType.Subject}
@@ -59,9 +59,9 @@ function WhatsAppSubjectsTab({ receiverId }) {
               Back to search
             </Button>
           </Box>
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
 

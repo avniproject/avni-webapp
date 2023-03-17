@@ -33,7 +33,7 @@ function WhatsAppUsersTab({ receiverId }) {
     history.push(`${BroadcastPath.UserFullPath}/${user.id}/messages`);
   };
   return (
-    <Box style={{ marginLeft: 20, display: "flex", flexGrow: 1 }}>
+    <div className="container">
       {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseUser && (
         <SearchUserAndConfirm
@@ -42,7 +42,7 @@ function WhatsAppUsersTab({ receiverId }) {
         />
       )}
       {workflowState.name === WorkflowStateNames.ViewUserMessages && (
-        <Box>
+        <div>
           <WhatsAppMessagesView
             receiverId={workflowState.user.id}
             receiverType={ReceiverType.User}
@@ -56,9 +56,9 @@ function WhatsAppUsersTab({ receiverId }) {
               Back to search
             </Button>
           </Box>
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
 

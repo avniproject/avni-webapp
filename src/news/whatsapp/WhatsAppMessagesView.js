@@ -41,7 +41,7 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
   }, []);
 
   return (
-    <Box>
+    <div>
       <SendMessage receiverId={receiverId} receiverType={receiverType} />
       <Typography variant={"h6"} style={{ paddingBottom: 10 }}>
         Messages for: {receiverName}
@@ -58,7 +58,7 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
         isMsgsSentAvailable={true}
         isMsgsNotYetSentAvailable={true}
       />
-    </Box>
+    </div>
   );
 }
 

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import MessageService from "../../common/service/MessageService";
 import ErrorMessage from "../../common/components/ErrorMessage";
-import {Box} from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import GroupSentMessagesTable from "../../common/components/messages/GroupSentMessagesTable";
 import SendMessage from "./SendMessage";
 import ReceiverType from "./ReceiverType";
@@ -21,21 +21,19 @@ const GroupMessageTab = ({ contactGroupId }) => {
   }, []);
 
   return (
-    <div style={{ width: "90%", margin: "20px" }}>
+    <div className="container">
       <ErrorMessage error={error} />
-      <SendMessage receiverId={contactGroupId} receiverType={ReceiverType.Group}/>
+      <SendMessage receiverId={contactGroupId} receiverType={ReceiverType.Group} />
       <Box style={{ marginTop: 20 }} />
       <GroupSentMessagesTable
         messages={sentMessages}
         title={"Sent Messages"}
-        showDeliveryStatus={false}
         showDeliveryDetails={true}
       />
       <Box style={{ marginTop: 20 }} />
       <GroupSentMessagesTable
         messages={unsentMessages}
         title={"Scheduled Messages"}
-        showDeliveryStatus={true}
         showDeliveryDetails={false}
       />
     </div>

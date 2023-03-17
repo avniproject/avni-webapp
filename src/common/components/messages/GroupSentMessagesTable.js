@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import MaterialTable from "material-table";
 
-import { formatDate } from "../../utils/General";
+import { formatDateTime } from "../../utils/General";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -35,35 +35,29 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
 
   const columns = [
     {
-      title: t("Group Id"),
-      field: "externalId"
-    },
-    {
       title: t("Message Template Id"),
-      field: "messageTemplateId"
-    },
-    {
-      title: t("Scheduled DateTime"),
-      field: "scheduledDateTime",
-      type: "date",
-      render: row => formatDate(row["scheduledDateTime"]),
-      defaultSort: "desc"
+      field: "messageTemplateId",
+      cellStyle: {
+        minWidth: 200,
+        maxWidth: 550
+      }
     }
   ];
 
-  if (showDeliveryStatus) {
-    columns.push({
-      title: t("Delivery Status"),
-      field: "deliveryStatus"
-    });
-  }
-
   if (showDeliveryDetails) {
     columns.push({
-      title: t("Delivered DateTime"),
-      field: "deliveredDateTime",
+      title: t("Inserted At"),
+      field: "insertedAt",
       type: "date",
-      render: row => formatDate(row["deliveredDateTime"]),
+      render: row => formatDateTime(row["deliveredDateTime"]),
+      defaultSort: "desc"
+    });
+  } else {
+    columns.push({
+      title: t("Scheduled At"),
+      field: "scheduledAt",
+      type: "date",
+      render: row => formatDateTime(row["scheduledDateTime"]),
       defaultSort: "desc"
     });
   }

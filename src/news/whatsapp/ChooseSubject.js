@@ -14,6 +14,7 @@ import {
 import { withRouter } from "react-router-dom";
 import SelectSubject from "../../common/components/subject/SelectSubject";
 import Button from "@material-ui/core/Button";
+import { useTranslation } from "react-i18next";
 
 const searchSubject = function(setWorkflowState, searchRequest, setSubjects) {
   setWorkflowState(WorkflowStates.Searching);
@@ -32,10 +33,15 @@ const WorkflowStates = {
 
 const SelectSubjectAndConfirm = function({ subjects, onSubjectChosen, onCancel, confirmLabel }) {
   const [selectedSubject, setSelectedSubject] = useState(null);
-
+  const { t } = useTranslation();
   return (
     <Box style={{ flexDirection: "column", display: "flex" }}>
-      <SelectSubject subjectData={subjects} onSelectedItem={setSelectedSubject} errormsg={null} />
+      <SelectSubject
+        t={t}
+        subjectData={subjects}
+        onSelectedItem={setSelectedSubject}
+        errormsg={null}
+      />
       <Box style={{ flexDirection: "row-reverse", display: "flex", marginTop: 20 }}>
         <Button
           variant="outlined"

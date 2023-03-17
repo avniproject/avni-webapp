@@ -88,7 +88,7 @@ function MessagesView({
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
-    <>
+    <div>
       <Paper elevation={0} className={classes.outlinedInfo}>
         <div>
           {<InfoIcon />}{" "}
@@ -97,23 +97,6 @@ function MessagesView({
           }
         </div>
       </Paper>
-      <ExpansionPanel className={classes.expansionPanel}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-          aria-controls="yetToBeSentMessagesPanelbh-content"
-          id="yet-to-be-sent-messages"
-        >
-          <Typography component={"span"} className={classes.expansionHeading}>
-            {t("Scheduled Messages")}
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
-          <YetToBeSentMessagesTable
-            msgsYetToBeSent={msgsYetToBeSent || []}
-            isMsgsNotYetSentAvailable={isMsgsNotYetSentAvailable}
-          />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
       <ExpansionPanel className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
@@ -133,7 +116,24 @@ function MessagesView({
           )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
-    </>
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+          aria-controls="yetToBeSentMessagesPanelbh-content"
+          id="yet-to-be-sent-messages"
+        >
+          <Typography component={"span"} className={classes.expansionHeading}>
+            {t("Scheduled Messages")}
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
+          <YetToBeSentMessagesTable
+            msgsYetToBeSent={msgsYetToBeSent || []}
+            isMsgsNotYetSentAvailable={isMsgsNotYetSentAvailable}
+          />
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    </div>
   );
 }
 
