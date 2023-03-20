@@ -30,7 +30,7 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
       field: "createdBy"
     },
     {
-      title: t("Message Template"),
+      title: t("Message Template with values filled-in"),
       field: "messageTemplateBody",
       type: "string",
       render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),

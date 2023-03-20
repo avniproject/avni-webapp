@@ -40,7 +40,7 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
       field: "createdBy"
     },
     {
-      title: t("Message Template"),
+      title: t("Message Template with values filled-in"),
       field: "messageTemplateBody",
       type: "string",
       render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),
@@ -82,8 +82,8 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
           columns={columns}
           data={messages}
           options={{
-            pageSize: 20,
-            pageSizeOptions: [20],
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
             addRowPosition: "first",
             sorting: true,
             debounceInterval: 500,
