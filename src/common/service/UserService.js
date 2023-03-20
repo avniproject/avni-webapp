@@ -1,6 +1,6 @@
 import http from "../utils/httpClient";
 
-const userEndpoint = "/user";
+const userEndpoint = "/user/search/findUsersByNameOrEmailOrPhoneNumber";
 
 class UserService {
   static searchUsers(name, phoneNumber, email) {

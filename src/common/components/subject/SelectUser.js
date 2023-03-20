@@ -75,7 +75,7 @@ const SelectUser = function({ users, errorMessage, onSelectedUser }) {
                   </TableCell>
 
                   <TableCell align="left" scope="row" id={labelId}>
-                    {row.fullName}
+                    {row.name}
                   </TableCell>
                   <TableCell align="left">{row.email}</TableCell>
                   <TableCell align="left">{row.phoneNumber}</TableCell>
