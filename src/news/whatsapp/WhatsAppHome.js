@@ -50,7 +50,7 @@ function getDataFetcher(errorHandler) {
   return query => {
     return new Promise(resolve =>
       ContactService.getContactGroups(
-        query.filters[0] ? query.filters[0].value : "",
+        !!query.search ? query.search : "",
         query.page,
         query.pageSize
       )

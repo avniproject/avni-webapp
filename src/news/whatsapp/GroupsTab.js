@@ -1,5 +1,5 @@
 import AddEditContactGroup from "./AddEditContactGroup";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import React, { Fragment, useCallback, useState } from "react";
 import { LinearProgress, Snackbar } from "@material-ui/core";
 import {
@@ -55,30 +55,34 @@ const GroupsTab = ({ groups, columns }) => {
         components={{
           Container: props => <Fragment>{props.children}</Fragment>,
           Toolbar: props => (
-            <MaterialTableToolBar
-              toolBarButtons={[
-                new MaterialTableToolBarButton(rows => onDelete(rows), true, "Delete"),
-                new MaterialTableToolBarButton(
-                  () => setAddingContactGroup(true),
-                  false,
-                  "Add Contact Group"
-                )
-              ]}
-              {...props}
-            />
+            <>
+              <MaterialTableToolBar
+                toolBarButtons={[
+                  new MaterialTableToolBarButton(rows => onDelete(rows), true, "Delete"),
+                  new MaterialTableToolBarButton(
+                    () => setAddingContactGroup(true),
+                    false,
+                    "Add Contact Group"
+                  )
+                ]}
+                {...props}
+              />
+              <MTableToolbar {...props} />
+            </>
           )
         }}
         tableRef={tableRef}
         columns={columns}
         data={groups}
         options={{
+          search: true,
+          searchFieldAlignment: "right",
           pageSize: 10,
           pageSizeOptions: [10, 15, 25],
           addRowPosition: "first",
           sorting: false,
           debounceInterval: 500,
-          search: false,
-          filtering: true,
+          filtering: false,
           selection: true,
           rowStyle: rowData => ({
             backgroundColor: "#fff"
