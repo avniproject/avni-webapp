@@ -15,7 +15,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SendMessage = ({ receiverId, receiverType }) => {
+const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
   const classes = useStyle();
   const [sendingMessage, setSendingMessage] = useState(false);
   const [scheduled, setScheduled] = useState(false);
@@ -23,6 +23,7 @@ const SendMessage = ({ receiverId, receiverType }) => {
   const onSchedulingAttempted = status => {
     setSendingMessage(false);
     setScheduled(status);
+    if(status) onComposedMessage();
   };
 
   return (
