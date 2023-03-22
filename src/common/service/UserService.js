@@ -1,12 +1,13 @@
 import http from "../utils/httpClient";
 
-const userEndpoint = "/user/search/findUsersByNameOrEmailOrPhoneNumber";
+const userEndpoint = "/user/",
+  userSearchEndpoint = "/user/search/findUsersByNameOrEmailOrPhoneNumber";
 
 class UserService {
   static searchUsers(name, phoneNumber, email) {
     return http.getPageData(
       "user",
-      `${userEndpoint}?name=${name}&phoneNumber=${phoneNumber}&email=${email}&page=${0}&size=${30}`
+      `${userSearchEndpoint}?name=${name}&phoneNumber=${phoneNumber}&email=${email}&page=${0}&size=${30}`
     );
   }
   static searchUserById(id) {
