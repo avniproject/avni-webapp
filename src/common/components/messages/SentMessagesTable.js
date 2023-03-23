@@ -25,7 +25,7 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
 
   const columns = [
     {
-      title: t("Body"),
+      title: t("Message Content"),
       field: "body",
       cellStyle: {
         minWidth: 200,
@@ -33,7 +33,7 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
       }
     },
     {
-      title: t("Inserted At"),
+      title: t("Sent At"),
       field: "insertedAt",
       type: "date",
       render: row => formatDateTime(row.insertedAt),

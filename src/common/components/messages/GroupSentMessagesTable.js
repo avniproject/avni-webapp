@@ -53,7 +53,7 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
 
   if (showDeliveryDetails) {
     columns.push({
-      title: t("Inserted At"),
+      title: t("Sent At"),
       field: "insertedAt",
       type: "date",
       render: row => formatDateTime(row["deliveredDateTime"]),
