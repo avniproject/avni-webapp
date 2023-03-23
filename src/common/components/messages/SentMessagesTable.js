@@ -25,7 +25,7 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
 
   const columns = [
     {
-      title: t("Message Content"),
+      title: t("msgBody"),
       field: "body",
       cellStyle: {
         minWidth: 200,
@@ -33,7 +33,7 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
       }
     },
     {
-      title: t("Sent At"),
+      title: t("insertedAt"),
       field: "insertedAt",
       type: "date",
       render: row => formatDateTime(row.insertedAt),
@@ -44,7 +44,7 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
   const renderNoSentMessages = () => (
     <Typography variant="caption" gutterBottom className={classes.infoMsg}>
       {" "}
-      {t("No")} {t("sent")} {t("messages")}{" "}
+      {t("noSentMessages")}{" "}
     </Typography>
   );
 
