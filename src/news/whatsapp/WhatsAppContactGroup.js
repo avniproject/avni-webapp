@@ -208,7 +208,9 @@ const WhatsAppContactGroup = ({ match }) => {
           <Members
             contactGroupId={contactGroupId}
             onContactGroupLoaded={contactGroup => setGroup(contactGroup["group"])}
-            contactGroupMembersUpdated={() => updateContactGroupVersion(contactGroupVersion + 1)}
+            contactGroupMembersUpdated={() =>
+              updateContactGroupVersion(contactGroupVersion => contactGroupVersion + 1)
+            }
             contactGroupMembersVersion={contactGroupVersion}
           />
         )}
