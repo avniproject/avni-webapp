@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Routes from "./Routes";
 import { getUserInfo } from "./ducks";
-import { cognitoInDev, isDevEnv } from "../common/constants";
+import IdpDetails from "./security/IdpDetails";
+import httpClient from "../common/utils/httpClient";
 
 class App extends Component {
   componentDidMount() {
-    if (isDevEnv && !cognitoInDev) {
+    if (httpClient.idp.idpType === IdpDetails.none) {
       this.props.getUserInfo();
     }
   }

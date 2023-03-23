@@ -4,7 +4,7 @@ import { types, getUserInfo } from "./ducks";
 import { httpClient } from "common/utils/httpClient";
 
 const setCognitoAction = {
-  type: types.SET_COGNITO_USER,
+  type: types.SET_IAM_USER,
   payload: {
     authData: {
       username: "abc",
@@ -16,7 +16,7 @@ const setCognitoAction = {
 it("set Cognito user", () => {
   testSaga(onSetCognitoUser)
     .next()
-    .take(types.SET_COGNITO_USER)
+    .take(types.SET_IAM_USER)
     .next(setCognitoAction)
     .call(httpClient.initAuthContext, {
       username: setCognitoAction.payload.authData.username,

@@ -164,12 +164,6 @@ const useStyles = theme => ({
     backgroundSize: "cover",
     backgroundPosition: "center"
   },
-  paper: {
-    margin: theme.spacing(8, 4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  },
   form: {
     width: "100%" // Fix IE 11 issue.
   },
@@ -185,13 +179,6 @@ const useStyles = theme => ({
   },
   eye: {
     cursor: "pointer"
-  },
-  disabledSubmit: {
-    margin: theme.spacing(3, 0, 2),
-    color: "white",
-    borderRadius: 50,
-    height: "38px",
-    boxShadow: "none"
   }
 });
 

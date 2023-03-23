@@ -4,10 +4,12 @@ import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
-import { devEnvUserName, isDevEnv, cognitoInDev } from "../constants";
+import { devEnvUserName } from "../constants";
 import Auth from "@aws-amplify/auth";
 
 class HttpClient {
+  idp;
+
   static instance;
 
   constructor() {
@@ -23,6 +25,10 @@ class HttpClient {
     this.patch = this._wrapAxiosMethod("patch");
     this.delete = this._wrapAxiosMethod("delete");
     HttpClient.instance = this;
+  }
+
+  setIdp(idp) {
+    this.idp = idp;
   }
 
   initAuthContext(userInfo) {
@@ -108,15 +114,7 @@ class HttpClient {
   }
 
   async setTokenAndOrgUuidHeaders(options) {
-    if (!isDevEnv || cognitoInDev) {
-      const currentSession = await Auth.currentSession();
-      if (options) {
-        options.headers.set("AUTH-TOKEN", currentSession.idToken.jwtToken);
-      } else {
-        axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
-        axios.defaults.withCredentials = true;
-      }
-    }
+    await this.idp.updateRequestWithSession(options, axios);
     this.setOrgUuidHeader();
   }
 

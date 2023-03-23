@@ -1,10 +1,8 @@
 export const types = {
-  INIT_COGNITO: "app/INIT_COGNITO",
-  SET_COGNITO_USER: "app/SET_COGNITO_USER",
+  SET_IAM_USER: "app/SET_IAM_USER",
   GET_USER_INFO: "app/GET_USER_INFO",
   SET_USER_INFO: "app/SET_USER_INFO",
   INIT_COMPLETE: "app/INIT_COMPLETE",
-  AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
   GET_ADMIN_ORGANISATIONS: "app/GET_ADMIN_ORGANISATIONS",
   SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS",
   SET_ORGANISATION_CONFIG: "app/SET_ORGANISATION_CONFIG",
@@ -36,12 +34,8 @@ export const setOrganisationConfig = organisationConfig => ({
   }
 });
 
-export const initCognito = () => ({
-  type: types.INIT_COGNITO
-});
-
 export const setCognitoUser = (authState, authData) => ({
-  type: types.SET_COGNITO_USER,
+  type: types.SET_IAM_USER,
   payload: {
     authState,
     authData
@@ -61,21 +55,12 @@ export const sendInitComplete = () => ({
   type: types.INIT_COMPLETE
 });
 
-export const sendAuthConfigured = () => ({
-  type: types.AUTH_CONFIGURED
-});
-
-export const setTranslations = translations => ({
-  type: types.SET_TRANSLATIONS,
-  translations
-});
-
 export const logout = () => ({
   type: types.LOGOUT
 });
 
 const initialState = {
-  authConfigured: false,
+  idpDetails: undefined,
   user: {
     authState: undefined,
     cognito: undefined,
@@ -93,7 +78,7 @@ const initialState = {
 // reducer
 export default function(state = initialState, action) {
   switch (action.type) {
-    case types.SET_COGNITO_USER: {
+    case types.SET_IAM_USER: {
       return {
         ...state,
         user: {
@@ -103,7 +88,6 @@ export default function(state = initialState, action) {
         }
       };
     }
-
     case types.SET_USER_INFO: {
       return {
         ...state,
@@ -125,12 +109,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         appInitialised: true
-      };
-    }
-    case types.AUTH_CONFIGURED: {
-      return {
-        ...state,
-        authConfigured: true
       };
     }
     case types.SET_ADMIN_ORGANISATIONS: {

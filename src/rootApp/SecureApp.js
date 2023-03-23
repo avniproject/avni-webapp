@@ -6,7 +6,7 @@ import _ from "lodash";
 
 import "./SecureApp.css";
 import App from "./App";
-import { initCognito, setCognitoUser } from "./ducks";
+import { setCognitoUser } from "./ducks";
 import { customAmplifyErrorMsgs } from "./utils";
 
 import CustomSignIn from "./CustomSignIn";
@@ -20,12 +20,6 @@ class SecureApp extends Component {
   setAuthState(authState, authData) {
     if (authState === "signedIn") {
       this.props.setCognitoUser(authState, authData);
-    }
-  }
-
-  componentDidMount() {
-    if (this.props.user.authState !== "signedIn") {
-      this.props.initCognito();
     }
   }
 
@@ -44,28 +38,25 @@ class SecureApp extends Component {
       <App />
     ) : (
       <div className="centerContainer">
-        {this.props.authConfigured && (
-          <Authenticator
-            hide={[Greetings, SignUp, SignIn]}
-            onStateChange={this.setAuthState}
-            errorMessage={customAmplifyErrorMsgs}
-          >
-            <CustomSignIn />
-          </Authenticator>
-        )}
+        <Authenticator
+          hide={[Greetings, SignUp, SignIn]}
+          onStateChange={this.setAuthState}
+          errorMessage={customAmplifyErrorMsgs}
+        >
+          <CustomSignIn />
+        </Authenticator>
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  user: state.app.user,
-  authConfigured: state.app.authConfigured
+  user: state.app.user
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    { initCognito, setCognitoUser }
+    { setCognitoUser }
   )(SecureApp)
 );
