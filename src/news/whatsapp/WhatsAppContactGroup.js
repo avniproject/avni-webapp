@@ -15,7 +15,6 @@ import ContactService from "../api/ContactService";
 import { Edit } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import AddEditContactGroup from "./AddEditContactGroup";
-import _ from "lodash";
 import ErrorMessage from "../../common/components/ErrorMessage";
 import {
   MaterialTableToolBar,
