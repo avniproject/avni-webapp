@@ -12,9 +12,16 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
   const [unsentMessages, setUnsentMessages] = useState([]);
   const [error, setError] = useState(null);
   const [userError, setUserError] = useState(null);
-  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
+    updateMessages();
+  }, []);
+
+  const onComposedMessage = () => {
+    updateMessages();
+  };
+
+  const updateMessages = () => {
     if (receiverType === ReceiverType.Subject) {
       MessageService.getSubjectMessages(receiverId)
         .then(response => {
@@ -38,15 +45,15 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
         .then(unsentMessages => setUnsentMessages(unsentMessages))
         .catch(setError);
     }
-  }, [refresh]);
-
-  const onComposedMessage = () => {
-    setRefresh(refresh => !refresh);
-  }
+  };
 
   return (
     <div>
-      <SendMessage receiverId={receiverId} receiverType={receiverType} onComposedMessage={onComposedMessage} />
+      <SendMessage
+        receiverId={receiverId}
+        receiverType={receiverType}
+        onComposedMessage={onComposedMessage}
+      />
       <Typography variant={"h6"} style={{ paddingBottom: 10 }}>
         Messages for: {receiverName}
       </Typography>

@@ -10,19 +10,22 @@ const GroupMessageTab = ({ contactGroupId }) => {
   const [sentMessages, setSentMessages] = useState([]);
   const [unsentMessages, setUnSentMessages] = useState([]);
   const [error, setError] = useState(null);
-  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
+    updateMessages();
+  }, []);
+
+  const onComposedMessage = () => {
+    updateMessages();
+  };
+
+  const updateMessages = () => {
     MessageService.getSentGroupMessageRequests(contactGroupId)
       .then(x => setSentMessages(x))
       .catch(setError);
     MessageService.getUnSentGroupMessageRequests(contactGroupId)
       .then(x => setUnSentMessages(x))
       .catch(setError);
-  }, [refresh]);
-
-  const onComposedMessage = () => {
-    setRefresh(refresh => !refresh);
   };
 
   return (
