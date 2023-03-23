@@ -47,7 +47,7 @@ function Members({
   const { t } = useTranslation();
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
   const [displayProgress, setDisplayProgress] = useState(false);
   const columns = [
     {
@@ -109,7 +109,7 @@ function Members({
           onUserAdd={user => onUserAdd()}
         />
       )}
-      {!_.isNil(error) && <ErrorMessage error={error} />}
+      {error && <ErrorMessage error={error} />}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
         key={contactGroupMembersVersion}
