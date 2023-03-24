@@ -6,6 +6,7 @@ import MessageService from "../../common/service/MessageService";
 import Typography from "@material-ui/core/Typography";
 import SendMessage from "./SendMessage";
 import ReceiverType from "./ReceiverType";
+import UserError from "../../common/components/UserError";
 
 function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
   const [messages, setMessages] = useState([]);
@@ -60,11 +61,7 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
         Messages for: {receiverName}
       </Typography>
       <ErrorMessage error={error} additionalStyle={{ marginBottom: 20 }} />
-      {userError && (
-        <Typography variant={"h5"} style={{ color: "red", marginBottom: 20 }}>
-          {userError}
-        </Typography>
-      )}
+      <UserError error={userError} />
       <MessagesView
         sentMessages={messages}
         msgsYetToBeSent={unsentMessages}

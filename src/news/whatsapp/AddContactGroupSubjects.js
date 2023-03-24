@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ChooseSubject from "./ChooseSubject";
 import ContactService from "../api/ContactService";
 import ErrorMessage from "../../common/components/ErrorMessage";
-import Typography from "@material-ui/core/Typography";
+import UserError from "../../common/components/UserError";
 
 const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
   const onCloseHandler = () => onClose();
@@ -36,11 +36,7 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
         </IconButton>
       </DialogActions>
       <ErrorMessage error={error} />
-      {userError && (
-        <Typography variant={"h5"} style={{ color: "red", marginBottom: 20, marginLeft: 20 }}>
-          {userError}
-        </Typography>
-      )}
+      <UserError error={userError} />
       <ChooseSubject
         onCancel={() => onCloseHandler()}
         confirmActionLabel="Add"
