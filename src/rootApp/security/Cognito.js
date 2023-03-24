@@ -17,9 +17,8 @@ class Cognito extends BaseIdp {
     }
   }
 
-  async getToken() {
-    const currentSession = await Auth.currentSession();
-    return `AUTH-TOKEN=${currentSession["idToken"].jwtToken}`;
+  async getTokenParam() {
+    return `AUTH-TOKEN=${await getToken()}`;
   }
 
   get idpType() {

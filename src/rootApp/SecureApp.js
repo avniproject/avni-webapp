@@ -1,28 +1,16 @@
 import React, { Component } from "react";
-import { Authenticator, Greetings, SignUp, SignIn } from "aws-amplify-react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
-
 import "./SecureApp.css";
 import App from "./App";
+import CognitoSignIn from "./CognitoSignIn";
+import httpClient from "../common/utils/httpClient";
+import IdpDetails from "./security/IdpDetails";
+import KeycloakSignInView from "./views/KeycloakSignInView";
 import { setCognitoUser } from "./ducks";
-import { customAmplifyErrorMsgs } from "./utils";
-
-import CustomSignIn from "./CustomSignIn";
 
 class SecureApp extends Component {
-  constructor(props) {
-    super(props);
-    this.setAuthState = this.setAuthState.bind(this);
-  }
-
-  setAuthState(authState, authData) {
-    if (authState === "signedIn") {
-      this.props.setCognitoUser(authState, authData);
-    }
-  }
-
   hasSignedIn() {
     return this.props.user.authState === "signedIn";
   }
@@ -34,19 +22,13 @@ class SecureApp extends Component {
       return <></>;
     }
 
-    return this.props.user.authState === "signedIn" ? (
-      <App />
-    ) : (
-      <div className="centerContainer">
-        <Authenticator
-          hide={[Greetings, SignUp, SignIn]}
-          onStateChange={this.setAuthState}
-          errorMessage={customAmplifyErrorMsgs}
-        >
-          <CustomSignIn />
-        </Authenticator>
-      </div>
-    );
+    if (this.props.user.authState === "signedIn") return <App />;
+
+    const idpType = httpClient.idp.idpType;
+
+    if (idpType === IdpDetails.cognito) return <CognitoSignIn />;
+
+    if (idpType === IdpDetails.keycloak) return <KeycloakSignInView />;
   }
 }
 

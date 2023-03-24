@@ -9,7 +9,6 @@ deps:
 	yarn install
 
 start:
-	cp env_templates/.env.local.local.template .env.development.local
 	yarn start
 
 start-with-staging:

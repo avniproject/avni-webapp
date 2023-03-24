@@ -8,6 +8,7 @@ class KeycloakDetails {
   clientId;
   grantType;
   scope;
+  realm;
 }
 
 class IdpDetails {

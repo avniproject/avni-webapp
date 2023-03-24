@@ -6,6 +6,7 @@ import axios from "axios";
 import files from "./files";
 import { devEnvUserName } from "../constants";
 import Auth from "@aws-amplify/auth";
+import querystring from "querystring";
 
 class HttpClient {
   idp;
@@ -151,6 +152,16 @@ class HttpClient {
         totalCount: responseBodyJson.page.totalElements
       };
     });
+  }
+
+  postUrlEncoded(url, request) {
+    const options = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+    const encoded = querystring.stringify(request);
+    return axios.post(url, encoded, options);
   }
 }
 
