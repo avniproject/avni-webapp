@@ -9,8 +9,21 @@ import httpClient from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakSignInView from "./views/KeycloakSignInView";
 import { setCognitoUser } from "./ducks";
+import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
+import { customAmplifyErrorMsgs } from "./utils";
 
 class SecureApp extends Component {
+  constructor(props) {
+    super(props);
+    this.setAuthState = this.setAuthState.bind(this);
+  }
+
+  setAuthState(authState, authData) {
+    if (authState === "signedIn") {
+      this.props.setCognitoUser(authState, authData);
+    }
+  }
+
   hasSignedIn() {
     return this.props.user.authState === "signedIn";
   }
@@ -26,7 +39,19 @@ class SecureApp extends Component {
 
     const idpType = httpClient.idp.idpType;
 
-    if (idpType === IdpDetails.cognito) return <CognitoSignIn />;
+    if (idpType === IdpDetails.cognito) {
+      return (
+        <div className="centerContainer">
+          <Authenticator
+            hide={[Greetings, SignUp, SignIn]}
+            onStateChange={this.setAuthState}
+            errorMessage={customAmplifyErrorMsgs}
+          >
+            <CognitoSignIn />
+          </Authenticator>
+        </div>
+      );
+    }
 
     if (idpType === IdpDetails.keycloak) return <KeycloakSignInView />;
   }
