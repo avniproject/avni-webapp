@@ -378,7 +378,7 @@ const SubjectRegister = props => {
 const mapStateToProps = state => {
   const registrationState = selectRegistrationState(state);
   return {
-    user: state.app.user,
+    user: state.app.authSession,
     genders: state.dataEntry.metadata.genders,
     addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
     customRegistrationLocations:

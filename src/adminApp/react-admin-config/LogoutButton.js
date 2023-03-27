@@ -29,7 +29,7 @@ const LogoutButton = ({ doLogout, username }) => {
 };
 
 const mapStateToProps = state => ({
-  username: state.app.user.username
+  username: state.app.authSession.username
 });
 const mapDispatchToProps = dispatch => ({
   doLogout: () => dispatch(logout())

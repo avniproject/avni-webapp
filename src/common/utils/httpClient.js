@@ -1,6 +1,5 @@
 import { isEmpty } from "lodash";
 import { fetchUtils } from "react-admin";
-import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
@@ -10,13 +9,13 @@ import querystring from "querystring";
 
 class HttpClient {
   idp;
+  authSession;
 
   static instance;
 
   constructor() {
     if (HttpClient.instance) return HttpClient.instance;
-    this.authContext = _authContext;
-    this.initAuthContext = this.initAuthContext.bind(this);
+    this.initAuthSession = this.initAuthSession.bind(this);
     this.setHeaders = this.setHeaders.bind(this);
     this.fetchJson = this.fetchJson.bind(this);
     this.getOrgUUID = this.getOrgUUID.bind(this);
@@ -32,8 +31,8 @@ class HttpClient {
     this.idp = idp;
   }
 
-  initAuthContext(userInfo) {
-    this.authContext.init(userInfo);
+  initAuthSession(authSession) {
+    this.authSession = authSession;
   }
 
   setOrgUuidHeader() {
@@ -64,7 +63,6 @@ class HttpClient {
   }
 
   async setHeaders(options) {
-    const authParams = this.authContext.get();
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });
     if (
       !options.headers.has("Content-Type") &&
@@ -72,8 +70,8 @@ class HttpClient {
     ) {
       options.headers.set("Content-Type", "application/json");
     }
-    if (!isEmpty(authParams)) {
-      options.headers.set("user-name", authParams.username);
+    if (!isEmpty(this.authSession)) {
+      options.headers.set("user-name", this.authSession.username);
       await this.setTokenAndOrgUuidHeaders(options);
     }
 

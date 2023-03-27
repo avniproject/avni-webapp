@@ -8,9 +8,10 @@ import CognitoSignIn from "./CognitoSignIn";
 import httpClient from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakSignInView from "./views/KeycloakSignInView";
-import { setCognitoUser } from "./ducks";
+import { setAuthSession } from "./ducks";
 import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
 import { customAmplifyErrorMsgs } from "./utils";
+import CognitoAuthSession from "./security/CognitoAuthSession";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -20,12 +21,12 @@ class SecureApp extends Component {
 
   setAuthState(authState, authData) {
     if (authState === "signedIn") {
-      this.props.setCognitoUser(authState, authData);
+      this.props.setAuthSession(authState, authData);
     }
   }
 
   hasSignedIn() {
-    return this.props.user.authState === "signedIn";
+    return _.get(this.props, "authSession.authState") === CognitoAuthSession.AuthStates.SignedIn;
   }
 
   render() {
@@ -35,7 +36,7 @@ class SecureApp extends Component {
       return <></>;
     }
 
-    if (this.props.user.authState === "signedIn") return <App />;
+    if (this.hasSignedIn()) return <App />;
 
     const idpType = httpClient.idp.idpType;
 
@@ -58,12 +59,12 @@ class SecureApp extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.app.user
+  authSession: state.app.authSession
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    { setCognitoUser }
+    { setAuthSession }
   )(SecureApp)
 );

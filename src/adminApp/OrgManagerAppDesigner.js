@@ -127,7 +127,7 @@ class OrgManagerAppDesigner extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.app.user
+  user: state.app.authSession
 });
 
 export default withRouter(

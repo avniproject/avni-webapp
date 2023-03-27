@@ -137,6 +137,6 @@ export default function(state = initialState, action) {
 export const selectCommentState = state => state.dataEntry.comment;
 
 export const selectDisplayUsername = state => {
-  const { username, name } = state.app.user;
+  const { username, name } = state.app.authSession;
   return name || username;
 };

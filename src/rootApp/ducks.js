@@ -1,5 +1,8 @@
+import CognitoAuthSession from "./security/CognitoAuthSession";
+import httpClient from "../common/utils/httpClient";
+
 export const types = {
-  SET_IAM_USER: "app/SET_IAM_USER",
+  SET_AUTH_SESSION: "app/SET_AUTH_SESSION",
   GET_USER_INFO: "app/GET_USER_INFO",
   SET_USER_INFO: "app/SET_USER_INFO",
   INIT_COMPLETE: "app/INIT_COMPLETE",
@@ -34,8 +37,8 @@ export const setOrganisationConfig = organisationConfig => ({
   }
 });
 
-export const setCognitoUser = (authState, authData) => ({
-  type: types.SET_IAM_USER,
+export const setAuthSession = (authState, authData) => ({
+  type: types.SET_AUTH_SESSION,
   payload: {
     authState,
     authData
@@ -61,12 +64,7 @@ export const logout = () => ({
 
 const initialState = {
   idpDetails: undefined,
-  user: {
-    authState: undefined,
-    cognito: undefined,
-    username: undefined,
-    roles: undefined
-  },
+  authSession: {},
   organisation: {
     id: undefined,
     name: undefined
@@ -78,25 +76,18 @@ const initialState = {
 // reducer
 export default function(state = initialState, action) {
   switch (action.type) {
-    case types.SET_IAM_USER: {
+    case types.SET_AUTH_SESSION: {
+      const { authState, authData, idpType } = action.payload;
+      const cognitoAuthSession = new CognitoAuthSession(idpType, authState, authData);
+      httpClient.initAuthSession(cognitoAuthSession);
       return {
         ...state,
-        user: {
-          authState: action.payload.authState,
-          cognito: action.payload.authData,
-          username: action.payload.authData.username
-        }
+        authSession: cognitoAuthSession
       };
     }
     case types.SET_USER_INFO: {
-      return {
+      const newState = {
         ...state,
-        user: {
-          ...state.user,
-          username: state.user.username || action.payload.username,
-          roles: action.payload.roles,
-          name: action.payload.name
-        },
         organisation: {
           id: action.payload.organisationId,
           name: action.payload.organisationName,
@@ -104,6 +95,12 @@ export default function(state = initialState, action) {
         },
         userInfo: action.payload
       };
+      newState.authSession.userInfoUpdate(
+        action.payload.roles,
+        action.payload.username,
+        action.payload.name
+      );
+      return newState;
     }
     case types.INIT_COMPLETE: {
       return {

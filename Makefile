@@ -11,6 +11,9 @@ deps:
 start:
 	yarn start
 
+start-dark:
+	yarn start-dark
+
 start-with-staging:
 	cp env_templates/.env.staging.local.template .env.development.local
 	yarn start-with-staging
