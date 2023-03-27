@@ -7,8 +7,7 @@ import { Close } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import ChooseSubject from "./ChooseSubject";
 import ContactService from "../api/ContactService";
-import ErrorMessage from "../../common/components/ErrorMessage";
-import UserError from "../../common/components/UserError";
+import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
   const onCloseHandler = () => onClose();
@@ -35,8 +34,23 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
           <Close />
         </IconButton>
       </DialogActions>
-      <ErrorMessage error={error} />
-      <UserError error={userError} />
+      {(!!userError || !!error) && (
+        <CustomizedSnackbar
+          variant={"error"}
+          message={
+            !!userError
+              ? userError
+              : error.response.data
+              ? error.response.data
+              : "Unexpected error occurred"
+          }
+          getDefaultSnackbarStatus={snackbarStatus => {
+            setError(snackbarStatus);
+            setUserError(snackbarStatus);
+          }}
+          defaultSnackbarStatus={error || userError}
+        />
+      )}
       <ChooseSubject
         onCancel={() => onCloseHandler()}
         confirmActionLabel="Add"

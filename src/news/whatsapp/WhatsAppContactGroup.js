@@ -15,7 +15,6 @@ import ContactService from "../api/ContactService";
 import { Edit } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import AddEditContactGroup from "./AddEditContactGroup";
-import ErrorMessage from "../../common/components/ErrorMessage";
 import {
   MaterialTableToolBar,
   MaterialTableToolBarButton
@@ -23,6 +22,7 @@ import {
 import ReceiverType from "./ReceiverType";
 import GroupMessageTab from "./GroupMessageTab";
 import { useTranslation } from "react-i18next";
+import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 const tableRef = React.createRef();
 
@@ -48,6 +48,10 @@ function Members({
   const [addingUsers, setAddingUser] = useState(false);
   const [error, setError] = useState(false);
   const [displayProgress, setDisplayProgress] = useState(false);
+  const [userAdded, setUserAdded] = useState(false);
+  const [subjectAdded, setSubjectAdded] = useState(false);
+  const [userDeleted, setUserDeleted] = useState(false);
+
   const columns = [
     {
       title: t("name"),
@@ -64,7 +68,10 @@ function Members({
   const removeContactFromGroup = useCallback(
     contactRows => {
       ContactService.removeContactsFromGroup(contactGroupId, contactRows.map(x => x.id))
-        .then(() => contactGroupMembersUpdated())
+        .then(() => {
+          contactGroupMembersUpdated();
+          setUserDeleted(true);
+        })
         .catch(error => setError(error))
         .finally(() => setDisplayProgress(false));
       setDisplayProgress(true);
@@ -84,11 +91,13 @@ function Members({
 
   const onSubjectAdd = useCallback(() => {
     contactGroupMembersUpdated();
+    setSubjectAdded(true);
     setAddingSubject(false);
   }, []);
 
   const onUserAdd = useCallback(() => {
     setAddingUser(false);
+    setUserAdded(true);
     contactGroupMembersUpdated();
   }, []);
 
@@ -108,7 +117,27 @@ function Members({
           onUserAdd={user => onUserAdd()}
         />
       )}
-      {error && <ErrorMessage error={error} />}
+      {(userAdded || subjectAdded || error || userDeleted) && (
+        <CustomizedSnackbar
+          variant={!error ? "success" : "error"}
+          message={
+            userAdded
+              ? "User added successfully"
+              : subjectAdded
+              ? "Subject added successfully"
+              : userDeleted
+              ? "Deleted successfully"
+              : "Unexpected error occurred"
+          }
+          getDefaultSnackbarStatus={snackbarStatus => {
+            setUserAdded(snackbarStatus);
+            setSubjectAdded(snackbarStatus);
+            setError(snackbarStatus);
+            setUserDeleted(snackbarStatus);
+          }}
+          defaultSnackbarStatus={userAdded || subjectAdded || error || userDeleted}
+        />
+      )}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
         key={contactGroupMembersVersion}
