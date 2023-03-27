@@ -1,4 +1,4 @@
-import { all, fork, call } from "redux-saga/effects";
+import { all, fork } from "redux-saga/effects";
 import { adminSaga, defaultI18nProvider } from "react-admin";
 import dataEntrySaga from "../dataEntryApp/sagas";
 import broadcastSaga from "../news/sagas";
