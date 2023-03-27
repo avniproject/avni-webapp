@@ -28,6 +28,11 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
+        <HomePageCard
+          href={"http://localhost:3000/"}
+          name={"Media Viewer "}
+          customIcon={"collections"}
+        />
         <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
         {isProdEnv && (
           <HomePageCard
