@@ -8,7 +8,6 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
-  console.log("env var =", process.env.REACT_APP_MEDIA_APP_URL);
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
