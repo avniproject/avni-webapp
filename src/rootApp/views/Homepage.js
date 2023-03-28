@@ -8,6 +8,7 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
+  console.log("env var =", process.env.REACT_APP_MEDIA_APP_URL);
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
@@ -29,7 +30,7 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
         <HomePageCard
-          href={"http://localhost:3000/"}
+          href={process.env.REACT_APP_MEDIA_APP_URL}
           name={"Media Viewer "}
           customIcon={"collections"}
         />
