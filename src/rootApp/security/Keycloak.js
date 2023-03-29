@@ -1,4 +1,5 @@
 import BaseIdp from "./BaseIdp";
+import IdpDetails from "./IdpDetails";
 
 const authTokenName = "authToken";
 
@@ -35,6 +36,10 @@ class Keycloak extends BaseIdp {
 
   clearAccessToken() {
     localStorage.removeItem(authTokenName);
+  }
+
+  get idpType() {
+    return IdpDetails.keycloak;
   }
 }
 

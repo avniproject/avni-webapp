@@ -12,6 +12,7 @@ import { setAuthSession } from "./ducks";
 import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
 import { customAmplifyErrorMsgs } from "./utils";
 import BaseAuthSession from "./security/BaseAuthSession";
+import ChooseIdpView from "./ChooseIdpView";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -64,6 +65,7 @@ class SecureApp extends Component {
     }
 
     if (idpType === IdpDetails.keycloak) return <KeycloakSignInView />;
+    else return <ChooseIdpView onIdpChosen={() => this.setState({ idpChosen: true })} />;
   }
 }
 
