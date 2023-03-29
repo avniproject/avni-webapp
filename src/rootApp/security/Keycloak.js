@@ -1,5 +1,7 @@
 import BaseIdp from "./BaseIdp";
 
+const authTokenName = "authToken";
+
 class Keycloak extends BaseIdp {
   getAuthRequest(username, password) {
     const { authServerUrl, realm, clientId, grantType, scope } = this.idpDetails.keycloak;
@@ -24,11 +26,15 @@ class Keycloak extends BaseIdp {
   }
 
   setAccessToken(value) {
-    localStorage.setItem("authToken", value);
+    localStorage.setItem(authTokenName, value);
   }
 
   getAccessToken() {
-    return localStorage.getItem("authToken");
+    return localStorage.getItem(authTokenName);
+  }
+
+  clearAccessToken() {
+    localStorage.removeItem(authTokenName);
   }
 }
 

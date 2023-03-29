@@ -6,6 +6,7 @@ import files from "./files";
 import { devEnvUserName } from "../constants";
 import Auth from "@aws-amplify/auth";
 import querystring from "querystring";
+import IdpDetails from "../../rootApp/security/IdpDetails";
 
 class HttpClient {
   idp;
@@ -91,7 +92,15 @@ class HttpClient {
     if (skipOrgUUIDHeader) {
       options.headers.delete("ORGANISATION-UUID");
     }
-    return fetchUtils.fetchJson(url, options);
+    return fetchUtils.fetchJson(url, options).catch(error => {
+      console.log(error.message);
+      if (
+        error.message.indexOf("TokenExpiredException") !== -1 &&
+        this.idp.idpType === IdpDetails.keycloak
+      )
+        this.idp.clearAccessToken();
+      throw error;
+    });
   }
 
   async downloadFile(url, filename) {

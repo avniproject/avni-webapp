@@ -8,12 +8,6 @@ class CognitoAuthSession extends BaseAuthSession {
     this.username = authData.username;
   }
 
-  userInfoUpdate(roles, updatedUsername, name) {
-    this.roles = roles;
-    this.username = this.username || updatedUsername;
-    this.name = name;
-  }
-
   roles;
   name;
   authState;
