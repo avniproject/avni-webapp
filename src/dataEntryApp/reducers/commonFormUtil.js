@@ -53,7 +53,13 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) 
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => {
       let obsArr = [];
-      formElementGroup.formElements.forEach(formElement => {
+      if (
+        !!filterFormElements(formElementGroup, entity) &&
+        filterFormElements(formElementGroup, entity).length === 0
+      ) {
+        return false;
+      }
+      filterFormElements(formElementGroup, entity).forEach(formElement => {
         return isObsPresent(formElement) ? obsArr.push(formElement) : "";
       });
       return obsArr.length === 0;
