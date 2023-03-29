@@ -1,12 +1,10 @@
-class CognitoAuthSession {
-  static AuthStates = {
-    SignedIn: "signedIn"
-  };
+import BaseAuthSession from "./BaseAuthSession";
 
-  constructor(idpType, authState, authData) {
-    this.idpType = idpType;
+class CognitoAuthSession extends BaseAuthSession {
+  constructor(authState, authData) {
+    super();
     this.authState = authState;
-    this.jwtToken = authData.signInUserSession.idToken.jwtToken;
+    this.jwtToken = authData["signInUserSession"].idToken.jwtToken;
     this.username = authData.username;
   }
 
@@ -21,7 +19,6 @@ class CognitoAuthSession {
   authState;
   username;
   jwtToken;
-  idpType;
 }
 
 export default CognitoAuthSession;

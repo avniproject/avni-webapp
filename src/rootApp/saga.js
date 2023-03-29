@@ -1,4 +1,4 @@
-import { call, put, takeLatest, take } from "redux-saga/effects";
+import { call, put, take, takeLatest } from "redux-saga/effects";
 import {
   getUserInfo,
   sendInitComplete,

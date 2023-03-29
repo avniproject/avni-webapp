@@ -3,8 +3,12 @@ import React, { useState } from "react";
 import httpClient from "../../common/utils/httpClient";
 import Typography from "@material-ui/core/Typography";
 import _ from "lodash";
+import { connect } from "react-redux";
+import { setAuthSession } from "../ducks";
+import IdpDetails from "../security/IdpDetails";
+import BaseAuthSession from "../security/BaseAuthSession";
 
-function KeycloakSignInView() {
+function KeycloakSignInView({ setAuthSession }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -16,9 +20,10 @@ function KeycloakSignInView() {
       .then(x => x.data)
       .then(data => {
         httpClient.idp.setAccessToken(data["access_token"]);
+        setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
       })
       .catch(error => {
-        setError(error.response.data["error_description"]);
+        setError(`${error.response.statusText}: ${error.response.data["error_description"]}`);
       });
   }
 
@@ -31,7 +36,7 @@ function KeycloakSignInView() {
   return (
     <div className="centerContainer">
       {!_.isNil(error) && (
-        <Typography variant={"h6"} style={{ color: "red" }}>
+        <Typography variant={"h6"} style={{ color: "red", marginLeft: 20 }}>
           {error}
         </Typography>
       )}
@@ -45,4 +50,11 @@ function KeycloakSignInView() {
   );
 }
 
-export default KeycloakSignInView;
+const mapStateToProps = state => ({
+  authSession: state.app.authSession
+});
+
+export default connect(
+  mapStateToProps,
+  { setAuthSession }
+)(KeycloakSignInView);

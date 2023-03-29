@@ -11,7 +11,7 @@ import KeycloakSignInView from "./views/KeycloakSignInView";
 import { setAuthSession } from "./ducks";
 import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
 import { customAmplifyErrorMsgs } from "./utils";
-import CognitoAuthSession from "./security/CognitoAuthSession";
+import BaseAuthSession from "./security/BaseAuthSession";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -20,13 +20,22 @@ class SecureApp extends Component {
   }
 
   setAuthState(authState, authData) {
-    if (authState === "signedIn") {
-      this.props.setAuthSession(authState, authData);
+    if (authState === BaseAuthSession.AuthStates.SignedIn) {
+      this.props.setAuthSession(authState, authData, IdpDetails.cognito);
+    }
+  }
+
+  componentDidMount() {
+    if (
+      httpClient.idp.idpType === IdpDetails.keycloak &&
+      !_.isNil(httpClient.idp.getAccessToken())
+    ) {
+      this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
     }
   }
 
   hasSignedIn() {
-    return _.get(this.props, "authSession.authState") === CognitoAuthSession.AuthStates.SignedIn;
+    return _.get(this.props, "authSession.authState") === BaseAuthSession.AuthStates.SignedIn;
   }
 
   render() {

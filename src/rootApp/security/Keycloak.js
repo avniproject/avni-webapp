@@ -14,8 +14,21 @@ class Keycloak extends BaseIdp {
     return [url, request];
   }
 
+  updateRequestWithSession(options, axios) {
+    if (options) {
+      options.headers.set("AUTH-TOKEN", this.getAccessToken());
+    } else {
+      axios.defaults.headers.common["AUTH-TOKEN"] = this.getAccessToken();
+      axios.defaults.withCredentials = true;
+    }
+  }
+
   setAccessToken(value) {
     localStorage.setItem("authToken", value);
+  }
+
+  getAccessToken() {
+    return localStorage.getItem("authToken");
   }
 }
 

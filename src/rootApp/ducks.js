@@ -1,5 +1,8 @@
 import CognitoAuthSession from "./security/CognitoAuthSession";
 import httpClient from "../common/utils/httpClient";
+import IdpDetails from "./security/IdpDetails";
+import KeycloakAuthSession from "./security/KeycloakAuthSession";
+import _ from "lodash";
 
 export const types = {
   SET_AUTH_SESSION: "app/SET_AUTH_SESSION",
@@ -37,11 +40,12 @@ export const setOrganisationConfig = organisationConfig => ({
   }
 });
 
-export const setAuthSession = (authState, authData) => ({
+export const setAuthSession = (authState, authData, idpType) => ({
   type: types.SET_AUTH_SESSION,
   payload: {
     authState,
-    authData
+    authData,
+    idpType
   }
 });
 
@@ -78,11 +82,13 @@ export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_AUTH_SESSION: {
       const { authState, authData, idpType } = action.payload;
-      const cognitoAuthSession = new CognitoAuthSession(idpType, authState, authData);
-      httpClient.initAuthSession(cognitoAuthSession);
+      let authSession;
+      if (idpType === IdpDetails.cognito) authSession = new CognitoAuthSession(authState, authData);
+      else if (idpType === IdpDetails.keycloak) authSession = new KeycloakAuthSession(authState);
+      httpClient.initAuthSession(authSession);
       return {
         ...state,
-        authSession: cognitoAuthSession
+        authSession: authSession
       };
     }
     case types.SET_USER_INFO: {
@@ -127,6 +133,7 @@ export default function(state = initialState, action) {
       };
     }
     default:
+      if (_.get(action, "payload.error")) console.log(action.payload.error);
       return state;
   }
 }
