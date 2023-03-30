@@ -1,9 +1,10 @@
 import BaseIdp from "./BaseIdp";
 import IdpDetails from "./IdpDetails";
+import _ from "lodash";
+import CognitoWebClient from "./CognitoWebClient";
+import LocalStorageLocator from "../../common/utils/LocalStorageLocator";
 
-const authTokenName = "authToken";
-
-class Keycloak extends BaseIdp {
+class KeycloakWebClient extends BaseIdp {
   getAuthRequest(username, password) {
     const { authServerUrl, realm, clientId, grantType, scope } = this.idpDetails.keycloak;
     const url = `${authServerUrl}/realms/${realm}/protocol/openid-connect/token`;
@@ -27,20 +28,27 @@ class Keycloak extends BaseIdp {
   }
 
   setAccessToken(value) {
-    localStorage.setItem(authTokenName, value);
+    localStorage.setItem(IdpDetails.AuthTokenName, value);
   }
 
   getAccessToken() {
-    return localStorage.getItem(authTokenName);
+    return localStorage.getItem(IdpDetails.AuthTokenName);
   }
 
   clearAccessToken() {
-    localStorage.removeItem(authTokenName);
+    localStorage.removeItem(IdpDetails.AuthTokenName);
   }
 
   get idpType() {
     return IdpDetails.keycloak;
   }
+
+  static isAuthenticatedWithKeycloak() {
+    return (
+      !_.isNil(LocalStorageLocator.getLocalStorage().getItem(IdpDetails.AuthTokenName)) &&
+      !CognitoWebClient.isAuthenticatedWithCognito()
+    );
+  }
 }
 
-export default Keycloak;
+export default KeycloakWebClient;

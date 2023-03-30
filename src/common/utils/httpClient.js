@@ -59,7 +59,7 @@ class HttpClient {
   saveAuthTokenForAnalyticsApp() {
     Auth.currentSession().then(session => {
       const authToken = session.idToken.jwtToken;
-      localStorage.setItem("authToken", authToken);
+      localStorage.setItem(IdpDetails.AuthTokenName, authToken);
     });
   }
 

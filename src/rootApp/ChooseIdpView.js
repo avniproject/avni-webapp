@@ -26,10 +26,17 @@ function ChooseIdpView({ onIdpChosen }) {
   return (
     <Box style={{ backgroundColor: "darkgray" }}>
       <Typography variant={"h4"} style={{ color: "white", marginBottom: 300 }}>
-        There are IDP types configured, please choose which one is used by your organisation
+        There are multiple IDP types configured and you do not have an active session, please choose
+        the one is used by your organisation
       </Typography>
       <Box
-        style={{ flexDirection: "row", justifyContent: "center", display: "flex", marginTop: 100 }}
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          display: "flex",
+          marginTop: 100,
+          paddingBottom: 300
+        }}
       >
         <IdpButton idpType={IdpDetails.cognito} title="COGNITO" onIdpChosen={onIdpChosen} />
         <IdpButton idpType={IdpDetails.keycloak} title="KEYCLOAK" onIdpChosen={onIdpChosen} />

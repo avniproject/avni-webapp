@@ -17,6 +17,8 @@ class IdpDetails {
   static none = "none";
   static both = "both";
 
+  static AuthTokenName = "authToken";
+
   idpType;
   cognito: CognitoDetails;
   keycloak: KeycloakDetails;

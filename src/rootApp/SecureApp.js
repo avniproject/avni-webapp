@@ -13,6 +13,7 @@ import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
 import { customAmplifyErrorMsgs } from "./utils";
 import BaseAuthSession from "./security/BaseAuthSession";
 import ChooseIdpView from "./ChooseIdpView";
+import KeycloakWebClient from "./security/KeycloakWebClient";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -27,10 +28,7 @@ class SecureApp extends Component {
   }
 
   componentDidMount() {
-    if (
-      httpClient.idp.idpType === IdpDetails.keycloak &&
-      !_.isNil(httpClient.idp.getAccessToken())
-    ) {
+    if (KeycloakWebClient.isAuthenticatedWithKeycloak()) {
       this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
     }
   }
