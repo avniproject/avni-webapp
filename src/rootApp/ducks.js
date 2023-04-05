@@ -3,6 +3,7 @@ import httpClient from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakAuthSession from "./security/KeycloakAuthSession";
 import _ from "lodash";
+import NoAuthSession from "./security/NoAuthSession";
 
 export const types = {
   SET_AUTH_SESSION: "app/SET_AUTH_SESSION",
@@ -68,7 +69,7 @@ export const logout = () => ({
 
 const initialState = {
   idpDetails: undefined,
-  authSession: {},
+  authSession: new NoAuthSession(),
   organisation: {
     id: undefined,
     name: undefined
@@ -85,7 +86,9 @@ export default function(state = initialState, action) {
       let authSession;
       if (idpType === IdpDetails.cognito) authSession = new CognitoAuthSession(authState, authData);
       else if (idpType === IdpDetails.keycloak) authSession = new KeycloakAuthSession(authState);
-      httpClient.initAuthSession(authSession);
+      if (_.isNil(authSession)) httpClient.initAuthSession(state.authSession);
+      else httpClient.initAuthSession(authSession);
+
       return {
         ...state,
         authSession: authSession

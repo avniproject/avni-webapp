@@ -1,6 +1,8 @@
 class NoAuthSession {
-  constructor(username) {
-    this.username = username;
+  userInfoUpdate(roles, updatedUsername, name) {
+    this.roles = roles;
+    this.username = this.username || updatedUsername;
+    this.name = name;
   }
 }
 

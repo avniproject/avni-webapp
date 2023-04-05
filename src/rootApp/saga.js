@@ -9,15 +9,12 @@ import {
 } from "./ducks";
 import { ROLES } from "../common/constants";
 import http from "common/utils/httpClient";
-import httpClient from "common/utils/httpClient";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import { get, intersection, isEmpty } from "lodash";
 import { userLogout } from "react-admin";
 import Auth from "@aws-amplify/auth";
-import IdpDetails from "./security/IdpDetails";
-import NoAuthSession from "./security/NoAuthSession";
 
 const api = {
   fetchUserInfo: () => http.fetchJson("/me").then(response => response.json),
@@ -81,10 +78,6 @@ function* setUserDetails() {
   };
   const init = params => i18nInstance.init(params);
   yield call(init, i18nParams);
-
-  if (httpClient.idp.idpType === IdpDetails.none) {
-    yield call(http.initAuthSession, new NoAuthSession(userDetails.username));
-  }
   yield put(sendInitComplete());
 }
 

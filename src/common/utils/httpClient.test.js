@@ -4,7 +4,9 @@ import NoAuthSession from "../../rootApp/security/NoAuthSession";
 
 describe("httpClient", () => {
   it("set headers", () => {
-    httpClient.initAuthSession(new NoAuthSession("abcd"));
+    const noAuthSession = new NoAuthSession();
+    noAuthSession.userInfoUpdate([], "abcd", "ABCD");
+    httpClient.initAuthSession(noAuthSession);
     const params = {};
     httpClient.setHeaders(params);
     assert.deepEqual(
