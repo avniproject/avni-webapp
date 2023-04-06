@@ -134,7 +134,8 @@ workflows:
       - app_build:
           requires:
             - app_test
-      - STAGING_deploy:
+      - STAGING_approve:
+          type: approval
           filters:
             branches:
               only:
@@ -142,6 +143,14 @@ workflows:
                 - /^3\..*/
           requires:
             - app_build
+      - STAGING_deploy:
+          filters:
+            branches:
+              only:
+                - master
+                - /^3\..*/
+          requires:
+            - STAGING_approve
       - cypress/run:
           type: approval
           yarn: true

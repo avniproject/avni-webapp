@@ -4,6 +4,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ExitIcon from "@material-ui/icons/PowerSettingsNew";
 import UserIcon from "@material-ui/icons/AccountCircle";
 import { logout } from "../../rootApp/ducks";
+import _ from "lodash";
 
 const styles = {
   userIcon: {
@@ -14,13 +15,14 @@ const styles = {
   }
 };
 
-const LogoutButton = ({ doLogout, username }) => {
+const LogoutButton = ({ doLogout, username, onChangePassword = _.noop }) => {
   return (
     <div>
       <span style={styles.userIcon}>
         <UserIcon color={"primary"} />
         {username}
       </span>
+      <MenuItem onClick={onChangePassword}>Change Password</MenuItem>
       <MenuItem onClick={doLogout}>
         <ExitIcon /> Logout
       </MenuItem>
@@ -29,7 +31,7 @@ const LogoutButton = ({ doLogout, username }) => {
 };
 
 const mapStateToProps = state => ({
-  username: state.app.user.username
+  username: state.app.authSession.username
 });
 const mapDispatchToProps = dispatch => ({
   doLogout: () => dispatch(logout())

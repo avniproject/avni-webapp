@@ -303,7 +303,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
 };
 
 const mapStateToProps = state => ({
-  user: state.app.user
+  user: state.app.authSession
 });
 
 export default withRouter(withParams(connect(mapStateToProps)(PrimarySearchAppBar)));

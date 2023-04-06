@@ -40,7 +40,7 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
       field: "createdBy"
     },
     {
-      title: t("Message Template with values filled-in"),
+      title: t("messageTemplateBody"),
       field: "messageTemplateBody",
       type: "string",
       render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),
@@ -53,7 +53,7 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
 
   if (showDeliveryDetails) {
     columns.push({
-      title: t("Inserted At"),
+      title: t("insertedAt"),
       field: "insertedAt",
       type: "date",
       render: row => formatDateTime(row["deliveredDateTime"]),
@@ -61,7 +61,7 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
     });
   } else {
     columns.push({
-      title: t("Scheduled At"),
+      title: t("scheduledAt"),
       field: "scheduledAt",
       type: "date",
       render: row => formatDateTime(row["scheduledDateTime"]),

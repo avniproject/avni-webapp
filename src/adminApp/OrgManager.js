@@ -226,7 +226,7 @@ class OrgManager extends Component {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.user,
+  user: state.app.authSession,
   organisations: state.app.organisations
 });
 

@@ -57,7 +57,7 @@ const useStyles = makeStyles(theme => ({
 export function ErrorFallback({ error, onClose }) {
   const classes = useStyles();
   const [showError, setShowError] = React.useState(false);
-  const user = useSelector(state => state.app.user);
+  const user = useSelector(state => state.app.authSession);
   const isAdmin = !isEmpty(intersection([ROLES.ADMIN, ROLES.ORG_ADMIN], user.roles));
 
   const closeDialogIfRequired = () => {

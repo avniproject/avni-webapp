@@ -2,10 +2,10 @@ import React from "react";
 import { map, filter, get } from "lodash";
 import { Button, makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { cognitoInDev, devEnvUserName, isDevEnv } from "../../../../../common/constants";
-import Auth from "@aws-amplify/auth";
+import { isDevEnv } from "../../../../../common/constants";
 import { extensionScopeTypes } from "../../../../../formDesigner/components/Extensions/ExtensionReducer";
 import commonApi from "../../../../../common/service";
+import httpClient from "../../../../../common/utils/httpClient";
 
 const useStyles = makeStyles(theme => ({
   buttonStyle: {
@@ -55,13 +55,7 @@ export const ExtensionOption = ({
   const serverURL = isDevEnv ? "http://localhost:8021" : window.location.origin;
 
   const clickHandler = async fileName => {
-    let token = "";
-    if (!isDevEnv || cognitoInDev) {
-      const currentSession = await Auth.currentSession();
-      token = `AUTH-TOKEN=${currentSession.idToken.jwtToken}`;
-    } else {
-      token = `user-name=${devEnvUserName}`;
-    }
+    const token = httpClient.idp.getTokenParam();
     const params = `subjectUUIDs=${subjectUUIDs}&${token}`;
     window.open(`${serverURL}/extension/${fileName}?${params}`, "_blank");
   };

@@ -58,7 +58,7 @@
     "profilePicture": "Profile Picture",
     "value": "Value",
     "age": "Age",
-    "searchAll": "All registration and enrolment text fields",
+    "searchAll": "All text fields within observations of registration and enrolment",
     "obsKeyword": "Other data",
     "lowestAddressLevel": "Village",
     "search": "Search",
@@ -443,6 +443,14 @@
     "visitDate": "Visit Date",
     "reviewBannerText": "Click here to see your 2021 personal highlights",
     "maskedPhone": "Masked phone number",
-    "sender": "Sender"
+    "sender": "Sender",
+    "msgBody": "Message Content",
+    "insertedAt": "Sent At",
+    "messageTemplateBody": "Message Template with values filled-in",
+    "scheduledAt": "Scheduled At",
+    "sentMessages": "Sent Messages",
+    "scheduledMessages": "Scheduled Messages",
+    "noSentMessages": "No sent messages",
+    "noMessagesYetToBeSent": "No messages scheduled to be sent"
   }
 }

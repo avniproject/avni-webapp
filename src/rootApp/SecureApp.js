@@ -1,15 +1,19 @@
 import React, { Component } from "react";
-import { Authenticator, Greetings, SignUp, SignIn } from "aws-amplify-react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import _ from "lodash";
-
 import "./SecureApp.css";
 import App from "./App";
-import { initCognito, setCognitoUser } from "./ducks";
+import CognitoSignIn from "./CognitoSignIn";
+import httpClient from "../common/utils/httpClient";
+import IdpDetails from "./security/IdpDetails";
+import KeycloakSignInView from "./views/KeycloakSignInView";
+import { setAuthSession } from "./ducks";
+import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
 import { customAmplifyErrorMsgs } from "./utils";
-
-import CustomSignIn from "./CustomSignIn";
+import BaseAuthSession from "./security/BaseAuthSession";
+import ChooseIdpView from "./ChooseIdpView";
+import KeycloakWebClient from "./security/KeycloakWebClient";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -18,19 +22,19 @@ class SecureApp extends Component {
   }
 
   setAuthState(authState, authData) {
-    if (authState === "signedIn") {
-      this.props.setCognitoUser(authState, authData);
+    if (authState === BaseAuthSession.AuthStates.SignedIn) {
+      this.props.setAuthSession(authState, authData, IdpDetails.cognito);
     }
   }
 
   componentDidMount() {
-    if (this.props.user.authState !== "signedIn") {
-      this.props.initCognito();
+    if (KeycloakWebClient.isAuthenticatedWithKeycloak()) {
+      this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
     }
   }
 
   hasSignedIn() {
-    return this.props.user.authState === "signedIn";
+    return _.get(this.props, "authSession.authState") === BaseAuthSession.AuthStates.SignedIn;
   }
 
   render() {
@@ -40,32 +44,36 @@ class SecureApp extends Component {
       return <></>;
     }
 
-    return this.props.user.authState === "signedIn" ? (
-      <App />
-    ) : (
-      <div className="centerContainer">
-        {this.props.authConfigured && (
+    if (this.hasSignedIn()) return <App />;
+
+    const idpType = httpClient.idp.idpType;
+
+    if (idpType === IdpDetails.cognito) {
+      return (
+        <div className="centerContainer">
           <Authenticator
             hide={[Greetings, SignUp, SignIn]}
             onStateChange={this.setAuthState}
             errorMessage={customAmplifyErrorMsgs}
           >
-            <CustomSignIn />
+            <CognitoSignIn />
           </Authenticator>
-        )}
-      </div>
-    );
+        </div>
+      );
+    }
+
+    if (idpType === IdpDetails.keycloak) return <KeycloakSignInView />;
+    else return <ChooseIdpView onIdpChosen={() => this.setState({ idpChosen: true })} />;
   }
 }
 
 const mapStateToProps = state => ({
-  user: state.app.user,
-  authConfigured: state.app.authConfigured
+  authSession: state.app.authSession
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    { initCognito, setCognitoUser }
+    { setAuthSession }
   )(SecureApp)
 );

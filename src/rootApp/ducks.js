@@ -1,10 +1,15 @@
+import CognitoAuthSession from "./security/CognitoAuthSession";
+import httpClient from "../common/utils/httpClient";
+import IdpDetails from "./security/IdpDetails";
+import KeycloakAuthSession from "./security/KeycloakAuthSession";
+import _ from "lodash";
+import NoAuthSession from "./security/NoAuthSession";
+
 export const types = {
-  INIT_COGNITO: "app/INIT_COGNITO",
-  SET_COGNITO_USER: "app/SET_COGNITO_USER",
+  SET_AUTH_SESSION: "app/SET_AUTH_SESSION",
   GET_USER_INFO: "app/GET_USER_INFO",
   SET_USER_INFO: "app/SET_USER_INFO",
   INIT_COMPLETE: "app/INIT_COMPLETE",
-  AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
   GET_ADMIN_ORGANISATIONS: "app/GET_ADMIN_ORGANISATIONS",
   SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS",
   SET_ORGANISATION_CONFIG: "app/SET_ORGANISATION_CONFIG",
@@ -36,15 +41,12 @@ export const setOrganisationConfig = organisationConfig => ({
   }
 });
 
-export const initCognito = () => ({
-  type: types.INIT_COGNITO
-});
-
-export const setCognitoUser = (authState, authData) => ({
-  type: types.SET_COGNITO_USER,
+export const setAuthSession = (authState, authData, idpType) => ({
+  type: types.SET_AUTH_SESSION,
   payload: {
     authState,
-    authData
+    authData,
+    idpType
   }
 });
 
@@ -61,27 +63,13 @@ export const sendInitComplete = () => ({
   type: types.INIT_COMPLETE
 });
 
-export const sendAuthConfigured = () => ({
-  type: types.AUTH_CONFIGURED
-});
-
-export const setTranslations = translations => ({
-  type: types.SET_TRANSLATIONS,
-  translations
-});
-
 export const logout = () => ({
   type: types.LOGOUT
 });
 
 const initialState = {
-  authConfigured: false,
-  user: {
-    authState: undefined,
-    cognito: undefined,
-    username: undefined,
-    roles: undefined
-  },
+  idpDetails: undefined,
+  authSession: new NoAuthSession(),
   organisation: {
     id: undefined,
     name: undefined
@@ -93,26 +81,22 @@ const initialState = {
 // reducer
 export default function(state = initialState, action) {
   switch (action.type) {
-    case types.SET_COGNITO_USER: {
+    case types.SET_AUTH_SESSION: {
+      const { authState, authData, idpType } = action.payload;
+      let authSession;
+      if (idpType === IdpDetails.cognito) authSession = new CognitoAuthSession(authState, authData);
+      else if (idpType === IdpDetails.keycloak) authSession = new KeycloakAuthSession(authState);
+      if (_.isNil(authSession)) httpClient.initAuthSession(state.authSession);
+      else httpClient.initAuthSession(authSession);
+
       return {
         ...state,
-        user: {
-          authState: action.payload.authState,
-          cognito: action.payload.authData,
-          username: action.payload.authData.username
-        }
+        authSession: authSession
       };
     }
-
     case types.SET_USER_INFO: {
-      return {
+      const newState = {
         ...state,
-        user: {
-          ...state.user,
-          username: state.user.username || action.payload.username,
-          roles: action.payload.roles,
-          name: action.payload.name
-        },
         organisation: {
           id: action.payload.organisationId,
           name: action.payload.organisationName,
@@ -120,17 +104,17 @@ export default function(state = initialState, action) {
         },
         userInfo: action.payload
       };
+      newState.authSession.userInfoUpdate(
+        action.payload.roles,
+        action.payload.username,
+        action.payload.name
+      );
+      return newState;
     }
     case types.INIT_COMPLETE: {
       return {
         ...state,
         appInitialised: true
-      };
-    }
-    case types.AUTH_CONFIGURED: {
-      return {
-        ...state,
-        authConfigured: true
       };
     }
     case types.SET_ADMIN_ORGANISATIONS: {
@@ -152,6 +136,7 @@ export default function(state = initialState, action) {
       };
     }
     default:
+      if (_.get(action, "payload.error")) console.log(action.payload.error);
       return state;
   }
 }

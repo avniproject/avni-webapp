@@ -74,7 +74,7 @@ const SearchUserAndConfirm = function({ onUserSelected, confirmButtonText = "Con
           onClick={() => {
             setWorkflowState(WorkflowStates.Searching);
             UserService.searchUsers(name, phoneNumber, email)
-              .then(usersPage => setUsers(usersPage.data))
+              .then(usersPage => setUsers(usersPage.content))
               .then(() => setWorkflowState(WorkflowStates.SearchCompleted))
               .catch(error => {
                 setError(error);

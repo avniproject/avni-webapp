@@ -1,19 +1,22 @@
 import { isEmpty } from "lodash";
 import { fetchUtils } from "react-admin";
-import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
-import { devEnvUserName, isDevEnv, cognitoInDev } from "../constants";
+import { devEnvUserName } from "../constants";
 import Auth from "@aws-amplify/auth";
+import querystring from "querystring";
+import IdpDetails from "../../rootApp/security/IdpDetails";
 
 class HttpClient {
+  idp;
+  authSession;
+
   static instance;
 
   constructor() {
     if (HttpClient.instance) return HttpClient.instance;
-    this.authContext = _authContext;
-    this.initAuthContext = this.initAuthContext.bind(this);
+    this.initAuthSession = this.initAuthSession.bind(this);
     this.setHeaders = this.setHeaders.bind(this);
     this.fetchJson = this.fetchJson.bind(this);
     this.getOrgUUID = this.getOrgUUID.bind(this);
@@ -25,8 +28,12 @@ class HttpClient {
     HttpClient.instance = this;
   }
 
-  initAuthContext(userInfo) {
-    this.authContext.init(userInfo);
+  setIdp(idp) {
+    this.idp = idp;
+  }
+
+  initAuthSession(authSession) {
+    this.authSession = authSession;
   }
 
   setOrgUuidHeader() {
@@ -52,12 +59,11 @@ class HttpClient {
   saveAuthTokenForAnalyticsApp() {
     Auth.currentSession().then(session => {
       const authToken = session.idToken.jwtToken;
-      localStorage.setItem("authToken", authToken);
+      localStorage.setItem(IdpDetails.AuthTokenName, authToken);
     });
   }
 
   async setHeaders(options) {
-    const authParams = this.authContext.get();
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });
     if (
       !options.headers.has("Content-Type") &&
@@ -65,8 +71,8 @@ class HttpClient {
     ) {
       options.headers.set("Content-Type", "application/json");
     }
-    if (!isEmpty(authParams)) {
-      options.headers.set("user-name", authParams.username);
+    if (!isEmpty(this.authSession)) {
+      options.headers.set("user-name", this.authSession.username);
       await this.setTokenAndOrgUuidHeaders(options);
     }
 
@@ -86,7 +92,15 @@ class HttpClient {
     if (skipOrgUUIDHeader) {
       options.headers.delete("ORGANISATION-UUID");
     }
-    return fetchUtils.fetchJson(url, options);
+    return fetchUtils.fetchJson(url, options).catch(error => {
+      console.log(error.message);
+      if (
+        error.message.indexOf("TokenExpiredException") !== -1 &&
+        this.idp.idpType === IdpDetails.keycloak
+      )
+        this.idp.clearAccessToken();
+      throw error;
+    });
   }
 
   async downloadFile(url, filename) {
@@ -108,15 +122,7 @@ class HttpClient {
   }
 
   async setTokenAndOrgUuidHeaders(options) {
-    if (!isDevEnv || cognitoInDev) {
-      const currentSession = await Auth.currentSession();
-      if (options) {
-        options.headers.set("AUTH-TOKEN", currentSession.idToken.jwtToken);
-      } else {
-        axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
-        axios.defaults.withCredentials = true;
-      }
-    }
+    await this.idp.updateRequestWithSession(options, axios);
     this.setOrgUuidHeader();
   }
 
@@ -153,6 +159,16 @@ class HttpClient {
         totalCount: responseBodyJson.page.totalElements
       };
     });
+  }
+
+  postUrlEncoded(url, request) {
+    const options = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+    const encoded = querystring.stringify(request);
+    return axios.post(url, encoded, options);
   }
 }
 

@@ -1,19 +1,12 @@
 import { assert } from "chai";
 import { httpClient } from "common/utils/httpClient";
+import NoAuthSession from "../../rootApp/security/NoAuthSession";
 
 describe("httpClient", () => {
-  const idToken = "deui3rehd32ouih23iou34o82ud";
-
-  it("initialise auth context", () => {
-    const userInfo = { username: "abcd", idToken };
-    httpClient.initAuthContext(userInfo);
-    assert.deepEqual(httpClient.authContext.get(), {
-      username: "abcd",
-      token: idToken
-    });
-  });
-
   it("set headers", () => {
+    const noAuthSession = new NoAuthSession();
+    noAuthSession.userInfoUpdate([], "abcd", "ABCD");
+    httpClient.initAuthSession(noAuthSession);
     const params = {};
     httpClient.setHeaders(params);
     assert.deepEqual(

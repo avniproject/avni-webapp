@@ -1,19 +1,14 @@
-export const isDevEnv = process.env.REACT_APP_ENVIRONMENT === "development";
-export const cognitoInDev = isDevEnv && process.env.REACT_APP_COGNITO_IN_DEV === "true";
-export const isProdEnv = process.env.REACT_APP_ENVIRONMENT === "production";
+import ApplicationContext from "../ApplicationContext";
+
+export const isDevEnv = ApplicationContext.isDevEnv();
+export const isProdEnv = ApplicationContext.isProdEnv();
 export const devEnvUserName = process.env.REACT_APP_DEV_ENV_USER;
 export const isMediaViewerEnabled = process.env.REACT_APP_MEDIA_VIEWER_ENABLED === "true";
 
 //Set by testing tools like Jest
 export const isTestEnv = process.env.NODE_ENV === "test";
 
-export const AWS_REGION = process.env.REACT_APP_AWS_REGION || "ap-south-1";
-
-export const cognitoConfig = {
-  region: AWS_REGION,
-  poolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
-  clientId: process.env.REACT_APP_COGNITO_APP_CLIENT_ID
-};
+export const AWS_REGION = "ap-south-1";
 
 export const ROLES = Object.freeze({
   ADMIN: "admin",

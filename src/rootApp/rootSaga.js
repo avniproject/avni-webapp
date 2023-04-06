@@ -1,4 +1,4 @@
-import { all, call, fork } from "redux-saga/effects";
+import { all, fork } from "redux-saga/effects";
 import { adminSaga, defaultI18nProvider } from "react-admin";
 import dataEntrySaga from "../dataEntryApp/sagas";
 import broadcastSaga from "../news/sagas";
@@ -13,23 +13,16 @@ import {
   dataProvider as springDataProvider
 } from "../adminApp/react-admin-config/index";
 
-import {
-  getAdminOrgsWatcher,
-  initialiseCognito,
-  logoutWatcher,
-  onSetCognitoUser,
-  userInfoWatcher
-} from "./saga";
+import { getAdminOrgsWatcher, logoutWatcher, onSetAuthSession, userInfoWatcher } from "./saga";
 
 const dataProvider = springDataProvider("");
 const i18nProvider = defaultI18nProvider;
 
 export default function* rootSaga() {
-  yield call(initialiseCognito);
   yield all(
     [
       adminSaga(dataProvider, authProvider, i18nProvider),
-      onSetCognitoUser,
+      onSetAuthSession,
       userInfoWatcher,
       getAdminOrgsWatcher,
       logoutWatcher,

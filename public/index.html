@@ -24,8 +24,21 @@
     />
     <title>Avni Web Console</title>
   </head>
+  <script>
+    function resetBackground() {
+      document.body.style.backgroundColor = "white";
+    }
+    function loading() {
+      if (document.location.origin === "http://localhost:6010")
+        document.body.style.backgroundColor = "darkslategrey";
+    }
+    document.addEventListener("DOMContentLoaded", loading);
+    window.onload = resetBackground;
+  </script>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript style="color: white"
+      >You need to enable JavaScript to run this app.</noscript
+    >
     <div id="root"></div>
   </body>
 </html>

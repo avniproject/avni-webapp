@@ -39,24 +39,34 @@ const useStyles = makeStyles(theme => ({
 
 const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const styles = useStyles();
-  const { organisation, user, history, staticContext, dispatch, organisations, ...rest } = props;
+  const {
+    organisation,
+    authSession,
+    history,
+    staticContext,
+    dispatch,
+    organisations,
+    ...rest
+  } = props;
   return (
     <AppBar {...rest}>
       <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />
       <OrganisationOptions
         getUserInfo={getUserInfo}
-        user={user}
+        user={authSession}
         organisation={organisation}
         styles={styles}
         history={history}
         organisations={organisations}
       />
       <div>
-        <b>{organisation.name} </b> ({user.username})
+        <b>{organisation.name} </b> ({authSession.username})
       </div>
-      {(isEmpty(intersection(user.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgUUID())) && (
+      {(isEmpty(intersection(authSession.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgUUID())) && (
         <IconButton
-          onClick={() => (isAnyAdmin(user.roles) ? history.push("/home") : history.push("/"))}
+          onClick={() =>
+            isAnyAdmin(authSession.roles) ? history.push("/home") : history.push("/")
+          }
           aria-label="Home"
           color="inherit"
         >
@@ -69,7 +79,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.user,
+  authSession: state.app.authSession,
   organisations: state.app.organisations
 });
 

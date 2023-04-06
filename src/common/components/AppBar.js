@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import LogoutButton from "../../adminApp/react-admin-config/LogoutButton";
 import MuiAppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -15,6 +15,8 @@ import { OrganisationOptions } from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import { Box } from "@material-ui/core";
 import { isAnyAdmin } from "../utils/General";
+import PasswordDialog from "../../adminApp/components/PasswordDialog";
+import httpClient from "../utils/httpClient";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -59,6 +61,7 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
   const { organisation, user, history, organisations } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -68,10 +71,25 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
     setAnchorEl(null);
   }
 
+  const onClosePassword = useCallback(() => {
+    setShowChangePassword(false);
+    handleClose();
+  }, []);
+
+  const onSubmitNewPassword = useCallback(password => {
+    httpClient.putJson("/user/changePassword", { newPassword: password });
+  }, []);
+
   const CustomComponent = component ? component : Box;
 
   return (
     <div className={classes.root}>
+      <PasswordDialog
+        open={showChangePassword}
+        username={user.username}
+        onClose={() => onClosePassword()}
+        onConfirm={password => onSubmitNewPassword(password)}
+      />
       <MuiAppBar position={position || "fixed"}>
         <Toolbar>
           <div className={classes.toolbar}>
@@ -128,7 +146,7 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
                   open={!!anchorEl}
                   onClose={handleClose}
                 >
-                  <LogoutButton />
+                  <LogoutButton onChangePassword={() => setShowChangePassword(true)} />
                 </Menu>
               </div>
             </div>
@@ -142,7 +160,7 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.user,
+  user: state.app.authSession,
   organisations: state.app.organisations
 });
 

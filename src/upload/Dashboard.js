@@ -176,7 +176,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
   uploadTypes: state.bulkUpload.uploadTypes,
-  userRoles: state.app.user.roles
+  userRoles: state.app.authSession.roles
 });
 
 export default withRouter(

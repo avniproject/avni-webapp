@@ -9,8 +9,10 @@ deps:
 	yarn install
 
 start:
-	rm .env.development.local || true
 	yarn start
+
+start-dark:
+	yarn start-dark
 
 start-with-staging:
 	cp env_templates/.env.staging.local.template .env.development.local
