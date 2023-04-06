@@ -3,6 +3,7 @@ import ApplicationContext from "../ApplicationContext";
 export const isDevEnv = ApplicationContext.isDevEnv();
 export const isProdEnv = ApplicationContext.isProdEnv();
 export const devEnvUserName = process.env.REACT_APP_DEV_ENV_USER;
+export const isMediaViewerEnabled = process.env.REACT_APP_MEDIA_VIEWER_ENABLED === "true";
 
 //Set by testing tools like Jest
 export const isTestEnv = process.env.NODE_ENV === "test";
