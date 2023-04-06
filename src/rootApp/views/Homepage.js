@@ -39,7 +39,7 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
         <HomePageCard
-          href={process.env.REACT_APP_MEDIA_APP_URL}
+          href={`/avni-media?orgUUID=${orgUUID}`}
           name={"Media Viewer "}
           customIcon={"collections"}
         />
@@ -49,13 +49,6 @@ const Homepage = ({ user }) => {
             href={"/analytics/activities"}
             name={"Canned Reports"}
             customIcon={"assessment"}
-          />
-        )}
-        {isMediaViewerEnabled && (
-          <HomePageCard
-            href={`${process.env.REACT_APP_MEDIA_APP_URL}?orgUUID=${orgUUID}`}
-            name={"Media Viewer"}
-            customIcon={"collections"}
           />
         )}
       </Grid>
