@@ -2,12 +2,22 @@ import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Grid from "@material-ui/core/Grid";
 import httpClient from "../../common/utils/httpClient";
-import { isProdEnv } from "../../common/constants";
+import { isProdEnv, isMediaViewerEnabled } from "../../common/constants";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
+import { useState, useEffect } from "react";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
+
+  const [orgUUID, setOrgUUID] = useState(null);
+  useEffect(() => {
+    const fetchOrgUUID = async () => {
+      const uuid = httpClient.getOrgUUID();
+      setOrgUUID(uuid);
+    };
+    fetchOrgUUID();
+  }, []);
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
@@ -34,6 +44,13 @@ const Homepage = ({ user }) => {
             href={"/analytics/activities"}
             name={"Canned Reports"}
             customIcon={"assessment"}
+          />
+        )}
+        {isMediaViewerEnabled && (
+          <HomePageCard
+            href={`${process.env.REACT_APP_MEDIA_APP_URL}?orgUUID=${orgUUID}`}
+            name={"Media Viewer"}
+            customIcon={"collections"}
           />
         )}
       </Grid>
