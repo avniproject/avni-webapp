@@ -22,8 +22,8 @@ class ResetPasswordButton extends Component {
     // HACK: passing request param appended in id.
     crudUpdate(
       `${resource}`,
-      `${record.id}/resetPassword?password=${password}`,
-      record,
+      `resetPassword`,
+      { userId: record.id, password: password },
       record,
       basePath,
       basePath

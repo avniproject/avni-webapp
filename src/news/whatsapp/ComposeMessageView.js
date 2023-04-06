@@ -68,7 +68,12 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
       _.reduce(
         rules[0].parameters,
         (allFilled, parameter) => {
-          return allFilled && !_.isNil(parameter) && !_.isEmpty(parameter);
+          return (
+            allFilled &&
+            !_.isNil(parameter) &&
+            !_.isEmpty(parameter) &&
+            parameter.trim().length !== 0
+          );
         },
         true
       )

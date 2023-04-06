@@ -30,7 +30,7 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
       field: "createdBy"
     },
     {
-      title: t("Message Template with values filled-in"),
+      title: t("messageTemplateBody"),
       field: "messageTemplateBody",
       type: "string",
       render: row => formatMsgTemplate(row["messageTemplate"].body, row["messageRuleParams"]),
@@ -40,7 +40,7 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
       }
     },
     {
-      title: t("Scheduled At"),
+      title: t("scheduledAt"),
       field: "scheduledAt",
       type: "date",
       render: row => formatDateTime(row.scheduledDateTime),
@@ -51,7 +51,7 @@ const YetToBeSentMessagesTable = ({ msgsYetToBeSent, isMsgsNotYetSentAvailable }
   const renderNoMsgsYetToBeSent = () => (
     <Typography variant="caption" gutterBottom className={classes.infoMsg}>
       {" "}
-      {t("No")} {t("messages")} {t("yet")} {t("to")} {t("be")} {t("sent")}
+      {t("noMessagesYetToBeSent")}{" "}
     </Typography>
   );
 

@@ -104,7 +104,7 @@ function MessagesView({
           id="sent-messages"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
-            {t("Sent Messages")}
+            {t("sentMessages")}
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
@@ -123,7 +123,7 @@ function MessagesView({
           id="yet-to-be-sent-messages"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
-            {t("Scheduled Messages")}
+            {t("scheduledMessages")}
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
