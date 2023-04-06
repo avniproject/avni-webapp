@@ -2,7 +2,7 @@ import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Grid from "@material-ui/core/Grid";
 import httpClient from "../../common/utils/httpClient";
-import { isProdEnv, isMediaViewerEnabled } from "../../common/constants";
+import { isProdEnv } from "../../common/constants";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import { useState, useEffect } from "react";
