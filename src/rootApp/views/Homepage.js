@@ -38,6 +38,11 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
+        <HomePageCard
+          href={process.env.REACT_APP_MEDIA_APP_URL}
+          name={"Media Viewer "}
+          customIcon={"collections"}
+        />
         <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
         {isProdEnv && (
           <HomePageCard
