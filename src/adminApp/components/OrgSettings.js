@@ -35,7 +35,7 @@ export const OrgSettings = () => {
       .catch(error => console.error(error));
   };
 
-  function renderSimpleSetting(key, name, tooltip) {
+  function renderSimpleSetting(key, name, tooltip, disabled = false) {
     return (
       <Grid item>
         <AvniSwitch
@@ -44,6 +44,7 @@ export const OrgSettings = () => {
           onChange={event => onSettingsChange(key, event.target.checked)}
           name={name}
           toolTipKey={tooltip}
+          disabled={disabled}
         />
       </Grid>
     );
@@ -100,12 +101,14 @@ export const OrgSettings = () => {
         {renderSimpleSetting(
           organisationConfigSettingKeys.useKeycloakAsIDP,
           "Use Keycloak as IDP",
-          "USE_KEYCLOAK_AS_IDP"
+          "USE_KEYCLOAK_AS_IDP",
+          true
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.useMinioForStorage,
           "Use MinIO for Storage",
-          "USE_MINIO_FOR_STORAGE"
+          "USE_MINIO_FOR_STORAGE",
+          true
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.skipRuleExecution,
