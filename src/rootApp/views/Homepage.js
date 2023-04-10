@@ -6,17 +6,18 @@ import { isProdEnv } from "../../common/constants";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
 
-  const [orgUUID, setOrgUUID] = useState(null);
+  const [userData, setUserData] = useState(null);
   useEffect(() => {
-    const fetchOrgUUID = async () => {
-      const uuid = httpClient.getOrgUUID();
-      setOrgUUID(uuid);
+    const fetchOrgID = async () => {
+      const resp = await axios("/me");
+      setUserData(resp.data);
     };
-    fetchOrgUUID();
+    fetchOrgID();
   }, []);
 
   return (
@@ -39,7 +40,7 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
         <HomePageCard
-          href={`/avni-media?orgUUID=${orgUUID}`}
+          href={`/avni-media?orgID=${userData && userData.organisationId}`}
           name={"Media Viewer "}
           customIcon={"collections"}
         />
