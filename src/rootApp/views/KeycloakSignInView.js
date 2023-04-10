@@ -41,6 +41,7 @@ function KeycloakSignInView({ setAuthSession }) {
         </Typography>
       )}
       <SignInView
+        disallowForgottenPasswordReset={true}
         loading={false}
         onForgotPassword={() => {}}
         onSignIn={() => onSignIn()}

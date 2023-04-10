@@ -18,7 +18,14 @@ import React, { useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import { withStyles } from "@material-ui/core/styles";
 
-function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, loading }) {
+function SignInView({
+  classes,
+  onSignIn,
+  notifyInputChange,
+  onForgotPassword,
+  loading,
+  disallowForgottenPasswordReset = false
+}) {
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
 
   return (
@@ -89,7 +96,7 @@ function SignInView({ classes, onSignIn, notifyInputChange, onForgotPassword, lo
               >
                 SIGN IN
               </Button>
-              <Grid container>
+              <Grid container hidden={disallowForgottenPasswordReset}>
                 <Grid item xs>
                   <Link href="#" variant="body2" onClick={onForgotPassword}>
                     Forgot password?
