@@ -116,7 +116,7 @@ jobs:
     working_directory: ~/
     steps:
       - deploy:
-          hostname: "ssh.perf.openchs.org"
+          hostname: "ssh.perf.avniproject.org"
 
   PRODUCTION_deploy:
     docker:
