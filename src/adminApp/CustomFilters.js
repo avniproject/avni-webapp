@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import commonApi from "../common/service";
 
 const useStyles = makeStyles({
   root: {
@@ -75,9 +76,9 @@ const customFilters = ({
   const [subjectTypes, setSubjectTypes] = React.useState();
 
   useEffect(() => {
-    http.get("/subjectType").then(res => {
-      res.data && setSubjectTypes(res.data._embedded.subjectType);
-    });
+    const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());
+    fetchSubjectTypes();
+    return () => {};
   }, []);
 
   const styles = useStyles();

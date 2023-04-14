@@ -5,5 +5,7 @@ export default {
     httpClient.fetchJson("/web/operationalModules").then(response => response.json),
   fetchGenders: () => httpClient.fetchJson("/web/gender").then(response => response.json),
   fetchOrganisationConfigs: () =>
-    httpClient.fetchJson("/web/organisationConfig").then(response => response.json)
+    httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
+  fetchSubjectTypes: () =>
+    httpClient.get("/subjectType").then(res => res.data._embedded.subjectType)
 };

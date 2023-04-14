@@ -13,6 +13,7 @@ import { SaveComponent } from "../common/components/SaveComponent";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { sampleWorkListUpdationRule } from "../formDesigner/common/SampleRule";
 import { JSEditor } from "../common/components/JSEditor";
+import commonApi from "../common/service";
 
 export const WorklistUpdationRule = () => {
   const emptyOrgSettings = {
@@ -45,9 +46,9 @@ export const WorklistUpdationRule = () => {
   };
 
   useEffect(() => {
-    http.get("/subjectType").then(res => {
-      res.data && setSubjectTypes(res.data._embedded.subjectType);
-    });
+    const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());
+    fetchSubjectTypes();
+    return () => {};
   }, []);
 
   useEffect(() => {

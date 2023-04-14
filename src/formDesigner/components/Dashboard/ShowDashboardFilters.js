@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import MaterialTable from "material-table";
-import http from "../../../common/utils/httpClient";
 import { buildFilterData, filterDisplayColumns } from "../../../adminApp/CustomFilters";
+import commonApi from "../../../common/service";
 
 const ShowDashboardFilters = ({ filters, editAction, deleteAction }) => {
   const [subjectTypes, setSubjectTypes] = React.useState([]);
 
   useEffect(() => {
-    http.get("/subjectType").then(res => {
-      res.data && setSubjectTypes(res.data._embedded.subjectType);
-    });
+    const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());
+    fetchSubjectTypes();
+    return () => {};
   }, []);
 
   return (
