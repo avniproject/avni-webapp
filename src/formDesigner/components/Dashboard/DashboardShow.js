@@ -3,6 +3,7 @@ import { ShowLabelValue } from "../../common/ShowLabelValue";
 import ResourceShowView from "../../common/ResourceShowView";
 import FormLabel from "@material-ui/core/FormLabel";
 import ShowDashboardSections from "./ShowDashboardSections";
+import ShowDashboardFilters from "./ShowDashboardFilters";
 
 export const DashboardShow = props => {
   const renderColumns = dashboard => {
@@ -15,6 +16,10 @@ export const DashboardShow = props => {
         <FormLabel style={{ fontSize: "13px" }}>{"Sections"}</FormLabel>
         <br />
         <ShowDashboardSections sections={dashboard.sections} />
+        <br />
+        <FormLabel style={{ fontSize: "13px" }}>{"Filters"}</FormLabel>
+        <br />
+        <ShowDashboardFilters filters={dashboard.filters} />
       </div>
     );
   };

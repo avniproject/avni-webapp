@@ -41,20 +41,18 @@ const nonSupportedTypes = [
   "Audio",
   "File"
 ];
-export const CreateEditFilters = props => {
+export const CreateEditFilters = ({
+  omitTableData,
+  selectedFilter,
+  title,
+  filterType,
+  worklistUpdationRule,
+  operationalModules,
+  settings,
+  documentationFileName,
+  dashboardFilterSave
+}) => {
   const { t } = useTranslation();
-
-  if (isNil(props.history.location.state)) {
-    return <div />;
-  }
-
-  const {
-    omitTableData,
-    selectedFilter,
-    title,
-    filterType,
-    worklistUpdationRule
-  } = props.history.location.state;
   const allTypes = values(CustomFilter.type);
   const filterTypes =
     filterType === "myDashboardFilters"
@@ -93,8 +91,7 @@ export const CreateEditFilters = props => {
     conceptDataType,
     groupSubjectTypeUUID
   } = selectedFilter || emptyFilter;
-  const { programs, subjectTypes, encounterTypes } =
-    props.history.location.state.operationalModules || {};
+  const { programs, subjectTypes, encounterTypes } = operationalModules || {};
 
   const mapToOptions = entity => map(entity, ({ name, uuid }) => ({ label: name, value: uuid }));
 
@@ -196,27 +193,30 @@ export const CreateEditFilters = props => {
       widget: (!isEmpty(selectedWidget) && selectedWidget.label) || null,
       scopeParameters: !isEmpty(selectedConcept) ? scopeParams : null
     };
-    const data = getNewFilterData(pickBy(newFilter, identity));
 
-    http
-      .put("/organisationConfig", data)
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          setMessageStatus({ message: "TaskAssignmentFilter updated", display: true });
+    if (!isNil(dashboardFilterSave)) {
+      dashboardFilterSave(newFilter);
+    } else {
+      const data = getNewFilterData(pickBy(newFilter, identity));
+      http
+        .put("/organisationConfig", data)
+        .then(response => {
+          if (response.status === 200 || response.status === 201) {
+            setMessageStatus({ message: "TaskAssignmentFilter updated", display: true });
+            setSnackBarStatus(true);
+          }
+        })
+        .catch(error => {
+          setMessageStatus({ message: "Something went wrong please try later", display: true });
           setSnackBarStatus(true);
-        }
-      })
-      .catch(error => {
-        setMessageStatus({ message: "Something went wrong please try later", display: true });
-        setSnackBarStatus(true);
-      });
+        });
+    }
   };
 
   const getNewFilterData = newFilter => {
-    const setting = props.history.location.state.settings;
-    const filterType = props.history.location.state.filterType;
+    const setting = settings;
     const oldFilters = setting.settings[filterType];
-    const newFilters = isNil(props.history.location.state.selectedFilter)
+    const newFilters = isNil(selectedFilter)
       ? [...oldFilters, newFilter]
       : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
     return {
@@ -327,11 +327,14 @@ export const CreateEditFilters = props => {
     <div>
       <Title title="TaskAssignmentFilter Config" />
       <Box boxShadow={2} p={1} bgcolor="background.paper">
-        <DocumentationContainer filename={props.history.location.state.filename}>
+        <DocumentationContainer filename={documentationFileName}>
           <Box>
-            <div className="container" style={{ float: "left" }}>
-              <div style={{ fontSize: 20, color: "rgba(0, 0, 0)" }}>{title}</div>
-              <Box mb={2} />
+            <div className="container" style={{ float: "left", marginBottom: 10 }}>
+              {title && (
+                <div style={{ fontSize: 20, color: "rgba(0, 0, 0)", marginBottom: 20 }}>
+                  {title}
+                </div>
+              )}
               <FormControl fullWidth>
                 <AvniTextField
                   id="Filter Name"
