@@ -2,7 +2,6 @@ import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Grid from "@material-ui/core/Grid";
 import httpClient from "../../common/utils/httpClient";
-import { isProdEnv } from "../../common/constants";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 
@@ -29,13 +28,6 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
         <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
-        {isProdEnv && (
-          <HomePageCard
-            href={"/analytics/activities"}
-            name={"Canned Reports"}
-            customIcon={"assessment"}
-          />
-        )}
       </Grid>
     </ScreenWithAppBar>
   );
