@@ -43,13 +43,6 @@ const Homepage = ({ user }) => {
           customIcon={"collections"}
         />
         <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
-        {/*{isProdEnv && (*/}
-        {/*  <HomePageCard*/}
-        {/*    href={"/analytics/activities"}*/}
-        {/*    name={"Canned Reports"}*/}
-        {/*    customIcon={"assessment"}*/}
-        {/*  />*/}
-        {/*)}*/}
       </Grid>
     </ScreenWithAppBar>
   );
