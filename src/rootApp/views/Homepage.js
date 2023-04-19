@@ -40,7 +40,8 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
         <HomePageCard
-          href={`/avni-media?orgID=${userData && userData.organisationId}`}
+          href={`/avni-media?orgID=${userData && userData.organisationId}&username=${userData &&
+            userData.username}`}
           name={"Media Viewer "}
           customIcon={"collections"}
         />
