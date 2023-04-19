@@ -8,9 +8,11 @@ export const DocumentationContainer = ({ filename, ...props }) => {
       <Grid item xs={9}>
         {props.children}
       </Grid>
-      <Grid item xs={3}>
-        <Documentation fileName={filename} />
-      </Grid>
+      {filename && (
+        <Grid item xs={3}>
+          <Documentation fileName={filename} />
+        </Grid>
+      )}
     </Grid>
   );
 };

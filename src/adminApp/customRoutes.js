@@ -1,7 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import { CreateEditLanguages } from "./components/CreateEditLanguages";
-import { CreateEditFilters } from "./components/CreateEditFilters";
+import { CreateEditFiltersHOC } from "./components/CreateEditFiltersHOC";
 import FormDetails from "../formDesigner/views/FormDetails";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
 import ConceptDetails from "../formDesigner/components/ConceptDetails";
@@ -24,7 +24,7 @@ import { VideoShow } from "../formDesigner/components/Video/VideoShow";
 import { WithProps } from "../common/components/utils";
 import { CreateEditReportCard } from "../formDesigner/components/ReportCard/CreateEditReportCard";
 import { ReportCardShow } from "../formDesigner/components/ReportCard/ReportCardShow";
-import { CreateEditDashboard } from "../formDesigner/components/Dashboard/CreateEditDashboard";
+import CreateEditDashboard from "../formDesigner/components/Dashboard/CreateEditDashboard";
 import { DashboardShow } from "../formDesigner/components/Dashboard/DashboardShow";
 import ApplicationMenuEdit from "./ApplicationMenu/ApplicationMenuEdit";
 import ApplicationMenuShow from "./ApplicationMenu/ApplicationMenuShow";
@@ -33,7 +33,7 @@ const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
 export default [
   <Route exact path="/editLanguages" component={CreateEditLanguages} />,
-  <Route exact path="/filters" component={CreateEditFilters} />,
+  <Route exact path="/filters" component={CreateEditFiltersHOC} />,
   <Route exact path="/forms/:formUUID" component={FormDetails} />,
   <Route exact path="/concept/create" component={CreateConcept} />,
   <Route exact path="/concept/:uuid/show" component={ConceptDetails} />,

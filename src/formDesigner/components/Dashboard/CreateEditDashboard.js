@@ -12,16 +12,36 @@ import { SaveComponent } from "../../../common/components/SaveComponent";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import CreateEditDashboardSections from "./CreateEditDashboardSections";
 import { getErrorByKey } from "../../common/ErrorUtil";
+import { getOperationalModules } from "../../../reports/reducers";
+import { connect } from "react-redux";
+import ShowDashboardFilters from "./ShowDashboardFilters";
+import { CreateEditFilterDialog } from "./CreateEditFilterDialog";
 
-const initialState = { name: "", description: "", sections: [] };
-export const CreateEditDashboard = ({ edit, history, ...props }) => {
+const initialState = { name: "", description: "", sections: [], filters: [] };
+const CreateEditDashboard = ({
+  edit,
+  history,
+  operationalModules,
+  getOperationalModules,
+  ...props
+}) => {
   const [dashboard, dispatch] = React.useReducer(DashboardReducer, initialState);
   const [error, setError] = React.useState([]);
   const [id, setId] = React.useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
+  const [showAddFilterModal, setShowAddFilterModal] = React.useState(false);
+  const [selectedFilter, setSelectedFilter] = React.useState(null);
+  React.useEffect(() => {
+    getOperationalModules();
+  }, []);
+
+  React.useEffect(() => {
+    selectedFilter && setShowAddFilterModal(true);
+  }, [selectedFilter]);
+
   React.useEffect(() => {
     if (edit) {
       http
@@ -93,6 +113,11 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
     event.stopPropagation();
   };
 
+  const showFilterDialog = event => {
+    setShowAddFilterModal(true);
+    event.stopPropagation();
+  };
+
   const onDelete = () => {
     if (window.confirm("Do you really want to delete dashboard record?")) {
       http
@@ -109,6 +134,10 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
   const onChange = (type, event, errorKey) => {
     setError(error.filter(({ key }) => key !== errorKey));
     dispatch({ type: type, payload: event.target.value });
+  };
+
+  const handleModalClose = () => {
+    setShowAddFilterModal(false);
   };
 
   return (
@@ -144,12 +173,11 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
         />
         <br />
         <br />
-        <br />
         <Grid container>
-          <Grid item container sm={6} justify={"flex-start"}>
+          <Grid item container sm={6} justifyContent={"flex-start"}>
             <AvniFormLabel label={"Sections"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTIONS"} />
           </Grid>
-          <Grid item container sm={6} justify={"flex-end"}>
+          <Grid item container sm={6} justifyContent={"flex-end"}>
             <Button color="primary" onClick={addSection}>
               Add Section
             </Button>
@@ -165,6 +193,40 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
           />
         </Grid>
         {getErrorByKey(error, "EMPTY_CARDS")}
+        <br />
+        <CreateEditFilterDialog
+          showAddFilterModal={showAddFilterModal}
+          handleModalClose={handleModalClose}
+          selectedFilter={selectedFilter}
+          operationalModules={operationalModules}
+          dashboardDispatch={dispatch}
+          dashboard={dashboard}
+          setShowAddFilterModal={setShowAddFilterModal}
+        />
+        <Grid container>
+          <Grid item container sm={6} justifyContent={"flex-start"}>
+            <AvniFormLabel label={"Filters"} toolTipKey={"APP_DESIGNER_DASHBOARD_FILTERS"} />
+          </Grid>
+          <Grid item container sm={6} justifyContent={"flex-end"}>
+            <Button color="primary" onClick={showFilterDialog}>
+              Add Filter
+            </Button>
+          </Grid>
+        </Grid>
+        <Grid item>
+          <ShowDashboardFilters
+            filters={dashboard.filters}
+            editAction={filter => {
+              setSelectedFilter(filter);
+            }}
+            deleteAction={selectedFilter =>
+              dispatch({
+                type: "deleteFilter",
+                payload: { selectedFilter }
+              })
+            }
+          />
+        </Grid>
         <p />
         {getErrorByKey(error, "SERVER_ERROR")}
         <Grid container direction={"row"}>
@@ -185,3 +247,14 @@ export const CreateEditDashboard = ({ edit, history, ...props }) => {
     </Box>
   );
 };
+
+const mapStateToProps = state => ({
+  operationalModules: state.reports.operationalModules
+});
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { getOperationalModules }
+  )(CreateEditDashboard)
+);

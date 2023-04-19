@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import commonApi from "../common/service";
 
 const useStyles = makeStyles({
   root: {
@@ -75,32 +76,12 @@ const customFilters = ({
   const [subjectTypes, setSubjectTypes] = React.useState();
 
   useEffect(() => {
-    http.get("/subjectType").then(res => {
-      res.data && setSubjectTypes(res.data._embedded.subjectType);
-    });
+    const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());
+    fetchSubjectTypes();
+    return () => {};
   }, []);
 
   const styles = useStyles();
-
-  const columns = [
-    { title: "TaskAssignmentFilter Name", field: "titleKey" },
-    { title: "Concept Name", field: "conceptName" },
-    { title: "Subject Type", field: "Subject" },
-    { title: "Filter Type", field: "Filter Type" },
-    { title: "Widget", field: "widget" },
-    { title: "Search Scope", field: "Scope" }
-  ];
-
-  const filterData = filters => {
-    return _.map(filters, filter => {
-      const subject = _.head(subjectTypes.filter(s => s.uuid === filter.subjectTypeUUID));
-      filter["widget"] = filter["widget"] || "Default";
-      filter["Scope"] = _.startCase(filter["scope"]);
-      filter["Filter Type"] = _.startCase(filter["type"]);
-      filter["Subject"] = (subject && subject.name) || "";
-      return filter;
-    });
-  };
 
   const editFilter = (filterType, title) => ({
     icon: "edit",
@@ -121,9 +102,6 @@ const customFilters = ({
       });
     }
   });
-
-  const omitTableData = filters =>
-    _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type", "Subject"]));
 
   const deleteFilter = filterType => ({
     icon: "delete_outline",
@@ -188,8 +166,8 @@ const customFilters = ({
         components={{
           Container: props => <Fragment>{props.children}</Fragment>
         }}
-        columns={columns}
-        data={filterData(settings.settings[filterType])}
+        columns={filterDisplayColumns}
+        data={buildFilterData(settings.settings[filterType], subjectTypes)}
         options={{ search: false, paging: false }}
         actions={[
           editFilter(filterType, `Edit ${_.startCase(filterType)}`),
@@ -218,6 +196,29 @@ const customFilters = ({
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules
 });
+
+export const filterDisplayColumns = [
+  { title: "TaskAssignmentFilter Name", field: "titleKey" },
+  { title: "Concept Name", field: "conceptName" },
+  { title: "Subject Type", field: "Subject" },
+  { title: "Filter Type", field: "Filter Type" },
+  { title: "Widget", field: "widget" },
+  { title: "Search Scope", field: "Scope" }
+];
+
+export const buildFilterData = (filters, subjectTypes) => {
+  return _.map(filters, filter => {
+    const subject = _.head(subjectTypes.filter(s => s.uuid === filter.subjectTypeUUID));
+    filter["widget"] = filter["widget"] || "Default";
+    filter["Scope"] = _.startCase(filter["scope"]);
+    filter["Filter Type"] = _.startCase(filter["type"]);
+    filter["Subject"] = (subject && subject.name) || "";
+    return filter;
+  });
+};
+
+export const omitTableData = filters =>
+  _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type", "Subject"]));
 
 export default withRouter(
   connect(
