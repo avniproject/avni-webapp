@@ -85,7 +85,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
       return;
     }
 
-    ProgramService.saveProgram(program, subjectType, props.match.params.id)
+    return ProgramService.saveProgram(program, subjectType, props.match.params.id)
       .then(saveResponse => {
         setErrors(saveResponse.errors);
         setRedirectShow(saveResponse.status === 200);

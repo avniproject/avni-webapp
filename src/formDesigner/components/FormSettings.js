@@ -143,7 +143,7 @@ class FormSettings extends Component {
       if (!this.state.warningFlag || (this.state.warningFlag && window.confirm(voidedMessage))) {
         const existFormUUID = this.state.uuid;
         this.setState({ errorMsg: "" });
-        http
+        return http
           .put("/web/forms/" + existFormUUID + "/metadata", {
             name: this.state.name,
             formType: this.state.formTypeInfo.formType,

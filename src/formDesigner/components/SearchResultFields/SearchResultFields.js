@@ -72,7 +72,7 @@ const SearchResultFields = () => {
 
   const onSave = () => {
     const payload = { settings: { [orgConfigKey]: searchResultFields } };
-    http
+    return http
       .put("/organisationConfig", payload)
       .then(response => {
         if (response.status === 200 || response.status === 201) {

@@ -128,7 +128,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
     setNameValidation(false);
     setSubjectValidation(false);
 
-    http
+    return http
       .put("/web/encounterType/" + props.match.params.id, {
         ...encounterType,
         id: props.match.params.id,

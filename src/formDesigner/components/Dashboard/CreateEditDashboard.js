@@ -88,7 +88,7 @@ const CreateEditDashboard = ({
     if (isValidRequest()) {
       const url = edit ? `/web/dashboard/${props.match.params.id}` : "/web/dashboard";
       const methodName = edit ? "put" : "post";
-      http[methodName](url, dashboard)
+      return http[methodName](url, dashboard)
         .then(res => {
           if (res.status === 200) {
             setId(res.data.id);

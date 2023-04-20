@@ -74,7 +74,7 @@ function RelationshipEdit(props) {
         }
       });
 
-      http
+      return http
         .post("/web/relation/" + props.match.params.id, {
           name: relationshipName,
           uuid: uuid,

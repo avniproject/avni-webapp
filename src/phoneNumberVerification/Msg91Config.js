@@ -56,7 +56,7 @@ const Msg91Config = () => {
   };
 
   const onSubmit = () => {
-    api
+    return api
       .updateMsg91Config(
         authKeyVerified
           ? msg91Config

@@ -26,7 +26,7 @@ export const CreateEditLanguages = props => {
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
   const saveLanguage = () => {
-    http
+    return http
       .put("/organisationConfig", {
         uuid: setting.uuid,
         settings: {

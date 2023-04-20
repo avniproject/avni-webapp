@@ -48,7 +48,7 @@ function RelationshipTypeCreate() {
 
   const onSubmitRelationshipType = () => {
     if (!isEmpty(individualAIsToBRelation) && !isEmpty(individualBIsToARelation)) {
-      http
+      return http
         .post("/web/relationshipType", {
           individualAIsToBRelation: {
             id: individualAIsToBRelation.id

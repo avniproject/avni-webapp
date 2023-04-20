@@ -50,7 +50,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
     validateRequest();
     if (!isEmpty(video.title) && !isEmpty(video.fileName)) {
       const url = edit ? `/web/video/${props.match.params.id}` : "/web/video";
-      http
+      return http
         .post(url, video)
         .then(res => {
           if (res.status === 200) {

@@ -60,7 +60,7 @@ function RelationshipCreate() {
         }
       });
 
-      http
+      return http
         .post("/web/relation", {
           name: relationshipName,
           genders: genderToBesubmit

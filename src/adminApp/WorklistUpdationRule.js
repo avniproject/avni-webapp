@@ -66,7 +66,7 @@ export const WorklistUpdationRule = () => {
   }, []);
 
   const onSaveWorklistUpdationRule = event => {
-    http
+    return http
       .put("/organisationConfig", {
         uuid: settings.uuid,
         settings: settings.settings,

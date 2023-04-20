@@ -198,7 +198,7 @@ export const CreateEditFilters = ({
       dashboardFilterSave(newFilter);
     } else {
       const data = getNewFilterData(pickBy(newFilter, identity));
-      http
+      return http
         .put("/organisationConfig", data)
         .then(response => {
           if (response.status === 200 || response.status === 201) {
