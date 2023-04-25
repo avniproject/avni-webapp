@@ -395,8 +395,8 @@ export const CreateEditFilters = ({
               <Box m={1} />
               {selectedType.value === "Concept" &&
                 renderSelect(
-                  "Search Scope",
                   "Scope",
+                  "Search Scope",
                   selectedScope,
                   scopeOptions,
                   scope => onScopeChange(scope),

@@ -3,6 +3,14 @@ import MaterialTable from "material-table";
 import { buildFilterData, filterDisplayColumns } from "../../../adminApp/CustomFilters";
 import commonApi from "../../../common/service";
 
+const filterDisplayColumns = [
+  { title: "Name", field: "name" },
+  { title: "Subject Type", render: rowData => rowData.filterConfig.subjectType.name },
+  { title: "Filter Type", render: rowData => rowData.filterConfig.type },
+  { title: "Widget", render: rowData => rowData.widget.type },
+  { title: "Search Scope", field: "Scope" }
+];
+
 const ShowDashboardFilters = ({ filters, editAction, deleteAction }) => {
   const [subjectTypes, setSubjectTypes] = React.useState([]);
 

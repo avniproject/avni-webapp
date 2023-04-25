@@ -1,12 +1,12 @@
+//@deprecated wrong use of service
 class ConceptService {
   constructor() {
     this.concepts = [];
   }
 
   getConceptByUUID(conceptUuid) {
-    if (conceptUuid !== null || conceptUuid !== undefined) {
-      let concept = this.concepts.find(x => x.uuid === conceptUuid);
-      return concept;
+    if (conceptUuid !== null) {
+      return this.concepts.find(x => x.uuid === conceptUuid);
     }
   }
 

@@ -1,11 +1,10 @@
 import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { DialogContent, DialogTitle } from "@material-ui/core";
-import { CreateEditFilters } from "../../../adminApp/components/CreateEditFilters";
-import { omitTableData } from "../../../adminApp/CustomFilters";
 import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import { CreateEditFiltersV2 } from "../../../adminApp/components/CreateEditFiltersV2";
 
 export const CreateEditFilterDialog = ({
   showAddFilterModal,
@@ -29,12 +28,8 @@ export const CreateEditFilterDialog = ({
         </Box>
       </DialogTitle>
       <DialogContent style={{ height: "600px" }}>
-        <CreateEditFilters
-          filterType={"myDashboardFilters"}
-          omitTableData={omitTableData}
-          selectedFilter={selectedFilter}
+        <CreateEditFiltersV2
           operationalModules={operationalModules}
-          settings={{}}
           documentationFileName={null}
           dashboardFilterSave={newFilter => {
             dashboardDispatch({
