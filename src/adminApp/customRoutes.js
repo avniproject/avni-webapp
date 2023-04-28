@@ -25,7 +25,7 @@ import { WithProps } from "../common/components/utils";
 import { CreateEditReportCard } from "../formDesigner/components/ReportCard/CreateEditReportCard";
 import { ReportCardShow } from "../formDesigner/components/ReportCard/ReportCardShow";
 import CreateEditDashboard from "../formDesigner/components/Dashboard/CreateEditDashboard";
-import { DashboardShow } from "../formDesigner/components/Dashboard/DashboardShow";
+import DashboardShow from "../formDesigner/components/Dashboard/DashboardShow";
 import ApplicationMenuEdit from "./ApplicationMenu/ApplicationMenuEdit";
 import ApplicationMenuShow from "./ApplicationMenu/ApplicationMenuShow";
 

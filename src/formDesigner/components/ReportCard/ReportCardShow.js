@@ -73,7 +73,7 @@ export const ReportCardShow = props => {
       resourceId={props.match.params.id}
       resourceName={"card"}
       resourceURLName={"reportCard"}
-      renderColumns={card => <RenderCard card={card} />}
+      render={card => <RenderCard card={card} />}
     />
   );
 };

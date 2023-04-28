@@ -69,10 +69,12 @@ function isSaveDisabled(filterConfig, filterName) {
 }
 
 export const CreateEditFiltersV2 = ({
+  selectedFilter,
   operationalModules,
   documentationFileName,
   dashboardFilterSave
 }) => {
+  const isNew = _.isNil(_.get(selectedFilter, "uuid"));
   const { t } = useTranslation();
   const typeOptions = values(CustomFilter.getDashboardFilterTypes()).map(s => ({
     label: startCase(s),
@@ -86,9 +88,9 @@ export const CreateEditFiltersV2 = ({
 
   const { programs, subjectTypes, encounterTypes, formMappings } = operationalModules;
 
-  const [filterName, setFilterName] = useState("");
+  const [filterName, setFilterName] = useState(isNew ? "" : selectedFilter.name);
   const [filterConfig: DashboardFilterConfig, setFilterConfig] = useState(
-    new DashboardFilterConfig()
+    isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
   );
 
   const subjectTypeOptions = mapToOptions(subjectTypes);
@@ -99,7 +101,7 @@ export const CreateEditFiltersV2 = ({
     MetaDataService.getEncounterTypes_For_SubjectTypeAndPrograms(
       encounterTypes,
       filterConfig.subjectType,
-      _.get(filterConfig.observationTypeFilter, "programs"),
+      _.get(filterConfig.observationBasedFilter, "programs"),
       formMappings
     )
   );
@@ -107,7 +109,7 @@ export const CreateEditFiltersV2 = ({
     MetaDataService.getPossibleGroupSubjectTypesFor(subjectTypes, filterConfig.subjectType)
   );
 
-  const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
+  const [messageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
   function updateFilterConfig() {
@@ -205,10 +207,10 @@ export const CreateEditFiltersV2 = ({
                   <AsyncSelect
                     cacheOptions
                     defaultOptions={conceptSuggestions}
-                    // value={_.find(conceptSuggestions, (x) => x.value === _.get(selectedEntity, "uuid"); filterConfig.observationTypeFilter.concept}
+                    // value={_.find(conceptSuggestions, (x) => x.value === _.get(selectedEntity, "uuid"); filterConfig.observationBasedFilter.concept}
                     placeholder={"Type to search"}
                     onChange={x => {
-                      filterConfig.observationTypeFilter.concept = x.value;
+                      filterConfig.observationBasedFilter.concept = x.value;
                       updateFilterConfig();
                     }}
                     loadOptions={loadConcept}
@@ -220,10 +222,10 @@ export const CreateEditFiltersV2 = ({
                 <SingleSelect
                   name="Scope"
                   placeholder="Search Scope"
-                  value={_.get(filterConfig.observationTypeFilter, "scope")}
+                  value={_.get(filterConfig.observationBasedFilter, "scope")}
                   options={scopeOptions}
                   onChange={scope => {
-                    filterConfig.observationTypeFilter.scope = scope.value;
+                    filterConfig.observationBasedFilter.scope = scope.value;
                     updateFilterConfig();
                   }}
                   toolTipKey="APP_DESIGNER_FILTER_SEARCH_SCOPE"
@@ -234,10 +236,10 @@ export const CreateEditFiltersV2 = ({
                 <MultipleEntitySelect
                   name="Programs"
                   placeholder="Select Programs"
-                  selectedEntities={filterConfig.observationTypeFilter.programs}
+                  selectedEntities={filterConfig.observationBasedFilter.programs}
                   options={programOptions}
                   onChange={xes => {
-                    filterConfig.observationTypeFilter.programs = xes.map(x => x.value);
+                    filterConfig.observationBasedFilter.programs = xes.map(x => x.value);
                     updateFilterConfig();
                   }}
                   toolTipKey="APP_DESIGNER_FILTER_PROGRAM"
@@ -248,10 +250,10 @@ export const CreateEditFiltersV2 = ({
                 <MultipleEntitySelect
                   name="Encounter Types"
                   placeholder="Select Encounter Types"
-                  selectedEntities={filterConfig.observationTypeFilter.encounterTypes}
+                  selectedEntities={filterConfig.observationBasedFilter.encounterTypes}
                   options={encounterTypeOptions}
                   onChange={xes => {
-                    filterConfig.observationTypeFilter.encounterTypes = xes.map(x => x.value);
+                    filterConfig.observationBasedFilter.encounterTypes = xes.map(x => x.value);
                     updateFilterConfig();
                   }}
                   toolTipKey="APP_DESIGNER_FILTER_ENCOUNTER_TYPE"

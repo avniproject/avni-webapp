@@ -1,7 +1,7 @@
 import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
-import { get, isEmpty, isNil, find } from "lodash";
+import { get, isEmpty, isNil } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -19,6 +19,8 @@ import { getOperationalModules } from "../../../reports/reducers";
 import { connect } from "react-redux";
 import ShowDashboardFilters from "./ShowDashboardFilters";
 import { CreateEditFilterDialog } from "./CreateEditFilterDialog";
+import DashboardService from "../../../common/service/DashboardService";
+import OperationalModules from "../../../common/model/OperationalModules";
 
 const initialState = { name: "", description: "", sections: [], filters: [] };
 const CreateEditDashboard = ({
@@ -43,69 +45,12 @@ const CreateEditDashboard = ({
   }, [selectedFilter]);
 
   React.useEffect(() => {
-    if (edit) {
-      http
-        .get(`/web/dashboard/${props.match.params.id}`)
-        .then(res => res.data)
-        .then(res => {
-          dispatch({ type: "setData", payload: res });
-        });
-    }
-  }, []);
-
-  const isValidRequest = () => {
-    const { name, sections } = dashboard;
-    const errors = [];
-    if (isEmpty(name)) {
-      errors.push({ key: "EMPTY_NAME", message: "Name cannot be empty" });
-    }
-    if (isEmpty(sections)) {
-      errors.push({ key: "EMPTY_SECTIONS", message: "Sections cannot be empty" });
-    }
-    if (!!find(sections, ({ name }) => isEmpty(name))) {
-      errors.push({
-        key: "EMPTY_SECTIONS",
-        message: "Section name cannot be left blank. Please specify it for all sections."
+    if (edit && OperationalModules.isLoaded(operationalModules)) {
+      DashboardService.getDashboard(props.match.params.id, operationalModules).then(dashboard => {
+        dispatch({ type: "setData", payload: dashboard });
       });
     }
-    if (!!find(sections, ({ viewType }) => isEmpty(viewType))) {
-      errors.push({
-        key: "EMPTY_SECTIONS",
-        message: "Section view type cannot be blank. Please select a view type"
-      });
-    }
-    if (!!find(sections, ({ cards }) => isEmpty(cards))) {
-      errors.push({ key: "EMPTY_SECTIONS", message: "Please add cards to the section." });
-    }
-    if (errors.length > 0) {
-      setError(errors);
-      return false;
-    }
-    return true;
-  };
-
-  const onSave = () => {
-    if (isValidRequest()) {
-      const url = edit ? `/web/dashboard/${props.match.params.id}` : "/web/dashboard";
-      const methodName = edit ? "put" : "post";
-      return http[methodName](url, dashboard)
-        .then(res => {
-          if (res.status === 200) {
-            setId(res.data.id);
-          }
-        })
-        .catch(error => {
-          setError([
-            {
-              key: "SERVER_ERROR",
-              message: `${get(error, "response.data") ||
-                get(error, "message") ||
-                "error while saving dashboard"}`
-            }
-          ]);
-        });
-    }
-  };
+  }, [operationalModules]);
 
   const addSection = event => {
     setError(error.filter(({ key }) => key !== "EMPTY_SECTIONS"));
@@ -138,6 +83,24 @@ const CreateEditDashboard = ({
 
   const handleModalClose = () => {
     setShowAddFilterModal(false);
+  };
+
+  const onSave = () => {
+    const errors = DashboardService.validate(dashboard);
+    if (!isEmpty(errors)) setError(errors);
+
+    DashboardService.save(dashboard, edit, props.match.params.id)
+      .then(data => setId(data.id))
+      .catch(error =>
+        setError([
+          {
+            key: "SERVER_ERROR",
+            message: `${get(error, "response.data") ||
+              get(error, "message") ||
+              "error while saving dashboard"}`
+          }
+        ])
+      );
   };
 
   return (
@@ -215,6 +178,7 @@ const CreateEditDashboard = ({
         </Grid>
         <Grid item>
           <ShowDashboardFilters
+            operationalModules={operationalModules}
             filters={dashboard.filters}
             editAction={filter => {
               setSelectedFilter(filter);

@@ -1,29 +1,45 @@
-import React, { useEffect } from "react";
+import React from "react";
 import MaterialTable from "material-table";
-import { buildFilterData, filterDisplayColumns } from "../../../adminApp/CustomFilters";
-import commonApi from "../../../common/service";
+import EntityService from "../../../common/service/EntityService";
+import _ from "lodash";
+import OperationalModules from "../../../common/model/OperationalModules";
 
-const filterDisplayColumns = [
-  { title: "Name", field: "name" },
-  { title: "Subject Type", render: rowData => rowData.filterConfig.subjectType.name },
-  { title: "Filter Type", render: rowData => rowData.filterConfig.type },
-  { title: "Widget", render: rowData => rowData.widget.type },
-  { title: "Search Scope", field: "Scope" }
-];
+function getFilterColumns(operationalModules) {
+  if (_.isNil(operationalModules.subjectTypes)) return [];
 
-const ShowDashboardFilters = ({ filters, editAction, deleteAction }) => {
-  const [subjectTypes, setSubjectTypes] = React.useState([]);
+  return [
+    {
+      title: "Name",
+      render: rowData => {
+        return rowData.name;
+      }
+    },
+    {
+      title: "Subject Type",
+      render: rowData => {
+        const subjectType = EntityService.findByUuid(
+          operationalModules.subjectTypes,
+          rowData.filterConfig.subjectType.uuid
+        );
+        return subjectType.name;
+      }
+    },
+    {
+      title: "Filter Type",
+      render: rowData => {
+        return rowData.filterConfig.type;
+      }
+    }
+  ];
+}
 
-  useEffect(() => {
-    const fetchSubjectTypes = async () => setSubjectTypes(await commonApi.fetchSubjectTypes());
-    fetchSubjectTypes();
-    return () => {};
-  }, []);
+const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalModules }) => {
+  if (!OperationalModules.isLoaded(operationalModules)) return null;
 
   return (
     <MaterialTable
-      columns={filterDisplayColumns}
-      data={filters && buildFilterData(filters.map(f => f.filter), subjectTypes)}
+      columns={getFilterColumns(operationalModules)}
+      data={filters}
       options={{ search: false, paging: false, toolbar: false }}
       actions={
         editAction || deleteAction

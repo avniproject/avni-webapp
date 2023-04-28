@@ -6,13 +6,21 @@ import EditIcon from "@material-ui/icons/Edit";
 import Box from "@material-ui/core/Box";
 import { Redirect } from "react-router-dom";
 import { Title } from "react-admin";
+import _ from "lodash";
 
-const ResourceShowView = ({ title, resourceId, resourceName, resourceURLName, renderColumns }) => {
+const ResourceShowView = ({
+  title,
+  resourceId,
+  resourceName,
+  resourceURLName,
+  render,
+  mapResource = _.identity
+}) => {
   const [resource, setResource] = React.useState({});
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {
-    http.get(`/web/${resourceName}/${resourceId}`).then(res => setResource(res.data));
+    http.get(`/web/${resourceName}/${resourceId}`).then(res => setResource(mapResource(res.data)));
   }, []);
 
   return (
@@ -25,7 +33,7 @@ const ResourceShowView = ({ title, resourceId, resourceName, resourceURLName, re
         </Button>
       </Grid>
       <div className="container" style={{ float: "left" }}>
-        {renderColumns(resource)}
+        {render(resource)}
       </div>
       {editAlert && <Redirect to={`/appDesigner/${resourceURLName}/${resourceId}`} />}
     </Box>

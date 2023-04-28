@@ -1,4 +1,4 @@
-import { forEach, map, reject, sortBy, concat } from "lodash";
+import { map, reject, sortBy, concat } from "lodash";
 import { ModelGeneral as General } from "openchs-models";
 
 const addSection = dashboard => {
@@ -54,17 +54,8 @@ const deleteSection = (dashboard, section) => ({
   sections: reject(dashboard.sections, it => it === section)
 });
 
-const setData = (dashboard, data) => {
-  forEach(data.sections, section => {
-    section.cards = sortBy(section.cards, "displayOrder");
-  });
-  return {
-    ...dashboard,
-    name: data.name,
-    description: data.description,
-    sections: sortBy(data.sections, "displayOrder"),
-    filters: data.filters || []
-  };
+const setData = (thisIsNotNecessaryInThisCase, dashboard) => {
+  return { ...dashboard };
 };
 
 const updateDisplayOrder = items => {
@@ -75,23 +66,13 @@ const updateDisplayOrder = items => {
 };
 
 const addFilter = (dashboard, { newFilter }) => {
-  const filterToAdd = {
-    name: newFilter.titleKey,
-    filter: newFilter,
-    uuid: General.randomUUID()
-  };
-  const newFilters = concat(dashboard.filters, filterToAdd);
+  const newFilters = concat(dashboard.filters, newFilter);
   return { ...dashboard, filters: newFilters };
 };
 
 const editFilter = (dashboard, { selectedFilter, newFilter }) => {
   const filters = reject(dashboard.filters, it => it["filter"] === selectedFilter);
-  const filterToAdd = {
-    name: newFilter.titleKey,
-    filter: newFilter,
-    uuid: General.randomUUID()
-  };
-  filters.push(filterToAdd);
+  filters.push(newFilter);
   return { ...dashboard, filters };
 };
 

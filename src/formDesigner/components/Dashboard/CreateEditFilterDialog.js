@@ -29,6 +29,7 @@ export const CreateEditFilterDialog = ({
       </DialogTitle>
       <DialogContent style={{ height: "600px" }}>
         <CreateEditFiltersV2
+          selectedFilter={selectedFilter}
           operationalModules={operationalModules}
           documentationFileName={null}
           dashboardFilterSave={newFilter => {

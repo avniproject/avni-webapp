@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 const prefix = "app/reports/reducer/metadata/";
 
 export const types = {
@@ -61,6 +63,9 @@ export default function(state = initialState, action) {
       };
     }
     default:
+      if (_.get(action, "payload.error")) {
+        console.log(action.payload.error);
+      }
       return state;
   }
 }
