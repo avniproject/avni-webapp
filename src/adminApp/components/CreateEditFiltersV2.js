@@ -117,10 +117,11 @@ export const CreateEditFiltersV2 = ({
   }
 
   const saveFilter = () => {
-    dashboardFilterSave({
+    const dashboardFilter = {
       name: filterName,
       filterConfig: filterConfig
-    });
+    };
+    dashboardFilterSave(dashboardFilter);
   };
 
   const [conceptSuggestions, setConceptSuggestions] = useState([]);
@@ -131,7 +132,7 @@ export const CreateEditFiltersV2 = ({
     ConceptService.searchDashboardFilterConcepts(value).then(concepts => {
       const conceptOptions = map(concepts, concept => ({
         label: concept.name,
-        value: concept.uuid
+        value: concept
       }));
       setConceptSuggestions(conceptOptions);
       callback(conceptOptions);
@@ -207,7 +208,12 @@ export const CreateEditFiltersV2 = ({
                   <AsyncSelect
                     cacheOptions
                     defaultOptions={conceptSuggestions}
-                    // value={_.find(conceptSuggestions, (x) => x.value === _.get(selectedEntity, "uuid"); filterConfig.observationBasedFilter.concept}
+                    value={
+                      !_.isNil(filterConfig.observationBasedFilter.concept) && {
+                        label: filterConfig.observationBasedFilter.concept.name,
+                        value: filterConfig.observationBasedFilter.concept
+                      }
+                    }
                     placeholder={"Type to search"}
                     onChange={x => {
                       filterConfig.observationBasedFilter.concept = x.value;

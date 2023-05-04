@@ -2,7 +2,6 @@ import React from "react";
 import MaterialTable from "material-table";
 import EntityService from "../../../common/service/EntityService";
 import _ from "lodash";
-import OperationalModules from "../../../common/model/OperationalModules";
 
 function getFilterColumns(operationalModules) {
   if (_.isNil(operationalModules.subjectTypes)) return [];
@@ -34,8 +33,6 @@ function getFilterColumns(operationalModules) {
 }
 
 const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalModules }) => {
-  if (!OperationalModules.isLoaded(operationalModules)) return null;
-
   return (
     <MaterialTable
       columns={getFilterColumns(operationalModules)}

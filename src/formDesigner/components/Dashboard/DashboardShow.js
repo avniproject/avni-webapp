@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { getOperationalModules } from "../../../reports/reducers";
 import { withRouter } from "react-router-dom";
 import DashboardService from "../../../common/service/DashboardService";
+import OperationalModules from "../../../common/model/OperationalModules";
 
 function render(dashboard, operationalModules) {
   return (
@@ -29,13 +30,16 @@ function render(dashboard, operationalModules) {
 
 const DashboardShow = props => {
   React.useEffect(() => {
-    getOperationalModules();
+    props.getOperationalModules();
   }, []);
 
   const { operationalModules } = props;
 
+  if (!OperationalModules.isLoaded(operationalModules)) return null;
+
   return (
     <ResourceShowView
+      operationalModules={operationalModules}
       title={"Offline Dashboard"}
       resourceId={props.match.params.id}
       resourceName={"dashboard"}

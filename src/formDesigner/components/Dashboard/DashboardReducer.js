@@ -1,4 +1,5 @@
 import { map, reject, sortBy, concat } from "lodash";
+import _ from "lodash";
 import { ModelGeneral as General } from "openchs-models";
 
 const addSection = dashboard => {
@@ -65,19 +66,24 @@ const updateDisplayOrder = items => {
   });
 };
 
-const addFilter = (dashboard, { newFilter }) => {
-  const newFilters = concat(dashboard.filters, newFilter);
+const addFilter = (dashboard, { modifiedFilter }) => {
+  modifiedFilter.uuid = General.randomUUID();
+  const newFilters = concat(dashboard.filters, modifiedFilter);
   return { ...dashboard, filters: newFilters };
 };
 
-const editFilter = (dashboard, { selectedFilter, newFilter }) => {
-  const filters = reject(dashboard.filters, it => it["filter"] === selectedFilter);
-  filters.push(newFilter);
+const editFilter = (dashboard, { modifiedFilter, selectedFilter }) => {
+  const filters = reject(dashboard.filters, x => x.uuid === selectedFilter.uuid);
+  if (_.isNil(selectedFilter)) {
+    modifiedFilter.id = selectedFilter.id;
+    modifiedFilter.uuid = selectedFilter.uuid;
+  }
+  filters.push(modifiedFilter);
   return { ...dashboard, filters };
 };
 
 const deleteFilter = (dashboard, { selectedFilter }) => {
-  const filters = reject(dashboard.filters, it => it["filter"] === selectedFilter);
+  const filters = reject(dashboard.filters, x => x.uuid === selectedFilter.uuid);
   return { ...dashboard, filters };
 };
 

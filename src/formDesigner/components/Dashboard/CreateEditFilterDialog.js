@@ -32,10 +32,10 @@ export const CreateEditFilterDialog = ({
           selectedFilter={selectedFilter}
           operationalModules={operationalModules}
           documentationFileName={null}
-          dashboardFilterSave={newFilter => {
+          dashboardFilterSave={modifiedFilter => {
             dashboardDispatch({
               type: selectedFilter ? "editFilter" : "addFilter",
-              payload: { dashboard, newFilter, selectedFilter }
+              payload: { dashboard, modifiedFilter, selectedFilter }
             });
             setShowAddFilterModal(false);
           }}

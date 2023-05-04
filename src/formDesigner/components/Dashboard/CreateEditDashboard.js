@@ -83,6 +83,7 @@ const CreateEditDashboard = ({
 
   const handleModalClose = () => {
     setShowAddFilterModal(false);
+    setSelectedFilter(null);
   };
 
   const onSave = () => {
@@ -102,6 +103,8 @@ const CreateEditDashboard = ({
         ])
       );
   };
+
+  if (!OperationalModules.isLoaded(operationalModules)) return null;
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
