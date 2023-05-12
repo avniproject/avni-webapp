@@ -13698,10 +13698,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.29.4:
-  version "1.29.4"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.29.4.tgz#2548101190348cd60ffcd28d11c0eb34af40bfde"
-  integrity sha512-lTDX5Cn8DMUcdxGpQuuNpUKGBD7PpVyzgvnTcCKJQPiMvg8y6Yi8wL4lkCV/80uQYYlGO1BBeH6oom/S2p6Atg==
+openchs-models@1.30.2:
+  version "1.30.2"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.2.tgz#bb26f183d0d4193a110994d3c81aa2eb773c9494"
+  integrity sha512-xoFQ1b1XnxgJ6tTC2EuSPvKwrvMZNaIZ5aD/02PnnKOUmHxhLwxfRG6+5aIqt112MX5ZEQZBaHDwuGMKEjsRpA==
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
@@ -17090,9 +17090,9 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
-"rules-config@github:avniproject/rules-config#cbf1307fb9b3ae12c44256e283d9796bd2cd334c":
+"rules-config@github:avniproject/rules-config#fe552da405368bfd138e2f38e605c1d307e3ebe4":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/cbf1307fb9b3ae12c44256e283d9796bd2cd334c"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/fe552da405368bfd138e2f38e605c1d307e3ebe4"
 
 run-async@^2.2.0, run-async@^2.4.0:
   version "2.4.1"
