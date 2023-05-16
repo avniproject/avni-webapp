@@ -1,6 +1,5 @@
 import React from "react";
 import MaterialTable from "material-table";
-import EntityService from "../../../common/service/EntityService";
 import _ from "lodash";
 
 function getFilterColumns(operationalModules) {
@@ -11,16 +10,6 @@ function getFilterColumns(operationalModules) {
       title: "Name",
       render: rowData => {
         return rowData.name;
-      }
-    },
-    {
-      title: "Subject Type",
-      render: rowData => {
-        const subjectType = EntityService.findByUuid(
-          operationalModules.subjectTypes,
-          rowData.filterConfig.subjectType.uuid
-        );
-        return subjectType.name;
       }
     },
     {

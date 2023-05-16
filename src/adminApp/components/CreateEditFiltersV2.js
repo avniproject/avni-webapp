@@ -93,14 +93,13 @@ export const CreateEditFiltersV2 = ({
     isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
   );
 
-  const subjectTypeOptions = mapToOptions(subjectTypes);
   const programOptions = mapToOptions(
-    MetaDataService.getProgramsForSubjectType(programs, filterConfig.subjectType, formMappings)
+    MetaDataService.getProgramsForSubjectType(programs, null, formMappings)
   );
   const encounterTypeOptions = mapToOptions(
     MetaDataService.getEncounterTypes_For_SubjectTypeAndPrograms(
       encounterTypes,
-      filterConfig.subjectType,
+      null,
       _.get(filterConfig.observationBasedFilter, "programs"),
       formMappings
     )
@@ -162,18 +161,6 @@ export const CreateEditFiltersV2 = ({
                   toolTipKey={"APP_DESIGNER_FILTER_NAME"}
                 />
               </FormControl>
-              <Box m={1} />
-              <SingleEntitySelect
-                name="Subject Type"
-                placeholder="Select Subject Type"
-                selectedEntity={filterConfig.subjectType}
-                options={subjectTypeOptions}
-                onChange={x => {
-                  filterConfig.setSubjectType(x.value);
-                  updateFilterConfig(filterConfig);
-                }}
-                toolTipKey="APP_DESIGNER_FILTER_SUBJECT_TYPE"
-              />
               <Box m={1} />
               <SingleSelect
                 name="Type"
