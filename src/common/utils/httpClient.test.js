@@ -1,6 +1,8 @@
 import { assert } from "chai";
 import { httpClient } from "common/utils/httpClient";
 import NoAuthSession from "../../rootApp/security/NoAuthSession";
+import IdpFactory from "../../rootApp/security/IdpFactory";
+import IdpDetails from "../../rootApp/security/IdpDetails";
 
 describe("httpClient", () => {
   it("set headers", () => {
@@ -8,6 +10,7 @@ describe("httpClient", () => {
     noAuthSession.userInfoUpdate([], "abcd", "ABCD");
     httpClient.initAuthSession(noAuthSession);
     const params = {};
+    httpClient.setIdp(IdpFactory.createIdp(IdpDetails.none, {}));
     httpClient.setHeaders(params);
     assert.deepEqual(
       params.headers,
