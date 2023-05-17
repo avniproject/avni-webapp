@@ -74,7 +74,7 @@ const addFilter = (dashboard, { modifiedFilter }) => {
 
 const editFilter = (dashboard, { modifiedFilter, selectedFilter }) => {
   const filters = reject(dashboard.filters, x => x.uuid === selectedFilter.uuid);
-  if (_.isNil(selectedFilter)) {
+  if (!_.isNil(selectedFilter)) {
     modifiedFilter.id = selectedFilter.id;
     modifiedFilter.uuid = selectedFilter.uuid;
   }
