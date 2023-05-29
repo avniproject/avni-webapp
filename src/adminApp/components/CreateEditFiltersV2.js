@@ -35,6 +35,7 @@ function MultipleEntitySelect({
         value={selectedValues}
         options={options}
         onChange={onChange}
+        maxMenuHeight={200}
       />
     </div>
   );
@@ -45,7 +46,13 @@ function SingleSelect({ name, placeholder, value, options, onChange, toolTipKey 
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
-      <Select placeholder={placeholder} value={selectValue} options={options} onChange={onChange} />
+      <Select
+        placeholder={placeholder}
+        value={selectValue}
+        options={options}
+        onChange={onChange}
+        maxMenuHeight={200}
+      />
     </div>
   );
 }
