@@ -43,7 +43,7 @@ export default function NewsList({ history, ...props }) {
     },
     {
       title: "Action",
-      render: rowData => <a href={`#/news/${rowData.id}/details`}>{"See details"}</a>
+      render: rowData => <a href={`#/broadcast/news/${rowData.id}/details`}>{"See details"}</a>
     }
   ];
 

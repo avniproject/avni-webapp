@@ -12,6 +12,7 @@ import { getHref, getRoutePath } from "../common/utils/routeUtil";
 import BroadcastPath from "./utils/BroadcastPath";
 import { connect, useDispatch } from "react-redux";
 import { getOrganisationConfig } from "./reducers/metadataReducer";
+import NewsDetails from "./NewsDetails";
 
 const BroadcastPage = function({ path, organisationConfig }) {
   return (
@@ -50,6 +51,7 @@ const Broadcast = ({ match: { path }, organisationConfig }) => {
         component={WithProps({ path: path, organisationConfig }, BroadcastPage)}
       />
       <Route exact path={getRoutePath(path, BroadcastPath.News)} component={News} />
+      <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
       <Route
         exact
         path={getRoutePath(path, `${BroadcastPath.WhatsApp}/:activeTab?`)}
