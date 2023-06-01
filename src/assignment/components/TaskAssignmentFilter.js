@@ -79,6 +79,13 @@ export const TaskAssignmentFilter = ({
           onFilterChange={onFilterChange}
         />
         <SelectFilter
+          label={"Scheduled"}
+          options={dateFilterFieldOptions}
+          filter={"scheduledOn"}
+          filterCriteria={filterCriteria}
+          onFilterChange={onFilterChange}
+        />
+        <SelectFilter
           label={"Completed"}
           options={dateFilterFieldOptions}
           filter={"completedOn"}
