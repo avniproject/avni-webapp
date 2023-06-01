@@ -34,6 +34,11 @@ export const getTableColumns = taskMetadata => {
       sorting: false
     },
     {
+      title: "Scheduled",
+      field: "scheduledOn",
+      sorting: false
+    },
+    {
       title: "Completed",
       field: "completedOn",
       sorting: false
