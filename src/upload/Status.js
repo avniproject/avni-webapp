@@ -10,7 +10,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { getStatuses } from "./reducers";
 import { capitalize, get, isNil, map, includes } from "lodash";
-import Types from "./Types";
+import { staticTypesWithStaticDownload, staticTypesWithDynamicDownload } from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
 
@@ -87,7 +87,9 @@ const Status = ({ viewVersion, statuses, getStatuses, page, uploadTypes = new Up
                 </TableCell>
               </Tooltip>
               <TableCell align="right">
-                {Types.getName(jobStatus.type) || uploadTypes.getName(jobStatus.type)}
+                {staticTypesWithStaticDownload.getName(jobStatus.type) ||
+                  staticTypesWithDynamicDownload.getName(jobStatus.type) ||
+                  uploadTypes.getName(jobStatus.type)}
               </TableCell>
               <TableCell align="right">{formatDate(jobStatus.createTime)}</TableCell>
               <TableCell align="right">{formatDate(jobStatus.startTime)}</TableCell>
