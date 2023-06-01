@@ -14957,11 +14957,6 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
-
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -15592,10 +15587,18 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.6:
-  version "1.30.6"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.6.tgz#34992635c10dde22ac8f677ee7105e9b6c1ddee1"
-  integrity sha512-jjwhg3W76+XfZB4PKO/oMmk71C5yGwkus7HWxttKKo91idPnjlIf+IyGdhJ1jMQfQOmGoYY21r6x8p9Y3+gT0A==
+openchs-models@1.30.7:
+  version "1.30.7"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.7.tgz#48ac035cad6432e6fb5f1783ef914143f4bb18d3"
+  integrity sha512-J7cys8LLS7CmH66gUxmfl6dCR2yCr2eo1OvWYKNdkY4oISjONLKdSEJUOC25gyEH+CdN65adA+VmzRJtkf6cGg==
+
+openchs-models@^0.2.25:
+  version "0.2.86"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
+  integrity sha512-+ivZewM93wX66HxRs+XIwxcHeGLEZfxPZE5hvcEvFEgyyRb7f8ZMOgpkLr7NBYpdoOPdM12qzQYKWNXnKW7oXg==
+  dependencies:
+    lodash "^4.17.11"
+    moment "^2.22.2"
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"

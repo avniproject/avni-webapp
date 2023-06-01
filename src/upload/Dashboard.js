@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 import Button from "@material-ui/core/Button";
 import FileUpload from "../common/components/FileUpload";
-import Types from "./Types";
+import { staticTypesWithStaticDownload, staticTypesWithDynamicDownload } from "./Types";
 import api from "./api";
 import DropDown from "../common/components/DropDown";
 import { getStatuses, getUploadTypes } from "./reducers";
@@ -20,6 +20,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
 import { isAnyAdmin } from "../common/utils/General";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -40,7 +41,10 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [mode, setMode] = React.useState("relaxed");
 
   const selectFile = (content, userfile) => setFile(userfile);
-  const getUploadTypeCode = name => Types.getCode(name) || uploadTypes.getCode(name);
+  const getUploadTypeCode = name =>
+    staticTypesWithStaticDownload.getCode(name) ||
+    staticTypesWithDynamicDownload.getCode(name) ||
+    uploadTypes.getCode(name);
 
   const uploadFile = async () => {
     const [ok, error] = await api.bulkUpload(
@@ -60,10 +64,17 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   };
 
   const downloadSampleFile = async () => {
-    if (Types.getCode(entityForDownload)) {
-      await api.downloadSample(Types.getCode(entityForDownload));
-    } else if (uploadTypes.getCode(entityForDownload)) {
-      await api.downloadDynamicSample(uploadTypes.getCode(entityForDownload));
+    let uploadType;
+    if (staticTypesWithStaticDownload.getCode(entityForDownload)) {
+      await api.downloadSample(staticTypesWithStaticDownload.getCode(entityForDownload));
+    } else if (
+      !_.isUndefined(
+        (uploadType =
+          uploadTypes.getCode(entityForDownload) ||
+          staticTypesWithDynamicDownload.getCode(entityForDownload))
+      )
+    ) {
+      await api.downloadDynamicSample(uploadType);
     }
     setEntityForDownload("");
   };
@@ -73,10 +84,19 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   }, []);
 
   const uploadOptions = () =>
-    isAnyAdmin(userRoles) ? concat(Types.names, uploadTypes.names) : uploadTypes.names;
+    isAnyAdmin(userRoles)
+      ? concat(
+          staticTypesWithStaticDownload.names,
+          staticTypesWithDynamicDownload.names,
+          uploadTypes.names
+        )
+      : uploadTypes.names;
 
   const downloadOptions = () =>
-    filter(uploadOptions(), ({ name }) => name !== Types.getName("metadataZip"));
+    filter(
+      uploadOptions(),
+      ({ name }) => name !== staticTypesWithStaticDownload.getName("metadataZip")
+    );
 
   const dropdownHandler = option => {
     setAutoApprove(false);
