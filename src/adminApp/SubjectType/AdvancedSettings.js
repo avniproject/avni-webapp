@@ -4,14 +4,12 @@ import Typography from "@material-ui/core/Typography";
 import { AddressLevelSetting } from "./AddressLevelSetting";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { ValidFormat } from "./ValidFormat";
-import {
-  CustomisedAccordionSummary,
-} from "../components/CustomisedExpansionPanelSummary";
+import { CustomisedAccordionSummary } from "../components/CustomisedExpansionPanelSummary";
 import { findFormUuidForSubjectType } from "../domain/formMapping";
 import http from "../../common/utils/httpClient";
 import { forEach, get, includes } from "lodash";
 import { OptionSelect } from "./OptionSelect";
-import {Accordion, AccordionDetails, Box, Input} from "@material-ui/core";
+import { Accordion, AccordionDetails, Box, Input } from "@material-ui/core";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 const CustomAccordion = withStyles({
@@ -22,7 +20,7 @@ const CustomAccordion = withStyles({
   expanded: {
     margin: "auto"
   }
-})(props => <Accordion {...props}/>);
+})(props => <Accordion {...props} />);
 CustomAccordion.muiName = "Accordion";
 
 const CustomAccordianDetails = withStyles(theme => ({
@@ -32,8 +30,8 @@ const CustomAccordianDetails = withStyles(theme => ({
     padding: theme.spacing.unit * 2,
     display: "block"
   }
-}))(props => <AccordionDetails {...props}/>);
-CustomAccordianDetails.muiName = "AccordionDetails"
+}))(props => <AccordionDetails {...props} />);
+CustomAccordianDetails.muiName = "AccordionDetails";
 
 const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
 export const AdvancedSettings = ({
@@ -86,8 +84,7 @@ export const AdvancedSettings = ({
   }, [formUuid]);
 
   return (
-    <CustomAccordion square expanded={expanded} onChange={() => setExpanded((expanded) => !expanded)
-    }>
+    <CustomAccordion square expanded={expanded} onChange={() => setExpanded(expanded => !expanded)}>
       <CustomisedAccordionSummary>
         <Typography>Advanced settings</Typography>
       </CustomisedAccordionSummary>
@@ -169,6 +166,19 @@ export const AdvancedSettings = ({
                   />
                 </>
               )}
+              <p />
+              <AvniSwitch
+                checked={!!subjectType.lastNameOptional}
+                onChange={event =>
+                  dispatch({
+                    type: "lastNameOptional",
+                    payload: event.target.checked
+                  })
+                }
+                name="Last Name Optional"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_LAST_NAME_OPTIONAL"}
+              />
+              <p />
               <ValidFormat
                 subjectType={subjectType}
                 dispatch={dispatch}
