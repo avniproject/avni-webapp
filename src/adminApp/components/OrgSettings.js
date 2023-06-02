@@ -62,8 +62,7 @@ export const OrgSettings = () => {
     skipRuleExecution: "skipRuleExecution",
     maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
     showHierarchicalLocation: "showHierarchicalLocation",
-    donotRequirePasswordChangeOnFirstLogin: "donotRequirePasswordChangeOnFirstLogin",
-    lastNameOptional: "lastNameOptional"
+    donotRequirePasswordChangeOnFirstLogin: "donotRequirePasswordChangeOnFirstLogin"
   };
 
   return orgSettings ? (
@@ -125,11 +124,6 @@ export const OrgSettings = () => {
           organisationConfigSettingKeys.donotRequirePasswordChangeOnFirstLogin,
           "Do not require password change for new user",
           "DO_NOT_REQUIRE_PASSWORD_CHANGE_FOR_NEW_USER"
-        )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.lastNameOptional,
-          "Last Name Optional",
-          "LAST_NAME_OPTIONAL"
         )}
         <AvniTextField
           style={{ marginLeft: 8, marginTop: 10 }}
