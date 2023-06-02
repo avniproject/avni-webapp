@@ -146,6 +146,8 @@ export function subjectTypeReducer(subjectType, action) {
       };
     case "allowMiddleName":
       return { ...subjectType, allowMiddleName: action.payload };
+    case "lastNameOptional":
+      return { ...subjectType, lastNameOptional: action.payload };
     case "validMiddleNameRegex":
       return {
         ...subjectType,

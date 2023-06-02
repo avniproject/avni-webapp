@@ -53,6 +53,8 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         />
       )}
 
+      <BooleanStatusInShow status={subjectType.lastNameOptional} label={"Last Name Optional"} />
+
       {subjectType.validLastNameFormat && (
         <TextFormatFieldInShow label="Valid Last Name" format={subjectType.validLastNameFormat} />
       )}
