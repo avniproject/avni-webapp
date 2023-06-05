@@ -115,6 +115,7 @@ export const mapSubjectType = json => {
   subjectType.validMiddleNameFormat = Format.fromResource(json.validMiddleNameFormat);
   subjectType.validLastNameFormat = Format.fromResource(json.validLastNameFormat);
   subjectType.allowMiddleName = json.allowMiddleName;
+  subjectType.lastNameOptional = json.lastNameOptional;
   subjectType.allowProfilePicture = json.allowProfilePicture;
   subjectType.group = json.group;
   subjectType.household = json.household;

@@ -318,7 +318,13 @@ const SubjectRegister = props => {
                     )}
                     <TextFormElement
                       uuid={Individual.validationKeys.LAST_NAME}
-                      formElement={new StaticFormElement("lastName", true, true)}
+                      formElement={
+                        new StaticFormElement(
+                          "lastName",
+                          !props.subject.subjectType.lastNameOptional,
+                          true
+                        )
+                      }
                       value={props.subject.lastName}
                       validationResults={props.validationResults}
                       update={props.setLastName}
