@@ -80,7 +80,7 @@ export default function NewsDetails({ history, ...props }) {
           news={news}
         />
       </div>
-      {redirectToListing && <Redirect to="/news" />}
+      {redirectToListing && <Redirect to="/broadcast/news" />}
     </ScreenWithAppBar>
   );
 }

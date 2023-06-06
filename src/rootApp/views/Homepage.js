@@ -5,6 +5,7 @@ import httpClient from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import axios from "axios";
+import { isMediaViewerEnabled } from "../../common/constants";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
@@ -17,7 +18,6 @@ const Homepage = ({ user }) => {
     };
     fetchOrgID();
   }, []);
-
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
@@ -37,12 +37,14 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
         <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
-        <HomePageCard
-          href={`/avni-media?orgID=${userData && userData.organisationId}&username=${userData &&
-            userData.username}`}
-          name={"Media Viewer "}
-          customIcon={"collections"}
-        />
+        {isMediaViewerEnabled && (
+          <HomePageCard
+            href={`/avni-media?orgID=${userData && userData.organisationId}&username=${userData &&
+              userData.username}`}
+            name={"Media Viewer "}
+            customIcon={"collections"}
+          />
+        )}
         <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
       </Grid>
     </ScreenWithAppBar>

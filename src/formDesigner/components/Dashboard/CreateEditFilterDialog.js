@@ -27,7 +27,7 @@ export const CreateEditFilterDialog = ({
           </Box>
         </Box>
       </DialogTitle>
-      <DialogContent style={{ height: "600px" }}>
+      <DialogContent style={{ height: "750px" }}>
         <CreateEditFiltersV2
           selectedFilter={selectedFilter}
           operationalModules={operationalModules}
