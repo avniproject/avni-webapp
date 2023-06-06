@@ -14957,6 +14957,11 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -15591,14 +15596,6 @@ openchs-models@1.30.9:
   version "1.30.9"
   resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.9.tgz#475354450288791db2fc268ab4f4f1ae4bbc3d22"
   integrity sha512-3y92I1lKztMRp+Dddi3xXf2wbcBIaxDsv2tdUelYK55zvkejzcVKGhq9Wv4aDSbYQ5H7bZWiDro3+wrouM2jPQ==
-
-openchs-models@^0.2.25:
-  version "0.2.86"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
-  integrity sha512-+ivZewM93wX66HxRs+XIwxcHeGLEZfxPZE5hvcEvFEgyyRb7f8ZMOgpkLr7NBYpdoOPdM12qzQYKWNXnKW7oXg==
-  dependencies:
-    lodash "^4.17.11"
-    moment "^2.22.2"
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
@@ -19139,7 +19136,8 @@ rsvp@^4.8.4:
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.29.4"
+    moment "^2.22.2"
+    openchs-models "^0.2.25"
     superagent "^3.8.3"
     test "^0.6.0"
     uglifyjs-webpack-plugin "^1.2.5"
