@@ -15605,6 +15605,14 @@ openchs-models@^0.2.25:
     lodash "^4.17.11"
     moment "^2.22.2"
 
+openchs-models@^0.2.25:
+  version "0.2.86"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
+  integrity sha512-+ivZewM93wX66HxRs+XIwxcHeGLEZfxPZE5hvcEvFEgyyRb7f8ZMOgpkLr7NBYpdoOPdM12qzQYKWNXnKW7oXg==
+  dependencies:
+    lodash "^4.17.11"
+    moment "^2.22.2"
+
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz#7a0fff978f6dbfa4d006238fbac98ed4198c3259"
