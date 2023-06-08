@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
 import axios from "axios";
@@ -22,6 +22,7 @@ class HttpClient {
     this.getOrgUUID = this.getOrgUUID.bind(this);
     this.get = this._wrapAxiosMethod("get");
     this.post = this._wrapAxiosMethod("post");
+    this.postToDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("post");
     this.put = this._wrapAxiosMethod("put");
     this.patch = this._wrapAxiosMethod("patch");
     this.delete = this._wrapAxiosMethod("delete");
@@ -126,6 +127,12 @@ class HttpClient {
     this.setOrgUuidHeader();
   }
 
+  _wrapAxiosMethodForDifferentOrigin(methodName) {
+    return async (...args) => {
+      return axios[methodName](...args);
+    };
+  }
+
   _wrapAxiosMethod(methodName) {
     return async (...args) => {
       await this.setTokenAndOrgUuidHeaders();
@@ -169,6 +176,15 @@ class HttpClient {
     };
     const encoded = querystring.stringify(request);
     return axios.post(url, encoded, options);
+  }
+
+  setServices(services) {
+    this.services = services;
+  }
+
+  postOtherOriginJson(url, serviceType, payload) {
+    const service = _.find(this.services, x => x["serviceType"] === serviceType);
+    return this.postToDifferentOrigin(`${service["origin"]}/${url}`, payload);
   }
 }
 

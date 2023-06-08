@@ -42,7 +42,9 @@ const MainApp = () => {
         if (IdpDetails.cognitoEnabled(idpDetails)) configureAuth(idpDetails.cognito);
         httpClient.setIdp(IdpFactory.createIdp(idpDetails.idpType, idpDetails));
         setInitialised(true);
-      });
+      })
+      .then(() => httpClient.fetchJson("/service"))
+      .then(response => httpClient.setServices(response.json));
   }, []);
 
   if (!initialised) return null;
