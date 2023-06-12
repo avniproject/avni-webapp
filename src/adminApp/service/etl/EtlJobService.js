@@ -3,38 +3,43 @@ import AvniServiceNames from "../../../common/AvniServiceNames";
 
 const JOB_BASE_URL = "etl/job";
 
+const jobEntityTypes = {
+  organisation: "Organisation",
+  organisationGroup: "OrganisationGroup"
+};
+
 class EtlJobService {
   static getJobStatuses(organisationUUIDs) {
-    return httpClient.postOtherOriginJson(
-      `${JOB_BASE_URL}/status`,
-      AvniServiceNames.ETL,
-      organisationUUIDs
-    );
+    return httpClient
+      .postOtherOriginJson(`${JOB_BASE_URL}/status`, AvniServiceNames.ETL, organisationUUIDs)
+      .catch(e => {
+        console.error(e);
+        return [];
+      });
   }
 
-  static getJob(organisationUUID) {
+  static getJob(entityUUID) {
     return httpClient
-      .getFromDifferentOrigin(`${JOB_BASE_URL}/${organisationUUID}`, AvniServiceNames.ETL)
+      .getFromDifferentOrigin(`${JOB_BASE_URL}/${entityUUID}`, AvniServiceNames.ETL)
       .then(response => {
         return response.data;
       })
       .catch(axiosError => {
+        console.error(axiosError);
         if (axiosError.response.status === 404) return null;
         throw axiosError;
       });
   }
 
-  static createOrEnableJob(organisationUUID) {
+  static createOrEnableJob(entityUUID, resource) {
     return httpClient.postOtherOriginJson(JOB_BASE_URL, AvniServiceNames.ETL, {
-      organisationUUID: organisationUUID
+      entityUUID: entityUUID,
+      jobEntityType: jobEntityTypes[resource]
     });
   }
 
-  static disableJob(organisationUUID) {
-    return httpClient.deleteOtherOriginJson(
-      `${JOB_BASE_URL}/${organisationUUID}`,
-      AvniServiceNames.ETL
-    );
+  static disableJob(entityUUID) {
+    return httpClient.deleteOtherOriginJson(`${JOB_BASE_URL}/${entityUUID}`, AvniServiceNames.ETL);
   }
 }
 

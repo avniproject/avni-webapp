@@ -23,6 +23,7 @@ import {
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { TitleChip } from "./components/TitleChip";
 import { Title } from "./components/Title";
+import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
 
 export const OrganisationGroupList = props => (
   <List {...props} bulkActions={false}>
@@ -110,7 +111,9 @@ export const organisationGroupEdit = props => (
       <TextInput source="name" validate={required("Name cannot be empty")} />
       <DisabledInput source="dbUser" />
       <TextInput source="schemaName" validate={required("Schema name cannot be empty")} />
-      <BooleanInput source="analyticsDataSyncActive" />
+      <BooleanField source="analyticsDataSyncActive" />
+      <ToggleAnalyticsButton />
+      <br />
       <ReferenceInput
         resource="account"
         source="accountId"
