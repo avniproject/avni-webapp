@@ -45,11 +45,6 @@ jobs:
 
       - run: yarn install
 
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-
       - run: yarn test
 
   app_build:
@@ -62,15 +57,7 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-
       - run: yarn install
-
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
 
       - run: yarn run build
 
