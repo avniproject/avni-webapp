@@ -148,7 +148,7 @@ const ProfileDetails = ({
     setError(isError);
   };
 
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   useEffect(() => {
     getPrograms(subjectUuid);
@@ -243,7 +243,7 @@ const ProfileDetails = ({
                   {profileDetails.subjectType.isPerson() && (
                     <TableCell className={classes.tableCellDetails}>
                       {profileDetails.dateOfBirth
-                        ? getDisplayAge(profileDetails.dateOfBirth, t)
+                        ? getDisplayAge(profileDetails.dateOfBirth, i18n)
                         : "-"}
                     </TableCell>
                   )}
