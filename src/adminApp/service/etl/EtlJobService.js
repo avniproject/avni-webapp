@@ -1,7 +1,7 @@
 import httpClient from "../../../common/utils/httpClient";
 import AvniServiceNames from "../../../common/AvniServiceNames";
 
-const JOB_BASE_URL = "etl/job";
+const JOB_BASE_URL = "job";
 
 const jobEntityTypes = {
   organisation: "Organisation",
