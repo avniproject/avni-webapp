@@ -6,7 +6,7 @@ const filter = function(pathname, req) {
     pathname === "/" ||
     _.startsWith(pathname, "/static") ||
     _.startsWith(pathname, "/manifest.json") ||
-    pathname.includes("/etl/")
+    req.get("host").includes("8022")
   );
   return doFilter;
 };
