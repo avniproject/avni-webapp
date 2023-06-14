@@ -26,7 +26,7 @@ import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const subjectTypes = useSelector(selectSubjectTypes);
   const searchExtensions = filter(
     get(organisationConfigs, "organisationConfig.extensions", []),
@@ -93,7 +93,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       ? {
           title: t("age"),
           field: "dateOfBirth",
-          render: row => (row.dateOfBirth ? getDisplayAge(row.dateOfBirth, t) : "")
+          render: row => (row.dateOfBirth ? getDisplayAge(row.dateOfBirth, i18n) : "")
         }
       : null,
     {
