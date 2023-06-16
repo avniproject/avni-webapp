@@ -7,13 +7,13 @@ export default {
   fetchRelationshipTypes: () =>
     httpClient.fetchJson("/web/relationshipType").then(response => response.json),
   saveSubject: subject =>
-    httpClient.fetchJson("/individuals", {
+    httpClient.fetchJson("/web/individuals", {
       method: "POST",
       body: JSON.stringify(subject)
     }),
 
   saveProgramEnrolment: programEnrolment =>
-    httpClient.fetchJson("/programEnrolments", {
+    httpClient.fetchJson("/web/programEnrolments", {
       method: "POST",
       body: JSON.stringify(programEnrolment)
     }),
@@ -25,7 +25,7 @@ export default {
     }),
 
   saveProgramEncouter: programEncounter =>
-    httpClient.fetchJson("/programEncounters", {
+    httpClient.fetchJson("/web/programEncounters", {
       method: "POST",
       body: JSON.stringify(programEncounter)
     }),
@@ -42,7 +42,7 @@ export default {
     }),
 
   saveEncounter: encounter =>
-    httpClient.fetchJson("/encounters", {
+    httpClient.fetchJson("/web/encounters", {
       method: "POST",
       body: JSON.stringify(encounter)
     }),
