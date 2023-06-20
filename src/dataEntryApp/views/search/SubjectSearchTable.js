@@ -20,7 +20,7 @@ import {
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import { Grid } from "@material-ui/core";
-import { getDisplayAge } from "../../utils/AgeUtil";
+import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
@@ -93,7 +93,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       ? {
           title: t("age"),
           field: "dateOfBirth",
-          render: row => (row.dateOfBirth ? getDisplayAge(row.dateOfBirth, i18n) : "")
+          render: row => (row.dateOfBirth ? AgeUtil.getDisplayAge(row.dateOfBirth, i18n) : "")
         }
       : null,
     {
