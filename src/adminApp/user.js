@@ -241,6 +241,12 @@ export const UserDetail = ({ user, ...props }) => {
           }
         />
         <FunctionField
+          label="Disable auto sync"
+          render={user =>
+            !isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : ""
+          }
+        />
+        <FunctionField
           label="Register + Enrol"
           render={user =>
             !isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : ""
@@ -602,6 +608,11 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           source="settings.disableAutoRefresh"
           label="Disable dashboard auto refresh"
           toolTipKey={"ADMIN_USER_SETTINGS_DISABLE_AUTO_REFRESH"}
+        />
+        <AvniBooleanInput
+          source="settings.disableAutoSync"
+          label="Disable auto sync"
+          toolTipKey={"ADMIN_USER_SETTINGS_DISABLE_AUTO_SYNC"}
         />
         <AvniBooleanInput
           source="settings.registerEnrol"
