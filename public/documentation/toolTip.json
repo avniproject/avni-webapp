@@ -142,6 +142,7 @@
   "ADMIN_USER_SETTINGS_HIDE_UNPLANNED": "Removes the ability to create unplanned visits on the Field App",
   "ADMIN_USER_SETTINGS_BENEFICIARY_MODE": "Enables the Beneficiary mode - a limited mode that allows beneficiaries to use the Field App",
   "ADMIN_USER_SETTINGS_DISABLE_AUTO_REFRESH": "Disables Auto-refresh of MyDashboard of the Field App. Use if the dashboard is slow to refresh",
+  "ADMIN_USER_SETTINGS_DISABLE_AUTO_SYNC": "Disables automatic background sync. Use it if you want to trigger sync only manually",
   "ADMIN_USER_SETTINGS_REGISTER_ENROL": "Adds extra quick menu items on the Register tab to register and enrol to programs in a single flow",
   "ADMIN_USER_SETTINGS_DATA_ENTRY_APP_ENABLE_WRITES": "Enable write functionality for web based data entry app. Write functionality is in beta so may have issues.",
   "ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX": "Identifier prefix for ids generated for this user. See [documentation](https://avni.readme.io/docs/creating-identifiers) for more information",
