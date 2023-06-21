@@ -3,8 +3,8 @@ class IndividualService {
     throw Error("getSubjectsInLocation method is not supported for DEA");
   }
 
-  getSubjectByUUIDAndType(uuid, subjectTypeName) {
-    throw Error("getSubjectByUUIDAndType method is not supported for DEA");
+  getSubjectByUUIDe(uuid, subjectTypeName) {
+    throw Error("getSubjectByUUID method is not supported for DEA");
   }
 }
 
