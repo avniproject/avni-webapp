@@ -134,7 +134,7 @@ class HttpClient {
     this.setOrgUuidHeader();
   }
 
-  _wrapAxiosMethodForDifferentOrigin(methodName, options = {}) {
+  _wrapAxiosMethodForDifferentOrigin(methodName, options) {
     return async (...args) => {
       await this.setTokenAndOrgUuidHeaders(options);
       return axios[methodName](...args);
