@@ -1,10 +1,13 @@
+const notSupportedMessage =
+  "Not supported. Please see  https://avni.readme.io/docs/writing-rules#types-of-rules-and-their-supportavailability-in-data-entry-app";
+
 class IndividualService {
   getSubjectsInLocation(addressLevel, subjectTypeName) {
-    throw Error("getSubjectsInLocation method is not supported for DEA");
+    throw Error(notSupportedMessage);
   }
 
   getSubjectByUUIDe(uuid, subjectTypeName) {
-    throw Error("getSubjectByUUID method is not supported for DEA");
+    throw Error(notSupportedMessage);
   }
 }
 
