@@ -8,11 +8,6 @@ import Auth from "@aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 
-function getOtherOriginUrl(services, serviceType, url) {
-  const service = _.find(services, x => x["serviceType"] === serviceType);
-  return `${service["origin"]}/${url}`;
-}
-
 class HttpClient {
   idp;
   authSession;
@@ -26,7 +21,6 @@ class HttpClient {
     this.fetchJson = this.fetchJson.bind(this);
     this.getOrgUUID = this.getOrgUUID.bind(this);
     this.get = this._wrapAxiosMethod("get");
-    this._getFromDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("get");
     this.post = this._wrapAxiosMethod("post");
     this.postToDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("post");
     this.put = this._wrapAxiosMethod("put");
@@ -162,11 +156,6 @@ class HttpClient {
     return this.get(...args).then(response => response.data);
   }
 
-  getFromDifferentOrigin(url, serviceType) {
-    const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
-    return this._getFromDifferentOrigin(otherOriginUrl);
-  }
-
   getPageData(embeddedResourceCollectionName, ...args) {
     return this.getData(args).then(responseBodyJson => {
       return {
@@ -194,8 +183,8 @@ class HttpClient {
   }
 
   postOtherOriginJson(url, serviceType, payload) {
-    const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
-    return this.postToDifferentOrigin(otherOriginUrl, payload);
+    const service = _.find(this.services, x => x["serviceType"] === serviceType);
+    return this.postToDifferentOrigin(`${service["origin"]}/${url}`, payload);
   }
 }
 

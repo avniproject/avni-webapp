@@ -13,7 +13,7 @@ import {
 import { UrlPartsGenerator } from "./requestUtils";
 import SpringResponse from "./SpringResponse";
 import { httpClient } from "../../common/utils/httpClient";
-import OrganisationDataProvider from "./resourceSpecificProviders/OrganisationDataProvider";
+import OrganisationProvider from "./resourceSpecificProviders/OrganisationProvider";
 
 /**
  * Maps react-admin queries to a simple REST API
@@ -53,7 +53,7 @@ const urlMapping = {
 };
 
 const resourceSpecificProviders = {
-  organisation: OrganisationDataProvider
+  organisation: OrganisationProvider
 };
 
 export default apiUrl => {
@@ -161,13 +161,12 @@ export default apiUrl => {
       }));
     }
 
+    const resourceSpecificProvider = resourceSpecificProviders[resource];
+    if (resourceSpecificProvider) return resourceSpecificProvider.execute(type, params);
+
     const { url, options } = convertDataRequestToHTTP(type, resource, params);
-    const promise = httpClient
+    return httpClient
       .fetchJson(url, options)
       .then(response => convertHTTPResponse(response, type, resource, params));
-    const resourceSpecificProvider = resourceSpecificProviders[resource];
-    if (resourceSpecificProvider && resourceSpecificProvider.supportsOperation(type))
-      return resourceSpecificProvider.execute(type, params, promise);
-    return promise;
   };
 };
