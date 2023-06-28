@@ -1,22 +1,17 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { fetchEnd, fetchStart, showNotification, Button } from "react-admin";
-import CircularProgress from "@material-ui/core/CircularProgress";
 
 import EtlJobService from "./service/etl/EtlJobService";
-import { Redirect } from "react-router-dom";
 
 class ToggleAnalyticsButton extends Component {
   state = {
     busy: false,
-    error: false,
-    actionCompleted: false
+    error: false
   };
 
-  async handleClick() {
-    this.setState({ busy: true });
-
-    const { fetchStart, fetchEnd, showNotification, record, resource } = this.props;
+  handleClick() {
+    const { fetchStart, fetchEnd, showNotification, record } = this.props;
 
     // Dispatch an action letting react-admin know a API call is ongoing
     fetchStart();
@@ -26,36 +21,27 @@ class ToggleAnalyticsButton extends Component {
     const toggleFn = record.analyticsDataSyncActive
       ? EtlJobService.disableJob
       : EtlJobService.createOrEnableJob;
-    toggleFn(record.uuid, resource)
+    toggleFn(record.uuid)
       .catch(error => {
         showNotification(error.message, "error");
       })
       .finally(() => {
         // Dispatch an action letting react-admin know a API call has ended
         fetchEnd();
-        this.setState({ busy: false, actionCompleted: true });
       });
   }
 
   render() {
-    const { resource, record } = this.props;
-    const { analyticsDataSyncActive, id } = record;
-    const { busy, actionCompleted } = this.state;
-
-    if (actionCompleted) return <Redirect to={`/admin/${resource}/${id}/show`} />;
-
+    const { analyticsDataSyncActive } = this.props.record;
     const label = analyticsDataSyncActive ? "Disable" : "Enable";
 
     return (
       <Fragment>
         <Button
-          disabled={busy}
           onClick={() => this.handleClick()}
           label={`${label} - Analytics Data Sync`}
           variant={"contained"}
-        >
-          {busy && <CircularProgress />}
-        </Button>
+        />
       </Fragment>
     );
   }
