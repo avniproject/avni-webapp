@@ -17,12 +17,12 @@ import {
   TextField,
   TextInput,
   Toolbar,
-  BooleanField
+  BooleanField,
+  BooleanInput
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
-import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -110,9 +110,7 @@ export const OrganisationEdit = props => {
         <DisabledInput source="schemaName" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
-        <BooleanField source="analyticsDataSyncActive" />
-        <ToggleAnalyticsButton />
-        <br />
+        <BooleanInput source="analyticsDataSyncActive" />
         <ReferenceInput
           resource="account"
           source="accountId"
@@ -143,6 +141,7 @@ export const OrganisationCreate = props => {
         <TextInput source="schemaName" validate={isRequired} />
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <BooleanInput source="analyticsDataSyncActive" />
         <ReferenceInput
           resource="account"
           source="accountId"

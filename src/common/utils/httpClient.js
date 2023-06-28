@@ -32,7 +32,6 @@ class HttpClient {
     this.put = this._wrapAxiosMethod("put");
     this.patch = this._wrapAxiosMethod("patch");
     this.delete = this._wrapAxiosMethod("delete");
-    this.deleteFromDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("delete");
     HttpClient.instance = this;
   }
 
@@ -197,11 +196,6 @@ class HttpClient {
   postOtherOriginJson(url, serviceType, payload) {
     const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
     return this.postToDifferentOrigin(otherOriginUrl, payload);
-  }
-
-  deleteOtherOriginJson(url, serviceType, payload) {
-    const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
-    return this.deleteFromDifferentOrigin(otherOriginUrl, payload);
   }
 }
 
