@@ -13,7 +13,6 @@ import {
 import { UrlPartsGenerator } from "./requestUtils";
 import SpringResponse from "./SpringResponse";
 import { httpClient } from "../../common/utils/httpClient";
-import OrganisationProvider from "./resourceSpecificProviders/OrganisationProvider";
 
 /**
  * Maps react-admin queries to a simple REST API
@@ -51,11 +50,6 @@ const urlMapping = {
   individual: "subjects",
   concept: "concept/answerConcepts"
 };
-
-const resourceSpecificProviders = {
-  organisation: OrganisationProvider
-};
-
 export default apiUrl => {
   /**
    * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
@@ -160,9 +154,6 @@ export default apiUrl => {
         data: responses.map(response => response.json)
       }));
     }
-
-    const resourceSpecificProvider = resourceSpecificProviders[resource];
-    if (resourceSpecificProvider) return resourceSpecificProvider.execute(type, params);
 
     const { url, options } = convertDataRequestToHTTP(type, resource, params);
     return httpClient
