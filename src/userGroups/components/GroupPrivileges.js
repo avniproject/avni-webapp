@@ -8,28 +8,33 @@ import MaterialTable from "material-table";
 import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 
-const VIEW_SUBJECT = "View subject";
-const REGISTER_SUBJECT = "Register subject";
-const EDIT_SUBJECT = "Edit subject";
-const VOID_SUBJECT = "Void subject";
-const ENROL_SUBJECT = "Enrol subject";
-const VIEW_ENROLMENT_DETAILS = "View enrolment details";
-const EDIT_ENROLMENT_DETAILS = "Edit enrolment details";
-const EXIT_ENROLMENT = "Exit enrolment";
-const VIEW_VISIT = "View visit";
-const SCHEDULE_VISIT = "Schedule visit";
-const PERFORM_VISIT = "Perform visit";
-const EDIT_VISIT = "Edit visit";
-const CANCEL_VISIT = "Cancel visit";
-const VIEW_CHECKLIST = "View checklist";
-const EDIT_CHECKLIST = "Edit checklist";
-const ADD_MEMBER = "Add member";
-const EDIT_MEMBER = "Edit member";
-const REMOVE_MEMBER = "Remove member";
-const APPROVE_SUBJECT = "Approve Subject";
-const APPROVE_ENROLMENT = "Approve Enrolment";
-const APPROVE_ENCOUNTER = "Approve Encounter";
-const APPROVE_CHECKLISTITEM = "Approve ChecklistItem";
+const VIEW_SUBJECT = "ViewSubject";
+const REGISTER_SUBJECT = "RegisterSubject";
+const EDIT_SUBJECT = "EditSubject";
+const VOID_SUBJECT = "VoidSubject";
+const ENROL_SUBJECT = "EnrolSubject";
+const VIEW_ENROLMENT_DETAILS = "ViewEnrolmentDetails";
+const EDIT_ENROLMENT_DETAILS = "EditEnrolmentDetails";
+const EXIT_ENROLMENT = "ExitEnrolment";
+const VIEW_VISIT = "ViewVisit";
+const SCHEDULE_VISIT = "ScheduleVisit";
+const PERFORM_VISIT = "PerformVisit";
+const EDIT_VISIT = "EditVisit";
+const CANCEL_VISIT = "CancelVisit";
+const VOID_VISIT = "VoidVisit";
+const VIEW_CHECKLIST = "ViewChecklist";
+const EDIT_CHECKLIST = "EditChecklist";
+const ADD_MEMBER = "AddMember";
+const EDIT_MEMBER = "EditMember";
+const REMOVE_MEMBER = "RemoveMember";
+const APPROVE_SUBJECT = "ApproveSubject";
+const REJECT_SUBJECT = "RejectSubject";
+const APPROVE_ENROLMENT = "ApproveEnrolment";
+const REJECT_ENROLMENT = "RejectEnrolment";
+const APPROVE_ENCOUNTER = "ApproveEncounter";
+const REJECT_ENCOUNTER = "RejectEncounter";
+const APPROVE_CHECKLISTITEM = "ApproveChecklistitem";
+const REJECT_CHECKLISTITEM = "RejectChecklistitem";
 
 const GroupPrivileges = ({
   groupId,
@@ -67,8 +72,8 @@ const GroupPrivileges = ({
 
     groupPrivilegeList.forEach(privilegeListItem => {
       checkedState.set(privilegeListItem.uuid, { checkedState: privilegeListItem.allow });
-      switch (privilegeListItem.privilegeName) {
-        case VIEW_SUBJECT: // VIEW_subject
+      switch (privilegeListItem.type) {
+        case VIEW_SUBJECT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: []
           });
@@ -92,7 +97,8 @@ const GroupPrivileges = ({
               .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
-        case APPROVE_SUBJECT: // APPROVE_Subject
+        case APPROVE_SUBJECT:
+        case REJECT_SUBJECT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -104,8 +110,8 @@ const GroupPrivileges = ({
           });
           break;
         case ENROL_SUBJECT:
-        case EDIT_ENROLMENT_DETAILS: // EDIT_enrolment details
-        case EXIT_ENROLMENT: // Exit enrolment
+        case EDIT_ENROLMENT_DETAILS:
+        case EXIT_ENROLMENT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -120,6 +126,7 @@ const GroupPrivileges = ({
           });
           break;
         case APPROVE_ENROLMENT:
+        case REJECT_ENROLMENT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -137,6 +144,7 @@ const GroupPrivileges = ({
         case PERFORM_VISIT:
         case EDIT_VISIT:
         case CANCEL_VISIT:
+        case VOID_VISIT:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -153,6 +161,7 @@ const GroupPrivileges = ({
           });
           break;
         case APPROVE_ENCOUNTER:
+        case REJECT_ENCOUNTER:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -183,6 +192,7 @@ const GroupPrivileges = ({
           });
           break;
         case APPROVE_CHECKLISTITEM:
+        case REJECT_CHECKLISTITEM:
           dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
@@ -197,6 +207,7 @@ const GroupPrivileges = ({
           });
           break;
         default:
+          dependencies.set(privilegeListItem.uuid, { dependencies: [] });
           break;
       }
     });
