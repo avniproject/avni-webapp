@@ -18,6 +18,10 @@ start-with-staging:
 	cp env_templates/.env.staging.local.template .env.development.local
 	yarn start-with-staging
 
+start-with-prerelease:
+	cp env_templates/.env.prerelease.local.template .env.development.local
+	yarn start-with-prerelease
+
 start-with-prod:
 	cp env_templates/.env.prod.local.template .env.development.local
 	yarn start-with-prod
