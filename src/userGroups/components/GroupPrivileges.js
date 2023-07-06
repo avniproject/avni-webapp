@@ -7,34 +7,9 @@ import { connect } from "react-redux";
 import MaterialTable from "material-table";
 import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
-
-const VIEW_SUBJECT = "ViewSubject";
-const REGISTER_SUBJECT = "RegisterSubject";
-const EDIT_SUBJECT = "EditSubject";
-const VOID_SUBJECT = "VoidSubject";
-const ENROL_SUBJECT = "EnrolSubject";
-const VIEW_ENROLMENT_DETAILS = "ViewEnrolmentDetails";
-const EDIT_ENROLMENT_DETAILS = "EditEnrolmentDetails";
-const EXIT_ENROLMENT = "ExitEnrolment";
-const VIEW_VISIT = "ViewVisit";
-const SCHEDULE_VISIT = "ScheduleVisit";
-const PERFORM_VISIT = "PerformVisit";
-const EDIT_VISIT = "EditVisit";
-const CANCEL_VISIT = "CancelVisit";
-const VOID_VISIT = "VoidVisit";
-const VIEW_CHECKLIST = "ViewChecklist";
-const EDIT_CHECKLIST = "EditChecklist";
-const ADD_MEMBER = "AddMember";
-const EDIT_MEMBER = "EditMember";
-const REMOVE_MEMBER = "RemoveMember";
-const APPROVE_SUBJECT = "ApproveSubject";
-const REJECT_SUBJECT = "RejectSubject";
-const APPROVE_ENROLMENT = "ApproveEnrolment";
-const REJECT_ENROLMENT = "RejectEnrolment";
-const APPROVE_ENCOUNTER = "ApproveEncounter";
-const REJECT_ENCOUNTER = "RejectEncounter";
-const APPROVE_CHECKLISTITEM = "ApproveChecklistitem";
-const REJECT_CHECKLISTITEM = "RejectChecklistitem";
+import { Privilege } from "openchs-models";
+import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
+import _ from "lodash";
 
 const GroupPrivileges = ({
   groupId,
@@ -50,7 +25,6 @@ const GroupPrivileges = ({
   const [allPrivilegesAllowed, setAllPrivilegesAllowed] = React.useState(hasAllPrivileges);
 
   React.useEffect(() => {
-    groupPrivilegeList = null;
     if (!allPrivilegesAllowed) {
       getGroupPrivilegeList(groupId);
     }
@@ -70,144 +44,72 @@ const GroupPrivileges = ({
     let dependencies = new Map();
     let checkedState = new Map();
 
-    groupPrivilegeList.forEach(privilegeListItem => {
-      checkedState.set(privilegeListItem.uuid, { checkedState: privilegeListItem.allow });
-      switch (privilegeListItem.type) {
-        case VIEW_SUBJECT:
-          dependencies.set(privilegeListItem.uuid, {
+    const { PrivilegeType } = Privilege;
+
+    groupPrivilegeList.forEach(groupPrivilege => {
+      checkedState.set(groupPrivilege.uuid, { checkedState: groupPrivilege.allow });
+      switch (groupPrivilege["privilegeType"]) {
+        case PrivilegeType.VIEW_SUBJECT:
+          dependencies.set(groupPrivilege.uuid, {
             dependencies: []
           });
           break;
-        case REGISTER_SUBJECT:
-        case EDIT_SUBJECT:
-        case VOID_SUBJECT:
-        case VIEW_ENROLMENT_DETAILS:
-        case VIEW_VISIT:
-        case VIEW_CHECKLIST:
-        case ADD_MEMBER:
-        case EDIT_MEMBER:
-        case REMOVE_MEMBER:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  privilege.privilegeName === VIEW_SUBJECT &&
-                  privilege.subjectTypeId === privilegeListItem.subjectTypeId
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
+        case PrivilegeType.REGISTER_SUBJECT:
+        case PrivilegeType.EDIT_SUBJECT:
+        case PrivilegeType.VOID_SUBJECT:
+        case PrivilegeType.VIEW_ENROLMENT_DETAILS:
+        case PrivilegeType.VIEW_VISIT:
+        case PrivilegeType.VIEW_CHECKLIST:
+        case PrivilegeType.ADD_MEMBER:
+        case PrivilegeType.EDIT_MEMBER:
+        case PrivilegeType.REMOVE_MEMBER:
+        case PrivilegeType.APPROVE_SUBJECT:
+        case PrivilegeType.REJECT_SUBJECT:
+          dependencies.set(groupPrivilege.uuid, {
+            dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
+              groupPrivilegeList,
+              groupPrivilege
+            ).map(x => x.uuid)
           });
           break;
-        case APPROVE_SUBJECT:
-        case REJECT_SUBJECT:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  privilege.privilegeName === VIEW_SUBJECT &&
-                  privilege.subjectTypeId === privilegeListItem.subjectTypeId
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
+        case PrivilegeType.ENROL_SUBJECT:
+        case PrivilegeType.EDIT_ENROLMENT_DETAILS:
+        case PrivilegeType.EXIT_ENROLMENT:
+        case PrivilegeType.APPROVE_ENROLMENT:
+        case PrivilegeType.REJECT_ENROLMENT:
+          dependencies.set(groupPrivilege.uuid, {
+            dependencies: GroupPrivilegesModel.getProgramDependencies(
+              groupPrivilegeList,
+              groupPrivilege
+            ).map(x => x.uuid)
           });
           break;
-        case ENROL_SUBJECT:
-        case EDIT_ENROLMENT_DETAILS:
-        case EXIT_ENROLMENT:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeName === VIEW_ENROLMENT_DETAILS &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeName === VIEW_SUBJECT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
+        case PrivilegeType.SCHEDULE_VISIT:
+        case PrivilegeType.PERFORM_VISIT:
+        case PrivilegeType.EDIT_VISIT:
+        case PrivilegeType.CANCEL_VISIT:
+        case PrivilegeType.VOID_VISIT:
+        case PrivilegeType.APPROVE_ENCOUNTER:
+        case PrivilegeType.REJECT_ENCOUNTER:
+          dependencies.set(groupPrivilege.uuid, {
+            dependencies: GroupPrivilegesModel.getEncounterTypeDependencies(
+              groupPrivilegeList,
+              groupPrivilege
+            ).map(x => x.uuid)
           });
           break;
-        case APPROVE_ENROLMENT:
-        case REJECT_ENROLMENT:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeName === VIEW_ENROLMENT_DETAILS &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeName === VIEW_SUBJECT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
-          });
-          break;
-        case SCHEDULE_VISIT:
-        case PERFORM_VISIT:
-        case EDIT_VISIT:
-        case CANCEL_VISIT:
-        case VOID_VISIT:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeName === VIEW_VISIT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.encounterTypeId === privilegeListItem.encounterTypeId &&
-                    privilege.programEncounterTypeId === privilegeListItem.programEncounterTypeId &&
-                    privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeName === VIEW_SUBJECT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
-          });
-          break;
-        case APPROVE_ENCOUNTER:
-        case REJECT_ENCOUNTER:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeName === VIEW_VISIT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.encounterTypeId === privilegeListItem.encounterTypeId &&
-                    privilege.programEncounterTypeId === privilegeListItem.programEncounterTypeId &&
-                    privilege.programId === privilegeListItem.programId) ||
-                  (privilege.privilegeName === VIEW_SUBJECT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
-          });
-          break;
-        case EDIT_CHECKLIST:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeName === VIEW_CHECKLIST &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
-                  (privilege.privilegeName === VIEW_SUBJECT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
-          });
-          break;
-        case APPROVE_CHECKLISTITEM:
-        case REJECT_CHECKLISTITEM:
-          dependencies.set(privilegeListItem.uuid, {
-            dependencies: groupPrivilegeList
-              .filter(
-                privilege =>
-                  (privilege.privilegeName === VIEW_CHECKLIST &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId &&
-                    privilege.checklistDetailId === privilegeListItem.checklistDetailId) ||
-                  (privilege.privilegeName === VIEW_SUBJECT &&
-                    privilege.subjectTypeId === privilegeListItem.subjectTypeId)
-              )
-              .map(filteredPrivileges => filteredPrivileges.uuid)
+        case PrivilegeType.EDIT_CHECKLIST:
+        case PrivilegeType.APPROVE_CHECKLISTITEM:
+        case PrivilegeType.REJECT_CHECKLISTITEM:
+          dependencies.set(groupPrivilege.uuid, {
+            dependencies: GroupPrivilegesModel.getChecklistDependencies(
+              groupPrivilegeList,
+              groupPrivilege
+            ).map(x => x.uuid)
           });
           break;
         default:
-          dependencies.set(privilegeListItem.uuid, { dependencies: [] });
+          dependencies.set(groupPrivilege.uuid, { dependencies: [] });
           break;
       }
     });
@@ -262,14 +164,14 @@ const GroupPrivileges = ({
     );
 
     let request_body = privilegesToBeUpdated.map(privilege => ({
-      groupPrivilegeId: privilege.groupPrivilegeId,
+      groupPrivilegeId: _.get(privilege, "groupPrivilege.id"),
       groupId: privilege.groupId,
       privilegeId: privilege.privilegeId,
-      subjectTypeId: privilege.subjectTypeId,
-      programId: privilege.programId,
-      programEncounterTypeId: privilege.programEncounterTypeId,
-      encounterTypeId: privilege.encounterTypeId,
-      checklistDetailId: privilege.checklistDetailId,
+      subjectTypeId: _.get(privilege, "subjectType.id"),
+      programId: _.get(privilege, "program.id"),
+      programEncounterTypeId: _.get(privilege, "programEncounterType.id"),
+      encounterTypeId: _.get(privilege, "encounterType.id"),
+      checklistDetailId: _.get(privilege, "checklistDetail.id"),
       allow: isAllow,
       uuid: privilege.uuid
     }));
@@ -315,13 +217,13 @@ const GroupPrivileges = ({
         />
       )
     },
-    { title: "Subject Type", field: "subjectTypeName", defaultGroupOrder: 0 },
+    { title: "Subject Type", field: "subjectType.name", defaultGroupOrder: 0 },
     { title: "Entity Type", field: "privilegeEntityType" },
     { title: "Privilege", field: "privilegeName" },
-    { title: "Program", field: "programName" },
-    { title: "Program Encounter Type", field: "programEncounterTypeName", defaultSort: "asc" },
-    { title: "General Encounter Type", field: "encounterTypeName" },
-    { title: "Checklist Detail", field: "checklistDetailName" }
+    { title: "Program", field: "program.name" },
+    { title: "Program Encounter Type", field: "programEncounterType.name", defaultSort: "asc" },
+    { title: "General Encounter Type", field: "encounterType.name" },
+    { title: "Checklist Detail", field: "checklistDetail.name" }
   ];
   return (
     <div>

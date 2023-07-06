@@ -60,8 +60,8 @@ export function* getAllDashboardsWorker() {
 }
 
 export function* getGroupPrivilegeListWorker(params) {
-  const valueFromApi = yield call(api.fetchGroupPrivileges, params.param);
-  yield put(setGroupPrivilegeList(valueFromApi));
+  const groupPrivileges = yield call(api.fetchGroupPrivileges, params.param);
+  yield put(setGroupPrivilegeList(groupPrivileges));
 }
 
 export function* createGroupWatcher() {

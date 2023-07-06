@@ -12,7 +12,7 @@ const Homepage = ({ user }) => {
   const [userData, setUserData] = useState(null);
   useEffect(() => {
     const fetchOrgID = async () => {
-      const resp = await axios("/me");
+      const resp = await axios("/web/userInfo");
       setUserData(resp.data);
     };
     fetchOrgID();

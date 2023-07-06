@@ -1,10 +1,8 @@
 import React from "react";
-import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
-import { ROLES } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
@@ -20,12 +18,15 @@ import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment
 import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
 import NewExport from "../reports/export/NewExport";
 import Broadcast from "../news/Broadcast";
+import User from "../common/model/User";
+import AvniRouter from "../common/AvniRouter";
+import DeploymentManager from "../adminApp/DeploymentManager";
 
-const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
+const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route
     {...rest}
     render={routerProps =>
-      isEmpty(allowedRoles) || !isEmpty(intersection(allowedRoles, currentUserRoles)) ? (
+      User.isAllowedToAccess(userInfo, requiredPrivileges) ? (
         <C {...routerProps} />
       ) : (
         <AccessDenied />
@@ -34,142 +35,112 @@ const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest
   />
 );
 
-const Routes = ({ user, organisation }) => (
+const AdminRoute = ({ component: C, userInfo, ...rest }) => (
+  <Route
+    {...rest}
+    render={routerProps => (userInfo.isAdmin ? <C {...routerProps} /> : <AccessDenied />)}
+  />
+);
+
+const Routes = ({ user, userInfo, organisation }) => (
   <Switch>
-    <RestrictedRoute
+    <AdminRoute
       exact
-      path="/admin/upload"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN, ROLES.USER]}
-      currentUserRoles={user.roles}
+      path="/deploymentAdmin/"
+      userInfo={userInfo}
+      requiredPrivileges={[]}
       component={OrgManager}
     />
-    <RestrictedRoute
-      exact
-      path="/admin/"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      path="/admin/*"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
-      component={OrgManager}
-    />
+    <AdminRoute path="/deploymentAdmin/*" userInfo={userInfo} component={DeploymentManager} />
     <Route path="/admin">
-      <RestrictedRoute
-        path="/"
-        allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-        currentUserRoles={user.roles}
-        component={OrgManager}
-      />
+      <AdminRoute path="/" userInfo={userInfo} component={DeploymentManager} />
     </Route>
     <RestrictedRoute
       path="/app"
-      allowedRoles={[ROLES.USER, ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
+      requiredPrivileges={[]}
       component={DataEntry}
     />
     <Route exact path="/">
-      <Redirect
-        to={
-          includes(user.roles, ROLES.ADMIN)
-            ? "/admin"
-            : includes(user.roles, ROLES.ORG_ADMIN)
-            ? "/home"
-            : "/app"
-        }
-      />
+      <Redirect to={AvniRouter.getRouteFromRoot(userInfo)} />
     </Route>
     <RestrictedRoute
       exact
       path="/home"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
+      requiredPrivileges={[]}
       component={WithProps({ user }, Homepage)}
     />
     <Route path="/appdesigner">
       <RestrictedRoute
         path="/"
-        allowedRoles={[ROLES.ORG_ADMIN]}
-        currentUserRoles={user.roles}
+        userInfo={userInfo}
         component={WithProps({ user, organisation }, OrgManagerAppDesigner)}
       />
     </Route>
     <RestrictedRoute
       exact
       path="/documentation"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      user={userInfo}
       component={WithProps({ user, organisation }, Documentation)}
     />
     <RestrictedRoute
       exact
       path="/assignment"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, Assignment)}
     />
     <RestrictedRoute
       exact
       path="/assignment/task"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, TaskAssignment)}
     />
     <RestrictedRoute
       exact
       path="/assignment/subject"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, SubjectAssignment)}
     />
     <RestrictedRoute
       exact
       path="/translations"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, Translations)}
     />
     <RestrictedRoute
       exact
       path="/export"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, Export)}
     />
     <RestrictedRoute
       exact
       path="/newExport"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, NewExport)}
     />
     <RestrictedRoute
       exact
       path="/selfservicereports"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, SelfServiceReports)}
     />
     <RestrictedRoute
       exact
       path="/cannedreports"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, CannedReport)}
     />
     <RestrictedRoute
       exact
       path="/help"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, Tutorials)}
     />
     <RestrictedRoute
       path="/broadcast"
-      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-      currentUserRoles={user.roles}
+      userInfo={userInfo}
       component={WithProps({ user, organisation }, Broadcast)}
     />
     <Route
@@ -184,7 +155,8 @@ const Routes = ({ user, organisation }) => (
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.authSession
+  user: state.app.authSession,
+  userInfo: state.app.userInfo
 });
 
 export default connect(

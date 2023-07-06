@@ -17,7 +17,7 @@ import { userLogout } from "react-admin";
 import Auth from "@aws-amplify/auth";
 
 const api = {
-  fetchUserInfo: () => http.fetchJson("/me").then(response => response.json),
+  fetchUserInfo: () => http.fetchJson("/web/userInfo").then(response => response.json),
   fetchAdminOrgs: () => http.fetchJson("/organisation", {}, true).then(response => response.json),
   fetchTranslations: () => http.fetchJson("/web/translations").then(response => response.json),
   fetchOrganisationConfig: () =>

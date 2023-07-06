@@ -17,15 +17,15 @@ import {
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
 import {
   IdentifierSourceCreate,
-  IdentifierSourceList,
   IdentifierSourceDetail,
-  IdentifierSourceEdit
+  IdentifierSourceEdit,
+  IdentifierSourceList
 } from "./IdentifierSource";
 import {
-  IdentifierUserAssignmentList,
+  IdentifierUserAssignmentCreate,
   IdentifierUserAssignmentDetail,
   IdentifierUserAssignmentEdit,
-  IdentifierUserAssignmentCreate
+  IdentifierUserAssignmentList
 } from "./IdentifierUserAssignment";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
@@ -33,28 +33,6 @@ import { WithProps } from "../common/components/utils";
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
-import { intersection, isEmpty } from "lodash";
-import httpClient from "../common/utils/httpClient";
-import { AccountCreate, AccountDetails, AccountEdit, AccountList } from "./Account";
-import {
-  AccountOrgAdminUserCreate,
-  AccountOrgAdminUserDetail,
-  AccountOrgAdminUserEdit,
-  AccountOrgAdminUserList
-} from "./AccountOrgAdminUser";
-import {
-  OrganisationCreate,
-  OrganisationDetails,
-  OrganisationEdit,
-  OrganisationList
-} from "./Organisation";
-import {
-  organisationGroupCreate,
-  organisationGroupEdit,
-  OrganisationGroupList,
-  OrganisationGroupShow
-} from "./OrganisationGroup";
-import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import { OrganisationDetail } from "./OrganisationDetail";
@@ -72,64 +50,6 @@ class OrgManager extends Component {
   render() {
     const { organisation, user } = this.props;
     return (
-      <React.Fragment>
-        {!isEmpty(httpClient.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
-          ? isEmpty(intersection(user.roles, [ROLES.ORG_ADMIN]))
-            ? this.renderUserResources(user)
-            : this.renderOrgAdminResources(user, organisation)
-          : this.renderAdminResources(user)}
-      </React.Fragment>
-    );
-  }
-
-  renderAdminResources(user) {
-    return (
-      <Admin
-        title="Manage Account"
-        authProvider={authProvider}
-        history={adminHistory}
-        logoutButton={WithProps({ user }, LogoutButton)}
-        customRoutes={customRoutes}
-        appLayout={AdminLayout}
-      >
-        <Resource
-          name={"account"}
-          options={{ label: "Accounts" }}
-          list={AccountList}
-          show={AccountDetails}
-          create={AccountCreate}
-          edit={AccountEdit}
-        />
-        <Resource
-          name="accountOrgAdmin"
-          options={{ label: "Admins" }}
-          list={AccountOrgAdminUserList}
-          create={WithProps({ user }, AccountOrgAdminUserCreate)}
-          show={WithProps({ user }, AccountOrgAdminUserDetail)}
-          edit={WithProps({ user }, AccountOrgAdminUserEdit)}
-        />
-        <Resource
-          name="organisation"
-          options={{ label: "Organisations" }}
-          list={OrganisationList}
-          create={OrganisationCreate}
-          show={OrganisationDetails}
-          edit={OrganisationEdit}
-        />
-        <Resource
-          name={"organisationGroup"}
-          options={{ label: "Organisation Groups" }}
-          list={OrganisationGroupList}
-          create={organisationGroupCreate}
-          show={OrganisationGroupShow}
-          edit={organisationGroupEdit}
-        />
-      </Admin>
-    );
-  }
-
-  renderOrgAdminResources(user, organisation) {
-    return (
       <Admin
         title="Manage Organisation"
         authProvider={authProvider}
@@ -143,8 +63,6 @@ class OrgManager extends Component {
           options={{ label: "Languages" }}
           list={WithProps({ organisation }, customConfig)}
         />
-        <Resource name="individual" />
-        <Resource name="concept" />
         <Resource
           name="addressLevelType"
           options={{ label: "Location Types" }}
@@ -204,20 +122,6 @@ class OrgManager extends Component {
           options={{ label: "Phone Verification" }}
           list={Msg91Config}
         />
-      </Admin>
-    );
-  }
-
-  renderUserResources(user) {
-    return (
-      <Admin
-        title="Manage Bulk Data"
-        authProvider={authProvider}
-        history={adminHistory}
-        logoutButton={WithProps({ user }, LogoutButton)}
-        customRoutes={customRoutes}
-        appLayout={AdminLayout}
-      >
         <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
       </Admin>
     );
@@ -226,8 +130,7 @@ class OrgManager extends Component {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.authSession,
-  organisations: state.app.organisations
+  user: state.app.authSession
 });
 
 export default withRouter(
