@@ -26,7 +26,7 @@ import Fab from "@material-ui/core/Fab";
 import { ExtensionOption } from "./extension/ExtensionOption";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import SubjectProfilePicture from "../../../components/SubjectProfilePicture";
-import { AgeUtil } from "openchs-models";
+import { getDisplayAge } from "../../../utils/AgeUtil";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -243,7 +243,7 @@ const ProfileDetails = ({
                   {profileDetails.subjectType.isPerson() && (
                     <TableCell className={classes.tableCellDetails}>
                       {profileDetails.dateOfBirth
-                        ? AgeUtil.getDisplayAge(profileDetails.dateOfBirth, i18n)
+                        ? getDisplayAge(profileDetails.dateOfBirth, i18n)
                         : "-"}
                     </TableCell>
                   )}

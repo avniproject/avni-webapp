@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 import { Typography } from "@material-ui/core";
 import { LineBreak } from "common/components/utils";
 import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { isNil, isDate } from "lodash";
-import { AgeUtil } from "openchs-models";
 
 const useStyle = makeStyles(theme => ({
   detailsstyle: {
@@ -23,7 +23,7 @@ const useStyle = makeStyles(theme => ({
 
 const FormWizardHeader = ({ subject }) => {
   const classes = useStyle();
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   let headerElements = [];
 
   const addElement = (label, value, headerElements) => {
@@ -45,7 +45,7 @@ const FormWizardHeader = ({ subject }) => {
 
   if (subject.isPerson()) {
     const dateOfBirth = isDate(subject.dateOfBirth)
-      ? AgeUtil.getDisplayAge(subject.dateOfBirth, i18n)
+      ? moment().diff(subject.dateOfBirth, "years") + " years"
       : null;
     headerElements = dateOfBirth && addElement(t("age"), dateOfBirth, headerElements);
     const gender = subject.gender && !isNil(subject.gender.name) ? subject.gender.name : "-";

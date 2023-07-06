@@ -19,6 +19,8 @@
 .env.production.local
 
 .env.prod.local.template
+.env.staging.local.template
+.env.prerelease.local.template
 
 npm-debug.log*
 yarn-debug.log*

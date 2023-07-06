@@ -15643,10 +15643,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.25:
-  version "1.30.25"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.25.tgz#5f285cdbc2bd4a7bc7cf3fa13e8e92f864c20098"
-  integrity sha512-szj8PPdCwql0nGfe/R8qzXotIoVeZfh+6UTO00bQG9Rn86jhcpHmdgzbAw3hoy20rLERppwuvBCo+MUmnpr3DQ==
+openchs-models@1.30.34:
+  version "1.30.34"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.34.tgz#60f42e90a542e5800971f015ec2a45afcad20d31"
+  integrity sha512-lSrEBA+/3aWcDtLyJScoJ9DN5cmdGQtTdTmiuDRwcFb95R07fEzD/uKNWwGwYo7Q6OYHC05R3poSTSmbB+2yyA==
 
 openchs-models@^0.2.25:
   version "0.2.86"
