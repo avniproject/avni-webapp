@@ -37,6 +37,8 @@ import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import { OrganisationDetail } from "./OrganisationDetail";
 import Msg91Config from "../phoneNumberVerification/Msg91Config";
+import CurrentUserService from "../common/service/CurrentUserService";
+import DeploymentManager from "./DeploymentManager";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -48,7 +50,10 @@ class OrgManager extends Component {
   }
 
   render() {
-    const { organisation, user } = this.props;
+    const { organisation, user, userInfo } = this.props;
+
+    if (CurrentUserService.isAdminButNotImpersonating(userInfo)) return <DeploymentManager />;
+
     return (
       <Admin
         title="Manage Organisation"
@@ -130,7 +135,8 @@ class OrgManager extends Component {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.authSession
+  user: state.app.authSession,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

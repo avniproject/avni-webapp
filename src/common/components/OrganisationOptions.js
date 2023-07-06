@@ -1,13 +1,12 @@
-import { intersection, isEmpty, map, sortBy, trim } from "lodash";
-import { ROLES } from "../constants";
+import { isEmpty, map, sortBy, trim } from "lodash";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import React from "react";
-import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core";
+import CurrentUserService from "../service/CurrentUserService";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -20,15 +19,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const OrganisationOptions = ({
-  getUserInfo,
-  user,
-  organisation,
-  styles,
-  history,
-  organisations,
-  ...props
-}) => {
+export const OrganisationOptions = ({ getUserInfo, history, organisations, userInfo }) => {
   const classes = useStyles();
 
   const options = [
@@ -52,43 +43,41 @@ export const OrganisationOptions = ({
     }
   };
 
-  const resetOrgUUID = () => {
-    localStorage.setItem("ORGANISATION_UUID", "");
+  const exitToAdmin = function() {
+    CurrentUserService.exitOrganisation();
     getUserInfo();
-    history.push("/#/admin/account");
+    history.push("/#/admin");
+    window.location.reload(true);
   };
 
   return (
-    !isEmpty(organisations) && (
+    !isEmpty(organisations) &&
+    CurrentUserService.isAdminUsingAnOrg(userInfo) && (
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-        {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && (
-          <FormControl className={classes.formControl}>
-            <InputLabel id="organisation-select-label" style={{ color: "white" }}>
-              Select Organisation
-            </InputLabel>
-            <Select
-              labelid="organisation-select"
-              id="organisation-select"
-              value={localStorage.getItem("ORGANISATION_UUID") || ""}
-              onChange={handleChange}
-              classes={{
-                root: classes.whiteColor,
-                icon: classes.whiteColor
-              }}
-            >
-              {options.map((option, index) => (
-                <MenuItem key={index} value={option.value}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-        {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && !isEmpty(http.getOrgUUID()) && (
-          <Button onClick={() => resetOrgUUID()} style={{ color: "white" }}>
-            Back To Admin
-          </Button>
-        )}
+        <FormControl className={classes.formControl}>
+          <InputLabel id="organisation-select-label" style={{ color: "white" }}>
+            Select Organisation
+          </InputLabel>
+          <Select
+            labelid="organisation-select"
+            id="organisation-select"
+            value={localStorage.getItem("ORGANISATION_UUID") || ""}
+            onChange={handleChange}
+            classes={{
+              root: classes.whiteColor,
+              icon: classes.whiteColor
+            }}
+          >
+            {options.map((option, index) => (
+              <MenuItem key={index} value={option.value}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button onClick={() => exitToAdmin()} style={{ color: "white" }}>
+          Exit To Admin
+        </Button>
       </div>
     )
   );

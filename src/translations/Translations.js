@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { find, intersection, isEmpty } from "lodash";
+import { find, isEmpty } from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -13,13 +13,11 @@ import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
-import { ROLES } from "../common/constants";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
 export const Translations = ({
   user,
-  organisation,
   organisationConfig,
   getOrgConfig,
   dashboardData,
@@ -27,10 +25,8 @@ export const Translations = ({
   history
 }) => {
   useEffect(() => {
-    if (!isEmpty(http.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))) {
-      getOrgConfig();
-      getDashboardData("Android", EMPTY_TRANSLATION_KEY);
-    }
+    getOrgConfig();
+    getDashboardData("Android", EMPTY_TRANSLATION_KEY);
   }, []);
 
   const platforms = [{ id: "Android", name: "Android" }, { id: "Web", name: "Web" }];

@@ -1,6 +1,8 @@
+import CurrentUserService from "./service/CurrentUserService";
+
 class AvniRouter {
-  static getRouteFromRoot(userInfo) {
-    return userInfo.isAdmin ? "/admin" : "/home";
+  static getRedirectRouteFromRoot(userInfo) {
+    return CurrentUserService.isAdminButNotImpersonating(userInfo) ? "/admin" : "/home";
   }
 }
 

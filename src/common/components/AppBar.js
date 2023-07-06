@@ -14,7 +14,6 @@ import { withRouter } from "react-router-dom";
 import { OrganisationOptions } from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
 import { Box } from "@material-ui/core";
-import { isAnyAdmin } from "../utils/General";
 import PasswordDialog from "../../adminApp/components/PasswordDialog";
 import httpClient from "../utils/httpClient";
 
@@ -57,7 +56,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const AppBar = ({ getUserInfo, component, position, ...props }) => {
+const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
   const { organisation, user, history, organisations } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -113,6 +112,7 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
               <div className={classes.profile}>
                 <OrganisationOptions
                   getUserInfo={getUserInfo}
+                  userInfo={userInfo}
                   user={user}
                   organisation={organisation}
                   styles={classes}
@@ -122,13 +122,7 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
                 <div style={{ marginTop: "2%" }}>
                   <b>{props.organisation.name} </b> ({props.user.username})
                 </div>
-                <IconButton
-                  onClick={() =>
-                    isAnyAdmin(user.roles) ? history.push("/home") : history.push("/")
-                  }
-                  aria-label="Home"
-                  color="inherit"
-                >
+                <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
                   <HomeIcon />
                 </IconButton>
                 <IconButton
@@ -161,7 +155,8 @@ const AppBar = ({ getUserInfo, component, position, ...props }) => {
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
   user: state.app.authSession,
-  organisations: state.app.organisations
+  organisations: state.app.organisations,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

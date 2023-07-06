@@ -23,8 +23,6 @@ import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import HomeIcon from "@material-ui/icons/Home";
 import { getNews, selectIsNewsAvailable } from "../reducers/NewsReducer";
-import { ROLES } from "../../common/constants";
-import { intersection, isEmpty } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -209,8 +207,6 @@ const PrimarySearchAppBar = ({ user, history }) => {
     </Button>
   );
 
-  const displayHomeButton = !isEmpty(intersection([ROLES.ADMIN, ROLES.ORG_ADMIN], user.roles));
-
   return (
     <div className={classes.grow}>
       <AppBar position="static" style={{ background: "white" }}>
@@ -268,11 +264,9 @@ const PrimarySearchAppBar = ({ user, history }) => {
               {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>
           </div>
-          {displayHomeButton && (
-            <IconButton onClick={() => history.push("/home")} aria-label="Home">
-              <HomeIcon />
-            </IconButton>
-          )}
+          <IconButton onClick={() => history.push("/home")} aria-label="Home">
+            <HomeIcon />
+          </IconButton>
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"

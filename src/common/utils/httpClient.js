@@ -7,6 +7,7 @@ import { devEnvUserName } from "../constants";
 import Auth from "@aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
+import CurrentUserService from "../service/CurrentUserService";
 
 function getOtherOriginUrl(services, serviceType, url) {
   const service = _.find(services, x => x["serviceType"] === serviceType);
@@ -24,7 +25,6 @@ class HttpClient {
     this.initAuthSession = this.initAuthSession.bind(this);
     this.setHeaders = this.setHeaders.bind(this);
     this.fetchJson = this.fetchJson.bind(this);
-    this.getOrgUUID = this.getOrgUUID.bind(this);
     this.get = this._wrapAxiosMethod("get");
     this._getFromDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("get");
     this.post = this._wrapAxiosMethod("post");
@@ -45,8 +45,8 @@ class HttpClient {
   }
 
   setOrgUuidHeader() {
-    const organisationUUID = this.getOrgUUID();
-    if (!isEmpty(organisationUUID)) {
+    const organisationUUID = CurrentUserService.getImpersonatedOrgUUID();
+    if (CurrentUserService.isOrganisationImpersonated()) {
       axios.defaults.headers.common["ORGANISATION-UUID"] = organisationUUID;
     } else {
       delete axios.defaults.headers.common["ORGANISATION-UUID"];
@@ -58,10 +58,6 @@ class HttpClient {
       axios.defaults.headers.common["user-name"] = devEnvUserName;
     }
     this.setOrgUuidHeader();
-  }
-
-  getOrgUUID() {
-    return localStorage.getItem("ORGANISATION_UUID");
   }
 
   saveAuthTokenForAnalyticsApp() {
@@ -87,8 +83,8 @@ class HttpClient {
     if (devEnvUserName) {
       options.headers.set("user-name", devEnvUserName);
     }
-    if (!isEmpty(this.getOrgUUID())) {
-      options.headers.set("ORGANISATION-UUID", this.getOrgUUID());
+    if (CurrentUserService.isOrganisationImpersonated()) {
+      options.headers.set("ORGANISATION-UUID", CurrentUserService.getImpersonatedOrgUUID());
     } else {
       options.headers.delete("ORGANISATION-UUID");
     }

@@ -19,7 +19,6 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
-import { isAnyAdmin } from "../common/utils/General";
 import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
@@ -84,13 +83,11 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   }, []);
 
   const uploadOptions = () =>
-    isAnyAdmin(userRoles)
-      ? concat(
-          staticTypesWithStaticDownload.names,
-          staticTypesWithDynamicDownload.names,
-          uploadTypes.names
-        )
-      : uploadTypes.names;
+    concat(
+      staticTypesWithStaticDownload.names,
+      staticTypesWithDynamicDownload.names,
+      uploadTypes.names
+    );
 
   const downloadOptions = () =>
     filter(

@@ -2,7 +2,6 @@ import React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
-import { OrgManager } from "../adminApp";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
@@ -18,15 +17,15 @@ import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment
 import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
 import NewExport from "../reports/export/NewExport";
 import Broadcast from "../news/Broadcast";
-import User from "../common/model/User";
 import AvniRouter from "../common/AvniRouter";
-import DeploymentManager from "../adminApp/DeploymentManager";
+import CurrentUserService from "../common/service/CurrentUserService";
+import OrgManager from "../adminApp/OrgManager";
 
 const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route
     {...rest}
     render={routerProps =>
-      User.isAllowedToAccess(userInfo, requiredPrivileges) ? (
+      CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? (
         <C {...routerProps} />
       ) : (
         <AccessDenied />
@@ -35,26 +34,9 @@ const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...r
   />
 );
 
-const AdminRoute = ({ component: C, userInfo, ...rest }) => (
-  <Route
-    {...rest}
-    render={routerProps => (userInfo.isAdmin ? <C {...routerProps} /> : <AccessDenied />)}
-  />
-);
-
 const Routes = ({ user, userInfo, organisation }) => (
   <Switch>
-    <AdminRoute
-      exact
-      path="/deploymentAdmin/"
-      userInfo={userInfo}
-      requiredPrivileges={[]}
-      component={OrgManager}
-    />
-    <AdminRoute path="/deploymentAdmin/*" userInfo={userInfo} component={DeploymentManager} />
-    <Route path="/admin">
-      <AdminRoute path="/" userInfo={userInfo} component={DeploymentManager} />
-    </Route>
+    <RestrictedRoute path="/admin" userInfo={userInfo} component={OrgManager} />
     <RestrictedRoute
       path="/app"
       userInfo={userInfo}
@@ -62,7 +44,7 @@ const Routes = ({ user, userInfo, organisation }) => (
       component={DataEntry}
     />
     <Route exact path="/">
-      <Redirect to={AvniRouter.getRouteFromRoot(userInfo)} />
+      <Redirect to={AvniRouter.getRedirectRouteFromRoot(userInfo)} />
     </Route>
     <RestrictedRoute
       exact

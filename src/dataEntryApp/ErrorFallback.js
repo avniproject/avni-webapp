@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import { intersection, isEmpty, isFunction } from "lodash";
+import { isFunction } from "lodash";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -10,8 +10,6 @@ import Slide from "@material-ui/core/Slide";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Link from "@material-ui/core/Link";
 import Colors from "./Colors";
-import { useSelector } from "react-redux";
-import { ROLES } from "../common/constants";
 import { InternalLink } from "../common/components/utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -57,8 +55,6 @@ const useStyles = makeStyles(theme => ({
 export function ErrorFallback({ error, onClose }) {
   const classes = useStyles();
   const [showError, setShowError] = React.useState(false);
-  const user = useSelector(state => state.app.authSession);
-  const isAdmin = !isEmpty(intersection([ROLES.ADMIN, ROLES.ORG_ADMIN], user.roles));
 
   const closeDialogIfRequired = () => {
     if (isFunction(onClose)) {
@@ -79,7 +75,7 @@ export function ErrorFallback({ error, onClose }) {
 
   const appHome = () => {
     closeDialogIfRequired();
-    const url = isAdmin ? "#/home" : "#/app";
+    const url = "#/app";
     window.open(`${window.location.origin}/${url}`, "_self");
     window.location.reload();
   };

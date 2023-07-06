@@ -1,18 +1,11 @@
 import React from "react";
 import { AppBar } from "react-admin";
 import Typography from "@material-ui/core/Typography";
-import { withStyles } from "@material-ui/core/styles";
-import HomeIcon from "@material-ui/icons/Home";
-import IconButton from "@material-ui/core/IconButton";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
 import { getUserInfo } from "../../rootApp/ducks";
 import { OrganisationOptions } from "./OrganisationOptions";
-import { intersection, isEmpty } from "lodash";
-import http from "common/utils/httpClient";
-import { ROLES } from "../constants";
-import { isAnyAdmin } from "../utils/General";
 
 const styles = {
   title: {
@@ -46,6 +39,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
     staticContext,
     dispatch,
     organisations,
+    userInfo,
     ...rest
   } = props;
   return (
@@ -54,6 +48,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
       <OrganisationOptions
         getUserInfo={getUserInfo}
         user={authSession}
+        userInfo={userInfo}
         organisation={organisation}
         styles={styles}
         history={history}
@@ -62,17 +57,6 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
       <div>
         <b>{organisation.name} </b> ({authSession.username})
       </div>
-      {(isEmpty(intersection(authSession.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgUUID())) && (
-        <IconButton
-          onClick={() =>
-            isAnyAdmin(authSession.roles) ? history.push("/home") : history.push("/")
-          }
-          aria-label="Home"
-          color="inherit"
-        >
-          <HomeIcon />
-        </IconButton>
-      )}
     </AppBar>
   );
 });
@@ -80,7 +64,8 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
   authSession: state.app.authSession,
-  organisations: state.app.organisations
+  organisations: state.app.organisations,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

@@ -7,12 +7,11 @@ import {
   setUserInfo,
   types
 } from "./ducks";
-import { ROLES } from "../common/constants";
 import http from "common/utils/httpClient";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-import { get, intersection, isEmpty } from "lodash";
+import { get, isEmpty } from "lodash";
 import { userLogout } from "react-admin";
 import Auth from "@aws-amplify/auth";
 
@@ -47,7 +46,7 @@ export function* userInfoWatcher() {
 function* setUserDetails() {
   const userDetails = yield call(api.fetchUserInfo);
   const translationData = yield call(api.fetchTranslations);
-  if (!isEmpty(intersection(userDetails.roles, [ROLES.ADMIN]))) {
+  if (userDetails.isAdmin) {
     const organisations = yield call(api.fetchAdminOrgs);
     yield put(setAdminOrgs(organisations));
   }
