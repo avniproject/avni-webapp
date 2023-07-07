@@ -6,6 +6,9 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getUserInfo } from "../../rootApp/ducks";
 import { OrganisationOptions } from "./OrganisationOptions";
+import { IconButton } from "@material-ui/core";
+import HomeIcon from "@material-ui/icons/Home";
+import CurrentUserService from "../service/CurrentUserService";
 
 const styles = {
   title: {
@@ -57,6 +60,11 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
       <div>
         <b>{organisation.name} </b> ({authSession.username})
       </div>
+      {CurrentUserService.hasOrganisationContext(userInfo) && (
+        <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
+          <HomeIcon />
+        </IconButton>
+      )}
     </AppBar>
   );
 });

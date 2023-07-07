@@ -29,6 +29,10 @@ class CurrentUserService {
   static isAdminButNotImpersonating(userInfo) {
     return userInfo.isAdmin && !this.isOrganisationImpersonated();
   }
+
+  static hasOrganisationContext(userInfo) {
+    return this.isOrganisationImpersonated() || !userInfo.isAdmin;
+  }
 }
 
 export default CurrentUserService;

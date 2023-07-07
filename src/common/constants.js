@@ -10,12 +10,6 @@ export const isTestEnv = process.env.NODE_ENV === "test";
 
 export const AWS_REGION = "ap-south-1";
 
-export const ROLES = Object.freeze({
-  ADMIN: "admin",
-  ORG_ADMIN: "organisation_admin",
-  USER: "user"
-});
-
 export const LOCALES = Object.freeze({
   ENGLISH: "en",
   HINDI: "hi_IN",
