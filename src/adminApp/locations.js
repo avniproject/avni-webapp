@@ -206,7 +206,7 @@ export class LocationForm extends React.Component {
                   source="parentId"
                   reference="locations"
                   filter={{
-                    searchURI: "autocompleteLocationsOfType",
+                    searchURI: "findAsList",
                     typeId: getParentIdOfLocationType(formData.typeId),
                     title: ""
                   }}
@@ -215,7 +215,7 @@ export class LocationForm extends React.Component {
                   {...rest}
                 >
                   <SelectInput
-                    optionText={record => record && `${record.title} (${record.typeString})`}
+                    optionText={record => record && `${record.titleLineage} (${record.typeString})`}
                   />
                 </ReferenceInput>
               )
