@@ -21,7 +21,7 @@ const useStyles = makeStyles({
   }
 });
 
-const customConfig = ({ operationalModules, getOperationalModules, history, organisation }) => {
+const OrganisationConfig = ({ getOperationalModules, history, organisation, hasEditPrivilege }) => {
   React.useEffect(() => {
     getOperationalModules();
   }, []);
@@ -108,7 +108,7 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
             Languages
           </h6>
           <Box>
-            {editLanguage()}
+            {hasEditPrivilege ? editLanguage() : <span style={{ marginLeft: 20 }} />}
             {renderLanguage(settings.settings.languages)}
           </Box>
         </Box>
@@ -125,5 +125,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     { getOperationalModules }
-  )(customConfig)
+  )(OrganisationConfig)
 );

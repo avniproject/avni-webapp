@@ -27,7 +27,7 @@ import {
   IdentifierUserAssignmentEdit,
   IdentifierUserAssignmentList
 } from "./IdentifierUserAssignment";
-import customConfig from "./OrganisationConfig";
+import OrganisationConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 
 import { Dashboard as UploadDashboard } from "../upload";
@@ -39,6 +39,8 @@ import { OrganisationDetail } from "./OrganisationDetail";
 import Msg91Config from "../phoneNumberVerification/Msg91Config";
 import CurrentUserService from "../common/service/CurrentUserService";
 import DeploymentManager from "./DeploymentManager";
+import UserInfo from "../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -51,6 +53,20 @@ class OrgManager extends Component {
 
   render() {
     const { organisation, user, userInfo } = this.props;
+    const {
+      EditLocationType,
+      EditLocation,
+      EditCatchment,
+      EditUserConfiguration,
+      EditUserGroup,
+      EditIdentifierSource,
+      EditIdentifierUserAssignment,
+      UploadMetadataAndData,
+      EditOrganisationConfiguration,
+      EditLanguage,
+      PhoneVerification
+    } = Privilege.PrivilegeType;
+    const { hasPrivilege } = UserInfo;
 
     if (CurrentUserService.isAdminButNotImpersonating(userInfo)) return <DeploymentManager />;
 
@@ -66,68 +82,99 @@ class OrgManager extends Component {
         <Resource
           name="language"
           options={{ label: "Languages" }}
-          list={WithProps({ organisation }, customConfig)}
+          list={WithProps(
+            {
+              organisation,
+              hasEditPrivilege: hasPrivilege(userInfo, EditLanguage)
+            },
+            OrganisationConfig
+          )}
         />
         <Resource
           name="addressLevelType"
           options={{ label: "Location Types" }}
           list={LocationTypeList}
           show={LocationTypeDetail}
-          create={LocationTypeCreate}
-          edit={LocationTypeEdit}
+          create={hasPrivilege(userInfo, EditLocationType) && LocationTypeCreate}
+          edit={hasPrivilege(userInfo, EditLocationType) && LocationTypeEdit}
         />
         <Resource
           name="locations"
           options={{ label: "Locations" }}
           list={LocationList}
           show={LocationDetail}
-          create={LocationCreate}
-          edit={LocationEdit}
+          create={hasPrivilege(userInfo, EditLocation) && LocationCreate}
+          edit={hasPrivilege(userInfo, EditLocation) && LocationEdit}
         />
         <Resource
           name="catchment"
           list={CatchmentList}
           show={CatchmentDetail}
-          create={CatchmentCreate}
-          edit={CatchmentEdit}
+          create={hasPrivilege(userInfo, EditCatchment) && CatchmentCreate}
+          edit={hasPrivilege(userInfo, EditCatchment) && CatchmentEdit}
         />
         <Resource
           name="user"
           list={WithProps({ organisation }, UserList)}
-          create={WithProps({ organisation }, UserCreate)}
+          create={
+            hasPrivilege(userInfo, EditUserConfiguration) &&
+            hasPrivilege(userInfo, EditCatchment) &&
+            WithProps({ organisation }, UserCreate)
+          }
           show={WithProps({ user }, UserDetail)}
-          edit={WithProps({ user }, UserEdit)}
+          edit={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ user }, UserEdit)}
         />
-        <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+        {hasPrivilege(userInfo, EditUserGroup) ? (
+          <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+        ) : (
+          <div />
+        )}
         <Resource name="task" options={{ label: "Tasks" }} />
-        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
+        {hasPrivilege(userInfo, UploadMetadataAndData) ? (
+          <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
+        ) : (
+          <div />
+        )}
         <Resource
           name="identifierSource"
           options={{ label: "Identifier Source" }}
           list={IdentifierSourceList}
           show={IdentifierSourceDetail}
-          create={IdentifierSourceCreate}
-          edit={IdentifierSourceEdit}
+          create={hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceCreate}
+          edit={hasPrivilege(userInfo, EditIdentifierSource) && IdentifierSourceEdit}
         />
         <Resource
           name="identifierUserAssignment"
           options={{ label: "Identifier User Assignment" }}
           list={IdentifierUserAssignmentList}
           show={IdentifierUserAssignmentDetail}
-          create={IdentifierUserAssignmentCreate}
-          edit={IdentifierUserAssignmentEdit}
+          create={
+            hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentCreate
+          }
+          edit={
+            hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentEdit
+          }
         />
         <Resource
           name="organisationDetails"
           options={{ label: "Organisation Details" }}
-          list={WithProps({ organisation }, OrganisationDetail)}
+          list={WithProps(
+            {
+              organisation,
+              hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration)
+            },
+            OrganisationDetail
+          )}
         />
-        <Resource
-          name="phoneNumberVerification"
-          options={{ label: "Phone Verification" }}
-          list={Msg91Config}
-        />
-        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
+        {hasPrivilege(userInfo, PhoneVerification) ? (
+          <Resource
+            name="phoneNumberVerification"
+            options={{ label: "Phone Verification" }}
+            list={Msg91Config}
+          />
+        ) : (
+          <div />
+        )}
       </Admin>
     );
   }

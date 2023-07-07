@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const OrganisationDetail = ({ organisation: { name } }) => {
+export const OrganisationDetail = ({ organisation: { name }, hasEditPrivilege }) => {
   const classes = useStyles();
   const [openModal, setOpenModal] = React.useState(false);
 
@@ -30,20 +30,24 @@ export const OrganisationDetail = ({ organisation: { name } }) => {
                 Organisation Name : {name}
               </Typography>
             </Grid>
-            <Grid item>
-              <Button
-                className={classes.deleteButton}
-                variant="contained"
-                color="secondary"
-                onClick={() => setOpenModal(true)}
-              >
-                Delete all data
-              </Button>
-            </Grid>
+            {hasEditPrivilege && (
+              <Grid item>
+                <Button
+                  className={classes.deleteButton}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => setOpenModal(true)}
+                >
+                  Delete all data
+                </Button>
+              </Grid>
+            )}
           </Grid>
-          <OrgSettings />
+          <OrgSettings hasEditPrivilege={hasEditPrivilege} />
         </Grid>
-        <DeleteData openModal={openModal} setOpenModal={setOpenModal} orgName={name} />
+        {hasEditPrivilege && (
+          <DeleteData openModal={openModal} setOpenModal={setOpenModal} orgName={name} />
+        )}
       </DocumentationContainer>
     </Box>
   );

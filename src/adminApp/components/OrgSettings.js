@@ -9,7 +9,7 @@ import { toNumber } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { setOrganisationConfig } from "../../rootApp/ducks";
 
-export const OrgSettings = () => {
+export const OrgSettings = ({ hasEditPrivilege }) => {
   const [orgSettings, setOrgSettings] = React.useState();
   const dispatch = useDispatch();
 
@@ -44,7 +44,7 @@ export const OrgSettings = () => {
           onChange={event => onSettingsChange(key, event.target.checked)}
           name={name}
           toolTipKey={tooltip}
-          disabled={disabled}
+          disabled={disabled || !hasEditPrivilege}
         />
       </Grid>
     );
