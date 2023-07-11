@@ -9,7 +9,6 @@ import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 import { Privilege } from "openchs-models";
 import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
-import _ from "lodash";
 
 const GroupPrivileges = ({
   groupId,
@@ -163,15 +162,15 @@ const GroupPrivileges = ({
       privilegeUuidsToBeUpdated.includes(groupPrivilege.uuid)
     );
 
-    let request_body = privilegesToBeUpdated.map(privilege => ({
-      groupPrivilegeId: _.get(privilege, "groupPrivilege.id"),
+    const request_body = privilegesToBeUpdated.map(privilege => ({
+      groupPrivilegeId: privilege.groupPrivilegeId,
       groupId: privilege.groupId,
       privilegeId: privilege.privilegeId,
-      subjectTypeId: _.get(privilege, "subjectType.id"),
-      programId: _.get(privilege, "program.id"),
-      programEncounterTypeId: _.get(privilege, "programEncounterType.id"),
-      encounterTypeId: _.get(privilege, "encounterType.id"),
-      checklistDetailId: _.get(privilege, "checklistDetail.id"),
+      subjectTypeId: privilege.subjectTypeId,
+      programId: privilege.programId,
+      programEncounterTypeId: privilege.programEncounterTypeId,
+      encounterTypeId: privilege.encounterTypeId,
+      checklistDetailId: privilege.checklistDetailId,
       allow: isAllow,
       uuid: privilege.uuid
     }));
