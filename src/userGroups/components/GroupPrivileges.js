@@ -41,30 +41,30 @@ const GroupPrivileges = ({
   }, [groupPrivilegeList]);
 
   const generatePrivilegeDependenciesAndCheckedState = () => {
-    let dependencies = new Map();
-    let checkedState = new Map();
+    const dependencies = new Map();
+    const checkedState = new Map();
 
     const { PrivilegeType } = Privilege;
 
     groupPrivilegeList.forEach(groupPrivilege => {
       checkedState.set(groupPrivilege.uuid, { checkedState: groupPrivilege.allow });
-      switch (groupPrivilege["privilegeType"]) {
-        case PrivilegeType.VIEW_SUBJECT:
+      switch (groupPrivilege["privilegeTypeName"]) {
+        case PrivilegeType.ViewSubject:
           dependencies.set(groupPrivilege.uuid, {
             dependencies: []
           });
           break;
-        case PrivilegeType.REGISTER_SUBJECT:
-        case PrivilegeType.EDIT_SUBJECT:
-        case PrivilegeType.VOID_SUBJECT:
-        case PrivilegeType.VIEW_ENROLMENT_DETAILS:
-        case PrivilegeType.VIEW_VISIT:
-        case PrivilegeType.VIEW_CHECKLIST:
-        case PrivilegeType.ADD_MEMBER:
-        case PrivilegeType.EDIT_MEMBER:
-        case PrivilegeType.REMOVE_MEMBER:
-        case PrivilegeType.APPROVE_SUBJECT:
-        case PrivilegeType.REJECT_SUBJECT:
+        case PrivilegeType.RegisterSubject:
+        case PrivilegeType.EditSubject:
+        case PrivilegeType.VoidSubject:
+        case PrivilegeType.ViewEnrolmentDetails:
+        case PrivilegeType.ViewVisit:
+        case PrivilegeType.ViewChecklist:
+        case PrivilegeType.AddMember:
+        case PrivilegeType.EditMember:
+        case PrivilegeType.RemoveMember:
+        case PrivilegeType.ApproveSubject:
+        case PrivilegeType.RejectSubject:
           dependencies.set(groupPrivilege.uuid, {
             dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
               groupPrivilegeList,
@@ -72,11 +72,11 @@ const GroupPrivileges = ({
             ).map(x => x.uuid)
           });
           break;
-        case PrivilegeType.ENROL_SUBJECT:
-        case PrivilegeType.EDIT_ENROLMENT_DETAILS:
-        case PrivilegeType.EXIT_ENROLMENT:
-        case PrivilegeType.APPROVE_ENROLMENT:
-        case PrivilegeType.REJECT_ENROLMENT:
+        case PrivilegeType.EnrolSubject:
+        case PrivilegeType.EditEnrolmentDetails:
+        case PrivilegeType.ExitEnrolment:
+        case PrivilegeType.ApproveEnrolment:
+        case PrivilegeType.RejectEnrolment:
           dependencies.set(groupPrivilege.uuid, {
             dependencies: GroupPrivilegesModel.getProgramDependencies(
               groupPrivilegeList,
@@ -84,13 +84,13 @@ const GroupPrivileges = ({
             ).map(x => x.uuid)
           });
           break;
-        case PrivilegeType.SCHEDULE_VISIT:
-        case PrivilegeType.PERFORM_VISIT:
-        case PrivilegeType.EDIT_VISIT:
-        case PrivilegeType.CANCEL_VISIT:
-        case PrivilegeType.VOID_VISIT:
-        case PrivilegeType.APPROVE_ENCOUNTER:
-        case PrivilegeType.REJECT_ENCOUNTER:
+        case PrivilegeType.ScheduleVisit:
+        case PrivilegeType.PerformVisit:
+        case PrivilegeType.EditVisit:
+        case PrivilegeType.CancelVisit:
+        case PrivilegeType.VoidVisit:
+        case PrivilegeType.ApproveEncounter:
+        case PrivilegeType.RejectEncounter:
           dependencies.set(groupPrivilege.uuid, {
             dependencies: GroupPrivilegesModel.getEncounterTypeDependencies(
               groupPrivilegeList,
@@ -98,9 +98,9 @@ const GroupPrivileges = ({
             ).map(x => x.uuid)
           });
           break;
-        case PrivilegeType.EDIT_CHECKLIST:
-        case PrivilegeType.APPROVE_CHECKLISTITEM:
-        case PrivilegeType.REJECT_CHECKLISTITEM:
+        case PrivilegeType.EditChecklist:
+        case PrivilegeType.ApproveChecklistitem:
+        case PrivilegeType.RejectChecklistitem:
           dependencies.set(groupPrivilege.uuid, {
             dependencies: GroupPrivilegesModel.getChecklistDependencies(
               groupPrivilegeList,
@@ -217,13 +217,13 @@ const GroupPrivileges = ({
         />
       )
     },
-    { title: "Subject Type", field: "subjectType.name", defaultGroupOrder: 0 },
+    { title: "Subject Type", field: "subjectTypeName", defaultGroupOrder: 0 },
     { title: "Entity Type", field: "privilegeEntityType" },
     { title: "Privilege", field: "privilegeName" },
-    { title: "Program", field: "program.name" },
-    { title: "Program Encounter Type", field: "programEncounterType.name", defaultSort: "asc" },
-    { title: "General Encounter Type", field: "encounterType.name" },
-    { title: "Checklist Detail", field: "checklistDetail.name" }
+    { title: "Program", field: "programName" },
+    { title: "Program Encounter Type", field: "programEncounterTypeName", defaultSort: "asc" },
+    { title: "General Encounter Type", field: "encounterTypeName" },
+    { title: "Checklist Detail", field: "checklistDetailName" }
   ];
   return (
     <div>

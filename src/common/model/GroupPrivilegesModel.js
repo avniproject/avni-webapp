@@ -2,7 +2,7 @@ import { Privilege } from "openchs-models";
 import _ from "lodash";
 
 function matchingId(a, b, fieldName) {
-  const fieldPath = fieldName + ".id";
+  const fieldPath = fieldName + "Id";
   return _.get(a, fieldPath) === _.get(b, fieldPath);
 }
 
@@ -27,7 +27,7 @@ class GroupPrivilegesModel {
   static getSubjectTypeDependencies(groupPrivileges, groupPrivilege) {
     return groupPrivileges.filter(
       x =>
-        x["privilegeType"] === Privilege.PrivilegeType.VIEW_SUBJECT &&
+        x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
         matchingSubjectType(x, groupPrivilege)
     );
   }
@@ -35,10 +35,10 @@ class GroupPrivilegesModel {
   static getProgramDependencies(groupPrivilegeList, groupPrivilege) {
     return groupPrivilegeList.filter(
       x =>
-        (x["privilegeType"] === Privilege.PrivilegeType.VIEW_ENROLMENT_DETAILS &&
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewEnrolmentDetails &&
           matchingSubjectType(x, groupPrivilege) &&
           matchingProgram(x, groupPrivilege)) ||
-        (x["privilegeType"] === Privilege.PrivilegeType.VIEW_SUBJECT &&
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
           matchingSubjectType(x, groupPrivilege))
     );
   }
@@ -46,12 +46,12 @@ class GroupPrivilegesModel {
   static getEncounterTypeDependencies(groupPrivilegeList, groupPrivilege) {
     return groupPrivilegeList.filter(
       x =>
-        (x["privilegeType"] === Privilege.PrivilegeType.VIEW_VISIT &&
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewVisit &&
           matchingSubjectType(x, groupPrivilege) &&
           matchingEncounterType(x, groupPrivilege) &&
           matchingProgramEncounterType(x, groupPrivilege) &&
           matchingProgram(x, groupPrivilege)) ||
-        (x["privilegeType"] === Privilege.PrivilegeType.VIEW_SUBJECT &&
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
           matchingSubjectType(x, groupPrivilege))
     );
   }
@@ -59,10 +59,10 @@ class GroupPrivilegesModel {
   static getChecklistDependencies(groupPrivilegeList, groupPrivilege) {
     return groupPrivilegeList.filter(
       x =>
-        (x["privilegeType"] === Privilege.PrivilegeType.VIEW_CHECKLIST &&
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewChecklist &&
           matchingSubjectType(x, groupPrivilege) &&
           matchingId(x, groupPrivilege, "checklistDetail")) ||
-        (x["privilegeType"] === Privilege.PrivilegeType.VIEW_SUBJECT &&
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
           matchingSubjectType(x, groupPrivilege))
     );
   }

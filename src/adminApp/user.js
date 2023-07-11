@@ -34,7 +34,6 @@ import EnableDisableButton from "./components/EnableDisableButton";
 import http from "common/utils/httpClient";
 import {
   CustomToolbar,
-  formatRoles,
   isRequired,
   mobileNumberFormatter,
   mobileNumberParser,
@@ -93,7 +92,6 @@ export const UserList = ({ organisation, ...props }) => (
       >
         <TextField source="name" />
       </ReferenceField>
-      <FunctionField label="Role" render={user => formatRoles(user.roles)} />
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
       <FunctionField
@@ -201,7 +199,6 @@ export const UserDetail = ({ user, ...props }) => {
         >
           <TextField source="name" />
         </ReferenceField>
-        <FunctionField label="Role" render={user => formatRoles(user.roles)} />
         <FunctionField
           label="Operating Scope"
           render={user => formatOperatingScope(user.operatingIndividualScope)}
@@ -524,27 +521,6 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         parse={mobileNumberParser}
         toolTipKey={"ADMIN_USER_PHONE_NUMBER"}
       />
-      <FormDataConsumer>
-        {({ formData, dispatch, ...rest }) =>
-          isAdminAndLoggedIn(props.record, user) ? null : (
-            <AvniBooleanInput
-              source="orgAdmin"
-              style={{ marginTop: "3em", marginBottom: "2em" }}
-              label="Make this user an administrator (user will be able to make organisation wide changes)"
-              onChange={(e, newVal) => {
-                if (newVal) {
-                  dispatch(change(REDUX_FORM_NAME, "catchmentId", null));
-                  dispatch(
-                    change(REDUX_FORM_NAME, "operatingIndividualScope", operatingScopes.NONE)
-                  );
-                }
-              }}
-              {...rest}
-              toolTipKey={"ADMIN_USER_ORG_ADMIN"}
-            />
-          )
-        }
-      </FormDataConsumer>
       <LineBreak />
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) => (
