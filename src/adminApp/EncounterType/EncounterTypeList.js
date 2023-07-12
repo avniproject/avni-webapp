@@ -11,8 +11,15 @@ import {
 } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-const EncounterTypeList = ({ history }) => {
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditEncounterType);
+}
+
+const EncounterTypeList = ({ history, userInfo }) => {
   const [redirect, setRedirect] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
@@ -157,7 +164,9 @@ const EncounterTypeList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />
+              {hasEditPrivilege(userInfo) && (
+                <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />
+              )}
             </div>
             <AvniMaterialTable
               title=""
@@ -173,7 +182,7 @@ const EncounterTypeList = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editEncounterType, voidEncounterType]}
+              actions={hasEditPrivilege(userInfo) && [editEncounterType, voidEncounterType]}
               route={"/appDesigner/encounterType"}
             />
           </div>
@@ -184,4 +193,8 @@ const EncounterTypeList = ({ history }) => {
   );
 };
 
-export default withRouter(EncounterTypeList);
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(EncounterTypeList));

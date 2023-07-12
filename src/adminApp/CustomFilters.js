@@ -12,6 +12,12 @@ import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import commonApi from "../common/service";
+import { Privilege } from "openchs-models";
+import UserInfo from "../common/model/UserInfo";
+
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard);
+}
 
 const useStyles = makeStyles({
   root: {
@@ -25,7 +31,8 @@ const customFilters = ({
   getOperationalModules,
   history,
   organisation,
-  filename
+  filename,
+  userInfo
 }) => {
   const typeOfFilter = history.location.pathname.endsWith("myDashboardFilters")
     ? "myDashboardFilters"
@@ -169,10 +176,12 @@ const customFilters = ({
         columns={filterDisplayColumns}
         data={buildFilterData(settings.settings[filterType], subjectTypes)}
         options={{ search: false, paging: false }}
-        actions={[
-          editFilter(filterType, `Edit ${_.startCase(filterType)}`),
-          deleteFilter(filterType)
-        ]}
+        actions={
+          hasEditPrivilege(userInfo) && [
+            editFilter(filterType, `Edit ${_.startCase(filterType)}`),
+            deleteFilter(filterType)
+          ]
+        }
       />
     </Box>
   );
@@ -194,7 +203,8 @@ const customFilters = ({
   );
 };
 const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
+  operationalModules: state.reports.operationalModules,
+  userInfo: state.app.userInfo
 });
 
 export const filterDisplayColumns = [

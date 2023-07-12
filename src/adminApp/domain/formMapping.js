@@ -1,4 +1,23 @@
 import { find, get } from "lodash";
+import { Form, Privilege } from "openchs-models";
+
+const privilegeTypes = new Map([
+  [Form.formTypes.ChecklistItem, Privilege.PrivilegeType.EditChecklist],
+  [Form.formTypes.Encounter, Privilege.PrivilegeType.EditChecklist],
+  [Form.formTypes.IndividualEncounterCancellation, Privilege.PrivilegeType.EditEncounterType],
+  [Form.formTypes.IndividualProfile, Privilege.PrivilegeType.EditSubjectType],
+  [Form.formTypes.ManualProgramEnrolmentEligibility, null],
+  [Form.formTypes.ProgramEncounter, Privilege.PrivilegeType.EditEncounterType],
+  [Form.formTypes.ProgramEncounterCancellation, Privilege.PrivilegeType.EditEncounterType],
+  [Form.formTypes.ProgramEnrolment, Privilege.PrivilegeType.EditProgram],
+  [Form.formTypes.ProgramExit, Privilege.PrivilegeType.EditProgram],
+  [Form.formTypes.SubjectEnrolmentEligibility, null],
+  [Form.formTypes.Task, null]
+]);
+
+export function getPrivilegeType(formType) {
+  return privilegeTypes.get(formType);
+}
 
 export const findProgramEncounterForm = (formMappings, encounterType) =>
   formMappings.find(

@@ -49,6 +49,8 @@ import {
   formDesignerUpdateDragDropOrderForFirstGroup
 } from "../common/FormDesignerHandlers";
 import { FormTypeEntities } from "../common/constants";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -1053,20 +1055,21 @@ class FormDetails extends Component {
             </Grid>
           )}
 
-          {!this.state.createFlag && (
-            <Grid item sm={2}>
-              <SaveComponent
-                name="Save"
-                onSubmit={this.validateForm}
-                styleClass={{
-                  marginTop: "30px",
-                  marginBottom: "2px"
-                }}
-                disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
-                fullWidth={true}
-              />
-            </Grid>
-          )}
+          {UserInfo.hasFormEditPrivilege(this.props.userInfo, this.state.formType) &&
+            !this.state.createFlag && (
+              <Grid item sm={2}>
+                <SaveComponent
+                  name="Save"
+                  onSubmit={this.validateForm}
+                  styleClass={{
+                    marginTop: "30px",
+                    marginBottom: "2px"
+                  }}
+                  disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
+                  fullWidth={true}
+                />
+              </Grid>
+            )}
         </Grid>
 
         <Grid item sm={12}>
@@ -1155,4 +1158,8 @@ class FormDetails extends Component {
   }
 }
 
-export default FormDetails;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(FormDetails);

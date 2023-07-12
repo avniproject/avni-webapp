@@ -9,6 +9,8 @@ import CustomizedSnackbar from "./CustomizedSnackbar";
 import { FormTypeEntities } from "../common/constants";
 import { default as UUID } from "uuid";
 import _ from "lodash";
+import UserInfo from "../../common/model/UserInfo";
+import { connect } from "react-redux";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -133,13 +135,18 @@ class NewFormModal extends Component {
   }
 
   formTypes() {
-    return _.map(FormTypeEntities.getAllFormTypeInfo(), formTypeInfo => {
-      return (
-        <MenuItem key={formTypeInfo} value={formTypeInfo}>
-          {formTypeInfo.display}
-        </MenuItem>
-      );
-    });
+    return _.map(
+      _.filter(FormTypeEntities.getAllFormTypeInfo(), x =>
+        UserInfo.hasFormEditPrivilege(this.props.userInfo, x.formType)
+      ),
+      formTypeInfo => {
+        return (
+          <MenuItem key={formTypeInfo} value={formTypeInfo}>
+            {formTypeInfo.display}
+          </MenuItem>
+        );
+      }
+    );
   }
   render() {
     if (this.state.toFormDetails !== "") {
@@ -212,4 +219,8 @@ NewFormModal.defaultProps = {
   isCloneForm: false
 };
 
-export default NewFormModal;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(NewFormModal);

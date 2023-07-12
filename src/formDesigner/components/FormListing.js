@@ -13,8 +13,14 @@ import CloseIcon from "@material-ui/icons/Close";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import NewFormModal from "../components/NewFormModal";
 import moment from "moment";
+import UserInfo from "../../common/model/UserInfo";
+import { connect } from "react-redux";
 
-const FormListing = ({ history }) => {
+function isActionDisabled(rowData, userInfo) {
+  return rowData.voided || !UserInfo.hasFormEditPrivilege(userInfo, rowData.formType);
+}
+
+const FormListing = ({ history, userInfo }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
   const onCloseEvent = () => {
@@ -86,14 +92,14 @@ const FormListing = ({ history }) => {
     icon: "edit",
     tooltip: "Edit Form",
     onClick: (event, form) => history.push(`/appdesigner/forms/${form.uuid}`),
-    disabled: rowData.voided
+    disabled: isActionDisabled(rowData, userInfo)
   });
 
   const formSettings = rowData => ({
     icon: "settings",
     tooltip: "Form Setting",
     onClick: (event, form) => history.push(`/appdesigner/forms/${form.uuid}/settings`),
-    disabled: rowData.voided
+    disabled: isActionDisabled(rowData, userInfo)
   });
 
   const showCloneForm = () => {
@@ -122,7 +128,7 @@ const FormListing = ({ history }) => {
     icon: "library_add",
     tooltip: "Clone Form",
     onClick: (event, form) => onSetUuidAndIndicator(true, rowData["uuid"]),
-    disabled: rowData.voided
+    disabled: isActionDisabled(rowData, userInfo)
   });
 
   const voidForm = rowData => ({
@@ -140,7 +146,7 @@ const FormListing = ({ history }) => {
         });
       }
     },
-    disabled: rowData.organisationId === 1
+    disabled: isActionDisabled(rowData, userInfo)
   });
 
   return (
@@ -171,4 +177,8 @@ const FormListing = ({ history }) => {
   );
 };
 
-export default withRouter(FormListing);
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(FormListing));

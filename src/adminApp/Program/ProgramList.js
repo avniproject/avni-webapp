@@ -8,8 +8,15 @@ import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+import { connect } from "react-redux";
 
-const ProgramList = ({ history }) => {
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditProgram);
+}
+
+const ProgramList = ({ history, userInfo }) => {
   const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
 
@@ -151,7 +158,9 @@ const ProgramList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name="New Program" />
+              {hasEditPrivilege(userInfo) && (
+                <CreateComponent onSubmit={addNewConcept} name="New Program" />
+              )}
             </div>
 
             <AvniMaterialTable
@@ -168,7 +177,7 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editProgram, voidProgram]}
+              actions={hasEditPrivilege(userInfo) && [editProgram, voidProgram]}
               route={"/appdesigner/program"}
             />
           </div>
@@ -183,4 +192,8 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default withRouter(React.memo(ProgramList, areEqual));
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(React.memo(ProgramList, areEqual)));

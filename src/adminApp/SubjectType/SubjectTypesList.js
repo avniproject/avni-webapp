@@ -8,8 +8,15 @@ import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-const SubjectTypesList = ({ history }) => {
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
+}
+
+const SubjectTypesList = ({ history, userInfo }) => {
   const [formMappings, setFormMappings] = useState([]);
 
   useFormMappings(setFormMappings);
@@ -103,7 +110,9 @@ const SubjectTypesList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name="New Subject type" />
+              {hasEditPrivilege(userInfo) && (
+                <CreateComponent onSubmit={addNewConcept} name="New Subject type" />
+              )}
             </div>
 
             <AvniMaterialTable
@@ -121,7 +130,7 @@ const SubjectTypesList = ({ history }) => {
                 })
               }}
               route={"/appdesigner/subjectType"}
-              actions={[editSubjectType, voidSubjectType]}
+              actions={hasEditPrivilege(userInfo) && [editSubjectType, voidSubjectType]}
             />
           </div>
         </div>
@@ -135,4 +144,8 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default withRouter(React.memo(SubjectTypesList, areEqual));
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(React.memo(SubjectTypesList, areEqual)));
