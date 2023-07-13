@@ -7,8 +7,11 @@ import Box from "@material-ui/core/Box";
 import { Redirect } from "react-router-dom";
 import { Title } from "react-admin";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
+import { connect } from "react-redux";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-export const VideoShow = props => {
+const VideoShow = props => {
   const [video, setVideo] = React.useState({});
   const [editAlert, setEditAlert] = useState(false);
 
@@ -19,12 +22,14 @@ export const VideoShow = props => {
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={"Show Video : " + video.title} />
-      <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
-        <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-          <EditIcon />
-          Edit
-        </Button>
-      </Grid>
+      {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditVideo) && (
+        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+          <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+            <EditIcon />
+            Edit
+          </Button>
+        </Grid>
+      )}
       <div className="container" style={{ float: "left" }}>
         <ShowLabelValue label={"Name"} value={video.title} />
         <p />
@@ -39,3 +44,9 @@ export const VideoShow = props => {
     </Box>
   );
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(VideoShow);

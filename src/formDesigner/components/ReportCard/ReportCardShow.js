@@ -5,9 +5,11 @@ import ColorValue from "../../common/ColorValue";
 import ResourceShowView from "../../common/ResourceShowView";
 import http from "../../../common/utils/httpClient";
 import RuleDisplay from "../../../adminApp/components/RuleDisplay";
+import { connect } from "react-redux";
+import { Privilege } from "openchs-models";
 
-export const ReportCardShow = props => {
-  const RenderCard = ({ card, ...props }) => {
+const ReportCardShow = props => {
+  const RenderCard = ({ card }) => {
     const [standardReportCardType, setStandardReportCardType] = React.useState();
     const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
     const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
@@ -74,6 +76,14 @@ export const ReportCardShow = props => {
       resourceName={"card"}
       resourceURLName={"reportCard"}
       render={card => <RenderCard card={card} />}
+      editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
+      userInfo={props.userInfo}
     />
   );
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(ReportCardShow);

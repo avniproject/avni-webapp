@@ -7,6 +7,9 @@ import moment from "moment";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const tableRef = React.createRef();
 const refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -113,7 +116,7 @@ const statusFilter = (selectedStatus, onSelect) => (
   </ButtonGroup>
 );
 
-const RuleFailureTelemetryList = () => {
+const RuleFailureTelemetryList = ({ userInfo }) => {
   const [selectedStatus, setSelectedStatus] = React.useState(STATUS.OPEN);
 
   const onSelect = label => {
@@ -140,26 +143,30 @@ const RuleFailureTelemetryList = () => {
             title=""
             components={{
               Container: props => <Fragment>{props.children}</Fragment>,
-              Action: props =>
-                props.action.icon === "close" ? (
-                  <Button
-                    onClick={event => props.action.onClick(event, props.data)}
-                    disabled={selectedStatus === STATUS.CLOSED}
-                    color="primary"
-                  >
-                    Close Errors
-                  </Button>
-                ) : props.action.icon === "open" ? (
-                  <Button
-                    onClick={event => props.action.onClick(event, props.data)}
-                    color="primary"
-                    disabled={selectedStatus === STATUS.OPEN}
-                  >
-                    Reopen Errors
-                  </Button>
-                ) : (
-                  statusFilter(selectedStatus, onSelect)
-                )
+              Action: props => {
+                return (
+                  UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditRuleFailure) &&
+                  (props.action.icon === "close" ? (
+                    <Button
+                      onClick={event => props.action.onClick(event, props.data)}
+                      disabled={selectedStatus === STATUS.CLOSED}
+                      color="primary"
+                    >
+                      Close Errors
+                    </Button>
+                  ) : props.action.icon === "open" ? (
+                    <Button
+                      onClick={event => props.action.onClick(event, props.data)}
+                      color="primary"
+                      disabled={selectedStatus === STATUS.OPEN}
+                    >
+                      Reopen Errors
+                    </Button>
+                  ) : (
+                    statusFilter(selectedStatus, onSelect)
+                  ))
+                );
+              }
             }}
             ref={tableRef}
             columns={columns}
@@ -194,4 +201,8 @@ const RuleFailureTelemetryList = () => {
   );
 };
 
-export default RuleFailureTelemetryList;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(RuleFailureTelemetryList);

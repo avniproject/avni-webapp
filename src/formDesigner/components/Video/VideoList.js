@@ -6,27 +6,35 @@ import { CreateComponent } from "../../../common/components/CreateComponent";
 import { Title } from "react-admin";
 import http from "common/utils/httpClient";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+import { connect } from "react-redux";
 
-export const VideoList = ({ history }) => {
-  const columns = [
-    {
-      title: "Name",
-      render: rowData =>
-        !rowData.voided && <a href={`#/appDesigner/video/${rowData.id}/show`}>{rowData.title}</a>
-    },
-    {
-      title: "Description",
-      render: rowData => rowData.description
-    },
-    {
-      title: "Filename",
-      render: rowData => rowData.fileName
-    },
-    {
-      title: "Duration",
-      render: rowData => rowData.duration
-    }
-  ];
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditVideo);
+}
+
+const columns = [
+  {
+    title: "Name",
+    render: rowData =>
+      !rowData.voided && <a href={`#/appDesigner/video/${rowData.id}/show`}>{rowData.title}</a>
+  },
+  {
+    title: "Description",
+    render: rowData => rowData.description
+  },
+  {
+    title: "Filename",
+    render: rowData => rowData.fileName
+  },
+  {
+    title: "Duration",
+    render: rowData => rowData.duration
+  }
+];
+
+const VideoList = ({ history, userInfo }) => {
   const [redirect, setRedirect] = useState(false);
   const [result, setResult] = useState([]);
   const tableRef = React.createRef();
@@ -73,9 +81,11 @@ export const VideoList = ({ history }) => {
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title="Video Playlist" />
         <div className="container">
-          <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-            <CreateComponent onSubmit={() => setRedirect(true)} name="New Video" />
-          </div>
+          {hasEditPrivilege(userInfo) && (
+            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+              <CreateComponent onSubmit={() => setRedirect(true)} name="New Video" />
+            </div>
+          )}
           <AvniMaterialTable
             title=""
             ref={tableRef}
@@ -90,7 +100,7 @@ export const VideoList = ({ history }) => {
                 backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
               })
             }}
-            actions={[editVideo, voidVideo]}
+            actions={hasEditPrivilege(userInfo) && [editVideo, voidVideo]}
             route={"/appdesigner/video"}
           />
         </div>
@@ -104,4 +114,8 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default withRouter(React.memo(VideoList, areEqual));
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(React.memo(VideoList, areEqual)));

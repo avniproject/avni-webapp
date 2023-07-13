@@ -10,6 +10,9 @@ import { Audit } from "../../formDesigner/components/Audit";
 import RuleDisplay from "../components/RuleDisplay";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const ApplicationMenuShow = props => {
   const [menuItem, setApplicationMenu] = useState(null);
@@ -26,12 +29,14 @@ const ApplicationMenuShow = props => {
       <>
         <Box boxShadow={2} p={3} bgcolor="background.paper">
           <Title title={"Application menu: " + menuItem.displayKey} />
-          <Grid container item={12} style={{ justifyContent: "flex-end" }}>
-            <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-              <EditIcon />
-              Edit
-            </Button>
-          </Grid>
+          {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditApplicationMenu) && (
+            <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+              <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+                <EditIcon />
+                Edit
+              </Button>
+            </Grid>
+          )}
           <div className="container" style={{ float: "left" }}>
             <ShowLabelValue value={menuItem.displayKey} label="Display Key" />
             <p />
@@ -56,4 +61,8 @@ const ApplicationMenuShow = props => {
   );
 };
 
-export default ApplicationMenuShow;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(ApplicationMenuShow);

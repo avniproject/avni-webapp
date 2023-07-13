@@ -20,10 +20,10 @@ import RelationshipShow from "../formDesigner/components/Relationships/Relations
 import RelationshipEdit from "../formDesigner/components/Relationships/RelationshipEdit";
 import RelationshipTypeCreate from "../formDesigner/components/RelationshipTypes/RelationshipTypeCreate";
 import { CreateEditVideo } from "../formDesigner/components/Video/CreateEditVideo";
-import { VideoShow } from "../formDesigner/components/Video/VideoShow";
+import VideoShow from "../formDesigner/components/Video/VideoShow";
 import { WithProps } from "../common/components/utils";
 import { CreateEditReportCard } from "../formDesigner/components/ReportCard/CreateEditReportCard";
-import { ReportCardShow } from "../formDesigner/components/ReportCard/ReportCardShow";
+import ReportCardShow from "../formDesigner/components/ReportCard/ReportCardShow";
 import CreateEditDashboard from "../formDesigner/components/Dashboard/CreateEditDashboard";
 import DashboardShow from "../formDesigner/components/Dashboard/DashboardShow";
 import ApplicationMenuEdit from "./ApplicationMenu/ApplicationMenuEdit";

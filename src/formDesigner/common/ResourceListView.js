@@ -6,8 +6,17 @@ import { CreateComponent } from "../../common/components/CreateComponent";
 import { Title } from "react-admin";
 import http from "common/utils/httpClient";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import UserInfo from "../../common/model/UserInfo";
 
-const ResourceListView = ({ history, title, resourceName, resourceURLName, columns }) => {
+const ResourceListView = ({
+  history,
+  title,
+  resourceName,
+  resourceURLName,
+  columns,
+  userInfo,
+  editPrivilegeType
+}) => {
   const [redirect, setRedirect] = useState(false);
   const [result, setResult] = useState([]);
   const tableRef = React.createRef();
@@ -54,9 +63,11 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={title} />
         <div className="container">
-          <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-            <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
-          </div>
+          {UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
+            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+              <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
+            </div>
+          )}
           <AvniMaterialTable
             title=""
             ref={tableRef}
@@ -71,7 +82,9 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
                 backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
               })
             }}
-            actions={[editResource, voidResource]}
+            actions={
+              UserInfo.hasPrivilege(userInfo, editPrivilegeType) && [editResource, voidResource]
+            }
             route={`/appdesigner/${resourceURLName}`}
           />
         </div>

@@ -7,6 +7,7 @@ import Box from "@material-ui/core/Box";
 import { Redirect } from "react-router-dom";
 import { Title } from "react-admin";
 import _ from "lodash";
+import UserInfo from "../../common/model/UserInfo";
 
 const ResourceShowView = ({
   title,
@@ -14,7 +15,9 @@ const ResourceShowView = ({
   resourceName,
   resourceURLName,
   render,
-  mapResource = _.identity
+  mapResource = _.identity,
+  userInfo,
+  editPrivilegeType
 }) => {
   const [resource, setResource] = React.useState({});
   const [editAlert, setEditAlert] = useState(false);
@@ -26,12 +29,14 @@ const ResourceShowView = ({
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={`Show ${title} : ${resource.name}`} />
-      <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
-        <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-          <EditIcon />
-          Edit
-        </Button>
-      </Grid>
+      {UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
+        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+          <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+            <EditIcon />
+            Edit
+          </Button>
+        </Grid>
+      )}
       <div className="container" style={{ float: "left" }}>
         {render(resource)}
       </div>

@@ -145,29 +145,31 @@ const customFilters = ({
 
   const renderFilterTable = filterType => (
     <Box m={2}>
-      <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={event => {
-            history.push({
-              pathname: "/appdesigner/filters",
-              state: {
-                filterType,
-                selectedFilter: null,
-                settings,
-                omitTableData,
-                operationalModules,
-                title: `Add ${_.startCase(filterType)}`,
-                worklistUpdationRule,
-                filename
-              }
-            });
-          }}
-        >
-          NEW {_.startCase(filterType)}
-        </Button>
-      </div>
+      {hasEditPrivilege(userInfo) && (
+        <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={event => {
+              history.push({
+                pathname: "/appdesigner/filters",
+                state: {
+                  filterType,
+                  selectedFilter: null,
+                  settings,
+                  omitTableData,
+                  operationalModules,
+                  title: `Add ${_.startCase(filterType)}`,
+                  worklistUpdationRule,
+                  filename
+                }
+              });
+            }}
+          >
+            NEW {_.startCase(filterType)}
+          </Button>
+        </div>
+      )}
       <MaterialTable
         title={_.startCase(filterType)}
         components={{

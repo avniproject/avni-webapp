@@ -16,6 +16,9 @@ import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
@@ -61,12 +64,14 @@ const ProgramShow = props => {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Program: " + program.name} />
-        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
-          <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-            <EditIcon />
-            Edit
-          </Button>
-        </Grid>
+        {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditProgram) && (
+          <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+            <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+              <EditIcon />
+              Edit
+            </Button>
+          </Grid>
+        )}
         <div className="container" style={{ float: "left" }}>
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Name</FormLabel>
@@ -180,4 +185,8 @@ const ProgramShow = props => {
   );
 };
 
-export default ProgramShow;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(ProgramShow);

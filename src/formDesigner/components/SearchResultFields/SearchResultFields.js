@@ -26,6 +26,9 @@ import CustomizedSnackbar from "../CustomizedSnackbar";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { DragNDropComponent } from "../../common/DragNDropComponent";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+import { connect } from "react-redux";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -34,7 +37,7 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const SearchResultFields = () => {
+const SearchResultFields = ({ userInfo }) => {
   const [state, dispatch] = useReducer(SearchFieldReducer, new SearchResultFieldState());
   const orgConfigKey = "searchResultFields";
   const {
@@ -176,7 +179,10 @@ const SearchResultFields = () => {
             </Typography>
             {isEmpty(selectedCustomFields) ? renderNotConfiguredMessage() : renderDraggableFields()}
           </Box>
-          <SaveComponent name="Save" onSubmit={onSave} />
+          {UserInfo.hasPrivilege(
+            userInfo,
+            Privilege.PrivilegeType.EditOfflineDashboardAndReportCard
+          ) && <SaveComponent name="Save" onSubmit={onSave} />}
         </DocumentationContainer>
       )}
       {!isEmpty(feedbackMessage) && (
@@ -191,4 +197,8 @@ const SearchResultFields = () => {
   );
 };
 
-export default SearchResultFields;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(SearchResultFields);

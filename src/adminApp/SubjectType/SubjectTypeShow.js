@@ -18,6 +18,9 @@ import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -67,12 +70,14 @@ const SubjectTypeShow = props => {
       <>
         <Box boxShadow={2} p={3} bgcolor="background.paper">
           <Title title={"Subject Type: " + subjectType.name} />
-          <Grid container style={{ justifyContent: "flex-end" }}>
-            <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-              <EditIcon />
-              Edit
-            </Button>
-          </Grid>
+          {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType) && (
+            <Grid container style={{ justifyContent: "flex-end" }}>
+              <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+                <EditIcon />
+                Edit
+              </Button>
+            </Grid>
+          )}
           <div className="container" style={{ float: "left" }}>
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Name</FormLabel>
@@ -150,4 +155,8 @@ const SubjectTypeShow = props => {
   );
 };
 
-export default SubjectTypeShow;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(SubjectTypeShow);

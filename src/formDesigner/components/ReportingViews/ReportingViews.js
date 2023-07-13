@@ -12,6 +12,9 @@ import { DocumentationContainer } from "../../../common/components/Documentation
 import Chip from "@material-ui/core/Chip";
 import { JSEditor } from "../../../common/components/JSEditor";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -27,7 +30,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ReportingViews = () => {
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Report);
+}
+
+const ReportingViews = ({ userInfo }) => {
   const classes = useStyles();
   const tableRef = React.createRef();
   const columns = [
@@ -120,9 +127,11 @@ const ReportingViews = () => {
       <Title title="Reporting Views" />
       <DocumentationContainer filename={"View.md"}>
         <div className="container">
-          <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-            <CreateComponent onSubmit={() => confirmViewCreation()} name="Create/Refresh view" />
-          </div>
+          {hasEditPrivilege(userInfo) && (
+            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+              <CreateComponent onSubmit={() => confirmViewCreation()} name="Create/Refresh view" />
+            </div>
+          )}
           <AvniMaterialTable
             title=""
             ref={tableRef}
@@ -148,7 +157,7 @@ const ReportingViews = () => {
                 }
               }
             ]}
-            actions={[deleteView]}
+            actions={hasEditPrivilege(userInfo) && [deleteView]}
             route={"/appdesigner/reportingViews"}
           />
         </div>
@@ -167,4 +176,8 @@ const ReportingViews = () => {
   );
 };
 
-export default ReportingViews;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(ReportingViews);

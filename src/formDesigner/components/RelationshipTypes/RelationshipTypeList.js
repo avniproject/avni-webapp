@@ -8,8 +8,15 @@ import { cloneDeep } from "lodash";
 
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-const RelationshipTypeList = ({ history }) => {
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
+}
+
+const RelationshipTypeList = ({ userInfo }) => {
   const columns = [
     {
       title: "Relationship",
@@ -88,9 +95,11 @@ const RelationshipTypeList = ({ history }) => {
           )}
           {isIndividualSubjectTypeAvailable === "true" && (
             <div>
-              <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-                <CreateComponent onSubmit={addNewConcept} name="New Relationship type" />
-              </div>
+              {hasEditPrivilege(userInfo) && (
+                <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+                  <CreateComponent onSubmit={addNewConcept} name="New Relationship type" />
+                </div>
+              )}
 
               <AvniMaterialTable
                 title=""
@@ -106,7 +115,7 @@ const RelationshipTypeList = ({ history }) => {
                     backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                   })
                 }}
-                actions={[voidRelationshipType]}
+                actions={hasEditPrivilege(userInfo) && [voidRelationshipType]}
                 route={"/appdesigner/relationshipType"}
               />
             </div>
@@ -122,4 +131,8 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default withRouter(React.memo(RelationshipTypeList, areEqual));
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(React.memo(RelationshipTypeList, areEqual)));

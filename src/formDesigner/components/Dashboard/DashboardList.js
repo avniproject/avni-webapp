@@ -1,7 +1,9 @@
 import React from "react";
 import ResourceListView from "../../common/ResourceListView";
+import { Privilege } from "openchs-models";
+import { connect } from "react-redux";
 
-const DashboardList = ({ history }) => {
+const DashboardList = ({ history, userInfo }) => {
   const columns = [
     {
       title: "Name",
@@ -21,8 +23,14 @@ const DashboardList = ({ history }) => {
       resourceName={"dashboard"}
       resourceURLName={"dashboard"}
       columns={columns}
+      userInfo={userInfo}
+      editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
     />
   );
 };
 
-export default DashboardList;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(DashboardList);

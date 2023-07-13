@@ -9,6 +9,7 @@ import { getOperationalModules } from "../../../reports/reducers";
 import { withRouter } from "react-router-dom";
 import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
+import { Privilege } from "openchs-models";
 
 function render(dashboard, operationalModules) {
   return (
@@ -48,12 +49,15 @@ const DashboardShow = props => {
       mapResource={resource =>
         DashboardService.mapDashboardFromResource(resource, operationalModules)
       }
+      userInfo={props.userInfo}
+      editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
     />
   );
 };
 
 const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
+  operationalModules: state.reports.operationalModules,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

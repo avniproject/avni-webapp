@@ -12,8 +12,11 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-export const ChecklistDetails = () => {
+const ChecklistDetails = ({ userInfo }) => {
   const [checklistDetails, setChecklistDetails] = React.useState();
   const [validationErrors, setValidationErrors] = React.useState();
   const [foldCard, setFoldCard] = React.useState(true);
@@ -80,15 +83,17 @@ export const ChecklistDetails = () => {
         <Grid>
           <ValidationError validationError={getValidationErrorByKey("SERVER_ERROR")} />
         </Grid>
-        <Button
-          disabled={disableSave}
-          color="primary"
-          variant="contained"
-          onClick={() => onSave()}
-          style={{ marginTop: "14px" }}
-        >
-          <i className="material-icons">save</i>Save
-        </Button>
+        {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditChecklist) && (
+          <Button
+            disabled={disableSave}
+            color="primary"
+            variant="contained"
+            onClick={() => onSave()}
+            style={{ marginTop: "14px" }}
+          >
+            <i className="material-icons">save</i>Save
+          </Button>
+        )}
         {success && (
           <CustomizedSnackbar
             message="Successfully saved the checklist"
@@ -100,3 +105,9 @@ export const ChecklistDetails = () => {
     </Box>
   );
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(ChecklistDetails);

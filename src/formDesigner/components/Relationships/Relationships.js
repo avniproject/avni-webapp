@@ -8,8 +8,15 @@ import { cloneDeep } from "lodash";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-const Relationships = ({ history }) => {
+function hasEditPrivilege(userInfo) {
+  return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
+}
+
+const Relationships = ({ history, userInfo }) => {
   const columns = [
     {
       title: "Name",
@@ -101,9 +108,11 @@ const Relationships = ({ history }) => {
           )}
           {isIndividualSubjectTypeAvailable === "true" && (
             <div>
-              <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-                <CreateComponent onSubmit={addNewConcept} name="New Relationship" />
-              </div>
+              {hasEditPrivilege(userInfo) && (
+                <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+                  <CreateComponent onSubmit={addNewConcept} name="New Relationship" />
+                </div>
+              )}
 
               <AvniMaterialTable
                 title=""
@@ -119,7 +128,7 @@ const Relationships = ({ history }) => {
                     backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                   })
                 }}
-                actions={[editRelationship, voidRelationship]}
+                actions={hasEditPrivilege(userInfo) && [editRelationship, voidRelationship]}
                 route={"/appdesigner/relationship"}
               />
             </div>
@@ -135,4 +144,8 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default withRouter(React.memo(Relationships, areEqual));
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(React.memo(Relationships, areEqual)));

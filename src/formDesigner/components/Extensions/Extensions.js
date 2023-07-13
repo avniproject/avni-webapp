@@ -10,6 +10,9 @@ import Button from "@material-ui/core/Button";
 import http from "common/utils/httpClient";
 import CustomizedBackdrop from "../../../dataEntryApp/components/CustomizedBackdrop";
 import { getErrorByKey } from "../../common/ErrorUtil";
+import { connect } from "react-redux";
+import UserInfo from "../../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const initialState = {
   labelFileNames: [],
@@ -17,7 +20,7 @@ const initialState = {
   errors: []
 };
 
-const Extensions = () => {
+const Extensions = ({ userInfo }) => {
   const [print, dispatch] = React.useReducer(ExtensionReducer, initialState);
   const [value, setValue] = React.useState("");
   const [load, setLoad] = React.useState(false);
@@ -123,11 +126,13 @@ const Extensions = () => {
               </Grid>
               <Grid item>{getErrorByKey(errors, "EMPTY_FILE")}</Grid>
             </Grid>
-            <Grid item>
-              <Button variant={"contained"} color={"primary"} onClick={onSave}>
-                Save
-              </Button>
-            </Grid>
+            {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditExtension) && (
+              <Grid item>
+                <Button variant={"contained"} color={"primary"} onClick={onSave}>
+                  Save
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </div>
         <CustomizedBackdrop load={!load} />
@@ -136,4 +141,8 @@ const Extensions = () => {
   );
 };
 
-export default Extensions;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(Extensions);
