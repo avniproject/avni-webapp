@@ -12,7 +12,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
-import { isEmpty, orderBy } from "lodash";
+import { isEmpty, isNil, orderBy } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "./Audit";
 
@@ -91,7 +91,7 @@ function ConceptDetails(props) {
                 <FormLabel style={{ fontSize: "13px" }}>Low absolute</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.lowAbsolute ? data.lowAbsolute : <RemoveIcon />}
+                  {!isNil(data.lowAbsolute) ? data.lowAbsolute : <RemoveIcon />}
                 </span>
               </div>
               <p />
@@ -99,7 +99,7 @@ function ConceptDetails(props) {
                 <FormLabel style={{ fontSize: "13px" }}>High Absolute</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.highAbsolute ? data.highAbsolute : <RemoveIcon />}
+                  {!isNil(data.highAbsolute) ? data.highAbsolute : <RemoveIcon />}
                 </span>
               </div>
               <p />
@@ -107,7 +107,7 @@ function ConceptDetails(props) {
                 <FormLabel style={{ fontSize: "13px" }}>Low Normal</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.lowNormal ? data.lowNormal : <RemoveIcon />}
+                  {!isNil(data.lowNormal) ? data.lowNormal : <RemoveIcon />}
                 </span>
               </div>
               <p />
@@ -115,14 +115,16 @@ function ConceptDetails(props) {
                 <FormLabel style={{ fontSize: "13px" }}>High normal</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.highNormal ? data.highNormal : <RemoveIcon />}
+                  {!isNil(data.highNormal) ? data.highNormal : <RemoveIcon />}
                 </span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Unit</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>{data.unit ? data.unit : <RemoveIcon />}</span>
+                <span style={{ fontSize: "15px" }}>
+                  {!isNil(data.unit) ? data.unit : <RemoveIcon />}
+                </span>
               </div>
             </>
           )}

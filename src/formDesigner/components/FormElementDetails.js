@@ -17,7 +17,7 @@ import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import InlineConcept from "./InlineConcept";
 
 import MenuItem from "@material-ui/core/MenuItem";
-import _, { capitalize, get, includes, isEqual, replace, toNumber } from "lodash";
+import _, { capitalize, get, includes, isEqual, isNil, replace, toNumber } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -342,7 +342,7 @@ function FormElementDetails(props) {
                       <Input
                         disableUnderline={true}
                         value={
-                          props.formElementData.concept.lowAbsolute
+                          !isNil(props.formElementData.concept.lowAbsolute)
                             ? props.formElementData.concept.lowAbsolute
                             : "N.A"
                         }
@@ -359,7 +359,7 @@ function FormElementDetails(props) {
                       <Input
                         disableUnderline={true}
                         value={
-                          props.formElementData.concept.highAbsolute
+                          !isNil(props.formElementData.concept.highAbsolute)
                             ? props.formElementData.concept.highAbsolute
                             : "N.A"
                         }
@@ -376,7 +376,7 @@ function FormElementDetails(props) {
                       <Input
                         disableUnderline={true}
                         value={
-                          props.formElementData.concept.lowNormal
+                          !isNil(props.formElementData.concept.lowNormal)
                             ? props.formElementData.concept.lowNormal
                             : "N.A"
                         }
@@ -393,7 +393,7 @@ function FormElementDetails(props) {
                       <Input
                         disableUnderline={true}
                         value={
-                          props.formElementData.concept.highNormal
+                          !isNil(props.formElementData.concept.highNormal)
                             ? props.formElementData.concept.highNormal
                             : "N.A"
                         }
@@ -407,7 +407,7 @@ function FormElementDetails(props) {
                       <Input
                         disableUnderline={true}
                         value={
-                          props.formElementData.concept.unit
+                          !isNil(props.formElementData.concept.unit)
                             ? props.formElementData.concept.unit
                             : "N.A"
                         }
