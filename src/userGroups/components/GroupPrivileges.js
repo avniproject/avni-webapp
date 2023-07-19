@@ -9,6 +9,97 @@ import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 import { Privilege } from "openchs-models";
 import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
+import GroupModel from "../../common/model/GroupModel";
+
+const generatePrivilegeDependenciesAndCheckedState = function(groupPrivilegeList) {
+  const dependencies = new Map();
+  const checkedState = new Map();
+
+  const { PrivilegeType } = Privilege;
+
+  groupPrivilegeList.forEach(groupPrivilege => {
+    checkedState.set(groupPrivilege.uuid, { checkedState: groupPrivilege.allow });
+    switch (groupPrivilege["privilegeTypeName"]) {
+      case PrivilegeType.ViewSubject:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: []
+        });
+        break;
+      case PrivilegeType.RegisterSubject:
+      case PrivilegeType.EditSubject:
+      case PrivilegeType.VoidSubject:
+      case PrivilegeType.ViewEnrolmentDetails:
+      case PrivilegeType.ViewVisit:
+      case PrivilegeType.ViewChecklist:
+      case PrivilegeType.AddMember:
+      case PrivilegeType.EditMember:
+      case PrivilegeType.RemoveMember:
+      case PrivilegeType.ApproveSubject:
+      case PrivilegeType.RejectSubject:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
+            groupPrivilegeList,
+            groupPrivilege
+          ).map(x => x.uuid)
+        });
+        break;
+      case PrivilegeType.EnrolSubject:
+      case PrivilegeType.EditEnrolmentDetails:
+      case PrivilegeType.ExitEnrolment:
+      case PrivilegeType.ApproveEnrolment:
+      case PrivilegeType.RejectEnrolment:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getProgramDependencies(
+            groupPrivilegeList,
+            groupPrivilege
+          ).map(x => x.uuid)
+        });
+        break;
+      case PrivilegeType.ScheduleVisit:
+      case PrivilegeType.PerformVisit:
+      case PrivilegeType.EditVisit:
+      case PrivilegeType.CancelVisit:
+      case PrivilegeType.VoidVisit:
+      case PrivilegeType.ApproveEncounter:
+      case PrivilegeType.RejectEncounter:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getEncounterTypeDependencies(
+            groupPrivilegeList,
+            groupPrivilege
+          ).map(x => x.uuid)
+        });
+        break;
+      case PrivilegeType.EditChecklist:
+      case PrivilegeType.ApproveChecklistitem:
+      case PrivilegeType.RejectChecklistitem:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getChecklistDependencies(
+            groupPrivilegeList,
+            groupPrivilege
+          ).map(x => x.uuid)
+        });
+        break;
+      default:
+        dependencies.set(groupPrivilege.uuid, { dependencies: [] });
+        break;
+    }
+  });
+
+  for (let [key, value] of dependencies) {
+    let dependency_keys = value.dependencies;
+    let current_dependencies;
+    if (!(dependency_keys === undefined)) {
+      dependency_keys.forEach(dep_key => {
+        current_dependencies = dependencies.get(dep_key);
+        if (!current_dependencies.dependents) {
+          current_dependencies.dependents = [];
+        }
+        current_dependencies.dependents.push(key);
+      });
+    }
+  }
+  return [checkedState, dependencies];
+};
 
 const GroupPrivileges = ({
   groupId,
@@ -32,102 +123,14 @@ const GroupPrivileges = ({
   React.useEffect(() => {
     if (!groupPrivilegeList) return;
 
-    const [checkedState, dependencies] = generatePrivilegeDependenciesAndCheckedState();
+    const [checkedState, dependencies] = generatePrivilegeDependenciesAndCheckedState(
+      groupPrivilegeList
+    );
 
     setPrivilegesCheckedState(checkedState);
 
     setPrivilegeDependencies(dependencies);
   }, [groupPrivilegeList]);
-
-  const generatePrivilegeDependenciesAndCheckedState = () => {
-    const dependencies = new Map();
-    const checkedState = new Map();
-
-    const { PrivilegeType } = Privilege;
-
-    groupPrivilegeList.forEach(groupPrivilege => {
-      checkedState.set(groupPrivilege.uuid, { checkedState: groupPrivilege.allow });
-      switch (groupPrivilege["privilegeTypeName"]) {
-        case PrivilegeType.ViewSubject:
-          dependencies.set(groupPrivilege.uuid, {
-            dependencies: []
-          });
-          break;
-        case PrivilegeType.RegisterSubject:
-        case PrivilegeType.EditSubject:
-        case PrivilegeType.VoidSubject:
-        case PrivilegeType.ViewEnrolmentDetails:
-        case PrivilegeType.ViewVisit:
-        case PrivilegeType.ViewChecklist:
-        case PrivilegeType.AddMember:
-        case PrivilegeType.EditMember:
-        case PrivilegeType.RemoveMember:
-        case PrivilegeType.ApproveSubject:
-        case PrivilegeType.RejectSubject:
-          dependencies.set(groupPrivilege.uuid, {
-            dependencies: GroupPrivilegesModel.getSubjectTypeDependencies(
-              groupPrivilegeList,
-              groupPrivilege
-            ).map(x => x.uuid)
-          });
-          break;
-        case PrivilegeType.EnrolSubject:
-        case PrivilegeType.EditEnrolmentDetails:
-        case PrivilegeType.ExitEnrolment:
-        case PrivilegeType.ApproveEnrolment:
-        case PrivilegeType.RejectEnrolment:
-          dependencies.set(groupPrivilege.uuid, {
-            dependencies: GroupPrivilegesModel.getProgramDependencies(
-              groupPrivilegeList,
-              groupPrivilege
-            ).map(x => x.uuid)
-          });
-          break;
-        case PrivilegeType.ScheduleVisit:
-        case PrivilegeType.PerformVisit:
-        case PrivilegeType.EditVisit:
-        case PrivilegeType.CancelVisit:
-        case PrivilegeType.VoidVisit:
-        case PrivilegeType.ApproveEncounter:
-        case PrivilegeType.RejectEncounter:
-          dependencies.set(groupPrivilege.uuid, {
-            dependencies: GroupPrivilegesModel.getEncounterTypeDependencies(
-              groupPrivilegeList,
-              groupPrivilege
-            ).map(x => x.uuid)
-          });
-          break;
-        case PrivilegeType.EditChecklist:
-        case PrivilegeType.ApproveChecklistitem:
-        case PrivilegeType.RejectChecklistitem:
-          dependencies.set(groupPrivilege.uuid, {
-            dependencies: GroupPrivilegesModel.getChecklistDependencies(
-              groupPrivilegeList,
-              groupPrivilege
-            ).map(x => x.uuid)
-          });
-          break;
-        default:
-          dependencies.set(groupPrivilege.uuid, { dependencies: [] });
-          break;
-      }
-    });
-
-    for (let [key, value] of dependencies) {
-      let dependency_keys = value.dependencies;
-      let current_dependencies;
-      if (!(dependency_keys === undefined)) {
-        dependency_keys.forEach(dep_key => {
-          current_dependencies = dependencies.get(dep_key);
-          if (!current_dependencies.dependents) {
-            current_dependencies.dependents = [];
-          }
-          current_dependencies.dependents.push(key);
-        });
-      }
-    }
-    return [checkedState, dependencies];
-  };
 
   const onTogglePermissionClick = (event, rowData) => {
     let isAllow = event.target.checked;
@@ -232,6 +235,7 @@ const GroupPrivileges = ({
             <Switch
               onChange={event => onToggleAllPrivileges(event)}
               checked={allPrivilegesAllowed}
+              disabled={groupName === GroupModel.Administrators}
             />
           }
           label="All privileges"

@@ -14,6 +14,7 @@ import api from "./api";
 import { Title } from "react-admin";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniAlert } from "../common/components/AvniAlert";
+import GroupModel from "../common/model/GroupModel";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -69,10 +70,8 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
     return (
       groups !== undefined &&
       groups.length > 1 &&
-      groups.filter(group => group.name === "Everyone" && group.hasAllPrivileges === true).length >
-        0 &&
-      groups.filter(group => group.name !== "Everyone" && group.hasAllPrivileges !== true).length >
-        0
+      groups.filter(group => GroupModel.isEveryoneWithAllPrivileges(group)).length > 0 &&
+      groups.filter(group => GroupModel.notEveryoneWithoutAllPrivileges(group)).length > 0
     );
   };
 

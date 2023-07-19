@@ -10,6 +10,7 @@ import {
   CardActionArea,
   Card
 } from "@material-ui/core";
+import GroupModel from "../../common/model/GroupModel";
 
 export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
   const classes = {
@@ -49,7 +50,11 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
       <CardActions>
         <Grid container justify="flex-end">
           <Grid item>
-            <Button size="small" disabled={groupName === "Everyone"} onClick={onDelete}>
+            <Button
+              size="small"
+              disabled={GroupModel.nonRemovableGroup(groupName)}
+              onClick={onDelete}
+            >
               <DeleteOutlineOutlinedIcon />
             </Button>
           </Grid>

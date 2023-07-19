@@ -7,6 +7,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { getGroupUsers, getAllUsers } from "../reducers";
 import Grid from "@material-ui/core/Grid";
+import GroupModel from "../../common/model/GroupModel";
 
 const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers, ...props }) => {
   const [otherUsers, setOtherUsers] = React.useState([]);
@@ -110,7 +111,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
             icon: "person_add_disabled",
             tooltip: "Remove user from group",
             onClick: (event, rowData) => removeUserFromGroupHandler(event, rowData),
-            disabled: rowData.groupName === "Everyone"
+            disabled: rowData.groupName === GroupModel.Everyone
           })
         ]}
         options={{

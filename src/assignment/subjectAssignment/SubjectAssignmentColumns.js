@@ -3,6 +3,7 @@ import { getSyncAttributes } from "../reducers/SubjectAssignmentReducer";
 import React from "react";
 import Chip from "@material-ui/core/Chip";
 import SubjectAssignmentMultiSelect from "./SubjectAssignmentMultiSelect";
+import GroupModel from "../../common/model/GroupModel";
 
 export const getColumns = (metadata, filterCriteria) => {
   const { syncAttribute1, syncAttribute2 } = getSyncAttributes(metadata, filterCriteria);
@@ -35,7 +36,7 @@ export const getColumns = (metadata, filterCriteria) => {
 
   const getFormattedUserAndGroups = user => {
     const groupNames = `${user.userGroups
-      .filter(ug => ug.groupName !== "Everyone")
+      .filter(ug => ug.groupName !== GroupModel.Everyone)
       .map(ug => ug.groupName)
       .join(", ")}`;
     if (groupNames.length > 0) {
