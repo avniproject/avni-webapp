@@ -53,7 +53,11 @@ export const OrganisationList = ({ history, ...props }) => {
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
-        <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
+        <BooleanField
+          source="analyticsDataSyncActive"
+          label="Active analytics data sync"
+          sortable={false}
+        />
         <ShowButton />
         <OpenOrganisation porps={props} />
       </Datagrid>
