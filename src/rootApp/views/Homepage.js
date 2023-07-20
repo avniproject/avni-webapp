@@ -5,6 +5,8 @@ import httpClient from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import axios from "axios";
+import CurrentUserService from "../../common/service/CurrentUserService";
+import { Privilege } from "openchs-models";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
@@ -17,6 +19,10 @@ const Homepage = ({ user }) => {
     };
     fetchOrgID();
   }, []);
+  const showAssignment = CurrentUserService.isAllowedToAccess(userData, [
+    Privilege.PrivilegeType.EditTask,
+    Privilege.PrivilegeType.DeleteTask
+  ]);
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
@@ -24,11 +30,13 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/admin/user"} name={"Admin"} customIcon={"supervisor_account"} />
         <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customIcon={"architecture"} />
         <HomePageCard href={"/#/documentation"} name={"Documentation"} customIcon={"article"} />
-        <HomePageCard
-          href={"/#/assignment"}
-          name={"Assignment"}
-          customIcon={"assignment_turned_in"}
-        />
+        {showAssignment && (
+          <HomePageCard
+            href={"/#/assignment"}
+            name={"Assignment"}
+            customIcon={"assignment_turned_in"}
+          />
+        )}
         <HomePageCard
           href={"/#/broadcast"}
           name={"Broadcast"}
