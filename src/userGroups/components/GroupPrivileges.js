@@ -219,7 +219,8 @@ const GroupPrivileges = ({
         />
       )
     },
-    { title: "Subject Type", field: "subjectTypeName", defaultGroupOrder: 0 },
+    { title: "Subject / Entity Type", field: "groupingTypeName", defaultGroupOrder: 0 },
+    { title: "Subject Type", field: "subjectTypeName" },
     { title: "Entity Type", field: "privilegeEntityType" },
     { title: "Privilege", field: "privilegeName" },
     { title: "Program", field: "programName" },

@@ -61,7 +61,10 @@ export function* getAllDashboardsWorker() {
 
 export function* getGroupPrivilegeListWorker(params) {
   const groupPrivileges = yield call(api.fetchGroupPrivileges, params.param);
-  yield put(setGroupPrivilegeList(groupPrivileges));
+  let modifiedGroupPrivilegeListWithGroupingTypeName = groupPrivileges.map(gp => {
+    return { ...gp, groupingTypeName: gp.subjectTypeName || gp.privilegeEntityType };
+  });
+  yield put(setGroupPrivilegeList(modifiedGroupPrivilegeListWithGroupingTypeName));
 }
 
 export function* createGroupWatcher() {
