@@ -21,16 +21,20 @@ const Homepage = ({ user }) => {
   }, []);
   const showAssignment = CurrentUserService.isAllowedToAccess(userData, [
     Privilege.PrivilegeType.EditTask,
-    Privilege.PrivilegeType.DeleteTask
+    Privilege.PrivilegeType.DeleteTask,
+    Privilege.PrivilegeType.EditUserConfiguration
   ]);
-  const canEditOrganisationConfig = CurrentUserService.isAllowedToAccess(userData, [
-    Privilege.PrivilegeType.EditOrganisationConfiguration
+  const showNews = CurrentUserService.isAllowedToAccess(userData, [
+    Privilege.PrivilegeType.EditNews
+  ]);
+  const showTranslations = CurrentUserService.isAllowedToAccess(userData, [
+    Privilege.PrivilegeType.EditLanguage
   ]);
   const showDocumentation = CurrentUserService.isAllowedToAccess(userData, [
     Privilege.PrivilegeType.EditDocumentation
   ]);
-  const showReports = CurrentUserService.isAllowedToAccess(userData, [
-    Privilege.PrivilegeType.Reports
+  const showAnalytics = CurrentUserService.isAllowedToAccess(userData, [
+    Privilege.PrivilegeType.Analytics
   ]);
 
   return (
@@ -48,26 +52,29 @@ const Homepage = ({ user }) => {
             customIcon={"assignment_turned_in"}
           />
         )}
-        {canEditOrganisationConfig && (
+        {showNews && (
           <HomePageCard
             href={"/#/broadcast"}
             name={"Broadcast"}
             customIconComponent={<SurroundSound color="primary" style={{ fontSize: 100 }} />}
           />
         )}
-        {canEditOrganisationConfig && (
+        {showTranslations && (
           <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
         )}
-        {showReports && (
+        {showAnalytics && (
           <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
         )}
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
-        <HomePageCard
-          href={`/avni-media?orgID=${userData && userData.organisationId}&username=${userData &&
-            userData.username}`}
-          name={"Media Viewer "}
-          customIcon={"collections"}
-        />
+
+        {showAnalytics && (
+          <HomePageCard
+            href={`/avni-media?orgID=${userData && userData.organisationId}&username=${userData &&
+              userData.username}`}
+            name={"Media Viewer "}
+            customIcon={"collections"}
+          />
+        )}
         <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
       </Grid>
     </ScreenWithAppBar>

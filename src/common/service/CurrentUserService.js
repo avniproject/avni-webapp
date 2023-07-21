@@ -4,10 +4,12 @@ import UserInfo from "../model/UserInfo";
 class CurrentUserService {
   static isAllowedToAccess(userInfo: UserInfo, resourcePrivileges) {
     let uInfo = userInfo || {};
+    let userPrivileges = uInfo.privileges || [];
+    let userPrivilegeTypes = userPrivileges.map(u => u.privilegeType);
     return (
       uInfo.hasAllPrivileges ||
       _.isEmpty(resourcePrivileges) ||
-      !_.isEmpty(_.intersection(resourcePrivileges, uInfo.privileges))
+      !_.isEmpty(_.intersection(resourcePrivileges, userPrivilegeTypes))
     );
   }
 
