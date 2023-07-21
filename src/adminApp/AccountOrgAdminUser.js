@@ -153,35 +153,17 @@ const UserForm = ({ edit, user, ...props }) => {
     <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="list">
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) => {
-          formData.admin = !formData.orgAdmin;
-          formData.admin ? delete formData.organisationId : delete formData.accountIds;
           return (
-            <Fragment>
-              <BooleanInput source="orgAdmin" label="Organisation Admin" />
-              {formData.orgAdmin && (
-                <ReferenceInput
-                  resource="organisation"
-                  source="organisationId"
-                  reference="organisation"
-                  label="Organisation Name"
-                  validate={required("Please select an organisation")}
-                >
-                  <CustomSelectInput source="name" resettable />
-                </ReferenceInput>
-              )}
-              {!formData.orgAdmin && (
-                <ReferenceArrayInput
-                  reference="account"
-                  source="accountIds"
-                  perPage={1000}
-                  label="Accounts"
-                  validate={required("Please select one or more accounts")}
-                  filterToQuery={searchText => ({ name: searchText })}
-                >
-                  <AutocompleteArrayInput {...props} />
-                </ReferenceArrayInput>
-              )}
-            </Fragment>
+            <ReferenceArrayInput
+              reference="account"
+              source="accountIds"
+              perPage={1000}
+              label="Accounts"
+              validate={required("Please select one or more accounts")}
+              filterToQuery={searchText => ({ name: searchText })}
+            >
+              <AutocompleteArrayInput {...props} />
+            </ReferenceArrayInput>
           );
         }}
       </FormDataConsumer>

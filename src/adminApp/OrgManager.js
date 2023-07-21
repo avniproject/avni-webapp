@@ -121,7 +121,10 @@ class OrgManager extends Component {
             hasPrivilege(userInfo, EditCatchment) &&
             WithProps({ organisation }, UserCreate)
           }
-          show={WithProps({ user }, UserDetail)}
+          show={WithProps(
+            { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
+            UserDetail
+          )}
           edit={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ user }, UserEdit)}
         />
         {hasPrivilege(userInfo, EditUserGroup) ? (

@@ -104,15 +104,12 @@ export const UserList = ({ organisation, ...props }) => (
   </List>
 );
 
-const isAdminAndLoggedIn = (loggedInUser, selectedUser) =>
-  loggedInUser && loggedInUser.orgAdmin && loggedInUser.username === selectedUser.username;
-
-const CustomShowActions = ({ user, basePath, data, resource }) => {
+const CustomShowActions = ({ hasEditUserPrivilege, basePath, data, resource }) => {
   return (
     (data && (
       <CardActions style={{ zIndex: 2, display: "flex", float: "right", flexDirection: "row" }}>
         <EditButton label="Edit User" basePath={basePath} record={data} />
-        {isAdminAndLoggedIn(data, user) ? null : (
+        {hasEditUserPrivilege && (
           <Fragment>
             <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
             <EnableDisableButton
@@ -123,10 +120,6 @@ const CustomShowActions = ({ user, basePath, data, resource }) => {
             />
           </Fragment>
         )}
-        {/*Commenting out delete user functionality as it is not required as of now
-            <DeleteButton basePath={basePath} record={data}
-                          label="Delete User" undoable={false}
-                          redirect={basePath} resource={resource}/>*/}
       </CardActions>
     )) ||
     null
@@ -173,18 +166,22 @@ const ConceptSyncAttributeShow = ({ subjectType, syncAttributeName, ...props }) 
         {startCase(syncAttributeName)}
       </span>
       {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
-        <Chip label={value} />
+        <Chip label={value} key={value} />
       ))}
     </div>
   );
 };
 
-export const UserDetail = ({ user, ...props }) => {
+export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
   const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
   fetchSyncAttributeData(setSyncAttributesData);
 
   return (
-    <Show title={<UserTitle />} actions={<CustomShowActions user={user} />} {...props}>
+    <Show
+      title={<UserTitle />}
+      actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} user={user} />}
+      {...props}
+    >
       <SimpleShowLayout>
         <TextField source="username" label="Login ID (username)" />
         <TextField source="name" label="Name of the Person" />
@@ -205,7 +202,7 @@ export const UserDetail = ({ user, ...props }) => {
         />
         <LineBreak />
         {map(syncAttributesData.subjectTypes, st => (
-          <SubjectTypeSyncAttributeShow subjectType={st} />
+          <SubjectTypeSyncAttributeShow subjectType={st} key={get(st, "name")} />
         ))}
         <FunctionField
           label="Preferred Language"
@@ -345,11 +342,12 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
               {!isEmpty(syncAttributeConceptUUID) ? (
                 get(syncAttributeConcept, "dataType") === "Coded" ? (
                   <ReferenceArrayInput
+                    resource="concept"
                     resettable
                     source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`}
                     reference="concept"
                     label={`${startCase(syncAttributeName)} Values`}
-                    filterToQuery={searchText => ({ conceptUUID: syncAttributeConceptUUID })}
+                    filter={{ conceptUUID: syncAttributeConceptUUID }}
                     validate={required("Please provide the concept value")}
                     {...rest}
                   >
@@ -537,7 +535,6 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
               filterToQuery={searchText => ({ name: searchText })}
               validate={
                 syncAttributesData.isAnySubjectTypeSyncByLocation &&
-                !formData.orgAdmin &&
                 required("Please select a catchment")
               }
               onChange={(e, newVal) => {
@@ -628,7 +625,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
               </Typography>
             </ToolTipContainer>
             {map(syncAttributesData.subjectTypes, st => (
-              <SubjectTypeSyncAttributes subjectType={st} />
+              <SubjectTypeSyncAttributes subjectType={st} key={get(st, "name")} />
             ))}
             <LineBreak />
           </div>

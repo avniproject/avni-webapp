@@ -105,30 +105,28 @@ const IdentifierSourceForm = props => (
       toolTipKey={"ADMIN_ID_SOURCE_TYPE"}
     />
     <AvniFormDataConsumer toolTipKey={"ADMIN_ID_SOURCE_CATCHMENT"} {...props}>
-      {({ formData, dispatch, ...rest }) =>
-        !formData.orgAdmin && (
-          <Fragment>
-            <ReferenceInput
-              source="catchmentId"
-              reference="catchment"
-              label="Which catchment?"
-              filterToQuery={searchText => ({ name: searchText })}
-              onChange={(e, newVal) => {
-                dispatch(
-                  change(
-                    REDUX_FORM_NAME,
-                    "operatingIndividualScope",
-                    isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                  )
-                );
-              }}
-              {...rest}
-            >
-              <CatchmentSelectInput source="name" resettable />
-            </ReferenceInput>
-          </Fragment>
-        )
-      }
+      {({ formData, dispatch, ...rest }) => (
+        <Fragment>
+          <ReferenceInput
+            source="catchmentId"
+            reference="catchment"
+            label="Which catchment?"
+            filterToQuery={searchText => ({ name: searchText })}
+            onChange={(e, newVal) => {
+              dispatch(
+                change(
+                  REDUX_FORM_NAME,
+                  "operatingIndividualScope",
+                  isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
+                )
+              );
+            }}
+            {...rest}
+          >
+            <CatchmentSelectInput source="name" resettable />
+          </ReferenceInput>
+        </Fragment>
+      )}
     </AvniFormDataConsumer>
     <AvniTextInput
       source="batchGenerationSize"

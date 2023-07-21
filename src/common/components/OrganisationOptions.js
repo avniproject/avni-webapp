@@ -76,7 +76,7 @@ export const OrganisationOptions = ({ getUserInfo, history, organisations, userI
           </Select>
         </FormControl>
         <Button onClick={() => exitToAdmin()} style={{ color: "white" }}>
-          Exit To Admin
+          Exit Organisation
         </Button>
       </div>
     )

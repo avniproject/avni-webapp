@@ -117,7 +117,6 @@ export default apiUrl => {
     switch (type) {
       case GET_LIST:
       case GET_MANY_REFERENCE:
-        return SpringResponse.toReactAdminResourceListResponse(json, resource);
       case GET_MANY:
         return SpringResponse.toReactAdminResourceListResponse(json, resource);
       case CREATE:

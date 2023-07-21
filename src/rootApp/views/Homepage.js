@@ -15,8 +15,6 @@ const Homepage = ({ user }) => {
   useEffect(() => {
     const fetchOrgID = async () => {
       const resp = await axios("/web/userInfo");
-      // resp.data.hasAllPrivileges = false; //Uncomment for testing
-      // resp.data.privileges = [Privilege.PrivilegeType.EditOrganisationConfiguration]; //Uncomment for testing
       setUserData(resp.data);
     };
     fetchOrgID();

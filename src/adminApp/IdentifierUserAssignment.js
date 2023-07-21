@@ -68,45 +68,41 @@ export const UserSelectInput = props => {
 const IdentifierUserAssignmentForm = props => (
   <SimpleForm {...props} redirect="show">
     <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_USER_NAME"} {...props}>
-      {({ formData, dispatch, ...rest }) =>
-        !formData.orgAdmin && (
-          <Fragment>
-            <ReferenceInput
-              source="userId"
-              reference="user"
-              label="Which user?"
-              validate={[required()]}
-              filterToQuery={searchText => ({ name: searchText })}
-              onChange={(e, newVal) => {
-                dispatch(change(newVal));
-              }}
-              {...rest}
-            >
-              <UserSelectInput source="name" />
-            </ReferenceInput>
-          </Fragment>
-        )
-      }
+      {({ formData, dispatch, ...rest }) => (
+        <Fragment>
+          <ReferenceInput
+            source="userId"
+            reference="user"
+            label="Which user?"
+            validate={[required()]}
+            filterToQuery={searchText => ({ name: searchText })}
+            onChange={(e, newVal) => {
+              dispatch(change(newVal));
+            }}
+            {...rest}
+          >
+            <UserSelectInput source="name" />
+          </ReferenceInput>
+        </Fragment>
+      )}
     </AvniFormDataConsumer>
     <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_SOURCE"} {...props}>
-      {({ formData, dispatch, ...rest }) =>
-        !formData.orgAdmin && (
-          <Fragment>
-            <ReferenceInput
-              source="identifierSourceId"
-              reference="identifierSource"
-              label="Which IdentifierSource?"
-              validate={[required()]}
-              onChange={(e, newVal) => {
-                dispatch(change(newVal));
-              }}
-              {...rest}
-            >
-              <SelectInput source="name" />
-            </ReferenceInput>
-          </Fragment>
-        )
-      }
+      {({ formData, dispatch, ...rest }) => (
+        <Fragment>
+          <ReferenceInput
+            source="identifierSourceId"
+            reference="identifierSource"
+            label="Which IdentifierSource?"
+            validate={[required()]}
+            onChange={(e, newVal) => {
+              dispatch(change(newVal));
+            }}
+            {...rest}
+          >
+            <SelectInput source="name" />
+          </ReferenceInput>
+        </Fragment>
+      )}
     </AvniFormDataConsumer>
     <AvniTextInput
       source="identifierStart"
