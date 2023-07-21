@@ -1,6 +1,7 @@
 import { isEmpty } from "lodash";
 import React, { Fragment, useState } from "react";
 import {
+  AutocompleteArrayInput,
   Create,
   Datagrid,
   DisabledInput,
@@ -10,24 +11,20 @@ import {
   FunctionField,
   List,
   REDUX_FORM_NAME,
+  ReferenceArrayField,
+  ReferenceArrayInput,
   ReferenceField,
-  ReferenceInput,
   required,
   Show,
   SimpleForm,
   SimpleShowLayout,
+  SingleFieldList,
   TextField,
-  TextInput,
-  ReferenceArrayInput,
-  AutocompleteArrayInput,
-  BooleanInput,
-  ReferenceArrayField,
-  SingleFieldList
+  TextInput
 } from "react-admin";
 import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import EnableDisableButton from "./components/EnableDisableButton";
-import { CustomSelectInput } from "./components/CustomSelectInput";
 import {
   CustomToolbar,
   formatRoles,
