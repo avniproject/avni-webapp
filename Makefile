@@ -86,6 +86,6 @@ deploy_platform_translations_prerelease:
 	make deploy_platform_translations poolId=$(OPENCHS_PRERELEASE_USER_POOL_ID) clientId=$(OPENCHS_PRERELEASE_APP_CLIENT_ID) server=https://prerelease.openchs.org port=443 username=admin password=$(password)
 
 deploy_static_local:
-	-rm ../avni-server/static
+	-rm -rf ../avni-server/static
 	mkdir ../avni-server/static
 	cp -r public/* ../avni-server/static

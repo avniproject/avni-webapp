@@ -15652,10 +15652,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.40:
-  version "1.30.40"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.40.tgz#5e488a6de4ce8a0dd01e0fcbd94c539cfebd232a"
-  integrity sha512-W0/xDtdmFKLBpiH7nuTdK/pnwq3VHEcLG7Mmyd6+yfiRGZOHrjwKR2Wr9mC+/yeL8EX012DVylKJUbG4O0yL7g==
+openchs-models@1.30.43:
+  version "1.30.43"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.43.tgz#202cbeba3ded8a936edd29679667ce7066ed0e64"
+  integrity sha512-Di8AApoRnQZsuWSQfhBoJiEpTqQpY2cspAG5WcUtm+QqDTbic/Jjipvh+jZdBUjYfG7igJ2TjpuF7nUBU+SQdg==
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
@@ -19196,7 +19196,8 @@ rsvp@^4.8.4:
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.29.4"
+    moment "^2.22.2"
+    openchs-models "^0.2.25"
     superagent "^3.8.3"
     test "^0.6.0"
     uglifyjs-webpack-plugin "^1.2.5"
