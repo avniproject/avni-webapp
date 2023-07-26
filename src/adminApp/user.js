@@ -2,7 +2,6 @@ import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy 
 import React, { Fragment, useEffect, useState } from "react";
 import {
   ArrayInput,
-  AutocompleteArrayInput,
   Create,
   Datagrid,
   DisabledInput,
@@ -12,7 +11,6 @@ import {
   FunctionField,
   List,
   REDUX_FORM_NAME,
-  ReferenceArrayInput,
   ReferenceField,
   ReferenceInput,
   required,
@@ -55,6 +53,9 @@ import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
 import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
+import ConceptService from "../common/service/ConceptService";
+import Select from "react-select";
+import ReactSelectHelper from "../common/utils/ReactSelectHelper";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Paper>
@@ -66,9 +67,9 @@ export const UserCreate = ({ user, organisation, ...props }) => (
   </Paper>
 );
 
-export const UserEdit = ({ user, ...props }) => (
+export const UserEdit = ({ ...props }) => (
   <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false}>
-    <UserForm edit user={user} />
+    <UserForm edit />
   </Edit>
 );
 
@@ -278,118 +279,127 @@ const catchmentChangeMessage = `Please ensure that the user has already synced a
 data for their previous sync attributes. Changing sync attributes will ask the users to reset their sync. 
 This might take time depending on the data.`;
 
-const SubjectTypeSyncAttributes = ({ subjectType }) => (
+const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
   <div style={{ marginTop: 8, padding: 10, border: "3px solid rgba(0, 0, 0, 0.05)" }}>
     <Typography gutterBottom variant={"h6"}>{`Sync settings for Subject Type: ${
       subjectType.name
     }`}</Typography>
     {subjectType.syncAttribute1 && (
-      <ConceptSyncAttribute subjectType={subjectType} syncAttributeName={"syncAttribute1"} />
+      <ConceptSyncAttribute
+        subjectType={subjectType}
+        syncAttributeName={"syncAttribute1"}
+        {...props}
+      />
     )}
     {subjectType.syncAttribute2 && (
-      <ConceptSyncAttribute subjectType={subjectType} syncAttributeName={"syncAttribute2"} />
+      <ConceptSyncAttribute
+        subjectType={subjectType}
+        syncAttributeName={"syncAttribute2"}
+        {...props}
+      />
     )}
   </div>
 );
 
-const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }) => (
-  <FormDataConsumer>
-    {({ formData, dispatch, ...rest }) => {
-      //TODO : workaround for the bug https://github.com/marmelab/react-admin/issues/3249
-      //TODO : this should be removed after react-admin upgrade
-      const syncConceptAttributeValues = get(
-        formData,
-        `syncSettings.${[subjectType.name]}.${syncAttributeName}Values`,
-        []
-      );
-      const syncAttributeConceptUUID = get(
-        formData,
-        `syncSettings.${[subjectType.name]}.${syncAttributeName}`
-      );
-      const syncAttributeConcept = subjectType[syncAttributeName];
-      const selectedValue = get(
-        formData,
-        `syncSettings.${[subjectType.name]}.${syncAttributeName}`
-      );
-      const defaultValue = selectedValue ? { defaultValue: selectedValue } : {};
-
-      if (some(syncConceptAttributeValues, v => typeof v === "object")) {
-        dispatch(
-          change(
-            REDUX_FORM_NAME,
-            `syncSettings.${[subjectType.name]}.${syncAttributeName}Values`,
-            map(syncConceptAttributeValues, v => (typeof v === "object" ? undefined : v))
-          )
+const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }) => {
+  return (
+    <FormDataConsumer>
+      {({ formData, dispatch }) => {
+        const syncAttributeConceptUUID = get(
+          formData,
+          `syncSettings.${[subjectType.name]}.${syncAttributeName}`
         );
-      }
-      return (
-        <Fragment>
-          <Grid container alignItems={"center"}>
-            <Grid item xs={3}>
-              <SelectInput
-                resettable
-                source={`syncSettings.${[subjectType.name]}.${syncAttributeName}`}
-                label={startCase(syncAttributeName)}
-                choices={[subjectType[syncAttributeName]]}
-                onChange={(e, newVal) => {
-                  if (edit && newVal !== syncAttributeConceptUUID) {
-                    alert(catchmentChangeMessage);
-                    dispatch(
-                      change(
-                        REDUX_FORM_NAME,
-                        `syncSettings.${[subjectType.name]}.${syncAttributeName}Values`,
-                        null
-                      )
-                    );
-                  }
-                }}
-                {...defaultValue}
-              />
+        const syncAttributeConcept = subjectType[syncAttributeName];
+        const selectedValue = get(
+          formData,
+          `syncSettings.${[subjectType.name]}.${syncAttributeName}`
+        );
+        const defaultValue = selectedValue ? { defaultValue: selectedValue } : {};
+
+        const [answerConcepts, setAnswerConcepts] = useState([]);
+        const syncAttributeValuesFieldName = `syncSettings.${[
+          subjectType.name
+        ]}.${syncAttributeName}Values`;
+
+        const selectedSyncAttributeValueIds = get(formData, syncAttributeValuesFieldName);
+        const selectedAnswerConcepts = filter(answerConcepts, x =>
+          some(selectedSyncAttributeValueIds, y => x.id === y)
+        );
+
+        useEffect(() => {
+          if (isEmpty(syncAttributeConceptUUID)) setAnswerConcepts([]);
+          else ConceptService.getAnswerConcepts(syncAttributeConceptUUID).then(setAnswerConcepts);
+        }, [syncAttributeConceptUUID]);
+
+        //TODO : workaround for the bug https://github.com/marmelab/react-admin/issues/3249
+        //TODO : this should be removed after react-admin upgrade
+        return (
+          <Fragment>
+            <Grid container alignItems={"center"}>
+              <Grid item xs={3}>
+                <SelectInput
+                  resettable
+                  source={`syncSettings.${[subjectType.name]}.${syncAttributeName}`}
+                  label={startCase(syncAttributeName)}
+                  choices={[subjectType[syncAttributeName]]}
+                  onChange={(e, newVal) => {
+                    if (newVal !== syncAttributeConceptUUID) {
+                      alert(catchmentChangeMessage);
+                      dispatch(change(REDUX_FORM_NAME, syncAttributeValuesFieldName, null));
+                    }
+                  }}
+                  {...defaultValue}
+                />
+              </Grid>
+              <Grid item xs={9}>
+                {!isEmpty(syncAttributeConceptUUID) ? (
+                  get(syncAttributeConcept, "dataType") === "Coded" ? (
+                    <Select
+                      isClearable
+                      isSearchable
+                      isMulti
+                      value={selectedAnswerConcepts.map(ReactSelectHelper.toReactSelectItem)}
+                      options={answerConcepts.map(ReactSelectHelper.toReactSelectItem)}
+                      style={{ width: "auto" }}
+                      onChange={event => {
+                        const selectedValues = ReactSelectHelper.getCurrentValues(event).map(
+                          x => x.id
+                        );
+                        dispatch(
+                          change(REDUX_FORM_NAME, syncAttributeValuesFieldName, selectedValues)
+                        );
+                      }}
+                    />
+                  ) : (
+                    <Fragment>
+                      <div
+                        style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginTop: "5px" }}
+                      >
+                        {"Values to sync"}
+                      </div>
+                      <ArrayInput
+                        source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`}
+                        label={""}
+                        resettable
+                      >
+                        <SimpleFormIterator>
+                          <TextInput
+                            label={`${startCase(syncAttributeName)} Value`}
+                            validate={isRequired}
+                          />
+                        </SimpleFormIterator>
+                      </ArrayInput>
+                    </Fragment>
+                  )
+                ) : null}
+              </Grid>
             </Grid>
-            <Grid item xs={9}>
-              {!isEmpty(syncAttributeConceptUUID) ? (
-                get(syncAttributeConcept, "dataType") === "Coded" ? (
-                  <ReferenceArrayInput
-                    resource="concept"
-                    resettable
-                    source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`}
-                    reference="concept"
-                    label={`${startCase(syncAttributeName)} Values`}
-                    filter={{ conceptUUID: syncAttributeConceptUUID }}
-                    validate={required("Please provide the concept value")}
-                    {...rest}
-                  >
-                    <AutocompleteArrayInput resettable />
-                  </ReferenceArrayInput>
-                ) : (
-                  <Fragment>
-                    <div
-                      style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginTop: "5px" }}
-                    >
-                      {"Values to sync"}
-                    </div>
-                    <ArrayInput
-                      source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`}
-                      label={""}
-                      resettable
-                    >
-                      <SimpleFormIterator>
-                        <TextInput
-                          label={`${startCase(syncAttributeName)} Value`}
-                          validate={isRequired}
-                        />
-                      </SimpleFormIterator>
-                    </ArrayInput>
-                  </Fragment>
-                )
-              ) : null}
-            </Grid>
-          </Grid>
-        </Fragment>
-      );
-    }}
-  </FormDataConsumer>
-);
+          </Fragment>
+        );
+      }}
+    </FormDataConsumer>
+  );
+};
 
 const initialSyncAttributes = { subjectTypes: [] };
 
@@ -411,7 +421,7 @@ function fetchSyncAttributeData(setSyncAttributesData) {
   }, []);
 }
 
-const UserForm = ({ edit, user, nameSuffix, ...props }) => {
+const UserForm = ({ edit, nameSuffix, ...props }) => {
   const [languages, setLanguages] = useState([]);
   const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
   const isSyncSettingsRequired =
@@ -633,7 +643,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
               </Typography>
             </ToolTipContainer>
             {map(syncAttributesData.subjectTypes, st => (
-              <SubjectTypeSyncAttributes subjectType={st} key={get(st, "name")} />
+              <SubjectTypeSyncAttributes subjectType={st} key={get(st, "name")} {...props} />
             ))}
             <LineBreak />
           </div>

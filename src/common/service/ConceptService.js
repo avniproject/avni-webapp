@@ -8,6 +8,12 @@ class ConceptService {
       .get("/web/concept/dashboardFilter/search?namePart=" + encodeURIComponent(inputValue))
       .then(response => response.data);
   }
+
+  static getAnswerConcepts(conceptUUID) {
+    return http
+      .get(`/concept/answerConcepts/search/find?conceptUUID=${conceptUUID}`)
+      .then(response => response.data.content);
+  }
 }
 
 export default ConceptService;

@@ -125,7 +125,7 @@ class OrgManager extends Component {
             { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
             UserDetail
           )}
-          edit={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ user }, UserEdit)}
+          edit={hasPrivilege(userInfo, EditUserConfiguration) && UserEdit}
         />
         {hasPrivilege(userInfo, EditUserGroup) ? (
           <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
