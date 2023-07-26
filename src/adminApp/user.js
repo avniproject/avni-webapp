@@ -1,4 +1,4 @@
-import { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
+import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";
 import {
   ArrayInput,
@@ -94,6 +94,14 @@ export const UserList = ({ organisation, ...props }) => (
       </ReferenceField>
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
+      <FunctionField
+        label="User Groups"
+        render={user =>
+          user.userGroups && user.userGroups.length > 0
+            ? _.join(user.userGroups.map(grp => grp.groupName), ", ")
+            : ""
+        }
+      />
       <FunctionField
         label="Status"
         render={user =>
