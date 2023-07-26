@@ -1,9 +1,8 @@
-import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
+import { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";
 import {
   ArrayInput,
   AutocompleteArrayInput,
-  ChipField,
   Create,
   Datagrid,
   DisabledInput,
@@ -14,7 +13,6 @@ import {
   List,
   REDUX_FORM_NAME,
   ReferenceArrayInput,
-  ReferenceManyField,
   ReferenceField,
   ReferenceInput,
   required,
@@ -23,7 +21,6 @@ import {
   SimpleForm,
   SimpleFormIterator,
   SimpleShowLayout,
-  SingleFieldList,
   TextField,
   TextInput
 } from "react-admin";
@@ -97,16 +94,6 @@ export const UserList = ({ organisation, ...props }) => (
       </ReferenceField>
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
-      <ReferenceManyField
-        label="User Groups"
-        sortable={false}
-        reference="userGroups"
-        target="userId"
-      >
-        <SingleFieldList linkType={false}>
-          <ChipField source="groupName" />
-        </SingleFieldList>
-      </ReferenceManyField>
       <FunctionField
         label="Status"
         render={user =>

@@ -49,8 +49,7 @@ const urlMapping = {
   organisationGroup: "organisationGroup",
   relationship: "/web/relations",
   individual: "subjects",
-  concept: "concept/answerConcepts",
-  userGroups: "userGroups"
+  concept: "concept/answerConcepts"
 };
 
 const resourceSpecificProviders = {
