@@ -220,7 +220,7 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
           <TextField source="name" />
         </ReferenceField>
         <ArrayField style={{ maxWidth: "20em" }} label="User Groups" source="userGroupNames">
-          <SingleFieldList>
+          <SingleFieldList linkType={false}>
             <StringToLabelObject>
               <ChipField source="label" />
             </StringToLabelObject>
