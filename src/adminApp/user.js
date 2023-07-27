@@ -83,7 +83,7 @@ const UserGroupsDisplay = ({ record, style }) => (
     {record.userGroups
       .filter(ug => !ug.voided)
       .map(userGroup => (
-        <Chip style={{ margin: "0.5em" }} label={userGroup.groupName} key={userGroup.groupName} />
+        <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />
       ))}
   </div>
 );
@@ -116,7 +116,7 @@ export const UserList = ({ organisation, ...props }) => (
       </ReferenceField>
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
-      <UserGroupsDisplay style={{ maxWidth: "20em" }} label="User Groups" />
+      <UserGroupsDisplay style={{ maxWidth: "40em" }} label="User Groups" />
       <FunctionField
         label="Status"
         render={user =>
