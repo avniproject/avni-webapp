@@ -7,10 +7,23 @@ class UserInfo {
   hasAllPrivileges;
   isAdmin;
 
+  static createEmpty() {
+    return {
+      privileges: []
+    };
+  }
+
   static hasPrivilege(userInfo, privilegeType) {
     return (
       userInfo.hasAllPrivileges ||
       _.some(userInfo.privileges, (x: Privilege) => x.privilegeType === privilegeType)
+    );
+  }
+
+  static hasAnyPrivilege(userInfo, privilegeTypes) {
+    return (
+      userInfo.hasAllPrivileges ||
+      _.intersection(userInfo.privileges.map(x => x.privilegeType), privilegeTypes).length > 0
     );
   }
 

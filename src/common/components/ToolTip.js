@@ -4,7 +4,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ReactMarkdown from "react-markdown";
 import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
-import { LinkRenderer } from "./Documentation";
+import { LinkRenderer } from "./PlatformDocumentation";
 
 export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const styles = {

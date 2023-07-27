@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Switch, useRouteMatch, withRouter } from "react-router-dom";
 import DocumentationList from "./DocumentationList";
 
-function Documentation() {
+function DocumentationRoutes() {
   const { path } = useRouteMatch();
   return (
     <Switch>
@@ -11,4 +11,4 @@ function Documentation() {
   );
 }
 
-export default withRouter(Documentation);
+export default withRouter(DocumentationRoutes);

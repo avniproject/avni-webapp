@@ -1,5 +1,5 @@
 import React from "react";
-import { Documentation } from "./Documentation";
+import { PlatformDocumentation } from "./PlatformDocumentation";
 import { Grid } from "@material-ui/core";
 
 export const DocumentationContainer = ({ filename, ...props }) => {
@@ -10,7 +10,7 @@ export const DocumentationContainer = ({ filename, ...props }) => {
       </Grid>
       {filename && (
         <Grid item xs={3}>
-          <Documentation fileName={filename} />
+          <PlatformDocumentation fileName={filename} />
         </Grid>
       )}
     </Grid>

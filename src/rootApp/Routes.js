@@ -11,7 +11,7 @@ import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 import Tutorials from "../tutorials/Tutorials";
 import SelfServiceReports from "../reports/SelfServiceReports";
 import CannedReport from "../reports/cannedReport/CannedReport";
-import Documentation from "../documentation/Documentation";
+import DocumentationRoutes from "../documentation/DocumentationRoutes";
 import Assignment from "../assignment/Assignment";
 import SubjectAssignment from "../assignment/subjectAssignment/SubjectAssignment";
 import TaskAssignment from "../assignment/taskAssignment/TaskAssignment";
@@ -64,7 +64,7 @@ const Routes = ({ user, userInfo, organisation }) => (
       exact
       path="/documentation"
       user={userInfo}
-      component={WithProps({ user, organisation }, Documentation)}
+      component={WithProps({ user, organisation }, DocumentationRoutes)}
     />
     <RestrictedRoute
       exact
