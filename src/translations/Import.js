@@ -5,6 +5,9 @@ import http from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, size } from "lodash";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
+import UserInfo from "../common/model/UserInfo";
+import { connect } from "react-redux";
+import { Privilege } from "openchs-models";
 
 const noOfKeysWithValues = file => {
   return size(file && file.json) - noOfKeysWithoutValues(file);
@@ -18,7 +21,7 @@ const isInvalidFile = file => {
   return !file ? false : isEmpty(filter(file && file.json, isString));
 };
 
-export default ({ locales = [], onSuccessfulImport }) => {
+const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
   const [file, setFile] = useState();
   const [language, setLanguage] = useState("");
   const [error, setError] = useState("");
@@ -80,7 +83,11 @@ export default ({ locales = [], onSuccessfulImport }) => {
             onSelect={onFileChooseHandler}
             onUpload={onUploadPressedHandler}
             canSelect={!isEmpty(language)}
-            canUpload={noOfKeysWithoutValues(file) === 0 && isEmpty(error)}
+            canUpload={
+              noOfKeysWithoutValues(file) === 0 &&
+              isEmpty(error) &&
+              UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
+            }
           />
         </Grid>
       </Grid>
@@ -98,3 +105,9 @@ export default ({ locales = [], onSuccessfulImport }) => {
     </Grid>
   );
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(ImportTranslations);

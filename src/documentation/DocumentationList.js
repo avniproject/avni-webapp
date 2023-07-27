@@ -9,6 +9,9 @@ import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import Box from "@material-ui/core/Box";
 import { Item } from "./components/Item";
 import { useLocation } from "react-router-dom";
+import { connect } from "react-redux";
+import UserInfo from "../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 function createDocumentationNode(
   documentations,
@@ -17,7 +20,8 @@ function createDocumentationNode(
   onDocumentationAdd,
   onRemoveDocumentation,
   level,
-  selectedDocumentationUUID
+  selectedDocumentationUUID,
+  hasEditPrivilege
 ) {
   return map(documentations, (documentation, idx) => {
     const { uuid, name } = documentation;
@@ -26,8 +30,8 @@ function createDocumentationNode(
       <React.Fragment key={uuid}>
         <Item
           name={name}
-          onAdd={() => onDocumentationAdd(documentation)}
-          onDelete={() => onRemoveDocumentation(uuid)}
+          onAdd={hasEditPrivilege && (() => onDocumentationAdd(documentation))}
+          onDelete={hasEditPrivilege && (() => onRemoveDocumentation(uuid))}
           level={level}
           onToggle={() => onDocumentationToggle(documentation)}
           isSelected={selectedDocumentationUUID === uuid}
@@ -39,14 +43,15 @@ function createDocumentationNode(
           onDocumentationAdd,
           onRemoveDocumentation,
           level + 1,
-          selectedDocumentationUUID
+          selectedDocumentationUUID,
+          hasEditPrivilege
         )}
       </React.Fragment>
     );
   });
 }
 
-const DocumentationList = ({ history, ...props }) => {
+const DocumentationList = ({ userInfo }) => {
   const location = useLocation();
   const documentationUUID = get(location, "state.documentationUUID");
   const [state, dispatch] = React.useReducer(DocumentationReducer, initialState);
@@ -87,6 +92,10 @@ const DocumentationList = ({ history, ...props }) => {
     }
   };
 
+  const hasEditPrivilege = UserInfo.hasPrivilege(
+    userInfo,
+    Privilege.PrivilegeType.EditDocumentation
+  );
   return (
     <ScreenWithAppBar appbarTitle={"Documentation"}>
       <DocumentationContext.Provider value={{ state: state, dispatch: dispatch }}>
@@ -101,7 +110,7 @@ const DocumentationList = ({ history, ...props }) => {
           >
             <Item
               name={"Documentation"}
-              onAdd={() => onDocumentationAdd()}
+              onAdd={hasEditPrivilege && (() => onDocumentationAdd())}
               level={1}
               disabled={true}
             />
@@ -112,7 +121,8 @@ const DocumentationList = ({ history, ...props }) => {
               onDocumentationAdd,
               onRemoveDocumentation,
               1,
-              get(selectedDocumentation, "uuid")
+              get(selectedDocumentation, "uuid"),
+              hasEditPrivilege
             )}
           </Box>
           <div style={{ flex: 0.8 }}>
@@ -125,4 +135,8 @@ const DocumentationList = ({ history, ...props }) => {
   );
 };
 
-export default DocumentationList;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(DocumentationList);

@@ -92,7 +92,7 @@ const Documentation = ({ userInfo }) => {
         name="save"
         onSubmit={onSave}
         styleClass={{ marginTop: "14px" }}
-        disabledFlag={UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation)}
+        disabledFlag={!UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation)}
       />
       <Box mt={2} />
       {createdBy && (
