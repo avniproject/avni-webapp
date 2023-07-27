@@ -20,7 +20,7 @@ const Homepage = ({ user }) => {
     fetchOrgID();
   }, []);
 
-  const showAnalytics = UserInfo.hasPrivilege(userInfo, [Privilege.PrivilegeType.Analytics]);
+  const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
