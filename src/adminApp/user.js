@@ -11,9 +11,11 @@ import {
   FunctionField,
   List,
   REDUX_FORM_NAME,
+  ReferenceArrayInput,
   ReferenceField,
   ReferenceInput,
   required,
+  SelectArrayInput,
   SelectInput,
   Show,
   SimpleForm,
@@ -96,10 +98,14 @@ export const UserList = ({ organisation, ...props }) => (
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
       <FunctionField
+        style={{ maxWidth: "20em" }}
         label="User Groups"
         render={user =>
           user.userGroups && user.userGroups.length > 0
-            ? _.join(user.userGroups.map(grp => grp.groupName), ", ")
+            ? _.join(
+                user.userGroups.filter(ug => !ug.voided).map(grp => `"${grp.groupName}"`),
+                ", "
+              )
             : ""
         }
       />
@@ -205,6 +211,14 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         >
           <TextField source="name" />
         </ReferenceField>
+        <FunctionField
+          label="User Groups"
+          render={user =>
+            user.userGroupNames && user.userGroupNames.length > 0
+              ? _.join(user.userGroupNames.map(groupName => `"${groupName}"`), ", ")
+              : ""
+          }
+        />
         <FunctionField
           label="Operating Scope"
           render={user => formatOperatingScope(user.operatingIndividualScope)}
@@ -569,16 +583,33 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
             >
               <CatchmentSelectInput source="name" resettable />
             </ReferenceInput>
-            <LineBreak num={3} />
+            <LineBreak num={1} />
           </Fragment>
         )}
       </FormDataConsumer>
+      <Fragment>
+        <ToolTipContainer toolTipKey={"USER_GROUP"} alignItems={"center"}>
+          <Typography variant="title" component="h3">
+            User Groups
+          </Typography>
+        </ToolTipContainer>
+        <ReferenceArrayInput reference="groups" source="groupIds">
+          <SelectArrayInput
+            style={{ minWidth: "16em" }}
+            label="Associated User Groups"
+            options={{ fullWidth: true }}
+            optionText="name"
+          />
+        </ReferenceArrayInput>
+        <LineBreak num={1} />
+      </Fragment>
       <DisabledInput
         source="operatingIndividualScope"
         defaultValue={operatingScopes.NONE}
         style={{ display: "none" }}
       />
       <Fragment>
+        <LineBreak num={1} />
         <ToolTipContainer toolTipKey={"ADMIN_USER_SETTINGS"} alignItems={"center"}>
           <Typography variant="title" component="h3">
             Settings

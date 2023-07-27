@@ -132,6 +132,7 @@ class OrgManager extends Component {
         ) : (
           <div />
         )}
+        {hasPrivilege(userInfo, EditUserGroup) ? <Resource name="groups" /> : <div />}
         <Resource name="task" options={{ label: "Tasks" }} />
         {hasPrivilege(userInfo, UploadMetadataAndData) ? (
           <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
