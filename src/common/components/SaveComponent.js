@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { isEmpty } from "lodash";
 
-export const SaveComponent = props => {
+export const SaveComponent = ({ disabledFlag, name, onSubmit, ...props }) => {
   const [saveInProgress, setSaveInProgress] = useState(false);
 
   const enableSaveButton = () => {
@@ -12,10 +12,10 @@ export const SaveComponent = props => {
     setSaveInProgress(true);
   };
 
-  const onSubmit = async event => {
+  const onSave = async event => {
     disableSaveButton();
     try {
-      await props.onSubmit(event);
+      await onSubmit(event);
     } finally {
       enableSaveButton();
     }
@@ -25,13 +25,13 @@ export const SaveComponent = props => {
     <Button
       color="primary"
       variant="contained"
-      onClick={onSubmit}
+      onClick={onSave}
       style={isEmpty(props.styleClass) ? {} : props.styleClass}
-      disabled={props.disabledFlag || saveInProgress}
+      disabled={disabledFlag || saveInProgress}
       fullWidth={props.fullWidth}
     >
       <i className="material-icons">save</i>
-      {props.name.toUpperCase()}
+      {name.toUpperCase()}
     </Button>
   );
 };

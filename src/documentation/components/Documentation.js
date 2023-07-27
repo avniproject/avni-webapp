@@ -10,6 +10,9 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import api from "../api";
 import { cloneForSave } from "../reducers";
 import { Audit } from "../../formDesigner/components/Audit";
+import { Privilege } from "openchs-models";
+import UserInfo from "../../common/model/UserInfo";
+import { connect } from "react-redux";
 
 function renderDocumentItem(value, index, selectedDocumentation, locale) {
   return (
@@ -27,7 +30,7 @@ function renderDocumentItem(value, index, selectedDocumentation, locale) {
   );
 }
 
-export const Documentation = () => {
+const Documentation = ({ userInfo }) => {
   const { selectedDocumentation, languages } = getDocumentationState();
   const dispatch = useDocumentationDispatch();
   const [value, setValue] = React.useState(0);
@@ -85,7 +88,12 @@ export const Documentation = () => {
       {map(languages, (locale, index) =>
         renderDocumentItem(value, index, selectedDocumentation, locale)
       )}
-      <SaveComponent name="save" onSubmit={onSave} styleClass={{ marginTop: "14px" }} />
+      <SaveComponent
+        name="save"
+        onSubmit={onSave}
+        styleClass={{ marginTop: "14px" }}
+        disabledFlag={UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditDocumentation)}
+      />
       <Box mt={2} />
       {createdBy && (
         <Audit
@@ -99,3 +107,9 @@ export const Documentation = () => {
     </Box>
   );
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(Documentation);

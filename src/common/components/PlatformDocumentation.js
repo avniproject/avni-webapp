@@ -19,7 +19,7 @@ export const LinkRenderer = props => {
   );
 };
 
-export const Documentation = ({ fileName }) => {
+export const PlatformDocumentation = ({ fileName }) => {
   const classes = useStyle();
   const [markdown, setMarkdown] = React.useState("");
 

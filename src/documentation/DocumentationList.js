@@ -4,7 +4,7 @@ import api from "./api";
 import { DocumentationReducer, initialState } from "./reducers";
 import { filter, get, isNil, map } from "lodash";
 import DocumentationContext from "./context";
-import { Documentation } from "./components/Documentation";
+import Documentation from "./components/Documentation";
 import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import Box from "@material-ui/core/Box";
 import { Item } from "./components/Item";
