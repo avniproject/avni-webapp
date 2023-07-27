@@ -8,7 +8,7 @@ import { Redirect } from "react-router-dom";
 import { PublishBroadcast } from "./components/PublishBroadcast";
 import { DeleteBroadcast } from "./components/DeleteBroadcast";
 import API from "./api";
-import { NewsDetailsCard } from "./components/NewsDetailsCard";
+import NewsDetailsCard from "./components/NewsDetailsCard";
 
 const useStyles = makeStyles(theme => ({
   root: {

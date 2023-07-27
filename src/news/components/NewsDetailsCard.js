@@ -9,15 +9,21 @@ import { isNil } from "lodash";
 import Divider from "@material-ui/core/Divider";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import DOMPurify from "dompurify";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-export const NewsDetailsCard = ({
+const NewsDetailsCard = ({
   history,
   news,
   setDeleteAlert,
   setOpenEdit,
   setPublishAlert,
-  displayActions
+  displayActions,
+  userInfo
 }) => {
+  const canEditNews = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditNews);
+
   return (
     <Fragment>
       <Grid container direction="row" alignItems={"center"}>
@@ -44,7 +50,7 @@ export const NewsDetailsCard = ({
             </Typography>
           </Grid>
         </Grid>
-        {displayActions && (
+        {displayActions && canEditNews && (
           <Grid item container justify={"flex-end"} spacing={2} xs={6}>
             <Grid item>
               <Button style={{ color: "red" }} onClick={() => setDeleteAlert(true)}>
@@ -85,3 +91,9 @@ export const NewsDetailsCard = ({
     </Fragment>
   );
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(NewsDetailsCard);

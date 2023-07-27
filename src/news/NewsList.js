@@ -8,8 +8,11 @@ import { isNil, orderBy } from "lodash";
 import { Paper } from "@material-ui/core";
 import { CustomToolbar } from "./components/CustomToolbar";
 import { CreateEditNews } from "./CreateEditNews";
+import UserInfo from "../common/model/UserInfo";
+import { connect } from "react-redux";
+import { Privilege } from "openchs-models";
 
-export default function NewsList({ history, ...props }) {
+function NewsList({ userInfo }) {
   const [news, setNews] = React.useState([]);
   const [openCreate, setOpenCreate] = React.useState(false);
   const tableRef = React.createRef();
@@ -47,6 +50,8 @@ export default function NewsList({ history, ...props }) {
     }
   ];
 
+  const canEditNews = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditNews);
+
   return (
     <ScreenWithAppBar appbarTitle={"News Broadcast"}>
       <DocumentationContainer filename={"NewsBroadcast.md"}>
@@ -55,9 +60,10 @@ export default function NewsList({ history, ...props }) {
             title=""
             components={{
               Container: props => <Fragment>{props.children}</Fragment>,
-              Toolbar: props => (
-                <CustomToolbar setOpenCreate={setOpenCreate} totalNews={news.length} {...props} />
-              )
+              Toolbar: props =>
+                canEditNews && (
+                  <CustomToolbar setOpenCreate={setOpenCreate} totalNews={news.length} {...props} />
+                )
             }}
             tableRef={tableRef}
             columns={columns}
@@ -89,3 +95,9 @@ export default function NewsList({ history, ...props }) {
     </ScreenWithAppBar>
   );
 }
+
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default connect(mapStateToProps)(NewsList);

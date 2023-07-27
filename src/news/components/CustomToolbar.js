@@ -2,7 +2,7 @@ import { Typography } from "@material-ui/core";
 import { ActionButton } from "./ActionButton";
 import React from "react";
 
-export const CustomToolbar = ({ totalNews, setOpenCreate, ...props }) => {
+export const CustomToolbar = ({ totalNews, setOpenCreate }) => {
   return (
     <div
       style={{

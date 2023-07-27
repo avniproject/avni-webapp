@@ -27,7 +27,7 @@ const AppBarContainer = props => (
   </ScreenWithAppBar>
 );
 
-function renderOptions(canEditUser, canEditTask) {
+function renderOptions(canAssignSubject, canEditTask) {
   return (
     <AppBarContainer>
       {canEditTask && (
@@ -37,7 +37,7 @@ function renderOptions(canEditUser, canEditTask) {
           customIcon={"assignment_turned_in"}
         />
       )}
-      {canEditUser && (
+      {canAssignSubject && (
         <HomePageCard
           href={"/#/assignment/subject"}
           name={"Subject Assignment"}
@@ -67,15 +67,12 @@ function Assignment({ userInfo }) {
   }, []);
 
   const canEditTask = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditTask);
-  const canEditUser = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.EditUserConfiguration
-  );
+  const canAssignSubject = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.AssignSubject);
 
   if (loaded) {
-    if (isAnyDirectlyAssignable && isAnyTaskTypeSetup && (canEditTask || canEditUser)) {
-      return renderOptions(canEditUser, canEditTask);
-    } else if (isAnyDirectlyAssignable && canEditUser) {
+    if (isAnyDirectlyAssignable && isAnyTaskTypeSetup && (canEditTask || canAssignSubject)) {
+      return renderOptions(canAssignSubject, canEditTask);
+    } else if (isAnyDirectlyAssignable && canAssignSubject) {
       return <SubjectAssignment />;
     } else if (isAnyTaskTypeSetup && canEditTask) {
       return <TaskAssignment />;

@@ -13,8 +13,11 @@ import BroadcastPath from "./utils/BroadcastPath";
 import { connect, useDispatch } from "react-redux";
 import { getOrganisationConfig } from "./reducers/metadataReducer";
 import NewsDetails from "./NewsDetails";
+import { Privilege } from "openchs-models";
+import UserInfo from "../common/model/UserInfo";
 
-const BroadcastPage = function({ path, organisationConfig }) {
+const BroadcastPage = function({ path, organisationConfig, userInfo }) {
+  const showMessaging = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Messaging);
   return (
     <React.Fragment>
       <AppBar title={"Broadcast"} position={"sticky"} />
@@ -24,21 +27,21 @@ const BroadcastPage = function({ path, organisationConfig }) {
           name={"News Broadcasts"}
           customIcon={"speaker"}
         />
-        {organisationConfig && organisationConfig.organisationConfig.enableMessaging ? (
-          <HomePageCard
-            href={getHref(BroadcastPath.WhatsApp, path)}
-            name="WhatsApp"
-            customIconComponent={<WhatsAppIcon color="primary" style={{ fontSize: 100 }} />}
-          />
-        ) : (
-          <></>
-        )}
+        {organisationConfig &&
+          organisationConfig.organisationConfig.enableMessaging &&
+          showMessaging && (
+            <HomePageCard
+              href={getHref(BroadcastPath.WhatsApp, path)}
+              name="WhatsApp"
+              customIconComponent={<WhatsAppIcon color="primary" style={{ fontSize: 100 }} />}
+            />
+          )}
       </Grid>
     </React.Fragment>
   );
 };
 
-const Broadcast = ({ match: { path }, organisationConfig }) => {
+const Broadcast = ({ match: { path }, organisationConfig, userInfo }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getOrganisationConfig());
@@ -48,7 +51,7 @@ const Broadcast = ({ match: { path }, organisationConfig }) => {
       <Route
         exact
         path={path}
-        component={WithProps({ path: path, organisationConfig }, BroadcastPage)}
+        component={WithProps({ path: path, organisationConfig, userInfo }, BroadcastPage)}
       />
       <Route exact path={getRoutePath(path, BroadcastPath.News)} component={News} />
       <Route exact path={`${path}/news/:id/details`} component={NewsDetails} />
@@ -73,7 +76,10 @@ const Broadcast = ({ match: { path }, organisationConfig }) => {
     </React.Fragment>
   );
 };
+
 const mapStateToProps = state => ({
-  organisationConfig: state.broadcast.organisationConfig
+  organisationConfig: state.broadcast.organisationConfig,
+  userInfo: state.app.userInfo
 });
+
 export default withRouter(connect(mapStateToProps)(Broadcast));

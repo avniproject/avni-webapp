@@ -13698,10 +13698,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.44:
-  version "1.30.44"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.44.tgz#448da2b6b37c1b7f91fcd3c779dc2b2f44b67a56"
-  integrity sha512-ZY3qEYQVl1ww2y4OCornUWtRUTJnVWxwZ2bhqOlA3cFdzzknbHppQBBxqaoKv9ij00Xah3LE1+J/FL7qDTLYkw==
+openchs-models@1.30.46:
+  version "1.30.46"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.46.tgz#739fa86a391235ec0965196745b0c68784f13914"
+  integrity sha512-nTX0zgdavor9gAY4rdR42zexdSYN/C/aBEDc4ICqM8QSnqClbNXsxKmW4kgAXSGqFx/7iswkw3uiiBWe+PkcXQ==
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
