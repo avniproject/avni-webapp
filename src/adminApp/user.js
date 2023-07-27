@@ -1,8 +1,10 @@
 import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { cloneElement, Fragment, useEffect, useState } from "react";
 import {
+  ArrayField,
   ArrayInput,
   Create,
+  ChipField,
   Datagrid,
   DisabledInput,
   Edit,
@@ -21,6 +23,7 @@ import {
   SimpleForm,
   SimpleFormIterator,
   SimpleShowLayout,
+  SingleFieldList,
   TextField,
   TextInput
 } from "react-admin";
@@ -75,6 +78,22 @@ export const UserEdit = ({ ...props }) => (
   </Edit>
 );
 
+const UserGroupsDisplay = ({ record, style }) => (
+  <div style={style}>
+    {record.userGroups
+      .filter(ug => !ug.voided)
+      .map(userGroup => (
+        <Chip style={{ margin: "0.5em" }} label={userGroup.groupName} key={userGroup.groupName} />
+      ))}
+  </div>
+);
+
+export const StringToLabelObject = ({ record, children, ...rest }) =>
+  cloneElement(children, {
+    record: { label: record },
+    ...rest
+  });
+
 export const UserList = ({ organisation, ...props }) => (
   <List
     {...props}
@@ -97,18 +116,7 @@ export const UserList = ({ organisation, ...props }) => (
       </ReferenceField>
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
-      <FunctionField
-        style={{ maxWidth: "20em" }}
-        label="User Groups"
-        render={user =>
-          user.userGroups && user.userGroups.length > 0
-            ? _.join(
-                user.userGroups.filter(ug => !ug.voided).map(grp => `"${grp.groupName}"`),
-                ", "
-              )
-            : ""
-        }
-      />
+      <UserGroupsDisplay style={{ maxWidth: "20em" }} label="User Groups" />
       <FunctionField
         label="Status"
         render={user =>
@@ -211,14 +219,13 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         >
           <TextField source="name" />
         </ReferenceField>
-        <FunctionField
-          label="User Groups"
-          render={user =>
-            user.userGroupNames && user.userGroupNames.length > 0
-              ? _.join(user.userGroupNames.map(groupName => `"${groupName}"`), ", ")
-              : ""
-          }
-        />
+        <ArrayField style={{ maxWidth: "20em" }} label="User Groups" source="userGroupNames">
+          <SingleFieldList>
+            <StringToLabelObject>
+              <ChipField source="label" />
+            </StringToLabelObject>
+          </SingleFieldList>
+        </ArrayField>
         <FunctionField
           label="Operating Scope"
           render={user => formatOperatingScope(user.operatingIndividualScope)}
