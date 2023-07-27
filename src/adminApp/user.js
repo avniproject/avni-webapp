@@ -1,4 +1,4 @@
-import { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
+import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
 import React, { cloneElement, Fragment, useEffect, useState } from "react";
 import {
   ArrayField,
@@ -80,11 +80,12 @@ export const UserEdit = ({ ...props }) => (
 
 const UserGroupsDisplay = ({ record, style }) => (
   <div style={style}>
-    {record.userGroups
-      .filter(ug => !ug.voided)
-      .map(userGroup => (
-        <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />
-      ))}
+    {_.isArrayLike(record.userGroups) &&
+      record.userGroups
+        .filter(ug => ug && !ug.voided)
+        .map(userGroup => (
+          <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />
+        ))}
   </div>
 );
 
