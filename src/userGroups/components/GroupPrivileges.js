@@ -101,6 +101,12 @@ const generatePrivilegeDependenciesAndCheckedState = function(groupPrivilegeList
   return [checkedState, dependencies];
 };
 
+const modifyGroupPrivilegesToIncludeGroupingTypeColumn = function(groupPrivilegeList) {
+  return groupPrivilegeList.map(gp => {
+    return { ...gp, groupingTypeName: gp.subjectTypeName || gp.privilegeEntityType };
+  });
+};
+
 const GroupPrivileges = ({
   groupId,
   hasAllPrivileges,
@@ -113,6 +119,9 @@ const GroupPrivileges = ({
   const [privilegeDependencies, setPrivilegeDependencies] = React.useState(null);
   const [privilegesCheckedState, setPrivilegesCheckedState] = React.useState(null);
   const [allPrivilegesAllowed, setAllPrivilegesAllowed] = React.useState(hasAllPrivileges);
+  const [enhancedGroupPrivilegeList, setEnhancedGroupPrivilegeList] = React.useState(
+    groupPrivilegeList
+  );
 
   React.useEffect(() => {
     if (!allPrivilegesAllowed) {
@@ -128,8 +137,10 @@ const GroupPrivileges = ({
     );
 
     setPrivilegesCheckedState(checkedState);
-
     setPrivilegeDependencies(dependencies);
+    setEnhancedGroupPrivilegeList(
+      modifyGroupPrivilegesToIncludeGroupingTypeColumn(groupPrivilegeList)
+    );
   }, [groupPrivilegeList]);
 
   const onTogglePermissionClick = (event, rowData) => {
@@ -249,7 +260,7 @@ const GroupPrivileges = ({
           <MaterialTable
             title=""
             columns={columns}
-            data={groupPrivilegeList}
+            data={enhancedGroupPrivilegeList}
             options={{
               grouping: true,
               pageSize: 20,
