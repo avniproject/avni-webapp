@@ -20,11 +20,6 @@ const Homepage = ({ user }) => {
     fetchOrgID();
   }, []);
 
-  const showAssignment = UserInfo.hasAnyPrivilege(userInfo, [
-    Privilege.PrivilegeType.EditTask,
-    Privilege.PrivilegeType.DeleteTask,
-    Privilege.PrivilegeType.EditUserConfiguration
-  ]);
   const showAnalytics = UserInfo.hasPrivilege(userInfo, [Privilege.PrivilegeType.Analytics]);
 
   return (
@@ -33,13 +28,11 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/admin/user"} name={"Admin"} customIcon={"supervisor_account"} />
         <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customIcon={"architecture"} />
         <HomePageCard href={"/#/documentation"} name={"Documentation"} customIcon={"article"} />
-        {showAssignment && (
-          <HomePageCard
-            href={"/#/assignment"}
-            name={"Assignment"}
-            customIcon={"assignment_turned_in"}
-          />
-        )}
+        <HomePageCard
+          href={"/#/assignment"}
+          name={"Assignment"}
+          customIcon={"assignment_turned_in"}
+        />
         <HomePageCard
           href={"/#/broadcast"}
           name={"Broadcast"}
