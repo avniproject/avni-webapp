@@ -600,7 +600,7 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
             User Groups
           </Typography>
         </ToolTipContainer>
-        <ReferenceArrayInput reference="groups" source="groupIds">
+        <ReferenceArrayInput reference="group" source="groupIds">
           <SelectArrayInput
             style={{ minWidth: "16em" }}
             label="Associated User Groups"
