@@ -595,12 +595,17 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
         )}
       </FormDataConsumer>
       <Fragment>
-        <ToolTipContainer toolTipKey={"USER_GROUP"} alignItems={"center"}>
+        <ToolTipContainer toolTipKey={"ADMIN_USER_GROUP"} alignItems={"center"}>
           <Typography variant="title" component="h3">
             User Groups
           </Typography>
         </ToolTipContainer>
-        <ReferenceArrayInput reference="group" source="groupIds">
+        <ReferenceArrayInput
+          resource="group"
+          reference="group"
+          source="groupIds"
+          validate={required("Please select one or more groups")}
+        >
           <SelectArrayInput
             style={{ minWidth: "16em" }}
             label="Associated User Groups"

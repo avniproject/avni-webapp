@@ -85,6 +85,7 @@
   "ADMIN_USER_PHONE_NUMBER": "This phone number will be used to send OTP and temporary passwords",
   "ADMIN_USER_ORG_ADMIN": "Whether this user is organisation admin or not",
   "ADMIN_USER_CATCHMENT": "A catchment is a group of locations that are accessed by a user. If there are multiple users in a catchment, they all share the same data about subjects and their information",
+  "ADMIN_USER_GROUP": "A User-group is a grouping of users, who are assigned a set of privileges. A user can be part of more than one group, in which case he'll be assigned all privileges consolidated across all the related User-groups",
   "ADMIN_USER_SETTINGS": "Various user settings\n\n##### Preferred Language :\n By default all the app data will be displayed in this language",
   "ADMIN_SYNC_SETTINGS": "User sync settings in case subject type supports other sync attributes",
   "ADMIN_LOCATION_NAME": "Name of the location",
