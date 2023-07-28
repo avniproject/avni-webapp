@@ -132,9 +132,9 @@ const CustomShowActions = ({ hasEditUserPrivilege, basePath, data, resource }) =
   return (
     (data && (
       <CardActions style={{ zIndex: 2, display: "flex", float: "right", flexDirection: "row" }}>
-        <EditButton label="Edit User" basePath={basePath} record={data} />
         {hasEditUserPrivilege && (
           <Fragment>
+            <EditButton label="Edit User" basePath={basePath} record={data} />
             <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
             <EnableDisableButton
               disabled={data.disabledInCognito}
