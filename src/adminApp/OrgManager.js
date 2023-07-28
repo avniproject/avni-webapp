@@ -113,26 +113,30 @@ class OrgManager extends Component {
           create={hasPrivilege(userInfo, EditCatchment) && CatchmentCreate}
           edit={hasPrivilege(userInfo, EditCatchment) && CatchmentEdit}
         />
-        <Resource
-          name="user"
-          list={WithProps({ organisation }, UserList)}
-          create={
-            hasPrivilege(userInfo, EditUserConfiguration) &&
-            hasPrivilege(userInfo, EditCatchment) &&
-            WithProps({ organisation }, UserCreate)
-          }
-          show={WithProps(
-            { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
-            UserDetail
-          )}
-          edit={hasPrivilege(userInfo, EditUserConfiguration) && UserEdit}
-        />
+        {hasPrivilege(userInfo, EditUserConfiguration) ? (
+          <Resource
+            name="user"
+            list={WithProps({ organisation }, UserList)}
+            create={
+              hasPrivilege(userInfo, EditUserConfiguration) &&
+              hasPrivilege(userInfo, EditCatchment) &&
+              WithProps({ organisation }, UserCreate)
+            }
+            show={WithProps(
+              { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
+              UserDetail
+            )}
+            edit={hasPrivilege(userInfo, EditUserConfiguration) && UserEdit}
+          />
+        ) : (
+          <div />
+        )}
         {hasPrivilege(userInfo, EditUserGroup) ? (
           <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
         ) : (
           <div />
         )}
-        {hasPrivilege(userInfo, EditUserGroup) ? <Resource name="group" /> : <div />}
+        <Resource name="group" />
         <Resource name="task" options={{ label: "Tasks" }} />
         {hasPrivilege(userInfo, UploadMetadataAndData) ? (
           <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
