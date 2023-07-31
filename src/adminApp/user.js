@@ -605,7 +605,7 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
           resource="group"
           reference="group"
           source="groupIds"
-          validate={required("Please select one or more groups")}
+          filter={{ isNotEveryoneGroup: true }}
         >
           <SelectArrayInput
             style={{ minWidth: "16em" }}
