@@ -119,7 +119,6 @@ class OrgManager extends Component {
             list={WithProps({ organisation }, UserList)}
             create={
               hasPrivilege(userInfo, EditUserConfiguration) &&
-              hasPrivilege(userInfo, EditCatchment) &&
               WithProps({ organisation }, UserCreate)
             }
             show={WithProps(
