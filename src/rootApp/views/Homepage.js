@@ -7,6 +7,7 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 import axios from "axios";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
+import ApplicationContext from "../../ApplicationContext";
 
 const Homepage = ({ user }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
@@ -43,8 +44,11 @@ const Homepage = ({ user }) => {
         <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
         {showAnalytics && (
           <HomePageCard
-            href={`/avni-media?orgID=${userInfo && userInfo.organisationId}&username=${userInfo &&
-              userInfo.username}`}
+            href={
+              ApplicationContext.isDevEnv()
+                ? `http://localhost:3000/avni-media?authToken=${httpClient.getAuthToken()}`
+                : "/avni-media"
+            }
             name={"Media Viewer "}
             customIcon={"collections"}
           />

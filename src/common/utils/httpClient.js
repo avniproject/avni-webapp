@@ -67,6 +67,10 @@ class HttpClient {
     });
   }
 
+  getAuthToken() {
+    return localStorage.getItem(IdpDetails.AuthTokenName);
+  }
+
   async setHeaders(options) {
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });
     if (
