@@ -4,22 +4,13 @@ import Grid from "@material-ui/core/Grid";
 import httpClient from "../../common/utils/httpClient";
 import { HomePageCard } from "./HomePageCard";
 import SurroundSound from "@material-ui/icons/SurroundSound";
-import axios from "axios";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
+import { connect } from "react-redux";
 import ApplicationContext from "../../ApplicationContext";
 
-const Homepage = ({ user }) => {
+const Homepage = ({ userInfo }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
-
-  const [userInfo, setUserInfo] = useState(UserInfo.createEmpty());
-  useEffect(() => {
-    const fetchOrgID = async () => {
-      const resp = await axios("/web/userInfo");
-      setUserInfo(resp.data);
-    };
-    fetchOrgID();
-  }, []);
 
   const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
@@ -59,4 +50,7 @@ const Homepage = ({ user }) => {
   );
 };
 
-export default Homepage;
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+export default connect(mapStateToProps)(Homepage);

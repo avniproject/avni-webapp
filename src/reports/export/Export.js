@@ -29,6 +29,8 @@ import { EnrolmentType } from "../components/export/EnrolmentType";
 import { EncounterType } from "../components/export/EncounterType";
 import { GroupSubjectType } from "../components/export/GroupSubjectType";
 import Checkbox from "@material-ui/core/Checkbox";
+import { Privilege } from "openchs-models";
+import UserInfo from "../../common/model/UserInfo";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -41,7 +43,8 @@ const Export = ({
   operationalModules,
   getOperationalModules,
   getUploadStatuses,
-  exportJobStatuses
+  exportJobStatuses,
+  userInfo
 }) => {
   const classes = useStyles();
 
@@ -159,6 +162,15 @@ const Export = ({
     return reportType.name ? reportTypeMap[reportType.name] : <React.Fragment />;
   };
 
+  const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
+  console.log(
+    "Allow report generation:",
+    allowReportGeneration,
+    "userinfo:",
+    userInfo,
+    "needs",
+    Privilege.PrivilegeType.Analytics
+  );
   return (
     <ScreenWithAppBar
       appbarTitle={`Longitudinal Export`}
@@ -175,18 +187,20 @@ const Export = ({
                 {!_.isEmpty(reportType.name) && renderAddressLevel()}
                 {!_.isEmpty(reportType.name) && renderIncludeVoided()}
               </Grid>
-              <Grid container direction="row" justify="flex-start">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  aria-haspopup="false"
-                  onClick={onStartExportHandler}
-                  disabled={!enableExport}
-                  className={classes.item}
-                >
-                  Generate Export
-                </Button>
-              </Grid>
+              {allowReportGeneration && (
+                <Grid container direction="row" justify="flex-start">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    aria-haspopup="false"
+                    onClick={onStartExportHandler}
+                    disabled={!enableExport}
+                    className={classes.item}
+                  >
+                    Generate Export
+                  </Button>
+                </Grid>
+              )}
             </DocumentationContainer>
           </Box>
           <Grid item>
@@ -205,7 +219,8 @@ const Export = ({
 
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
-  exportJobStatuses: state.reports.exportJobStatuses
+  exportJobStatuses: state.reports.exportJobStatuses,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(
