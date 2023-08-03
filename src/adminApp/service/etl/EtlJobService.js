@@ -1,7 +1,6 @@
 import httpClient from "../../../common/utils/httpClient";
-import AvniServiceNames from "../../../common/AvniServiceNames";
 
-const JOB_BASE_URL = "job";
+const JOB_BASE_URL = "/etl/job";
 
 const jobEntityTypes = {
   organisation: "Organisation",
@@ -10,17 +9,15 @@ const jobEntityTypes = {
 
 class EtlJobService {
   static getJobStatuses(organisationUUIDs) {
-    return httpClient
-      .postOtherOriginJson(`${JOB_BASE_URL}/status`, AvniServiceNames.ETL, organisationUUIDs)
-      .catch(e => {
-        console.error(e);
-        return [];
-      });
+    return httpClient.postJson(`${JOB_BASE_URL}/status`, organisationUUIDs).catch(e => {
+      console.error(e);
+      return [];
+    });
   }
 
   static getJob(entityUUID) {
     return httpClient
-      .getFromDifferentOrigin(`${JOB_BASE_URL}/${entityUUID}`, AvniServiceNames.ETL)
+      .fetchJson(`${JOB_BASE_URL}/${entityUUID}`)
       .then(response => {
         return response.data;
       })
@@ -32,14 +29,14 @@ class EtlJobService {
   }
 
   static createOrEnableJob(entityUUID, resource) {
-    return httpClient.postOtherOriginJson(JOB_BASE_URL, AvniServiceNames.ETL, {
+    return httpClient.postJson(JOB_BASE_URL, {
       entityUUID: entityUUID,
       jobEntityType: jobEntityTypes[resource]
     });
   }
 
   static disableJob(entityUUID) {
-    return httpClient.deleteOtherOriginJson(`${JOB_BASE_URL}/${entityUUID}`, AvniServiceNames.ETL);
+    return httpClient.deleteEntity(`${JOB_BASE_URL}/${entityUUID}`);
   }
 }
 

@@ -13,6 +13,16 @@ const filter = function(pathname, req) {
 
 module.exports = function(app) {
   app.use(
+    "/etl",
+    createProxyMiddleware(filter, {
+      target: "http://localhost:8022",
+      changeOrigin: true,
+      pathRewrite: { "^/etl": "" }
+    })
+  );
+
+  app.use(
+    "/",
     createProxyMiddleware(filter, {
       target: process.env.BACKEND_URL,
       changeOrigin: true

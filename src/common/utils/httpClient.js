@@ -1,4 +1,4 @@
-import _, { isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
 import axios from "axios";
@@ -8,11 +8,6 @@ import Auth from "@aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
-
-function getOtherOriginUrl(services, serviceType, url) {
-  const service = _.find(services, x => x["serviceType"] === serviceType);
-  return `${service["origin"]}/${url}`;
-}
 
 class HttpClient {
   idp;
@@ -26,13 +21,10 @@ class HttpClient {
     this.setHeaders = this.setHeaders.bind(this);
     this.fetchJson = this.fetchJson.bind(this);
     this.get = this._wrapAxiosMethod("get");
-    this._getFromDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("get");
     this.post = this._wrapAxiosMethod("post");
-    this.postToDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("post");
     this.put = this._wrapAxiosMethod("put");
     this.patch = this._wrapAxiosMethod("patch");
     this.delete = this._wrapAxiosMethod("delete");
-    this.deleteFromDifferentOrigin = this._wrapAxiosMethodForDifferentOrigin("delete");
     HttpClient.instance = this;
   }
 
@@ -164,11 +156,6 @@ class HttpClient {
     return this.get(...args).then(response => response.data);
   }
 
-  getFromDifferentOrigin(url, serviceType) {
-    const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
-    return this._getFromDifferentOrigin(otherOriginUrl);
-  }
-
   getPageData(embeddedResourceCollectionName, ...args) {
     return this.getData(args).then(responseBodyJson => {
       return {
@@ -189,20 +176,6 @@ class HttpClient {
     };
     const encoded = querystring.stringify(request);
     return axios.post(url, encoded, options);
-  }
-
-  setServices(services) {
-    this.services = services;
-  }
-
-  postOtherOriginJson(url, serviceType, payload) {
-    const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
-    return this.postToDifferentOrigin(otherOriginUrl, payload);
-  }
-
-  deleteOtherOriginJson(url, serviceType, payload) {
-    const otherOriginUrl = getOtherOriginUrl(this.services, serviceType, url);
-    return this.deleteFromDifferentOrigin(otherOriginUrl, payload);
   }
 }
 
