@@ -163,14 +163,7 @@ const Export = ({
   };
 
   const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
-  console.log(
-    "Allow report generation:",
-    allowReportGeneration,
-    "userinfo:",
-    userInfo,
-    "needs",
-    Privilege.PrivilegeType.Analytics
-  );
+
   return (
     <ScreenWithAppBar
       appbarTitle={`Longitudinal Export`}
