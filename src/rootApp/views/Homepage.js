@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Grid from "@material-ui/core/Grid";
 import httpClient from "../../common/utils/httpClient";
