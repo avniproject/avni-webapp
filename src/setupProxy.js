@@ -15,7 +15,7 @@ module.exports = function(app) {
     "/etl",
     createProxyMiddleware(
       () => {
-        return false;
+        return true;
       },
       {
         target: "http://localhost:8022",
