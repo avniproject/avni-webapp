@@ -5,8 +5,7 @@ const filter = function(pathname, req) {
   const doFilter = !(
     pathname === "/" ||
     _.startsWith(pathname, "/static") ||
-    _.startsWith(pathname, "/manifest.json") ||
-    req.get("host").includes("8022")
+    _.startsWith(pathname, "/manifest.json")
   );
   return doFilter;
 };
@@ -14,11 +13,16 @@ const filter = function(pathname, req) {
 module.exports = function(app) {
   app.use(
     "/etl",
-    createProxyMiddleware(filter, {
-      target: "http://localhost:8022",
-      changeOrigin: true,
-      pathRewrite: { "^/etl": "" }
-    })
+    createProxyMiddleware(
+      () => {
+        return false;
+      },
+      {
+        target: "http://localhost:8022",
+        changeOrigin: true,
+        pathRewrite: { "^/etl": "" }
+      }
+    )
   );
 
   app.use(
