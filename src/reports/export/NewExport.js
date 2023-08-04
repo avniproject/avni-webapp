@@ -13,6 +13,8 @@ import { DocumentationContainer } from "../../common/components/DocumentationCon
 import { reportSideBarOptions } from "../Common";
 import { ExportRequestBody } from "../components/export/ExportRequestBody";
 import api from "../api";
+import { Privilege } from "openchs-models";
+import UserInfo from "../../common/model/UserInfo";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -25,7 +27,8 @@ const NewExport = ({
   operationalModules,
   getOperationalModules,
   getUploadStatuses,
-  exportJobStatuses
+  exportJobStatuses,
+  userInfo
 }) => {
   const classes = useStyles();
 
@@ -56,7 +59,7 @@ const NewExport = ({
     }
     setTimeout(() => getUploadStatuses(0), 1000);
   };
-
+  const allowReportGeneration = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
   return (
     <ScreenWithAppBar
       appbarTitle={`New Longitudinal Export`}
@@ -67,23 +70,27 @@ const NewExport = ({
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
             <DocumentationContainer filename={"Report.md"}>
-              <ExportRequestBody
-                dispatch={setCustomRequest}
-                customRequest={customRequest}
-                exportRequest={exportRequest}
-              />
-              <Grid container direction="row" justify="flex-start">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  aria-haspopup="false"
-                  onClick={onStartExportHandler}
-                  disabled={!customRequest}
-                  className={classes.item}
-                >
-                  Generate Export
-                </Button>
-              </Grid>
+              {allowReportGeneration && (
+                <ExportRequestBody
+                  dispatch={setCustomRequest}
+                  customRequest={customRequest}
+                  exportRequest={exportRequest}
+                />
+              )}
+              {allowReportGeneration && (
+                <Grid container direction="row" justify="flex-start">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    aria-haspopup="false"
+                    onClick={onStartExportHandler}
+                    disabled={!customRequest}
+                    className={classes.item}
+                  >
+                    Generate Export
+                  </Button>
+                </Grid>
+              )}
             </DocumentationContainer>
           </Box>
           <Grid item>
@@ -102,7 +109,8 @@ const NewExport = ({
 
 const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules,
-  exportJobStatuses: state.reports.exportJobStatuses
+  exportJobStatuses: state.reports.exportJobStatuses,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

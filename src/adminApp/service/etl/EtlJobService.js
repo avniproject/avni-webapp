@@ -19,12 +19,12 @@ class EtlJobService {
     return httpClient
       .fetchJson(`${JOB_BASE_URL}/${entityUUID}`)
       .then(response => {
-        return response.data;
+        return response.json;
       })
-      .catch(axiosError => {
-        console.error(axiosError);
-        if (axiosError.response.status === 404) return null;
-        throw axiosError;
+      .catch(error => {
+        console.error(error);
+        if (error.status === 404) return null;
+        throw error;
       });
   }
 
