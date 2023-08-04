@@ -174,12 +174,14 @@ const Export = ({
         <div>
           <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
             <DocumentationContainer filename={"Report.md"}>
-              <Grid>
-                {RenderReportTypes()}
-                {renderReportTypeOptions()}
-                {!_.isEmpty(reportType.name) && renderAddressLevel()}
-                {!_.isEmpty(reportType.name) && renderIncludeVoided()}
-              </Grid>
+              {allowReportGeneration && (
+                <Grid>
+                  {RenderReportTypes()}
+                  {renderReportTypeOptions()}
+                  {!_.isEmpty(reportType.name) && renderAddressLevel()}
+                  {!_.isEmpty(reportType.name) && renderIncludeVoided()}
+                </Grid>
+              )}
               {allowReportGeneration && (
                 <Grid container direction="row" justify="flex-start">
                   <Button
