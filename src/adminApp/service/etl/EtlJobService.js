@@ -1,5 +1,4 @@
 import httpClient from "../../../common/utils/httpClient";
-import _ from "lodash";
 
 const JOB_BASE_URL = "/etl/job";
 
