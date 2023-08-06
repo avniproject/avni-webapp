@@ -8,9 +8,13 @@ import { useDispatch } from "react-redux";
 import { toNumber } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { setOrganisationConfig } from "../../rootApp/ducks";
+import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 export const OrgSettings = ({ hasEditPrivilege }) => {
   const [orgSettings, setOrgSettings] = React.useState();
+  const [showEncryptionWarningMessage, setShowEncryptionWarningMessage] = React.useState(false);
+  const [defaultSnackbarStatus, setDefaultSnackbarStatus] = React.useState(true);
+
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -35,13 +39,16 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
       .catch(error => console.error(error));
   };
 
-  function renderSimpleSetting(key, name, tooltip, disabled = false) {
+  function renderSimpleSetting(key, name, tooltip, disabled = false, onEnabled) {
     return (
       <Grid item>
         <AvniSwitch
           switchFirst
           checked={orgSettings[key]}
-          onChange={event => onSettingsChange(key, event.target.checked)}
+          onChange={event => {
+            if (event.target.checked === true) onEnabled();
+            onSettingsChange(key, event.target.checked);
+          }}
           name={name}
           toolTipKey={tooltip}
           disabled={disabled || !hasEditPrivilege}
@@ -62,7 +69,12 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
     skipRuleExecution: "skipRuleExecution",
     maxAddressDisplayInlineCount: "maxAddressDisplayInlineCount",
     showHierarchicalLocation: "showHierarchicalLocation",
-    donotRequirePasswordChangeOnFirstLogin: "donotRequirePasswordChangeOnFirstLogin"
+    donotRequirePasswordChangeOnFirstLogin: "donotRequirePasswordChangeOnFirstLogin",
+    enableMobileAppDbEncryption: "enableMobileAppDbEncryption"
+  };
+
+  const getDefaultSnackbarStatus = defaultSnackbarStatus => {
+    setDefaultSnackbarStatus(defaultSnackbarStatus);
   };
 
   return orgSettings ? (
@@ -87,6 +99,13 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
           organisationConfigSettingKeys.enableComments,
           "Enable comments",
           "ADMIN_ENABLE_COMMENTS"
+        )}
+        {renderSimpleSetting(
+          organisationConfigSettingKeys.enableMobileAppDbEncryption,
+          "Enable mobile app db encryption",
+          "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION",
+          false,
+          () => setShowEncryptionWarningMessage(true)
         )}
         {renderSimpleSetting(
           organisationConfigSettingKeys.showSummaryButton,
@@ -141,6 +160,18 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
           }
           toolTipKey={"MAX_ADDRESS_DISPLAY_INLINE_COUNT"}
         />
+        {showEncryptionWarningMessage && (
+          <CustomizedSnackbar
+            message="Warning: Enabling this will not permit user to use fast sync feature and upload db from mobile app."
+            getDefaultSnackbarStatus={getDefaultSnackbarStatus}
+            defaultSnackbarStatus={defaultSnackbarStatus}
+            variant={"error"}
+            onExited={() => {
+              setShowEncryptionWarningMessage(false);
+              setDefaultSnackbarStatus(true);
+            }}
+          />
+        )}
       </Grid>
     </Grid>
   ) : (
