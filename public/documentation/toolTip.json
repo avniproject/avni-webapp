@@ -171,7 +171,7 @@
   "ADMIN_SAVE_DRAFT": "Enable subject draft save",
   "ADMIN_HIDE_DOB": "Hides the DOB on subject dashboard on Data Entry App",
   "ADMIN_ENABLE_COMMENTS": "Enable the comments feature.",
-  "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION": "Enable mobile app db encryption",
+  "ADMIN_ENABLE_MOBILE_APP_DB_ENCRYPTION": "Enables mobile app database encryption to ensure safety of data. Enabling this will not permit user to use fast sync and upload db feature in mobile app.",
   "ADMIN_ENABLE_CANNED_REPORTS": "Enable canned reporting app.",
   "ADMIN_SHOW_SUMMARY_BUTTON": "Display summary button in the forms on field app.",
   "ADMIN_ENABLE_RULE_DESIGNER": "Enable rule designer for writing the rules. Please contact administrator before enabling this as this is not fully developed yet.",

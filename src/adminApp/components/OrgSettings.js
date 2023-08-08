@@ -162,10 +162,10 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
         />
         {showEncryptionWarningMessage && (
           <CustomizedSnackbar
-            message="Warning: Enabling this will not permit user to use fast sync feature and upload db from mobile app."
+            message="Enabling this will not permit user to use fast sync and upload db feature in mobile app."
             getDefaultSnackbarStatus={getDefaultSnackbarStatus}
             defaultSnackbarStatus={defaultSnackbarStatus}
-            variant={"error"}
+            variant={"warning"}
             onExited={() => {
               setShowEncryptionWarningMessage(false);
               setDefaultSnackbarStatus(true);
