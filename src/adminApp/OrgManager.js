@@ -66,7 +66,7 @@ class OrgManager extends Component {
       EditLanguage,
       PhoneVerification
     } = Privilege.PrivilegeType;
-    const { hasPrivilege } = UserInfo;
+    const { hasPrivilege, hasMultiplePrivileges } = UserInfo;
 
     if (CurrentUserService.isAdminButNotImpersonating(userInfo)) return <DeploymentManager />;
 
@@ -131,7 +131,7 @@ class OrgManager extends Component {
         ) : (
           <div />
         )}
-        {hasPrivilege(userInfo, EditUserGroup) ? (
+        {hasMultiplePrivileges(userInfo, [EditUserGroup, EditUserConfiguration]) ? (
           <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
         ) : (
           <div />

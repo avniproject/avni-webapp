@@ -30,10 +30,9 @@ export const GroupCard = ({ groupName, href, hasAllPrivileges, onDelete }) => {
     }
   };
 
-  let toUserGroupDetails = {
+  const toUserGroupDetails = {
     pathname: href,
     search: `?groupName=${groupName}&hasAllPrivileges=${hasAllPrivileges}`
-    // state: {"groupName": groupName, "hasAllPrivileges": hasAllPrivileges} //TODO why isn't this working??
   };
 
   return (

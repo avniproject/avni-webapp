@@ -20,6 +20,19 @@ class UserInfo {
     );
   }
 
+  static hasMultiplePrivileges(userInfo, privilegeTypes = []) {
+    return (
+      userInfo.hasAllPrivileges ||
+      _.intersectionBy(
+        userInfo.privileges,
+        privilegeTypes.map(x => {
+          return { privilegeType: x };
+        }),
+        "privilegeType"
+      ).length === privilegeTypes.length
+    );
+  }
+
   static hasFormEditPrivilege(userInfo, formType) {
     return UserInfo.hasPrivilege(userInfo, getPrivilegeType(formType));
   }
