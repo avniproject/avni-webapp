@@ -120,7 +120,7 @@ class OrgManager extends Component {
             list={WithProps({ organisation }, UserList)}
             create={
               hasPrivilege(userInfo, EditUserConfiguration) &&
-              WithProps({ organisation }, UserCreate)
+              WithProps({ organisation, userInfo }, UserCreate)
             }
             show={WithProps(
               { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
