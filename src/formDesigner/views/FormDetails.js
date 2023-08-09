@@ -1022,6 +1022,10 @@ class FormDetails extends Component {
       }
     };
 
+    const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(
+      this.props.userInfo,
+      this.state.formType
+    );
     const form = (
       <Grid container>
         <Grid container alignContent="flex-end">
@@ -1055,21 +1059,34 @@ class FormDetails extends Component {
             </Grid>
           )}
 
-          {UserInfo.hasFormEditPrivilege(this.props.userInfo, this.state.formType) &&
-            !this.state.createFlag && (
-              <Grid item sm={2}>
-                <SaveComponent
-                  name="Save"
-                  onSubmit={this.validateForm}
-                  styleClass={{
-                    marginTop: "30px",
-                    marginBottom: "2px"
-                  }}
-                  disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
-                  fullWidth={true}
-                />
-              </Grid>
-            )}
+          {hasFormEditPrivilege && !this.state.createFlag && (
+            <Grid item sm={2}>
+              <SaveComponent
+                name="Save"
+                onSubmit={this.validateForm}
+                styleClass={{
+                  marginTop: "30px",
+                  marginBottom: "2px"
+                }}
+                disabledFlag={!this.state.detectBrowserCloseEvent || this.state.disableForm}
+                fullWidth={true}
+              />
+            </Grid>
+          )}
+          {!hasFormEditPrivilege && (
+            <div
+              style={{
+                backgroundColor: "salmon",
+                borderColor: "red",
+                margin: "20px",
+                padding: "15px",
+                fontSize: 24,
+                borderRadius: "5px"
+              }}
+            >
+              This is a read-only form. Changes will not be saved
+            </div>
+          )}
         </Grid>
 
         <Grid item sm={12}>
