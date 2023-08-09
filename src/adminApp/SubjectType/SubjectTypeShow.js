@@ -65,12 +65,16 @@ const SubjectTypeShow = props => {
     }
   }, [subjectType.iconFileS3Key]);
 
+  const hasPrivilegeEdit = UserInfo.hasPrivilege(
+    props.userInfo,
+    Privilege.PrivilegeType.EditSubjectType
+  );
   return (
     !_.isEmpty(subjectType) && (
       <>
         <Box boxShadow={2} p={3} bgcolor="background.paper">
           <Title title={"Subject Type: " + subjectType.name} />
-          {UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType) && (
+          {hasPrivilegeEdit && (
             <Grid container style={{ justifyContent: "flex-end" }}>
               <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
                 <EditIcon />
