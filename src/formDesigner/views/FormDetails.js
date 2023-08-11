@@ -1084,7 +1084,7 @@ class FormDetails extends Component {
                 borderRadius: "5px"
               }}
             >
-              This is a read-only form. Changes will not be saved
+              You do not have access to edit this form. Changes will not be saved
             </div>
           )}
         </Grid>
