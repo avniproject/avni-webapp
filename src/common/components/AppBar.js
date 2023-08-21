@@ -16,6 +16,7 @@ import { getUserInfo } from "../../rootApp/ducks";
 import { Box } from "@material-ui/core";
 import PasswordDialog from "../../adminApp/components/PasswordDialog";
 import httpClient from "../utils/httpClient";
+import { get } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -61,7 +62,7 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
-
+  const [error, setError] = useState(null);
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
   }
@@ -75,8 +76,12 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
     handleClose();
   }, []);
 
-  const onSubmitNewPassword = useCallback(password => {
-    httpClient.putJson("/user/changePassword", { newPassword: password });
+  const onSubmitNewPassword = useCallback(async password => {
+    try {
+      const response = await httpClient.putJson("/user/changePassword", { newPassword: password });
+    } catch (e) {
+      setError(get(e, "response.data", "Unknown error. Could not change password"));
+    }
   }, []);
 
   const CustomComponent = component ? component : Box;
@@ -88,6 +93,7 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
         username={user.username}
         onClose={() => onClosePassword()}
         onConfirm={password => onSubmitNewPassword(password)}
+        serverError={error}
       />
       <MuiAppBar position={position || "fixed"}>
         <Toolbar>

@@ -15,7 +15,7 @@ import FormControl from "@material-ui/core/FormControl";
 import { isEqual, size } from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
 
-export default function PasswordDialog({ username, open, onClose, onConfirm }) {
+export default function PasswordDialog({ username, open, onClose, onConfirm, serverError }) {
   let initialPassword = { password: undefined, showPassword: false };
   const [password, setPassword] = React.useState(initialPassword);
   const [confirmPassword, setConfirmPassword] = React.useState(initialPassword);
@@ -48,8 +48,11 @@ export default function PasswordDialog({ username, open, onClose, onConfirm }) {
       return;
     }
     onConfirm(password.password);
-    onClose();
   };
+
+  React.useEffect(() => {
+    setError(serverError);
+  }, [serverError]);
 
   const passwordField = (state, handler, id, label) => {
     return (
