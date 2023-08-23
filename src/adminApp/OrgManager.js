@@ -66,10 +66,11 @@ class OrgManager extends Component {
       EditLanguage,
       PhoneVerification
     } = Privilege.PrivilegeType;
-    const { hasPrivilege } = UserInfo;
+    const { hasPrivilege, hasMultiplePrivileges } = UserInfo;
 
     if (CurrentUserService.isAdminButNotImpersonating(userInfo)) return <DeploymentManager />;
 
+    const canEditCatchment = hasPrivilege(userInfo, EditCatchment);
     return (
       <Admin
         title="Manage Organisation"
@@ -109,9 +110,9 @@ class OrgManager extends Component {
         <Resource
           name="catchment"
           list={CatchmentList}
-          show={CatchmentDetail}
-          create={hasPrivilege(userInfo, EditCatchment) && CatchmentCreate}
-          edit={hasPrivilege(userInfo, EditCatchment) && CatchmentEdit}
+          show={WithProps({ hasEditPrivilege: canEditCatchment }, CatchmentDetail)}
+          create={canEditCatchment && CatchmentCreate}
+          edit={canEditCatchment && CatchmentEdit}
         />
         {hasPrivilege(userInfo, EditUserConfiguration) ? (
           <Resource
@@ -119,7 +120,7 @@ class OrgManager extends Component {
             list={WithProps({ organisation }, UserList)}
             create={
               hasPrivilege(userInfo, EditUserConfiguration) &&
-              WithProps({ organisation }, UserCreate)
+              WithProps({ organisation, userInfo }, UserCreate)
             }
             show={WithProps(
               { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
@@ -130,7 +131,7 @@ class OrgManager extends Component {
         ) : (
           <div />
         )}
-        {hasPrivilege(userInfo, EditUserGroup) ? (
+        {hasMultiplePrivileges(userInfo, [EditUserGroup, EditUserConfiguration]) ? (
           <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
         ) : (
           <div />

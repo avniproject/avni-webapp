@@ -28,6 +28,7 @@ import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 import { SubjectConcept } from "../components/SubjectConcept";
 import { PhoneNumberConcept } from "../components/PhoneNumberConcept";
 import { EncounterConcept } from "../components/EncounterConcept";
+import { connect } from "react-redux";
 
 export const moveUp = (conceptAnswers, index) => {
   if (index === 0) return conceptAnswers;
@@ -820,6 +821,10 @@ class CreateEditConcept extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
 CreateEditConcept.propTypes = { isCreatePage: PropTypes.bool };
 CreateEditConcept.defaultProps = { isCreatePage: false, enableLeftMenuButton: true };
-export default CreateEditConcept;
+export default connect(mapStateToProps)(CreateEditConcept);

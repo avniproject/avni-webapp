@@ -10,10 +10,16 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { get } from "lodash";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
-function ImplementationBundle({ organisation }) {
+function ImplementationBundle({ organisation, userInfo }) {
   const [loading, setLoading] = React.useState(false);
   const [includeLocations, setIncludeLocations] = React.useState(false);
+  const hasDownloadPrivilege = UserInfo.hasPrivilege(
+    userInfo,
+    Privilege.PrivilegeType.DownloadBundle
+  );
 
   function onDownloadHandler() {
     setLoading(true);
@@ -39,24 +45,27 @@ function ImplementationBundle({ organisation }) {
   return (
     <Fragment>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <DocumentationContainer filename={"Bundle.md"}>
-          <Title title="Bundle" />
-          <p>Download Implementation Bundle</p>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={includeLocations}
-                onChange={event => setIncludeLocations(event.target.checked)}
-                name="location"
-              />
-            }
-            label="Include Locations"
-          />
-          <p />
-          <Button variant="contained" color="primary" onClick={onDownloadHandler}>
-            Download
-          </Button>
-        </DocumentationContainer>
+        {hasDownloadPrivilege && (
+          <DocumentationContainer filename={"Bundle.md"}>
+            <Title title="Bundle" />
+            <p>Download Implementation Bundle</p>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={includeLocations}
+                  onChange={event => setIncludeLocations(event.target.checked)}
+                  name="location"
+                />
+              }
+              label="Include Locations"
+            />
+            <p />
+            <Button variant="contained" color="primary" onClick={onDownloadHandler}>
+              Download
+            </Button>
+          </DocumentationContainer>
+        )}
+        {!hasDownloadPrivilege && <p>You don't have the privilege to download bundle</p>}
       </Box>
       <ActivityIndicatorModal open={loading} />
     </Fragment>
@@ -64,10 +73,8 @@ function ImplementationBundle({ organisation }) {
 }
 
 const mapStateToProps = state => ({
-  organisation: state.app.organisation
+  organisation: state.app.organisation,
+  userInfo: state.app.userInfo
 });
 
-export default connect(
-  mapStateToProps,
-  null
-)(ImplementationBundle);
+export default connect(mapStateToProps)(ImplementationBundle);

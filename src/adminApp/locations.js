@@ -89,7 +89,6 @@ ParentLocationReferenceField.defaultProps = {
 
 export const LocationDetail = props => {
   return (
-    // <Show {...props} title={<Title title={"Location" } />}>
     <Show {...props} title={<Title title={"Location"} />}>
       <SimpleShowLayout>
         <TextField source="title" label="Name" />

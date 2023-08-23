@@ -67,7 +67,11 @@ export const CatchmentEdit = props => {
 
 export const CatchmentDetail = props => {
   return (
-    <Show title={<Title title={"Catchment"} />} actions={<CustomShowActions />} {...props}>
+    <Show
+      title={<Title title={"Catchment"} />}
+      actions={<CustomShowActions hasEditPrivilege={props.hasEditPrivilege} />}
+      {...props}
+    >
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
         <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
@@ -90,9 +94,9 @@ export const CatchmentList = props => (
   </List>
 );
 
-const CustomShowActions = ({ basePath, data, resource }) => {
+const CustomShowActions = ({ basePath, data, hasEditPrivilege }) => {
   return (
-    (data && (
+    (data && hasEditPrivilege && (
       <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
         <EditButton label="Edit Catchment" basePath={basePath} record={data} />
       </CardActions>

@@ -31,6 +31,9 @@ import SubjectFormElementKeyValues from "./SubjectFormElementKeyValues";
 import QuestionGroup from "./QuestionGroup";
 import DocumentationSearch from "../../documentation/components/DocumentationSearch";
 import { ColourStyle } from "./ColourStyle";
+import { Privilege } from "openchs-models";
+import { connect } from "react-redux";
+import UserInfo from "../../common/model/UserInfo";
 
 export const FormControl = withStyles({
   root: {
@@ -95,7 +98,7 @@ export const BackButton = props => {
   );
 };
 
-function FormElementDetails(props) {
+function FormElementDetails({ userInfo, ...props }) {
   const classes = useStyles();
   const { t } = useTranslation();
   const disableFormElement = props.disableFormElement;
@@ -238,16 +241,18 @@ function FormElementDetails(props) {
               <br />
               OR
               <br />
-              <Button
-                color="primary"
-                type="button"
-                onClick={event =>
-                  props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
-                }
-                disabled={disableFormElement}
-              >
-                Create new
-              </Button>
+              {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept) && (
+                <Button
+                  color="primary"
+                  type="button"
+                  onClick={event =>
+                    props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
+                  }
+                  disabled={disableFormElement}
+                >
+                  Create new
+                </Button>
+              )}
             </div>
           )}
           {props.formElementData.showConceptLibrary === "addNewConcept" && (
@@ -1022,4 +1027,8 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default React.memo(FormElementDetails, areEqual);
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default React.memo(connect(mapStateToProps)(FormElementDetails), areEqual);

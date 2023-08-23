@@ -29,6 +29,8 @@ import Extensions from "../formDesigner/components/Extensions/Extensions";
 import RuleFailureTelemetryList from "../formDesigner/components/RuleFailureTelemetry/RuleFailureTelemetryList";
 import SearchResultFields from "../formDesigner/components/SearchResultFields/SearchResultFields";
 import ApplicationMenuList from "./ApplicationMenu/ApplicationMenuList";
+import { Privilege } from "openchs-models";
+import UserInfo from "../common/model/UserInfo";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -40,7 +42,7 @@ class OrgManagerAppDesigner extends Component {
   }
 
   render() {
-    const { organisation, user } = this.props;
+    const { organisation, user, userInfo } = this.props;
 
     return (
       <React.Fragment>
@@ -75,11 +77,18 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Search Filters" }}
             list={WithProps({ organisation, filename: "SearchFilter.md" }, customFilters)}
           />
-          <Resource
-            name="searchResultFields"
-            options={{ label: "Search Result Fields" }}
-            list={SearchResultFields}
-          />
+          {UserInfo.hasPrivilege(
+            userInfo,
+            Privilege.PrivilegeType.EditOfflineDashboardAndReportCard
+          ) ? (
+            <Resource
+              name="searchResultFields"
+              options={{ label: "Search Result Fields" }}
+              list={SearchResultFields}
+            />
+          ) : (
+            <div />
+          )}
           <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
           <Resource name={"checklist"} options={{ label: "Checklist" }} list={ChecklistDetails} />
           <Resource
@@ -127,7 +136,8 @@ class OrgManagerAppDesigner extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.app.authSession
+  user: state.app.authSession,
+  userInfo: state.app.userInfo
 });
 
 export default withRouter(

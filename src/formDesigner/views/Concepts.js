@@ -6,8 +6,11 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
+import { connect } from "react-redux";
+import { Privilege } from "openchs-models";
+import UserInfo from "../../common/model/UserInfo";
 
-const Concepts = ({ history }) => {
+const Concepts = ({ history, userInfo }) => {
   const columns = [
     {
       title: "Name",
@@ -70,6 +73,7 @@ const Concepts = ({ history }) => {
     setRedirect(true);
   };
 
+  const hasPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -78,7 +82,7 @@ const Concepts = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name="New Concept" />
+              {hasPrivilege && <CreateComponent onSubmit={addNewConcept} name="New Concept" />}
             </div>
             <AvniMaterialTable
               title=""
@@ -97,7 +101,7 @@ const Concepts = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editConcept, voidConcept]}
+              actions={hasPrivilege && [editConcept, voidConcept]}
               route={"/appdesigner/concepts"}
             />
           </div>
@@ -108,4 +112,8 @@ const Concepts = ({ history }) => {
   );
 };
 
-export default withRouter(Concepts);
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(Concepts));

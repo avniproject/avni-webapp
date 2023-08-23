@@ -79,6 +79,13 @@ const generatePrivilegeDependenciesAndCheckedState = function(groupPrivilegeList
           ).map(x => x.uuid)
         });
         break;
+      case PrivilegeType.EditUserGroup:
+        dependencies.set(groupPrivilege.uuid, {
+          dependencies: GroupPrivilegesModel.getEditUserGroupDependencies(groupPrivilegeList).map(
+            x => x.uuid
+          )
+        });
+        break;
       default:
         dependencies.set(groupPrivilege.uuid, { dependencies: [] });
         break;

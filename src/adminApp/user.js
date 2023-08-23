@@ -62,11 +62,11 @@ import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
 
-export const UserCreate = ({ user, organisation, ...props }) => (
+export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
     <DocumentationContainer filename={"User.md"}>
       <Create {...props}>
-        <UserForm user={user} nameSuffix={organisation.usernameSuffix} />
+        <UserForm user={user} nameSuffix={userInfo.usernameSuffix} />
       </Create>
     </DocumentationContainer>
   </Paper>

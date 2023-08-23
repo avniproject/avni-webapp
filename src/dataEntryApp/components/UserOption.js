@@ -20,6 +20,8 @@ import { useTranslation } from "react-i18next";
 import { logout, saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
+import UserInfo from "../../common/model/UserInfo";
+import { Privilege } from "openchs-models";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -121,6 +123,11 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
     }
   };
 
+  const hasUploadPrivilege = UserInfo.hasPrivilege(
+    userInfo,
+    Privilege.PrivilegeType.UploadMetadataAndData
+  );
+
   return (
     <div style={{ float: "right", boxShadow: "3px 3px 5px #aaaaaa", marginRight: "300px" }}>
       <List
@@ -172,16 +179,18 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
           </FormControl>
         </Collapse>
         <hr className={classes.horizontalLine} />
-        <ListItem
-          onClick={() => history.push(`/admin/upload`)}
-          button
-          style={{ paddingTop: "5px", paddingBottom: "5px" }}
-        >
-          <ListItemIcon>
-            <ArrowUpwardIcon style={{ color: "blue" }} />
-          </ListItemIcon>
-          <ListItemText primary={t("bulk upload")} />
-        </ListItem>
+        {hasUploadPrivilege && (
+          <ListItem
+            onClick={() => history.push(`/admin/upload`)}
+            button
+            style={{ paddingTop: "5px", paddingBottom: "5px" }}
+          >
+            <ListItemIcon>
+              <ArrowUpwardIcon style={{ color: "blue" }} />
+            </ListItemIcon>
+            <ListItemText primary={t("bulk upload")} />
+          </ListItem>
+        )}
         <hr className={classes.horizontalLine} />
         <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>

@@ -83,7 +83,7 @@ const ChecklistDetails = ({ userInfo }) => {
         <Grid>
           <ValidationError validationError={getValidationErrorByKey("SERVER_ERROR")} />
         </Grid>
-        {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditChecklist) && (
+        {UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditChecklistConfiguration) && (
           <Button
             disabled={disableSave}
             color="primary"

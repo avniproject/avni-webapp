@@ -32,16 +32,21 @@ const SubjectTypesList = ({ history, userInfo }) => {
       title: "Registration Form",
       field: "formName",
       sorting: false,
-      render: rowData => (
-        <a
-          href={`#/appdesigner/forms/${get(
-            findRegistrationForm(formMappings, rowData),
-            "formUUID"
-          )}`}
-        >
-          {get(findRegistrationForm(formMappings, rowData), "formName")}
-        </a>
-      )
+      render: rowData => {
+        const formName = get(findRegistrationForm(formMappings, rowData), "formName");
+        return hasEditPrivilege(userInfo) ? (
+          <a
+            href={`#/appdesigner/forms/${get(
+              findRegistrationForm(formMappings, rowData),
+              "formUUID"
+            )}`}
+          >
+            {formName}
+          </a>
+        ) : (
+          formName
+        );
+      }
     },
     { title: "Type", field: "type" },
     { title: "Organisation Id", field: "organisationId", type: "numeric" }

@@ -15,8 +15,11 @@ import { withRouter } from "react-router-dom";
 import { isEmpty, isNil, orderBy } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { Audit } from "./Audit";
+import UserInfo from "../../common/model/UserInfo";
+import { connect } from "react-redux";
+import { Privilege } from "openchs-models";
 
-function ConceptDetails(props) {
+function ConceptDetails({ userInfo, ...props }) {
   const [editAlert, setEditAlert] = useState(false);
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
@@ -60,16 +63,19 @@ function ConceptDetails(props) {
       });
   }, [props.match.params.uuid]);
 
+  const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Concept: " + data.name} />
-        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
-          <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
-            <EditIcon />
-            Edit
-          </Button>
-        </Grid>
+        {hasEditPrivilege && (
+          <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
+            <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
+              <EditIcon />
+              Edit
+            </Button>
+          </Grid>
+        )}
         <div className="container" style={{ float: "left" }}>
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Name</FormLabel>
@@ -324,4 +330,8 @@ function ConceptDetails(props) {
   );
 }
 
-export default withRouter(ConceptDetails);
+const mapStateToProps = state => ({
+  userInfo: state.app.userInfo
+});
+
+export default withRouter(connect(mapStateToProps)(ConceptDetails));

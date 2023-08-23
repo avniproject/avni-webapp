@@ -66,6 +66,12 @@ class GroupPrivilegesModel {
           matchingSubjectType(x, groupPrivilege))
     );
   }
+
+  static getEditUserGroupDependencies(groupPrivilegeList) {
+    return groupPrivilegeList.filter(
+      x => x["privilegeTypeName"] === Privilege.PrivilegeType.EditUserConfiguration
+    );
+  }
 }
 
 export default GroupPrivilegesModel;

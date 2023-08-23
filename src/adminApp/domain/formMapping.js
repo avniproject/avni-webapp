@@ -1,18 +1,19 @@
 import { find, get } from "lodash";
 import { Form, Privilege } from "openchs-models";
 
+//todo: this should be loaded from the server
 const privilegeTypes = new Map([
   [Form.formTypes.ChecklistItem, Privilege.PrivilegeType.EditChecklist],
   [Form.formTypes.Encounter, Privilege.PrivilegeType.EditChecklist],
   [Form.formTypes.IndividualEncounterCancellation, Privilege.PrivilegeType.EditEncounterType],
   [Form.formTypes.IndividualProfile, Privilege.PrivilegeType.EditSubjectType],
-  [Form.formTypes.ManualProgramEnrolmentEligibility, null],
+  [Form.formTypes.ManualProgramEnrolmentEligibility, Privilege.PrivilegeType.EditProgram],
   [Form.formTypes.ProgramEncounter, Privilege.PrivilegeType.EditEncounterType],
   [Form.formTypes.ProgramEncounterCancellation, Privilege.PrivilegeType.EditEncounterType],
   [Form.formTypes.ProgramEnrolment, Privilege.PrivilegeType.EditProgram],
   [Form.formTypes.ProgramExit, Privilege.PrivilegeType.EditProgram],
-  [Form.formTypes.SubjectEnrolmentEligibility, null],
-  [Form.formTypes.Task, null]
+  [Form.formTypes.SubjectEnrolmentEligibility, Privilege.PrivilegeType.EditSubjectType],
+  [Form.formTypes.Task, Privilege.PrivilegeType.EditTaskType]
 ]);
 
 export function getPrivilegeType(formType) {
