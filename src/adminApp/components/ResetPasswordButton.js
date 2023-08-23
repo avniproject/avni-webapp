@@ -21,10 +21,10 @@ class ResetPasswordButton extends Component {
   };
 
   handleConfirm = async password => {
-    const { basePath, crudUpdate, record, resource } = this.props;
+    const { record } = this.props;
 
     try {
-      const result = await httpClient.putJson("/user/resetPassword", {
+      await httpClient.putJson("/user/resetPassword", {
         userId: record.id,
         password: password
       });
