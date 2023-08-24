@@ -34,3 +34,4 @@ cypress/screenshots
 
 package-lock.json
 *.iml
+/avni-webapp.tgz

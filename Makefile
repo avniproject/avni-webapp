@@ -89,3 +89,11 @@ deploy_static_local:
 	-rm -rf ../avni-server/static
 	mkdir ../avni-server/static
 	cp -r public/* ../avni-server/static
+
+zip-app:
+	yarn install
+	yarn run build
+	tar -czvf avni-webapp.tgz  -C build .
+
+zip-app-only:
+	tar -czvf avni-webapp.tgz  -C build .
