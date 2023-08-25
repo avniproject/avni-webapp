@@ -66,10 +66,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
     )}${makeParameter("parentId", parentId)}&size=100&page=0`;
     return httpClient
       .get(apiUrl)
-      .then(response => callback(getLocationOptions(get(response, "data.content", []))))
-      .catch(error => {
-        console.log(error);
-      });
+      .then(response => callback(getLocationOptions(get(response, "data.content", []))));
   }
 
   const getLocationOptions = locations =>

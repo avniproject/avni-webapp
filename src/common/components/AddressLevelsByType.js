@@ -43,10 +43,7 @@ const AddressLevelsByType = ({
     let apiUrl = `/locations/search/find?title=${title}&size=100&page=0`;
     return httpClient
       .get(apiUrl)
-      .then(response => callback(getLocationOptions(get(response, "data.content", []))))
-      .catch(error => {
-        console.log(error);
-      });
+      .then(response => callback(getLocationOptions(get(response, "data.content", []))));
   }
 
   const getLocationOptions = locations =>

@@ -38,22 +38,17 @@ export default function LocationFormElement({
 
   React.useEffect(() => {
     if (!isEmpty(locationUUID)) {
-      http
-        .get(`/locations/web?uuid=${locationUUID}`)
-        .then(response => {
-          if (response.status === 200) {
-            const location = response.data;
-            setLocation(location);
-            const currentLevel = addressLevelTypes.find(alt => alt.name === location.type);
-            setLevel(currentLevel);
-            addressLevelService.addAddressLevel(location);
-          } else {
-            alert(`Error while fetching location with uuid: ${locationUUID}`);
-          }
-        })
-        .catch(error => {
-          console.error(`Error while fetching location with uuid: ${locationUUID}`, error);
-        });
+      http.get(`/locations/web?uuid=${locationUUID}`).then(response => {
+        if (response.status === 200) {
+          const location = response.data;
+          setLocation(location);
+          const currentLevel = addressLevelTypes.find(alt => alt.name === location.type);
+          setLevel(currentLevel);
+          addressLevelService.addAddressLevel(location);
+        } else {
+          alert(`Error while fetching location with uuid: ${locationUUID}`);
+        }
+      });
     }
   }, [locationUUID]);
 

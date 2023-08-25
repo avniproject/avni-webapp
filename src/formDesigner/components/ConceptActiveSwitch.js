@@ -9,8 +9,7 @@ export const ConceptActiveSwitch = ({ active, handleActive, conceptUUID }) => {
     if (conceptUUID) {
       http
         .get("/web/concept/usage/" + conceptUUID)
-        .then(response => setConceptUsage(response.data))
-        .catch(error => console.error(error));
+        .then(response => setConceptUsage(response.data));
     }
   }, [conceptUUID]);
 

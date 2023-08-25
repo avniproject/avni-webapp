@@ -19,23 +19,16 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation
   ]);
 
   function setSelectedLocationWithParents(selectedLocation) {
-    const result = httpClient
-      .get(`/locations/parents/${selectedLocation.uuid}`)
-      .then(response => {
-        const selectedAddressLevelsFromSelectedLocation = _.map(response.data, l => {
-          let addressLevelToPushToArray = {
-            addressLevelType: addressLevelTypes.find(alt => alt.name === l.typeString),
-            value: l
-          };
-          return addressLevelToPushToArray;
-        });
-        setSelectedAddressLevels(selectedAddressLevelsFromSelectedLocation);
-      })
-      .catch(error => {
-        console.error(`Error while fetching location with id: ${selectedLocation.id}`, error);
+    return httpClient.get(`/locations/parents/${selectedLocation.uuid}`).then(response => {
+      const selectedAddressLevelsFromSelectedLocation = _.map(response.data, l => {
+        let addressLevelToPushToArray = {
+          addressLevelType: addressLevelTypes.find(alt => alt.name === l.typeString),
+          value: l
+        };
+        return addressLevelToPushToArray;
       });
-
-    return result;
+      setSelectedAddressLevels(selectedAddressLevelsFromSelectedLocation);
+    });
   }
 
   const addressLevelTypes = allAddressLevelTypes;

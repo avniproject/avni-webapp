@@ -67,12 +67,6 @@ export function ErrorFallback({ error, onClose }) {
     window.location.reload();
   };
 
-  const deaHome = () => {
-    closeDialogIfRequired();
-    window.open(`${window.location.origin}/#/app`, "_self");
-    window.location.reload();
-  };
-
   const appHome = () => {
     closeDialogIfRequired();
     const url = "#/app";
@@ -104,7 +98,7 @@ export function ErrorFallback({ error, onClose }) {
           <Typography variant="body2">{error.stack}</Typography>
         </div>
         <div className={classes.buttonContainer}>
-          <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={deaHome}>
+          <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>
             Back to Home
           </Button>
           <Button variant="contained" color="primary" onClick={reload}>

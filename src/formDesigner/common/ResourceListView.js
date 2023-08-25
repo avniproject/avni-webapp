@@ -22,13 +22,10 @@ const ResourceListView = ({
   const tableRef = React.createRef();
 
   useEffect(() => {
-    http
-      .get(`/web/${resourceName}`)
-      .then(response => {
-        const result = response.data.filter(({ voided }) => !voided);
-        setResult(result);
-      })
-      .catch(error => console.log(error));
+    http.get(`/web/${resourceName}`).then(response => {
+      const result = response.data.filter(({ voided }) => !voided);
+      setResult(result);
+    });
   }, []);
 
   const editResource = rowData => ({
@@ -43,17 +40,14 @@ const ResourceListView = ({
     onClick: (event, rowData) => {
       const voidedMessage = `Do you really want to delete ${title} ${rowData.name} ?`;
       if (window.confirm(voidedMessage)) {
-        http
-          .delete(`/web/${resourceName}/${rowData.id}`)
-          .then(response => {
-            if (response.status === 200) {
-              const index = result.indexOf(rowData);
-              const clonedResult = cloneDeep(result);
-              clonedResult.splice(index, 1);
-              setResult(clonedResult);
-            }
-          })
-          .catch(error => error => console.log(error));
+        http.delete(`/web/${resourceName}/${rowData.id}`).then(response => {
+          if (response.status === 200) {
+            const index = result.indexOf(rowData);
+            const clonedResult = cloneDeep(result);
+            clonedResult.splice(index, 1);
+            setResult(clonedResult);
+          }
+        });
       }
     }
   });

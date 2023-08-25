@@ -5,13 +5,11 @@ import API from "../api";
 
 export const DeleteBroadcast = ({ open, setOpen, setRedirect, news }) => {
   const deleteNews = () => {
-    API.deleteNews(news.id)
-      .then(response => {
-        if (response.status === 200) {
-          setRedirect(true);
-        }
-      })
-      .catch(error => console.error(error));
+    API.deleteNews(news.id).then(response => {
+      if (response.status === 200) {
+        setRedirect(true);
+      }
+    });
   };
 
   const actions = [];

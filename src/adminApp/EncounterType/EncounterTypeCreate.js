@@ -46,16 +46,13 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setFormList(response.data.forms);
-        setSubjectType(response.data.subjectTypes);
-        setProgram(response.data.programs);
-      })
-      .catch(error => {});
+    http.get("/web/operationalModules").then(response => {
+      const formMap = response.data.formMappings;
+      formMap.map(l => (l["isVoided"] = false));
+      setFormList(response.data.forms);
+      setSubjectType(response.data.subjectTypes);
+      setProgram(response.data.programs);
+    });
   }, []);
 
   const onSubmit = event => {

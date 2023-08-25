@@ -7541,9 +7541,9 @@ center-align@^0.1.1:
     lazy-cache "^1.0.3"
 
 chai@^4.1.2:
-  version "4.3.8"
-  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.8.tgz#40c59718ad6928da6629c70496fe990b2bb5b17c"
-  integrity sha512-vX4YvVVtxlfSZ2VecZgFUTU5qPCYsobVI2O9FmwEXBhDigYGQA6jRXCycIs1yJnnWbZ6/+a2zNIF5DfVCcJBFQ==
+  version "4.3.7"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.7.tgz#ec63f6df01829088e8bf55fca839bcd464a8ec51"
+  integrity sha512-HLnAzZ2iupm25PlN0xFreAlBA5zaBSv3og0DdeGA4Ar6h6rJ3A0rolRUKJhSF2V10GZKDgWF/VmAEsNWjCRB+A==
   dependencies:
     assertion-error "^1.1.0"
     check-error "^1.0.2"
@@ -19219,20 +19219,6 @@ rsvp@^4.8.4:
 "rules-config@github:avniproject/rules-config#fe552da405368bfd138e2f38e605c1d307e3ebe4":
   version "0.0.1"
   resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/fe552da405368bfd138e2f38e605c1d307e3ebe4"
-  dependencies:
-    "@quasar/babel-preset-app" "^2.0.1"
-    babel-preset-env "^1.7.0"
-    babel-register "^6.26.0"
-    chai "^4.1.2"
-    lodash "^4.17.11"
-    moment "^2.22.2"
-    openchs-models "^0.2.25"
-    superagent "^3.8.3"
-    test "^0.6.0"
-    uglifyjs-webpack-plugin "^1.2.5"
-    webpack "^3.12.0"
-    webpack-cli "^3.0.3"
-    webpack-node-externals "1.6.0"
 
 run-async@^2.2.0, run-async@^2.4.0:
   version "2.4.1"

@@ -16,24 +16,19 @@ export const LocationConcept = props => {
   const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
 
   React.useEffect(() => {
-    http
-      .get("/addressLevelType/?page=0&size=10&sort=level%2CDESC")
-      .then(response => {
-        if (response.status === 200) {
-          const addressLevelTypes = response.data.content.map(addressLevelType => ({
-            label: addressLevelType.name,
-            value: addressLevelType.uuid,
-            level: addressLevelType.level,
-            parent: addressLevelType.parent
-          }));
-          setAddressLevelTypes(addressLevelTypes);
-        } else {
-          console.error(`Response code for /addressLevelType call: ${response.status}`);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
+      if (response.status === 200) {
+        const addressLevelTypes = response.data.content.map(addressLevelType => ({
+          label: addressLevelType.name,
+          value: addressLevelType.uuid,
+          level: addressLevelType.level,
+          parent: addressLevelType.parent
+        }));
+        setAddressLevelTypes(addressLevelTypes);
+      } else {
+        console.error(`Response code for /addressLevelType call: ${response.status}`);
+      }
+    });
   }, []);
 
   React.useEffect(() => {

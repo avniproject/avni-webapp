@@ -5,13 +5,11 @@ import API from "../api";
 
 export const PublishBroadcast = ({ open, setOpen, setRedirect, news }) => {
   const publishNews = () => {
-    API.editNews({ ...news, publishedDate: new Date() })
-      .then(response => {
-        if (response.status === 200) {
-          setRedirect(true);
-        }
-      })
-      .catch(error => console.error(error));
+    API.editNews({ ...news, publishedDate: new Date() }).then(response => {
+      if (response.status === 200) {
+        setRedirect(true);
+      }
+    });
   };
 
   const actions = [];

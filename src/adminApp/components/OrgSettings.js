@@ -27,16 +27,13 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
 
   const onSettingsChange = (settingsName, value) => {
     const payload = { settings: { [settingsName]: value } };
-    http
-      .put("/organisationConfig", payload)
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          setOrgSettings(response.data.settings);
-          dispatch(setOrganisationConfig(response.data.settings));
-        }
-        return response;
-      })
-      .catch(error => console.error(error));
+    http.put("/organisationConfig", payload).then(response => {
+      if (response.status === 200 || response.status === 201) {
+        setOrgSettings(response.data.settings);
+        dispatch(setOrganisationConfig(response.data.settings));
+      }
+      return response;
+    });
   };
 
   function renderSimpleSetting(key, name, tooltip, disabled = false, onEnabled) {

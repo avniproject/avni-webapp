@@ -16,14 +16,11 @@ class EntityListUtil {
           rowData[entityFieldName]
         }?`;
         if (window.confirm(voidedMessage)) {
-          http
-            .delete(`/web/${resourceName}/${rowData.id}`)
-            .then(response => {
-              if (response.status === 200) {
-                this.refreshTable(tableRef);
-              }
-            })
-            .catch(error => {});
+          http.delete(`/web/${resourceName}/${rowData.id}`).then(response => {
+            if (response.status === 200) {
+              this.refreshTable(tableRef);
+            }
+          });
         }
       }
     };

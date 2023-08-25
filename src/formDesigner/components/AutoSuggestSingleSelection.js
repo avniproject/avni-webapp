@@ -98,31 +98,25 @@ export default function AutoSuggestSingleSelection(props) {
       : "name=" + encodeURIComponent(inputValue) + "&dataType=" + dataType;
     const inputLength = inputValue.length;
 
-    http
-      .get(`/search/concept?${queryString}`)
-      .then(response => {
-        const suggestions = response.data;
-        _.sortBy(suggestions, function(concept) {
-          return concept.name;
-        });
-        if (props.showSuggestionStartsWith) {
-          const filteredSuggestions = suggestions.filter(suggestion => {
-            return (
-              !suggestion.voided &&
-              suggestion.name.slice(0, inputLength).toLowerCase() === inputValue
-            );
-          });
-          setSuggestions(filteredSuggestions);
-        } else {
-          const filteredSuggestions = suggestions.filter(suggestion => {
-            return !suggestion.voided && !_.includes(dataTypesToIgnore, suggestion.dataType);
-          });
-          setSuggestions(filteredSuggestions);
-        }
-      })
-      .catch(error => {
-        console.log(error);
+    http.get(`/search/concept?${queryString}`).then(response => {
+      const suggestions = response.data;
+      _.sortBy(suggestions, function(concept) {
+        return concept.name;
       });
+      if (props.showSuggestionStartsWith) {
+        const filteredSuggestions = suggestions.filter(suggestion => {
+          return (
+            !suggestion.voided && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue
+          );
+        });
+        setSuggestions(filteredSuggestions);
+      } else {
+        const filteredSuggestions = suggestions.filter(suggestion => {
+          return !suggestion.voided && !_.includes(dataTypesToIgnore, suggestion.dataType);
+        });
+        setSuggestions(filteredSuggestions);
+      }
+    });
   };
 
   const getSuggestionValue = suggestion => {

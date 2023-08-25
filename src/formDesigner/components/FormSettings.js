@@ -176,48 +176,38 @@ class FormSettings extends Component {
   }
 
   componentDidMount() {
-    http
-      .get(`/forms/export?formUUID=${this.props.match.params.id}`)
-      .then(response => {
-        this.setState({
-          name: response.data.name,
-          formTypeInfo: FormTypeEntities.getFormTypeInfo(response.data.formType),
-          uuid: response.data.uuid
-        });
-      })
-      .catch(error => {
-        console.log(error);
+    http.get(`/forms/export?formUUID=${this.props.match.params.id}`).then(response => {
+      this.setState({
+        name: response.data.name,
+        formTypeInfo: FormTypeEntities.getFormTypeInfo(response.data.formType),
+        uuid: response.data.uuid
       });
+    });
 
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        let data = Object.assign({}, response.data);
-        const formMappings = [];
-        _.forEach(data.formMappings, formMapping => {
-          if (formMapping.formUUID === this.props.match.params.id) {
-            formMappings.push({
-              uuid: formMapping.uuid,
-              programUuid: formMapping.programUUID,
-              subjectTypeUuid: formMapping.subjectTypeUUID,
-              encounterTypeUuid: formMapping.encounterTypeUUID,
-              taskTypeUuid: formMapping.taskTypeUUID,
-              enableApproval: formMapping.enableApproval,
-              voided: false,
-              newFlag: false,
-              updatedFlag: false
-            });
-          }
-        });
-        delete data["formMappings"];
-        this.setState({
-          formMappings: formMappings,
-          data: data
-        });
-      })
-      .catch(error => {
-        console.log(error);
+    http.get("/web/operationalModules").then(response => {
+      let data = Object.assign({}, response.data);
+      const formMappings = [];
+      _.forEach(data.formMappings, formMapping => {
+        if (formMapping.formUUID === this.props.match.params.id) {
+          formMappings.push({
+            uuid: formMapping.uuid,
+            programUuid: formMapping.programUUID,
+            subjectTypeUuid: formMapping.subjectTypeUUID,
+            encounterTypeUuid: formMapping.encounterTypeUUID,
+            taskTypeUuid: formMapping.taskTypeUUID,
+            enableApproval: formMapping.enableApproval,
+            voided: false,
+            newFlag: false,
+            updatedFlag: false
+          });
+        }
       });
+      delete data["formMappings"];
+      this.setState({
+        formMappings: formMappings,
+        data: data
+      });
+    });
   }
 
   onChangeField(event) {

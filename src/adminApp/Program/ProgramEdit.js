@@ -54,25 +54,22 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
       .then(response => response.data)
       .then(result => {
         dispatch({ type: "setData", payload: result });
-        http
-          .get("/web/operationalModules")
-          .then(response => {
-            const formMap = response.data.formMappings;
-            formMap.map(l => (l["isVoided"] = false));
-            setFormList(response.data.forms);
-            setSubjectTypes(response.data.subjectTypes);
-            const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
-            setSubjectType(
-              response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
-            );
+        http.get("/web/operationalModules").then(response => {
+          const formMap = response.data.formMappings;
+          formMap.map(l => (l["isVoided"] = false));
+          setFormList(response.data.forms);
+          setSubjectTypes(response.data.subjectTypes);
+          const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
+          setSubjectType(
+            response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
+          );
 
-            const enrolmentForm = findProgramEnrolmentForm(formMap, result);
-            dispatch({ type: "programEnrolmentForm", payload: enrolmentForm });
+          const enrolmentForm = findProgramEnrolmentForm(formMap, result);
+          dispatch({ type: "programEnrolmentForm", payload: enrolmentForm });
 
-            const exitForm = findProgramExitForm(formMap, result);
-            dispatch({ type: "programExitForm", payload: exitForm });
-          })
-          .catch(error => {});
+          const exitForm = findProgramExitForm(formMap, result);
+          dispatch({ type: "programExitForm", payload: exitForm });
+        });
       });
   }, []);
 
@@ -95,14 +92,11 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete program?")) {
-      http
-        .delete("/web/program/" + props.match.params.id)
-        .then(response => {
-          if (response.status === 200) {
-            setDeleteAlert(true);
-          }
-        })
-        .catch(error => {});
+      http.delete("/web/program/" + props.match.params.id).then(response => {
+        if (response.status === 200) {
+          setDeleteAlert(true);
+        }
+      });
     }
   };
 

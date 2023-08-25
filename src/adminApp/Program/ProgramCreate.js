@@ -42,13 +42,10 @@ const ProgramCreate = ({ organisationConfig }) => {
 
   useEffect(() => {
     dispatch({ type: "setLoaded" });
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        setFormList(response.data.forms);
-        setSubjectTypes(response.data.subjectTypes);
-      })
-      .catch(error => {});
+    http.get("/web/operationalModules").then(response => {
+      setFormList(response.data.forms);
+      setSubjectTypes(response.data.subjectTypes);
+    });
   }, []);
 
   const onSubmit = event => {

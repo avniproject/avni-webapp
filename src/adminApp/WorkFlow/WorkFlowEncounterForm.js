@@ -85,14 +85,9 @@ function WorkFlowEncounterForm(props) {
         formMap.isVoided = true;
       }
     });
-    http
-      .post("/emptyFormMapping", [voidedFormAssociation])
-      .then(response => {
-        props.setMapping(formMappingClone);
-      })
-      .catch(error => {
-        console.log(error.response.data.message);
-      });
+    http.post("/emptyFormMapping", [voidedFormAssociation]).then(response => {
+      props.setMapping(formMappingClone);
+    });
   };
 
   const onCreateForm = () => {

@@ -132,14 +132,11 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete subject type?")) {
-      http
-        .delete("/web/subjectType/" + props.match.params.id)
-        .then(response => {
-          if (response.status === 200) {
-            setDeleteAlert(true);
-          }
-        })
-        .catch(error => {});
+      http.delete("/web/subjectType/" + props.match.params.id).then(response => {
+        if (response.status === 200) {
+          setDeleteAlert(true);
+        }
+      });
     }
   };
 

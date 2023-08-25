@@ -29,16 +29,13 @@ const EncounterTypeList = ({ history, userInfo }) => {
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   useEffect(() => {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setFormMappings(formMap);
-        setSubjectTypes(response.data.subjectTypes);
-        setProgram(response.data.programs);
-      })
-      .catch(error => {});
+    http.get("/web/operationalModules").then(response => {
+      const formMap = response.data.formMappings;
+      formMap.map(l => (l["isVoided"] = false));
+      setFormMappings(formMap);
+      setSubjectTypes(response.data.subjectTypes);
+      setProgram(response.data.programs);
+    });
   }, []);
 
   const columns = [
@@ -144,14 +141,11 @@ const EncounterTypeList = ({ history, userInfo }) => {
       const voidedMessage =
         "Do you really want to delete the encounter type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
-        http
-          .delete("/web/encounterType/" + rowData.id)
-          .then(response => {
-            if (response.status === 200) {
-              refreshTable(tableRef);
-            }
-          })
-          .catch(error => {});
+        http.delete("/web/encounterType/" + rowData.id).then(response => {
+          if (response.status === 200) {
+            refreshTable(tableRef);
+          }
+        });
       }
     }
   });

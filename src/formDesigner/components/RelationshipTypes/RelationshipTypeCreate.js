@@ -25,25 +25,19 @@ function RelationshipTypeCreate() {
 
   useEffect(() => {
     let flag = false;
-    http
-      .get("/web/subjectType")
-      .then(response => {
-        response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.type === "Person") {
-            flag = true;
-          }
-        });
-        setIsIndividualSubjectTypeAvailable(flag);
-      })
-      .catch(error => {});
+    http.get("/web/subjectType").then(response => {
+      response.data._embedded.subjectType.forEach(subjectType => {
+        if (subjectType.type === "Person") {
+          flag = true;
+        }
+      });
+      setIsIndividualSubjectTypeAvailable(flag);
+    });
 
-    http
-      .get("/web/relation")
-      .then(response => {
-        const filterVoidedRelations = response.data.filter(relation => !relation.voided);
-        setRelations(filterVoidedRelations);
-      })
-      .catch(error => {});
+    http.get("/web/relation").then(response => {
+      const filterVoidedRelations = response.data.filter(relation => !relation.voided);
+      setRelations(filterVoidedRelations);
+    });
   }, []);
 
   const onSubmitRelationshipType = () => {
@@ -65,8 +59,7 @@ function RelationshipTypeCreate() {
             });
             setRedirect(true);
           }
-        })
-        .catch(error => {});
+        });
     } else {
       let relationError = {};
 

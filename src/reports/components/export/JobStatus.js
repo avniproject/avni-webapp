@@ -89,7 +89,7 @@ const JobStatus = ({
       .then(response => {
         fileDownload(response.data, `${outFileName}.csv`);
       })
-      .catch(error => alert("Error occurred while downloading file"));
+      .catch(error => alert(`${error.message} Error occurred while downloading file`));
   };
 
   return (

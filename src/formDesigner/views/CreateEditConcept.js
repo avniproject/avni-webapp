@@ -103,66 +103,51 @@ class CreateEditConcept extends Component {
 
   componentDidMount() {
     if (this.props.isCreatePage) {
-      http
-        .get("/concept/dataTypes")
-        .then(response => {
-          this.setState({
-            dataTypes: sortBy(response.data)
-          });
-        })
-        .catch(error => {
-          console.log(error);
+      http.get("/concept/dataTypes").then(response => {
+        this.setState({
+          dataTypes: sortBy(response.data)
         });
+      });
     } else {
-      http
-        .get("/web/concept/" + this.props.match.params.uuid)
-        .then(response => {
-          let answers = [];
-          if (response.data.dataType === "Coded" && response.data.conceptAnswers) {
-            answers = response.data.conceptAnswers.map(conceptAnswer => ({
-              name: conceptAnswer.answerConcept.name,
-              uuid: conceptAnswer.answerConcept.uuid,
-              unique: conceptAnswer.unique,
-              abnormal: conceptAnswer.abnormal,
-              order: conceptAnswer.order,
-              voided: conceptAnswer.voided
-            }));
-            answers.sort(function(conceptOrder1, conceptOrder2) {
-              return conceptOrder1.order - conceptOrder2.order;
-            });
-          }
-
-          this.setState({
-            name: response.data.name,
-            uuid: response.data.uuid,
-            dataType: response.data.dataType,
-            active: response.data.active,
-            lowAbsolute: response.data.lowAbsolute,
-            highAbsolute: response.data.highAbsolute,
-            lowNormal: response.data.lowNormal,
-            highNormal: response.data.highNormal,
-            unit: response.data.unit,
-            createdBy: response.data.createdBy,
-            lastModifiedBy: response.data.lastModifiedBy,
-            creationDateTime: response.data.createdDateTime,
-            lastModifiedDateTime: response.data.lastModifiedDateTime,
-            keyValues: response.data.keyValues,
-            answers
+      http.get("/web/concept/" + this.props.match.params.uuid).then(response => {
+        let answers = [];
+        if (response.data.dataType === "Coded" && response.data.conceptAnswers) {
+          answers = response.data.conceptAnswers.map(conceptAnswer => ({
+            name: conceptAnswer.answerConcept.name,
+            uuid: conceptAnswer.answerConcept.uuid,
+            unique: conceptAnswer.unique,
+            abnormal: conceptAnswer.abnormal,
+            order: conceptAnswer.order,
+            voided: conceptAnswer.voided
+          }));
+          answers.sort(function(conceptOrder1, conceptOrder2) {
+            return conceptOrder1.order - conceptOrder2.order;
           });
-        })
-        .catch(error => {
-          console.log(error);
+        }
+
+        this.setState({
+          name: response.data.name,
+          uuid: response.data.uuid,
+          dataType: response.data.dataType,
+          active: response.data.active,
+          lowAbsolute: response.data.lowAbsolute,
+          highAbsolute: response.data.highAbsolute,
+          lowNormal: response.data.lowNormal,
+          highNormal: response.data.highNormal,
+          unit: response.data.unit,
+          createdBy: response.data.createdBy,
+          lastModifiedBy: response.data.lastModifiedBy,
+          creationDateTime: response.data.createdDateTime,
+          lastModifiedDateTime: response.data.lastModifiedDateTime,
+          keyValues: response.data.keyValues,
+          answers
         });
+      });
     }
 
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        this.setState(state => ({ ...state, operationalModules: response.data }));
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    http.get("/web/operationalModules").then(response => {
+      this.setState(state => ({ ...state, operationalModules: response.data }));
+    });
   }
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
@@ -307,9 +292,6 @@ class CreateEditConcept extends Component {
                 redirectShow: true
               });
             }
-          })
-          .catch(error => {
-            console.log(error);
           });
       }
     );
@@ -519,9 +501,6 @@ class CreateEditConcept extends Component {
                 redirectShow: true
               });
             }
-          })
-          .catch(error => {
-            console.log(error);
           });
       }
     }

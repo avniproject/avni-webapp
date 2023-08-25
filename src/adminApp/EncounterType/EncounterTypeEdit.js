@@ -64,39 +64,36 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
       .then(result => {
         setEncounterTypeData(result);
         dispatch({ type: "setData", payload: result });
-        http
-          .get("/web/operationalModules")
-          .then(response => {
-            const formMap = response.data.formMappings;
-            formMap.map(l => (l["isVoided"] = false));
-            setFormList(response.data.forms);
-            setSubjectType(response.data.subjectTypes);
-            setProgram(response.data.programs);
+        http.get("/web/operationalModules").then(response => {
+          const formMap = response.data.formMappings;
+          formMap.map(l => (l["isVoided"] = false));
+          setFormList(response.data.forms);
+          setSubjectType(response.data.subjectTypes);
+          setProgram(response.data.programs);
 
-            const encounterTypeMappings = response.data.formMappings.filter(
-              l => l.encounterTypeUUID === result.uuid
-            );
+          const encounterTypeMappings = response.data.formMappings.filter(
+            l => l.encounterTypeUUID === result.uuid
+          );
 
-            _.isNil(encounterTypeMappings[0].programUUID)
-              ? setEntityType("Encounter")
-              : setEntityType("ProgramEncounter");
+          _.isNil(encounterTypeMappings[0].programUUID)
+            ? setEntityType("Encounter")
+            : setEntityType("ProgramEncounter");
 
-            setSubjectT(
-              response.data.subjectTypes.filter(
-                l => l.uuid === encounterTypeMappings[0].subjectTypeUUID
-              )[0]
-            );
-            setProgramT(
-              response.data.programs.filter(l => l.uuid === encounterTypeMappings[0].programUUID)[0]
-            );
+          setSubjectT(
+            response.data.subjectTypes.filter(
+              l => l.uuid === encounterTypeMappings[0].subjectTypeUUID
+            )[0]
+          );
+          setProgramT(
+            response.data.programs.filter(l => l.uuid === encounterTypeMappings[0].programUUID)[0]
+          );
 
-            const form = findProgramEncounterForm(formMap, result);
-            dispatch({ type: "programEncounterForm", payload: form });
+          const form = findProgramEncounterForm(formMap, result);
+          dispatch({ type: "programEncounterForm", payload: form });
 
-            const cancellationForm = findProgramEncounterCancellationForm(formMap, result);
-            dispatch({ type: "programEncounterCancellationForm", payload: cancellationForm });
-          })
-          .catch(error => {});
+          const cancellationForm = findProgramEncounterCancellationForm(formMap, result);
+          dispatch({ type: "programEncounterCancellationForm", payload: cancellationForm });
+        });
       });
   }, []);
 
@@ -152,14 +149,11 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete encounter type?")) {
-      http
-        .delete("/web/encounterType/" + props.match.params.id)
-        .then(response => {
-          if (response.status === 200) {
-            setDeleteAlert(true);
-          }
-        })
-        .catch(error => {});
+      http.delete("/web/encounterType/" + props.match.params.id).then(response => {
+        if (response.status === 200) {
+          setDeleteAlert(true);
+        }
+      });
     }
   };
 

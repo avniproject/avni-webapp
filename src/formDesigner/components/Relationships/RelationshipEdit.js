@@ -25,33 +25,24 @@ function RelationshipEdit(props) {
   const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
 
   useEffect(() => {
-    http
-      .get("/web/subjectType")
-      .then(response => {
-        response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.type === "Person") {
-            setIsIndividualSubjectTypeAvailable(true);
-          }
-        });
-      })
-      .catch(error => {});
+    http.get("/web/subjectType").then(response => {
+      response.data._embedded.subjectType.forEach(subjectType => {
+        if (subjectType.type === "Person") {
+          setIsIndividualSubjectTypeAvailable(true);
+        }
+      });
+    });
 
-    http
-      .get("/web/gender")
-      .then(response => {
-        setGenders(response.data.content);
-      })
-      .catch(error => {});
+    http.get("/web/gender").then(response => {
+      setGenders(response.data.content);
+    });
 
-    http
-      .get("/web/relation/" + props.match.params.id)
-      .then(response => {
-        const gender = response.data.genders.map(l => l.name);
-        setRelationshipGenders(gender);
-        setRelationshipName(response.data.name);
-        setUUID(response.data.uuid);
-      })
-      .catch(error => {});
+    http.get("/web/relation/" + props.match.params.id).then(response => {
+      const gender = response.data.genders.map(l => l.name);
+      setRelationshipGenders(gender);
+      setRelationshipName(response.data.name);
+      setUUID(response.data.uuid);
+    });
   }, []);
 
   const checkGender = gender => {
@@ -84,9 +75,6 @@ function RelationshipEdit(props) {
           if (response.status === 200) {
             setRedirectShow(true);
           }
-        })
-        .catch(error => {
-          setError("existName");
         });
     } else {
       setError("emptyName");
@@ -95,14 +83,11 @@ function RelationshipEdit(props) {
 
   const onDeleteRelationship = () => {
     if (window.confirm("Do you really want to delete relationship?")) {
-      http
-        .delete("/web/relation/" + props.match.params.id)
-        .then(response => {
-          if (response.status === 200) {
-            setRedirectAfterDelete(true);
-          }
-        })
-        .catch(error => {});
+      http.delete("/web/relation/" + props.match.params.id).then(response => {
+        if (response.status === 200) {
+          setRedirectAfterDelete(true);
+        }
+      });
     }
   };
 

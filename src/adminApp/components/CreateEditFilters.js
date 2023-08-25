@@ -29,6 +29,7 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
+import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
 
 const nonSupportedTypes = [
   "Duration",
@@ -207,7 +208,7 @@ export const CreateEditFilters = ({
           }
         })
         .catch(error => {
-          setMessageStatus({ message: "Something went wrong please try later", display: true });
+          setMessageStatus(ErrorMessageUtil.getMessageType1(error));
           setSnackBarStatus(true);
         });
     }
@@ -266,23 +267,18 @@ export const CreateEditFilters = ({
       return callback([]);
     }
     const inputValue = deburr(value.trim()).toLowerCase();
-    http
-      .get("/search/concept?name=" + encodeURIComponent(inputValue))
-      .then(response => {
-        const concepts = response.data;
-        const filteredConcepts = concepts.filter(
-          concept => !includes(nonSupportedTypes, concept.dataType)
-        );
-        const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
-          label: name,
-          value: { uuid, dataType }
-        }));
-        setSuggestions(conceptOptions);
-        callback(conceptOptions);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    http.get("/search/concept?name=" + encodeURIComponent(inputValue)).then(response => {
+      const concepts = response.data;
+      const filteredConcepts = concepts.filter(
+        concept => !includes(nonSupportedTypes, concept.dataType)
+      );
+      const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
+        label: name,
+        value: { uuid, dataType }
+      }));
+      setSuggestions(conceptOptions);
+      callback(conceptOptions);
+    });
   };
   const resetState = () => {
     setEncounter("");

@@ -36,24 +36,18 @@ const RelationshipTypeList = ({ userInfo }) => {
 
   useEffect(() => {
     let flag = "false";
-    http
-      .get("/web/subjectType")
-      .then(response => {
-        response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.type === "Person") {
-            flag = "true";
-          }
-        });
-        setIsIndividualSubjectTypeAvailable(flag);
-      })
-      .catch(error => {});
+    http.get("/web/subjectType").then(response => {
+      response.data._embedded.subjectType.forEach(subjectType => {
+        if (subjectType.type === "Person") {
+          flag = "true";
+        }
+      });
+      setIsIndividualSubjectTypeAvailable(flag);
+    });
 
-    http
-      .get("/web/relationshipType")
-      .then(response => {
-        setResult(response.data);
-      })
-      .catch(error => {});
+    http.get("/web/relationshipType").then(response => {
+      setResult(response.data);
+    });
   }, []);
 
   const addNewConcept = () => {
@@ -66,17 +60,14 @@ const RelationshipTypeList = ({ userInfo }) => {
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete the relationship type ?";
       if (window.confirm(voidedMessage)) {
-        http
-          .delete("/web/relationshipType/" + rowData.id)
-          .then(response => {
-            if (response.status === 200) {
-              const index = result.indexOf(rowData);
-              const clonedResult = cloneDeep(result);
-              clonedResult.splice(index, 1);
-              setResult(clonedResult);
-            }
-          })
-          .catch(error => {});
+        http.delete("/web/relationshipType/" + rowData.id).then(response => {
+          if (response.status === 200) {
+            const index = result.indexOf(rowData);
+            const clonedResult = cloneDeep(result);
+            clonedResult.splice(index, 1);
+            setResult(clonedResult);
+          }
+        });
       }
     }
   });

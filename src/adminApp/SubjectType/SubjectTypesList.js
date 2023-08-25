@@ -95,14 +95,11 @@ const SubjectTypesList = ({ history, userInfo }) => {
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete the subject type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
-        http
-          .delete("/web/subjectType/" + rowData.id)
-          .then(response => {
-            if (response.status === 200) {
-              refreshTable(tableRef);
-            }
-          })
-          .catch(error => {});
+        http.delete("/web/subjectType/" + rowData.id).then(response => {
+          if (response.status === 200) {
+            refreshTable(tableRef);
+          }
+        });
       }
     }
   });

@@ -40,13 +40,10 @@ const VideoList = ({ history, userInfo }) => {
   const tableRef = React.createRef();
 
   useEffect(() => {
-    http
-      .get("/web/video")
-      .then(response => {
-        const result = response.data.filter(({ voided }) => !voided);
-        setResult(result);
-      })
-      .catch(error => console.log(error));
+    http.get("/web/video").then(response => {
+      const result = response.data.filter(({ voided }) => !voided);
+      setResult(result);
+    });
   }, []);
 
   const editVideo = rowData => ({
@@ -61,17 +58,14 @@ const VideoList = ({ history, userInfo }) => {
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete video " + rowData.title + " ?";
       if (window.confirm(voidedMessage)) {
-        http
-          .delete("/web/video/" + rowData.id)
-          .then(response => {
-            if (response.status === 200) {
-              const index = result.indexOf(rowData);
-              const clonedResult = cloneDeep(result);
-              clonedResult.splice(index, 1);
-              setResult(clonedResult);
-            }
-          })
-          .catch(error => error => console.log(error));
+        http.delete("/web/video/" + rowData.id).then(response => {
+          if (response.status === 200) {
+            const index = result.indexOf(rowData);
+            const clonedResult = cloneDeep(result);
+            clonedResult.splice(index, 1);
+            setResult(clonedResult);
+          }
+        });
       }
     }
   });

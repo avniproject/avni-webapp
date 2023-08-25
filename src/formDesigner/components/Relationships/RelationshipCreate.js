@@ -20,24 +20,18 @@ function RelationshipCreate() {
 
   useEffect(() => {
     let flag = false;
-    http
-      .get("/web/subjectType")
-      .then(response => {
-        response.data._embedded.subjectType.forEach(subjectType => {
-          if (subjectType.type === "Person") {
-            flag = true;
-          }
-        });
-        setIsIndividualSubjectTypeAvailable(flag);
-      })
-      .catch(error => {});
+    http.get("/web/subjectType").then(response => {
+      response.data._embedded.subjectType.forEach(subjectType => {
+        if (subjectType.type === "Person") {
+          flag = true;
+        }
+      });
+      setIsIndividualSubjectTypeAvailable(flag);
+    });
 
-    http
-      .get("/web/gender")
-      .then(response => {
-        setGenders(response.data.content);
-      })
-      .catch(error => {});
+    http.get("/web/gender").then(response => {
+      setGenders(response.data.content);
+    });
   }, []);
 
   const checkGender = gender => {
@@ -69,9 +63,6 @@ function RelationshipCreate() {
           if (response.status === 200) {
             setId(response.data.id);
           }
-        })
-        .catch(error => {
-          setError("existName");
         });
     } else {
       setError("emptyName");

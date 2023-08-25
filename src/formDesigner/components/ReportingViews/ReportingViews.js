@@ -53,13 +53,10 @@ const ReportingViews = ({ userInfo }) => {
   const [message, setMessage] = React.useState();
 
   useEffect(() => {
-    http
-      .get("/viewsInDb")
-      .then(response => {
-        const result = response.data;
-        setResult(result);
-      })
-      .catch(error => console.log(error));
+    http.get("/viewsInDb").then(response => {
+      const result = response.data;
+      setResult(result);
+    });
   }, []);
 
   const deleteView = rowData => {
@@ -71,17 +68,14 @@ const ReportingViews = ({ userInfo }) => {
           onClick: (event, rowData) => {
             const voidedMessage = "Do you really want to delete view " + rowData.viewName + " ?";
             if (window.confirm(voidedMessage)) {
-              http
-                .delete("/reportingView/" + rowData.viewName)
-                .then(response => {
-                  if (response.status === 200) {
-                    const index = result.indexOf(rowData);
-                    const clonedResult = cloneDeep(result);
-                    clonedResult.splice(index, 1);
-                    setResult(clonedResult);
-                  }
-                })
-                .catch(error => console.log(error));
+              http.delete("/reportingView/" + rowData.viewName).then(response => {
+                if (response.status === 200) {
+                  const index = result.indexOf(rowData);
+                  const clonedResult = cloneDeep(result);
+                  clonedResult.splice(index, 1);
+                  setResult(clonedResult);
+                }
+              });
             }
           }
         };

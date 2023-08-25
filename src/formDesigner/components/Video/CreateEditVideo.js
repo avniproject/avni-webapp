@@ -72,14 +72,11 @@ export const CreateEditVideo = ({ edit, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete video record?")) {
-      http
-        .delete(`/web/video/${props.match.params.id}`)
-        .then(response => {
-          if (response.status === 200) {
-            setRedirectAfterDelete(true);
-          }
-        })
-        .catch(error => console.error(error));
+      http.delete(`/web/video/${props.match.params.id}`).then(response => {
+        if (response.status === 200) {
+          setRedirectAfterDelete(true);
+        }
+      });
     }
   };
 

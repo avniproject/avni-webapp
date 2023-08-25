@@ -8,6 +8,12 @@ import Auth from "@aws-amplify/auth";
 import querystring from "querystring";
 import IdpDetails from "../../rootApp/security/IdpDetails";
 import CurrentUserService from "../service/CurrentUserService";
+import _ from "lodash";
+
+function getCsrfToken() {
+  // eslint-disable-next-line no-useless-escape
+  return document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+}
 
 class HttpClient {
   idp;
@@ -85,6 +91,8 @@ class HttpClient {
       options.headers.delete("ORGANISATION-UUID");
     }
     options.credentials = "include";
+    const csrfToken = getCsrfToken();
+    if (!_.isEmpty(csrfToken)) options.headers.set("X-XSRF-TOKEN", csrfToken);
   }
 
   async fetchJson(url, options = {}, skipOrgUUIDHeader) {
@@ -124,13 +132,6 @@ class HttpClient {
   async setTokenAndOrgUuidHeaders(options) {
     await this.idp.updateRequestWithSession(options, axios);
     this.setOrgUuidHeader();
-  }
-
-  _wrapAxiosMethodForDifferentOrigin(methodName, options) {
-    return async (...args) => {
-      await this.setTokenAndOrgUuidHeaders(options);
-      return axios[methodName](...args);
-    };
   }
 
   _wrapAxiosMethod(methodName) {

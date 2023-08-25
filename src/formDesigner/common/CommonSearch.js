@@ -15,9 +15,7 @@ const CommonSearch = ({
       return callback(defaultOptions);
     }
     const inputValue = deburr(value.trim()).toLowerCase();
-    loadOptionsByValue(encodeURIComponent(inputValue), callback).catch(error => {
-      console.log(error);
-    });
+    loadOptionsByValue(encodeURIComponent(inputValue), callback);
   };
 
   return (

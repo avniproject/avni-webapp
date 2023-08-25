@@ -21,15 +21,12 @@ const ProgramList = ({ history, userInfo }) => {
   const [subjectType, setSubjectType] = useState([]);
 
   useEffect(() => {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setFormMappings(formMap);
-        setSubjectType(response.data.subjectTypes);
-      })
-      .catch(error => {});
+    http.get("/web/operationalModules").then(response => {
+      const formMap = response.data.formMappings;
+      formMap.map(l => (l["isVoided"] = false));
+      setFormMappings(formMap);
+      setSubjectType(response.data.subjectTypes);
+    });
   }, []);
 
   const columns = [
@@ -138,14 +135,11 @@ const ProgramList = ({ history, userInfo }) => {
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete the program " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
-        http
-          .delete("/web/program/" + rowData.id)
-          .then(response => {
-            if (response.status === 200) {
-              refreshTable(tableRef);
-            }
-          })
-          .catch(error => {});
+        http.delete("/web/program/" + rowData.id).then(response => {
+          if (response.status === 200) {
+            refreshTable(tableRef);
+          }
+        });
       }
     }
   });

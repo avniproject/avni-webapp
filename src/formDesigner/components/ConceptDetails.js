@@ -26,41 +26,31 @@ function ConceptDetails({ userInfo, ...props }) {
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);
   const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
   useEffect(() => {
-    http
-      .get("/web/concept/" + props.match.params.uuid)
-      .then(response => {
-        setData(response.data);
-        if (response.data.dataType === "Location") {
-          http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
-            if (response.status === 200) {
-              const addressLevelTypes = response.data.content.map(addressLevelType => ({
-                label: addressLevelType.name,
-                value: addressLevelType.uuid,
-                level: addressLevelType.level,
-                parent: addressLevelType.parent
-              }));
-              setAddressLevelTypes(addressLevelTypes);
-            }
-          });
-        }
+    http.get("/web/concept/" + props.match.params.uuid).then(response => {
+      setData(response.data);
+      if (response.data.dataType === "Location") {
+        http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
+          if (response.status === 200) {
+            const addressLevelTypes = response.data.content.map(addressLevelType => ({
+              label: addressLevelType.name,
+              value: addressLevelType.uuid,
+              level: addressLevelType.level,
+              parent: addressLevelType.parent
+            }));
+            setAddressLevelTypes(addressLevelTypes);
+          }
+        });
+      }
 
-        if (response.data.dataType === "Subject") {
-          http.get("/web/operationalModules").then(response => {
-            setSubjectTypeOptions(response.data.subjectTypes);
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    http
-      .get("/web/concept/usage/" + props.match.params.uuid)
-      .then(response => {
-        setUsage(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+      if (response.data.dataType === "Subject") {
+        http.get("/web/operationalModules").then(response => {
+          setSubjectTypeOptions(response.data.subjectTypes);
+        });
+      }
+    });
+    http.get("/web/concept/usage/" + props.match.params.uuid).then(response => {
+      setUsage(response.data);
+    });
   }, [props.match.params.uuid]);
 
   const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);

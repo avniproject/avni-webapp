@@ -28,9 +28,6 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
 
   React.useEffect(() => {
     setMessage(toolTipKey || "No key found");
-    // fetch(`/documentation/toolTip.json`)
-    //   .then(res => res.json())
-    //   .then(data => setMessage(data[toolTipKey] || "No key found"));
   }, []);
 
   const handleClick = () => {

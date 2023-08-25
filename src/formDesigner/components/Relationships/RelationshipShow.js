@@ -21,21 +21,15 @@ const RelationshipShow = props => {
   const [genders, setGenders] = useState([]);
 
   useEffect(() => {
-    http
-      .get("/web/relation/" + props.match.params.id)
-      .then(response => {
-        setRelationship(response.data);
-        const gender = response.data.genders.map(l => l.name);
-        setRelationshipGenders(gender);
-      })
-      .catch(error => {});
+    http.get("/web/relation/" + props.match.params.id).then(response => {
+      setRelationship(response.data);
+      const gender = response.data.genders.map(l => l.name);
+      setRelationshipGenders(gender);
+    });
 
-    http
-      .get("/web/gender")
-      .then(response => {
-        setGenders(response.data.content);
-      })
-      .catch(error => {});
+    http.get("/web/gender").then(response => {
+      setGenders(response.data.content);
+    });
   }, []);
 
   return (

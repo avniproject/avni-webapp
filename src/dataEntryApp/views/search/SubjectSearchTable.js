@@ -149,8 +149,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
             page: query.page,
             totalCount: result.totalElements
           });
-        })
-        .catch(err => console.log(err));
+        });
     });
 
   return (

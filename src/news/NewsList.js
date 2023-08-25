@@ -18,9 +18,7 @@ function NewsList({ userInfo }) {
   const tableRef = React.createRef();
 
   React.useEffect(() => {
-    API.getNews()
-      .then(news => setNews(orderBy(news, "lastModifiedDateTime", "desc")))
-      .catch(error => console.error(error));
+    API.getNews().then(news => setNews(orderBy(news, "lastModifiedDateTime", "desc")));
   }, [openCreate]);
 
   const columns = [

@@ -150,14 +150,11 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete card record?")) {
-      http
-        .delete(`/web/card/${props.match.params.id}`)
-        .then(response => {
-          if (response.status === 200) {
-            setRedirectAfterDelete(true);
-          }
-        })
-        .catch(error => console.error(error));
+      http.delete(`/web/card/${props.match.params.id}`).then(response => {
+        if (response.status === 200) {
+          setRedirectAfterDelete(true);
+        }
+      });
     }
   };
 

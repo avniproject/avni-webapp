@@ -17,8 +17,7 @@ export const fetchSubjectData = (query, filterCriteria) => {
           page: query.page,
           totalCount: result.totalElements
         });
-      })
-      .catch(err => console.log(err));
+      });
   });
 };
 

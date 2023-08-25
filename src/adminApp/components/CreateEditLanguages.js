@@ -9,6 +9,7 @@ import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar
 import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
 
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 
@@ -43,7 +44,7 @@ export const CreateEditLanguages = props => {
         }
       })
       .catch(error => {
-        setMessageStatus({ message: "Something went wrong please try later", display: true });
+        setMessageStatus(ErrorMessageUtil.getMessageType1(error));
         setSnackBarStatus(true);
       });
   };

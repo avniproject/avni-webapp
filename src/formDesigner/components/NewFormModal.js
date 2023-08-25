@@ -51,83 +51,63 @@ class NewFormModal extends Component {
         name: this.state.name,
         formType: this.state.formTypeInfo.formType
       };
-      http
-        .post("/web/forms", dataSend)
-        .then(response => {
-          if (!this.props.isCloneForm) {
-            this.setState({
-              toFormDetails: response.data.uuid
-            });
-          } else {
-            const newUUID = response.data.uuid;
-            let editResponse;
-            http
-              .get(`/forms/export?formUUID=${this.props.uuid}`)
-              .then(response => {
-                const oldParentToNewParentUUIDsMap = new Map();
-                editResponse = response.data;
-                editResponse["uuid"] = newUUID;
-                editResponse["name"] = this.state.name;
-                editResponse["formType"] = this.state.formTypeInfo.formType;
+      http.post("/web/forms", dataSend).then(response => {
+        if (!this.props.isCloneForm) {
+          this.setState({
+            toFormDetails: response.data.uuid
+          });
+        } else {
+          const newUUID = response.data.uuid;
+          let editResponse;
+          http.get(`/forms/export?formUUID=${this.props.uuid}`).then(response => {
+            const oldParentToNewParentUUIDsMap = new Map();
+            editResponse = response.data;
+            editResponse["uuid"] = newUUID;
+            editResponse["name"] = this.state.name;
+            editResponse["formType"] = this.state.formTypeInfo.formType;
 
-                const promise = new Promise((resolve, reject) => {
-                  _.forEach(editResponse.formElementGroups, group => {
-                    group["uuid"] = UUID.v4();
-                    _.forEach(group.formElements, element => {
-                      const newUuid = UUID.v4();
-                      oldParentToNewParentUUIDsMap.set(element.uuid, newUuid);
-                      element["uuid"] = newUuid;
-                      if (element.parentFormElementUuid) {
-                        element.parentFormElementUuid = oldParentToNewParentUUIDsMap.get(
-                          element.parentFormElementUuid
-                        );
-                      }
-                    });
-                  });
-                  resolve("Promise resolved ");
-                });
-                promise.then(
-                  result => {
-                    http
-                      .post("/forms", editResponse)
-                      .then(response => {
-                        if (response.status === 200) {
-                          this.setState({ toFormDetails: newUUID });
-                        }
-                      })
-                      .catch(error => {
-                        console.log(error);
-                      });
-                  },
-                  function(error) {
-                    console.log(error);
+            const promise = new Promise((resolve, reject) => {
+              _.forEach(editResponse.formElementGroups, group => {
+                group["uuid"] = UUID.v4();
+                _.forEach(group.formElements, element => {
+                  const newUuid = UUID.v4();
+                  oldParentToNewParentUUIDsMap.set(element.uuid, newUuid);
+                  element["uuid"] = newUuid;
+                  if (element.parentFormElementUuid) {
+                    element.parentFormElementUuid = oldParentToNewParentUUIDsMap.get(
+                      element.parentFormElementUuid
+                    );
                   }
-                );
-              })
-              .catch(error => {
-                console.log(error);
+                });
               });
-          }
-        })
-        .catch(error => {
-          this.setState({ errorMsg: error.response.data });
-        });
+              resolve("Promise resolved ");
+            });
+            promise.then(
+              result => {
+                http.post("/forms", editResponse).then(response => {
+                  if (response.status === 200) {
+                    this.setState({ toFormDetails: newUUID });
+                  }
+                });
+              },
+              function(error) {
+                console.log(error);
+              }
+            );
+          });
+        }
+      });
     }
   }
 
   componentDidMount() {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        let data = Object.assign({}, response.data);
-        delete data["formMappings"];
-        this.setState({
-          data: data
-        });
-      })
-      .catch(error => {
-        console.log(error);
+    http.get("/web/operationalModules").then(response => {
+      let data = Object.assign({}, response.data);
+      delete data["formMappings"];
+      this.setState({
+        data: data
       });
+    });
   }
 
   onChangeField(event) {

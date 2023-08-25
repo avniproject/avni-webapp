@@ -14,7 +14,7 @@ import { getEncounterForm } from "../../reducers/programSubjectDashboardReducer"
 import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
-import {formatDate} from "../../../common/utils/General";
+import { formatDate } from "../../../common/utils/General";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -198,8 +198,7 @@ const CompletedVisitsTable = ({
               totalCount: result.totalElements
             });
           }
-        })
-        .catch(err => console.log(err));
+        });
     });
 
   return (

@@ -19,14 +19,9 @@ import { EncounterConcept } from "./EncounterConcept";
 function InlineConcept(props) {
   const [operationalModules, setOperationalModules] = React.useState({});
   React.useEffect(() => {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        setOperationalModules(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    http.get("/web/operationalModules").then(response => {
+      setOperationalModules(response.data);
+    });
   }, []);
 
   const renderInlinePhoneNumber = () => {

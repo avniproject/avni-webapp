@@ -59,27 +59,24 @@ export const AdvancedSettings = ({
 
   useEffect(() => {
     if (formUuid) {
-      http
-        .get(`/forms/export?formUUID=${formUuid}`)
-        .then(response => {
-          const form = response.data;
-          const syncAttributes = [];
-          forEach(form.formElementGroups, feg => {
-            forEach(feg.formElements, fe => {
-              const concept = fe.concept;
-              if (
-                !feg.voided &&
-                !fe.voided &&
-                fe.mandatory &&
-                includes(syncAttributeDataTypes, concept.dataType)
-              ) {
-                syncAttributes.push({ label: concept.name, value: concept.uuid });
-              }
-            });
+      http.get(`/forms/export?formUUID=${formUuid}`).then(response => {
+        const form = response.data;
+        const syncAttributes = [];
+        forEach(form.formElementGroups, feg => {
+          forEach(feg.formElements, fe => {
+            const concept = fe.concept;
+            if (
+              !feg.voided &&
+              !fe.voided &&
+              fe.mandatory &&
+              includes(syncAttributeDataTypes, concept.dataType)
+            ) {
+              syncAttributes.push({ label: concept.name, value: concept.uuid });
+            }
           });
-          setSyncAttributes(syncAttributes);
-        })
-        .catch(error => {});
+        });
+        setSyncAttributes(syncAttributes);
+      });
     }
   }, [formUuid]);
 

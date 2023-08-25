@@ -53,24 +53,21 @@ const EncounterTypeShow = props => {
       .then(result => {
         setEncounterType(result);
 
-        http
-          .get("/web/operationalModules")
-          .then(response => {
-            const formMap = response.data.formMappings;
-            formMap.map(l => (l["isVoided"] = false));
+        http.get("/web/operationalModules").then(response => {
+          const formMap = response.data.formMappings;
+          formMap.map(l => (l["isVoided"] = false));
 
-            const encounterTypeMappings = response.data.formMappings.filter(
-              l => l.encounterTypeUUID === result.uuid
-            );
-            _.isNil(encounterTypeMappings[0].programUUID)
-              ? setEntityType("Encounter")
-              : setEntityType("ProgramEncounter");
+          const encounterTypeMappings = response.data.formMappings.filter(
+            l => l.encounterTypeUUID === result.uuid
+          );
+          _.isNil(encounterTypeMappings[0].programUUID)
+            ? setEntityType("Encounter")
+            : setEntityType("ProgramEncounter");
 
-            setFormMappings(formMap);
-            setSubjectType(response.data.subjectTypes);
-            setProgram(response.data.programs);
-          })
-          .catch(error => {});
+          setFormMappings(formMap);
+          setSubjectType(response.data.subjectTypes);
+          setProgram(response.data.programs);
+        });
       });
   }, []);
 

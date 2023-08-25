@@ -23,11 +23,7 @@ const SubjectAssignmentMultiSelect = props => {
   const onChange = (value, event) => {
     updateUserAssignmentToSubject(event)
       .then(() => setSelectedOptions(value))
-      .catch(() =>
-        alert(
-          "Server side error! Refresh your page and resume. If the assignment has not happened, kindly try later."
-        )
-      );
+      .catch(e => alert(`${e.message}.`));
   };
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {

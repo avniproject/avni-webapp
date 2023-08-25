@@ -15,14 +15,12 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
     if (subjectType.syncRegistrationConcept1) {
       http
         .get(`/web/concept/${subjectType.syncRegistrationConcept1}`)
-        .then(res => setConcept1Name(_.get(res, "data.name")))
-        .catch(error => {});
+        .then(res => setConcept1Name(_.get(res, "data.name")));
     }
     if (subjectType.syncRegistrationConcept2) {
       http
         .get(`/web/concept/${subjectType.syncRegistrationConcept2}`)
-        .then(res => setConcept2Name(_.get(res, "data.name")))
-        .catch(error => {});
+        .then(res => setConcept2Name(_.get(res, "data.name")));
     }
   }, [subjectType.syncRegistrationConcept2, subjectType.syncRegistrationConcept1]);
 

@@ -227,9 +227,6 @@ class FormDetails extends Component {
         if (dataGroupFlag) {
           this.btnGroupClick();
         }
-      })
-      .catch(error => {
-        console.log(error);
       });
   }
 
