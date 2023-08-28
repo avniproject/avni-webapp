@@ -8,7 +8,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Slide from "@material-ui/core/Slide";
 import logo from "../formDesigner/styles/images/avniLogo.png";
-import Link from "@material-ui/core/Link";
 import Colors from "./Colors";
 import { InternalLink } from "../common/components/utils";
 
@@ -52,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export function ErrorFallback({ error, onClose }) {
+export function ErrorFallback({ error, onClose, minimal = false }) {
   const classes = useStyles();
   const [showError, setShowError] = React.useState(false);
 
@@ -69,7 +68,7 @@ export function ErrorFallback({ error, onClose }) {
 
   const appHome = () => {
     closeDialogIfRequired();
-    const url = "#/app";
+    const url = "#/";
     window.open(`${window.location.origin}/${url}`, "_self");
     window.location.reload();
   };
@@ -79,9 +78,11 @@ export function ErrorFallback({ error, onClose }) {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            <InternalLink onClick={appHome}>
-              <img src={logo} alt="logo" />
-            </InternalLink>
+            {!minimal && (
+              <InternalLink onClick={appHome}>
+                <img src={logo} alt="logo" />
+              </InternalLink>
+            )}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -90,11 +91,18 @@ export function ErrorFallback({ error, onClose }) {
           oops!
         </Typography>
         <Typography variant="h4" gutterBottom>
-          There was a problem when loading this page. Please contact administrator if you see this
-          again.
+          There was a problem when loading this page. Please contact administrator.
         </Typography>
-        <Link onClick={() => setShowError(true)}>Show error details</Link>
+        {minimal && (
+          <Typography variant="h4" gutterBottom>
+            App was not initialised
+          </Typography>
+        )}
+        <Button onClick={() => setShowError(true)} variant={"contained"}>
+          Show error details
+        </Button>
         <div style={{ display: showError ? "block" : "none" }} className={classes.errorContainer}>
+          <Typography variant="body2">{error.message}</Typography>
           <Typography variant="body2">{error.stack}</Typography>
         </div>
         <div className={classes.buttonContainer}>

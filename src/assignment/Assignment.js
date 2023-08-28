@@ -52,7 +52,9 @@ function renderEmptyMessage() {
   return (
     <AppBarContainer>
       <Typography component={"div"} variant={"h6"} gutterBottom>
-        {"No Task or subject assignment setup for the organisation"}
+        {
+          "No Task or subject assignment setup for the organisation. Or you do not have privilege to Edit task"
+        }
       </Typography>
     </AppBarContainer>
   );
