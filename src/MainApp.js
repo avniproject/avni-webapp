@@ -36,7 +36,8 @@ httpClient.initHeadersForDevEnv();
 
 const MainApp = () => {
   const [initialised, setInitialised] = useState(false);
-  const [promiseError, setError] = useState(null);
+  //const [promiseError, setError] = useState(null);
+  const [promiseError] = useState(null);
 
   useEffect(() => {
     http
@@ -53,7 +54,7 @@ const MainApp = () => {
     const errorObject = ErrorMessageUtil.getWindowUnhandledError(error);
     console.error(`Promise failed: ${errorObject.message}`);
     console.error(`Promise failed: ${errorObject.stack}`);
-    setError(errorObject);
+    //setError(errorObject);
   };
 
   if (!initialised) {
