@@ -63,6 +63,7 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [error, setError] = useState(null);
+
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
   }

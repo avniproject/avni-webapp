@@ -36,8 +36,7 @@ httpClient.initHeadersForDevEnv();
 
 const MainApp = () => {
   const [initialised, setInitialised] = useState(false);
-  //const [promiseError, setError] = useState(null);
-  const [promiseError] = useState(null);
+  const [unhandledRejectionError, setUnhandledError] = useState(null);
 
   useEffect(() => {
     http
@@ -51,28 +50,31 @@ const MainApp = () => {
   }, []);
 
   window.onunhandledrejection = function(error) {
-    const errorObject = ErrorMessageUtil.getWindowUnhandledError(error);
-    console.error(`Promise failed: ${errorObject.message}`);
-    console.error(`Promise failed: ${errorObject.stack}`);
-    //setError(errorObject);
+    const unhandledError = ErrorMessageUtil.fromWindowUnhandledError(error, x =>
+      setUnhandledError(x)
+    );
+    console.error("Unhandled Rejection Error", JSON.stringify(unhandledError));
+    setUnhandledError(unhandledError);
   };
 
   if (!initialised) {
-    if (promiseError) return <ErrorFallback error={promiseError} minimal={true} />;
+    if (unhandledRejectionError) return <ErrorFallback error={unhandledRejectionError} />;
     return null;
   }
 
   return (
     <StylesProvider generateClassName={generateClassName}>
       <ThemeProvider theme={theme}>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Provider store={store}>
-            <HashRouter>
-              {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp />}
-            </HashRouter>
-          </Provider>
-        </ErrorBoundary>
-        {promiseError && <ErrorFallback error={promiseError} />}
+        {!unhandledRejectionError && (
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <Provider store={store}>
+              <HashRouter>
+                {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp />}
+              </HashRouter>
+            </Provider>
+          </ErrorBoundary>
+        )}
+        {unhandledRejectionError && <ErrorFallback error={unhandledRejectionError} />}
       </ThemeProvider>
     </StylesProvider>
   );

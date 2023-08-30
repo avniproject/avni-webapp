@@ -14,6 +14,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { isEqual, size } from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
+import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 export default function PasswordDialog({ username, open, onClose, onConfirm, serverError }) {
   let initialPassword = { password: undefined, showPassword: false };
@@ -84,9 +85,8 @@ export default function PasswordDialog({ username, open, onClose, onConfirm, ser
   return (
     <div>
       <Dialog
-        disableBackdropClick
         open={open}
-        onClose={onClose}
+        onClose={MuiComponentHelper.getDialogClosingHandler(onClose)}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="password-reset-title">{title}</DialogTitle>

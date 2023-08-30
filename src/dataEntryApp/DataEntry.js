@@ -59,8 +59,7 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorSt
       {loadApp ? (
         <I18nextProvider i18n={i18n}>
           <div className={classes.root}>
-            {/* <Grid container spacing={2} justify="center"> */}
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
               <Grid item xs={12}>
                 <AppBar />
               </Grid>

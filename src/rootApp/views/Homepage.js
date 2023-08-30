@@ -16,7 +16,7 @@ const Homepage = ({ userInfo }) => {
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <HomePageCard href={"/#/admin/user"} name={"Admin"} customIcon={"supervisor_account"} />
         <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customIcon={"architecture"} />
         <HomePageCard href={"/#/documentation"} name={"Documentation"} customIcon={"article"} />

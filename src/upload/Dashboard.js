@@ -125,7 +125,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     container
                     item
                     direction="column"
-                    justify="center"
+                    justifyContent="center"
                     alignItems="flex-start"
                     xs={12}
                     sm={9}

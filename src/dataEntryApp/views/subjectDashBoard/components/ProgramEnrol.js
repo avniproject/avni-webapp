@@ -88,7 +88,7 @@ const ProgramEnrol = ({
           <Typography component={"span"} className={classes.mainHeading}>
             {t(match.queryParams.programName)}
           </Typography>
-          <Grid justify="center" alignItems="center" container spacing={3}>
+          <Grid justifyContent="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
               {enrolForm && programEnrolment && formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm

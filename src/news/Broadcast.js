@@ -21,7 +21,7 @@ const BroadcastPage = function({ path, organisationConfig, userInfo }) {
   return (
     <React.Fragment>
       <AppBar title={"Broadcast"} position={"sticky"} />
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <HomePageCard
           href={getHref(BroadcastPath.News, path)}
           name={"News Broadcasts"}

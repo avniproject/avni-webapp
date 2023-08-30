@@ -15,6 +15,7 @@ import DOMPurify from "dompurify";
 import { CustomDialogTitle } from "./components/CustomDialogTitle";
 import CustomizedBackdrop from "../dataEntryApp/components/CustomizedBackdrop";
 import API from "./api";
+import MuiComponentHelper from "../common/utils/MuiComponentHelper";
 
 const useStyles = makeStyles(theme => ({
   dialogPaper: {
@@ -105,7 +106,11 @@ export const CreateEditNews = ({ handleClose, open, headerTitle, edit, existingN
   };
 
   return (
-    <Dialog disableBackdropClick classes={{ paper: classes.dialogPaper }} open={open}>
+    <Dialog
+      onClose={MuiComponentHelper.getDialogClosingHandler(handleClose)}
+      classes={{ paper: classes.dialogPaper }}
+      open={open}
+    >
       <CustomDialogTitle onClose={handleClose}>{headerTitle}</CustomDialogTitle>
       <DialogContent>
         <Grid container spacing={4} direction={"column"}>

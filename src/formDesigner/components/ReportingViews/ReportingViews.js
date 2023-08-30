@@ -15,6 +15,7 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -155,7 +156,7 @@ const ReportingViews = ({ userInfo }) => {
             route={"/appdesigner/reportingViews"}
           />
         </div>
-        <Modal disableBackdropClick open={loading}>
+        <Modal onClose={MuiComponentHelper.getDialogClosingHandler()} open={loading}>
           <CircularProgress size={150} className={classes.progress} />
         </Modal>
         {showAlert && (

@@ -9,7 +9,6 @@ import Typography from "@material-ui/core/Typography";
 import Slide from "@material-ui/core/Slide";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Colors from "./Colors";
-import { InternalLink } from "../common/components/utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -51,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export function ErrorFallback({ error, onClose, minimal = false }) {
+export function ErrorFallback({ error, onClose }) {
   const classes = useStyles();
   const [showError, setShowError] = React.useState(false);
 
@@ -73,16 +72,18 @@ export function ErrorFallback({ error, onClose, minimal = false }) {
     window.location.reload();
   };
 
+  const clearSession = () => {
+    closeDialogIfRequired();
+    localStorage.clear();
+    appHome();
+  };
+
   return (
     <div>
       <AppBar className={classes.appBar}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            {!minimal && (
-              <InternalLink onClick={appHome}>
-                <img src={logo} alt="logo" />
-              </InternalLink>
-            )}
+            <img src={logo} alt="logo" />
           </Typography>
         </Toolbar>
       </AppBar>
@@ -93,11 +94,6 @@ export function ErrorFallback({ error, onClose, minimal = false }) {
         <Typography variant="h4" gutterBottom>
           There was a problem when loading this page. Please contact administrator.
         </Typography>
-        {minimal && (
-          <Typography variant="h4" gutterBottom>
-            App was not initialised
-          </Typography>
-        )}
         <Button onClick={() => setShowError(true)} variant={"contained"}>
           Show error details
         </Button>
@@ -107,10 +103,13 @@ export function ErrorFallback({ error, onClose, minimal = false }) {
         </div>
         <div className={classes.buttonContainer}>
           <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>
-            Back to Home
+            Home
           </Button>
-          <Button variant="contained" color="primary" onClick={reload}>
-            Reload Page
+          <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={reload}>
+            Reload
+          </Button>
+          <Button variant="contained" color="primary" onClick={clearSession}>
+            Clear session & reload (will logout)
           </Button>
         </div>
       </div>

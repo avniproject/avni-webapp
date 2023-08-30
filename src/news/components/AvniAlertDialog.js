@@ -4,6 +4,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import { CustomDialogTitle } from "./CustomDialogTitle";
+import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 export const AvniAlertDialog = ({ open, setOpen, title, message, actions }) => {
   const handleClose = () => {
@@ -11,7 +12,7 @@ export const AvniAlertDialog = ({ open, setOpen, title, message, actions }) => {
   };
 
   return (
-    <Dialog disableBackdropClick open={open}>
+    <Dialog onClose={MuiComponentHelper.getDialogClosingHandler()} open={open}>
       <CustomDialogTitle onClose={handleClose}>{title}</CustomDialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>

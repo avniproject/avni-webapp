@@ -11,6 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import { AlertModal } from "./AlertModal";
 import WarningIcon from "@material-ui/icons/Warning";
 import ActivityIndicatorModal from "../../common/components/ActivityIndicatorModal";
+import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -68,7 +69,10 @@ export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
 
   return (
     <div>
-      <Modal disableBackdropClick open={openModal} onClose={() => setOpenModal(false)}>
+      <Modal
+        onClose={MuiComponentHelper.getDialogClosingHandler(() => setOpenModal(false))}
+        open={openModal}
+      >
         <Grid
           container
           direction={"column"}

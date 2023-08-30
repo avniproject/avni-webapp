@@ -11,7 +11,7 @@ const ActivityCard = ({ title, total, data }) => {
         container
         direction={"column"}
         alignItems="center"
-        justify="center"
+        justifyContent="center"
         style={{ minWidth: "30vh" }}
       >
         <Grid item>

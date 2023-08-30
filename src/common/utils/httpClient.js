@@ -59,10 +59,12 @@ class HttpClient {
   }
 
   saveAuthTokenForAnalyticsApp() {
-    Auth.currentSession().then(session => {
-      const authToken = session.idToken.jwtToken;
-      localStorage.setItem(IdpDetails.AuthTokenName, authToken);
-    });
+    if (this.idp.idpType === IdpDetails.cognito) {
+      Auth.currentSession().then(session => {
+        const authToken = session.idToken.jwtToken;
+        localStorage.setItem(IdpDetails.AuthTokenName, authToken);
+      });
+    }
   }
 
   getAuthToken() {

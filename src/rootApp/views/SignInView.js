@@ -109,12 +109,12 @@ function SignInView({
         <Grid style={{ backgroundColor: "#f0f2f0" }}>
           <CardHeader title={"View Reports"} />
           <CardContent>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="secondary">
               Avni provides reports using one of two different external BI tools - Metabase and
               Jasper Reports. You can find out the reports used by your organisation from your
               system administrator.
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="secondary">
               <br />
               Choose your reporting system
             </Typography>

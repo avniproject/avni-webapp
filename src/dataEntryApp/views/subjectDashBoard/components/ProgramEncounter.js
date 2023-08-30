@@ -64,7 +64,7 @@ const ProgramEncounter = ({
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid justify="center" alignItems="center" container spacing={3}>
+        <Grid justifyContent="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.programEncounterForm && programEncounter && props.subjectProfile ? (
               <ProgramEncounterForm fetchRulesResponse={fetchProgramEncounterRulesResponse}>

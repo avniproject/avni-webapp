@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import { makeStyles, Typography } from "@material-ui/core";
 import Select from "react-select";
+import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -57,7 +58,7 @@ export const TaskAssignmentAction = ({
   const onClose = () => dispatch({ type: "hideAction" });
 
   return (
-    <Modal disableBackdropClick open={openAction} onClose={onClose}>
+    <Modal onClose={MuiComponentHelper.getDialogClosingHandler(onClose)} open={openAction}>
       <Grid
         container
         direction={"column"}

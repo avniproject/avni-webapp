@@ -54,7 +54,7 @@ const Encounter = ({ match, encounter, validationResults, setEncounterDate, ...p
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Grid justify="center" alignItems="center" container spacing={3}>
+        <Grid justifyContent="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
             {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm fetchRulesResponse={fetchEncounterRulesResponse}>

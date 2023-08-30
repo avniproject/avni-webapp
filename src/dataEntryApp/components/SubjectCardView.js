@@ -37,7 +37,7 @@ const SubjectCardView = ({
   return (
     <Card className={classes.card} key={uuid}>
       <CardContent className={classes.cardContent}>
-        <Grid container justify="center" direction="row" spacing={1} alignItems="center">
+        <Grid container justifyContent="center" direction="row" spacing={1} alignItems="center">
           <Grid item>
             <SubjectProfilePicture
               allowEnlargementOnClick={true}
