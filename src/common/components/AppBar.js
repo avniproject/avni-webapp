@@ -79,8 +79,9 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
   const onSubmitNewPassword = useCallback(async password => {
     try {
       await httpClient.putJson("/user/changePassword", { newPassword: password });
+      onClosePassword();
     } catch (e) {
-      setError(get(e, "response.data", "Unknown error. Could not change password"));
+      setError(get(e, "response.data.message", "Unknown error. Could not change password"));
     }
   }, []);
 

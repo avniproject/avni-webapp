@@ -30,8 +30,9 @@ class ResetPasswordButton extends Component {
       });
       this.setState({ isOpen: false });
     } catch (e) {
-      console.log("result", e);
-      this.setState({ error: get(e, "response.data", "Unknown error. Could not set password") });
+      this.setState({
+        error: get(e, "response.data.message", "Unknown error. Could not set password")
+      });
     }
   };
 
