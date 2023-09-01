@@ -40,7 +40,12 @@ const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...r
 const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());
-    logout();
+    console.log("A user has logged in?", hasSignedIn());
+    hasSignedIn() && logout();
+  };
+
+  const hasSignedIn = () => {
+    return user.authState === BaseAuthSession.AuthStates.SignedIn;
   };
 
   const { getLastActiveTime } = useIdleTimer({
