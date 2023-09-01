@@ -108,7 +108,8 @@ const JobStatus = ({
             <TableCell className={classes.tableHeader}>Program</TableCell>
             <TableCell className={classes.tableHeader}>Encounter type</TableCell>
             <TableCell className={classes.tableHeader}>Date range</TableCell>
-            <TableCell className={classes.tableHeader}>Ended at</TableCell>
+            <TableCell className={classes.tableHeader}>Report Requested at</TableCell>
+            <TableCell className={classes.tableHeader}>Report Generated at</TableCell>
             <TableCell className={classes.tableHeader}>Status</TableCell>
             <TableCell className={classes.tableHeader}>Download</TableCell>
           </TableRow>
@@ -130,6 +131,7 @@ const JobStatus = ({
                 }
               </TableCell>
               <TableCell className={classes.tableRow}>{getDateParams(status)}</TableCell>
+              <TableCell className={classes.tableRow}>{formatDate(status.startTime)}</TableCell>
               <TableCell className={classes.tableRow}>{formatDate(status.endTime)}</TableCell>
               <TableCell className={classes.tableRow}>{status.status}</TableCell>
               <TableCell className={classes.tableRow}>
