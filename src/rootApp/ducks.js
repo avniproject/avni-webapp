@@ -4,6 +4,7 @@ import IdpDetails from "./security/IdpDetails";
 import KeycloakAuthSession from "./security/KeycloakAuthSession";
 import _ from "lodash";
 import NoAuthSession from "./security/NoAuthSession";
+import { SESSION_IDLE_MINUTES } from "../common/constants";
 
 export const types = {
   SET_AUTH_SESSION: "app/SET_AUTH_SESSION",
@@ -15,7 +16,8 @@ export const types = {
   SET_ORGANISATION_CONFIG: "app/SET_ORGANISATION_CONFIG",
   SET_TRANSLATIONS: "app/SET_TRANSLATIONS",
   SAVE_USER_INFO: "app/SAVE_USER_INFO",
-  LOGOUT: "app/LOGOUT"
+  LOGOUT: "app/LOGOUT",
+  INIT_GENERIC_CONFIG: "app/INIT_GENERIC_CONFIG"
 };
 
 export const getAdminOrgs = () => ({
@@ -67,6 +69,11 @@ export const logout = () => ({
   type: types.LOGOUT
 });
 
+export const initGenericConfig = genericConfig => ({
+  type: types.INIT_GENERIC_CONFIG,
+  payload: genericConfig
+});
+
 const initialState = {
   idpDetails: undefined,
   authSession: new NoAuthSession(),
@@ -75,7 +82,10 @@ const initialState = {
     name: undefined
   },
   appInitialised: false,
-  organisationConfig: {}
+  organisationConfig: {},
+  genericConfig: {
+    webAppTimeoutInMinutes: SESSION_IDLE_MINUTES
+  }
 };
 
 // reducer
@@ -134,6 +144,15 @@ export default function(state = initialState, action) {
         ...state,
         translationData: action.translations
       };
+    }
+    case types.INIT_GENERIC_CONFIG: {
+      const newState = {
+        ...state,
+        genericConfig: {
+          webAppTimeoutInMinutes: action.payload.webAppTimeoutInMinutes
+        }
+      };
+      return newState;
     }
     default:
       if (_.get(action, "payload.error")) console.log(action.payload.error);

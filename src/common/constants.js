@@ -9,6 +9,7 @@ export const isMediaViewerEnabled = process.env.REACT_APP_MEDIA_VIEWER_ENABLED =
 export const isTestEnv = process.env.NODE_ENV === "test";
 
 export const AWS_REGION = "ap-south-1";
+export const SESSION_IDLE_MINUTES = 20;
 
 export const LOCALES = Object.freeze({
   ENGLISH: "en",

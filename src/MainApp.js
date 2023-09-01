@@ -37,6 +37,7 @@ httpClient.initHeadersForDevEnv();
 const MainApp = () => {
   const [initialised, setInitialised] = useState(false);
   const [unhandledRejectionError, setUnhandledError] = useState(null);
+  const [genericConfig, setGenericConfig] = useState({});
 
   useEffect(() => {
     http
@@ -45,6 +46,7 @@ const MainApp = () => {
       .then(idpDetails => {
         if (IdpDetails.cognitoEnabled(idpDetails)) configureAuth(idpDetails.cognito);
         httpClient.setIdp(IdpFactory.createIdp(idpDetails.idpType, idpDetails));
+        setGenericConfig(idpDetails.genericConfig);
         setInitialised(true);
       });
   }, []);
@@ -69,7 +71,11 @@ const MainApp = () => {
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <Provider store={store}>
               <HashRouter>
-                {httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp />}
+                {httpClient.idp.idpType === IdpDetails.none ? (
+                  <App />
+                ) : (
+                  <SecureApp genericConfig={genericConfig} />
+                )}
               </HashRouter>
             </Provider>
           </ErrorBoundary>

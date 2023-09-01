@@ -22,8 +22,7 @@ import CurrentUserService from "../common/service/CurrentUserService";
 import OrgManager from "../adminApp/OrgManager";
 import { useIdleTimer } from "react-idle-timer/dist/index.legacy.cjs.js";
 import { logout } from "./ducks";
-
-const SESSION_IDLE_MINUTES = 20;
+import BaseAuthSession from "./security/BaseAuthSession";
 
 const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route
@@ -38,14 +37,14 @@ const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...r
   />
 );
 
-const Routes = ({ logout, user, userInfo, organisation }) => {
+const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
   const handleOnIdle = () => {
     console.log("User is idle, was last active at ", getLastActiveTime());
     logout();
   };
 
   const { getLastActiveTime } = useIdleTimer({
-    timeout: 1000 * 60 * SESSION_IDLE_MINUTES,
+    timeout: 1000 * 60 * genericConfig.webAppTimeoutInMinutes,
     onIdle: handleOnIdle,
     debounce: 500,
     syncTimers: 200,
@@ -158,7 +157,8 @@ const Routes = ({ logout, user, userInfo, organisation }) => {
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
   user: state.app.authSession,
-  userInfo: state.app.userInfo
+  userInfo: state.app.userInfo,
+  genericConfig: state.app.genericConfig
 });
 
 export default connect(

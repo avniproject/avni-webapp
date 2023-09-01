@@ -8,7 +8,7 @@ import CognitoSignIn from "./CognitoSignIn";
 import httpClient from "../common/utils/httpClient";
 import IdpDetails from "./security/IdpDetails";
 import KeycloakSignInView from "./views/KeycloakSignInView";
-import { setAuthSession } from "./ducks";
+import { initGenericConfig, setAuthSession } from "./ducks";
 import { Authenticator, Greetings, SignIn, SignUp } from "aws-amplify-react";
 import { customAmplifyErrorMsgs } from "./utils";
 import BaseAuthSession from "./security/BaseAuthSession";
@@ -31,6 +31,7 @@ class SecureApp extends Component {
     if (KeycloakWebClient.isAuthenticatedWithKeycloak()) {
       this.props.setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
     }
+    this.props.genericConfig && this.props.initGenericConfig(this.props.genericConfig);
   }
 
   hasSignedIn() {
@@ -74,6 +75,6 @@ const mapStateToProps = state => ({
 export default withRouter(
   connect(
     mapStateToProps,
-    { setAuthSession }
+    { setAuthSession, initGenericConfig }
   )(SecureApp)
 );
