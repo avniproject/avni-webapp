@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Slide from "@material-ui/core/Slide";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Colors from "./Colors";
+import _ from "lodash";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -39,7 +40,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: "50px",
     flex: 1,
     alignItems: "center",
-    flexDirection: "row"
+    flexDirection: "row",
+    justifyContent: "center"
   },
   errorContainer: {
     padding: "5px",
@@ -49,6 +51,19 @@ const useStyles = makeStyles(theme => ({
     marginTop: "10px"
   }
 }));
+
+function ErrorItem({ fieldName, fieldValue }) {
+  return (
+    <>
+      <Typography variant="h6">{fieldName}</Typography>
+      {fieldValue && (
+        <Typography variant="body2" style={{ whiteSpace: "pre-line" }}>
+          {fieldValue}
+        </Typography>
+      )}
+    </>
+  );
+}
 
 export function ErrorFallback({ error, onClose }) {
   const classes = useStyles();
@@ -94,12 +109,32 @@ export function ErrorFallback({ error, onClose }) {
         <Typography variant="h4" gutterBottom>
           There was a problem when loading this page. Please contact administrator.
         </Typography>
-        <Button onClick={() => setShowError(true)} variant={"contained"}>
-          Show error details
-        </Button>
+        {!showError && (
+          <Button onClick={() => setShowError(true)} variant={"contained"}>
+            Show error details
+          </Button>
+        )}
+        {showError && (
+          <Button
+            onClick={() =>
+              navigator.clipboard.writeText(
+                `Message: ${_.get(error, "message")}\n\nStack: ${_.get(
+                  error,
+                  "stack"
+                )}\n\nSaga Stack: ${_.get(error, "sagaStack")}`
+              )
+            }
+            variant={"contained"}
+          >
+            Copy Error
+          </Button>
+        )}
         <div style={{ display: showError ? "block" : "none" }} className={classes.errorContainer}>
-          <Typography variant="body2">{error.message}</Typography>
-          <Typography variant="body2">{error.stack}</Typography>
+          <ErrorItem fieldName="Message" fieldValue={error.message} />
+          <ErrorItem fieldName="Error Stack" fieldValue={error.stack} />
+          {error["sagaStack"] && (
+            <ErrorItem fieldName="Saga Stack" fieldValue={error["sagaStack"]} />
+          )}
         </div>
         <div className={classes.buttonContainer}>
           <Button style={{ marginRight: 20 }} variant="contained" color="primary" onClick={appHome}>
