@@ -20,6 +20,10 @@ import Broadcast from "../news/Broadcast";
 import AvniRouter from "../common/AvniRouter";
 import CurrentUserService from "../common/service/CurrentUserService";
 import OrgManager from "../adminApp/OrgManager";
+import { useIdleTimer } from "react-idle-timer/dist/index.legacy.cjs.js";
+import { logout } from "./ducks";
+
+const SESSION_IDLE_MINUTES = 20;
 
 const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route
@@ -34,106 +38,122 @@ const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...r
   />
 );
 
-const Routes = ({ user, userInfo, organisation }) => (
-  <Switch>
-    <RestrictedRoute path="/admin" userInfo={userInfo} component={OrgManager} />
-    <RestrictedRoute
-      path="/app"
-      userInfo={userInfo}
-      requiredPrivileges={[]}
-      component={DataEntry}
-    />
-    <Route exact path="/">
-      <Redirect to={AvniRouter.getRedirectRouteFromRoot(userInfo)} />
-    </Route>
-    <RestrictedRoute
-      exact
-      path="/home"
-      userInfo={userInfo}
-      requiredPrivileges={[]}
-      component={WithProps({ user }, Homepage)}
-    />
-    <Route path="/appdesigner">
+const Routes = ({ logout, user, userInfo, organisation }) => {
+  const handleOnIdle = () => {
+    console.log("User is idle, was last active at ", getLastActiveTime());
+    logout();
+  };
+
+  const { getLastActiveTime } = useIdleTimer({
+    timeout: 1000 * 60 * SESSION_IDLE_MINUTES,
+    onIdle: handleOnIdle,
+    debounce: 500,
+    syncTimers: 200,
+    crossTab: true,
+    leaderElection: true
+  });
+
+  return (
+    <Switch>
+      <RestrictedRoute path="/admin" userInfo={userInfo} component={OrgManager} />
       <RestrictedRoute
-        path="/"
+        path="/app"
         userInfo={userInfo}
-        component={WithProps({ user, organisation }, OrgManagerAppDesigner)}
+        requiredPrivileges={[]}
+        component={DataEntry}
       />
-    </Route>
-    <RestrictedRoute
-      exact
-      path="/documentation"
-      user={userInfo}
-      component={WithProps({ user, organisation }, DocumentationRoutes)}
-    />
-    <RestrictedRoute
-      exact
-      path="/assignment"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, Assignment)}
-    />
-    <RestrictedRoute
-      exact
-      path="/assignment/task"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, TaskAssignment)}
-    />
-    <RestrictedRoute
-      exact
-      path="/assignment/subject"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, SubjectAssignment)}
-    />
-    <RestrictedRoute
-      exact
-      path="/translations"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, Translations)}
-    />
-    <RestrictedRoute
-      exact
-      path="/export"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, Export)}
-    />
-    <RestrictedRoute
-      exact
-      path="/newExport"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, NewExport)}
-    />
-    <RestrictedRoute
-      exact
-      path="/selfservicereports"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, SelfServiceReports)}
-    />
-    <RestrictedRoute
-      exact
-      path="/cannedreports"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, CannedReport)}
-    />
-    <RestrictedRoute
-      exact
-      path="/help"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, Tutorials)}
-    />
-    <RestrictedRoute
-      path="/broadcast"
-      userInfo={userInfo}
-      component={WithProps({ user, organisation }, Broadcast)}
-    />
-    <Route
-      component={() => (
-        <div>
-          <span>Page Not found</span>
-        </div>
-      )}
-    />
-  </Switch>
-);
+      <Route exact path="/">
+        <Redirect to={AvniRouter.getRedirectRouteFromRoot(userInfo)} />
+      </Route>
+      <RestrictedRoute
+        exact
+        path="/home"
+        userInfo={userInfo}
+        requiredPrivileges={[]}
+        component={WithProps({ user }, Homepage)}
+      />
+      <Route path="/appdesigner">
+        <RestrictedRoute
+          path="/"
+          userInfo={userInfo}
+          component={WithProps({ user, organisation }, OrgManagerAppDesigner)}
+        />
+      </Route>
+      <RestrictedRoute
+        exact
+        path="/documentation"
+        user={userInfo}
+        component={WithProps({ user, organisation }, DocumentationRoutes)}
+      />
+      <RestrictedRoute
+        exact
+        path="/assignment"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, Assignment)}
+      />
+      <RestrictedRoute
+        exact
+        path="/assignment/task"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, TaskAssignment)}
+      />
+      <RestrictedRoute
+        exact
+        path="/assignment/subject"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, SubjectAssignment)}
+      />
+      <RestrictedRoute
+        exact
+        path="/translations"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, Translations)}
+      />
+      <RestrictedRoute
+        exact
+        path="/export"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, Export)}
+      />
+      <RestrictedRoute
+        exact
+        path="/newExport"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, NewExport)}
+      />
+      <RestrictedRoute
+        exact
+        path="/selfservicereports"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, SelfServiceReports)}
+      />
+      <RestrictedRoute
+        exact
+        path="/cannedreports"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, CannedReport)}
+      />
+      <RestrictedRoute
+        exact
+        path="/help"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, Tutorials)}
+      />
+      <RestrictedRoute
+        path="/broadcast"
+        userInfo={userInfo}
+        component={WithProps({ user, organisation }, Broadcast)}
+      />
+      <Route
+        component={() => (
+          <div>
+            <span>Page Not found</span>
+          </div>
+        )}
+      />
+    </Switch>
+  );
+};
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
@@ -143,5 +163,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  null
+  { logout }
 )(Routes);
