@@ -90,6 +90,12 @@ deploy_static_local:
 	mkdir ../avni-server/static
 	cp -r public/* ../avni-server/static
 
+deploy_build_local: build-app
+	-rm -rf ../avni-server/static
+	mkdir ../avni-server/static
+	cp -r build/* ../avni-server/static
+
+
 zip-app:
 	yarn install
 	yarn run build
