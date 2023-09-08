@@ -8,6 +8,17 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 import ApplicationContext from "../../ApplicationContext";
+import {
+  SupervisorAccount,
+  Build,
+  Description,
+  AssignmentTurnedIn,
+  Translate,
+  Assessment,
+  Keyboard,
+  Collections,
+  Help
+} from "@material-ui/icons";
 
 const Homepage = ({ userInfo }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
@@ -17,22 +28,46 @@ const Homepage = ({ userInfo }) => {
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justifyContent="center">
-        <HomePageCard href={"/#/admin/user"} name={"Admin"} customIcon={"supervisor_account"} />
-        <HomePageCard href={"/#/appdesigner"} name={"App Designer"} customIcon={"architecture"} />
-        <HomePageCard href={"/#/documentation"} name={"Documentation"} customIcon={"article"} />
+        <HomePageCard
+          href={"/#/admin/user"}
+          name={"Admin"}
+          customIconComponent={<SupervisorAccount color="primary" style={{ fontSize: 100 }} />}
+        />
+        <HomePageCard
+          href={"/#/appdesigner"}
+          name={"App Designer"}
+          customIconComponent={<Build color="primary" style={{ fontSize: 100 }} />}
+        />
+        <HomePageCard
+          href={"/#/documentation"}
+          name={"Documentation"}
+          customIconComponent={<Description color="primary" style={{ fontSize: 100 }} />}
+        />
         <HomePageCard
           href={"/#/assignment"}
           name={"Assignment"}
-          customIcon={"assignment_turned_in"}
+          customIconComponent={<AssignmentTurnedIn color="primary" style={{ fontSize: 100 }} />}
         />
         <HomePageCard
           href={"/#/broadcast"}
           name={"Broadcast"}
           customIconComponent={<SurroundSound color="primary" style={{ fontSize: 100 }} />}
         />
-        <HomePageCard href={"/#/translations"} name={"Translations"} customIcon={"translate"} />
-        <HomePageCard href={"/#/export"} name={"Reports"} customIcon={"assessment"} />
-        <HomePageCard href={"/#/app"} name={"Data Entry App"} customIcon={"keyboard"} />
+        <HomePageCard
+          href={"/#/translations"}
+          name={"Translations"}
+          customIconComponent={<Translate color="primary" style={{ fontSize: 100 }} />}
+        />
+        <HomePageCard
+          href={"/#/export"}
+          name={"Reports"}
+          customIconComponent={<Assessment color="primary" style={{ fontSize: 100 }} />}
+        />
+        <HomePageCard
+          href={"/#/app"}
+          name={"Data Entry App"}
+          customIconComponent={<Keyboard color="primary" style={{ fontSize: 100 }} />}
+        />
         {showAnalytics && (
           <HomePageCard
             href={
@@ -41,10 +76,14 @@ const Homepage = ({ userInfo }) => {
                 : "/avni-media"
             }
             name={"Media Viewer "}
-            customIcon={"collections"}
+            customIconComponent={<Collections color="primary" style={{ fontSize: 100 }} />}
           />
         )}
-        <HomePageCard href={"/#/help"} name={"Support And Training"} customIcon={"help"} />
+        <HomePageCard
+          href={"/#/help"}
+          name={"Support And Training"}
+          customIconComponent={<Help color="primary" style={{ fontSize: 100 }} />}
+        />
       </Grid>
     </ScreenWithAppBar>
   );

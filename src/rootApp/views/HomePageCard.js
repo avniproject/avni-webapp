@@ -25,19 +25,12 @@ const classes = {
   }
 };
 
-export const HomePageCard = ({ href, name, customIcon, customIconComponent }) => (
+export const HomePageCard = ({ href, name, customIconComponent }) => (
   <CardActionArea style={classes.cardArea} href={href}>
     <Card style={classes.card} raised={true}>
       <CardContent style={{ marginTop: 10 }}>
         <Grid container direction="column" justifyContent="center" alignItems="center">
-          <Grid item>
-            {customIconComponent}
-            {customIcon && (
-              <Icon color="primary" style={{ fontSize: 100 }}>
-                {customIcon}
-              </Icon>
-            )}
-          </Grid>
+          <Grid item>{customIconComponent}</Grid>
           <Grid item>
             <Typography
               variant="h5"

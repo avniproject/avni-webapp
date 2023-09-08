@@ -14,7 +14,7 @@ const useStyles = makeStyles({
   }
 });
 
-const TutorialCard = ({ href, title, content, footer, icon, iconColor }) => {
+const TutorialCard = ({ href, title, content, footer, icon, iconColor, iconComponent }) => {
   const classes = useStyles();
 
   return (
@@ -27,9 +27,7 @@ const TutorialCard = ({ href, title, content, footer, icon, iconColor }) => {
         <CardContent>
           <Grid container wrap={"wrap"}>
             <Grid item container direction={"row"} spacing={1}>
-              <Grid item>
-                <Icon style={{ fontSize: 60, color: iconColor }}>{icon}</Icon>
-              </Grid>
+              <Grid item>{iconComponent}</Grid>
               <Grid item xs={10}>
                 <Typography gutterBottom variant="h5" component="h2">
                   {title}
