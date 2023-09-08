@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   }
 });
 
-const TutorialCard = ({ href, title, content, footer, icon, iconColor, iconComponent }) => {
+const TutorialCard = ({ href, title, content, footer, iconComponent }) => {
   const classes = useStyles();
 
   return (
