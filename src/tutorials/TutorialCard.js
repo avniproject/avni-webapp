@@ -5,7 +5,6 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import Icon from "@material-ui/core/Icon";
 
 const useStyles = makeStyles({
   root: {
