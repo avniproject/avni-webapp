@@ -1,7 +1,8 @@
 import React, { forwardRef, Fragment, useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import TablePagination from "@material-ui/core/TablePagination";
-import { useLocation, useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import MaterialTableIcons from "./MaterialTableIcons";
 
 const AvniMaterialTable = forwardRef(
   ({ fetchData, options, components, route, ...props }, tableRef) => {
@@ -26,12 +27,12 @@ const AvniMaterialTable = forwardRef(
     return (
       <>
         <MaterialTable
+          icons={MaterialTableIcons}
           tableRef={tableRef}
           data={typeof fetchData === "function" ? handleFetchData : fetchData}
           components={{
             Container: props => <Fragment>{props.children}</Fragment>,
             Pagination: paginationProps => {
-              console.log("paginationprops", paginationProps);
               const { ActionsComponent, onChangePage, ...tablePaginationProps } = paginationProps;
               return (
                 <TablePagination

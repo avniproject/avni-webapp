@@ -14,6 +14,8 @@ import Button from "@material-ui/core/Button";
 import commonApi from "../common/service";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard);
@@ -91,7 +93,7 @@ const customFilters = ({
   const styles = useStyles();
 
   const editFilter = (filterType, title) => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: "Edit TaskAssignmentFilter",
     onClick: (event, filter) => {
       history.push({
@@ -111,7 +113,7 @@ const customFilters = ({
   });
 
   const deleteFilter = filterType => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: "Delete filter",
     onClick: (event, rowData) => {
       const voidedMessage = `Do you want to delete ${rowData.titleKey} filter ?`;

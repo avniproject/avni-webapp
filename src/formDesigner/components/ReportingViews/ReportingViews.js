@@ -16,6 +16,7 @@ import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import MuiComponentHelper from "../../../common/utils/MuiComponentHelper";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -64,7 +65,7 @@ const ReportingViews = ({ userInfo }) => {
     return rowData.legacyView
       ? null
       : {
-          icon: "delete_outline",
+          icon: () => <Delete />,
           tooltip: "Delete View",
           onClick: (event, rowData) => {
             const voidedMessage = "Do you really want to delete view " + rowData.viewName + " ?";

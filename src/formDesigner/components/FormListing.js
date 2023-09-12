@@ -15,6 +15,9 @@ import NewFormModal from "../components/NewFormModal";
 import moment from "moment";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
+import Edit from "@material-ui/icons/Edit";
+import { LibraryAdd, RestoreFromTrash, Settings } from "@material-ui/icons";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function isActionDisabled(rowData, userInfo) {
   return rowData.voided || !UserInfo.hasFormEditPrivilege(userInfo, rowData.formType);
@@ -89,14 +92,14 @@ const FormListing = ({ history, userInfo }) => {
     });
 
   const editForm = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: "Edit Form",
     onClick: (event, form) => history.push(`/appdesigner/forms/${form.uuid}`),
     disabled: isActionDisabled(rowData, userInfo)
   });
 
   const formSettings = rowData => ({
-    icon: "settings",
+    icon: () => <Settings />,
     tooltip: "Form Setting",
     onClick: (event, form) => history.push(`/appdesigner/forms/${form.uuid}/settings`),
     disabled: isActionDisabled(rowData, userInfo)
@@ -125,14 +128,14 @@ const FormListing = ({ history, userInfo }) => {
     );
   };
   const cloneForm = rowData => ({
-    icon: "library_add",
+    icon: () => <LibraryAdd />,
     tooltip: "Clone Form",
     onClick: (event, form) => onSetUuidAndIndicator(true, rowData["uuid"]),
     disabled: isActionDisabled(rowData, userInfo)
   });
 
   const voidForm = rowData => ({
-    icon: rowData.voided ? "restore_from_trash" : "delete_outline",
+    icon: rowData.voided ? () => <RestoreFromTrash /> : () => <Delete />,
     tooltip: rowData.voided ? "Unvoid Form" : "Delete Form",
     onClick: (event, rowData) => {
       const voidedMessage = rowData.voided

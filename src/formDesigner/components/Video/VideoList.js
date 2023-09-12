@@ -9,6 +9,8 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { connect } from "react-redux";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditVideo);
@@ -47,13 +49,13 @@ const VideoList = ({ history, userInfo }) => {
   }, []);
 
   const editVideo = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: "Edit video details",
     onClick: event => history.push(`/video/${rowData.id}`)
   });
 
   const voidVideo = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: "Delete Video",
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete video " + rowData.title + " ?";

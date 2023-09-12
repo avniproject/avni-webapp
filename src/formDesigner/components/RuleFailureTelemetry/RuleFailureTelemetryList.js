@@ -10,6 +10,7 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import { Close, MenuOpen } from "@material-ui/icons";
 
 const tableRef = React.createRef();
 const refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -61,7 +62,7 @@ const buildActions = () => [
   },
   {
     tooltip: "Close All Selected Errors",
-    icon: "close",
+    icon: () => <Close />,
     onClick: (evt, data) => {
       const request = {
         params: {
@@ -74,7 +75,7 @@ const buildActions = () => [
   },
   {
     tooltip: "Reopen All Selected Errors",
-    icon: "open",
+    icon: () => <MenuOpen />,
     onClick: (evt, data) => {
       const request = {
         params: {

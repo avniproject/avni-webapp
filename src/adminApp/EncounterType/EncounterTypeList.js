@@ -14,6 +14,8 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditEncounterType);
@@ -128,14 +130,14 @@ const EncounterTypeList = ({ history, userInfo }) => {
   };
 
   const editEncounterType = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: "Edit encounter type",
     onClick: event => history.push(`/appDesigner/encounterType/${rowData.id}`),
     disabled: rowData.voided
   });
 
   const voidEncounterType = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: "Delete encounter type",
     onClick: (event, rowData) => {
       const voidedMessage =

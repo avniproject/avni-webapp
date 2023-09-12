@@ -7,6 +7,8 @@ import { Title } from "react-admin";
 import http from "common/utils/httpClient";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 const ResourceListView = ({
   history,
@@ -29,13 +31,13 @@ const ResourceListView = ({
   }, []);
 
   const editResource = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: `Edit ${title}`,
     onClick: event => history.push(`/appDesigner/${resourceURLName}/${rowData.id}`)
   });
 
   const voidResource = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: `Delete ${title}`,
     onClick: (event, rowData) => {
       const voidedMessage = `Do you really want to delete ${title} ${rowData.name} ?`;

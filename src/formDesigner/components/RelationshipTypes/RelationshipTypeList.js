@@ -11,6 +11,7 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
@@ -55,7 +56,7 @@ const RelationshipTypeList = ({ userInfo }) => {
   };
 
   const voidRelationshipType = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: "Delete relationship",
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete the relationship type ?";

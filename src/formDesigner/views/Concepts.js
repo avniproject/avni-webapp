@@ -9,6 +9,8 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 const Concepts = ({ history, userInfo }) => {
   const columns = [
@@ -47,7 +49,7 @@ const Concepts = ({ history, userInfo }) => {
     });
 
   const voidConcept = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: rowData.organisationId === 1 ? "Can not delete core concepts" : "Delete Concept",
     onClick: (event, rowData) => {
       const voidedMessage = "Do you want to delete the concept " + rowData.name + " ?";
@@ -63,7 +65,7 @@ const Concepts = ({ history, userInfo }) => {
   });
 
   const editConcept = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
     onClick: (event, concept) => history.push(`/appdesigner/concept/${concept.uuid}/edit`),
     disabled: rowData.organisationId === 1 || rowData.voided

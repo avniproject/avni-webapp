@@ -15,6 +15,7 @@ import Observations from "dataEntryApp/components/Observations";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
 import { formatDate } from "../../../common/utils/General";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -222,8 +223,8 @@ const CompletedVisitsTable = ({
       }}
       detailPanel={[
         {
-          icon: "keyboard_arrow_down",
-          openIcon: "keyboard_arrow_up",
+          icon: () => <KeyboardArrowDown />,
+          openIcon: () => <KeyboardArrowUp />,
           render: row => {
             return (
               <Box margin={1} key={row.uuid}>

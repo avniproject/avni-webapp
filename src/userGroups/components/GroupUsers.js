@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import { getGroupUsers, getAllUsers } from "../reducers";
 import Grid from "@material-ui/core/Grid";
 import GroupModel from "../../common/model/GroupModel";
+import { PersonAddDisabled } from "@material-ui/icons";
+import MaterialTableIcons from "../../adminApp/components/MaterialTableIcons";
 
 const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers, ...props }) => {
   const [otherUsers, setOtherUsers] = React.useState([]);
@@ -102,13 +104,13 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
       <br />
       <hr />
       <MaterialTable
+        icons={MaterialTableIcons}
         title="Group Members"
         columns={columns}
         data={groupUsers}
         actions={[
           rowData => ({
-            //          icon: 'remove_circle_outline',
-            icon: "person_add_disabled",
+            icon: () => <PersonAddDisabled />,
             tooltip: "Remove user from group",
             onClick: (event, rowData) => removeUserFromGroupHandler(event, rowData),
             disabled: rowData.groupName === GroupModel.Everyone

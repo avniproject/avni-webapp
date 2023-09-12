@@ -9,7 +9,6 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
-import "material-ui-rc-color-picker/assets/index.css";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniSwitch } from "../../common/components/AvniSwitch";

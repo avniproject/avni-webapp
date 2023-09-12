@@ -1,6 +1,8 @@
 import React from "react";
 import MaterialTable from "material-table";
 import _ from "lodash";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function getFilterColumns(operationalModules) {
   if (_.isNil(operationalModules.subjectTypes)) return [];
@@ -31,14 +33,14 @@ const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalMo
         editAction || deleteAction
           ? [
               editAction && {
-                icon: "edit",
+                icon: () => <Edit />,
                 tooltip: "Edit",
                 onClick: (event, filter) => {
                   editAction(filter);
                 }
               },
               deleteAction && {
-                icon: "delete",
+                icon: () => <Delete />,
                 tooltip: "Delete",
                 onClick: (event, filter) => {
                   deleteAction(filter);

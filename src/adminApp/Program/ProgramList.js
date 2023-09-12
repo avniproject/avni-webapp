@@ -11,6 +11,8 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import { connect } from "react-redux";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditProgram);
@@ -123,14 +125,14 @@ const ProgramList = ({ history, userInfo }) => {
   };
 
   const editProgram = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: "Edit program",
     onClick: event => history.push(`/appDesigner/program/${rowData.id}`),
     disabled: rowData.voided
   });
 
   const voidProgram = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: "Delete program",
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete the program " + rowData.name + " ?";

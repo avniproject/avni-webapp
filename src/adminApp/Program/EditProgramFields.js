@@ -5,8 +5,6 @@ import _ from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import MenuItem from "@material-ui/core/MenuItem";
-import ColorPicker from "material-ui-rc-color-picker";
-import { colorPickerCSS } from "../Constant";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { findProgramEnrolmentForms, findProgramExitForms } from "../domain/formMapping";
@@ -19,6 +17,7 @@ import {
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
 import { JSEditor } from "../../common/components/JSEditor";
+import { PopoverColorPicker } from "../../common/components/PopoverColorPicker";
 
 const EditProgramFields = props => {
   const {
@@ -69,12 +68,11 @@ const EditProgramFields = props => {
 
       <br />
       <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_PROGRAM_COLOR"} />
-      <ColorPicker
+      <PopoverColorPicker
         id="colour"
         label="Colour"
-        style={colorPickerCSS}
         color={program.colour}
-        onChange={color => dispatch({ type: "colour", payload: color.color })}
+        onChange={color => dispatch({ type: "colour", payload: color })}
       />
 
       <br />

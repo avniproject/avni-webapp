@@ -11,6 +11,8 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
 import UserInfo from "../../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import Edit from "@material-ui/icons/Edit";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditSubjectType);
@@ -61,14 +63,14 @@ const Relationships = ({ history, userInfo }) => {
     setRedirect(true);
   };
   const editRelationship = rowData => ({
-    icon: "edit",
+    icon: () => <Edit />,
     tooltip: "Edit relarionship",
     onClick: event => history.push(`/appDesigner/relationship/${rowData.id}`),
     disabled: rowData.voided
   });
 
   const voidRelationship = rowData => ({
-    icon: "delete_outline",
+    icon: () => <Delete />,
     tooltip: "Delete relationship",
     onClick: (event, rowData) => {
       const voidedMessage = "Do you really want to delete the relationship " + rowData.name + " ?";

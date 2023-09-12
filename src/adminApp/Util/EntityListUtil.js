@@ -1,4 +1,7 @@
 import http from "../../common/utils/httpClient";
+import Edit from "@material-ui/icons/Edit";
+import React from "react";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 class EntityListUtil {
   static refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -9,7 +12,7 @@ class EntityListUtil {
 
   static voidAction(rowData, tableRef, resourceName, entityDisplayName, entityFieldName) {
     return {
-      icon: "delete_outline",
+      icon: () => <Delete />,
       tooltip: `Delete ${entityDisplayName.toLowerCase()}}`,
       onClick: (event, rowData) => {
         const voidedMessage = `Do you really want to delete the ${entityDisplayName.toLowerCase()} ${
@@ -32,7 +35,7 @@ class EntityListUtil {
 
   static editAction(rowData, history, entityName, entityDisplayName) {
     return {
-      icon: "edit",
+      icon: () => <Edit />,
       tooltip: `Edit ${entityDisplayName.toLowerCase()}`,
       onClick: () => history.push(`/appDesigner/${entityName}/${rowData.id}`),
       disabled: rowData.voided

@@ -13,8 +13,6 @@ import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect } from "react-router-dom";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
-import ColorPicker from "material-ui-rc-color-picker";
-import { colorPickerCSS } from "../../../adminApp/Constant";
 import { sampleCardQuery } from "../../common/SampleRule";
 import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import { AvniSelect } from "../../../common/components/AvniSelect";
@@ -23,6 +21,7 @@ import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 import { bucketName, uploadImage } from "../../../common/utils/S3Client";
 import { getErrorByKey } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
+import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
 
 const initialState = {
   name: "",
@@ -196,10 +195,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         />
         <p />
         <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_CARD_COLOR"} />
-        <ColorPicker
+        <PopoverColorPicker
           id="colour"
           label="Colour"
-          style={colorPickerCSS}
           color={card.color}
           onChange={color => dispatch({ type: "color", payload: color.color })}
         />

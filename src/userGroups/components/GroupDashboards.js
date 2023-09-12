@@ -9,6 +9,7 @@ import { getGroupDashboards, getAllDashboards } from "../reducers";
 import Grid from "@material-ui/core/Grid";
 import Checkbox from "@material-ui/core/Checkbox";
 import { RadioButtonUnchecked, RadioButtonChecked } from "@material-ui/icons";
+import Delete from "@material-ui/icons/DeleteOutline";
 
 const GroupDashboards = ({
   getGroupDashboards,
@@ -148,7 +149,7 @@ const GroupDashboards = ({
         data={groupDashboards}
         actions={[
           rowData => ({
-            icon: "delete_outline",
+            icon: () => <Delete />,
             tooltip: "Remove dashboard from group",
             onClick: (event, rowData) => removeDashboardFromGroupHandler(event, rowData)
           })
