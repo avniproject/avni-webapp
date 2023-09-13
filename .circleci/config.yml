@@ -63,17 +63,22 @@ jobs:
 
       - run: cd build; zip -r ../openchs-webapp.zip *
 
+      - run: tar -czvf avni-webapp.tgz -C build .
+
       - run: mkdir -p ~/artifacts
 
       - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
       - run: cp ~/openchs-webapp/openchs-webapp.zip ~/artifacts/
 
+      - run: cp ~/openchs-webapp/avni-webapp.tgz ~/artifacts/
+
       - persist_to_workspace:
           root: ~/artifacts
           paths:
             - build_version
             - openchs-webapp.zip
+            - avni-webapp.tgz
 
       - store_artifacts:
           path: ~/artifacts
