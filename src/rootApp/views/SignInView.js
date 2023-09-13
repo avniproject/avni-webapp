@@ -17,6 +17,7 @@ import Typography from "@material-ui/core/Typography";
 import React, { useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import { withStyles } from "@material-ui/core/styles";
+import ApplicationContext from "../../ApplicationContext";
 
 function SignInView({
   classes,
@@ -27,6 +28,7 @@ function SignInView({
   disallowForgottenPasswordReset = false
 }) {
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
+  const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -49,6 +51,12 @@ function SignInView({
             <form className={classes.form} noValidate>
               <TextField
                 variant="outlined"
+                inputProps={{
+                  autocomplete: autoComplete,
+                  form: {
+                    autocomplete: autoComplete
+                  }
+                }}
                 margin="normal"
                 required
                 fullWidth
@@ -71,6 +79,7 @@ function SignInView({
                 type={passwordIsMasked ? "password" : "text"}
                 onChange={notifyInputChange}
                 id="password"
+                autoComplete={autoComplete}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
