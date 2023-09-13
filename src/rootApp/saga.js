@@ -52,7 +52,9 @@ function* setUserDetails() {
   }
   yield put(setUserInfo(userDetails));
   const organisationName = get(userDetails, "organisationName", "");
-  document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(organisationName)}; path=/`;
+  document.cookie = `IMPLEMENTATION-NAME=${encodeURIComponent(
+    organisationName
+  )}; path=/; SameSite=Lax; Secure=true`;
   if (!isEmpty(organisationName)) {
     const organisationConfig = yield call(api.fetchOrganisationConfig);
     yield put(setOrganisationConfig(get(organisationConfig, "organisationConfig", {})));
