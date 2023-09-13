@@ -14,6 +14,7 @@ import { getMessageTemplates, saveMessageRules } from "../service/MessageService
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { identity } from "lodash";
 import { connect } from "react-redux";
+import Save from "@material-ui/icons/Save";
 
 const ProgramCreate = ({ organisationConfig }) => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -99,8 +100,8 @@ const ProgramCreate = ({ organisationConfig }) => {
               )}
               <br />
               <br />
-              <Button color="primary" variant="contained" type="submit">
-                <i className="material-icons">save</i>Save
+              <Button color="primary" variant="contained" type="submit" startIcon={<Save />}>
+                Save
               </Button>
             </form>
           </div>

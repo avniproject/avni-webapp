@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { isEmpty } from "lodash";
+import Save from "@material-ui/icons/Save";
 
 export const SaveComponent = ({ disabledFlag, name, onSubmit, ...props }) => {
   const [saveInProgress, setSaveInProgress] = useState(false);
@@ -29,8 +30,8 @@ export const SaveComponent = ({ disabledFlag, name, onSubmit, ...props }) => {
       style={isEmpty(props.styleClass) ? {} : props.styleClass}
       disabled={disabledFlag || saveInProgress}
       fullWidth={props.fullWidth}
+      startIcon={<Save />}
     >
-      <i className="material-icons">save</i>
       {name.toUpperCase()}
     </Button>
   );

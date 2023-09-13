@@ -18,6 +18,7 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
+import Save from "@material-ui/icons/Save";
 
 const SubjectTypeCreate = ({ organisationConfig }) => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -149,8 +150,8 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
                 </FormLabel>
               )}
               <p />
-              <Button color="primary" variant="contained" type="submit">
-                <i className="material-icons">save</i>Save
+              <Button color="primary" variant="contained" type="submit" startIcon={<Save />}>
+                Save
               </Button>
             </form>
           </div>

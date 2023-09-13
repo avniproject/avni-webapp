@@ -15,6 +15,7 @@ import { DocumentationContainer } from "../../common/components/DocumentationCon
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import Save from "@material-ui/icons/Save";
 
 const ChecklistDetails = ({ userInfo }) => {
   const [checklistDetails, setChecklistDetails] = React.useState();
@@ -90,8 +91,9 @@ const ChecklistDetails = ({ userInfo }) => {
             variant="contained"
             onClick={() => onSave()}
             style={{ marginTop: "14px" }}
+            startIcon={<Save />}
           >
-            <i className="material-icons">save</i>Save
+            Save
           </Button>
         )}
         {success && (
