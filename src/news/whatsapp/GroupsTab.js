@@ -9,6 +9,7 @@ import {
 import ContactService from "../api/ContactService";
 import _ from "lodash";
 import ErrorMessage from "../../common/components/ErrorMessage";
+import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const tableRef = React.createRef();
 
@@ -50,6 +51,7 @@ const GroupsTab = ({ groups, columns }) => {
       {!_.isNil(error) && <ErrorMessage error={error} />}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
+        icons={materialTableIcons}
         key={contactGroupsVersion}
         title=""
         components={{

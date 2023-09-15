@@ -11,6 +11,7 @@ import { CreateEditNews } from "./CreateEditNews";
 import UserInfo from "../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
+import materialTableIcons from "../common/material-table/MaterialTableIcons";
 
 function NewsList({ userInfo }) {
   const [news, setNews] = React.useState([]);
@@ -55,6 +56,7 @@ function NewsList({ userInfo }) {
       <DocumentationContainer filename={"NewsBroadcast.md"}>
         <Paper style={{ marginBottom: "15px", marginTop: "15px" }}>
           <MaterialTable
+            icons={materialTableIcons}
             title=""
             components={{
               Container: props => <Fragment>{props.children}</Fragment>,

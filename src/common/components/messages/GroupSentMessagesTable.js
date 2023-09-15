@@ -10,6 +10,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import { formatMsgTemplate } from "../utils";
+import materialTableIcons from "../../material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   expansionPanel: {
@@ -78,6 +79,7 @@ const GroupMessagesTable = ({ messages, title, showDeliveryStatus, showDeliveryD
       </ExpansionPanelSummary>
       <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
         <MaterialTable
+          icons={materialTableIcons}
           title=""
           columns={columns}
           data={messages}

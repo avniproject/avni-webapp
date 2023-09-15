@@ -16,6 +16,7 @@ import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import { DeleteButton } from "../../components/DeleteButton";
 import { formatDate } from "../../../common/utils/General";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   editLabel: {
@@ -204,6 +205,7 @@ const CompletedVisitsTable = ({
 
   return (
     <MaterialTable
+      icons={materialTableIcons}
       title=""
       components={{
         Container: props => <Fragment>{props.children}</Fragment>

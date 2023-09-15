@@ -10,6 +10,7 @@ import api from "../api";
 import { Privilege } from "openchs-models";
 import GroupPrivilegesModel from "../../common/model/GroupPrivilegesModel";
 import GroupModel from "../../common/model/GroupModel";
+import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const generatePrivilegeDependenciesAndCheckedState = function(groupPrivilegeList) {
   const dependencies = new Map();
@@ -265,6 +266,7 @@ const GroupPrivileges = ({
           <hr />
           <br />
           <MaterialTable
+            icons={materialTableIcons}
             title=""
             columns={columns}
             data={enhancedGroupPrivilegeList}

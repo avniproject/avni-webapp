@@ -18,6 +18,7 @@ import Paper from "@material-ui/core/Paper";
 import { includes, map, mapValues } from "lodash";
 import { getAssignmentValue, getFilterPayload } from "../reducers/SubjectAssignmentReducer";
 import { SubjectAssignmentAction } from "../components/SubjectAssignmentAction";
+import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -80,6 +81,7 @@ const SubjectAssignment = () => {
           <Grid item xs={8}>
             <div style={{ maxWidth: "100%" }}>
               <MaterialTable
+                icons={materialTableIcons}
                 title="Subjects"
                 tableRef={tableRef}
                 columns={getColumns(state.metadata, state.filterCriteria)}

@@ -2,7 +2,7 @@ import React, { forwardRef, Fragment, useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import TablePagination from "@material-ui/core/TablePagination";
 import { useHistory, useLocation } from "react-router-dom";
-import MaterialTableIcons from "./MaterialTableIcons";
+import MaterialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const AvniMaterialTable = forwardRef(
   ({ fetchData, options, components, route, ...props }, tableRef) => {

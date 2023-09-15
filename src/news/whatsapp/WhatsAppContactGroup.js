@@ -23,6 +23,7 @@ import ReceiverType from "./ReceiverType";
 import GroupMessageTab from "./GroupMessageTab";
 import { useTranslation } from "react-i18next";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
+import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const tableRef = React.createRef();
 
@@ -140,6 +141,7 @@ function Members({
       )}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
+        icons={materialTableIcons}
         key={contactGroupMembersVersion}
         title=""
         components={{

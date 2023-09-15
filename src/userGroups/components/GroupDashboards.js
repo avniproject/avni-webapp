@@ -10,6 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import Checkbox from "@material-ui/core/Checkbox";
 import { RadioButtonUnchecked, RadioButtonChecked } from "@material-ui/icons";
 import Delete from "@material-ui/icons/DeleteOutline";
+import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const GroupDashboards = ({
   getGroupDashboards,
@@ -144,6 +145,7 @@ const GroupDashboards = ({
       <br />
       <hr />
       <MaterialTable
+        icons={materialTableIcons}
         title="Group Dashboards"
         columns={columns}
         data={groupDashboards}

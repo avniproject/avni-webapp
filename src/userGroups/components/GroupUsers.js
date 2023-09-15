@@ -9,7 +9,7 @@ import { getGroupUsers, getAllUsers } from "../reducers";
 import Grid from "@material-ui/core/Grid";
 import GroupModel from "../../common/model/GroupModel";
 import { PersonAddDisabled } from "@material-ui/icons";
-import MaterialTableIcons from "../../adminApp/components/MaterialTableIcons";
+import MaterialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers, ...props }) => {
   const [otherUsers, setOtherUsers] = React.useState([]);

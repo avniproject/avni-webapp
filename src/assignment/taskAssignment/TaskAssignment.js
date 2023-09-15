@@ -20,6 +20,7 @@ import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import CustomizedBackdrop from "../../dataEntryApp/components/CustomizedBackdrop";
 import Paper from "@material-ui/core/Paper";
 import { labelValue, refreshTable } from "../util/util";
+import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -78,6 +79,7 @@ const TaskAssignment = ({ history, ...props }) => {
       <Grid container>
         <Grid item xs={8}>
           <MaterialTable
+            icons={materialTableIcons}
             title="All Tasks"
             tableRef={tableRef}
             columns={getTableColumns(taskMetadata)}

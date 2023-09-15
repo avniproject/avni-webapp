@@ -24,6 +24,7 @@ import { AgeUtil } from "openchs-models";
 import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
+import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { i18n, t } = useTranslation();
@@ -155,6 +156,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   return (
     <div>
       <MaterialTable
+        icons={materialTableIcons}
         title=""
         tableRef={tableRef}
         columns={columns}

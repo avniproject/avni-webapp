@@ -16,6 +16,7 @@ import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/DeleteOutline";
+import materialTableIcons from "../common/material-table/MaterialTableIcons";
 
 function hasEditPrivilege(userInfo) {
   return UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditOfflineDashboardAndReportCard);
@@ -173,6 +174,7 @@ const customFilters = ({
         </div>
       )}
       <MaterialTable
+        icons={materialTableIcons}
         title={_.startCase(filterType)}
         components={{
           Container: props => <Fragment>{props.children}</Fragment>

@@ -7,7 +7,8 @@ import { DeleteButton } from "../../components/DeleteButton";
 import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import { size } from "lodash";
-import {formatDate} from "../../../common/utils/General";
+import { formatDate } from "../../../common/utils/General";
+import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -89,6 +90,7 @@ const PlannedVisitsTable = ({ plannedVisits, doBaseUrl, cancelBaseURL, onDelete 
 
   const renderTable = () => (
     <MaterialTable
+      icons={materialTableIcons}
       title=""
       columns={columns}
       data={plannedVisits}

@@ -3,6 +3,7 @@ import MaterialTable from "material-table";
 import _ from "lodash";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/DeleteOutline";
+import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
 
 function getFilterColumns(operationalModules) {
   if (_.isNil(operationalModules.subjectTypes)) return [];
@@ -26,6 +27,7 @@ function getFilterColumns(operationalModules) {
 const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalModules }) => {
   return (
     <MaterialTable
+      icons={materialTableIcons}
       columns={getFilterColumns(operationalModules)}
       data={filters}
       options={{ search: false, paging: false, toolbar: false }}

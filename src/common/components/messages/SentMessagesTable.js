@@ -5,6 +5,7 @@ import { formatDateTime } from "../../utils/General";
 import MaterialTable from "material-table";
 
 import Typography from "@material-ui/core/Typography";
+import materialTableIcons from "../../material-table/MaterialTableIcons";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -50,6 +51,7 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
 
   const renderTable = () => (
     <MaterialTable
+      icons={materialTableIcons}
       title=""
       columns={columns}
       data={sentMessages}
