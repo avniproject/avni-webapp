@@ -104,11 +104,9 @@ class HttpClient {
     }
     return fetchUtils.fetchJson(url, options).catch(error => {
       console.log(error.message);
-      if (
-        error.message.indexOf("TokenExpiredException") !== -1 &&
-        this.idp.idpType === IdpDetails.keycloak
-      )
+      if (error.message === "Unauthorized" && this.idp.idpType === IdpDetails.keycloak) {
         this.idp.clearAccessToken();
+      }
       throw error;
     });
   }
