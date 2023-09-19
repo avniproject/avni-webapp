@@ -20,28 +20,23 @@ export const getTableColumns = taskMetadata => {
     ...metaSearchColumns,
     {
       title: "Assigned To",
-      field: "assignedTo",
-      sorting: false
+      field: "assignedTo"
     },
     {
       title: "Status",
-      field: "status",
-      sorting: false
+      field: "taskStatus"
     },
     {
       title: "Created",
-      field: "createdOn",
-      sorting: false
+      field: "createdDateTime"
     },
     {
       title: "Scheduled",
-      field: "scheduledOn",
-      sorting: false
+      field: "scheduledOn"
     },
     {
       title: "Completed",
-      field: "completedOn",
-      sorting: false
+      field: "completedOn"
     }
   ];
   return reject(columns, isNil);
