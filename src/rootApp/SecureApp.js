@@ -41,7 +41,9 @@ class SecureApp extends Component {
   render() {
     const redirect_url = new URLSearchParams(window.location.search).get("redirect_url");
     if (!_.isEmpty(redirect_url) && this.hasSignedIn()) {
-      window.location.href = redirect_url;
+      httpClient.fetchJson("/ping").then(() => {
+        window.open(redirect_url, "_self");
+      });
       return <></>;
     }
 
