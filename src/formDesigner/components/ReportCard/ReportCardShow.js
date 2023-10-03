@@ -7,6 +7,7 @@ import http from "../../../common/utils/httpClient";
 import RuleDisplay from "../../../adminApp/components/RuleDisplay";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
+import * as _ from "lodash";
 
 const ReportCardShow = props => {
   const RenderCard = ({ card }) => {
@@ -27,7 +28,7 @@ const ReportCardShow = props => {
     }, [card.standardReportCardTypeId]);
 
     React.useEffect(() => {
-      if (card.iconFileS3Key != null) {
+      if (!_.isNil(card.iconFileS3Key) && !_.isEmpty(card.iconFileS3Key)) {
         http
           .get(http.withParams(`/media/signedUrl`, { url: card.iconFileS3Key }))
           .then(res => res.data)
