@@ -32,9 +32,11 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
       <MenuItem onClick={doLogout}>
         <ExitIcon /> Logout
       </MenuItem>
-      <span style={styles.lastLoginDate}>
-        Last login: {moment(lastSessionTimeMillis).format("MMM Do YYYY h:mm:ss a")}
-      </span>
+      {lastSessionTimeMillis > 0 && (
+        <span style={styles.lastLoginDate}>
+          Last login: {moment(lastSessionTimeMillis).format("MMM Do YYYY h:mm:ss a")}
+        </span>
+      )}
     </div>
   );
 };
