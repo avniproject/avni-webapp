@@ -103,8 +103,7 @@ class HttpClient {
       options.headers.delete("ORGANISATION-UUID");
     }
     return fetchUtils.fetchJson(url, options).catch(error => {
-      console.log(error.message);
-      if (error.message === "Unauthorized" && this.idp.idpType === IdpDetails.keycloak) {
+      if (error.status === 401 && this.idp.idpType === IdpDetails.keycloak) {
         this.idp.clearAccessToken();
       }
       throw error;

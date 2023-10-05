@@ -4858,6 +4858,11 @@
   resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.5.4.tgz#b863a4191e525206819e008097ebf0fb2e3a1cdc"
   integrity sha512-sW6xN96wUak4tgc89d0tbTg7QDGYhGv5hvQIS6h4mRCd8h2btiZ80loPU8cyLwsBbA4ZeQt0FjvUhJ4rNhdsGg==
 
+"@ungap/structured-clone@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
+  integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
+
 "@webassemblyjs/ast@1.7.11":
   version "1.7.11"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.7.11.tgz#b988582cafbb2b095e8b556526f30c90d057cace"
@@ -14976,6 +14981,11 @@ moment@^2.27.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -15606,18 +15616,12 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.61:
-  version "1.30.61"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.61.tgz#24ab268bae88da4797e228f5559d7fa79d4d0c5e"
-  integrity sha512-9oQOI6vKKkBHr/x+AftWk5cZ3e++VMZYnGyM2wdX7qKsie7vN5nQ/TNg/J2sDY93wDrtk9WepgQ34OPgG24INA==
-
-openchs-models@^0.2.25:
-  version "0.2.86"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.86.tgz#5cda09991532d9542300604c84b038e2c35a0830"
-  integrity sha512-+ivZewM93wX66HxRs+XIwxcHeGLEZfxPZE5hvcEvFEgyyRb7f8ZMOgpkLr7NBYpdoOPdM12qzQYKWNXnKW7oXg==
+openchs-models@1.30.69:
+  version "1.30.69"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.69.tgz#03ecc2a36af8eb44c2d767bf8897d715b472b6d7"
+  integrity sha512-zMrdlpd4AyoYPeRv5sklp+TRcoY9QQszeXKqUQXaukMPqZvXuVP7rUAvqeHpSYmzVwsKCzGlnT9GqqouKKSaTg==
   dependencies:
-    lodash "^4.17.11"
-    moment "^2.22.2"
+    "@ungap/structured-clone" "^1.2.0"
 
 opencollective-postinstall@^2.0.2:
   version "2.0.3"
@@ -19147,8 +19151,7 @@ rsvp@^4.8.4:
     babel-register "^6.26.0"
     chai "^4.1.2"
     lodash "^4.17.11"
-    moment "^2.22.2"
-    openchs-models "^0.2.25"
+    moment "^2.29.4"
     superagent "^3.8.3"
     test "^0.6.0"
     uglifyjs-webpack-plugin "^1.2.5"
