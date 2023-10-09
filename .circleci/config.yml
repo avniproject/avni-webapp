@@ -125,11 +125,6 @@ workflows:
             - app_test
       - STAGING_approve:
           type: approval
-          filters:
-            branches:
-              only:
-                - master
-                - /^3\..*/
           requires:
             - app_build
       - STAGING_deploy:
