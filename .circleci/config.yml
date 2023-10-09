@@ -129,11 +129,6 @@ workflows:
             - app_build
       - STAGING_deploy:
           context: non-prod-deploy
-          filters:
-            branches:
-              only:
-                - master
-                - /^3\..*/
           requires:
             - STAGING_approve
       - cypress/run:
