@@ -68,16 +68,6 @@ export const AccountOrgAdminUserList = ({ ...props }) => (
     <Datagrid rowClick="show">
       <TextField label="Login ID" source="username" />
       <TextField source="name" label="Name of the Person" />
-      <FunctionField label="Role" render={user => formatRoles(user.roles)} />
-      <ReferenceField
-        label="Organisation"
-        source="organisationId"
-        reference="organisation"
-        linkType="show"
-        allowEmpty
-      >
-        <TextField source="name" />
-      </ReferenceField>
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
       <FunctionField

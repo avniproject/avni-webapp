@@ -148,7 +148,10 @@ const AppBar = ({ getUserInfo, component, position, userInfo, ...props }) => {
                   open={!!anchorEl}
                   onClose={handleClose}
                 >
-                  <LogoutButton onChangePassword={() => setShowChangePassword(true)} />
+                  <LogoutButton
+                    onChangePassword={() => setShowChangePassword(true)}
+                    lastSessionTimeMillis={userInfo.lastSessionTime}
+                  />
                 </Menu>
               </div>
             </div>
