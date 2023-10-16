@@ -199,7 +199,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           id="colour"
           label="Colour"
           color={card.color}
-          onChange={color => dispatch({ type: "color", payload: color.color })}
+          onChange={color => dispatch({ type: "color", payload: color })}
         />
         <p />
         <AvniImageUpload
