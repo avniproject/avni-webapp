@@ -29,7 +29,13 @@ const createStyles = makeStyles(theme => ({
   }
 }));
 
-const Status = ({ viewVersion, statuses, getStatuses, page, uploadTypes = new UploadTypes() }) => {
+const Status = ({
+  viewVersion,
+  statuses,
+  getStatuses,
+  page = 0,
+  uploadTypes = new UploadTypes()
+}) => {
   const classes = createStyles();
   React.useEffect(() => {
     getStatuses(0);
@@ -39,20 +45,16 @@ const Status = ({ viewVersion, statuses, getStatuses, page, uploadTypes = new Up
     getStatuses(newPage);
   };
 
-  const getRefreshStatuse = () => {
-    getStatuses(page);
-  };
-
   return (
     <Box>
       <Button
         color="primary"
         variant="contained"
-        onClick={event => getRefreshStatuse()}
+        onClick={() => getStatuses(page)}
         style={{ float: "right", margin: "10px" }}
       >
-        <RefreshIcon />
-        REFRESH STATUS{" "}
+        <RefreshIcon style={{ marginRight: 5 }} />
+        {"REFRESH STATUS"}
       </Button>
       <Table aria-label="simple table">
         <TableHead>
@@ -125,7 +127,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page, uploadTypes = new Up
         page={page}
         backIconButtonProps={{ "aria-label": "previous page" }}
         nextIconButtonProps={{ "aria-label": "next page" }}
-        onChangePage={changePage}
+        onPageChange={changePage}
       />
     </Box>
   );

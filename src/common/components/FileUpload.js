@@ -32,7 +32,7 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   };
 
   return (
-    <Grid container direction="row" justify="flex-start" spacing={1}>
+    <Grid container direction="row" justifyContent="flex-start" spacing={1}>
       <Button variant="contained" component="label" disabled={!canSelect} className={classes.item}>
         Choose File
         <input type="file" value={value} onChange={onSelectWrapper} style={{ display: "none" }} />

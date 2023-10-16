@@ -147,7 +147,13 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                 <Grid container item>
                   Download Sample
                 </Grid>
-                <Grid item container direction="row" justify="flex-start" alignItems="center">
+                <Grid
+                  item
+                  container
+                  direction="row"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                >
                   <DropDown
                     name="Type"
                     value={entityForDownload}

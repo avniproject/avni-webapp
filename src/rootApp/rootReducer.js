@@ -11,6 +11,7 @@ import userGroups from "../userGroups/reducers";
 import app from "./ducks";
 import translationsReducer from "../i18nTranslations/TranslationReducers";
 import programs from "../dataEntryApp/reducers/programReducer";
+import sagaErrorState from "./SagaErrorReducer";
 
 const LOCALE = "en";
 export default combineReducers({
@@ -26,5 +27,6 @@ export default combineReducers({
   reports,
   translationsReducer,
   programs,
-  userGroups
+  userGroups,
+  sagaErrorState
 });

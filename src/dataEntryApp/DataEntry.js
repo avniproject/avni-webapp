@@ -32,7 +32,6 @@ import { I18nextProvider } from "react-i18next";
 import { NewsList } from "./views/subjectDashBoard/components/news/NewsList";
 import NewsDetails from "./views/subjectDashBoard/components/news/NewsDetails";
 import Player from "./views/audio/Player";
-import { ReduxErrorFallbackDialog } from "./ErrorFallback";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,12 +39,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorState }) => {
+const DataEntry = ({ match: { path }, operationalModules, orgConfig }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const legacyRulesBundleLoaded = useSelector(selectLegacyRulesBundleLoaded);
   const legacyRulesLoaded = useSelector(selectLegacyRulesLoaded);
-  const { errorRaised, error, resetErrorCB } = sagaErrorState;
   const loadApp = operationalModules && orgConfig && legacyRulesBundleLoaded && legacyRulesLoaded;
   useEffect(() => {
     dispatch(getOperationalModules());
@@ -128,7 +126,6 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorSt
       ) : (
         <Loading />
       )}
-      <ReduxErrorFallbackDialog open={errorRaised} error={error} handleClose={resetErrorCB} />
     </div>
   );
 };
@@ -136,7 +133,7 @@ const DataEntry = ({ match: { path }, operationalModules, orgConfig, sagaErrorSt
 const mapStateToProps = state => ({
   operationalModules: state.dataEntry.metadata.operationalModules,
   orgConfig: state.translationsReducer.orgConfig,
-  sagaErrorState: state.dataEntry.sagaErrorState
+  sagaErrorState: state.sagaErrorState
 });
 
 export default withRouter(

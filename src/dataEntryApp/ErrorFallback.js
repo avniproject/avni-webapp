@@ -1,19 +1,12 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import { isFunction } from "lodash";
+import _, { isFunction } from "lodash";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Slide from "@material-ui/core/Slide";
 import logo from "../formDesigner/styles/images/avniLogo.png";
 import Colors from "./Colors";
-import _ from "lodash";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -149,13 +142,5 @@ export function ErrorFallback({ error, onClose }) {
         </div>
       </div>
     </div>
-  );
-}
-
-export function ReduxErrorFallbackDialog({ error, open, handleClose }) {
-  return (
-    <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-      <ErrorFallback error={error} onClose={handleClose} />
-    </Dialog>
   );
 }

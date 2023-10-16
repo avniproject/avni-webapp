@@ -156,7 +156,7 @@ const JobStatus = ({
         page={page}
         backIconButtonProps={{ "aria-label": "previous page" }}
         nextIconButtonProps={{ "aria-label": "next page" }}
-        onChangePage={handleChangePage}
+        onPageChange={handleChangePage}
       />
     </Box>
   );

@@ -1,4 +1,4 @@
-const prefix = "app/dataEntry/reducer/SagaErrorReducer/";
+const prefix = "app/reducer/SagaErrorReducer/";
 
 export const types = {
   SET_ERROR_RAISED: `${prefix}SET_ERROR_RAISED`,

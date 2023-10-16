@@ -3,15 +3,20 @@ import files from "common/utils/files";
 import { get } from "lodash";
 
 export default {
-  fetchUploadJobStatuses: (params = {}) =>
-    http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then(r => r.json),
+  fetchUploadJobStatuses: (params = {}) => {
+    return http
+      .fetchJson(http.withParams("/import/status", { size: 5, ...params }))
+      .then(r => r.json);
+  },
   bulkUpload: (type, file, autoApprove, locationUploadMode) =>
     http
       .uploadFile(http.withParams("/import/new", { type, autoApprove, locationUploadMode }), file)
       //returns [response, error]
       .then(r => [r.text, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
-  fetchUploadTypes: () => http.fetchJson(http.withParams("/web/importTypes")).then(r => r.json),
+  fetchUploadTypes: () => {
+    return http.fetchJson(http.withParams("/web/importTypes")).then(r => r.json);
+  },
   async downloadSample(type) {
     const file = await fetch(`/bulkuploads/sample/${type}.csv`);
     const content = await file.text();

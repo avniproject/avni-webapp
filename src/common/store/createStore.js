@@ -9,7 +9,7 @@ import { isDevEnv } from "../constants";
 import rootReducer from "../../rootApp/rootReducer";
 import rootSaga from "../../rootApp/rootSaga";
 import { isTestEnv } from "common/constants";
-import { types } from "../../dataEntryApp/reducers/SagaErrorReducer";
+import { types } from "../../rootApp/SagaErrorReducer";
 
 export const adminHistory = createHashHistory({ basename: "/admin" });
 export const appDesignerHistory = createHashHistory({ basename: "/appdesigner" });
@@ -18,6 +18,7 @@ const configureStore = initialState => {
   //https://github.com/redux-saga/redux-saga/issues/1698#issuecomment-444291868
   const sagaMiddleware = createSagaMiddleware({
     onError: error => {
+      console.error("configureStore", "saga unhandled error", error.message);
       const resetErrorCB = () => store.dispatch({ type: types.RESET_ERROR_RAISED });
       store.dispatch({
         type: types.SET_ERROR_RAISED,

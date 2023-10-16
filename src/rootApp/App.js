@@ -13,8 +13,13 @@ class App extends Component {
   }
 
   render() {
+    const { appInitialised, sagaErrorState } = this.props;
+    const { errorRaised, error } = sagaErrorState;
+
+    if (errorRaised) throw error;
+
     return (
-      this.props.appInitialised && (
+      appInitialised && (
         <div>
           <Routes />
         </div>
@@ -24,7 +29,8 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  appInitialised: state.app.appInitialised
+  appInitialised: state.app.appInitialised,
+  sagaErrorState: state.sagaErrorState
 });
 
 export default connect(
