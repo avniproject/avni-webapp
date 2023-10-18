@@ -20,7 +20,7 @@ import { Redirect } from "react-router-dom";
 
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
-import { Audit } from "../components/Audit";
+import { SystemInfo } from "../components/SystemInfo";
 import StaticFormElementGroup from "../components/StaticFormElementGroup";
 import { DeclarativeRuleHolder } from "rules-config";
 import FormDesignerContext from "./FormDesignerContext";
@@ -1124,7 +1124,7 @@ class FormDetails extends Component {
               </Droppable>
             </DragDropContext>
 
-            <Audit {...this.state.form} direction={"row"} />
+            <SystemInfo {...this.state.form} direction={"row"} />
             {/* </div> */}
           </TabContainer>
 

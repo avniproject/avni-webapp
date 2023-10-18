@@ -2,8 +2,10 @@ import React from "react";
 import { Grid } from "@material-ui/core";
 import FormLabel from "@material-ui/core/FormLabel";
 import { createdAudit, modifiedAudit } from "../../adminApp/components/AuditUtil";
+import _ from "lodash";
 
-export const Audit = ({
+export const SystemInfo = ({
+  uuid,
   createdBy,
   lastModifiedBy,
   createdDateTime,
@@ -40,6 +42,16 @@ export const Audit = ({
             })}
           </span>
         </Grid>
+        {!_.isEmpty(uuid) && (
+          <Grid item container direction={"column"} spacing={1} xs={8}>
+            <Grid item>
+              <FormLabel style={{ fontSize: "13px" }}>UUID </FormLabel>
+            </Grid>
+            <Grid item>
+              <span style={{ fontSize: "15px" }}>{uuid}</span>
+            </Grid>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

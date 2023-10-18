@@ -12,7 +12,7 @@ import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings, useLocationType } from "./effects";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
-import { Audit } from "../../formDesigner/components/Audit";
+import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import { AdvancedSettingShow } from "./AdvancedSettingShow";
 import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
@@ -150,7 +150,7 @@ const SubjectTypeShow = props => {
             />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
             <AdvancedSettingShow locationTypes={locationTypes} subjectType={subjectType} />
-            <Audit {...subjectType} />
+            <SystemInfo {...subjectType} />
           </div>
           {editAlert && <Redirect to={"/appDesigner/subjectType/" + props.match.params.id} />}
         </Box>

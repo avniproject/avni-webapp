@@ -14,7 +14,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
 import { isEmpty, isNil, orderBy } from "lodash";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
-import { Audit } from "./Audit";
+import { SystemInfo } from "./SystemInfo";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
@@ -311,7 +311,7 @@ function ConceptDetails({ userInfo, ...props }) {
           </>
 
           <p />
-          <Audit {...data} />
+          <SystemInfo {...data} />
         </div>
 
         {editAlert && <Redirect to={"/appdesigner/concept/" + props.match.params.uuid + "/edit"} />}

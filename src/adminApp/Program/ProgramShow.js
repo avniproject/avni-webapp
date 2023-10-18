@@ -11,7 +11,7 @@ import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get, identity } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
-import { Audit } from "../../formDesigner/components/Audit";
+import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
@@ -173,7 +173,7 @@ const ProgramShow = props => {
             entityTypeId={program.programId}
             readOnly={true}
           />
-          <Audit {...program} />
+          <SystemInfo {...program} />
         </div>
 
         {editAlert && <Redirect to={"/appDesigner/program/" + props.match.params.id} />}

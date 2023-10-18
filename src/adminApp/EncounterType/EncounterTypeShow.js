@@ -15,7 +15,7 @@ import {
   findProgramEncounterForm
 } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
-import { Audit } from "../../formDesigner/components/Audit";
+import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates } from "../service/MessageService";
@@ -166,7 +166,7 @@ const EncounterTypeShow = props => {
             readOnly={true}
           />
           <p />
-          <Audit {...encounterType} />
+          <SystemInfo {...encounterType} />
         </div>
 
         {editAlert && <Redirect to={"/appDesigner/encounterType/" + props.match.params.id} />}

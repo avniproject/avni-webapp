@@ -6,7 +6,7 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
-import { Audit } from "../../formDesigner/components/Audit";
+import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
 import ApplicationMenuService from "../service/ApplicationMenuService";
 import { ShowLabelValue } from "../../formDesigner/common/ShowLabelValue";
@@ -52,7 +52,7 @@ const ApplicationMenuShow = props => {
                 <p />
               </>
             )}
-            <Audit {...menuItem} />
+            <SystemInfo {...menuItem} />
           </div>
           {editAlert && <Redirect to={"/appDesigner/applicationMenu/" + props.match.params.id} />}
         </Box>

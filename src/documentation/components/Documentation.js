@@ -9,7 +9,7 @@ import { DocumentationItem } from "./DocumentationItem";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import api from "../api";
 import { cloneForSave } from "../reducers";
-import { Audit } from "../../formDesigner/components/Audit";
+import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
@@ -96,7 +96,7 @@ const Documentation = ({ userInfo }) => {
       />
       <Box mt={2} />
       {createdBy && (
-        <Audit
+        <SystemInfo
           direction={"row"}
           createdDateTime={createdDateTime}
           lastModifiedDateTime={lastModifiedDateTime}
