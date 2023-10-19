@@ -24,6 +24,10 @@ const Homepage = ({ userInfo }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
 
   const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
+  const showDataEntryApp = UserInfo.hasPrivilege(
+    userInfo,
+    Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp
+  );
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
@@ -63,11 +67,13 @@ const Homepage = ({ userInfo }) => {
           name={"Reports"}
           customIconComponent={<Assessment color="primary" style={{ fontSize: 100 }} />}
         />
-        <HomePageCard
-          href={"/#/app"}
-          name={"Data Entry App"}
-          customIconComponent={<Keyboard color="primary" style={{ fontSize: 100 }} />}
-        />
+        {showDataEntryApp && (
+          <HomePageCard
+            href={"/#/app"}
+            name={"Data Entry App"}
+            customIconComponent={<Keyboard color="primary" style={{ fontSize: 100 }} />}
+          />
+        )}
         {showAnalytics && (
           <HomePageCard
             href={
