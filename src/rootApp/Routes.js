@@ -23,6 +23,7 @@ import OrgManager from "../adminApp/OrgManager";
 import { useIdleTimer } from "react-idle-timer/dist/index.legacy.cjs.js";
 import { logout } from "./ducks";
 import BaseAuthSession from "./security/BaseAuthSession";
+import { Privilege } from "openchs-models";
 
 const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route
@@ -63,7 +64,7 @@ const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
       <RestrictedRoute
         path="/app"
         userInfo={userInfo}
-        requiredPrivileges={[]}
+        requiredPrivileges={[Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp]}
         component={DataEntry}
       />
       <Route exact path="/">
