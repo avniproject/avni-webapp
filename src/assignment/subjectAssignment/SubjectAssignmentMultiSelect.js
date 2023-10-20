@@ -21,9 +21,13 @@ const SubjectAssignmentMultiSelect = props => {
   }
 
   const onChange = (value, event) => {
-    updateUserAssignmentToSubject(event)
-      .then(() => setSelectedOptions(value))
-      .catch(e => alert(`${e.message}.`));
+    updateUserAssignmentToSubject(event).then(([error]) => {
+      if (error) {
+        alert(error);
+      } else {
+        setSelectedOptions(value);
+      }
+    });
   };
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {
