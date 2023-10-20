@@ -16,6 +16,8 @@ import { Title } from "react-admin";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
+import StringUtil from "../../common/utils/StringUtil";
+import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -413,7 +415,10 @@ class FormSettings extends Component {
           <form>
             {this.state.errorMsg && (
               <FormControl fullWidth margin="dense">
-                <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                <li style={{ color: "red" }}>{StringUtil.substring(this.state.errorMsg, 100)}</li>
+                <CopyToClipboard text={this.state.errorMsg}>
+                  <button>Copy to clipboard</button>
+                </CopyToClipboard>
               </FormControl>
             )}
             <AvniFormLabel
