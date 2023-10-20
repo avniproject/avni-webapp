@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -15,11 +15,18 @@ import { ExportRequestBody } from "../components/export/ExportRequestBody";
 import api from "../api";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {},
   button: {
     color: "#3f51b5"
+  },
+  warningText: {
+    fontSize: "20px",
+    fontWeight: "500",
+    marginLeft: 10,
+    marginBottom: 10
   }
 }));
 
@@ -30,6 +37,7 @@ const NewExport = ({
   exportJobStatuses,
   userInfo
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -78,7 +86,7 @@ const NewExport = ({
                 />
               )}
               {allowReportGeneration && (
-                <Grid container direction="row" justify="flex-start">
+                <Grid container direction="row" justify="flex-start" alignItems="baseline">
                   <Button
                     variant="contained"
                     color="primary"
@@ -89,6 +97,9 @@ const NewExport = ({
                   >
                     Generate Export
                   </Button>
+                  <Typography component={"span"} className={classes.warningText}>
+                    {t("newLongitudinalExportWarningMessage")}
+                  </Typography>
                 </Grid>
               )}
             </DocumentationContainer>
