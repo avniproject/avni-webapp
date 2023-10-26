@@ -37,7 +37,7 @@ const AvniMaterialTable = forwardRef(
               return (
                 <TablePagination
                   {...tablePaginationProps}
-                  onPageChange={(event, page) => {
+                  onChangePage={(event, page) => {
                     history.push(`${route}?page=${page}`);
                     setInitialPage(Number(page));
                     onChangePage(event, page);
