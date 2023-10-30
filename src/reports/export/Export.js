@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, makeStyles } from "@material-ui/core";
+import { FormControl, FormLabel, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
 import api from "../api";
 import Grid from "@material-ui/core/Grid";
@@ -31,11 +31,18 @@ import { GroupSubjectType } from "../components/export/GroupSubjectType";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Privilege } from "openchs-models";
 import UserInfo from "../../common/model/UserInfo";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {},
   button: {
     color: "#3f51b5"
+  },
+  warningText: {
+    fontSize: "20px",
+    fontWeight: "500",
+    marginLeft: 10,
+    marginBottom: 10
   }
 }));
 
@@ -46,6 +53,7 @@ const Export = ({
   exportJobStatuses,
   userInfo
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -183,7 +191,7 @@ const Export = ({
                 </Grid>
               )}
               {allowReportGeneration && (
-                <Grid container direction="row" justify="flex-start">
+                <Grid container direction="row" justify="flex-start" alignItems="baseline">
                   <Button
                     variant="contained"
                     color="primary"
@@ -194,6 +202,9 @@ const Export = ({
                   >
                     Generate Export
                   </Button>
+                  <Typography component={"span"} className={classes.warningText}>
+                    {t("legacyLongitudinalExportWarningMessage")}
+                  </Typography>
                 </Grid>
               )}
             </DocumentationContainer>

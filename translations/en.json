@@ -452,6 +452,7 @@
     "scheduledMessages": "Scheduled Messages",
     "noSentMessages": "No sent messages",
     "noMessagesYetToBeSent": "No messages scheduled to be sent",
-    "newLongitudinalExportWarningMessage": "(Only first 10,000 rows matching the request filters will be exported to the csv file!)"
+    "newLongitudinalExportWarningMessage": "(Only first 10,000 rows matching the request filters will be exported to the csv file!)",
+    "legacyLongitudinalExportWarningMessage": "(Only first 10,000 rows matching the request filters will be exported to the csv file!)"
   }
 }
