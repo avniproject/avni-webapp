@@ -33,6 +33,11 @@ commands:
             sudo rm -rf /tmp/openchs-webapp.zip
             EOF
 
+      - run:
+          name: Deploy translations
+          command: |
+            echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
+
 jobs:
   app_test:
     docker:
