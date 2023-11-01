@@ -36,14 +36,7 @@ commands:
       - run:
           name: Deploy translations
           command: |
-            unzip -p ~/artifacts/openchs-webapp.zip Makefile > Makefile
-            mkdir translations
-            unzip -p ~/artifacts/openchs-webapp.zip translations/en.json > translations/en.json
-            unzip -p ~/artifacts/openchs-webapp.zip translations/gu_IN.json > translations/gu_IN.json
-            unzip -p ~/artifacts/openchs-webapp.zip translations/hi_IN.json > translations/hi.json
-            unzip -p ~/artifacts/openchs-webapp.zip translations/ka_IN.json > translations/ka_IN.json
-            unzip -p ~/artifacts/openchs-webapp.zip translations/mr_IN.json > translations/mr_IN.json
-            unzip -p ~/artifacts/openchs-webapp.zip translations/ta_IN.json > translations/ta_IN.json
+            cd ~/artifacts
             echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
 
 jobs:
@@ -78,7 +71,7 @@ jobs:
 
       - run: tar -czvf avni-webapp.tgz -C build .
 
-      - run: mkdir -p ~/artifacts
+      - run: mkdir -p ~/artifacts/translations
 
       - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
@@ -86,12 +79,18 @@ jobs:
 
       - run: cp ~/openchs-webapp/avni-webapp.tgz ~/artifacts/
 
+      - run: cp ~/openchs-webapp/Makefile ~/artifacts/
+
+      - run: cp ~/openchs-webapp/translations/*.json ~/artifacts/translations/
+
       - persist_to_workspace:
           root: ~/artifacts
           paths:
             - build_version
             - openchs-webapp.zip
             - avni-webapp.tgz
+            - Makefile
+            - translations/*.json
 
       - store_artifacts:
           path: ~/artifacts
