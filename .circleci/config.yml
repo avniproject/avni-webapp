@@ -73,6 +73,8 @@ jobs:
 
       - run: mkdir -p ~/artifacts/translations
 
+      - run: mkdir -p ~/artifacts/scripts
+
       - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
       - run: cp ~/openchs-webapp/openchs-webapp.zip ~/artifacts/
@@ -82,6 +84,8 @@ jobs:
       - run: cp ~/openchs-webapp/Makefile ~/artifacts/
 
       - run: cp ~/openchs-webapp/translations/*.json ~/artifacts/translations/
+
+      - run: cp ~/openchs-webapp/scripts/token.js ~/artifacts/scripts/
 
       - persist_to_workspace:
           root: ~/artifacts
