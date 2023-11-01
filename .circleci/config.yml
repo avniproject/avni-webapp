@@ -37,6 +37,7 @@ commands:
           name: Deploy translations
           command: |
             cd ~/artifacts
+            npm install https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8
             echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
 
 jobs:
@@ -95,6 +96,7 @@ jobs:
             - avni-webapp.tgz
             - Makefile
             - translations/*.json
+            - scripts/token.js
 
       - store_artifacts:
           path: ~/artifacts
