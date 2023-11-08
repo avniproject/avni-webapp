@@ -81,7 +81,7 @@ deploy_platform_translations_staging:
 deploy_platform_translations_live:
 	make deploy_platform_translations poolId=$(OPENCHS_PROD_USER_POOL_ID) clientId=$(OPENCHS_PROD_APP_CLIENT_ID) server=https://app.avniproject.org port=443 username=admin password=$(OPENCHS_PROD_ADMIN_PASSWORD)
 
-deploy_platform_translations_prod: deploy_platform_translations_live
+deploy_platform_translations_production: deploy_platform_translations_live
 
 deploy_platform_translations_prerelease:
 	make deploy_platform_translations poolId=$(OPENCHS_PRERELEASE_USER_POOL_ID) clientId=$(OPENCHS_PRERELEASE_APP_CLIENT_ID) server=https://prerelease.avniproject.org port=443 username=admin password=$(OPENCHS_PRERELEASE_ADMIN_PASSWORD)
