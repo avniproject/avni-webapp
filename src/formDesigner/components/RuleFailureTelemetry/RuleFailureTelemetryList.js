@@ -62,6 +62,7 @@ const buildActions = () => [
   },
   {
     tooltip: "Close All Selected Errors",
+    name: "CloseSelected",
     icon: () => <Close />,
     onClick: (evt, data) => {
       const request = {
@@ -75,6 +76,7 @@ const buildActions = () => [
   },
   {
     tooltip: "Reopen All Selected Errors",
+    name: "ReopenSelected",
     icon: () => <MenuOpen />,
     onClick: (evt, data) => {
       const request = {
@@ -147,7 +149,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
               Action: props => {
                 return (
                   UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditRuleFailure) &&
-                  (props.action.icon === "close" ? (
+                  (props.action.name === "CloseSelected" ? (
                     <Button
                       onClick={event => props.action.onClick(event, props.data)}
                       disabled={selectedStatus === STATUS.CLOSED}
@@ -155,7 +157,7 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
                     >
                       Close Errors
                     </Button>
-                  ) : props.action.icon === "open" ? (
+                  ) : props.action.name === "ReopenSelected" ? (
                     <Button
                       onClick={event => props.action.onClick(event, props.data)}
                       color="primary"
