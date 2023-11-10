@@ -100,7 +100,53 @@ jobs:
 
       - store_artifacts:
           path: ~/artifacts
+  
+  build_docker_image:
+    docker:
+      - image: docker:latest
+    resource_class: medium
+    working_directory: ~/openchs-webapp
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/artifacts
 
+      - setup_remote_docker
+
+      - run: mkdir -p build
+
+      - run: unzip ~/artifacts/openchs-webapp.zip -d build
+
+      - run:
+          name: Determine Docker Tags
+          command: |
+            if [ "$CIRCLE_BRANCH" == "master" ]; then
+              DOCKER_TAG="latest"
+            elif [ -n "$CIRCLE_TAG" ]; then
+              DOCKER_TAG="$CIRCLE_TAG"
+            else
+              echo "No valid tag found. Exiting."
+              exit 1
+            fi
+            echo "export DOCKER_TAG=$DOCKER_TAG" >> $BASH_ENV
+          shell: /bin/sh
+
+      - run:
+          name: Authenticate with Docker Hub
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - run:
+          name: Build Multi-Platform Docker Image
+          command: |
+            source $BASH_ENV
+            docker buildx create --use
+            docker buildx build --platform linux/amd64,linux/arm64 --tag "$DOCKER_USERNAME/avni-webapp:${DOCKER_TAG}" --push -f Dockerfile .
+            if [ "$CIRCLE_BRANCH" == "master" ]; then
+              SHORT_CIRCLE_SHA=$(echo "$CIRCLE_SHA1" | cut -c1-6)
+              docker buildx build --platform linux/amd64,linux/arm64 --tag "$DOCKER_USERNAME/avni-webapp:${SHORT_CIRCLE_SHA}" --push -f Dockerfile .
+            fi
+  
   STAGING_deploy:
     docker:
       - image: cimg/node:20.2.0
@@ -133,14 +179,30 @@ jobs:
       - deploy:
           hostname: "ssh.server.openchs.org"
 
+tags_filter: &tags_filter
+  filters:
+    tags:
+      only: /.*/
+
 workflows:
   version: 2
   test_and_build:
     jobs:
-      - app_test
+      - app_test:
+          <<: *tags_filter
       - app_build:
+          <<: *tags_filter
           requires:
             - app_test
+      - build_docker_image:
+          context: dockerhub
+          requires:
+            - app_build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only: master
       - STAGING_approve:
           type: approval
           requires:
