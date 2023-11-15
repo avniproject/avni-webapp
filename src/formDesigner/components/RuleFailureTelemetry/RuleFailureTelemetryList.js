@@ -13,7 +13,7 @@ import { Privilege } from "openchs-models";
 import { Close, MenuOpen } from "@material-ui/icons";
 
 const tableRef = React.createRef();
-const refreshTable = ref => ref.current && ref.current.onQueryChange();
+const refreshTable = ref => ref.current && ref.current.onQueryChange({ page: 0 });
 
 const STATUS = {
   OPEN: 1,
@@ -52,6 +52,31 @@ const columns = [
     title: "Rule UUID",
     field: "ruleUuid",
     render: rowData => rowData.ruleUuid
+  },
+  {
+    title: "Source",
+    field: "source",
+    render: rowData => (
+      <Fragment>
+        <span>{rowData.sourceId || ""}</span>
+        <b>{rowData.sourceType ? " (" + rowData.sourceType + ")" : ""}</b>
+      </Fragment>
+    )
+  },
+  {
+    title: "Entity",
+    field: "entity",
+    render: rowData => (
+      <Fragment>
+        <span>{rowData.entityId || ""}</span>
+        <b>{rowData.entityType ? " (" + rowData.entityType + ")" : ""}</b>
+      </Fragment>
+    )
+  },
+  {
+    title: "App",
+    field: "app",
+    render: rowData => rowData.appType
   }
 ];
 
@@ -177,8 +202,6 @@ const RuleFailureTelemetryList = ({ userInfo }) => {
             data={fetchData(resourceName, resourceUrl, queryParams)}
             detailPanel={[
               {
-                icon: "expand_more",
-                openIcon: "expand_less",
                 tooltip: "Show Stacktrace",
                 render: rowData => {
                   return <div>{rowData.stacktrace}</div>;

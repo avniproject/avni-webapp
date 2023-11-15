@@ -15606,10 +15606,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.78:
-  version "1.30.78"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.78.tgz#767b4b7043d6289ffee99c6e94d558b0d3c3dfc0"
-  integrity sha512-UFXR3VPlKaslrymy6CB6kIQg+Wpf8N0qIcwBuYKsrpMeIZ5ehM3n9bAmkQXaOtK3aH4DfGGH7L/yYTxI4uBYtQ==
+openchs-models@1.30.89:
+  version "1.30.89"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.89.tgz#fbe3e49e7c85b00f5c1aa1cd13d8bb0d2dad0802"
+  integrity sha512-8sCkZoXB//9N/eSOiXoFr25DiPL01y65XkcXulm/wi5946R35bEpTwP005Y+GThHY2RrAouTYcfs1Wpi/Q/ekA==
 
 openchs-models@^0.2.25:
   version "0.2.86"
