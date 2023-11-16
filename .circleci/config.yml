@@ -40,6 +40,50 @@ commands:
             npm install https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8
             echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
 
+  deploy_ansible:
+    description: "Deployment of webapp using ansible"
+    parameters:
+      env:
+        type: string
+        default: "staging"
+    steps:
+      - attach_workspace:
+          at: ~/artifacts
+
+      #      - run:
+      #          name: Install dependencies
+      #          command: |
+      #            sudo apt-get -y -qq update
+      #            sudo apt-get -y -qq install make openssl python3-pip
+      #            sudo pip3 install awscli --upgrade
+
+      - run: sudo apt-get install make openssl
+
+      - run: curl -L https://github.com/avniproject/avni-infra/archive/master.zip >> ~/infra.zip
+
+      - run: |
+          cd ~/
+          unzip infra.zip
+          mv avni-infra-master avni-infra
+          rm -rf infra.zip
+
+      - run: echo $ANSIBLE_VAULT_PASS > ~/.vault-pass.txt
+
+      - run: |
+          pwd
+          cd ~/avni-infra/configure
+          VAULT_PASSWORD_FILE=~/.vault-pass.txt app_zip_path=~/artifacts/ make deploy-avni-webapp-<< parameters.env >>
+
+      - run: rm ~/.vault-pass.txt
+
+#TODO uncomment when renaming NEW_STAGING to STAGING
+#      - run:
+#          name: Deploy translations
+#          command: |
+#            cd ~/artifacts
+#            npm install https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8
+#            echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
+
 jobs:
   app_test:
     docker:
@@ -109,6 +153,14 @@ jobs:
       - deploy:
           hostname: "ssh.staging.openchs.org"
 
+  NEW_STAGING_deploy:
+    docker:
+      - image: cimg/deploy:2023.09-node
+    working_directory: ~/
+    steps:
+      - deploy_ansible:
+          env: "staging"
+
   PRERELEASE_deploy:
     docker:
       - image: cimg/node:20.2.0
@@ -149,6 +201,14 @@ workflows:
           context: non-prod-deploy
           requires:
             - STAGING_approve
+      - NEW_STAGING_approve:
+          type: approval
+          requires:
+            - app_build
+      - NEW_STAGING_deploy:
+          context: non-prod-deploy
+          requires:
+            - NEW_STAGING_approve
       - cypress/run:
           type: approval
           yarn: true
