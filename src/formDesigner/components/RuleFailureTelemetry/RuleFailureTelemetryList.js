@@ -21,6 +21,15 @@ const STATUS = {
   ALL: 3
 };
 
+function renderIdAndType(id, type) {
+  return rowData => (
+    <Fragment>
+      <span>{rowData[id] || ""}</span>
+      <b>{rowData[type] ? " (" + rowData[type] + ")" : ""}</b>
+    </Fragment>
+  );
+}
+
 const columns = [
   {
     title: "Message",
@@ -56,22 +65,12 @@ const columns = [
   {
     title: "Source",
     field: "source",
-    render: rowData => (
-      <Fragment>
-        <span>{rowData.sourceId || ""}</span>
-        <b>{rowData.sourceType ? " (" + rowData.sourceType + ")" : ""}</b>
-      </Fragment>
-    )
+    render: renderIdAndType("sourceId", "sourceType")
   },
   {
     title: "Entity",
     field: "entity",
-    render: rowData => (
-      <Fragment>
-        <span>{rowData.entityId || ""}</span>
-        <b>{rowData.entityType ? " (" + rowData.entityType + ")" : ""}</b>
-      </Fragment>
-    )
+    render: renderIdAndType("entityId", "entityType")
   },
   {
     title: "App",
