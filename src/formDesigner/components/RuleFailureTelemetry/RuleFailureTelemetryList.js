@@ -48,7 +48,7 @@ const columns = [
   },
   {
     title: "Closed Date",
-    field: "closeDateTime",
+    field: "closedDateTime",
     render: rowData =>
       rowData.closeDateTime && moment(rowData.closeDateTime).format("YYYY-MM-DD HH:mm")
   },
@@ -64,17 +64,17 @@ const columns = [
   },
   {
     title: "Source",
-    field: "source",
+    field: "sourceId",
     render: renderIdAndType("sourceId", "sourceType")
   },
   {
     title: "Entity",
-    field: "entity",
+    field: "entityId",
     render: renderIdAndType("entityId", "entityType")
   },
   {
     title: "App",
-    field: "app",
+    field: "appType",
     render: rowData => rowData.appType
   }
 ];
