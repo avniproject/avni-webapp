@@ -50,13 +50,6 @@ commands:
       - attach_workspace:
           at: ~/artifacts
 
-      #      - run:
-      #          name: Install dependencies
-      #          command: |
-      #            sudo apt-get -y -qq update
-      #            sudo apt-get -y -qq install make openssl python3-pip
-      #            sudo pip3 install awscli --upgrade
-
       - run: sudo apt-get install make openssl
 
       - run: curl -L https://github.com/avniproject/avni-infra/archive/master.zip >> ~/infra.zip
@@ -76,13 +69,12 @@ commands:
 
       - run: rm ~/.vault-pass.txt
 
-#TODO uncomment when renaming NEW_STAGING to STAGING
-#      - run:
-#          name: Deploy translations
-#          command: |
-#            cd ~/artifacts
-#            npm install https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8
-#            echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
+      - run:
+          name: Deploy translations
+          command: |
+            cd ~/artifacts
+            npm install https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8
+            echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
 
 jobs:
   app_test:
@@ -144,7 +136,7 @@ jobs:
 
       - store_artifacts:
           path: ~/artifacts
-  
+
   build_docker_image:
     docker:
       - image: docker:git
@@ -190,16 +182,16 @@ jobs:
               SHORT_CIRCLE_SHA=$(echo "$CIRCLE_SHA1" | cut -c1-6)
               docker buildx build --platform linux/amd64,linux/arm64 --tag "$DOCKER_USERNAME/avni-webapp:${SHORT_CIRCLE_SHA}" --push -f Dockerfile .
             fi
-  
-  STAGING_deploy:
-    docker:
-      - image: cimg/node:20.2.0
-    working_directory: ~/
-    steps:
-      - deploy:
-          hostname: "ssh.staging.openchs.org"
 
-  NEW_STAGING_deploy:
+  #  STAGING_deploy:
+  #    docker:
+  #      - image: cimg/node:20.2.0
+  #    working_directory: ~/
+  #    steps:
+  #      - deploy:
+  #          hostname: "ssh.staging.openchs.org"
+
+  STAGING_deploy:
     docker:
       - image: cimg/deploy:2023.09-node
     working_directory: ~/
@@ -263,14 +255,14 @@ workflows:
           context: non-prod-deploy
           requires:
             - STAGING_approve
-      - NEW_STAGING_approve:
-          type: approval
-          requires:
-            - app_build
-      - NEW_STAGING_deploy:
-          context: non-prod-deploy
-          requires:
-            - NEW_STAGING_approve
+      #      - NEW_STAGING_approve:
+      #          type: approval
+      #          requires:
+      #            - app_build
+      #      - NEW_STAGING_deploy:
+      #          context: non-prod-deploy
+      #          requires:
+      #            - NEW_STAGING_approve
       - cypress/run:
           type: approval
           yarn: true
