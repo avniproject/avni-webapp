@@ -1,3 +1,5 @@
 FROM alpine
-COPY build/ /build
-CMD ["sh", "-c", "cp -r /build/* /opt/openchs/static/ && sleep infinity"]
+
+RUN mkdir -p /opt/openchs/static/
+COPY build/ /opt/openchs/static/
+CMD ["sh", "-c", "sleep infinity"]
