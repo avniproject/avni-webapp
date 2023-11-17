@@ -50,7 +50,7 @@ const columns = [
     title: "Closed Date",
     field: "closedDateTime",
     render: rowData =>
-      rowData.closeDateTime && moment(rowData.closeDateTime).format("YYYY-MM-DD HH:mm")
+      rowData.closedDateTime && moment(rowData.closedDateTime).format("YYYY-MM-DD HH:mm")
   },
   {
     title: "Individual UUID",
