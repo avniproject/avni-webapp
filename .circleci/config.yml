@@ -207,6 +207,14 @@ jobs:
       - deploy:
           hostname: "ssh.prerelease.openchs.org"
 
+  NEW_PRERELEASE_deploy:
+    docker:
+      - image: cimg/deploy:2023.09-node
+    working_directory: ~/
+    steps:
+      - deploy_ansible:
+          env: "prerelease"
+
   PERF_deploy:
     docker:
       - image: cimg/node:20.2.0
@@ -255,14 +263,6 @@ workflows:
           context: non-prod-deploy
           requires:
             - STAGING_approve
-      #      - NEW_STAGING_approve:
-      #          type: approval
-      #          requires:
-      #            - app_build
-      #      - NEW_STAGING_deploy:
-      #          context: non-prod-deploy
-      #          requires:
-      #            - NEW_STAGING_approve
       - cypress/run:
           type: approval
           yarn: true
@@ -288,6 +288,14 @@ workflows:
           context: non-prod-deploy
           requires:
             - PRERELEASE_approve
+      - NEW_PRERELEASE_approve:
+          type: approval
+          requires:
+            - app_build
+      - NEW_PRERELEASE_deploy:
+          context: non-prod-deploy
+          requires:
+            - NEW_PRERELEASE_approve
       - PRODUCTION_approve:
           type: approval
           requires:
