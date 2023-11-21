@@ -215,6 +215,14 @@ jobs:
       - deploy:
           hostname: "ssh.perf.avniproject.org"
 
+  NEW_PRODUCTION_deploy:
+    docker:
+      - image: cimg/deploy:2023.09-node
+    working_directory: ~/
+    steps:
+      - deploy_ansible:
+          env: "prod"
+
   PRODUCTION_deploy:
     docker:
       - image: cimg/node:20.2.0
@@ -288,6 +296,14 @@ workflows:
           context: prod-deploy
           requires:
             - PRODUCTION_approve
+      - NEW_PRODUCTION_approve:
+          type: approval
+          requires:
+            - app_build
+      - NEW_PRODUCTION_deploy:
+          context: prod-deploy
+          requires:
+            - NEW_PRODUCTION_approve
 
 notify:
   webhooks:
