@@ -81,6 +81,7 @@ export const CatchmentDetail = props => {
         </ReferenceArrayField>
         <FunctionField label="Created" render={audit => createdAudit(audit)} />
         <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+        <TextField source="uuid" label="UUID" />
       </SimpleShowLayout>
     </Show>
   );

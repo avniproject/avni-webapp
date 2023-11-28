@@ -104,6 +104,7 @@ export const LocationDetail = props => {
         </ReferenceManyField>
         <FunctionField label="Created" render={audit => createdAudit(audit)} />
         <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+        <TextField source="uuid" label="UUID" />
       </SimpleShowLayout>
     </Show>
   );
