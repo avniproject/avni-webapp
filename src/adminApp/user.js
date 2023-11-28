@@ -61,6 +61,7 @@ import Grid from "@material-ui/core/Grid";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
+import { error } from "jquery";
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
@@ -187,12 +188,24 @@ const ConceptSyncAttributeShow = ({ subjectType, syncAttributeName, ...props }) 
 
   const [valueMap, setValueMap] = useState(new Map());
   useEffect(() => {
+    let isMounted = true;
     const newValMap = new Map();
-    ConceptService.getAnswerConcepts(conceptUUID).then(content =>
-      content.forEach(val => newValMap.set(val.id, val.name))
-    );
-    setValueMap(newValMap);
-  }, []);
+
+    ConceptService.getAnswerConcepts(conceptUUID)
+      .then(content => {
+        content.forEach(val => newValMap.set(val.id, val.name));
+        if (isMounted) {
+          setValueMap(newValMap);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+    // console.log("value============>",newValMap.size,newValMap);
+    return () => {
+      isMounted = false;
+    };
+  }, [conceptUUID]);
   return (
     <div>
       <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>
