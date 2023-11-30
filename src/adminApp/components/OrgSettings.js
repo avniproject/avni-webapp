@@ -5,7 +5,7 @@ import React from "react";
 import http from "common/utils/httpClient";
 import { getOperationalModules } from "../../reports/reducers";
 import { useDispatch } from "react-redux";
-import { toNumber } from "lodash";
+import { toNumber, noop } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { setOrganisationConfig } from "../../rootApp/ducks";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -36,7 +36,7 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
     });
   };
 
-  function renderSimpleSetting(key, name, tooltip, disabled = false, onEnabled) {
+  function renderSimpleSetting(key, name, tooltip, disabled = false, onEnabled = noop) {
     return (
       <Grid item>
         <AvniSwitch
