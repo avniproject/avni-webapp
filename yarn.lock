@@ -15606,10 +15606,12 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.30.89:
-  version "1.30.89"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.30.89.tgz#fbe3e49e7c85b00f5c1aa1cd13d8bb0d2dad0802"
-  integrity sha512-8sCkZoXB//9N/eSOiXoFr25DiPL01y65XkcXulm/wi5946R35bEpTwP005Y+GThHY2RrAouTYcfs1Wpi/Q/ekA==
+openchs-models@1.31.2:
+  version "1.31.2"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.2.tgz#dccdae7ce282b52cc1b284cc7d6a20e270784321"
+  integrity sha512-4xhl6DTE27ojYxoxv1H/eASNZEa6e3E8wqXLSxIevf/EGqb6v4KaRls+SpksGucS/mxPX7f/W4DttqluA5l10g==
+  dependencies:
+    uuid "^9.0.1"
 
 openchs-models@^0.2.25:
   version "0.2.86"
@@ -21280,6 +21282,11 @@ uuid@^8.0.0:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 v8-compile-cache@^2.1.1:
   version "2.4.0"
