@@ -61,7 +61,6 @@ import Grid from "@material-ui/core/Grid";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
-import { error } from "jquery";
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
@@ -186,22 +185,17 @@ const ConceptSyncAttributeShow = ({ subjectType, syncAttributeName, ...props }) 
   const conceptUUID = get(syncSettings, [syncAttributeName]);
   if (isEmpty(conceptUUID)) return null;
 
-  const [valueMap, setValueMap] = useState(new Map());
+  const [syncConceptValueMap, setSyncConceptValueMap] = useState(new Map());
   useEffect(() => {
     let isMounted = true;
     const newValMap = new Map();
 
-    ConceptService.getAnswerConcepts(conceptUUID)
-      .then(content => {
-        content.forEach(val => newValMap.set(val.id, val.name));
-        if (isMounted) {
-          setValueMap(newValMap);
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-    // console.log("value============>",newValMap.size,newValMap);
+    ConceptService.getAnswerConcepts(conceptUUID).then(content => {
+      content.forEach(val => newValMap.set(val.id, val.name));
+      if (isMounted) {
+        setSyncConceptValueMap(newValMap);
+      }
+    });
     return () => {
       isMounted = false;
     };
@@ -212,7 +206,7 @@ const ConceptSyncAttributeShow = ({ subjectType, syncAttributeName, ...props }) 
         {startCase(syncAttributeName)}
       </span>
       {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
-        <Chip style={{ margin: "0.2em" }} label={valueMap.get(value)} key={value} />
+        <Chip style={{ margin: "0.2em" }} label={syncConceptValueMap.get(value)} key={value} />
       ))}
     </div>
   );
