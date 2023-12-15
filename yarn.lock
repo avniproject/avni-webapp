@@ -15606,10 +15606,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.31.2:
-  version "1.31.2"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.2.tgz#dccdae7ce282b52cc1b284cc7d6a20e270784321"
-  integrity sha512-4xhl6DTE27ojYxoxv1H/eASNZEa6e3E8wqXLSxIevf/EGqb6v4KaRls+SpksGucS/mxPX7f/W4DttqluA5l10g==
+openchs-models@1.31.3:
+  version "1.31.3"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.3.tgz#0d34b92b1ef15a357ffc0f6fe34e573578927e70"
+  integrity sha512-t1W4e/qvmnRI6acz6nDET2XJQIoUEunjc8ag2791+aRYqriR2ewOEg13wULGVSJ8q9jaXNbizmI/iZaG01TbwQ==
   dependencies:
     uuid "^9.0.1"
 
