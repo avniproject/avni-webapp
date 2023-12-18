@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
 import { updateUserAssignmentToSubject } from "./SubjectAssignmentData";
-import _ from "lodash";
+import _, { debounce } from "lodash";
 
 const SubjectAssignmentMultiSelect = props => {
   const [selectedOptions, setSelectedOptions] = useState(
@@ -20,7 +20,7 @@ const SubjectAssignmentMultiSelect = props => {
     ]);
   }
 
-  const onChange = (value, event) => {
+  const _onChange = (value, event) => {
     updateUserAssignmentToSubject(event).then(([error]) => {
       if (error) {
         alert(error);
@@ -29,6 +29,8 @@ const SubjectAssignmentMultiSelect = props => {
       }
     });
   };
+
+  const debouncedOnChange = debounce(_onChange, 500);
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {
     if (value.length === 0) {
@@ -47,7 +49,7 @@ const SubjectAssignmentMultiSelect = props => {
     <ReactMultiSelectCheckboxes
       options={getSortedDropdownList(props.options)}
       value={selectedOptions}
-      onChange={onChange}
+      onChange={debouncedOnChange}
       setState={setSelectedOptions}
       getDropdownButtonLabel={getDropdownButtonLabel}
     />
