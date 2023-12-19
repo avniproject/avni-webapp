@@ -30,7 +30,7 @@ const SubjectAssignmentMultiSelect = props => {
     });
   };
 
-  const debouncedOnChange = debounce(_onChange, 500);
+  const debouncedOnChange = debounce(_onChange, 500, { leading: true, trailing: false });
 
   function getDropdownButtonLabel({ placeholderButtonLabel, value }) {
     if (value.length === 0) {
