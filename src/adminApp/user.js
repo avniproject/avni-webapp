@@ -184,13 +184,29 @@ const ConceptSyncAttributeShow = ({ subjectType, syncAttributeName, ...props }) 
   const syncSettings = get(props.record, ["syncSettings", subjectType.name], {});
   const conceptUUID = get(syncSettings, [syncAttributeName]);
   if (isEmpty(conceptUUID)) return null;
+
+  const [syncConceptValueMap, setSyncConceptValueMap] = useState(new Map());
+  useEffect(() => {
+    let isMounted = true;
+    const newValMap = new Map();
+
+    ConceptService.getAnswerConcepts(conceptUUID).then(content => {
+      content.forEach(val => newValMap.set(val.id, val.name));
+      if (isMounted) {
+        setSyncConceptValueMap(newValMap);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [conceptUUID]);
   return (
     <div>
       <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>
         {startCase(syncAttributeName)}
       </span>
       {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
-        <Chip label={value} key={value} />
+        <Chip style={{ margin: "0.2em" }} label={syncConceptValueMap.get(value)} key={value} />
       ))}
     </div>
   );
@@ -297,8 +313,8 @@ const operatingScopes = Object.freeze({
   CATCHMENT: "ByCatchment"
 });
 
-const catchmentChangeMessage = `Please ensure that the user has already synced all 
-data for their previous sync attributes. Changing sync attributes will ask the users to reset their sync. 
+const catchmentChangeMessage = `Please ensure that the user has already synced all
+data for their previous sync attributes. Changing sync attributes will ask the users to reset their sync.
 This might take time depending on the data.`;
 
 const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
