@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
 import { updateUserAssignmentToSubject } from "./SubjectAssignmentData";
-import _, { debounce } from "lodash";
+import _, { debounce, isEqual } from "lodash";
 
 const SubjectAssignmentMultiSelect = props => {
   const [selectedOptions, setSelectedOptions] = useState(
@@ -56,4 +56,8 @@ const SubjectAssignmentMultiSelect = props => {
   );
 };
 
-export default SubjectAssignmentMultiSelect;
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
+
+export default React.memo(SubjectAssignmentMultiSelect, areEqual);
