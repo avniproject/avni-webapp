@@ -18,9 +18,10 @@ const MessageRule = ({
   receiverType,
   onChange,
   onDelete,
-  readOnly = false
+  readOnly = false,
+  fixedReceiverType = null
 }) => {
-  const receiverTypes = [{id: 'Subject', name: 'Subject'}, {id: 'User', name: 'User'}]
+  const receiverTypes = [{ id: "Subject", name: "Subject" }, { id: "User", name: "User" }];
 
   return (
     <BorderBox>
@@ -52,10 +53,11 @@ const MessageRule = ({
         onChange={({ value }) => onChange({ messageTemplateId: value.id })}
       />
       <RadioButtonsGroup
-        label={'Receiver Type'}
+        label={"Receiver Type"}
         items={receiverTypes}
-        value={receiverType}
-        onChange={(value)=> onChange({receiverType: value.id})}
+        disabled={fixedReceiverType ? true : false}
+        value={!fixedReceiverType ? receiverType : fixedReceiverType}
+        onChange={value => onChange({ receiverType: value.id })}
         toolTipKey={"APP_DESIGNER_SELECT_RECEIVER_TYPE"}
       />
       <AvniFormLabel label={"Schedule"} toolTipKey={"APP_DESIGNER_MESSAGE_SCHEDULE_RULE"} />

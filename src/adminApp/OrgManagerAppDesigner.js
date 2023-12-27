@@ -31,6 +31,7 @@ import SearchResultFields from "../formDesigner/components/SearchResultFields/Se
 import ApplicationMenuList from "./ApplicationMenu/ApplicationMenuList";
 import { Privilege } from "openchs-models";
 import UserInfo from "../common/model/UserInfo";
+import { UserMessagingConfig } from "../formDesigner/components/UserMessagingConfig";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -117,6 +118,11 @@ class OrgManagerAppDesigner extends Component {
             name="dashboard"
             options={{ label: "Offline Dashboard" }}
             list={DashboardList}
+          />
+          <Resource
+            name="userMessagingConfig"
+            options={{ label: "User Messaging Config" }}
+            list={UserMessagingConfig}
           />
           <Resource
             name="applicationMenu"
