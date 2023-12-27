@@ -216,13 +216,28 @@ export const sampleMessageScheduleRule = () => {
 });`;
 };
 
-export const sampleMessageRule = () => {
+export const sampleMessageRule = (entityType, fixedReceiverType) => {
+  if (fixedReceiverType && fixedReceiverType === "User" && entityType === "User") {
+    return sampleUserCreationMessageRule();
+  }
+
   return `//SAMPLE RULE EXAMPLE
 'use strict';
 ({params, imports}) => {
   const individual = params.entity;
   return {
     parameters: ['Ramesh']
+  }
+};`;
+};
+
+export const sampleUserCreationMessageRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) => {
+  const user = params.entity;
+  return {
+    parameters: [user.username]
   }
 };`;
 };

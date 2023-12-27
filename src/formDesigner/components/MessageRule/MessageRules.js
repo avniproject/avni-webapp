@@ -68,7 +68,7 @@ const MessageRules = ({
           onClick={() =>
             updateRules(rules.length)({
               scheduleRule: sampleMessageScheduleRule(),
-              messageRule: sampleMessageRule(),
+              messageRule: sampleMessageRule(entityType, fixedReceiverType),
               voided: false
             })
           }
