@@ -69,14 +69,12 @@ export const UserMessagingConfig = () => {
 
   const onSaveUserMessagingConfig = event => {
     return saveMessageRules(entityType, entityTypeId, rules)
+      .then(response => {
+        setNotificationAlert(true);
+        setEnableMessagingConfigSave(false);
+      })
       .catch(error => {
         setError(error.response.data.message);
-      })
-      .then(response => {
-        if (response.status === 200 || response.status === 201) {
-          setNotificationAlert(true);
-          setEnableMessagingConfigSave(false);
-        }
       });
   };
 
