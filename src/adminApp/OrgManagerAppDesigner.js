@@ -119,11 +119,18 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Offline Dashboard" }}
             list={DashboardList}
           />
-          <Resource
-            name="userMessagingConfig"
-            options={{ label: "User Messaging Config" }}
-            list={UserMessagingConfig}
-          />
+          {UserInfo.hasPrivilege(
+            userInfo,
+            Privilege.PrivilegeType.EditOrganisationConfiguration
+          ) ? (
+            <Resource
+              name="userMessagingConfig"
+              options={{ label: "User Messaging Config" }}
+              list={UserMessagingConfig}
+            />
+          ) : (
+            <div />
+          )}
           <Resource
             name="applicationMenu"
             options={{ label: "Application Menu" }}
