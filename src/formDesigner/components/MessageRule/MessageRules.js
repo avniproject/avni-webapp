@@ -17,7 +17,13 @@ const MessageRules = ({
 }) => {
   const updateRules = index => newRule => {
     const newState = [...rules];
-    newState[index] = { ...rules[index], ...newRule, entityType, entityTypeId };
+    newState[index] = {
+      ...rules[index],
+      receiverType: fixedReceiverType,
+      ...newRule,
+      entityType,
+      entityTypeId
+    };
     onChange(newState);
   };
 
