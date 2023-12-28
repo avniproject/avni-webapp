@@ -101,7 +101,12 @@ export const UserMessagingConfig = () => {
                     fixedReceiverType={receiverType}
                   />
                 ) : (
-                  <></>
+                  <div>
+                    <span style={{ fontSize: "1rem", fontFamily: "Roboto", fontWeight: "400" }}>
+                      Enable Messaging for Organisation in-order to be able to do this
+                      configuration.
+                    </span>
+                  </div>
                 )}
               </div>
             </ExpansionPanelDetails>
