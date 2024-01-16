@@ -85,6 +85,10 @@ deploy_platform_translations_production: deploy_platform_translations_live
 
 deploy_platform_translations_prerelease:
 	make deploy_platform_translations poolId=$(OPENCHS_PRERELEASE_USER_POOL_ID) clientId=$(OPENCHS_PRERELEASE_APP_CLIENT_ID) server=https://prerelease.avniproject.org port=443 username=admin password=$(OPENCHS_PRERELEASE_ADMIN_PASSWORD)
+deploy_platform_translations_rwb_staging:
+	make deploy_platform_translations poolId=$(RWB_STAGING_USER_POOL_ID) clientId=$(RWB_STAGING_APP_CLIENT_ID) server=https://staging.rwb.avniproject.org port=443 username=admin password=$(RWB_STAGING_ADMIN_PASSWORD)
+deploy_platform_translations_rwb_prod:
+	make deploy_platform_translations poolId=$(RWB_PROD_USER_POOL_ID) clientId=$(RWB_PROD_APP_CLIENT_ID) server=https://app.rwb.avniproject.org port=443 username=admin password=$(RWB_PROD_ADMIN_PASSWORD)
 
 deploy_static_local:
 	-rm -rf ../avni-server/static
