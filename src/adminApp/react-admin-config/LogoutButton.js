@@ -3,9 +3,12 @@ import { connect } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
 import ExitIcon from "@material-ui/icons/PowerSettingsNew";
 import UserIcon from "@material-ui/icons/AccountCircle";
+import LockIcon from "@material-ui/icons/Lock";
 import { logout } from "../../rootApp/ducks";
 import _ from "lodash";
 import moment from "moment";
+import ApplicationContext from "../../ApplicationContext";
+import httpClient from "../../common/utils/httpClient";
 
 const styles = {
   userIcon: {
@@ -36,6 +39,15 @@ const LogoutButton = ({ doLogout, username, onChangePassword = _.noop, lastSessi
         <span style={styles.lastLoginDate}>
           Last login: {moment(lastSessionTimeMillis).format("MMM Do YYYY h:mm:ss a")}
         </span>
+      )}
+      {ApplicationContext.isDevEnv() && (
+        <MenuItem
+          onClick={() => {
+            navigator.clipboard.writeText(httpClient.getAuthToken());
+          }}
+        >
+          <LockIcon /> Copy Token
+        </MenuItem>
       )}
     </div>
   );
