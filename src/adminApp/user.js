@@ -34,7 +34,7 @@ import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import { datePickerModes, localeChoices, timePickerModes } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
-import http from "common/utils/httpClient";
+import http, { httpClient } from "common/utils/httpClient";
 import {
   CustomToolbar,
   isRequired,
@@ -61,6 +61,7 @@ import Grid from "@material-ui/core/Grid";
 import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
+import IdpDetails from "../rootApp/security/IdpDetails";
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
@@ -512,13 +513,11 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
                 >
                   <span>@{nameSuffix}</span>
                 </AvniTextInput>
-                {formData.username && (
+                {httpClient.idp.idpType === IdpDetails.cognito && formData.username && (
                   <AvniBooleanInput
                     source={"customPassword"}
                     style={{ marginTop: "1em" }}
-                    label={
-                      "Set a custom password. If custom password is not set, temporary password will be first 4 characters of username and last 4 characters of phone number."
-                    }
+                    label="Set a custom password. If custom password is not set, temporary password will be first 4 characters of username and last 4 characters of phone number."
                     onChange={(e, newVal) => {
                       if (!isNil(newVal)) {
                         dispatch(change(REDUX_FORM_NAME, "customPassword", newVal));
@@ -530,7 +529,7 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
                     toolTipKey={"ADMIN_USER_SET_PASSWORD"}
                   />
                 )}
-                {formData.customPassword && (
+                {(httpClient.idp.idpType === IdpDetails.keycloak || formData.customPassword) && (
                   <Fragment>
                     <AvniPasswordInput
                       resettable
