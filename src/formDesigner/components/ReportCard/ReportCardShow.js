@@ -8,6 +8,7 @@ import RuleDisplay from "../../../adminApp/components/RuleDisplay";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import * as _ from "lodash";
+import { BooleanStatusInShow } from "../../../common/components/BooleanStatusInShow";
 
 const ReportCardShow = props => {
   const RenderCard = ({ card }) => {
@@ -49,6 +50,19 @@ const ReportCardShow = props => {
           <br />
           <ColorValue colour={card.color} />
         </div>
+        <p />
+        {!isStandardReportCard && (
+          <React.Fragment>
+            <BooleanStatusInShow status={card.nested} label={"Is nested?"} />
+          </React.Fragment>
+        )}
+        <p />
+        {!isStandardReportCard && card.nested && (
+          <React.Fragment>
+            <ShowLabelValue label={"Number of Cards"} value={card.count} />
+            <p />
+          </React.Fragment>
+        )}
         <p />
         <div>
           <FormLabel style={{ fontSize: "13px" }}>{"Icon"}</FormLabel>

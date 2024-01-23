@@ -8,6 +8,8 @@ export const ReportCardReducer = (reportCard, action) => {
       return { ...reportCard, color: action.payload };
     case "query":
       return { ...reportCard, query: action.payload };
+    case "nested":
+      return { ...reportCard, nested: action.payload.nested, count: action.payload.count };
     case "standardReportCardType":
       return { ...reportCard, standardReportCardType: action.payload };
     case "standardReportCardTypeId":
@@ -20,7 +22,9 @@ export const ReportCardReducer = (reportCard, action) => {
         color: action.payload.color,
         query: action.payload.query,
         standardReportCardTypeId: action.payload.standardReportCardTypeId,
-        iconFileS3Key: action.payload.iconFileS3Key
+        iconFileS3Key: action.payload.iconFileS3Key,
+        nested: action.payload.nested,
+        count: action.payload.count
       };
     default:
       return reportCard;

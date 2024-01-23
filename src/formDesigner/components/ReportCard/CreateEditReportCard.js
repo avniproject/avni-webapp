@@ -23,11 +23,15 @@ import { getErrorByKey } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
 
+const MinimumNumberOfNestedCards = 1;
+const MaximumNumberOfNestedCards = 9;
 const initialState = {
   name: "",
   description: "",
   color: "#ff0000",
   query: "",
+  nested: false,
+  count: MinimumNumberOfNestedCards,
   iconFileS3Key: "",
   standardReportCardType: {}
 };
@@ -84,13 +88,14 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   React.useEffect(() => {
     if (isStandardReportCard) {
       dispatch({ type: "query", payload: null });
+      dispatch({ type: "nested", payload: { nested: false, count: MinimumNumberOfNestedCards } });
     } else {
       dispatch({ type: "standardReportCardType", payload: null });
     }
   }, [isStandardReportCard]);
 
   const validateRequest = () => {
-    const { name, color, query, standardReportCardType } = card;
+    const { name, color, query, nested, count, standardReportCardType } = card;
     let isValid = true;
     setError([]);
     if (isEmpty(name)) {
@@ -109,6 +114,45 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       setError([...error, { key: "EMPTY_QUERY", message: "Query cannot be empty" }]);
       isValid = false;
     }
+    if (isStandardReportCard && nested) {
+      setError([
+        ...error,
+        {
+          key: "DISALLOWED_NESTED",
+          message: "Standard Report Type Card cannot be marked as Nested"
+        }
+      ]);
+      isValid = false;
+    }
+    if (isStandardReportCard && count !== 1) {
+      setError([
+        ...error,
+        {
+          key: "INVALID_NESTED_CARD_COUNT",
+          message: "Standard Report Type Card count should always be 1"
+        }
+      ]);
+      isValid = false;
+    }
+    if (
+      !isStandardReportCard &&
+      nested &&
+      (count < MinimumNumberOfNestedCards || count > MaximumNumberOfNestedCards)
+    ) {
+      setError([
+        ...error,
+        {
+          key: "INVALID_NESTED_CARD_COUNT",
+          message: "Nested Card count cannot be less than 1 or greater than 9"
+        }
+      ]);
+      isValid = false;
+    }
+    //TODO Add Error for keys:
+    // - DISALLOWED_NESTED => "Standard Report Type Card cannot be marked as Nested"
+    // - INVALID_NESTED_CARD_COUNT => "Standard Report Type Card count should always be 1" || "Nested Card count cannot be less than 1 or greater than 9"
+
+    //TODO Check if validation of response entity format is doable on query
     return isValid;
   };
 
@@ -126,6 +170,8 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         description: card.description,
         color: card.color,
         query: card.query,
+        nested: card.nested,
+        count: card.count,
         standardReportCardTypeId: card.standardReportCardType && card.standardReportCardType.id,
         iconFileS3Key: s3FileKey
       })
@@ -201,6 +247,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           color={card.color}
           onChange={color => dispatch({ type: "color", payload: color })}
         />
+        {getErrorByKey(error, "EMPTY_COLOR")}
         <p />
         <AvniImageUpload
           onSelect={setFile}
@@ -212,13 +259,52 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           allowUpload={true}
         />
         <p />
-        {getErrorByKey(error, "EMPTY_COLOR")}
         <AvniSwitch
           checked={isStandardReportCard}
           onChange={event => setIsStandardReportCard(!isStandardReportCard)}
           name="Is Standard Report Card?"
           toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
         />
+        <p />
+        {getErrorByKey(error, "EMPTY_NESTED")}
+        {!isStandardReportCard && (
+          <AvniSwitch
+            checked={!isStandardReportCard && card.nested}
+            onChange={event =>
+              dispatch({
+                type: "nested",
+                payload: { nested: !card.nested, count: MinimumNumberOfNestedCards }
+              })
+            }
+            name="Is a Nested Report Card?"
+            toolTipKey={"APP_DESIGNER_CARD_IS_NESTED"}
+          />
+        )}
+        {/*TODO Add tool tip for APP_DESIGNER_CARD_IS_NESTED*/}
+        <p />
+        {!isStandardReportCard && card.nested && (
+          <AvniSelect
+            label="Count of Nested Cards"
+            value={card.count}
+            style={{ width: "200px" }}
+            required={!isStandardReportCard && card.nested}
+            onChange={event =>
+              dispatch({
+                type: "nested",
+                payload: { nested: card.nested, count: event.target.value }
+              })
+            }
+            options={Array.from({ length: MaximumNumberOfNestedCards }, (_, i) => i + 1).map(
+              (num, index) => (
+                <MenuItem value={num} key={index}>
+                  {num}
+                </MenuItem>
+              )
+            )}
+            toolTipKey={"APP_DESIGNER_CARD_COUNT"}
+          />
+        )}
+        {/*TODO Add tool tip for APP_DESIGNER_CARD_COUNT*/}
         <p />
         {isStandardReportCard && (
           <AvniSelect
