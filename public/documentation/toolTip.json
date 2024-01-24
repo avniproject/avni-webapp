@@ -156,6 +156,8 @@
   "APP_DESIGNER_CARD_ICON": "Icon of the card",
   "APP_DESIGNER_CARD_QUERY": "Actual query function to fetch subjects",
   "APP_DESIGNER_CARD_IS_STANDARD_TYPE": "Do you want to use a standard report card?",
+  "APP_DESIGNER_CARD_IS_NESTED": "Is this a Nested report card?",
+  "APP_DESIGNER_CARD_COUNT": "The number of Nested report cards that will be generated from this one report card's query",
   "APP_DESIGNER_DASHBOARD_NAME": "Name of the dashboard",
   "APP_DESIGNER_DASHBOARD_DESCRIPTION": "Dashboard description",
   "APP_DESIGNER_DASHBOARD_CARDS": "All the cards that will be shown in this dashboard",

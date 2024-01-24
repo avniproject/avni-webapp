@@ -148,9 +148,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       ]);
       isValid = false;
     }
-    //TODO Add Error for keys:
-    // - DISALLOWED_NESTED => "Standard Report Type Card cannot be marked as Nested"
-    // - INVALID_NESTED_CARD_COUNT => "Standard Report Type Card count should always be 1" || "Nested Card count cannot be less than 1 or greater than 9"
 
     //TODO Check if validation of response entity format is doable on query
     return isValid;
@@ -280,7 +277,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             toolTipKey={"APP_DESIGNER_CARD_IS_NESTED"}
           />
         )}
-        {/*TODO Add tool tip for APP_DESIGNER_CARD_IS_NESTED*/}
         <p />
         {!isStandardReportCard && card.nested && (
           <AvniSelect
@@ -304,7 +300,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             toolTipKey={"APP_DESIGNER_CARD_COUNT"}
           />
         )}
-        {/*TODO Add tool tip for APP_DESIGNER_CARD_COUNT*/}
         <p />
         {isStandardReportCard && (
           <AvniSelect
@@ -337,6 +332,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {getErrorByKey(error, "EMPTY_QUERY")}
         <p />
         {getErrorByKey(error, "SERVER_ERROR")}
+        <p />
+        {getErrorByKey(error, "DISALLOWED_NESTED")}
+        <p />
+        {getErrorByKey(error, "INVALID_NESTED_CARD_COUNT")}
         <Grid container direction={"row"}>
           <Grid item xs={1}>
             <SaveComponent name="save" onSubmit={onSave} />
