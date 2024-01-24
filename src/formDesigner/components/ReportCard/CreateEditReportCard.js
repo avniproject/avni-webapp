@@ -273,7 +273,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
                 payload: { nested: !card.nested, count: MinimumNumberOfNestedCards }
               })
             }
-            name="Is a Nested Report Card?"
+            name="Is Nested Report Card?"
             toolTipKey={"APP_DESIGNER_CARD_IS_NESTED"}
           />
         )}
