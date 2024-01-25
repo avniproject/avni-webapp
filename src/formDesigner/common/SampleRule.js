@@ -195,12 +195,44 @@ export const sampleWorkListUpdationRule = () => {
 };`;
 };
 
-export const sampleCardQuery = () => {
-  return `// Documentation - https://docs.mongodb.com/realm-legacy/docs/javascript/latest/index.html#queries
+export const sampleCardQuery = isNested => {
+  if (isNested) {
+    return `// Documentation - https://docs.mongodb.com/realm-legacy/docs/javascript/latest/index.html#queries
+'use strict';
+({params, imports}) => {
+    const individualsList = params.db.objects('Individual').filtered("individual.voided == false");
+    // const firstFilterIndividualsList = _.filter(individualsList, function(o) { return cond1; });
+    // const secondFilterIndividualsList = _.filter(individualsList, function(o) { return cond2; });
+    // return {reportCards: [
+    //     {
+    //         cardName: 'nested-1',
+    //         cardColor: '#123456',
+    //         textColor: '#654321',
+    //         primaryValue: firstFilterIndividualsList.length,
+    //         secondaryValue: '(5%)',
+    //         lineListFunction: () => {
+    //             return params.db.objects('Individual').filtered("individual.voided == false && cond1")
+    //         }
+    //     },
+    //     {
+    //         cardName: 'nested-2',
+    //         cardColor: '#654321',
+    //         textColor: '#123456',
+    //         primaryValue: secondFilterIndividualsList.length,
+    //         secondaryValue: '(5%)',
+    //         lineListFunction: () => {
+    //             return params.db.objects('Individual').filtered("individual.voided == false && cond2")
+    //         }
+    //     }
+    // ]
+};`;
+  } else {
+    return `// Documentation - https://docs.mongodb.com/realm-legacy/docs/javascript/latest/index.html#queries
 'use strict';
 ({params, imports}) => {
     // return params.db.objects('Individual').filtered("individual.voided == false");
 };`;
+  }
 };
 
 export const sampleLinkFunction = () => {

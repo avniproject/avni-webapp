@@ -322,7 +322,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           <React.Fragment>
             <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
             <JSEditor
-              value={card.query || sampleCardQuery()}
+              value={card.query || sampleCardQuery(card.nested)}
               onValueChange={event => dispatch({ type: "query", payload: event })}
             />
           </React.Fragment>
