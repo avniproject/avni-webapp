@@ -1,6 +1,8 @@
 version: 2.1
 orbs:
   cypress: cypress-io/cypress@1.26.0
+  aws-cli: circleci/aws-cli@4.1.1
+
 commands:
   deploy:
     description: "Deployment of webapp"
@@ -75,6 +77,25 @@ commands:
             cd ~/artifacts
             npm install https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8
             echo deploy_platform_translations_${CIRCLE_JOB%_deploy} | tr '[:upper:]' '[:lower:]' | xargs make || true
+
+  setup_server_access:
+    description: Generate and copy temporary keys to server
+    parameters:
+      instance-id:
+        type: string
+      os-user:
+        type: string
+        default: ubuntu
+      availability-zone:
+        type: string
+        default: ap-south-1a
+    steps:
+      - run: rm -rf /tmp/temp_rsa_key*
+      - run: ssh-keygen -b 2048 -t rsa -f /tmp/temp_rsa_key -q -N ""
+      - run: eval `ssh-agent -s`
+      - run: ssh-add /tmp/temp_rsa_key
+      - run: |
+          aws ec2-instance-connect send-ssh-public-key --instance-id << parameters.instance-id >> --availability-zone << parameters.availability-zone >> --instance-os-user << parameters.os-user >> --no-paginate --ssh-public-key file:///tmp/temp_rsa_key.pub --output text | head -1
 
 jobs:
   app_test:
@@ -215,6 +236,34 @@ jobs:
       - deploy_ansible:
           env: "prod"
 
+  RWB_STAGING_deploy:
+    docker:
+      - image: cimg/deploy:2023.09-node
+    working_directory: ~/
+    steps:
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::730335671779:role/avni_circleci_instance_connect"
+          region: "ap-south-1"
+      - setup_server_access:
+          instance-id: "i-00b50ac6e8413fdca"
+          availability-zone: "ap-south-1b"
+      - deploy_ansible:
+          env: "rwb-staging"
+
+  RWB_PRODUCTION_deploy:
+    docker:
+      - image: cimg/deploy:2023.09-node
+    working_directory: ~/
+    steps:
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::730335671779:role/avni_circleci_instance_connect"
+          region: "ap-south-1"
+      - setup_server_access:
+          instance-id: "i-015a3839bfe137346"
+          availability-zone: "ap-south-1a"
+      - deploy_ansible:
+          env: "rwb-prod"
+
 tags_filter: &tags_filter
   filters:
     tags:
@@ -280,6 +329,26 @@ workflows:
           context: prod-deploy
           requires:
             - PRODUCTION_approve
+      - RWB_STAGING_approve:
+          type: approval
+          requires:
+            - app_build
+      - RWB_STAGING_deploy:
+          context:
+            - RWB_AWS_OIDC
+            - non-prod-deploy
+          requires:
+            - RWB_STAGING_approve
+      - RWB_PRODUCTION_approve:
+          type: approval
+          requires:
+            - app_build
+      - RWB_PRODUCTION_deploy:
+          context:
+            - RWB_AWS_OIDC
+            - prod-deploy
+          requires:
+            - RWB_PRODUCTION_approve
 
 notify:
   webhooks:
