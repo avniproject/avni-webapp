@@ -1,8 +1,9 @@
 import React from "react";
 import { isEmpty, toLower } from "lodash";
-import http from "../../common/utils/httpClient";
 import { useSelector } from "react-redux";
 import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
+import MediaService from "../../adminApp/service/MediaService";
+import CustomizedSnackbar from "./CustomizedSnackbar";
 
 const SubjectProfilePicture = ({
   allowEnlargementOnClick,
@@ -22,6 +23,7 @@ const SubjectProfilePicture = ({
   const label = isSubjectProfileIconSetup ? firstName : subjectTypeName;
   const [signedURL, setSignedURL] = React.useState();
   const [modalState, setModalState] = React.useState(false);
+  const [errorLoadingProfileImage, setErrorLoadingProfileImage] = React.useState(false);
 
   const handleShowDialog = () => {
     allowEnlargementOnClick && setModalState(!modalState);
@@ -30,16 +32,20 @@ const SubjectProfilePicture = ({
   React.useEffect(() => {
     let urlToUse = isSubjectProfileIconSetup ? profilePicture : subjectType.iconFileS3Key;
     if (!isEmpty(urlToUse)) {
-      http
-        .get(http.withParams(`/media/signedUrl`, { url: urlToUse }))
-        .then(res => res.data)
-        .then(res => setSignedURL(res));
+      MediaService.getMedia(urlToUse)
+        .then(res => setSignedURL(res))
+        .catch(() => setErrorLoadingProfileImage(true));
     }
   }, [isSubjectProfileIconSetup, subjectType]);
 
   const renderIcon = url => {
     return (
       <div>
+        <CustomizedSnackbar
+          defaultSnackbarStatus={errorLoadingProfileImage}
+          message="Profile image URL is not correct or couldn't be loaded."
+          onClose={() => setErrorLoadingProfileImage(false)}
+        />
         <img
           className="circular_image"
           onClick={handleShowDialog}

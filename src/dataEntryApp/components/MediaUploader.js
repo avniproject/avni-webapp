@@ -12,6 +12,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
 import { Concept } from "avni-models";
 import { FilePreview } from "./FilePreview";
+import MediaService from "../../adminApp/service/MediaService";
 
 const useStyles = makeStyles(theme => ({
   labelStyle: {
@@ -79,10 +80,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
 
   useEffect(() => {
     if (!isEmpty(obsValue)) {
-      http
-        .get(http.withParams(`/media/signedUrl`, { url: obsValue }))
-        .then(res => res.data)
-        .then(res => setPreview(res));
+      MediaService.getMedia(obsValue).then(res => setPreview(res));
     }
   }, [obsValue]);
 

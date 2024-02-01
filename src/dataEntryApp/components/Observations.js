@@ -21,6 +21,7 @@ import { AudioPlayer } from "./AudioPlayer";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import ReportProblemIcon from "@material-ui/icons/ReportProblem";
 import _ from "lodash";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -49,6 +50,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+class MediaData {
+  static MissingSignedMediaMessage =
+    "Please check the url for this observation as it could not be signed.";
+
+  constructor(url, type, altTag, unsignedUrl) {
+    this.url = url;
+    this.type = type;
+    this.altTag = altTag;
+    this.unsignedUrl = unsignedUrl;
+  }
+}
+
 const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
   const i = new i18n();
   const { t } = useTranslation();
@@ -56,7 +69,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const [showMedia, setShowMedia] = React.useState(false);
   const [currentMediaItemIndex, setCurrentMediaItemIndex] = React.useState(0);
-  const [mediaSignedUrls, setMediaSignedUrls] = React.useState([]);
+  const [mediaDataList, setMediaDataList] = React.useState([]);
 
   if (isNil(observations)) {
     return <div />;
@@ -117,38 +130,50 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   };
 
   const openMediaInNewTab = mediaUrl => {
-    window.open(mediaSignedUrls.find(media => media.url.startsWith(mediaUrl)).url);
+    const mediaData = mediaDataList.find(x => !_.isNil(x.url) && x.url.startsWith(mediaUrl));
+    window.open(mediaData.url);
   };
 
-  const imageVideoOptions = mediaUrl => {
+  const imageVideoOptions = unsignedMediaUrl => {
+    const space = <> | </>;
+    const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
+    const couldntSignMessage = MediaData.MissingSignedMediaMessage + ". Value: " + unsignedMediaUrl;
     return (
       <div>
-        <Link
-          to={"#"}
-          onClick={event => {
-            event.preventDefault();
-            showMediaOverlay(mediaUrl);
-          }}
-        >
-          {t("View Media")}
-        </Link>{" "}
-        |{" "}
-        <Link
-          to={"#"}
-          onClick={event => {
-            event.preventDefault();
-            openMediaInNewTab(mediaUrl);
-          }}
-        >
-          {t("Open in New Tab")}
-        </Link>
+        {_.isNil(_.get(mediaData, "url")) ? (
+          couldntSignMessage
+        ) : (
+          <>
+            <Link
+              to={"#"}
+              onClick={event => {
+                event.preventDefault();
+                showMediaOverlay(unsignedMediaUrl);
+              }}
+            >
+              {t("View Media")}
+            </Link>
+            {space}
+            <Link
+              to={"#"}
+              onClick={event => {
+                event.preventDefault();
+                openMediaInNewTab(unsignedMediaUrl);
+              }}
+            >
+              {t("Open in New Tab")}
+            </Link>
+          </>
+        )}
       </div>
     );
   };
 
   const fileOptions = conceptName => {
-    const signedURL = get(find(mediaSignedUrls, ({ altTag }) => altTag === conceptName), "url");
-    return (
+    const signedURL = get(find(mediaDataList, ({ altTag }) => altTag === conceptName), "url");
+    return _.isNil(signedURL) ? (
+      <TextField>MediaData.MissingSignedMediaMessage</TextField>
+    ) : (
       <Link
         to={"#"}
         onClick={event => {
@@ -161,13 +186,13 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     );
   };
 
-  const renderMedia = (mediaUrl, concept) => {
+  const renderMedia = (unsignedMediaUrl, concept) => {
     switch (concept.datatype) {
       case Concept.dataType.Audio:
-        return <AudioPlayer url={mediaUrl} />;
+        return <AudioPlayer url={unsignedMediaUrl} />;
       case Concept.dataType.Image:
       case Concept.dataType.Video:
-        return imageVideoOptions(mediaUrl);
+        return imageVideoOptions(unsignedMediaUrl);
       case Concept.dataType.File:
         return fileOptions(concept.name);
       default:
@@ -176,7 +201,11 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   };
 
   const getSignedUrl = async url => {
-    return await http.get(`/media/signedUrl?url=${url}`);
+    try {
+      return await http.get(`/media/signedUrl?url=${url}`);
+    } catch (e) {
+      return null;
+    }
   };
 
   const refreshSignedUrlsForMedia = async () => {
@@ -184,18 +213,22 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       return await Promise.all(
         mediaObservations.map(async obs => {
           const signedUrl = await getSignedUrl(obs.valueJSON.answer);
-          return {
-            url: signedUrl.data,
-            type: obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype),
-            altTag: obs.concept.name
-          };
+          const type = obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype);
+          return new MediaData(
+            _.get(signedUrl, "data"),
+            type,
+            obs.concept.name,
+            obs.valueJSON.answer
+          );
         })
       );
     }
   };
 
-  const showMediaOverlay = url => {
-    setCurrentMediaItemIndex(mediaObservations.findIndex(obs => obs.valueJSON.answer === url));
+  const showMediaOverlay = unsignedMediaUrl => {
+    setCurrentMediaItemIndex(
+      mediaObservations.findIndex(obs => obs.valueJSON.answer === unsignedMediaUrl)
+    );
     setShowMedia(true);
   };
 
@@ -209,12 +242,12 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   );
 
   React.useEffect(() => {
-    refreshSignedUrlsForMedia().then(signedUrls => setMediaSignedUrls(signedUrls));
+    refreshSignedUrlsForMedia().then(mediaDataList => setMediaDataList(mediaDataList));
   }, []);
 
   React.useEffect(() => {
     const refreshedMediaUrls = setInterval(async () => {
-      refreshSignedUrlsForMedia().then(signedUrls => setMediaSignedUrls(signedUrls));
+      refreshSignedUrlsForMedia().then(signedUrls => setMediaDataList(signedUrls));
     }, 110000); //config on server for signed url expiry is 2 minutes. Refreshing it before that.
 
     return () => clearInterval(refreshedMediaUrls);
@@ -303,7 +336,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       </Table>
       {showMedia && (
         <MediaObservations
-          mediaData={filter(mediaSignedUrls, ({ type }) => type !== "file")}
+          mediaDataList={filter(mediaDataList, mediaData => mediaData.type !== "file")}
           currentMediaItemIndex={currentMediaItemIndex}
           onClose={() => setShowMedia(false)}
         />

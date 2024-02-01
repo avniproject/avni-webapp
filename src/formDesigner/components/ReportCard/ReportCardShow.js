@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 import * as _ from "lodash";
 import { BooleanStatusInShow } from "../../../common/components/BooleanStatusInShow";
+import MediaService from "../../../adminApp/service/MediaService";
 
 const ReportCardShow = props => {
   const RenderCard = ({ card }) => {
@@ -30,12 +31,9 @@ const ReportCardShow = props => {
 
     React.useEffect(() => {
       if (!_.isNil(card.iconFileS3Key) && !_.isEmpty(card.iconFileS3Key)) {
-        http
-          .get(http.withParams(`/media/signedUrl`, { url: card.iconFileS3Key }))
-          .then(res => res.data)
-          .then(res => {
-            setIconPreviewUrl(res);
-          });
+        MediaService.getMedia(card.iconFileS3Key).then(res => {
+          setIconPreviewUrl(res);
+        });
       }
     }, [card.iconFileS3Key]);
 

@@ -4,9 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, IconButton, Typography } from "@material-ui/core";
 import { ToolTipContainer } from "./ToolTipContainer";
 import FormControl from "@material-ui/core/FormControl";
-import http from "../utils/httpClient";
 import AddAPhoto from "@material-ui/icons/AddAPhoto";
 import CloseIcon from "@material-ui/icons/Close";
+import MediaService from "../../adminApp/service/MediaService";
 
 const useStyles = makeStyles(theme => ({
   item: {
@@ -46,12 +46,9 @@ export const AvniImageUpload = ({
 
   React.useEffect(() => {
     if (!isEmpty(oldImgUrl)) {
-      http
-        .get(http.withParams(`/media/signedUrl`, { url: oldImgUrl }))
-        .then(res => res.data)
-        .then(res => {
-          setIconPreview(res);
-        });
+      MediaService.getMedia(oldImgUrl).then(res => {
+        setIconPreview(res);
+      });
     }
   }, [oldImgUrl]);
 

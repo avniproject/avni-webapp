@@ -6,6 +6,7 @@ import { green } from "@material-ui/core/colors";
 import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import { makeStyles } from "@material-ui/core/styles";
+import _ from "lodash";
 
 const variantIcon = {
   success: CheckCircleIcon
@@ -55,7 +56,7 @@ MySnackbarContentWrapper.propTypes = {
   variant: PropTypes.oneOf(["success"]).isRequired
 };
 
-export default function CustomizedSnackbar(props) {
+export default function CustomizedSnackbar({ defaultSnackbarStatus, message, onClose = _.noop }) {
   return (
     <div>
       <Snackbar
@@ -63,10 +64,11 @@ export default function CustomizedSnackbar(props) {
           vertical: "bottom",
           horizontal: "center"
         }}
-        open={props.defaultSnackbarStatus}
+        open={defaultSnackbarStatus}
         autoHideDuration={2000}
+        onClose={() => onClose()}
       >
-        <MySnackbarContentWrapper variant="success" message={props.message} />
+        <MySnackbarContentWrapper variant="success" message={message} />
       </Snackbar>
     </div>
   );

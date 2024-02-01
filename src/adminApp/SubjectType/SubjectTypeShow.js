@@ -21,6 +21,7 @@ import MessageRules from "../../formDesigner/components/MessageRule/MessageRules
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import MediaService from "../service/MediaService";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -56,12 +57,9 @@ const SubjectTypeShow = props => {
 
   React.useEffect(() => {
     if (subjectType.iconFileS3Key != null) {
-      http
-        .get(http.withParams(`/media/signedUrl`, { url: subjectType.iconFileS3Key }))
-        .then(res => res.data)
-        .then(res => {
-          setIconPreviewUrl(res);
-        });
+      MediaService.getMedia(subjectType.iconFileS3Key).then(res => {
+        setIconPreviewUrl(res);
+      });
     }
   }, [subjectType.iconFileS3Key]);
 

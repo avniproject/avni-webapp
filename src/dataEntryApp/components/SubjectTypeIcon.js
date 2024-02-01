@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty, toLower } from "lodash";
-import http from "../../common/utils/httpClient";
+import MediaService from "../../adminApp/service/MediaService";
 
 const SubjectTypeIcon = ({ subjectType, size, style }) => {
   const label = subjectType.name;
@@ -9,8 +9,7 @@ const SubjectTypeIcon = ({ subjectType, size, style }) => {
 
   React.useEffect(() => {
     if (isIconSetup && isEmpty(signedURL)) {
-      http
-        .get(http.withParams(`/media/signedUrl`, { url: subjectType.iconFileS3Key }))
+      MediaService.getMedia(subjectType.iconFileS3Key)
         .then(res => res.data)
         .then(res => setSignedURL(res));
     }
