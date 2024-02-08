@@ -125,6 +125,16 @@ export const sampleDecisionRule = entityName => {
 };`;
 };
 
+export const sampleEditFormRule = () => {
+  return `//SAMPLE EDIT FORM RULE
+  "use strict";
+({params, imports}) => {
+    const {entity, form, services, entityContext, myUserGroups, userInfo} = params;
+    const output = {}; // https://avni.readme.io/docs/writing-rules#16-edit-form-rule
+    return output;
+};`;
+};
+
 export const sampleVisitScheduleRule = entityName => {
   return `//SAMPLE RULE EXAMPLE
 "use strict";

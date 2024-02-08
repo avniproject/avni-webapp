@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import {
   sampleChecklistRule,
   sampleDecisionRule,
+  sampleEditFormRule,
   sampleTaskScheduleRule,
   sampleValidationRule,
   sampleVisitScheduleRule
@@ -93,6 +94,18 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
   };
   return (
     <div>
+      <RulePanel
+        title={"Edit Form Rule"}
+        details={
+          <Fragment>
+            <JSEditor
+              value={form.editFormRule || sampleEditFormRule()}
+              onValueChange={x => props.onRuleUpdate("editFormRule", x)}
+            />
+          </Fragment>
+        }
+      />
+
       <DeclarativeFormRule
         title={"Decision Rule"}
         onValueChange={jsonData => onDeclarativeRuleUpdate("decisionDeclarativeRule", jsonData)}

@@ -123,6 +123,7 @@
     "prettier": "1.17.1",
     "pretty-quick": "^1.11.1",
     "redux-saga-test-plan": "^3.7.0",
-    "source-map-explorer": "^2.0.1"
+    "source-map-explorer": "^2.0.1",
+    "@babel/helper-environment-visitor": "7.22.20"
   }
 }
