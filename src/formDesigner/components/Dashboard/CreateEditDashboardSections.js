@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, IconButton, Typography, Tooltip, MenuItem } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { isEmpty, map, size } from "lodash";
+import { isEmpty, filter, map, size } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -138,13 +138,24 @@ const CreateEditDashboardSections = props => {
             toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_ADD_CARDS"}
           />
           <SelectCardsView
-            dashboardCards={section.cards}
+            dashboardCards={filter(section.cards, card => card.voided === false)}
             dispatch={props.dispatch}
             addCards={cards => addCards(cards, section)}
           />
           <CreateEditDashboardSectionCards
             section={section}
-            cards={section.cards}
+            cards={filter(
+              section.cards,
+              card =>
+                card.voided === false &&
+                filter(
+                  section.dashboardSectionCardMappings,
+                  sectionCardMapping => sectionCardMapping.voided === false
+                )
+                  .map(sectionCardMapping => sectionCardMapping.reportCardUUID)
+                  .includes(card.uuid)
+            )}
+            // cards={section.cards}
             dispatch={props.dispatch}
             changeDisplayOrder={cards =>
               props.dispatch({ type: "changeDisplayOrder", payload: { cards, section } })
@@ -185,7 +196,15 @@ const CreateEditDashboardSections = props => {
         </Typography>
       </Grid>
       <Grid item sm={3}>
-        <Typography className={classes.questionCount}>{size(section.cards)} cards</Typography>
+        <Typography className={classes.questionCount}>
+          {size(
+            filter(
+              section.dashboardSectionCardMappings,
+              sectionCardMapping => sectionCardMapping.voided === false
+            )
+          )}{" "}
+          cards
+        </Typography>
       </Grid>
       <Grid item sm={2}>
         <IconButton aria-label="delete" onClick={() => handleDelete(section)}>

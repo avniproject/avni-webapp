@@ -6,7 +6,7 @@ import {
   Tooltip,
   ExpansionPanelDetails
 } from "@material-ui/core";
-import { isEmpty, map, orderBy, size } from "lodash";
+import { isEmpty, filter, map, orderBy, size } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -134,7 +134,13 @@ const ShowDashboardSections = ({ sections, history }) => {
                       </Grid>
                       <Grid item sm={3}>
                         <Typography className={classes.questionCount}>
-                          {size(section.cards)} cards
+                          {size(
+                            filter(
+                              section.dashboardSectionCardMappings,
+                              sectionCardMapping => sectionCardMapping.voided === false
+                            )
+                          )}{" "}
+                          cards
                         </Typography>
                       </Grid>
                     </Grid>
@@ -151,7 +157,17 @@ const ShowDashboardSections = ({ sections, history }) => {
                     <Grid item xs={12}>
                       <ShowDashboardSectionCards
                         section={section}
-                        cards={section.cards}
+                        cards={filter(
+                          section.cards,
+                          card =>
+                            card.voided === false &&
+                            filter(
+                              section.dashboardSectionCardMappings,
+                              sectionCardMapping => sectionCardMapping.voided === false
+                            )
+                              .map(sectionCardMapping => sectionCardMapping.reportCardUUID)
+                              .includes(card.uuid)
+                        )}
                         history={history}
                       />
                     </Grid>
