@@ -1,5 +1,5 @@
 import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
-import React, { cloneElement, Fragment, useEffect, useState } from "react";
+import React, { cloneElement, Fragment, useContext, useEffect, useState } from "react";
 import {
   ArrayField,
   ArrayInput,
@@ -62,6 +62,7 @@ import ConceptService from "../common/service/ConceptService";
 import Select from "react-select";
 import ReactSelectHelper from "../common/utils/ReactSelectHelper";
 import IdpDetails from "../rootApp/security/IdpDetails";
+import OrgManagerContext from "./OrgManagerContext";
 
 export const UserCreate = ({ user, organisation, userInfo, ...props }) => (
   <Paper>
@@ -96,38 +97,45 @@ export const StringToLabelObject = ({ record, children, ...rest }) =>
     ...rest
   });
 
-export const UserList = ({ organisation, ...props }) => (
-  <List
-    {...props}
-    bulkActions={false}
-    filter={{ organisationId: organisation.id }}
-    filters={<UserFilter />}
-    title={`${organisation.name} Users`}
-  >
-    <Datagrid rowClick="show">
-      <TextField label="Login ID" source="username" />
-      <TextField source="name" label="Name of the Person" />
-      <ReferenceField
-        label="Catchment"
-        source="catchmentId"
-        reference="catchment"
-        linkType="show"
-        allowEmpty
-      >
-        <TextField source="name" />
-      </ReferenceField>
-      <TextField source="email" label="Email Address" />
-      <TextField source="phoneNumber" label="Phone Number" />
-      <UserGroupsDisplay style={{ maxWidth: "40em" }} label="User Groups" />
-      <FunctionField
-        label="Status"
-        render={user =>
-          user.voided === true ? "Deleted" : user.disabledInCognito === true ? "Disabled" : "Active"
-        }
-      />
-    </Datagrid>
-  </List>
-);
+export const UserList = ({ ...props }) => {
+  const { organisation } = useContext(OrgManagerContext);
+  return (
+    <List
+      {...props}
+      bulkActions={false}
+      filter={{ organisationId: organisation.id }}
+      filters={<UserFilter />}
+      title={`${organisation.name} Users`}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Login ID" source="username" />
+        <TextField source="name" label="Name of the Person" />
+        <ReferenceField
+          label="Catchment"
+          source="catchmentId"
+          reference="catchment"
+          linkType="show"
+          allowEmpty
+        >
+          <TextField source="name" />
+        </ReferenceField>
+        <TextField source="email" label="Email Address" />
+        <TextField source="phoneNumber" label="Phone Number" />
+        <UserGroupsDisplay style={{ maxWidth: "40em" }} label="User Groups" />
+        <FunctionField
+          label="Status"
+          render={user =>
+            user.voided === true
+              ? "Deleted"
+              : user.disabledInCognito === true
+              ? "Disabled"
+              : "Active"
+          }
+        />
+      </Datagrid>
+    </List>
+  );
+};
 
 const CustomShowActions = ({ hasEditUserPrivilege, basePath, data, resource }) => {
   return (
