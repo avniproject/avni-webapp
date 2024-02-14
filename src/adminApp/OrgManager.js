@@ -41,6 +41,7 @@ import CurrentUserService from "../common/service/CurrentUserService";
 import DeploymentManager from "./DeploymentManager";
 import UserInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
+import _ from "lodash";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -49,6 +50,9 @@ class OrgManager extends Component {
 
   getChildContext() {
     return { store };
+  }
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return !_.isEqual(_.omit(nextProps, ["location"]), _.omit(this.props, ["location"]));
   }
 
   render() {
