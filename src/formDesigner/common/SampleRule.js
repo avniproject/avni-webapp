@@ -234,7 +234,7 @@ export const sampleCardQuery = isNested => {
     //             return params.db.objects('Individual').filtered("individual.voided == false && cond2")
     //         }
     //     }
-    // ]
+    // ]}
 };`;
   } else {
     return `// Documentation - https://docs.mongodb.com/realm-legacy/docs/javascript/latest/index.html#queries
