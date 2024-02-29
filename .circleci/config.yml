@@ -114,7 +114,7 @@ jobs:
   app_build:
     docker:
       - image: cimg/node:20.2.0
-    resource_class: medium+
+    resource_class: large
 
     working_directory: ~/openchs-webapp
 
