@@ -167,7 +167,7 @@ const formatLang = lang =>
     .map(lang => lang.name)
     .join("");
 
-const SubjectTypeSyncAttributeShow = ({ subjectType, ...props }) => (
+const SubjectTypeSyncAttributeShow = ({ subjectType, syncConceptValueMap, ...props }) => (
   <div style={{ marginTop: 8, padding: 10, border: "3px solid rgba(0, 0, 0, 0.05)" }}>
     <Typography gutterBottom variant={"subtitle1"}>{`Sync settings for Subject Type: ${
       subjectType.name
@@ -176,6 +176,7 @@ const SubjectTypeSyncAttributeShow = ({ subjectType, ...props }) => (
       <ConceptSyncAttributeShow
         subjectType={subjectType}
         syncAttributeName={"syncAttribute1"}
+        syncConceptValueMap={syncConceptValueMap}
         {...props}
       />
     )}
@@ -183,39 +184,34 @@ const SubjectTypeSyncAttributeShow = ({ subjectType, ...props }) => (
       <ConceptSyncAttributeShow
         subjectType={subjectType}
         syncAttributeName={"syncAttribute2"}
+        syncConceptValueMap={syncConceptValueMap}
         {...props}
       />
     )}
   </div>
 );
 
-const ConceptSyncAttributeShow = ({ subjectType, syncAttributeName, ...props }) => {
+const ConceptSyncAttributeShow = ({
+  subjectType,
+  syncConceptValueMap,
+  syncAttributeName,
+  ...props
+}) => {
   const syncSettings = get(props.record, ["syncSettings", subjectType.name], {});
   const conceptUUID = get(syncSettings, [syncAttributeName]);
   if (isEmpty(conceptUUID)) return null;
 
-  const [syncConceptValueMap, setSyncConceptValueMap] = useState(new Map());
-  useEffect(() => {
-    let isMounted = true;
-    const newValMap = new Map();
-
-    ConceptService.getAnswerConcepts(conceptUUID).then(content => {
-      content.forEach(val => newValMap.set(val.id, val.name));
-      if (isMounted) {
-        setSyncConceptValueMap(newValMap);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [conceptUUID]);
   return (
     <div>
       <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>
         {startCase(syncAttributeName)}
       </span>
       {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
-        <Chip style={{ margin: "0.2em" }} label={syncConceptValueMap.get(value)} key={value} />
+        <Chip
+          style={{ margin: "0.2em" }}
+          label={syncConceptValueMap.get(value) || value}
+          key={value}
+        />
       ))}
     </div>
   );
@@ -258,7 +254,11 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         />
         <LineBreak />
         {map(syncAttributesData.subjectTypes, st => (
-          <SubjectTypeSyncAttributeShow subjectType={st} key={get(st, "name")} />
+          <SubjectTypeSyncAttributeShow
+            subjectType={st}
+            key={get(st, "name")}
+            syncConceptValueMap={syncAttributesData.syncConceptValueMap}
+          />
         ))}
         <FunctionField
           label="Preferred Language"
@@ -452,19 +452,51 @@ const initialSyncAttributes = { subjectTypes: [] };
 
 function fetchSyncAttributeData(setSyncAttributesData) {
   useEffect(() => {
-    http.get("/subjectType/syncAttributesData").then(res => {
+    let isMounted = true;
+    http.get("/subjectType/syncAttributesData").then(async res => {
       const {
         subjectTypes,
         anySubjectTypeDirectlyAssignable,
         anySubjectTypeSyncByLocation
       } = res.data;
       const sortedSubjectTypes = sortBy(subjectTypes, "id");
-      setSyncAttributesData({
-        subjectTypes: sortedSubjectTypes,
-        anySubjectTypeDirectlyAssignable,
-        anySubjectTypeSyncByLocation
+
+      const codedConceptUUIDSet = new Set();
+
+      sortedSubjectTypes.forEach(subject => {
+        const syncAttribute1UUID =
+          subject.syncAttribute1 &&
+          subject.syncAttribute1.dataType === "Coded" &&
+          subject.syncAttribute1.id;
+        const syncAttribute2UUID =
+          subject.syncAttribute2 &&
+          subject.syncAttribute2.dataType === "Coded" &&
+          subject.syncAttribute2.id;
+        if (syncAttribute1UUID) codedConceptUUIDSet.add(syncAttribute1UUID);
+        if (syncAttribute2UUID) codedConceptUUIDSet.add(syncAttribute2UUID);
       });
+
+      const syncConceptValueMap = new Map();
+
+      for (const conceptUUID of codedConceptUUIDSet) {
+        const content = await ConceptService.getAnswerConcepts(conceptUUID);
+        content.forEach(val => {
+          syncConceptValueMap.set(val.id, val.name);
+        });
+      }
+
+      if (isMounted) {
+        setSyncAttributesData({
+          subjectTypes: sortedSubjectTypes,
+          anySubjectTypeDirectlyAssignable,
+          anySubjectTypeSyncByLocation,
+          syncConceptValueMap
+        });
+      }
     });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 }
 

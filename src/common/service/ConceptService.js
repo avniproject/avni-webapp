@@ -9,7 +9,7 @@ class ConceptService {
       .then(response => response.data);
   }
 
-  static getAnswerConcepts(conceptUUID) {
+  static async getAnswerConcepts(conceptUUID) {
     return http
       .get(`/concept/answerConcepts/search/find?conceptUUID=${conceptUUID}`)
       .then(response => response.data.content);
