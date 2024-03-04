@@ -20,10 +20,8 @@ import { withStyles } from "@material-ui/core/styles";
 import ApplicationContext from "../../ApplicationContext";
 
 const fetchReportingSystem = async setReportingSystems => {
-  const data = await fetch("https://mocki.io/v1/4ecbcf7f-f1d5-46a7-a193-928678d3dd12").then(
-    response => response.json()
-  );
-  if (data.reportingSystems) setReportingSystems(data.reportingSystems);
+  const data = await fetch("/Config").then(response => response.json());
+  data.reportingSystems && setReportingSystems(data.reportingSystems);
 };
 
 function SignInView({
