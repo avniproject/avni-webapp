@@ -450,10 +450,35 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
 
 const initialSyncAttributes = { subjectTypes: [] };
 
+const getSyncConceptValueMap = async sortedSubjectTypes => {
+  const syncConceptValueMap = new Map();
+  const codedConceptUUIDSet = new Set();
+  sortedSubjectTypes.forEach(subject => {
+    const syncAttribute1UUID =
+      subject.syncAttribute1 &&
+      subject.syncAttribute1.dataType === "Coded" &&
+      subject.syncAttribute1.id;
+    const syncAttribute2UUID =
+      subject.syncAttribute2 &&
+      subject.syncAttribute2.dataType === "Coded" &&
+      subject.syncAttribute2.id;
+    syncAttribute1UUID && codedConceptUUIDSet.add(syncAttribute1UUID);
+    syncAttribute2UUID && codedConceptUUIDSet.add(syncAttribute2UUID);
+  });
+
+  for (const conceptUUID of codedConceptUUIDSet) {
+    const content = await ConceptService.getAnswerConcepts(conceptUUID);
+    content.forEach(val => {
+      syncConceptValueMap.set(val.id, val.name);
+    });
+  }
+  return syncConceptValueMap;
+};
+
 function fetchSyncAttributeData(setSyncAttributesData) {
   useEffect(() => {
     let isMounted = true;
-    http.get("/subjectType/syncAttributesData").then(async res => {
+    http.get("/subjectType/syncAttributesData").then(res => {
       const {
         subjectTypes,
         anySubjectTypeDirectlyAssignable,
@@ -461,38 +486,16 @@ function fetchSyncAttributeData(setSyncAttributesData) {
       } = res.data;
       const sortedSubjectTypes = sortBy(subjectTypes, "id");
 
-      const codedConceptUUIDSet = new Set();
-
-      sortedSubjectTypes.forEach(subject => {
-        const syncAttribute1UUID =
-          subject.syncAttribute1 &&
-          subject.syncAttribute1.dataType === "Coded" &&
-          subject.syncAttribute1.id;
-        const syncAttribute2UUID =
-          subject.syncAttribute2 &&
-          subject.syncAttribute2.dataType === "Coded" &&
-          subject.syncAttribute2.id;
-        if (syncAttribute1UUID) codedConceptUUIDSet.add(syncAttribute1UUID);
-        if (syncAttribute2UUID) codedConceptUUIDSet.add(syncAttribute2UUID);
+      getSyncConceptValueMap(sortedSubjectTypes).then(syncConceptValueMap => {
+        if (isMounted) {
+          setSyncAttributesData({
+            subjectTypes: sortedSubjectTypes,
+            anySubjectTypeDirectlyAssignable,
+            anySubjectTypeSyncByLocation,
+            syncConceptValueMap
+          });
+        }
       });
-
-      const syncConceptValueMap = new Map();
-
-      for (const conceptUUID of codedConceptUUIDSet) {
-        const content = await ConceptService.getAnswerConcepts(conceptUUID);
-        content.forEach(val => {
-          syncConceptValueMap.set(val.id, val.name);
-        });
-      }
-
-      if (isMounted) {
-        setSyncAttributesData({
-          subjectTypes: sortedSubjectTypes,
-          anySubjectTypeDirectlyAssignable,
-          anySubjectTypeSyncByLocation,
-          syncConceptValueMap
-        });
-      }
     });
     return () => {
       isMounted = false;
