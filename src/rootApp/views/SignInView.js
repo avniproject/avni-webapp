@@ -18,11 +18,7 @@ import React, { useEffect, useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import { withStyles } from "@material-ui/core/styles";
 import ApplicationContext from "../../ApplicationContext";
-
-const fetchReportingSystem = async setReportingSystems => {
-  const data = await fetch("/Config").then(response => response.json());
-  data.reportingSystems && setReportingSystems(data.reportingSystems);
-};
+import http from "common/utils/httpClient";
 
 function SignInView({
   classes,
@@ -37,7 +33,14 @@ function SignInView({
   const [reportingSystems, setReportingSystems] = useState(null);
 
   useEffect(() => {
-    fetchReportingSystem(setReportingSystems);
+    http
+      .get("/Config")
+      .then(
+        response =>
+          response.data &&
+          response.data.reportingSystems &&
+          setReportingSystems(response.data.reportingSystems)
+      );
     return () => {
       setReportingSystems(null);
     };
