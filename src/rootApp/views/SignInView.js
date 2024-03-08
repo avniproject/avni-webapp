@@ -41,9 +41,6 @@ function SignInView({
           response.data.reportingSystems &&
           setReportingSystems(response.data.reportingSystems)
       );
-    return () => {
-      setReportingSystems(null);
-    };
   }, []);
 
   return (
