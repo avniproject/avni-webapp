@@ -67,6 +67,18 @@ export const AdvancedSettingShow = ({ locationTypes, subjectType }) => {
         status={subjectType.directlyAssignable}
         label={"Sync By Direct Assignment"}
       />
+      {!isEmpty(subjectType.settings) && (
+        <div>
+          <BooleanStatusInShow
+            status={subjectType.settings.displayRegistrationDetails}
+            label={"Display Registration Details"}
+          />
+          <BooleanStatusInShow
+            status={subjectType.settings.displayPlannedEncounters}
+            label={"Display Planned Encounters"}
+          />
+        </div>
+      )}
       <ConceptSyncAttributesShow
         subjectType={subjectType}
         concept1Name={concept1Name}

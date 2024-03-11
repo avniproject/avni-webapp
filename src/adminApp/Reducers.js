@@ -191,6 +191,11 @@ export function subjectTypeReducer(subjectType, action) {
         ...subjectType,
         nameHelpText: action.payload
       };
+    case "settings":
+      return {
+        ...subjectType,
+        settings: { ...subjectType.settings, [action.payload.setting]: action.payload.value }
+      };
     default:
       return subjectType;
   }

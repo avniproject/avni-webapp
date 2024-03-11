@@ -20,5 +20,9 @@ export const subjectTypeInitialState = {
   subjectSummaryRule: "",
   programEligibilityCheckRule: "",
   shouldSyncByLocation: true,
-  lastNameOptional: false
+  lastNameOptional: false,
+  settings: {
+    displayRegistrationDetails: true,
+    displayPlannedEncounters: true
+  }
 };

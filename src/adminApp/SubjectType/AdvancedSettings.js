@@ -7,7 +7,7 @@ import { ValidFormat } from "./ValidFormat";
 import { CustomisedAccordionSummary } from "../components/CustomisedExpansionPanelSummary";
 import { findFormUuidForSubjectType } from "../domain/formMapping";
 import http from "../../common/utils/httpClient";
-import { forEach, get, includes } from "lodash";
+import { forEach, get, includes, isEmpty } from "lodash";
 import { OptionSelect } from "./OptionSelect";
 import { Accordion, AccordionDetails, Box, Input } from "@material-ui/core";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
@@ -198,6 +198,32 @@ export const AdvancedSettings = ({
             value={get(subjectType, `nameHelpText`, "")}
             onChange={event => dispatch({ type: "nameHelpText", payload: event.target.value })}
           />
+          {!isEmpty(subjectType.settings) && (
+            <div>
+              <AvniSwitch
+                checked={!!subjectType.settings.displayRegistrationDetails}
+                onChange={event =>
+                  dispatch({
+                    type: "settings",
+                    payload: { setting: "displayRegistrationDetails", value: event.target.checked }
+                  })
+                }
+                name="Display Registration Details"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_DISPLAY_REGISTRATION_DETAILS"}
+              />
+              <AvniSwitch
+                checked={!!subjectType.settings.displayPlannedEncounters}
+                onChange={event =>
+                  dispatch({
+                    type: "settings",
+                    payload: { setting: "displayPlannedEncounters", value: event.target.checked }
+                  })
+                }
+                name="Display Planned Encounters"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_DISPLAY_PLANNED_ENCOUNTERS"}
+              />
+            </div>
+          )}
           <Box component={"div"} mt={3} mb={2} p={2} border={1} borderColor={"#e1e1e1"}>
             <Typography gutterBottom variant={"subtitle1"}>
               {"Sync Settings"}
