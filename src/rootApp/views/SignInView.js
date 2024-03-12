@@ -39,6 +39,7 @@ function SignInView({
         response =>
           response.data &&
           response.data.reportingSystems &&
+          response.data.reportingSystems.length > 0 &&
           setReportingSystems(response.data.reportingSystems)
       );
   }, []);
