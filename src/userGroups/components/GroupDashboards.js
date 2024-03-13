@@ -12,6 +12,47 @@ import { RadioButtonUnchecked, RadioButtonChecked } from "@material-ui/icons";
 import Delete from "@material-ui/icons/DeleteOutline";
 import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
+function handleResponse(response, groupId, refresh) {
+  const [, error] = response;
+  if (error) {
+    alert(error);
+  } else {
+    refresh(groupId);
+  }
+}
+
+function addDashboardToGroupHandler(
+  event,
+  otherDashboardsOptionsRef,
+  dashboardsToBeAdded,
+  groupId,
+  refresh
+) {
+  event.preventDefault();
+  otherDashboardsOptionsRef.current.select.clearValue();
+
+  api
+    .addDashboardsToGroup(
+      dashboardsToBeAdded.map(dashboard => ({ dashboardId: dashboard.value, groupId: +groupId }))
+    )
+    .then(response => handleResponse(response, groupId, refresh));
+}
+
+function removeDashboardFromGroupHandler(event, rowData, groupId, refresh) {
+  api
+    .removeDashboardFromGroup(rowData.id)
+    .then(response => handleResponse(response, groupId, refresh));
+}
+
+function setDashboardType(
+  { id, groupId, dashboardId, primaryDashboard, secondaryDashboard },
+  refresh
+) {
+  api
+    .updateGroupDashboard(id, groupId, dashboardId, primaryDashboard, secondaryDashboard)
+    .then(response => handleResponse(response, groupId, refresh));
+}
+
 const GroupDashboards = ({
   getGroupDashboards,
   getAllDashboards,
@@ -59,46 +100,6 @@ const GroupDashboards = ({
     event && event.length > 0 ? setButtonDisabled(false) : setButtonDisabled(true);
   };
 
-  const addDashboardToGroupHandler = event => {
-    event.preventDefault();
-    otherDashboardsOptionsRef.current.select.clearValue();
-
-    api
-      .addDashboardsToGroup(
-        dashboardsToBeAdded.map(dashboard => ({ dashboardId: dashboard.value, groupId: +groupId }))
-      )
-      .then(response => {
-        const [response_data, error] = response;
-        if (!response_data && error) {
-          alert(error);
-        } else if (response_data) {
-          getGroupDashboards(groupId);
-        }
-      });
-  };
-
-  const removeDashboardFromGroupHandler = (event, rowData) => {
-    api.removeDashboardFromGroup(rowData.id).then(response => {
-      const [, error] = response;
-      if (error) {
-        alert(error);
-      } else {
-        getGroupDashboards(groupId);
-      }
-    });
-  };
-
-  const setPrimaryDashboard = ({ id, groupId, dashboardId }, primaryDashboard) => {
-    api.updateGroupDashboard(id, groupId, dashboardId, primaryDashboard).then(response => {
-      const [, error] = response;
-      if (error) {
-        alert(error);
-      } else {
-        getGroupDashboards(groupId);
-      }
-    });
-  };
-
   const columns = [
     { title: "Name", field: "dashboardName", searchable: true },
     { title: "Description", field: "dashboardDescription", searchable: true },
@@ -111,7 +112,27 @@ const GroupDashboards = ({
           icon={<RadioButtonUnchecked />}
           checkedIcon={<RadioButtonChecked />}
           checked={!!rowData.primaryDashboard}
-          onChange={e => setPrimaryDashboard(rowData, e.target.checked)}
+          onChange={e =>
+            setDashboardType({ ...rowData, primaryDashboard: e.target.checked }, getGroupDashboards)
+          }
+        />
+      )
+    },
+    {
+      title: "Is Secondary",
+      field: "secondaryDashboard",
+      searchable: false,
+      render: rowData => (
+        <Checkbox
+          icon={<RadioButtonUnchecked />}
+          checkedIcon={<RadioButtonChecked />}
+          checked={!!rowData.secondaryDashboard}
+          onChange={e =>
+            setDashboardType(
+              { ...rowData, secondaryDashboard: e.target.checked },
+              getGroupDashboards
+            )
+          }
         />
       )
     }
@@ -134,7 +155,15 @@ const GroupDashboards = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={event => addDashboardToGroupHandler(event)}
+            onClick={event =>
+              addDashboardToGroupHandler(
+                event,
+                otherDashboardsOptionsRef,
+                dashboardsToBeAdded,
+                groupId,
+                getGroupDashboards
+              )
+            }
             disabled={buttonDisabled}
             fullWidth={true}
           >
@@ -153,11 +182,12 @@ const GroupDashboards = ({
           rowData => ({
             icon: () => <Delete />,
             tooltip: "Remove dashboard from group",
-            onClick: (event, rowData) => removeDashboardFromGroupHandler(event, rowData)
+            onClick: (event, rowData) =>
+              removeDashboardFromGroupHandler(event, rowData, groupId, getGroupDashboards)
           })
         ]}
         options={{
-          actionsColumnIndex: 3,
+          actionsColumnIndex: 4,
           searchFieldAlignment: "left",
           headerStyle: {
             zIndex: 0
