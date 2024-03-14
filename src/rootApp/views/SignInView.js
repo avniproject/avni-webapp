@@ -14,10 +14,11 @@ import { RemoveRedEye } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SideImage from "../../avni-background.jpeg";
 import { withStyles } from "@material-ui/core/styles";
 import ApplicationContext from "../../ApplicationContext";
+import http from "common/utils/httpClient";
 
 function SignInView({
   classes,
@@ -29,6 +30,19 @@ function SignInView({
 }) {
   const [passwordIsMasked, setPasswordIsMasked] = useState(true);
   const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
+  const [reportingSystems, setReportingSystems] = useState(null);
+
+  useEffect(() => {
+    http
+      .get("/Config")
+      .then(
+        response =>
+          response.data &&
+          response.data.reportingSystems &&
+          response.data.reportingSystems.length > 0 &&
+          setReportingSystems(response.data.reportingSystems)
+      );
+  }, []);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -115,39 +129,49 @@ function SignInView({
             </form>
           </CardContent>
         </Card>
-        <Grid style={{ backgroundColor: "#f0f2f0" }}>
-          <CardHeader title={"View Reports"} />
-          <CardContent>
-            <Typography variant="body2" color="secondary">
-              Avni provides reports using one of two different external BI tools - Metabase and
-              Jasper Reports. You can find out the reports used by your organisation from your
-              system administrator.
-            </Typography>
-            <Typography variant="body2" color="secondary">
-              <br />
-              Choose your reporting system
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Link href={"https://reporting.avniproject.org"}>
-              <Button size="small" variant={"contained"} className={classes.submit}>
-                Metabase Reports
-              </Button>
-            </Link>
-            <Link
-              href={"https://reporting-jasper.avniproject.org/jasperserver"}
-              style={{ marginLeft: "56px" }}
-            >
-              <Button size="small" variant={"contained"} className={classes.submit}>
-                Jasper Reports
-              </Button>
-            </Link>
-          </CardActions>
-        </Grid>
+        {reportingSystems && <ShowReport classes={classes} reportingSystems={reportingSystems} />}
       </Grid>
     </Grid>
   );
 }
+
+const ShowReport = ({ classes, reportingSystems }) => {
+  return (
+    <>
+      <Grid style={{ backgroundColor: "#f0f2f0" }}>
+        <CardHeader title={"View Reports"} />
+        <CardContent>
+          <Typography variant="body2" color="secondary">
+            Avni provides reports using one of two different external BI tools - Metabase and Jasper
+            Reports. You can find out the reports used by your organisation from your system
+            administrator.
+          </Typography>
+          <Typography variant="body2" color="secondary">
+            <br />
+            Choose your reporting system
+          </Typography>
+        </CardContent>
+        <CardActions style={{ justifyContent: "space-evenly" }}>
+          {reportingSystems.map(({ name, url }) => (
+            <ReportDetails key={name} name={name} url={url} classes={classes} />
+          ))}
+        </CardActions>
+      </Grid>
+    </>
+  );
+};
+
+const ReportDetails = ({ name, url, classes }) => {
+  return (
+    <>
+      <Link href={url}>
+        <Button size="small" variant={"contained"} className={classes.submit}>
+          {name}
+        </Button>
+      </Link>
+    </>
+  );
+};
 
 const useStyles = theme => ({
   root: {
