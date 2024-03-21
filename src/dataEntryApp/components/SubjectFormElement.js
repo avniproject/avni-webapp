@@ -7,12 +7,11 @@ import { subjectService } from "../services/SubjectService";
 import { find, first, isEmpty, xor } from "lodash";
 import { FormHelperText } from "@material-ui/core";
 import { Individual } from "avni-models";
+import { Concept } from "openchs-models";
 
 const SubjectFormElement = props => {
   const { t } = useTranslation();
-  const subjectTypeUuid = props.formElement.concept.keyValues
-    .find(keyValue => keyValue.key === "subjectTypeUUID")
-    .value.replace(/^"(.*)"$/, "$1");
+  const subjectTypeUuid = props.formElement.concept.recordValueByKey(Concept.keys.subjectTypeUUID);
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
   const fieldLabel = props.formElement.name;
