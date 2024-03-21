@@ -10,9 +10,9 @@ import { Individual } from "avni-models";
 
 const SubjectFormElement = props => {
   const { t } = useTranslation();
-  const subjectTypeUuid = JSON.parse(
-    props.formElement.concept.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID").value
-  );
+  const subjectTypeUuid = props.formElement.concept.keyValues
+    .find(keyValue => keyValue.key === "subjectTypeUUID")
+    .value.replace(/^"(.*)"$/, "$1");
   const isMultiSelect = props.formElement.type === "MultiSelect";
   const isMandatory = props.formElement.mandatory;
   const fieldLabel = props.formElement.name;
