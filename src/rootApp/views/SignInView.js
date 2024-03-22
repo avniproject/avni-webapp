@@ -34,13 +34,13 @@ function SignInView({
 
   useEffect(() => {
     http
-      .get("/Config")
+      .fetchJson("/config")
+      .then(response => response.json)
       .then(
-        response =>
-          response.data &&
-          response.data.reportingSystems &&
-          response.data.reportingSystems.length > 0 &&
-          setReportingSystems(response.data.reportingSystems)
+        responseData =>
+          responseData.reportingSystems &&
+          responseData.reportingSystems.length > 0 &&
+          setReportingSystems(responseData.reportingSystems)
       );
   }, []);
 
