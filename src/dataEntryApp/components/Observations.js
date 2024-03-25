@@ -103,15 +103,12 @@ function renderSingleQuestionGroup(
 ) {
   const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
   return (
-    <div style={{ borderBottomStyle: "groove" }}>
+    <div style={{ borderStyle: "inset", borderWidth: "2px" }}>
       {map(groupObservations, (obs, i) => (
         <StyledTableRow key={`${index}-${i}-${customKey}`}>
-          <TableCell
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
-            width={"0.1%"}
-          />
+          <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
           <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-            <div style={{ marginLeft: "20px" }}>{t(obs.concept["name"])}</div>
+            {t(obs.concept["name"])}
           </TableCell>
           <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
             {renderValue(obs)}
@@ -370,7 +367,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
               >
                 {t(observation.concept["name"])}
               </Typography>
-              <Table size="small" aria-label="fegRows">
+              <Table size="small" aria-label="questionGroupRows">
                 <TableBody style={{ background: "white" }}> {questionGroupRows}</TableBody>
               </Table>
             </Box>
