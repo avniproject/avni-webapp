@@ -364,7 +364,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
               <Typography
                 style={{ marginLeft: "10px" }}
                 color="textSecondary"
-                variant="h6"
+                variant="body1"
                 gutterBottom
                 component="div"
               >
