@@ -18,11 +18,12 @@ import {
   ProgramEnrolment,
   QuestionGroup
 } from "avni-models";
-import { isNil, map } from "lodash";
+import _, { isNil, map } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
 import { subjectService } from "../dataEntryApp/services/SubjectService";
 import { addressLevelService } from "../dataEntryApp/services/AddressLevelService";
 import { mapSubjectType } from "./adapters";
+import { RepeatableQuestionGroup } from "openchs-models";
 
 export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
@@ -95,8 +96,18 @@ export const mapObservation = observationJson => {
     observationJson.location && addressLevelService.addAddressLevel(observationJson.location);
     let value;
     if (concept.isQuestionGroup()) {
-      const questionGroupObservations = mapObservations(observationJson.value);
-      value = new QuestionGroup(questionGroupObservations);
+      if (_.isArrayLike(observationJson.value)) {
+        //RepeatableQuestionGroup
+        const repeatableQuestionGroupObservations = _.map(
+          observationJson.value,
+          qgObs => new QuestionGroup(mapObservations(qgObs))
+        );
+        value = new RepeatableQuestionGroup(repeatableQuestionGroupObservations);
+      } else {
+        //QuestionGroup
+        const questionGroupObservations = mapObservations(observationJson.value);
+        value = new QuestionGroup(questionGroupObservations);
+      }
     } else {
       value = concept.getValueWrapperFor(observationJson.value);
     }

@@ -92,6 +92,36 @@ function includeAdditionalRows(
   return renderFEGView("Miscellaneous Information", "feg-" + fegIndex, additionalObsRows);
 }
 
+function renderSingleQuestionGroup(
+  valueWrapper,
+  index,
+  customKey,
+  t,
+  observation,
+  StyledTableRow,
+  renderValue
+) {
+  const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
+  return (
+    <div style={{ borderBottomStyle: "groove" }}>
+      {map(groupObservations, (obs, i) => (
+        <StyledTableRow key={`${index}-${i}-${customKey}`}>
+          <TableCell
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
+            width={"0.1%"}
+          />
+          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+            <div style={{ marginLeft: "20px" }}>{t(obs.concept["name"])}</div>
+          </TableCell>
+          <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+            {renderValue(obs)}
+          </TableCell>
+        </StyledTableRow>
+      ))}
+    </div>
+  );
+}
+
 const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
   const i = new i18n();
   const { t } = useTranslation();
@@ -298,33 +328,54 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const renderGroupQuestionView = (observation, index) => {
     const valueWrapper = observation.getValueWrapper();
-    const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
+    let questionGroupRows = null;
+
+    if ("repeatableObservations" in valueWrapper) {
+      questionGroupRows = _.map(
+        valueWrapper.repeatableObservations,
+        (questionGroupValueWrapper, rqgIndex) =>
+          renderSingleQuestionGroup(
+            questionGroupValueWrapper,
+            index + "rqg" + rqgIndex,
+            customKey,
+            t,
+            observation,
+            StyledTableRow,
+            renderValue
+          )
+      );
+    } else {
+      questionGroupRows = renderSingleQuestionGroup(
+        valueWrapper,
+        index + "qg-0",
+        customKey,
+        t,
+        observation,
+        StyledTableRow,
+        renderValue
+      );
+    }
+
     return (
       <Fragment>
-        <StyledTableRow key={`${index}-${customKey}`}>
-          <TableCell
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
-            width={"0.1%"}
-          />
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-            <div style={{ marginLeft: "10px" }}>{t(observation.concept["name"])}</div>
+        <TableRow key={`${index}-${customKey}`}>
+          <TableCell style={{ padding: 0, background: "rgb(232 232 232)" }} colSpan={6}>
+            <Box sx={{ margin: 2 }}>
+              <Typography
+                style={{ marginLeft: "10px" }}
+                color="textSecondary"
+                variant="h6"
+                gutterBottom
+                component="div"
+              >
+                {t(observation.concept["name"])}
+              </Typography>
+              <Table size="small" aria-label="fegRows">
+                <TableBody style={{ background: "white" }}> {questionGroupRows}</TableBody>
+              </Table>
+            </Box>
           </TableCell>
-          <TableCell align="left" width="50%" />
-        </StyledTableRow>
-        {map(groupObservations, (obs, i) => (
-          <StyledTableRow key={`${index}-${i}-${customKey}`}>
-            <TableCell
-              style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
-              width={"0.1%"}
-            />
-            <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-              <div style={{ marginLeft: "20px" }}>{t(obs.concept["name"])}</div>
-            </TableCell>
-            <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
-              {renderValue(obs)}
-            </TableCell>
-          </StyledTableRow>
-        ))}
+        </TableRow>
       </Fragment>
     );
   };
@@ -337,7 +388,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
             <Typography color="textSecondary" variant="h6" gutterBottom component="div">
               {t(fegName)}
             </Typography>
-            <Table size="small" aria-label="purchases">
+            <Table size="small" aria-label="fegRows">
               <TableBody style={{ background: "white" }}>{fegRows}</TableBody>
             </Table>
           </Box>
@@ -373,11 +424,23 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     }
   };
 
-  const rows = _.filter(orderedObs, obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray))
-    .map((obs, fegIndex) => renderObservationValue(obs, fegIndex, isNotAssociatedWithForm));
+  const rows = _.filter(
+    orderedObs,
+    obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray)
+  ).map((obs, fegIndex) => renderObservationValue(obs, fegIndex, isNotAssociatedWithForm));
 
-  additionalRows && !_.isEmpty(additionalRows) && rows
-    .push(includeAdditionalRows(additionalRows, rows.length, t, renderText, renderFEGView, StyledTableRow));
+  additionalRows &&
+    !_.isEmpty(additionalRows) &&
+    rows.push(
+      includeAdditionalRows(
+        additionalRows,
+        rows.length,
+        t,
+        renderText,
+        renderFEGView,
+        StyledTableRow
+      )
+    );
 
   return isEmpty(rows) ? (
     <div />
