@@ -17,7 +17,11 @@ import api from "../api";
 import commonApi from "../../common/service";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
-import { getRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
+import {
+  getRegistrationForm,
+  selectRegistrationForm,
+  setRegistrationForm
+} from "../reducers/registrationReducer";
 import { filter, isEmpty, map, includes, get } from "lodash";
 import { setSubjectProgram } from "../reducers/programSubjectDashboardReducer";
 import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
@@ -111,8 +115,9 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
       displayGeneralInfoInProfileTab
     })
   );
-
   yield put.resolve(getRegistrationForm(subjectProfile.subjectType.name));
+  const registrationForm = yield select(selectRegistrationForm);
+  yield put(setRegistrationForm(registrationForm));
   yield put(setSubjectProfile(subjectProfile));
   yield put.resolve(setLoad(true));
 }

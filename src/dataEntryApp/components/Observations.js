@@ -22,6 +22,9 @@ import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import ReportProblemIcon from "@material-ui/icons/ReportProblem";
 import _ from "lodash";
 import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import { styled } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -60,6 +63,33 @@ class MediaData {
     this.altTag = altTag;
     this.unsignedUrl = unsignedUrl;
   }
+}
+
+function includeAdditionalRows(
+  additionalRows,
+  fegIndex,
+  t,
+  renderText,
+  renderFEGView,
+  StyledTableRow
+) {
+  const additionalObsRows = [];
+  additionalRows &&
+    additionalRows.forEach((row, index) => {
+      additionalObsRows.unshift(
+        <StyledTableRow key={"feg-" + fegIndex + "fe-" + index}>
+          <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
+          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+            {t(row.label)}
+          </TableCell>
+          <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+            <div>{renderText(t(row.value), row.abnormal)}</div>
+          </TableCell>
+        </StyledTableRow>
+      );
+    });
+
+  return renderFEGView("Miscellaneous Information", "feg-" + fegIndex, additionalObsRows);
 }
 
 const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
@@ -232,9 +262,22 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     setShowMedia(true);
   };
 
-  const orderedObs = isNil(form) ? observations : form.orderObservations(observations);
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0
+    }
+  }));
 
-  const mediaObservations = orderedObs.filter(obs =>
+  const isNotAssociatedWithForm = isNil(form);
+  const orderedObs = isNotAssociatedWithForm
+    ? observations
+    : form.orderObservationsPerFEG(observations);
+
+  const mediaObservations = observations.filter(obs =>
     includes(
       [Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File],
       obs.concept.datatype
@@ -258,37 +301,54 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
     return (
       <Fragment>
-        <TableRow key={`${index}-${customKey}`}>
+        <StyledTableRow key={`${index}-${customKey}`}>
           <TableCell
             style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
             width={"0.1%"}
           />
           <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-            {t(observation.concept["name"])}
+            <div style={{ marginLeft: "10px" }}>{t(observation.concept["name"])}</div>
           </TableCell>
           <TableCell align="left" width="50%" />
-        </TableRow>
+        </StyledTableRow>
         {map(groupObservations, (obs, i) => (
-          <TableRow key={`${index}-${i}-${customKey}`}>
+          <StyledTableRow key={`${index}-${i}-${customKey}`}>
             <TableCell
               style={{ backgroundColor: "rgba(0, 0, 0, 0.12)", padding: "6px 4px 6px 6px" }}
               width={"0.1%"}
             />
             <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-              <div style={{ marginLeft: "10px" }}>{t(obs.concept["name"])}</div>
+              <div style={{ marginLeft: "20px" }}>{t(obs.concept["name"])}</div>
             </TableCell>
             <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
               {renderValue(obs)}
             </TableCell>
-          </TableRow>
+          </StyledTableRow>
         ))}
       </Fragment>
     );
   };
 
-  const renderNormalView = (observation, index) => {
+  const renderFEGView = (fegName, index, fegRows, customKey) => {
     return (
       <TableRow key={`${index}-${customKey}`}>
+        <TableCell style={{ padding: 0, background: "lightgray" }} colSpan={6}>
+          <Box sx={{ margin: 2 }}>
+            <Typography color="textSecondary" variant="h6" gutterBottom component="div">
+              {t(fegName)}
+            </Typography>
+            <Table size="small" aria-label="purchases">
+              <TableBody style={{ background: "white" }}>{fegRows}</TableBody>
+            </Table>
+          </Box>
+        </TableCell>
+      </TableRow>
+    );
+  };
+
+  const renderNormalView = (observation, index) => {
+    return (
+      <StyledTableRow key={`${index}-${customKey}`}>
         <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
         <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
           {t(observation.concept["name"])}
@@ -296,32 +356,30 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
           {renderValue(observation)}
         </TableCell>
-      </TableRow>
+      </StyledTableRow>
     );
   };
 
-  const renderObservationValue = observation => {
-    return observation.concept.isQuestionGroup()
-      ? renderGroupQuestionView(observation)
-      : renderNormalView(observation);
+  const renderObservationValue = (observation, index, isNotAssociatedWithForm) => {
+    if (isNotAssociatedWithForm) {
+      return observation.concept.isQuestionGroup()
+        ? renderGroupQuestionView(observation, index)
+        : renderNormalView(observation, index);
+    } else {
+      const fegRows = _.map(observation.sortedObservationsArray, (obs, feIndex) =>
+        renderObservationValue(obs, "feg-" + index + "fe-" + feIndex, true)
+      );
+      return renderFEGView(observation.feg.name, "feg-" + index, fegRows);
+    }
   };
 
-  const rows = _.map(orderedObs, renderObservationValue);
-
-  additionalRows &&
-    additionalRows.forEach((row, index) => {
-      rows.unshift(
-        <TableRow key={observations.length + index}>
-          <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-            {t(row.label)}
-          </TableCell>
-          <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
-            <div>{renderText(t(row.value), row.abnormal)}</div>
-          </TableCell>
-        </TableRow>
-      );
-    });
+  const rows = _.filter(
+    orderedObs,
+    obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray)
+  ).map((obs, fegIndex) => renderObservationValue(obs, fegIndex, isNotAssociatedWithForm));
+  rows.push(
+    includeAdditionalRows(additionalRows, rows.length, t, renderText, renderFEGView, StyledTableRow)
+  );
 
   return isEmpty(rows) ? (
     <div />
