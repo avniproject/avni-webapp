@@ -1,5 +1,5 @@
 import { Concept, FormElementGroup, ValidationResult, QuestionGroup } from "avni-models";
-import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
+import { differenceWith, some, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
@@ -147,3 +147,12 @@ export const filterFormElements = (formElementGroup, entity) => {
   let formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
   return formElementGroup.filterElements(formElementStatuses);
 };
+
+export function nestedFormElements(formElements) {
+  const nested = [];
+  formElements.forEach(x => {
+    if (isNil(x.group)) nested.push(x);
+    else if (!some(nested, y => y.uuid === x.group.uuid)) nested.push(x.group);
+  });
+  return nested;
+}

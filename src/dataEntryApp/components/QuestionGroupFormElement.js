@@ -1,17 +1,25 @@
 import React, { Fragment } from "react";
-import { filter, includes, map, sortBy } from "lodash";
+import { filter, includes, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 
-const QuestionGroupFormElement = ({
+function getChildObservationValue(concept, questionGroupObservation) {
+  const qgObservationValue = questionGroupObservation
+    ? questionGroupObservation.getValueWrapper()
+    : new QuestionGroup();
+  const childObs = qgObservationValue.findObservation(concept);
+  return childObs && childObs.getValueWrapper().getValue();
+}
+
+export default function QuestionGroupFormElement({
   formElement,
   obsHolder,
   validationResults,
   filteredFormElements,
   updateObs
-}) => {
+}) {
   const allChildren = sortBy(
-    filter(filteredFormElements, ffe => ffe.groupUuid === formElement.uuid && !ffe.voided),
+    filter(filteredFormElements, ffe => get(ffe, "group.uuid") === formElement.uuid && !ffe.voided),
     "displayOrder"
   );
   const textNumericAndNotes = filter(allChildren, ({ concept }) =>
@@ -30,13 +38,7 @@ const QuestionGroupFormElement = ({
   );
   const childObservations = obsHolder.findObservation(formElement.concept);
 
-  const getChildObservationValue = concept => {
-    const childObservationsValue = childObservations
-      ? childObservations.getValueWrapper()
-      : new QuestionGroup();
-    const childObs = childObservationsValue.findObservation(concept);
-    return childObs && childObs.getValueWrapper().getValue();
-  };
+  console.log("QuestionGroupFormElement", formElement.name);
 
   return (
     <Fragment>
@@ -47,7 +49,7 @@ const QuestionGroupFormElement = ({
             key={cfe.uuid}
             concept={cfe.concept}
             obsHolder={obsHolder}
-            value={getChildObservationValue(cfe.concept)}
+            value={getChildObservationValue(cfe.concept, childObservations)}
             validationResults={validationResults}
             uuid={cfe.uuid}
             update={value => {
@@ -55,7 +57,6 @@ const QuestionGroupFormElement = ({
             }}
             feIndex={cfe.displayOrder}
             filteredFormElements={filteredFormElements}
-            isChildFormElement={true}
             ignoreLineBreak={true}
             isGrid={true}
           >
@@ -69,7 +70,7 @@ const QuestionGroupFormElement = ({
             <FormElement
               concept={fe.concept}
               obsHolder={obsHolder}
-              value={getChildObservationValue(fe.concept)}
+              value={getChildObservationValue(fe.concept, childObservations)}
               validationResults={validationResults}
               uuid={fe.uuid}
               update={value => {
@@ -77,7 +78,6 @@ const QuestionGroupFormElement = ({
               }}
               feIndex={fe.displayOrder}
               filteredFormElements={filteredFormElements}
-              isChildFormElement={true}
               ignoreLineBreak={true}
             >
               {fe}
@@ -87,6 +87,4 @@ const QuestionGroupFormElement = ({
       </div>
     </Fragment>
   );
-};
-
-export default QuestionGroupFormElement;
+}

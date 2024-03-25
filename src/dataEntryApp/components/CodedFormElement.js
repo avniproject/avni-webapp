@@ -58,9 +58,8 @@ export const CodedFormElement = ({
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
           {items.map(item => (
-            <Box>
+            <Box key={item.uuid}>
               <FormControlLabel
-                key={item.uuid}
                 control={
                   multiSelect ? (
                     <Checkbox

@@ -1,7 +1,6 @@
 import {
   FormElementGroup,
   Form,
-  FormElement,
   Concept,
   Program,
   ModelGeneral as General,
@@ -16,6 +15,9 @@ import {
 } from "openchs-models";
 
 import _ from "lodash";
+import WebFormElement from "../../common/model/WebFormElement";
+import WebFormElementGroup from "../../common/model/WebFormElementGroup";
+import WebForm from "../../common/model/WebForm";
 
 class EntityFactory {
   static createSafeProgram(name) {
@@ -33,7 +35,7 @@ class EntityFactory {
   }
 
   static createSafeFormElementGroup(form) {
-    const formElementGroup = new FormElementGroup();
+    const formElementGroup = new WebFormElementGroup();
     formElementGroup.formElements = [];
     formElementGroup.form = form;
     form.addFormElementGroup(formElementGroup);
@@ -48,23 +50,56 @@ class EntityFactory {
   }
 
   static createForm(name) {
-    const form = new Form();
+    const form = new WebForm();
     form.name = name;
     form.formElementGroups = [];
     return form;
   }
 
-  static createFormElement(name, mandatory, concept, displayOrder, type, formElementGroup, keyValues) {
-    const formElement = new FormElement();
-    formElement.uuid = General.randomUUID();
-    formElement.name = name;
-    formElement.mandatory = mandatory;
-    formElement.concept = concept;
-    formElement.displayOrder = displayOrder;
-    formElement.type = type;
-    formElement.formElementGroup = formElementGroup;
-    formElement.keyValues = keyValues;
-    return formElement;
+  static createFormElement(
+    name,
+    mandatory,
+    concept,
+    displayOrder,
+    type,
+    formElementGroup,
+    keyValues
+  ) {
+    return EntityFactory.createFormElement2({
+      name: name,
+      mandatory: mandatory,
+      concept: concept,
+      displayOrder: displayOrder,
+      type: type,
+      formElementGroup: formElementGroup,
+      keyValues: keyValues
+    });
+  }
+
+  static createFormElement2({
+    uuid = General.randomUUID(),
+    name = General.randomUUID(),
+    displayOrder,
+    concept,
+    formElementGroup = new WebFormElementGroup(),
+    mandatory = true,
+    keyValues = [],
+    type,
+    group
+  }) {
+    const entity = new WebFormElement();
+    entity.uuid = uuid;
+    entity.name = name;
+    entity.concept = concept;
+    entity.displayOrder = displayOrder;
+    entity.formElementGroup = formElementGroup;
+    entity.mandatory = mandatory;
+    entity.keyValues = keyValues;
+    formElementGroup.formElements = [entity];
+    entity.type = type;
+    entity.groupUuid = _.get(group, "uuid");
+    entity.group = group;
+    return entity;
   }
 
   static addCodedAnswers(concept, answers) {

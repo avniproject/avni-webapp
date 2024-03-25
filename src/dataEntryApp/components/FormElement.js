@@ -13,8 +13,8 @@ import MediaFormElement from "./MediaFormElement";
 import PhoneNumberFormElement from "./PhoneNumberFormElement";
 import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
-// import QuestionGroupFormElement from "./QuestionGroupFormElement";
-import { isNil } from "lodash";
+import QuestionGroupFormElement from "./QuestionGroupFormElement";
+import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
 
 const div = () => <div />;
 
@@ -37,8 +37,9 @@ const elements = {
   Id: TextFormElement,
   PhoneNumber: PhoneNumberFormElement,
   Subject: LandingSubjectFormElement,
-  Location: LocationFormElement
-  // QuestionGroup: QuestionGroupFormElement
+  Location: LocationFormElement,
+  QuestionGroup: QuestionGroupFormElement,
+  RepeatableQuestionGroup: RepeatableQuestionGroupElement
 };
 
 export const FormElement = ({
@@ -50,12 +51,10 @@ export const FormElement = ({
   uuid,
   feIndex,
   filteredFormElements,
-  isChildFormElement,
   ignoreLineBreak,
   isGrid,
   updateObs
 }) => {
-  if (!isChildFormElement && !isNil(formElement.groupUuid)) return null;
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
     formElement.keyValues = [
@@ -64,6 +63,7 @@ export const FormElement = ({
     ];
     formElement.mandatory = false;
   }
+
   const props = {
     formElement,
     value,

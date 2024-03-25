@@ -15,6 +15,7 @@ import {
   Program,
   SubjectType
 } from "avni-models";
+import WebFormElementGroup from "./model/WebFormElementGroup";
 
 describe("adapters", () => {
   it("can map concept", () => {
@@ -54,8 +55,21 @@ describe("adapters", () => {
     assert.equal(feg.formElements.length, 3);
   });
 
+  it("should map form element group with question groups", function() {
+    const form = {};
+    const feg = { name: "a", form: form, applicableFormElements: [] };
+    const questionGroup = { name: "qg", uuid: "uuid-1", concept: {} };
+    feg.applicableFormElements.push({ name: "1", group: questionGroup, concept: {} });
+    feg.applicableFormElements.push({ name: "2", group: questionGroup, concept: {} });
+    const mapped = mapFormElementGroup(feg);
+    assert.equal(mapped.formElements.length, 2);
+    assert.equal(mapped.formElements[0].name, "1");
+    assert.equal(mapped.formElements[0].group.uuid, "uuid-1");
+    assert.equal(mapped.formElements[1].group.uuid, "uuid-1");
+  });
+
   it("can map form element", () => {
-    const feg = new FormElementGroup();
+    const feg = new WebFormElementGroup();
     feg.uuid = "uuid";
     const fe = mapFormElement(sampleFormElement, feg);
 
@@ -79,7 +93,7 @@ describe("adapters", () => {
     assert.equal(form.uuid, "36ba19a3-c289-44b7-bf56-eed36e9d7519");
     assert.equal(form.formType, "IndividualProfile");
     assert.equal(form.formElementGroups.length, 2);
-    assert.equal(form.formElementGroups[0].constructor, FormElementGroup);
+    assert.equal(form.formElementGroups[0].constructor, WebFormElementGroup);
     assert.equal(form.formElementGroups[0].name, "Individual details");
     assert.equal(form.formElementGroups[1].uuid, "0ef62f9b-e52e-4fd9-be85-4c3f08c9a973");
   });

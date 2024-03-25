@@ -1,10 +1,12 @@
+import _ from "lodash";
+
 class SubjectService {
   constructor() {
     this.subjects = [];
   }
 
   findByUUID(subjectUuid) {
-    if (subjectUuid !== null || subjectUuid !== undefined) {
+    if (!_.isNil(subjectUuid)) {
       return this.subjects.find(x => x.uuid === subjectUuid);
     }
   }

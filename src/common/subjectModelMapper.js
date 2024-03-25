@@ -129,7 +129,7 @@ export const mapProfile = subjectProfile => {
   }
 };
 
-export const mapProgramEnrolment = (json, subject) => {
+export function mapProgramEnrolment(json, subject) {
   const programEnrolment = new ProgramEnrolment();
   programEnrolment.uuid = json.uuid;
   if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
@@ -149,7 +149,7 @@ export const mapProgramEnrolment = (json, subject) => {
     );
   }
   return programEnrolment;
-};
+}
 
 export const mapRelationships = relationshipList => {
   if (relationshipList) {

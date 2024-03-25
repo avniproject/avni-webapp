@@ -36,7 +36,7 @@
     "material-table": "1.43.0",
     "moment": "^2.22.2",
     "openchs-idi": "git+https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
-    "openchs-models": "1.31.55",
+    "openchs-models": "1.31.58",
     "popper.js": "^1.14.3",
     "prismjs": "^1.17.1",
     "prop-types": "^15.7.2",

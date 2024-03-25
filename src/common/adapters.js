@@ -2,10 +2,7 @@ import {
   Concept,
   ConceptAnswer,
   EncounterType,
-  Form,
   Format,
-  FormElement,
-  FormElementGroup,
   Gender,
   KeyValue,
   ModelGeneral as General,
@@ -15,6 +12,9 @@ import {
 } from "avni-models";
 import { get, isEmpty, isNil, map } from "lodash";
 import { conceptService } from "dataEntryApp/services/ConceptService";
+import WebFormElement from "./model/WebFormElement";
+import WebFormElementGroup from "./model/WebFormElementGroup";
+import WebForm from "./model/WebForm";
 
 export const mapConceptAnswer = json => {
   const conceptAnswer = new ConceptAnswer();
@@ -34,23 +34,36 @@ export const mapConcept = json => {
   return concept;
 };
 
-export const mapFormElement = (json, formElementGroup) => {
+export const mapFormElement = (
+  formElementResource,
+  formElementGroup,
+  questionGroupFormElements = new Map()
+) => {
   const formElement = General.assignFields(
-    json,
-    new FormElement(),
+    formElementResource,
+    new WebFormElement(),
     ["uuid", "name", "displayOrder", "mandatory", "type", "voided", "rule"],
     []
   );
   formElement.formElementGroup = formElementGroup;
-  formElement.keyValues = map(json.keyValues, KeyValue.fromResource);
-  formElement.validFormat = Format.fromResource(json.validFormat);
-  formElement.concept = mapConcept(json.concept);
-  if (json.group) formElement.groupUuid = json.group.uuid;
+  formElement.keyValues = map(formElementResource.keyValues, KeyValue.fromResource);
+  formElement.validFormat = Format.fromResource(formElementResource.validFormat);
+  formElement.concept = mapConcept(formElementResource.concept);
+  if (formElementResource.group) {
+    formElement.groupUuid = formElementResource.group.uuid;
+    if (!questionGroupFormElements.has(formElement.groupUuid))
+      questionGroupFormElements.set(
+        formElement.groupUuid,
+        mapFormElement(formElementResource.group, formElementGroup)
+      );
+
+    formElement.group = questionGroupFormElements.get(formElement.groupUuid);
+  }
   return formElement;
 };
 
 export const mapFormElementGroup = (json, form) => {
-  const formElementGroup = General.assignFields(json, new FormElementGroup(), [
+  const formElementGroup = General.assignFields(json, new WebFormElementGroup(), [
     "uuid",
     "name",
     "displayOrder",
@@ -58,15 +71,16 @@ export const mapFormElementGroup = (json, form) => {
     "voided",
     "rule"
   ]);
+  const questionGroupFormElements = new Map();
   formElementGroup.formElements = map(json.applicableFormElements, feJson =>
-    mapFormElement(feJson, formElementGroup)
+    mapFormElement(feJson, formElementGroup, questionGroupFormElements)
   );
   formElementGroup.form = form;
   return formElementGroup;
 };
 
 export const mapForm = json => {
-  let form = General.assignFields(json, new Form(), ["uuid", "name", "formType"]);
+  let form = General.assignFields(json, new WebForm(), ["uuid", "name", "formType"]);
   form.formElementGroups = map(json.formElementGroups, fegJson =>
     mapFormElementGroup(fegJson, form)
   );
