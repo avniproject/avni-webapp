@@ -373,23 +373,11 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     }
   };
 
-  const rows = _.filter(
-    orderedObs,
-    obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray)
-  ).map((obs, fegIndex) => renderObservationValue(obs, fegIndex, isNotAssociatedWithForm));
+  const rows = _.filter(orderedObs, obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray))
+    .map((obs, fegIndex) => renderObservationValue(obs, fegIndex, isNotAssociatedWithForm));
 
-  additionalRows &&
-    !_.isEmpty(additionalRows) &&
-    rows.push(
-      includeAdditionalRows(
-        additionalRows,
-        rows.length,
-        t,
-        renderText,
-        renderFEGView,
-        StyledTableRow
-      )
-    );
+  additionalRows && !_.isEmpty(additionalRows) && rows
+    .push(includeAdditionalRows(additionalRows, rows.length, t, renderText, renderFEGView, StyledTableRow));
 
   return isEmpty(rows) ? (
     <div />
