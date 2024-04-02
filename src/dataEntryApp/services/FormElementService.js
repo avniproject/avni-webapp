@@ -1,16 +1,11 @@
 import { Concept, FormElementGroup, ValidationResult, QuestionGroup } from "avni-models";
 import { differenceWith, some, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
-import WebFormElement from "../../common/model/WebFormElement";
 
 export default {
   updateObservations(observationsHolder, formElement, value, childFormElement) {
     if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
-      observationsHolder.updateGroupQuestion(
-        formElement,
-        childFormElement,
-        value
-      );
+      observationsHolder.updateGroupQuestion(formElement, childFormElement, value);
 
       const questionGroupTypeObservation = observationsHolder.findObservation(formElement.concept);
       let questionGroup;
