@@ -1,24 +1,30 @@
 import { Concept, FormElementGroup, ValidationResult, QuestionGroup } from "avni-models";
 import { differenceWith, some, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
+import WebFormElement from "../../common/model/WebFormElement";
 
 export default {
   updateObservations(observationsHolder, formElement, value, childFormElement) {
     if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
       observationsHolder.updateGroupQuestion(
-        formElement.concept,
-        childFormElement.concept,
-        value,
-        childFormElement
+        formElement,
+        childFormElement,
+        value
       );
-      const childObservations = observationsHolder.findObservation(formElement.concept);
-      const childObservationsValue = childObservations
-        ? childObservations.getValueWrapper()
-        : new QuestionGroup();
-      const childObs = childObservationsValue.findObservation(childFormElement.concept);
-      return childFormElement.concept.isPrimitive() && isNil(childFormElement.durationOptions)
-        ? value
-        : childObs && childObs.getValueWrapper();
+
+      const questionGroupTypeObservation = observationsHolder.findObservation(formElement.concept);
+      let questionGroup;
+      if (questionGroupTypeObservation) {
+        questionGroup = questionGroupTypeObservation.getValueWrapper();
+      } else {
+        questionGroup = new QuestionGroup();
+      }
+      const childObs = questionGroup.findObservation(childFormElement.concept);
+      if (childFormElement.concept.isPrimitive() && isNil(childFormElement.durationOptions)) {
+        return value;
+      } else {
+        return childObs && childObs.getValueWrapper();
+      }
     } else if (
       formElement.isMultiSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
@@ -98,20 +104,20 @@ export default {
   }
 };
 
-export const getFormElementStatuses = (entity, formElementGroup, observationsHolder) => {
+export function getFormElementStatuses(entity, formElementGroup, observationsHolder) {
   const formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
-  const filteredFormElements = FormElementGroup._sortedFormElements(
-    formElementGroup.filterElements(formElementStatuses)
-  );
+  const filteredFormElements = formElementGroup.filterElements(formElementStatuses);
+  const sortedFilteredFormElements = FormElementGroup._sortedFormElements(filteredFormElements);
+  const allFormElements = formElementGroup.getFormElements();
   const removedObs = observationsHolder.removeNonApplicableObs(
-    formElementGroup.getFormElements(),
-    filteredFormElements
+    allFormElements,
+    sortedFilteredFormElements
   );
   if (isEmpty(removedObs)) {
     return formElementStatuses;
   }
   return getFormElementStatuses(entity, formElementGroup, observationsHolder);
-};
+}
 
 const getRuleValidationErrors = formElementStatuses => {
   return flatMap(

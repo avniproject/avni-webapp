@@ -2,15 +2,15 @@ import _ from "lodash";
 import lodash from "lodash";
 import moment from "moment";
 import * as models from "avni-models";
-import { FormElementStatus } from "avni-models";
+import {FormElementStatus} from "avni-models";
 import * as rulesConfig from "rules-config";
-import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
-import { store } from "common/store/createStore";
+import {common, motherCalculations, RuleRegistry} from "avni-health-modules";
+import {store} from "common/store/createStore";
 import {
   selectLegacyRules,
   selectLegacyRulesAllRules
 } from "dataEntryApp/reducers/metadataReducer";
-import { individualService } from "./IndividualService";
+import {individualService} from "./IndividualService";
 
 const services = {
   individualService
@@ -25,13 +25,14 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
     .getFormElements()
     .filter(formElement => !_.isNil(formElement.rule) && !_.isEmpty(_.trim(formElement.rule)));
   const formElementStatusAfterGroupRule = runFormElementGroupRule(formElementGroup, entity);
+
   const visibleFormElementsUUIDs = _.filter(
     formElementStatusAfterGroupRule,
-    ({ visibility }) => visibility === true
-  ).map(({ uuid }) => uuid);
+    ({visibility}) => visibility === true
+  ).map(({uuid}) => uuid);
   if (!_.isEmpty(formElementsWithRules) && !_.isEmpty(visibleFormElementsUUIDs)) {
     let formElementStatuses = formElementsWithRules
-      .filter(({ uuid }) => _.includes(visibleFormElementsUUIDs, uuid))
+      .filter(({uuid}) => _.includes(visibleFormElementsUUIDs, uuid))
       .map(formElement => {
         try {
           /* eslint-disable-next-line no-unused-vars */
@@ -39,8 +40,8 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
           /* eslint-disable-next-line no-eval */
           const ruleFunc = eval(formElement.rule);
           return ruleFunc({
-            params: { formElement, entity, services },
-            imports: { rulesConfig, lodash, moment, common }
+            params: {formElement, entity, services},
+            imports: {rulesConfig, lodash, moment, common}
           });
         } catch (e) {
           console.error(
@@ -69,9 +70,15 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
 
 const runFormElementGroupRule = (formElementGroup, entity) => {
   if (_.isNil(formElementGroup.rule) || _.isEmpty(_.trim(formElementGroup.rule))) {
+    console.log("RuleEvaluationService", "No FEGroup rule found");
     return formElementGroup
       .getFormElements()
-      .map(formElement => new FormElementStatus(formElement.uuid, true, undefined));
+      .map(formElement => {
+        const formElementStatus = new FormElementStatus(formElement.uuid, true, undefined);
+        if (!_.isNil(formElement.group))
+          formElementStatus.addQuestionGroupInformation(0);
+        return formElementStatus;
+      });
   }
   try {
     /* eslint-disable-next-line no-unused-vars */
@@ -79,8 +86,8 @@ const runFormElementGroupRule = (formElementGroup, entity) => {
     /* eslint-disable-next-line no-eval */
     const ruleFunc = eval(formElementGroup.rule);
     return ruleFunc({
-      params: { formElementGroup, entity, services },
-      imports: { rulesConfig, lodash, moment, common }
+      params: {formElementGroup, entity, services},
+      imports: {rulesConfig, lodash, moment, common}
     });
   } catch (e) {
     console.error(
@@ -125,7 +132,7 @@ const getRuleFunctions = (rules = []) => {
   const allRules = selectLegacyRulesAllRules(store.getState());
   return _.defaults(rules, [])
     .filter(ar => _.isFunction(allRules[ar.fnName]) && _.isFunction(allRules[ar.fnName].exec))
-    .map(ar => ({ ...ar, fn: allRules[ar.fnName] }));
+    .map(ar => ({...ar, fn: allRules[ar.fnName]}));
 };
 
 const runRuleAndSaveFailure = (rule, entityName, entity, ruleTypeValue, config, context) => {

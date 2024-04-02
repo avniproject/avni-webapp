@@ -11,7 +11,7 @@ export function RepeatableQuestionGroupElement({
 }) {
   const childObservations = obsHolder.findObservation(formElement.concept);
   const repeatableQuestionGroup = new RepeatableQuestionGroup(childObservations);
-  return repeatableQuestionGroup.getValue().map(x => {
+  return repeatableQuestionGroup.getValue().map((x, index) => {
     return (
       <QuestionGroupFormElement
         formElement={formElement}
@@ -19,6 +19,9 @@ export function RepeatableQuestionGroupElement({
         obsHolder={obsHolder}
         updateObs={updateObs}
         validationResults={validationResults}
+        isRepeatable={true}
+        repeatableIndex={1}
+        key={index}
       />
     );
   });

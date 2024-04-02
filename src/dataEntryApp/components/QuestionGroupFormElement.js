@@ -11,12 +11,19 @@ function getChildObservationValue(concept, questionGroupObservation) {
   return childObs && childObs.getValueWrapper().getValue();
 }
 
+function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
+  if (isRepeatable) return `${formElement.name} - ${repeatableIndex}`;
+  return formElement.name;
+}
+
 export default function QuestionGroupFormElement({
   formElement,
   obsHolder,
   validationResults,
   filteredFormElements,
-  updateObs
+  updateObs,
+  isRepeatable = false,
+  repeatableIndex
 }) {
   const allChildren = sortBy(
     filter(filteredFormElements, ffe => get(ffe, "group.uuid") === formElement.uuid && !ffe.voided),
@@ -38,29 +45,27 @@ export default function QuestionGroupFormElement({
   );
   const childObservations = obsHolder.findObservation(formElement.concept);
 
-  console.log("QuestionGroupFormElement", formElement.name);
-
   return (
     <Fragment>
-      <div>{formElement.name}</div>
+      <div>{getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex)}</div>
       <div style={{ flexDirection: "row", alignItems: "center", marginTop: "10px" }}>
-        {map(textNumericAndNotes, cfe => (
+        {map(textNumericAndNotes, childFormElement => (
           <FormElement
-            key={cfe.uuid}
-            concept={cfe.concept}
+            key={childFormElement.uuid}
+            concept={childFormElement.concept}
             obsHolder={obsHolder}
-            value={getChildObservationValue(cfe.concept, childObservations)}
+            value={getChildObservationValue(childFormElement.concept, childObservations)}
             validationResults={validationResults}
-            uuid={cfe.uuid}
+            uuid={childFormElement.uuid}
             update={value => {
-              updateObs(formElement, value, cfe);
+              updateObs(formElement, value, childFormElement);
             }}
-            feIndex={cfe.displayOrder}
+            feIndex={childFormElement.displayOrder}
             filteredFormElements={filteredFormElements}
             ignoreLineBreak={true}
             isGrid={true}
           >
-            {cfe}
+            {childFormElement}
           </FormElement>
         ))}
       </div>
