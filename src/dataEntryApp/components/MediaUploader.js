@@ -162,8 +162,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
 
   const onDelete = fileName => {
     if (isMultiSelect && isArrayLikeObject(localObsValue)) {
-      const filteredObsValue = localObsValue.filter(item => item != fileName);
-      setLocalObsValue([...filteredObsValue]);
+      setLocalObsValue(localObsValue.filter(item => item != fileName));
     } else {
       if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
     }

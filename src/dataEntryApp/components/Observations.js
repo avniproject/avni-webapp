@@ -11,11 +11,10 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { filter, find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
+import { find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
-import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
@@ -24,7 +23,7 @@ import _ from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { styled } from "@material-ui/core";
+import { Grid, styled } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -50,6 +49,11 @@ const useStyles = makeStyles(theme => ({
     color: Colors.ValidationError,
     fontSize: 20,
     marginLeft: theme.spacing(1)
+  },
+  boxStyle: {
+    minWidth: 200,
+    minHeight: 50,
+    marginTop: 5
   }
 }));
 
@@ -79,10 +83,10 @@ function includeAdditionalRows(
       additionalObsRows.unshift(
         <StyledTableRow key={"feg-" + fegIndex + "fe-" + index}>
           <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="25%">
             {t(row.label)}
           </TableCell>
-          <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+          <TableCell align="left" width="75%" style={{ padding: "6px 4px 6px 6px" }}>
             <div>{renderText(t(row.value), row.abnormal)}</div>
           </TableCell>
         </StyledTableRow>
@@ -107,10 +111,10 @@ function renderSingleQuestionGroup(
       {map(groupObservations, (obs, i) => (
         <StyledTableRow key={`${index}-${i}-${customKey}`}>
           <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="25%">
             {t(obs.concept["name"])}
           </TableCell>
-          <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+          <TableCell align="left" width="75%" style={{ padding: "6px 4px 6px 6px" }}>
             {renderValue(obs)}
           </TableCell>
         </StyledTableRow>
@@ -124,8 +128,6 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const [showMedia, setShowMedia] = React.useState(false);
-  const [currentMediaItemIndex, setCurrentMediaItemIndex] = React.useState(0);
   const [mediaDataList, setMediaDataList] = React.useState([]);
 
   if (isNil(observations)) {
@@ -191,38 +193,54 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     window.open(mediaData.url);
   };
 
-  const imageVideoOptions = unsignedMediaUrl => {
-    const space = <> | </>;
-    const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
-    const couldntSignMessage = MediaData.MissingSignedMediaMessage + ". Value: " + unsignedMediaUrl;
+  const mediaPreviewMap = unsignedMediaUrl => ({
+    [Concept.dataType.Image]: (
+      <img
+        src={unsignedMediaUrl}
+        width={200}
+        height={200}
+        onClick={event => {
+          event.preventDefault();
+          openMediaInNewTab(unsignedMediaUrl);
+        }}
+      />
+    ),
+    [Concept.dataType.Video]: (
+      <video preload="auto" controls width={200} height={200} controlsList="nodownload">
+        <source src={unsignedMediaUrl} type="video/mp4" />
+        Sorry, your browser doesn't support embedded videos.
+      </video>
+    )
+  });
+
+  const imageVideoOptions = (observationValue, concept) => {
+    let isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
+    const mediaUrls = isMultiSelect ? observationValue : [observationValue];
     return (
-      <div>
-        {_.isNil(_.get(mediaData, "url")) ? (
-          couldntSignMessage
-        ) : (
-          <>
-            <Link
-              to={"#"}
-              onClick={event => {
-                event.preventDefault();
-                showMediaOverlay(unsignedMediaUrl);
-              }}
-            >
-              {t("View Media")}
-            </Link>
-            {space}
-            <Link
-              to={"#"}
-              onClick={event => {
-                event.preventDefault();
-                openMediaInNewTab(unsignedMediaUrl);
-              }}
-            >
-              {t("Open in New Tab")}
-            </Link>
-          </>
-        )}
-      </div>
+      <Grid container direction="row" alignItems="center" spacing={1}>
+        {mediaUrls.map((unsignedMediaUrl, index) => {
+          const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
+          const couldntSignMessage =
+            MediaData.MissingSignedMediaMessage + ". Value: " + unsignedMediaUrl;
+          const signedMediaUrl = _.get(mediaData, "url");
+          return (
+            <Grid item key={index}>
+              {_.isNil(signedMediaUrl) ? (
+                couldntSignMessage
+              ) : (
+                <Box
+                  display={"flex"}
+                  flexDirection={"row"}
+                  alignItems={"flex-start"}
+                  className={classes.boxStyle}
+                >
+                  {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
+                </Box>
+              )}
+            </Grid>
+          );
+        })}
+      </Grid>
     );
   };
 
@@ -249,7 +267,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         return <AudioPlayer url={unsignedMediaUrl} />;
       case Concept.dataType.Image:
       case Concept.dataType.Video:
-        return imageVideoOptions(unsignedMediaUrl);
+        return imageVideoOptions(unsignedMediaUrl, concept);
       case Concept.dataType.File:
         return fileOptions(concept.name);
       default:
@@ -268,25 +286,24 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const refreshSignedUrlsForMedia = async () => {
     if (!isEmpty(mediaObservations)) {
       return await Promise.all(
-        mediaObservations.map(async obs => {
-          const signedUrl = await getSignedUrl(obs.valueJSON.answer);
-          const type = obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype);
-          return new MediaData(
-            _.get(signedUrl, "data"),
-            type,
-            obs.concept.name,
-            obs.valueJSON.answer
-          );
+        mediaObservations.flatMap(obs => {
+          const observationValue = obs.valueJSON.answer;
+          let isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
+          const mediaUrls = isMultiSelect ? observationValue : [observationValue];
+          return mediaUrls.map(async unsignedMediaUrl => {
+            const signedUrl = await getSignedUrl(unsignedMediaUrl);
+            const type =
+              obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype);
+            return new MediaData(
+              _.get(signedUrl, "data"),
+              type,
+              obs.concept.name,
+              unsignedMediaUrl
+            );
+          });
         })
       );
     }
-  };
-
-  const showMediaOverlay = unsignedMediaUrl => {
-    setCurrentMediaItemIndex(
-      mediaObservations.findIndex(obs => obs.valueJSON.answer === unsignedMediaUrl)
-    );
-    setShowMedia(true);
   };
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -398,10 +415,10 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     return (
       <StyledTableRow key={`${index}-${customKey}`}>
         <TableCell width={"0.1%"} style={{ padding: "6px 4px 6px 6px" }} />
-        <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+        <TableCell style={{ color: "#555555" }} component="th" scope="row" width="25%">
           {t(observation.concept["name"])}
         </TableCell>
-        <TableCell align="left" width="50%" style={{ padding: "6px 4px 6px 6px" }}>
+        <TableCell align="left" width="75%" style={{ padding: "6px 4px 6px 6px" }}>
           {renderValue(observation)}
         </TableCell>
       </StyledTableRow>
@@ -450,13 +467,6 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       >
         <TableBody>{rows}</TableBody>
       </Table>
-      {showMedia && (
-        <MediaObservations
-          mediaDataList={filter(mediaDataList, mediaData => mediaData.type !== "file")}
-          currentMediaItemIndex={currentMediaItemIndex}
-          onClose={() => setShowMedia(false)}
-        />
-      )}
     </div>
   );
 };
