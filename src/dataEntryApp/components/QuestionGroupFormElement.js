@@ -2,17 +2,10 @@ import React, { Fragment } from "react";
 import { filter, includes, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
-
-function getChildObservationValue(concept, questionGroupObservation) {
-  const qgObservationValue = questionGroupObservation
-    ? questionGroupObservation.getValueWrapper()
-    : new QuestionGroup();
-  const childObs = qgObservationValue.findObservation(concept);
-  return childObs && childObs.getValueWrapper().getValue();
-}
+import _ from "lodash";
 
 function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
-  if (isRepeatable) return `${formElement.name} - ${repeatableIndex}`;
+  if (isRepeatable) return `${formElement.name} - ${repeatableIndex + 1}`;
   return formElement.name;
 }
 
@@ -23,7 +16,7 @@ export default function QuestionGroupFormElement({
   filteredFormElements,
   updateObs,
   isRepeatable = false,
-  repeatableIndex
+  questionGroupIndex
 }) {
   const allChildren = sortBy(
     filter(filteredFormElements, ffe => get(ffe, "group.uuid") === formElement.uuid && !ffe.voided),
@@ -43,18 +36,23 @@ export default function QuestionGroupFormElement({
         concept.datatype
       )
   );
-  const childObservations = obsHolder.findObservation(formElement.concept);
+  const observation = obsHolder.findObservation(formElement.concept);
+  let questionGroup;
+  if (_.isNil(observation)) questionGroup = new QuestionGroup();
+  else if (formElement.repeatable)
+    questionGroup = observation.getValueWrapper().getGroupObservationAtIndex(questionGroupIndex);
+  else questionGroup = observation.getValueWrapper();
 
   return (
     <Fragment>
-      <div>{getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex)}</div>
+      <div>{getQuestionGroupLabel(formElement, isRepeatable, questionGroupIndex)}</div>
       <div style={{ flexDirection: "row", alignItems: "center", marginTop: "10px" }}>
         {map(textNumericAndNotes, childFormElement => (
           <FormElement
             key={childFormElement.uuid}
             concept={childFormElement.concept}
             obsHolder={obsHolder}
-            value={getChildObservationValue(childFormElement.concept, childObservations)}
+            value={questionGroup.getValueForConcept(childFormElement.concept)}
             validationResults={validationResults}
             uuid={childFormElement.uuid}
             update={value => {
@@ -70,22 +68,22 @@ export default function QuestionGroupFormElement({
         ))}
       </div>
       <div style={{ marginRight: "15px" }}>
-        {map(otherQuestions, fe => (
-          <div key={fe.uuid} style={{ marginTop: "20px" }}>
+        {map(otherQuestions, childFormElement => (
+          <div key={childFormElement.uuid} style={{ marginTop: "20px" }}>
             <FormElement
-              concept={fe.concept}
+              concept={childFormElement.concept}
               obsHolder={obsHolder}
-              value={getChildObservationValue(fe.concept, childObservations)}
+              value={questionGroup.getValueForConcept(childFormElement.concept)}
               validationResults={validationResults}
-              uuid={fe.uuid}
+              uuid={childFormElement.uuid}
               update={value => {
-                updateObs(formElement, value, fe);
+                updateObs(formElement, value, childFormElement);
               }}
-              feIndex={fe.displayOrder}
+              feIndex={childFormElement.displayOrder}
               filteredFormElements={filteredFormElements}
               ignoreLineBreak={true}
             >
-              {fe}
+              {childFormElement}
             </FormElement>
           </div>
         ))}

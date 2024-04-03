@@ -3,11 +3,29 @@ import { differenceWith, some, filter, flatMap, head, isEmpty, isNil, map, remov
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
-  updateObservations(observationsHolder, formElement, value, childFormElement) {
+  updateObservations(
+    observationsHolder,
+    formElement,
+    value,
+    childFormElement,
+    questionGroupIndex = 0
+  ) {
     if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
-      observationsHolder.updateGroupQuestion(formElement, childFormElement, value);
-
-      const questionGroupTypeObservation = observationsHolder.findObservation(formElement.concept);
+      if (formElement.repeatable) {
+        observationsHolder.updateRepeatableGroupQuestion(
+          questionGroupIndex,
+          formElement,
+          childFormElement,
+          value
+        );
+      } else {
+        observationsHolder.updateGroupQuestion(formElement, childFormElement, value);
+      }
+      const questionGroupTypeObservation = observationsHolder.findQuestionGroupObservation(
+        formElement.concept,
+        formElement,
+        questionGroupIndex
+      );
       let questionGroup;
       if (questionGroupTypeObservation) {
         questionGroup = questionGroupTypeObservation.getValueWrapper();

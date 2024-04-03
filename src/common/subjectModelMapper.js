@@ -50,12 +50,12 @@ export const mapIndividual = individualDetails => {
   return individual;
 };
 
-export const mapObservations = observations => {
+export function mapObservations(observations) {
   if (observations)
     return observations.map(observation => {
       return mapObservation(observation);
     });
-};
+}
 
 function getAnswers(answersJson) {
   return map(answersJson, answerJson => {
@@ -84,7 +84,11 @@ export const mapConcept = conceptJson => {
   return concept;
 };
 
-export const mapObservation = observationJson => {
+function looksLikeRepeatableQuestionGroupValue(value) {
+  return _.isArrayLike(value) && value.length > 1 && _.isArrayLike(value[0]);
+}
+
+export function mapObservation(observationJson) {
   if (observationJson) {
     const observation = new Observation();
     const concept = mapConcept(observationJson.concept);
@@ -96,7 +100,7 @@ export const mapObservation = observationJson => {
     observationJson.location && addressLevelService.addAddressLevel(observationJson.location);
     let value;
     if (concept.isQuestionGroup()) {
-      if (_.isArrayLike(observationJson.value)) {
+      if (looksLikeRepeatableQuestionGroupValue(observationJson.value)) {
         //RepeatableQuestionGroup
         const repeatableQuestionGroupObservations = _.map(
           observationJson.value,
@@ -115,7 +119,7 @@ export const mapObservation = observationJson => {
     observation.valueJSON = value;
     return observation;
   }
-};
+}
 
 //subject Dashboard profile Tab
 export const mapProfile = subjectProfile => {
@@ -301,7 +305,7 @@ export const mapEncounterType = encounterType => {
   return General.assignFields(encounterType, new EncounterType(), ["name", "uuid"]);
 };
 
-// general tab subject Dashbord
+// general tab subject Dashboard
 export const mapGeneral = subjectGeneral => {
   if (subjectGeneral && subjectGeneral.encounters) {
     return subjectGeneral.encounters.map(encounters => {
