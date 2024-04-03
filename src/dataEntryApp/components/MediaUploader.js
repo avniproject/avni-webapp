@@ -9,6 +9,7 @@ import Audiotrack from "@material-ui/icons/Audiotrack";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import CustomizedBackdrop from "./CustomizedBackdrop";
 import CloseIcon from "@material-ui/icons/Close";
+import ReactImageVideoLightbox from "react-image-video-lightbox";
 import { Concept } from "avni-models";
 import { FilePreview } from "./FilePreview";
 import MediaService from "../../adminApp/service/MediaService";
@@ -83,6 +84,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   const [preview, setPreview] = useState({});
   const [uploadButtonClicked, setUploadButtonClicked] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [openImage, setOpenImage] = useState();
   const isFileDataType = formElement.getType() === Concept.dataType.File;
   const supportedMIMEType = isFileDataType ? getFileMimeType(formElement) : `${mediaType}/*`;
   const isMultiSelect = formElement.isMultiSelect();
@@ -105,6 +107,13 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   useEffect(() => {
     setUploading(uploadButtonClicked > 0);
   }, [uploadButtonClicked]);
+
+  useEffect(() => {
+    if (openImage) {
+      const LightBoxContainer = document.querySelector("div.imagePreviewContainer");
+      LightBoxContainer.firstChild.style.zIndex = 1;
+    }
+  }, [openImage]);
 
   const onMediaSelect = event => {
     const alerts = [];
@@ -165,9 +174,16 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
     }));
   };
 
-  //TODO ONCLICK open in new tab
   const mediaPreviewMap = fileToPreview => ({
-    image: <img src={fileToPreview} alt={label} width={200} height={200} />,
+    image: (
+      <img
+        src={fileToPreview}
+        alt={label}
+        width={200}
+        height={200}
+        onClick={() => setOpenImage(fileToPreview)}
+      />
+    ),
     video: (
       <video preload="auto" controls width={200} height={200} controlsList="nodownload">
         <source src={fileToPreview} type="video/mp4" />
@@ -191,6 +207,29 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
           <CloseIcon />
         </Button>
       </Box>
+    );
+  };
+
+  const previewImage = () => {
+    let startIndex = 0;
+    const data = Object.entries(preview).map(([fileName, imgSrc], index) => {
+      if (imgSrc === openImage) {
+        startIndex = index;
+      }
+      return {
+        url: imgSrc,
+        type: "photo",
+        altTag: fileName
+      };
+    });
+    return (
+      <div className="imagePreviewContainer">
+        <ReactImageVideoLightbox
+          data={data}
+          startIndex={startIndex}
+          onCloseCallback={() => setOpenImage()}
+        />
+      </div>
     );
   };
 
@@ -230,6 +269,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
           );
         })}
       </Grid>
+      {openImage && previewImage()}
       <CustomizedBackdrop load={!uploading} />
     </Fragment>
   );
