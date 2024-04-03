@@ -87,7 +87,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   const [openImage, setOpenImage] = useState();
   const isFileDataType = formElement.getType() === Concept.dataType.File;
   const supportedMIMEType = isFileDataType ? getFileMimeType(formElement) : `${mediaType}/*`;
-  const isMultiSelect = formElement.isMultiSelect();
+  const isMultiSelect = formElement.isMultiSelect() && !isFileDataType;
 
   useEffect(() => {
     // Push consolidated changes to ObservationHolder, doing it directly without state messes up the multi-select flows
