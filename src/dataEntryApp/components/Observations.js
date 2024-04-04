@@ -11,10 +11,11 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
+import { filter, find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
+import MediaObservations from "./MediaObservations";
 import http from "../../common/utils/httpClient";
 import { AudioPlayer } from "./AudioPlayer";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
@@ -128,6 +129,8 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const [showMedia, setShowMedia] = React.useState(false);
+  const [currentMediaItemIndex, setCurrentMediaItemIndex] = React.useState(0);
   const [mediaDataList, setMediaDataList] = React.useState([]);
 
   if (isNil(observations)) {
@@ -201,12 +204,12 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         height={200}
         onClick={event => {
           event.preventDefault();
-          openMediaInNewTab(unsignedMediaUrl);
+          showMediaOverlay(unsignedMediaUrl);
         }}
       />
     ),
     [Concept.dataType.Video]: (
-      <video preload="auto" controls width={200} height={200} controlsList="nodownload">
+      <video preload="auto" controls width={200} height={200}>
         <source src={unsignedMediaUrl} type="video/mp4" />
         Sorry, your browser doesn't support embedded videos.
       </video>
@@ -304,6 +307,15 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         })
       );
     }
+  };
+
+  const showMediaOverlay = unsignedMediaUrl => {
+    setCurrentMediaItemIndex(
+      filter(mediaDataList, mediaData => mediaData.type === "photo").findIndex(
+        img => img.url === unsignedMediaUrl
+      )
+    );
+    setShowMedia(true);
   };
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -467,6 +479,13 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       >
         <TableBody>{rows}</TableBody>
       </Table>
+      {showMedia && (
+        <MediaObservations
+          mediaDataList={filter(mediaDataList, mediaData => mediaData.type === "photo")}
+          currentMediaItemIndex={currentMediaItemIndex}
+          onClose={() => setShowMedia(false)}
+        />
+      )}
     </div>
   );
 };

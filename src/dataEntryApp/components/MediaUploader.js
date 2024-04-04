@@ -226,6 +226,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
         <ReactImageVideoLightbox
           data={data}
           startIndex={startIndex}
+          showResourceCount={true}
           onCloseCallback={() => setOpenImage()}
         />
       </div>
