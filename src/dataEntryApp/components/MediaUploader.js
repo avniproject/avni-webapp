@@ -57,21 +57,28 @@ const isValidType = (formElement, type, isFile) => {
 };
 
 function updatePreviewWithObsResults(observationValue, setPreview) {
-  MediaService.getMedia(observationValue).then(res =>
-    setPreview(oldPreview => ({
-      ...oldPreview,
-      [observationValue]: res
-    }))
-  );
+  observationValue &&
+    MediaService.getMedia(observationValue).then(res =>
+      setPreview(oldPreview => ({
+        ...oldPreview,
+        [observationValue]: res
+      }))
+    );
 }
 
-function addMediaUrlToLocalObsValue(setLocalObsValue, isMultiSelect, localObsValue, r) {
+function invokeUpdate(update, mediaUrl) {
+  // Push consolidated changes to ObservationHolder, doing it directly without state messes up the multi-select flows
+  update(mediaUrl);
+}
+
+function addMediaUrlToLocalObsValue(setLocalObsValue, isMultiSelect, localObsValue, r, update) {
+  invokeUpdate(update, r.data);
   if (isMultiSelect) {
-    if (isArrayLikeObject(localObsValue)) {
-      setLocalObsValue(locObsValue => [...locObsValue, r.data]);
-    } else {
-      setLocalObsValue(locObsValue => [locObsValue, r.data].filter(ele => !isEmpty(ele)));
-    }
+    setLocalObsValue(locObsValue =>
+      locObsValue && !isArrayLikeObject(locObsValue)
+        ? [locObsValue, r.data].filter(ele => !isEmpty(ele))
+        : [...(locObsValue || []), r.data].filter(ele => !isEmpty(ele))
+    );
   } else {
     setLocalObsValue(r.data);
   }
@@ -90,19 +97,14 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   const isMultiSelect = formElement.isMultiSelect() && !isFileDataType;
 
   useEffect(() => {
-    // Push consolidated changes to ObservationHolder, doing it directly without state messes up the multi-select flows
-    update(localObsValue);
-  }, [localObsValue]);
-
-  useEffect(() => {
-    if (!isEmpty(obsValue)) {
-      if (isArrayLikeObject(obsValue)) {
-        obsValue.forEach(obsItrValue => updatePreviewWithObsResults(obsItrValue, setPreview));
+    if (!isEmpty(localObsValue)) {
+      if (isArrayLikeObject(localObsValue)) {
+        localObsValue.forEach(obsItrValue => updatePreviewWithObsResults(obsItrValue, setPreview));
       } else {
-        updatePreviewWithObsResults(obsValue, setPreview);
+        updatePreviewWithObsResults(localObsValue, setPreview);
       }
     }
-  }, [obsValue]);
+  }, [localObsValue]);
 
   useEffect(() => {
     setUploading(uploadButtonClicked > 0);
@@ -146,7 +148,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
           .uploadFile("/web/uploadMedia", file)
           .then(r => {
             setUploadButtonClicked(oldValue => oldValue - 1);
-            addMediaUrlToLocalObsValue(setLocalObsValue, isMultiSelect, localObsValue, r);
+            addMediaUrlToLocalObsValue(setLocalObsValue, isMultiSelect, localObsValue, r, update);
           })
           .catch(r => {
             const error = `${get(r, "response.data") ||
@@ -161,8 +163,9 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   };
 
   const onDelete = fileName => {
+    invokeUpdate(update, fileName);
     if (isMultiSelect && isArrayLikeObject(localObsValue)) {
-      setLocalObsValue(localObsValue.filter(item => item !== fileName));
+      setLocalObsValue(locObsValue => locObsValue.filter(item => item !== fileName));
     } else {
       if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
     }

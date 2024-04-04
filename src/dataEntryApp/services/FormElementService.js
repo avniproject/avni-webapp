@@ -41,14 +41,18 @@ export default {
     } else if (
       formElement.isMultiSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
-        formElement.concept.datatype === Concept.dataType.Subject)
+        formElement.concept.datatype === Concept.dataType.Subject ||
+        formElement.concept.datatype === Concept.dataType.Image ||
+        formElement.concept.datatype === Concept.dataType.Video)
     ) {
       const observation = observationsHolder.toggleMultiSelectAnswer(formElement.concept, value);
       return observation && observation.getValueWrapper();
     } else if (
       formElement.isSingleSelect() &&
       (formElement.concept.datatype === Concept.dataType.Coded ||
-        formElement.concept.datatype === Concept.dataType.Subject)
+        formElement.concept.datatype === Concept.dataType.Subject ||
+        formElement.concept.datatype === Concept.dataType.Image ||
+        formElement.concept.datatype === Concept.dataType.Video)
     ) {
       const observation = observationsHolder.toggleSingleSelectAnswer(formElement.concept, value);
       return observation && observation.getValueWrapper();
@@ -71,6 +75,10 @@ export default {
       const { phoneNumber, isVerified } = value;
       observationsHolder.updatePhoneNumberValue(formElement.concept, phoneNumber, isVerified);
       return phoneNumber;
+    } else if (formElement.concept.datatype === Concept.dataType.File) {
+      //TODO Handle File same as Image or Video later when its fixed in MediaUploader as well
+      const observation = observationsHolder.toggleSingleSelectAnswer(formElement.concept, value);
+      return observation && observation.getValueWrapper();
     } else {
       observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
       return value;
