@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { get, isEmpty, includes, lowerCase, isArrayLikeObject } from "lodash";
+import { get, isEmpty, includes, lowerCase, isArrayLikeObject, omit } from "lodash";
 import { Box, Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../../common/utils/httpClient";
@@ -167,10 +167,9 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
       if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
     }
     preview[fileName] && URL.revokeObjectURL(preview[fileName]);
-    setPreview(oldPreview => ({
-      ...oldPreview,
-      [fileName]: null
-    }));
+    setPreview(oldPreview => {
+      return omit(oldPreview, fileName);
+    });
   };
 
   const mediaPreviewMap = fileToPreview => ({

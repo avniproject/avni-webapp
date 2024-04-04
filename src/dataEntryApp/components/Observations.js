@@ -11,7 +11,7 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { filter, find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
+import { find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
@@ -130,7 +130,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const classes = useStyles();
 
   const [showMedia, setShowMedia] = React.useState(false);
-  const [currentMediaItemIndex, setCurrentMediaItemIndex] = React.useState(0);
+  const [currentMediaItem, setCurrentMediaItem] = React.useState(null);
   const [mediaDataList, setMediaDataList] = React.useState([]);
 
   if (isNil(observations)) {
@@ -189,11 +189,6 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         {addLineBreak && <br />}
       </div>
     );
-  };
-
-  const openMediaInNewTab = mediaUrl => {
-    const mediaData = mediaDataList.find(x => !_.isNil(x.url) && x.url.startsWith(mediaUrl));
-    window.open(mediaData.url);
   };
 
   const mediaPreviewMap = unsignedMediaUrl => ({
@@ -310,11 +305,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   };
 
   const showMediaOverlay = unsignedMediaUrl => {
-    setCurrentMediaItemIndex(
-      filter(mediaDataList, mediaData => mediaData.type === "photo").findIndex(
-        img => img.url === unsignedMediaUrl
-      )
-    );
+    setCurrentMediaItem(find(mediaDataList, img => img.url === unsignedMediaUrl));
     setShowMedia(true);
   };
 
@@ -481,8 +472,9 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       </Table>
       {showMedia && (
         <MediaObservations
-          mediaDataList={filter(mediaDataList, mediaData => mediaData.type === "photo")}
-          currentMediaItemIndex={currentMediaItemIndex}
+          mediaDataList={[currentMediaItem]}
+          currentMediaItemIndex={0}
+          showResourceCount={false}
           onClose={() => setShowMedia(false)}
         />
       )}

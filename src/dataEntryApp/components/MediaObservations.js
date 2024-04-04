@@ -1,7 +1,12 @@
 import React from "react";
 import ReactImageVideoLightbox from "react-image-video-lightbox";
 
-const MediaObservations = ({ mediaDataList, currentMediaItemIndex, onClose }) => {
+const MediaObservations = ({
+  mediaDataList,
+  currentMediaItemIndex,
+  onClose,
+  showResourceCount
+}) => {
   React.useEffect(() => {
     const LightboxContainer = document.querySelector("div.mediaObservationContainer");
     LightboxContainer.firstChild.style.zIndex = 1;
@@ -12,7 +17,7 @@ const MediaObservations = ({ mediaDataList, currentMediaItemIndex, onClose }) =>
       <ReactImageVideoLightbox
         data={mediaDataList}
         startIndex={currentMediaItemIndex}
-        showResourceCount={true}
+        showResourceCount={showResourceCount}
         onCloseCallback={() => onClose()}
       />
     </div>
