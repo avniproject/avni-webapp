@@ -124,6 +124,26 @@ function renderSingleQuestionGroup(
   );
 }
 
+function initMediaObservations(observations) {
+  const mediaObservations = [
+    ...observations.filter(obs =>
+      includes(
+        [Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File],
+        obs.concept.datatype
+      )
+    )
+  ];
+  //TODO handle Repeatable Question Group media observations
+  observations
+    .filter(obs => obs.concept.isQuestionGroup())
+    .map(
+      qgObservation =>
+        qgObservation.valueJSON.groupObservations &&
+        mediaObservations.push(...qgObservation.valueJSON.groupObservations)
+    );
+  return mediaObservations;
+}
+
 const Observations = ({ observations, additionalRows, form, customKey, highlight }) => {
   const i = new i18n();
   const { t } = useTranslation();
@@ -324,13 +344,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const orderedObs = isNotAssociatedWithForm
     ? observations
     : form.orderObservationsPerFEG(observations);
-
-  const mediaObservations = observations.filter(obs =>
-    includes(
-      [Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File],
-      obs.concept.datatype
-    )
-  );
+  const mediaObservations = initMediaObservations(observations);
 
   React.useEffect(() => {
     refreshSignedUrlsForMedia().then(mediaDataList => setMediaDataList(mediaDataList));
