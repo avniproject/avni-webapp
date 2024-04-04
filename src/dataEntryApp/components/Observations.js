@@ -195,6 +195,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     [Concept.dataType.Image]: (
       <img
         src={unsignedMediaUrl}
+        alt={""}
         width={200}
         height={200}
         onClick={event => {
