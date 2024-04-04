@@ -1,6 +1,7 @@
 import React from "react";
 import { RepeatableQuestionGroup } from "openchs-models";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
+import _ from "lodash";
 
 export function RepeatableQuestionGroupElement({
   formElement,
@@ -9,8 +10,8 @@ export function RepeatableQuestionGroupElement({
   filteredFormElements,
   updateObs
 }) {
-  const childObservations = obsHolder.findObservation(formElement.concept);
-  const repeatableQuestionGroup = new RepeatableQuestionGroup(childObservations);
+  let repeatableQuestionGroup = obsHolder.findObservation(formElement.concept);
+  if (_.isNil(repeatableQuestionGroup)) repeatableQuestionGroup = new RepeatableQuestionGroup();
   return repeatableQuestionGroup.getValue().map((x, index) => {
     return (
       <QuestionGroupFormElement
@@ -20,7 +21,7 @@ export function RepeatableQuestionGroupElement({
         updateObs={updateObs}
         validationResults={validationResults}
         isRepeatable={true}
-        repeatableIndex={1}
+        questionGroupIndex={index}
         key={index}
       />
     );
