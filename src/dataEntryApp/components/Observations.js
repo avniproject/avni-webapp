@@ -24,7 +24,8 @@ import _ from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { Grid, styled } from "@material-ui/core";
+import { Grid, Collapse, IconButton, styled } from "@material-ui/core";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -152,6 +153,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const [showMedia, setShowMedia] = React.useState(false);
   const [currentMediaItem, setCurrentMediaItem] = React.useState(null);
   const [mediaDataList, setMediaDataList] = React.useState([]);
+  const [open, setOpen] = React.useState({});
 
   if (isNil(observations)) {
     return <div />;
@@ -216,6 +218,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       <img
         src={unsignedMediaUrl}
         alt={""}
+        align={"center"}
         width={200}
         height={200}
         onClick={event => {
@@ -232,34 +235,74 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     )
   });
 
+  /**
+   * We use observationValue to maintain state of corresponding media observation's collapse state,
+   * as use of concept could be a problem with QuestionGroups and RepeatableQG able to re-use same concept
+   * @param observationValue
+   */
+  function updateOpen(observationValue) {
+    setOpen(oldOpen => {
+      return { ...oldOpen, [observationValue]: !oldOpen[observationValue] };
+    });
+  }
+
   const imageVideoOptions = (observationValue, concept) => {
     let isMultiSelect = observationValue && _.isArrayLikeObject(observationValue);
     const mediaUrls = isMultiSelect ? observationValue : [observationValue];
     return (
-      <Grid container direction="row" alignItems="center" spacing={1}>
-        {mediaUrls.map((unsignedMediaUrl, index) => {
-          const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
-          const couldntSignMessage =
-            MediaData.MissingSignedMediaMessage + ". Value: " + unsignedMediaUrl;
-          const signedMediaUrl = _.get(mediaData, "url");
-          return (
-            <Grid item key={index}>
-              {_.isNil(signedMediaUrl) ? (
-                couldntSignMessage
-              ) : (
-                <Box
-                  display={"flex"}
-                  flexDirection={"row"}
-                  alignItems={"flex-start"}
-                  className={classes.boxStyle}
-                >
-                  {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
-                </Box>
-              )}
-            </Grid>
-          );
-        })}
-      </Grid>
+      <Fragment>
+        <Grid
+          onClick={event => {
+            updateOpen(observationValue);
+          }}
+        >
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Link
+              to={"#"}
+              onClick={event => {
+                event.preventDefault();
+              }}
+            >
+              {!open[observationValue] && t("View Media")}
+            </Link>
+            <IconButton aria-label="expand row" size="small">
+              {open[observationValue] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            </IconButton>
+          </Box>
+        </Grid>
+        <Collapse in={open[observationValue]} timeout="auto" unmountOnExit>
+          <Grid
+            container
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            onClick={() => updateOpen(observationValue)}
+          >
+            {mediaUrls.map((unsignedMediaUrl, index) => {
+              const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
+              const couldntSignMessage =
+                MediaData.MissingSignedMediaMessage + ". Value: " + unsignedMediaUrl;
+              const signedMediaUrl = _.get(mediaData, "url");
+              return (
+                <Grid item key={index}>
+                  {_.isNil(signedMediaUrl) ? (
+                    couldntSignMessage
+                  ) : (
+                    <Box
+                      display={"flex"}
+                      flexDirection={"row"}
+                      alignItems={"flex-start"}
+                      className={classes.boxStyle}
+                    >
+                      {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
+                    </Box>
+                  )}
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Collapse>
+      </Fragment>
     );
   };
 
