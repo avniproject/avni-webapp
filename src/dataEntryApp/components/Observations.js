@@ -228,7 +228,15 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
       />
     ),
     [Concept.dataType.Video]: (
-      <video preload="auto" controls width={200} height={200}>
+      <video
+        preload="auto"
+        controls
+        width={200}
+        height={200}
+        onClick={event => {
+          event.stopPropagation();
+        }}
+      >
         <source src={unsignedMediaUrl} type="video/mp4" />
         Sorry, your browser doesn't support embedded videos.
       </video>
