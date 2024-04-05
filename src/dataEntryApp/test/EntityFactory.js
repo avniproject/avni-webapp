@@ -11,13 +11,15 @@ import {
   ProgramEnrolment,
   Individual,
   ConceptAnswer,
-  EncounterType
+  EncounterType,
+  KeyValue
 } from "openchs-models";
 
 import _ from "lodash";
 import WebFormElement from "../../common/model/WebFormElement";
 import WebFormElementGroup from "../../common/model/WebFormElementGroup";
 import WebForm from "../../common/model/WebForm";
+import moment from "moment";
 
 class EntityFactory {
   static createSafeProgram(name) {
@@ -34,6 +36,30 @@ class EntityFactory {
     return individual;
   }
 
+  static createSubject({
+    uuid = General.randomUUID(),
+    subjectType,
+    firstName,
+    lastName,
+    address,
+    registrationDate = moment().toDate(),
+    observations = [],
+    approvalStatuses = []
+  }) {
+    const subject = new Individual();
+    subject.uuid = uuid;
+    subject.subjectType = subjectType;
+    subject.firstName = firstName;
+    subject.lastName = lastName;
+    subject.name = firstName;
+    subject.lowestAddressLevel = address;
+    subject.registrationDate = registrationDate;
+    subject.observations = observations;
+    subject.approvalStatuses = approvalStatuses;
+    subject.setLatestEntityApprovalStatus(subject.latestEntityApprovalStatus);
+    return subject;
+  }
+
   static createSafeFormElementGroup(form) {
     const formElementGroup = new WebFormElementGroup();
     formElementGroup.formElements = [];
@@ -43,6 +69,14 @@ class EntityFactory {
   }
 
   static createFormElementGroup(name, displayOrder, form) {
+    return EntityFactory.createFormElementGroup2({
+      name: name,
+      displayOrder: displayOrder,
+      form: form
+    });
+  }
+
+  static createFormElementGroup2({ name, displayOrder, form }) {
     const formElementGroup = EntityFactory.createSafeFormElementGroup(form);
     formElementGroup.name = name;
     formElementGroup.displayOrder = displayOrder;
@@ -50,9 +84,15 @@ class EntityFactory {
   }
 
   static createForm(name) {
+    return EntityFactory.createForm2({ name });
+  }
+
+  static createForm2({ uuid, formType, name, formElementGroups = [] }) {
     const form = new WebForm();
+    form.uuid = uuid;
+    form.formType = formType;
     form.name = name;
-    form.formElementGroups = [];
+    form.formElementGroups = formElementGroups;
     return form;
   }
 
@@ -112,6 +152,17 @@ class EntityFactory {
     const concept = Concept.create(name, dataType);
     concept.uuid = uuid || General.randomUUID();
     if (dataType === Concept.dataType.Coded) concept.answers = [];
+    return concept;
+  }
+
+  static createConcept2({ uuid, dataType, name, answers = [], keyValues = [] } = { answers: [] }) {
+    const concept = new Concept();
+    concept.name = name;
+    concept.uuid = uuid;
+    concept.datatype = dataType;
+    concept.answers = [];
+    concept.keyValues = _.map(keyValues, KeyValue.fromResource);
+    answers.forEach(x => concept.addAnswer(x));
     return concept;
   }
 

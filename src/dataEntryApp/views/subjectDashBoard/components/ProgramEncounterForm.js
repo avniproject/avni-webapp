@@ -8,7 +8,9 @@ import {
   saveProgramEncounter,
   setValidationResults,
   onNext,
-  onPrevious
+  onPrevious,
+  addNewQuestionGroup,
+  removeQuestionGroup
 } from "dataEntryApp/reducers/programEncounterReducer";
 
 const mapFormStateToProps = state => ({
@@ -41,6 +43,8 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup,
   onSave: () => saveProgramEncounter(false),
   setValidationResults,
   onNext: () => onNext(false),

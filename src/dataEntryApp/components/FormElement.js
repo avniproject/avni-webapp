@@ -53,7 +53,9 @@ export const FormElement = ({
   filteredFormElements,
   ignoreLineBreak,
   isGrid,
-  updateObs
+  updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup
 }) => {
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
@@ -73,7 +75,9 @@ export const FormElement = ({
     uuid,
     filteredFormElements,
     isGrid,
-    updateObs
+    updateObs,
+    addNewQuestionGroup,
+    removeQuestionGroup
   };
   const Element = elements[type];
   return (

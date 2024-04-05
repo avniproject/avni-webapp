@@ -44,6 +44,8 @@ export default function*() {
     [
       programEncounterOnLoadWatcher,
       updateEncounterObsWatcher,
+      addNewQuestionGroupWatcher,
+      removeQuestionGroupWatcher,
       saveProgramEncounterWatcher,
       editProgramEncounterWatcher,
       updateEncounterCancelObsWatcher,
@@ -159,7 +161,12 @@ export function* createProgramEncounterForScheduledWorker({ programEncounterUuid
 function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
-export function* updateEncounterObsWorker({ formElement, value, childFormElement }) {
+export function* updateEncounterObsWorker({
+  formElement,
+  value,
+  childFormElement,
+  questionGroupIndex
+}) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -168,7 +175,8 @@ export function* updateEncounterObsWorker({ formElement, value, childFormElement
     programEncounter,
     new ObservationsHolder(programEncounter.observations),
     state.validationResults,
-    childFormElement
+    childFormElement,
+    questionGroupIndex
   );
   yield put(
     setState({
@@ -176,6 +184,36 @@ export function* updateEncounterObsWorker({ formElement, value, childFormElement
       filteredFormElements,
       programEncounter,
       validationResults
+    })
+  );
+}
+
+function* addNewQuestionGroupWatcher() {
+  yield takeEvery(types.ADD_NEW_QG, addNewQuestionGroupWorker);
+}
+export function* addNewQuestionGroupWorker({ concept }) {
+  const state = yield select(selectProgramEncounterState);
+  const programEncounter = state.programEncounter.cloneForEdit();
+  commonFormUtil.addNewQuestionGroup(programEncounter.observations, concept);
+  yield put(
+    setState({
+      ...state,
+      programEncounter
+    })
+  );
+}
+
+function* removeQuestionGroupWatcher() {
+  yield takeEvery(types.REMOVE_QG, removeNewQuestionGroupWorker);
+}
+export function* removeNewQuestionGroupWorker({ concept, questionGroupIndex }) {
+  const state = yield select(selectProgramEncounterState);
+  const programEncounter = state.programEncounter.cloneForEdit();
+  commonFormUtil.removeQuestionGroup(programEncounter.observations, concept, questionGroupIndex);
+  yield put(
+    setState({
+      ...state,
+      programEncounter
     })
   );
 }

@@ -85,7 +85,7 @@ export const mapConcept = conceptJson => {
 };
 
 function looksLikeRepeatableQuestionGroupValue(value) {
-  return _.isArrayLike(value) && value.length > 1 && _.isArrayLike(value[0]);
+  return _.isArrayLike(value) && value.length > 0 && _.isArrayLike(value[0]);
 }
 
 export function mapObservation(observationJson) {

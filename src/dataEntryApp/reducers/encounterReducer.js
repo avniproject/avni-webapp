@@ -27,7 +27,9 @@ export const types = {
   SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`,
   SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
   GET_ELIGIBLE_ENCOUNTERS: `${prefix}GET_ELIGIBLE_ENCOUNTERS`,
-  SET_ELIGIBLE_ENCOUNTERS: `${prefix}SET_ELIGIBLE_ENCOUNTERS`
+  SET_ELIGIBLE_ENCOUNTERS: `${prefix}SET_ELIGIBLE_ENCOUNTERS`,
+  ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
+  REMOVE_QG: `${prefix}REMOVE_QG`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -79,12 +81,16 @@ export const setEncounter = encounter => ({
   encounter
 });
 
-export const updateObs = (formElement, value, childFormElement) => ({
+export const updateObs = (formElement, value, childFormElement, questionGroupIndex) => ({
   type: types.UPDATE_OBS,
   formElement,
   value,
-  childFormElement
+  childFormElement,
+  questionGroupIndex
 });
+
+export const addNewQuestionGroup = formElement => ({});
+export const removeQuestionGroup = (formElement, questionGroupIndex) => ({});
 
 export const saveEncounter = isCancel => ({
   type: types.SAVE_ENCOUNTER,

@@ -196,7 +196,12 @@ export function* updateExitEnrolmentObsWorker({ formElement, value, childFormEle
   );
 }
 
-export function* updateEnrolmentObsWorker({ formElement, value, childFormElement }) {
+export function* updateEnrolmentObsWorker({
+  formElement,
+  value,
+  childFormElement,
+  questionGroupIndex
+}) {
   const state = yield select(selectProgramEnrolmentState);
   const programEnrolment = state.programEnrolment.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -205,7 +210,8 @@ export function* updateEnrolmentObsWorker({ formElement, value, childFormElement
     programEnrolment,
     new ObservationsHolder(programEnrolment.observations),
     state.validationResults,
-    childFormElement
+    childFormElement,
+    questionGroupIndex
   );
   yield put(
     setProgramEnrolmentState({
@@ -216,6 +222,16 @@ export function* updateEnrolmentObsWorker({ formElement, value, childFormElement
     })
   );
 }
+
+function* addNewQuestionGroupWatcher() {
+  yield takeEvery(enrolmentTypes.ADD_NEW_QG, addNewQuestionGroupWorker);
+}
+export function* addNewQuestionGroupWorker({ formElement }) {}
+
+function* removeQuestionGroupWatcher() {
+  yield takeEvery(enrolmentTypes.REMOVE_QG, removeNewQuestionGroupWorker);
+}
+export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {}
 
 export function* enrolmentNextWatcher() {
   yield takeLatest(enrolmentTypes.ON_NEXT, enrolmentWizardWorker, commonFormUtil.onNext, true);
@@ -284,6 +300,8 @@ export default function* enrolmentSaga() {
     [
       enrolmentOnLoadWatcher,
       updateEnrolmentObsWatcher,
+      addNewQuestionGroupWatcher,
+      removeQuestionGroupWatcher,
       saveProgramEnrolmentWatcher,
       enrolmentNextWatcher,
       enrolmentPreviousWatcher,

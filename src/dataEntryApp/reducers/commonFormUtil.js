@@ -304,20 +304,14 @@ const handleValidationResult = (newValidationResults, existingValidationResults)
   return existingValidationResultClones;
 };
 
-const updateObservations = (
-  formElement,
-  value,
+function postObservationsUpdate(
   entity,
+  formElement,
   observationsHolder,
+  obsValue,
   existingValidationResults,
   childFormElement
-) => {
-  const obsValue = formElementService.updateObservations(
-    observationsHolder,
-    formElement,
-    value,
-    childFormElement
-  );
+) {
   const formElementStatuses = getFormElementStatuses(
     entity,
     formElement.formElementGroup,
@@ -337,7 +331,50 @@ const updateObservations = (
     childFormElement
   );
   return { filteredFormElements, validationResults };
+}
+
+const updateObservations = (
+  formElement,
+  value,
+  entity,
+  observationsHolder,
+  existingValidationResults,
+  childFormElement,
+  questionGroupIndex
+) => {
+  const obsValue = formElementService.updateObservations(
+    observationsHolder,
+    formElement,
+    value,
+    childFormElement,
+    questionGroupIndex
+  );
+  const { filteredFormElements, validationResults } = postObservationsUpdate(
+    entity,
+    formElement,
+    observationsHolder,
+    obsValue,
+    existingValidationResults,
+    childFormElement
+  );
+  return { filteredFormElements, validationResults };
 };
+
+function getRepeatableQuestionGroup(observations, concept) {
+  const observationsHolder = new ObservationsHolder(observations);
+  const observation = observationsHolder.findObservation(concept);
+  return observation.getValueWrapper();
+}
+
+function addNewQuestionGroup(observations, concept) {
+  const repeatableQuestionGroup = getRepeatableQuestionGroup(observations, concept);
+  repeatableQuestionGroup.addQuestionGroup();
+}
+
+function removeQuestionGroup(observations, concept, index) {
+  const repeatableQuestionGroup = getRepeatableQuestionGroup(observations, concept);
+  repeatableQuestionGroup.removeQuestionGroup(index);
+}
 
 const getValidationResult = (validationResults, formElementIdentifier) =>
   find(
@@ -351,5 +388,7 @@ export default {
   onPrevious,
   handleValidationResult,
   updateObservations,
-  getValidationResult
+  getValidationResult,
+  addNewQuestionGroup,
+  removeQuestionGroup
 };

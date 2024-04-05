@@ -200,7 +200,7 @@ function* updateObsWatcher() {
   yield takeEvery(subjectTypes.UPDATE_OBS, updateObsWorker);
 }
 
-export function* updateObsWorker({ formElement, value, childFormElement }) {
+export function* updateObsWorker({ formElement, value, childFormElement, questionGroupIndex }) {
   const state = yield select(selectRegistrationState);
   const subject = state.subject.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -209,7 +209,8 @@ export function* updateObsWorker({ formElement, value, childFormElement }) {
     subject,
     new ObservationsHolder(subject.observations),
     state.validationResults,
-    childFormElement
+    childFormElement,
+    questionGroupIndex
   );
   yield put(
     setRegistrationState({
@@ -220,6 +221,16 @@ export function* updateObsWorker({ formElement, value, childFormElement }) {
     })
   );
 }
+
+function* addNewQuestionGroupWatcher() {
+  yield takeEvery(subjectTypes.ADD_NEW_QG, addNewQuestionGroupWorker);
+}
+export function* addNewQuestionGroupWorker({ formElement }) {}
+
+function* removeQuestionGroupWatcher() {
+  yield takeEvery(subjectTypes.REMOVE_QG, removeNewQuestionGroupWorker);
+}
+export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {}
 
 export function* registrationNextWatcher() {
   yield takeLatest(subjectTypes.ON_NEXT, registrationWizardWorkerNext);
@@ -324,6 +335,8 @@ export default function* subjectSaga() {
       loadNewRegistrationPageWatcher,
       loadEditRegistrationPageWatcher,
       updateObsWatcher,
+      addNewQuestionGroupWatcher,
+      removeQuestionGroupWatcher,
       registrationNextWatcher,
       registrationPreviousWatcher,
       saveSubjectWatcher

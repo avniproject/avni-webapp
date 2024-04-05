@@ -20,7 +20,9 @@ export const types = {
   SET_STATE: `${prefix}SET_STATE`,
   SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
   SET_ENROLMENT_DATE: `${prefix}SET_ENROLMENT_DATE`,
-  SET_EXIT_DATE: `${prefix}SET_EXIT_DATE`
+  SET_EXIT_DATE: `${prefix}SET_EXIT_DATE`,
+  ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
+  REMOVE_QG: `${prefix}REMOVE_QG`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -74,11 +76,12 @@ export const undoExitEnrolment = programEnrolmentUuid => ({
   programEnrolmentUuid
 });
 
-export const updateObs = (formElement, value, childFormElement) => ({
+export const updateObs = (formElement, value, childFormElement, questionGroupIndex) => ({
   type: types.UPDATE_OBS,
   formElement,
   value,
-  childFormElement
+  childFormElement,
+  questionGroupIndex
 });
 
 export const updateExitObs = (formElement, value) => ({

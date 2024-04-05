@@ -28,7 +28,9 @@ export const types = {
   SET_FILTERED_FORM_ELEMENTS: `${prefix}SET_FILTERED_FORM_ELEMENTS`,
   SET_ENCOUNTER_DATE: `${prefix}SET_ENCOUNTER_DATE`,
   GET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}GET_ELIGIBLE_PROGRAM_ENCOUNTERS`,
-  SET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}SET_ELIGIBLE_PROGRAM_ENCOUNTERS`
+  SET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}SET_ELIGIBLE_PROGRAM_ENCOUNTERS`,
+  ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
+  REMOVE_QG: `${prefix}REMOVE_QG`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -85,11 +87,23 @@ export const onLoadSuccess = (
   isFormEmpty
 });
 
-export const updateObs = (formElement, value, childFormElement) => ({
+export const updateObs = (formElement, value, childFormElement, questionGroupIndex) => ({
   type: types.UPDATE_OBS,
   formElement,
   value,
-  childFormElement
+  childFormElement,
+  questionGroupIndex
+});
+
+export const addNewQuestionGroup = concept => ({
+  type: types.ADD_NEW_QG,
+  concept
+});
+
+export const removeQuestionGroup = (concept, questionGroupIndex) => ({
+  type: types.REMOVE_QG,
+  concept,
+  questionGroupIndex
 });
 
 export const updateCancelObs = (formElement, value) => ({

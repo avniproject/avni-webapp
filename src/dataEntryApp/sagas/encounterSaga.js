@@ -34,6 +34,8 @@ export default function*() {
     [
       encouterOnLoadWatcher,
       updateEncounterObsWatcher,
+      addNewQuestionGroupWatcher,
+      removeQuestionGroupWatcher,
       saveEncounterWatcher,
       createEncounterWatcher,
       createEncounterForScheduledWatcher,
@@ -133,7 +135,12 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
 function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
-export function* updateEncounterObsWorker({ formElement, value, childFormElement }) {
+export function* updateEncounterObsWorker({
+  formElement,
+  value,
+  childFormElement,
+  questionGroupIndex
+}) {
   const state = yield select(selectEncounterState);
   const encounter = state.encounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -142,7 +149,8 @@ export function* updateEncounterObsWorker({ formElement, value, childFormElement
     encounter,
     new ObservationsHolder(encounter.observations),
     state.validationResults,
-    childFormElement
+    childFormElement,
+    questionGroupIndex
   );
   yield put(
     setState({
@@ -153,6 +161,16 @@ export function* updateEncounterObsWorker({ formElement, value, childFormElement
     })
   );
 }
+
+function* addNewQuestionGroupWatcher() {
+  yield takeEvery(types.ADD_NEW_QG, addNewQuestionGroupWorker);
+}
+export function* addNewQuestionGroupWorker({ formElement }) {}
+
+function* removeQuestionGroupWatcher() {
+  yield takeEvery(types.REMOVE_QG, removeNewQuestionGroupWorker);
+}
+export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {}
 
 export function* saveEncounterWatcher() {
   yield takeLatest(types.SAVE_ENCOUNTER, saveEncounterWorker);

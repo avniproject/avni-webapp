@@ -125,7 +125,9 @@ const FormWizard = ({
   onNext,
   onPrevious,
   onSummaryPage,
-  wizard
+  wizard,
+  addNewQuestionGroup,
+  removeQuestionGroup
 }) => {
   if (!form) return <div />;
 
@@ -182,6 +184,8 @@ const FormWizard = ({
                 filteredFormElements={filteredFormElements}
                 entity={entity}
                 renderChildren={isFirstPage}
+                addNewQuestionGroup={addNewQuestionGroup}
+                removeQuestionGroup={removeQuestionGroup}
               >
                 {children}
               </FormElementGroupComponent>

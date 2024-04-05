@@ -3,13 +3,7 @@ import { differenceWith, some, filter, flatMap, head, isEmpty, isNil, map, remov
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
-  updateObservations(
-    observationsHolder,
-    formElement,
-    value,
-    childFormElement,
-    questionGroupIndex = 0
-  ) {
+  updateObservations(observationsHolder, formElement, value, childFormElement, questionGroupIndex) {
     if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
       if (formElement.repeatable) {
         observationsHolder.updateRepeatableGroupQuestion(

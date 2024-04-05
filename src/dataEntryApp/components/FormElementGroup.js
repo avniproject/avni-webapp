@@ -11,7 +11,9 @@ export const FormElementGroup = ({
   validationResults,
   filteredFormElements,
   entity,
-  renderChildren
+  renderChildren,
+  addNewQuestionGroup,
+  removeQuestionGroup
 }) => {
   const nestedElements = nestedFormElements(filteredFormElements);
   return (
@@ -47,6 +49,8 @@ export const FormElementGroup = ({
             feIndex={index}
             filteredFormElements={filteredFormElements}
             updateObs={updateObs}
+            addNewQuestionGroup={addNewQuestionGroup}
+            removeQuestionGroup={removeQuestionGroup}
           >
             {fe}
           </FormElement>

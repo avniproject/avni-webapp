@@ -32,7 +32,9 @@ export const types = {
   SET_REMOVE_PROFILE_PICTURE: `${prefix}SET_REMOVE_PROFILE_PICTURE`,
   SET_DATE_OF_BIRTH: `${prefix}SET_DATE_OF_BIRTH`,
   SET_GENDER: `${prefix}SET_GENDER`,
-  SET_ADDRESS: `${prefix}SET_ADDRESS`
+  SET_ADDRESS: `${prefix}SET_ADDRESS`,
+  ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
+  REMOVE_QG: `${prefix}REMOVE_QG`
 };
 
 export const selectAddressLevelType = addressLevelType => ({
@@ -104,11 +106,12 @@ export const setLoaded = () => ({
   type: types.SET_LOADED
 });
 
-export const updateObs = (formElement, value, childFormElement) => ({
+export const updateObs = (formElement, value, childFormElement, questionGroupIndex) => ({
   type: types.UPDATE_OBS,
   formElement,
   value,
-  childFormElement
+  childFormElement,
+  questionGroupIndex
 });
 
 export const saveComplete = () => ({

@@ -19,7 +19,13 @@ export default function QuestionGroupFormElement({
   questionGroupIndex
 }) {
   const allChildren = sortBy(
-    filter(filteredFormElements, ffe => get(ffe, "group.uuid") === formElement.uuid && !ffe.voided),
+    filter(
+      filteredFormElements,
+      ffe =>
+        get(ffe, "group.uuid") === formElement.uuid &&
+        !ffe.voided &&
+        (_.isNil(questionGroupIndex) || ffe.questionGroupIndex === questionGroupIndex)
+    ),
     "displayOrder"
   );
   const textNumericAndNotes = filter(allChildren, ({ concept }) =>
@@ -56,7 +62,7 @@ export default function QuestionGroupFormElement({
             validationResults={validationResults}
             uuid={childFormElement.uuid}
             update={value => {
-              updateObs(formElement, value, childFormElement);
+              updateObs(formElement, value, childFormElement, questionGroupIndex);
             }}
             feIndex={childFormElement.displayOrder}
             filteredFormElements={filteredFormElements}
@@ -77,7 +83,7 @@ export default function QuestionGroupFormElement({
               validationResults={validationResults}
               uuid={childFormElement.uuid}
               update={value => {
-                updateObs(formElement, value, childFormElement);
+                updateObs(formElement, value, childFormElement, questionGroupIndex);
               }}
               feIndex={childFormElement.displayOrder}
               filteredFormElements={filteredFormElements}
