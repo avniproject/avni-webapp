@@ -56,32 +56,129 @@ const isValidType = (formElement, type, isFile) => {
     : includes(type, lowerCase(formElement.getType()));
 };
 
-function updatePreviewWithObsResults(observationValue, setPreview) {
-  observationValue &&
-    MediaService.getMedia(observationValue).then(res =>
-      setPreview(oldPreview => ({
-        ...oldPreview,
-        [observationValue]: res
-      }))
-    );
+function addObsResultsToPreview(observationValue, setPreview) {
+  if (!isEmpty(observationValue)) {
+    if (isArrayLikeObject(observationValue)) {
+      observationValue.forEach(obsItrValue => {
+        MediaService.getMedia(obsItrValue).then(res =>
+          setPreview(oldPreview => ({
+            ...oldPreview,
+            [obsItrValue]: res
+          }))
+        );
+      });
+    } else {
+      MediaService.getMedia(observationValue).then(res =>
+        setPreview({
+          [observationValue]: res
+        })
+      );
+    }
+  }
 }
 
+function removeFileFromPreview(fileName, preview, setPreview) {
+  preview[fileName] && URL.revokeObjectURL(preview[fileName]);
+  setPreview(oldPreview => {
+    return omit(oldPreview, fileName);
+  });
+}
+
+/*
+ * Push consolidated changes to ObservationHolder, doing it directly without state messes up the multi-select flows
+ */
 function invokeUpdate(update, mediaUrl) {
-  // Push consolidated changes to ObservationHolder, doing it directly without state messes up the multi-select flows
   update(mediaUrl);
 }
 
-function addMediaUrlToLocalObsValue(setLocalObsValue, isMultiSelect, localObsValue, r, update) {
-  invokeUpdate(update, r.data);
+function addMediaUrlToLocalObsValue(
+  update,
+  fileName,
+  isMultiSelect,
+  localObsValue,
+  setLocalObsValue
+) {
+  invokeUpdate(update, fileName);
   if (isMultiSelect) {
     setLocalObsValue(locObsValue =>
       locObsValue && !isArrayLikeObject(locObsValue)
-        ? [locObsValue, r.data].filter(ele => !isEmpty(ele))
-        : [...(locObsValue || []), r.data].filter(ele => !isEmpty(ele))
+        ? [locObsValue, fileName].filter(ele => !isEmpty(ele))
+        : [...(locObsValue || []), fileName].filter(ele => !isEmpty(ele))
     );
   } else {
-    setLocalObsValue(r.data);
+    setLocalObsValue(fileName);
   }
+}
+
+function removeMediaUrlFromLocalObsValue(
+  update,
+  fileName,
+  isMultiSelect,
+  localObsValue,
+  setLocalObsValue
+) {
+  invokeUpdate(update, fileName);
+  if (isMultiSelect && isArrayLikeObject(localObsValue)) {
+    setLocalObsValue(locObsValue => locObsValue.filter(item => item !== fileName));
+  } else {
+    if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
+  }
+}
+
+function consolidateAlerts(etFiles, formElement, isFileDataType, alerts) {
+  etFiles.forEach(file => {
+    if (!isValidType(formElement, file.type, isFileDataType)) {
+      alerts.push(
+        `Selected files type not supported for file ${file.name}. Please choose proper files.\n`
+      );
+    }
+    if (isFileDataType && isBiggerFile(formElement, file.size)) {
+      const oneMBInBytes = 1000000;
+      alerts.push(
+        `Selected file size ${file.size /
+          oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
+          oneMBInBytes} MB for file ${file.name}.\n`
+      );
+    }
+  });
+}
+
+function uploadMediaAndUpdateObservationValue(
+  etFiles,
+  setUploadButtonClicked,
+  setLocalObsValue,
+  isMultiSelect,
+  localObsValue,
+  update,
+  onDelete
+) {
+  etFiles.forEach(file => {
+    const fileReader = new FileReader();
+    file && fileReader.readAsText(file);
+    setUploadButtonClicked(oldValue => oldValue + 1);
+    fileReader.onloadend = event => {
+      http
+        .uploadFile("/web/uploadMedia", file)
+        .then(r => {
+          setUploadButtonClicked(oldValue => oldValue - 1);
+          addMediaUrlToLocalObsValue(
+            update,
+            r.data,
+            isMultiSelect,
+            localObsValue,
+            setLocalObsValue
+          );
+        })
+        .catch(r => {
+          const error = `${get(r, "response.data") ||
+            get(r, "message") ||
+            "Unknown error occurred while uploadButtonClicked media"}`;
+          setUploadButtonClicked(oldValue => oldValue - 1);
+          onDelete(file.name);
+          alert(error);
+        });
+    };
+  });
 }
 
 export const MediaUploader = ({ label, obsValue, mediaType, update, formElement }) => {
@@ -97,13 +194,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   const isMultiSelect = formElement.isMultiSelect() && !isFileDataType;
 
   useEffect(() => {
-    if (!isEmpty(localObsValue)) {
-      if (isArrayLikeObject(localObsValue)) {
-        localObsValue.forEach(obsItrValue => updatePreviewWithObsResults(obsItrValue, setPreview));
-      } else {
-        updatePreviewWithObsResults(localObsValue, setPreview);
-      }
-    }
+    addObsResultsToPreview(localObsValue, setPreview);
   }, [localObsValue]);
 
   useEffect(() => {
@@ -120,59 +211,31 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   const onMediaSelect = event => {
     const alerts = [];
     const etFiles = Array.from(event.target.files);
-    etFiles.forEach(file => {
-      if (!isValidType(formElement, file.type, isFileDataType)) {
-        alerts.push(
-          `Selected files type not supported for file ${file.name}. Please choose proper files.\n`
-        );
-      }
-      if (isFileDataType && isBiggerFile(formElement, file.size)) {
-        const oneMBInBytes = 1000000;
-        alerts.push(
-          `Selected file size ${file.size /
-            oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
-            oneMBInBytes} MB for file ${file.name}.\n`
-        );
-      }
-    });
+    consolidateAlerts(etFiles, formElement, isFileDataType, alerts);
     if (!isEmpty(alerts)) {
       alert(alerts);
       return;
     }
-    etFiles.forEach(file => {
-      const fileReader = new FileReader();
-      file && fileReader.readAsText(file);
-      setUploadButtonClicked(oldValue => oldValue + 1);
-      fileReader.onloadend = event => {
-        http
-          .uploadFile("/web/uploadMedia", file)
-          .then(r => {
-            setUploadButtonClicked(oldValue => oldValue - 1);
-            addMediaUrlToLocalObsValue(setLocalObsValue, isMultiSelect, localObsValue, r, update);
-          })
-          .catch(r => {
-            const error = `${get(r, "response.data") ||
-              get(r, "message") ||
-              "Unknown error occurred while uploadButtonClicked media"}`;
-            setUploadButtonClicked(oldValue => oldValue - 1);
-            onDelete(file.name);
-            alert(error);
-          });
-      };
-    });
+    uploadMediaAndUpdateObservationValue(
+      etFiles,
+      setUploadButtonClicked,
+      setLocalObsValue,
+      isMultiSelect,
+      localObsValue,
+      update,
+      onDelete
+    );
   };
 
   const onDelete = fileName => {
-    invokeUpdate(update, fileName);
-    if (isMultiSelect && isArrayLikeObject(localObsValue)) {
-      setLocalObsValue(locObsValue => locObsValue.filter(item => item !== fileName));
-    } else {
-      if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
-    }
-    preview[fileName] && URL.revokeObjectURL(preview[fileName]);
-    setPreview(oldPreview => {
-      return omit(oldPreview, fileName);
-    });
+    removeMediaUrlFromLocalObsValue(
+      update,
+      fileName,
+      isMultiSelect,
+      localObsValue,
+      setLocalObsValue
+    );
+    removeFileFromPreview(fileName, preview, setPreview);
   };
 
   const mediaPreviewMap = fileToPreview => ({
