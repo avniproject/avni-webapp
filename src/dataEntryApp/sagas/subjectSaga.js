@@ -25,18 +25,11 @@ import { mapForm } from "../../common/adapters";
 import { setLoad } from "../reducers/loadReducer";
 import { find, isNil, sortBy, keys } from "lodash";
 import { mapProfile } from "common/subjectModelMapper";
-import {
-  selectDecisions,
-  selectVisitSchedules
-} from "dataEntryApp/reducers/serverSideRulesReducer";
+import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import Wizard from "dataEntryApp/state/Wizard";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
-import {
-  selectRegistrationForm,
-  setFilteredFormElements,
-  setInitialSubjectState
-} from "dataEntryApp/reducers/registrationReducer";
+import { selectRegistrationForm, setFilteredFormElements, setInitialSubjectState } from "dataEntryApp/reducers/registrationReducer";
 import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
 import { bucketName, uploadImage } from "../../common/utils/S3Client";
 
@@ -73,12 +66,7 @@ export function* saveSubjectWorker() {
   const identifierAssignments = yield select(selectIdentifierAssignments);
   const profilePictureFile = yield select(selectRegistrationProfilePictureFile);
   const removeProfilePicFile = yield select(selectRegistrationRemoveProfilePicture);
-  const [profilePicKey] = yield call(
-    uploadImage,
-    subject.profilePicture,
-    profilePictureFile,
-    bucketName.PROFILE_PICS
-  );
+  const [profilePicKey] = yield call(uploadImage, subject.profilePicture, profilePictureFile, bucketName.PROFILE_PICS);
   subject.profilePicture = removeProfilePicFile ? null : profilePicKey;
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
@@ -113,11 +101,7 @@ export function* loadNewRegistrationPageWorker({ subjectTypeName }) {
   const registrationForm = mapForm(registrationFormJson);
 
   const identifierAssignments = yield call(api.fetchIdentifierAssignments, formMapping.formUUID);
-  identifierAssignmentService.addIdentifiersToObservations(
-    registrationForm,
-    subject.observations,
-    identifierAssignments
-  );
+  identifierAssignmentService.addIdentifiersToObservations(registrationForm, subject.observations, identifierAssignments);
   yield setRegistrationOnLoadState(registrationForm, subject, identifierAssignments);
 }
 
@@ -136,9 +120,7 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
     : { id: -1, name: "" };
   yield put(selectAddressLevelType(selectedAddressLevelType));
 
-  const formMapping = yield select(
-    selectRegistrationFormMappingForSubjectType(subject.subjectType.name)
-  );
+  const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subject.subjectType.name));
   const registrationFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const registrationForm = mapForm(registrationFormJson);
 
@@ -173,13 +155,11 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
       )
     );
   } else {
-    const {
-      formElementGroup,
-      filteredFormElements,
-      onSummaryPage,
-      wizard,
-      isFormEmpty
-    } = commonFormUtil.onLoad(registrationForm, subject, true);
+    const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
+      registrationForm,
+      subject,
+      true
+    );
 
     yield put.resolve(
       onLoadSuccess(
@@ -225,12 +205,34 @@ export function* updateObsWorker({ formElement, value, childFormElement, questio
 function* addNewQuestionGroupWatcher() {
   yield takeEvery(subjectTypes.ADD_NEW_QG, addNewQuestionGroupWorker);
 }
-export function* addNewQuestionGroupWorker({ formElement }) {}
+export function* addNewQuestionGroupWorker({ formElement }) {
+  const state = yield select(selectRegistrationState);
+  const subject = state.subject.cloneForEdit();
+  const { filteredFormElements } = commonFormUtil.addNewQuestionGroup(subject, formElement, subject.observations);
+  yield put(
+    setRegistrationState({
+      ...state,
+      subject,
+      filteredFormElements
+    })
+  );
+}
 
 function* removeQuestionGroupWatcher() {
-  yield takeEvery(subjectTypes.REMOVE_QG, removeNewQuestionGroupWorker);
+  yield takeEvery(subjectTypes.REMOVE_QG, removeQuestionGroupWorker);
 }
-export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {}
+export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) {
+  const state = yield select(selectRegistrationState);
+  const subject = state.subject.cloneForEdit();
+  const { filteredFormElements } = commonFormUtil.removeQuestionGroup(subject, formElement, subject.observations, questionGroupIndex);
+  yield put(
+    setRegistrationState({
+      ...state,
+      subject,
+      filteredFormElements
+    })
+  );
+}
 
 export function* registrationNextWatcher() {
   yield takeLatest(subjectTypes.ON_NEXT, registrationWizardWorkerNext);
@@ -240,14 +242,7 @@ export function* registrationWizardWorkerNext() {
   const state = yield select(selectRegistrationState);
   const subject = state.subject.cloneForEdit();
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    validationResults,
-    observations,
-    onSummaryPage,
-    wizard
-  } = commonFormUtil.onNext({
+  const { formElementGroup, filteredFormElements, validationResults, observations, onSummaryPage, wizard } = commonFormUtil.onNext({
     formElementGroup: state.formElementGroup,
     filteredFormElements: state.filteredFormElements,
     observations: subject.observations,
@@ -284,8 +279,7 @@ export function* registrationWizardWorkerPrev() {
 
   //The previousGroup is going to be null only when we are going to the static page for the person subject type.
   //In that case we need to set formElementGroup as static FEG and filteredFormElements as empty.
-  const shouldGoToStaticPageForPersonSubjectType =
-    isNil(previousGroup) && subject.subjectType.isPerson() && !state.onSummaryPage;
+  const shouldGoToStaticPageForPersonSubjectType = isNil(previousGroup) && subject.subjectType.isPerson() && !state.onSummaryPage;
   if (shouldGoToStaticPageForPersonSubjectType) {
     const wizard = state.wizard.clone();
     wizard.movePrevious();
@@ -297,14 +291,7 @@ export function* registrationWizardWorkerPrev() {
     };
     yield put(setRegistrationState(nextState));
   } else {
-    const {
-      formElementGroup,
-      filteredFormElements,
-      validationResults,
-      observations,
-      onSummaryPage,
-      wizard
-    } = commonFormUtil.onPrevious({
+    const { formElementGroup, filteredFormElements, validationResults, observations, onSummaryPage, wizard } = commonFormUtil.onPrevious({
       formElementGroup: state.formElementGroup,
       filteredFormElements: state.filteredFormElements,
       observations: subject.observations,

@@ -174,11 +174,17 @@ function* removeQuestionGroupWatcher() {
 export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
-  commonFormUtil.removeQuestionGroup(programEncounter, formElement, programEncounter.observations, questionGroupIndex);
+  const { filteredFormElements } = commonFormUtil.removeQuestionGroup(
+    programEncounter,
+    formElement,
+    programEncounter.observations,
+    questionGroupIndex
+  );
   yield put(
     setState({
       ...state,
-      programEncounter
+      programEncounter,
+      filteredFormElements
     })
   );
 }

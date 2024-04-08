@@ -9,21 +9,14 @@ import {
   setEligibleEncounters
 } from "../reducers/encounterReducer";
 import api from "../api";
-import {
-  selectFormMappingsForSubjectType,
-  selectFormMappingForEncounter,
-  selectFormMappingForCancelEncounter
-} from "./encounterSelector";
+import { selectFormMappingsForSubjectType, selectFormMappingForEncounter, selectFormMappingForCancelEncounter } from "./encounterSelector";
 import { mapForm } from "../../common/adapters";
 import { Encounter, ModelGeneral as General, ObservationsHolder } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile, mapEncounter, mapObservations } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
-import {
-  selectDecisions,
-  selectVisitSchedules
-} from "dataEntryApp/reducers/serverSideRulesReducer";
+import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
 import { selectEncounterState, setState } from "dataEntryApp/reducers/encounterReducer";
 import Wizard from "dataEntryApp/state/Wizard";
@@ -58,9 +51,7 @@ export function* encouterOnLoadWorker({ subjectUuid }) {
   yield put.resolve(setFilteredFormElements());
   yield put.resolve(getSubjectGeneral(subjectUuid));
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
-  const encounterFormMappings = yield select(
-    selectFormMappingsForSubjectType(subjectProfileJson.subjectType.uuid)
-  );
+  const encounterFormMappings = yield select(selectFormMappingsForSubjectType(subjectProfileJson.subjectType.uuid));
   yield put.resolve(setEncounterFormMappings(encounterFormMappings));
   yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
   yield put.resolve(setLoad(true));
@@ -96,13 +87,8 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   encounter.uuid = General.randomUUID();
   encounter.encounterDateTime = new Date();
   encounter.observations =
-    encounterTypeDetails.immutable && latestEncounter.content[0]
-      ? mapObservations(latestEncounter.content[0].observations)
-      : [];
-  encounter.encounterType = find(
-    state.dataEntry.metadata.operationalModules.encounterTypes,
-    eT => eT.uuid === encounterTypeUuid
-  );
+    encounterTypeDetails.immutable && latestEncounter.content[0] ? mapObservations(latestEncounter.content[0].observations) : [];
+  encounter.encounterType = find(state.dataEntry.metadata.operationalModules.encounterTypes, eT => eT.uuid === encounterTypeUuid);
   encounter.name = encounter.encounterType.name;
 
   yield setEncounterDetails(encounter, subjectProfileJson);
@@ -118,9 +104,7 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
   const latestEncounter = yield call(
     api.fetchCompletedEncounters,
     encounterJson.subjectUUID,
-    `encounterTypeUuids=${
-      encounterJson.encounterType.uuid
-    }&&page=0&&size=1&&sort=encounterDateTime,desc`
+    `encounterTypeUuids=${encounterJson.encounterType.uuid}&&page=0&&size=1&&sort=encounterDateTime,desc`
   );
   const encounter = mapEncounter(
     encounterJson,
@@ -135,12 +119,7 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
 function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
-export function* updateEncounterObsWorker({
-  formElement,
-  value,
-  childFormElement,
-  questionGroupIndex
-}) {
+export function* updateEncounterObsWorker({ formElement, value, childFormElement, questionGroupIndex }) {
   const state = yield select(selectEncounterState);
   const encounter = state.encounter.cloneForEdit();
   const { validationResults, filteredFormElements } = commonFormUtil.updateObservations(
@@ -165,12 +144,34 @@ export function* updateEncounterObsWorker({
 function* addNewQuestionGroupWatcher() {
   yield takeEvery(types.ADD_NEW_QG, addNewQuestionGroupWorker);
 }
-export function* addNewQuestionGroupWorker({ formElement }) {}
+export function* addNewQuestionGroupWorker({ formElement }) {
+  const state = yield select(selectEncounterState);
+  const encounter = state.encounter.cloneForEdit();
+  const { filteredFormElements } = commonFormUtil.addNewQuestionGroup(encounter, formElement, encounter.observations);
+  yield put(
+    setState({
+      ...state,
+      encounter,
+      filteredFormElements
+    })
+  );
+}
 
 function* removeQuestionGroupWatcher() {
-  yield takeEvery(types.REMOVE_QG, removeNewQuestionGroupWorker);
+  yield takeEvery(types.REMOVE_QG, removeQuestionGroupWorker);
 }
-export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {}
+export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) {
+  const state = yield select(selectEncounterState);
+  const encounter = state.encounter.cloneForEdit();
+  const { filteredFormElements } = commonFormUtil.removeQuestionGroup(encounter, formElement, encounter.observations, questionGroupIndex);
+  yield put(
+    setState({
+      ...state,
+      encounter,
+      filteredFormElements
+    })
+  );
+}
 
 export function* saveEncounterWatcher() {
   yield takeLatest(types.SAVE_ENCOUNTER, saveEncounterWorker);
@@ -203,32 +204,19 @@ export function* editEncounterWorker({ encounterUuid }) {
 
 export function* setEncounterDetails(encounter, subjectProfileJson, isEdit = false) {
   const subject = mapProfile(subjectProfileJson);
-  const formMapping = yield select(
-    selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
-  );
+  const formMapping = yield select(selectFormMappingForEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid));
   const encounterFormJson = yield call(api.fetchForm, formMapping.formUUID);
   const encounterForm = mapForm(encounterFormJson);
   encounter.individual = subject;
 
-  const {
-    formElementGroup,
-    filteredFormElements,
-    onSummaryPage,
-    wizard,
-    isFormEmpty
-  } = commonFormUtil.onLoad(encounterForm, encounter, false, isEdit);
-
-  yield put.resolve(
-    onLoadSuccess(
-      encounter,
-      encounterForm,
-      formElementGroup,
-      filteredFormElements,
-      onSummaryPage,
-      wizard,
-      isFormEmpty
-    )
+  const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
+    encounterForm,
+    encounter,
+    false,
+    isEdit
   );
+
+  yield put.resolve(onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty));
   yield put.resolve(setSubjectProfile(subject));
 }
 
@@ -282,31 +270,17 @@ export function* setCancelEncounterDetails(encounter, subjectProfileJson) {
   encounter.individual = subject;
 
   const cancelFormMapping = yield select(
-    selectFormMappingForCancelEncounter(
-      encounter.encounterType.uuid,
-      subjectProfileJson.subjectType.uuid
-    )
+    selectFormMappingForCancelEncounter(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
   );
   const cancelEncounterFormJson = yield call(api.fetchForm, cancelFormMapping.formUUID);
   const encounterCancellationForm = mapForm(cancelEncounterFormJson);
-  const {
-    formElementGroup,
-    filteredFormElements,
-    onSummaryPage,
-    wizard,
-    isFormEmpty
-  } = commonFormUtil.onLoad(encounterCancellationForm, encounter);
+  const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
+    encounterCancellationForm,
+    encounter
+  );
 
   yield put.resolve(
-    onLoadSuccess(
-      encounter,
-      encounterCancellationForm,
-      formElementGroup,
-      filteredFormElements,
-      onSummaryPage,
-      wizard,
-      isFormEmpty
-    )
+    onLoadSuccess(encounter, encounterCancellationForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty)
   );
   yield put.resolve(setSubjectProfile(subject));
 }
@@ -332,14 +306,7 @@ export function* wizardWorker(getNextState, isNext, params) {
     );
   } else {
     const obsToUpdate = params.isCancel ? "cancelObservations" : "observations";
-    const {
-      formElementGroup,
-      filteredFormElements,
-      validationResults,
-      observations,
-      onSummaryPage,
-      wizard
-    } = getNextState({
+    const { formElementGroup, filteredFormElements, validationResults, observations, onSummaryPage, wizard } = getNextState({
       formElementGroup: state.formElementGroup,
       filteredFormElements: state.filteredFormElements,
       observations: state.encounter[obsToUpdate],
