@@ -46,10 +46,12 @@ export function RepeatableQuestionGroupElement({
           key={index}
         />
         {(hasMultipleElements || isLastElement) && <LineBreak num={1} />}
-        <>
-          {hasMultipleElements && <RemoveButton formElement={formElement} index={index} removeQuestionGroup={removeQuestionGroup} />}
-          {isLastElement && <AddMoreButton formElement={formElement} addNewQuestionGroup={addNewQuestionGroup} />}
-        </>
+        {!formElement.disableManualActions && (
+          <>
+            {hasMultipleElements && <RemoveButton formElement={formElement} index={index} removeQuestionGroup={removeQuestionGroup} />}
+            {isLastElement && <AddMoreButton formElement={formElement} addNewQuestionGroup={addNewQuestionGroup} />}
+          </>
+        )}
         {!isLastElement && <LineBreak num={2} />}
       </>
     );

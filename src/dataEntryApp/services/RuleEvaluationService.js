@@ -6,10 +6,7 @@ import { FormElementStatus } from "avni-models";
 import * as rulesConfig from "rules-config";
 import { common, motherCalculations, RuleRegistry } from "avni-health-modules";
 import { store } from "common/store/createStore";
-import {
-  selectLegacyRules,
-  selectLegacyRulesAllRules
-} from "dataEntryApp/reducers/metadataReducer";
+import { selectLegacyRules, selectLegacyRulesAllRules } from "dataEntryApp/reducers/metadataReducer";
 import { individualService } from "./IndividualService";
 
 const services = {
@@ -26,10 +23,9 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
     .filter(formElement => !_.isNil(formElement.rule) && !_.isEmpty(_.trim(formElement.rule)));
   const formElementStatusAfterGroupRule = runFormElementGroupRule(formElementGroup, entity);
 
-  const visibleFormElementsUUIDs = _.filter(
-    formElementStatusAfterGroupRule,
-    ({ visibility }) => visibility === true
-  ).map(({ uuid }) => uuid);
+  const visibleFormElementsUUIDs = _.filter(formElementStatusAfterGroupRule, ({ visibility }) => visibility === true).map(
+    ({ uuid }) => uuid
+  );
   if (!_.isEmpty(formElementsWithRules) && !_.isEmpty(visibleFormElementsUUIDs)) {
     let formElementStatuses = formElementsWithRules
       .filter(({ uuid }) => _.includes(visibleFormElementsUUIDs, uuid))
@@ -44,11 +40,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
             imports: { rulesConfig, lodash, moment, common }
           });
         } catch (e) {
-          console.error(
-            `Rule-Failure for formElement name: ${formElement.name} Error message: ${
-              e.message
-            } stack: ${e.stack}`
-          );
+          console.error(`Rule-Failure for formElement name: ${formElement.name} Error message: ${e.message} stack: ${e.stack}`);
           return null;
         }
       })
@@ -74,8 +66,7 @@ const runFormElementGroupRule = (formElementGroup, entity) => {
     return formElementGroup.getFormElements().flatMap(formElement => {
       if (!_.isNil(formElement.group)) {
         const questionGroupObservation = entity.findObservation(formElement.group.concept.uuid);
-        const questionGroupObsValue =
-          questionGroupObservation && questionGroupObservation.getValueWrapper();
+        const questionGroupObsValue = questionGroupObservation && questionGroupObservation.getValueWrapper();
         const size = questionGroupObsValue ? questionGroupObsValue.size() : 1;
         return _.range(size).map(questionGroupIndex => {
           const formElementStatus = new FormElementStatus(formElement.uuid, true, undefined);
@@ -97,9 +88,7 @@ const runFormElementGroupRule = (formElementGroup, entity) => {
       imports: { rulesConfig, lodash, moment, common }
     });
   } catch (e) {
-    console.error(
-      `Rule-Failure for formElement group name: ${formElementGroup.name} Error message : ${e}`
-    );
+    console.error(`Rule-Failure for formElement group name: ${formElementGroup.name} Error message : ${e}`);
   }
 };
 
@@ -127,10 +116,7 @@ const getApplicableRules = (ruledEntity, ruleType, ruledEntityType) => {
     .map(_.identity)
     .filter(
       rule =>
-        rule.voided === false &&
-        rule.type === ruleType &&
-        rule.entity.uuid === ruledEntity.uuid &&
-        rule.entity.type === ruledEntityType
+        rule.voided === false && rule.type === ruleType && rule.entity.uuid === ruledEntity.uuid && rule.entity.type === ruledEntityType
     );
   return getRuleFunctions(rules);
 };
@@ -148,9 +134,7 @@ const runRuleAndSaveFailure = (rule, entityName, entity, ruleTypeValue, config, 
       ruleTypeValue = entity;
       return rule.fn.exec(entity, context);
     } else {
-      return _.isNil(context)
-        ? rule.fn.exec(entity, ruleTypeValue, config)
-        : rule.fn.exec(entity, ruleTypeValue, context, config);
+      return _.isNil(context) ? rule.fn.exec(entity, ruleTypeValue, config) : rule.fn.exec(entity, ruleTypeValue, context, config);
     }
   } catch (error) {
     console.log("Rule-Failure", `Rule failed: ${rule.name}, uuid: ${rule.uuid}`);
