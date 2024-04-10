@@ -4688,10 +4688,10 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.24:
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.24.tgz#560d5f9328cae518c1d347e4a6a6a85e51b817e7"
-  integrity sha512-2xwKWUyVymEuqBusErOqx/Lu9lP/PNZBflF3KkPuiukjh4gSM2t6uBEBSGTDZ7IQBe3NWt/5+6mFf52vjZ2tTQ==
+avni-health-modules@0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.25.tgz#157ccf77673e99c915bad25aa4fdf8907dfed29e"
+  integrity sha512-jrtj+7DoT26RRCkobdseYUpVzzIEN6d1iDM7kYXIF4e/8n/GbjfjjtjFRUJnQxCt0+s7zjKj7LjI85o22i4GnQ==
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"

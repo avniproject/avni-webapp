@@ -96,15 +96,7 @@ class EntityFactory {
     return form;
   }
 
-  static createFormElement(
-    name,
-    mandatory,
-    concept,
-    displayOrder,
-    type,
-    formElementGroup,
-    keyValues
-  ) {
+  static createFormElement(name, mandatory, concept, displayOrder, type, formElementGroup, keyValues) {
     return EntityFactory.createFormElement2({
       name: name,
       mandatory: mandatory,
@@ -135,7 +127,7 @@ class EntityFactory {
     entity.formElementGroup = formElementGroup;
     entity.mandatory = mandatory;
     entity.keyValues = keyValues;
-    formElementGroup.formElements = [entity];
+    formElementGroup.formElements = [...formElementGroup.formElements, entity];
     entity.type = type;
     entity.groupUuid = _.get(group, "uuid");
     entity.group = group;
@@ -143,9 +135,7 @@ class EntityFactory {
   }
 
   static addCodedAnswers(concept, answers) {
-    _.forEach(answers, answer =>
-      concept.addAnswer(EntityFactory.createConcept(answer, Concept.dataType.NA))
-    );
+    _.forEach(answers, answer => concept.addAnswer(EntityFactory.createConcept(answer, Concept.dataType.NA)));
   }
 
   static createConcept(name, dataType, uuid) {
@@ -193,12 +183,7 @@ class EntityFactory {
     return decision;
   }
 
-  static createProgramEncounter({
-    programEnrolment,
-    encounterDateTime = new Date(),
-    observations = [],
-    encounterType = undefined
-  }) {
+  static createProgramEncounter({ programEnrolment, encounterDateTime = new Date(), observations = [], encounterType = undefined }) {
     const programEncounter = ProgramEncounter.createEmptyInstance();
     const encounterTypeObj = EncounterType.create(encounterType);
     programEncounter.encounterDateTime = encounterDateTime;
@@ -208,14 +193,7 @@ class EntityFactory {
     return programEncounter;
   }
 
-  static createEnrolment({
-    enrolmentDateTime = new Date(),
-    uuid,
-    programExitDateTime,
-    program = null,
-    observations = [],
-    individual
-  }) {
+  static createEnrolment({ enrolmentDateTime = new Date(), uuid, programExitDateTime, program = null, observations = [], individual }) {
     const programEnrolment = ProgramEnrolment.createEmptyInstance();
     programEnrolment.enrolmentDateTime = enrolmentDateTime;
     programEnrolment.program = program;
