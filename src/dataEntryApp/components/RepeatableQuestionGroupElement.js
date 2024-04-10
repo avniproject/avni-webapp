@@ -6,17 +6,12 @@ import Button from "@material-ui/core/Button";
 import { LineBreak } from "../../common/components/utils";
 
 function AddMoreButton({ addNewQuestionGroup, formElement }) {
-  return (
-    <Button
-      onClick={() => addNewQuestionGroup(formElement.concept)}
-      color="primary"
-    >{`Add One More - ${formElement.concept.name}`}</Button>
-  );
+  return <Button onClick={() => addNewQuestionGroup(formElement)} color="primary">{`Add One More - ${formElement.concept.name}`}</Button>;
 }
 
 function RemoveButton({ removeQuestionGroup, formElement, index }) {
   return (
-    <Button onClick={() => removeQuestionGroup(formElement.concept, index)} color="primary">
+    <Button onClick={() => removeQuestionGroup(formElement, index)} color="primary">
       {"Remove"}
     </Button>
   );
@@ -51,18 +46,12 @@ export function RepeatableQuestionGroupElement({
           key={index}
         />
         {(hasMultipleElements || isLastElement) && <LineBreak num={1} />}
-        <>
-          {hasMultipleElements && (
-            <RemoveButton
-              formElement={formElement}
-              index={index}
-              removeQuestionGroup={removeQuestionGroup}
-            />
-          )}
-          {isLastElement && (
-            <AddMoreButton formElement={formElement} addNewQuestionGroup={addNewQuestionGroup} />
-          )}
-        </>
+        {!formElement.disableManualActions && (
+          <>
+            {hasMultipleElements && <RemoveButton formElement={formElement} index={index} removeQuestionGroup={removeQuestionGroup} />}
+            {isLastElement && <AddMoreButton formElement={formElement} addNewQuestionGroup={addNewQuestionGroup} />}
+          </>
+        )}
         {!isLastElement && <LineBreak num={2} />}
       </>
     );

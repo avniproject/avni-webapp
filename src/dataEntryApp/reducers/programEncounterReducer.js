@@ -95,14 +95,14 @@ export const updateObs = (formElement, value, childFormElement, questionGroupInd
   questionGroupIndex
 });
 
-export const addNewQuestionGroup = concept => ({
+export const addNewQuestionGroup = formElement => ({
   type: types.ADD_NEW_QG,
-  concept
+  formElement
 });
 
-export const removeQuestionGroup = (concept, questionGroupIndex) => ({
+export const removeQuestionGroup = (formElement, questionGroupIndex) => ({
   type: types.REMOVE_QG,
-  concept,
+  formElement,
   questionGroupIndex
 });
 
@@ -271,10 +271,7 @@ export default (state = initialState, action) => {
     case types.SET_ENCOUNTER_DATE: {
       const programEncounter = state.programEncounter.cloneForEdit();
       programEncounter.encounterDateTime = action.encounterDate;
-      const validationResults = commonFormUtil.handleValidationResult(
-        programEncounter.validate(),
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult(programEncounter.validate(), state.validationResults);
 
       return {
         ...state,
