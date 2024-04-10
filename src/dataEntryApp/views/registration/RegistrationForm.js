@@ -4,7 +4,9 @@ import {
   saveSubject,
   selectRegistrationState,
   setValidationResults,
-  updateObs
+  updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup
 } from "dataEntryApp/reducers/registrationReducer";
 import { ObservationsHolder } from "openchs-models";
 import { connect } from "react-redux";
@@ -31,6 +33,8 @@ const mapFormStateToProps = state => {
 
 const mapFormDispatchToProps = {
   updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup,
   onSave: saveSubject,
   setValidationResults,
   onNext,

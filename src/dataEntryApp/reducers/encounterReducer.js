@@ -52,15 +52,7 @@ export const setEligibleEncounters = eligibleEncounters => ({
   eligibleEncounters
 });
 
-export const onLoadSuccess = (
-  encounter,
-  encounterForm,
-  formElementGroup,
-  filteredFormElements,
-  onSummaryPage,
-  wizard,
-  isFormEmpty
-) => ({
+export const onLoadSuccess = (encounter, encounterForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty) => ({
   type: types.ON_LOAD_SUCCESS,
   encounter,
   encounterForm,
@@ -89,8 +81,16 @@ export const updateObs = (formElement, value, childFormElement, questionGroupInd
   questionGroupIndex
 });
 
-export const addNewQuestionGroup = formElement => ({});
-export const removeQuestionGroup = (formElement, questionGroupIndex) => ({});
+export const addNewQuestionGroup = formElement => ({
+  type: types.ADD_NEW_QG,
+  formElement
+});
+
+export const removeQuestionGroup = (formElement, questionGroupIndex) => ({
+  type: types.REMOVE_QG,
+  formElement,
+  questionGroupIndex
+});
 
 export const saveEncounter = isCancel => ({
   type: types.SAVE_ENCOUNTER,
@@ -258,10 +258,7 @@ export default (state = initialState, action) => {
     case types.SET_ENCOUNTER_DATE: {
       const encounter = state.encounter.cloneForEdit();
       encounter.encounterDateTime = action.encounterDate;
-      const validationResults = commonFormUtil.handleValidationResult(
-        encounter.validate(),
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult(encounter.validate(), state.validationResults);
 
       return {
         ...state,

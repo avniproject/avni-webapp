@@ -7,7 +7,9 @@ import {
   setValidationResults,
   selectProgramEnrolmentState,
   onNext,
-  onPrevious
+  onPrevious,
+  addNewQuestionGroup,
+  removeQuestionGroup
 } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 
@@ -33,6 +35,8 @@ const mapFormStateToProps = state => {
 
 const mapFormDispatchToProps = {
   updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup,
   onSave: () => saveProgramEnrolment(false),
   setValidationResults,
   onNext: () => onNext(false),

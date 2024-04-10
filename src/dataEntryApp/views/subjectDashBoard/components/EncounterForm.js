@@ -8,7 +8,9 @@ import {
   saveEncounter,
   setValidationResults,
   onNext,
-  onPrevious
+  onPrevious,
+  addNewQuestionGroup,
+  removeQuestionGroup
 } from "dataEntryApp/reducers/encounterReducer";
 
 const mapFormStateToProps = state => ({
@@ -27,9 +29,7 @@ const mapFormStateToProps = state => ({
   additionalRows: [
     {
       label: "visitDate",
-      value: moment(state.dataEntry.encounterReducer.encounter.encounterDateTime).format(
-        "DD-MMM-YYYY"
-      )
+      value: moment(state.dataEntry.encounterReducer.encounter.encounterDateTime).format("DD-MMM-YYYY")
     }
   ],
   filteredFormElements: state.dataEntry.encounterReducer.filteredFormElements,
@@ -41,6 +41,8 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
+  addNewQuestionGroup,
+  removeQuestionGroup,
   onSave: () => saveEncounter(false),
   setValidationResults,
   onNext: () => onNext(false),

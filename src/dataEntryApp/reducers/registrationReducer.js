@@ -114,6 +114,17 @@ export const updateObs = (formElement, value, childFormElement, questionGroupInd
   questionGroupIndex
 });
 
+export const addNewQuestionGroup = formElement => ({
+  type: types.ADD_NEW_QG,
+  formElement
+});
+
+export const removeQuestionGroup = (formElement, questionGroupIndex) => ({
+  type: types.REMOVE_QG,
+  formElement,
+  questionGroupIndex
+});
+
 export const saveComplete = () => ({
   type: types.SAVE_COMPLETE
 });
@@ -212,8 +223,7 @@ export const fetchRegistrationRulesResponse = () => {
 
 export const selectRegistrationState = state => state.dataEntry.registration;
 export const selectRegistrationForm = state => selectRegistrationState(state).registrationForm;
-export const selectIdentifierAssignments = state =>
-  selectRegistrationState(state).identifierAssignments;
+export const selectIdentifierAssignments = state => selectRegistrationState(state).identifierAssignments;
 
 const initialState = {
   saved: false,
@@ -307,10 +317,7 @@ export default (state = initialState, action) => {
     case types.SET_REGISTRATION_DATE: {
       const subject = state.subject.cloneForEdit();
       subject.registrationDate = action.registrationDate;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateRegistrationDate()],
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult([subject.validateRegistrationDate()], state.validationResults);
       return {
         ...state,
         subject,
@@ -320,10 +327,7 @@ export default (state = initialState, action) => {
     case types.SET_FIRST_NAME: {
       const subject = state.subject.cloneForEdit();
       subject.firstName = action.firstName;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateFirstName()],
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult([subject.validateFirstName()], state.validationResults);
       return {
         ...state,
         subject,
@@ -333,10 +337,7 @@ export default (state = initialState, action) => {
     case types.SET_MIDDLE_NAME: {
       const subject = state.subject.cloneForEdit();
       subject.middleName = action.middleName;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateMiddleName()],
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult([subject.validateMiddleName()], state.validationResults);
       return {
         ...state,
         subject,
@@ -346,10 +347,7 @@ export default (state = initialState, action) => {
     case types.SET_LAST_NAME: {
       const subject = state.subject.cloneForEdit();
       subject.lastName = action.lastName;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateLastName()],
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult([subject.validateLastName()], state.validationResults);
       return {
         ...state,
         subject,
@@ -375,10 +373,7 @@ export default (state = initialState, action) => {
     case types.SET_DATE_OF_BIRTH: {
       const subject = state.subject.cloneForEdit();
       subject.dateOfBirth = action.dateOfBirth;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateDateOfBirth()],
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult([subject.validateDateOfBirth()], state.validationResults);
       return {
         ...state,
         subject,
@@ -388,10 +383,7 @@ export default (state = initialState, action) => {
     case types.SET_GENDER: {
       const subject = state.subject.cloneForEdit();
       subject.gender = action.gender;
-      const validationResults = commonFormUtil.handleValidationResult(
-        [subject.validateGender()],
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult([subject.validateGender()], state.validationResults);
       return {
         ...state,
         subject,
@@ -403,10 +395,7 @@ export default (state = initialState, action) => {
       subject.lowestAddressLevel = action.lowestAddressLevel;
       const validationResults = state.subject.subjectType.allowEmptyLocation
         ? state.validationResults
-        : commonFormUtil.handleValidationResult(
-            [subject.validateAddress()],
-            state.validationResults
-          );
+        : commonFormUtil.handleValidationResult([subject.validateAddress()], state.validationResults);
       return {
         ...state,
         subject,

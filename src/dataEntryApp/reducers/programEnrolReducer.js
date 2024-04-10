@@ -56,13 +56,7 @@ export const saveProgramEnrolment = isExit => ({
   isExit
 });
 
-export const onLoad = (
-  subjectTypeName,
-  programName,
-  formType,
-  programEnrolmentUuid,
-  subjectUuid
-) => ({
+export const onLoad = (subjectTypeName, programName, formType, programEnrolmentUuid, subjectUuid) => ({
   type: types.ON_LOAD,
   subjectTypeName,
   programName,
@@ -88,6 +82,17 @@ export const updateExitObs = (formElement, value) => ({
   type: types.UPDATE_EXIT_OBS,
   formElement,
   value
+});
+
+export const addNewQuestionGroup = formElement => ({
+  type: types.ADD_NEW_QG,
+  formElement
+});
+
+export const removeQuestionGroup = (formElement, questionGroupIndex) => ({
+  type: types.REMOVE_QG,
+  formElement,
+  questionGroupIndex
 });
 
 export const saveProgramComplete = () => ({
@@ -155,8 +160,7 @@ export const fetchEnrolmentRulesResponse = () => {
 
 export const selectProgramEnrolmentState = state => state.dataEntry.enrolmentReducer;
 export const selectEnrolmentForm = state => selectProgramEnrolmentState(state).enrolForm;
-export const selectIdentifierAssignments = state =>
-  selectProgramEnrolmentState(state).identifierAssignments;
+export const selectIdentifierAssignments = state => selectProgramEnrolmentState(state).identifierAssignments;
 
 const initialState = {
   saved: false,
@@ -219,10 +223,7 @@ const reducer = (state = initialState, action) => {
     case types.SET_ENROLMENT_DATE: {
       const programEnrolment = state.programEnrolment.cloneForEdit();
       programEnrolment.enrolmentDateTime = action.enrolmentDate;
-      const validationResults = commonFormUtil.handleValidationResult(
-        programEnrolment.validateEnrolment(),
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult(programEnrolment.validateEnrolment(), state.validationResults);
 
       return {
         ...state,
@@ -233,10 +234,7 @@ const reducer = (state = initialState, action) => {
     case types.SET_EXIT_DATE: {
       const programEnrolment = state.programEnrolment.cloneForEdit();
       programEnrolment.programExitDateTime = action.exitDate;
-      const validationResults = commonFormUtil.handleValidationResult(
-        programEnrolment.validateExit(),
-        state.validationResults
-      );
+      const validationResults = commonFormUtil.handleValidationResult(programEnrolment.validateExit(), state.validationResults);
 
       return {
         ...state,
