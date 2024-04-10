@@ -3,6 +3,7 @@ import { filter, includes, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 import _ from "lodash";
+import { PrimitiveValue } from "openchs-models";
 
 function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
   if (isRepeatable) return `${formElement.name} - ${repeatableIndex + 1}`;
@@ -29,25 +30,22 @@ export default function QuestionGroupFormElement({
     "displayOrder"
   );
   const textNumericAndNotes = filter(allChildren, ({ concept }) =>
-    includes(
-      [Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes],
-      concept.datatype
-    )
+    includes([Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes], concept.datatype)
   );
   const otherQuestions = filter(
     allChildren,
-    ({ concept }) =>
-      !includes(
-        [Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes],
-        concept.datatype
-      )
+    ({ concept }) => !includes([Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes], concept.datatype)
   );
   const observation = obsHolder.findObservation(formElement.concept);
   let questionGroup;
   if (_.isNil(observation)) questionGroup = new QuestionGroup();
-  else if (formElement.repeatable)
-    questionGroup = observation.getValueWrapper().getGroupObservationAtIndex(questionGroupIndex);
+  else if (formElement.repeatable) questionGroup = observation.getValueWrapper().getGroupObservationAtIndex(questionGroupIndex);
   else questionGroup = observation.getValueWrapper();
+
+  function getSelectedAnswer(childConcept, nullReplacement) {
+    const observation = questionGroup.getObservation(childConcept);
+    return _.isNil(observation) ? nullReplacement : _.get(observation.getValueWrapper(), "answer");
+  }
 
   return (
     <Fragment>
@@ -79,7 +77,7 @@ export default function QuestionGroupFormElement({
             <FormElement
               concept={childFormElement.concept}
               obsHolder={obsHolder}
-              value={questionGroup.getValueForConcept(childFormElement.concept)}
+              value={getSelectedAnswer(childFormElement.concept, new PrimitiveValue())}
               validationResults={validationResults}
               uuid={childFormElement.uuid}
               update={value => {
