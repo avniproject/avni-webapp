@@ -127,7 +127,7 @@ class EntityFactory {
     entity.formElementGroup = formElementGroup;
     entity.mandatory = mandatory;
     entity.keyValues = keyValues;
-    formElementGroup.formElements = [...formElementGroup.formElements, entity];
+    formElementGroup.formElements = [...(formElementGroup.formElements || []), entity];
     entity.type = type;
     entity.groupUuid = _.get(group, "uuid");
     entity.group = group;
