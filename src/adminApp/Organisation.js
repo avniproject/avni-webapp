@@ -17,12 +17,14 @@ import {
   TextField,
   TextInput,
   Toolbar,
-  BooleanField
+  BooleanField,
+  SelectInput
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
+import OrganisationCategory from "./domain/OrganisationCategory";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -30,34 +32,34 @@ export const OrganisationFilter = props => (
   </Filter>
 );
 
+const OrganisationCategoryInput = () => {
+  return (
+    <SelectInput
+      source="category"
+      validate={isRequired}
+      choices={[
+        { id: OrganisationCategory.Production, name: OrganisationCategory.Production },
+        { id: OrganisationCategory.UAT, name: OrganisationCategory.UAT },
+        { id: OrganisationCategory.Prototype, name: OrganisationCategory.Prototype },
+        { id: OrganisationCategory.Temporary, name: OrganisationCategory.Temporary }
+      ]}
+    />
+  );
+};
+
 export const OrganisationList = ({ history, ...props }) => {
   return (
-    <List
-      {...props}
-      bulkActions={false}
-      filter={{ searchURI: "find" }}
-      filters={<OrganisationFilter />}
-    >
+    <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<OrganisationFilter />}>
       <Datagrid>
         <TextField source="name" label="Name" />
-        <ReferenceField
-          label="Parent organisation"
-          source="parentOrganisationId"
-          reference="organisation"
-          linkType="show"
-          allowEmpty
-        >
+        <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
         <TextField source="dbUser" label="DB User" />
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
-        <BooleanField
-          source="analyticsDataSyncActive"
-          label="Active analytics data sync"
-          sortable={false}
-        />
+        <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" sortable={false} />
         <ShowButton />
         <OpenOrganisation porps={props} />
       </Datagrid>
@@ -74,23 +76,11 @@ export const OrganisationDetails = props => {
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
-        <ReferenceField
-          resource="account"
-          source="accountId"
-          reference="account"
-          label="Account Name"
-          linkType="show"
-          allowEmpty
-        >
+        <TextField source="category" label="Category" />
+        <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
-        <ReferenceField
-          label="Parent organisation"
-          source="parentOrganisationId"
-          reference="organisation"
-          linkType="show"
-          allowEmpty
-        >
+        <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
         <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
@@ -114,6 +104,7 @@ export const OrganisationEdit = props => {
         <DisabledInput source="schemaName" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <OrganisationCategoryInput />
         <BooleanField source="analyticsDataSyncActive" />
         <ToggleAnalyticsButton />
         <br />
@@ -147,6 +138,7 @@ export const OrganisationCreate = props => {
         <TextInput source="schemaName" validate={isRequired} />
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <OrganisationCategoryInput />
         <ReferenceInput
           resource="account"
           source="accountId"

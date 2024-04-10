@@ -114,11 +114,7 @@ export default function(state = initialState, action) {
         },
         userInfo: action.payload
       };
-      newState.authSession.userInfoUpdate(
-        action.payload.roles,
-        action.payload.username,
-        action.payload.name
-      );
+      newState.authSession.userInfoUpdate(action.payload.roles, action.payload.username, action.payload.name);
       return newState;
     }
     case types.INIT_COMPLETE: {
@@ -146,13 +142,12 @@ export default function(state = initialState, action) {
       };
     }
     case types.INIT_GENERIC_CONFIG: {
-      const newState = {
+      return {
         ...state,
         genericConfig: {
           webAppTimeoutInMinutes: action.payload.webAppTimeoutInMinutes
         }
       };
-      return newState;
     }
     default:
       if (_.get(action, "payload.error")) console.log(action.payload.error);

@@ -37,8 +37,8 @@ import {
   validateEmail,
   validatePhone
 } from "./UserHelper";
-import http from "common/utils/httpClient";
 import { TitleChip } from "./components/TitleChip";
+import OrganisationService from "../common/service/OrganisationService";
 
 export const AccountOrgAdminUserCreate = ({ user, ...props }) => (
   <Create {...props}>
@@ -47,24 +47,13 @@ export const AccountOrgAdminUserCreate = ({ user, ...props }) => (
 );
 
 export const AccountOrgAdminUserEdit = ({ user, ...props }) => (
-  <Edit
-    {...props}
-    title={<UserTitle titlePrefix="Edit" />}
-    undoable={false}
-    filter={{ searchURI: "orgAdmin" }}
-  >
+  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false} filter={{ searchURI: "orgAdmin" }}>
     <UserForm edit user={user} />
   </Edit>
 );
 
 export const AccountOrgAdminUserList = ({ ...props }) => (
-  <List
-    {...props}
-    bulkActions={false}
-    filter={{ searchURI: "find" }}
-    filters={<UserFilter />}
-    title={`Admin Users`}
-  >
+  <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<UserFilter />} title={`Admin Users`}>
     <Datagrid rowClick="show">
       <TextField label="Login ID" source="username" />
       <TextField source="name" label="Name of the Person" />
@@ -72,9 +61,7 @@ export const AccountOrgAdminUserList = ({ ...props }) => (
       <TextField source="phoneNumber" label="Phone Number" />
       <FunctionField
         label="Status"
-        render={user =>
-          user.voided === true ? "Deleted" : user.disabledInCognito === true ? "Disabled" : "Active"
-        }
+        render={user => (user.voided === true ? "Deleted" : user.disabledInCognito === true ? "Disabled" : "Active")}
       />
     </Datagrid>
   </List>
@@ -85,12 +72,7 @@ const CustomShowActions = ({ basePath, data, resource }) => {
     (data && (
       <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
         <EditButton label="Edit User" basePath={basePath} record={data} />
-        <EnableDisableButton
-          disabled={data.disabledInCognito}
-          basePath={basePath}
-          record={data}
-          resource={resource}
-        />
+        <EnableDisableButton disabled={data.disabledInCognito} basePath={basePath} record={data} resource={resource} />
       </CardActions>
     )) ||
     null
@@ -105,13 +87,7 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
       <FunctionField label="Role" render={user => formatRoles(user.roles)} />
-      <ReferenceField
-        label="Organisation"
-        source="organisationId"
-        reference="organisation"
-        linkType="show"
-        allowEmpty
-      >
+      <ReferenceField label="Organisation" source="organisationId" reference="organisation" linkType="show" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Accounts" reference="account" source="accountIds">
@@ -125,11 +101,7 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
 
 const UserForm = ({ edit, user, ...props }) => {
   const [nameSuffix, setNameSuffix] = useState("");
-  const getOrgData = id =>
-    id &&
-    http.get(`/organisation/${id}`).then(res => {
-      res && setNameSuffix(res.data.usernameSuffix);
-    });
+  const getOrgData = id => id && OrganisationService.getOrganisation(id).then(data => setNameSuffix(data.usernameSuffix));
 
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
@@ -161,8 +133,7 @@ const UserForm = ({ edit, user, ...props }) => {
           <FormDataConsumer>
             {({ formData, dispatch, ...rest }) => {
               formData && getOrgData(formData.organisationId);
-              const getSuffixIfApplicable =
-                formData && formData.organisationId ? `@${nameSuffix}` : "";
+              const getSuffixIfApplicable = formData && formData.organisationId ? `@${nameSuffix}` : "";
               return (
                 <Fragment>
                   <TextInput
@@ -170,8 +141,7 @@ const UserForm = ({ edit, user, ...props }) => {
                     validate={isRequired}
                     label={"Login ID (username)"}
                     onChange={(e, newVal) =>
-                      !isEmpty(newVal) &&
-                      dispatch(change(REDUX_FORM_NAME, "username", newVal + getSuffixIfApplicable))
+                      !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal + getSuffixIfApplicable))
                     }
                     {...rest}
                   />
@@ -183,12 +153,7 @@ const UserForm = ({ edit, user, ...props }) => {
         </Fragment>
       )}
       {!edit && <PasswordTextField />}
-      <TextInput
-        source="name"
-        label="Name of the Person"
-        validate={isRequired}
-        autoComplete="off"
-      />
+      <TextInput source="name" label="Name of the Person" validate={isRequired} autoComplete="off" />
       <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete="off" />
       <TextInput
         source="phoneNumber"
