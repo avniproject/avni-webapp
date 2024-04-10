@@ -1,21 +1,11 @@
-import { isNil } from "lodash";
+import _ from "lodash";
 import React from "react";
 import { CodedConceptFormElement } from "./CodedConceptFormElement";
-import { MultipleCodedValues } from "avni-models";
 
-export default ({ formElement: fe, value, update, obsHolder, validationResults, uuid }) => {
-  const getSelectedAnswer = (concept, nullReplacement) => {
-    const observation = obsHolder.findObservation(concept);
-    return isNil(observation) ? nullReplacement : observation.getValueWrapper();
-  };
-  const valueWrapper = getSelectedAnswer(fe.concept, new MultipleCodedValues());
-
+export default ({ formElement: fe, value, update, validationResults, uuid }) => {
   return (
     <CodedConceptFormElement
-      isChecked={answer => {
-        const answerAlreadyPresent = valueWrapper.isAnswerAlreadyPresent(answer.uuid);
-        return answerAlreadyPresent;
-      }}
+      isChecked={answer => _.some(value, valueItr => valueItr === answer.uuid)}
       onChange={answer => {
         update(answer.uuid);
       }}
