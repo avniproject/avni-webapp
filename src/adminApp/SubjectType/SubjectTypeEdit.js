@@ -22,6 +22,7 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
+import { SubjectTypeType } from "./Types";
 
 const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -87,11 +88,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
 
     setNameValidation(false);
     if (!groupValidationError) {
-      const [s3FileKey, error] = await uploadImage(
-        subjectType.iconFileS3Key,
-        file,
-        bucketName.ICONS
-      );
+      const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, bucketName.ICONS);
       if (error) {
         alert(error);
         return;
@@ -140,12 +137,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
     }
   };
 
-  if (
-    !_.isEmpty(formMappings) &&
-    !_.isEmpty(subjectType.uuid) &&
-    !firstTimeFormValueToggle &&
-    _.isEmpty(subjectType.registrationForm)
-  ) {
+  if (!_.isEmpty(formMappings) && !_.isEmpty(subjectType.uuid) && !firstTimeFormValueToggle && _.isEmpty(subjectType.registrationForm)) {
     setFirstTimeFormValueToggle(true);
     let payload = findRegistrationForm(formMappings, subjectType);
     dispatch({ type: "registrationForm", payload: payload });
@@ -153,8 +145,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
 
   const disableDelete = _.find(
     subjectTypes,
-    ({ group, memberSubjectUUIDs }) =>
-      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid)
+    ({ group, memberSubjectUUIDs }) => group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid)
   );
 
   return (
@@ -167,14 +158,22 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <EditSubjectTypeFields
-            subjectType={subjectType}
-            onSetFile={setFile}
-            onRemoveFile={setRemoveFile}
-            formList={formList}
-            groupValidationError={groupValidationError}
-            dispatch={dispatch}
-          />
+          {subjectType.type === SubjectTypeType.User ? (
+            <div>
+              <FormLabel style={{ fontSize: "13px" }}>Type</FormLabel>
+              <br />
+              <span style={{ fontSize: "15px" }}>{subjectType.type}</span>
+            </div>
+          ) : (
+            <EditSubjectTypeFields
+              subjectType={subjectType}
+              onSetFile={setFile}
+              onRemoveFile={setRemoveFile}
+              formList={formList}
+              groupValidationError={groupValidationError}
+              dispatch={dispatch}
+            />
+          )}
           {organisationConfig && organisationConfig.enableMessaging ? (
             <MessageRules
               rules={rules}

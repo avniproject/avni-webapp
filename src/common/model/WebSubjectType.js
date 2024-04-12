@@ -20,7 +20,11 @@ function getRole(role, minimumNumberOfMembers, maximumNumberOfMembers) {
 
 class WebSubjectType {
   static updateType(subjectType, type) {
-    if (type === SubjectTypeType.User) subjectType.allowEmptyLocation = true;
+    if (type === SubjectTypeType.User) {
+      subjectType.allowEmptyLocation = true;
+      subjectType.shouldSyncByLocation = false;
+      subjectType.directlyAssignable = false;
+    }
     if (!Types.isGroup(type)) {
       return { ...subjectType, type, groupRoles: [] };
     }

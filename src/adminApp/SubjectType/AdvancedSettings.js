@@ -11,6 +11,7 @@ import { forEach, get, includes, isEmpty } from "lodash";
 import { OptionSelect } from "./OptionSelect";
 import { Accordion, AccordionDetails, Box, Input } from "@material-ui/core";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { SubjectTypeType } from "./Types";
 
 const CustomAccordion = withStyles({
   root: {
@@ -34,18 +35,11 @@ const CustomAccordianDetails = withStyles(theme => ({
 CustomAccordianDetails.muiName = "AccordionDetails";
 
 const syncAttributeDataTypes = ["Numeric", "Coded", "Text"];
-export const AdvancedSettings = ({
-  subjectType,
-  dispatch,
-  locationTypes,
-  formMappings,
-  isEdit
-}) => {
+export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMappings, isEdit }) => {
   const [expanded, setExpanded] = React.useState(false);
   const [syncAttributes, setSyncAttributes] = React.useState([]);
   const formUuid = findFormUuidForSubjectType(subjectType, formMappings);
-  const changeSyncAttribute = (name, value) =>
-    dispatch({ type: "syncAttribute", payload: { name, value } });
+  const changeSyncAttribute = (name, value) => dispatch({ type: "syncAttribute", payload: { name, value } });
 
   const onSyncConceptChange = (name, value) => {
     const syncAttributeChangeMessage =
@@ -65,12 +59,7 @@ export const AdvancedSettings = ({
         forEach(form.formElementGroups, feg => {
           forEach(feg.formElements, fe => {
             const concept = fe.concept;
-            if (
-              !feg.voided &&
-              !fe.voided &&
-              fe.mandatory &&
-              includes(syncAttributeDataTypes, concept.dataType)
-            ) {
+            if (!feg.voided && !fe.voided && fe.mandatory && includes(syncAttributeDataTypes, concept.dataType)) {
               syncAttributes.push({ label: concept.name, value: concept.uuid });
             }
           });
@@ -95,9 +84,7 @@ export const AdvancedSettings = ({
           <AvniSwitch
             switchFirst
             checked={!!subjectType.allowEmptyLocation}
-            onChange={event =>
-              dispatch({ type: "allowEmptyLocation", payload: event.target.checked })
-            }
+            onChange={event => dispatch({ type: "allowEmptyLocation", payload: event.target.checked })}
             name="Allow Empty Location"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_EMPTY_LOCATION"}
           />
@@ -111,9 +98,7 @@ export const AdvancedSettings = ({
           <AvniSwitch
             switchFirst
             checked={!!subjectType.allowProfilePicture}
-            onChange={event =>
-              dispatch({ type: "allowProfilePicture", payload: event.target.checked })
-            }
+            onChange={event => dispatch({ type: "allowProfilePicture", payload: event.target.checked })}
             name="Allow Profile Picture"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ALLOW_PROFILE_PICTURE"}
           />
@@ -124,11 +109,7 @@ export const AdvancedSettings = ({
             regexLabel={subjectType.type === "Person" ? "First Name Regex" : "Name Regex"}
             regexToolTipKey={"APP_DESIGNER_FIRST_NAME_REGEX"}
             regexID={"validFirstNameRegex"}
-            descKeyLabel={
-              subjectType.type === "Person"
-                ? "First Name Validation Description Key"
-                : "Name Validation Description Key"
-            }
+            descKeyLabel={subjectType.type === "Person" ? "First Name Validation Description Key" : "Name Validation Description Key"}
             descToolTipKey={"APP_DESIGNER_FIRST_NAME_DESCRIPTION_KEY"}
             descID={"validFirstNameDescriptionKey"}
             propertyName={"validFirstNameFormat"}
@@ -228,32 +209,38 @@ export const AdvancedSettings = ({
             <Typography gutterBottom variant={"subtitle1"}>
               {"Sync Settings"}
             </Typography>
-            <AvniSwitch
-              switchFirst
-              checked={!!subjectType.shouldSyncByLocation}
-              onChange={event => changeSyncAttribute("shouldSyncByLocation", event.target.checked)}
-              name="Sync by location"
-              toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SYC_BY_LOCATION"}
-            />
-            <AvniSwitch
-              switchFirst
-              checked={!!subjectType.directlyAssignable}
-              onChange={event => changeSyncAttribute("directlyAssignable", event.target.checked)}
-              name="Sync by direct assignment"
-              toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SYNC_BY_DIRECT_ASSIGNMENT"}
-            />
-            <OptionSelect
-              label={"Sync Registration Concept 1"}
-              options={syncAttributes}
-              value={subjectType.syncRegistrationConcept1}
-              onChange={value => onSyncConceptChange("syncRegistrationConcept1", value)}
-            />
-            <OptionSelect
-              label={"Sync Registration Concept 2"}
-              options={syncAttributes}
-              value={subjectType.syncRegistrationConcept2}
-              onChange={value => onSyncConceptChange("syncRegistrationConcept2", value)}
-            />
+            {subjectType.type === SubjectTypeType.User ? (
+              <Typography>Determined by Subject Type</Typography>
+            ) : (
+              <>
+                <AvniSwitch
+                  switchFirst
+                  checked={!!subjectType.shouldSyncByLocation}
+                  onChange={event => changeSyncAttribute("shouldSyncByLocation", event.target.checked)}
+                  name="Sync by location"
+                  toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SYC_BY_LOCATION"}
+                />
+                <AvniSwitch
+                  switchFirst
+                  checked={!!subjectType.directlyAssignable}
+                  onChange={event => changeSyncAttribute("directlyAssignable", event.target.checked)}
+                  name="Sync by direct assignment"
+                  toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SYNC_BY_DIRECT_ASSIGNMENT"}
+                />
+                <OptionSelect
+                  label={"Sync Registration Concept 1"}
+                  options={syncAttributes}
+                  value={subjectType.syncRegistrationConcept1}
+                  onChange={value => onSyncConceptChange("syncRegistrationConcept1", value)}
+                />
+                <OptionSelect
+                  label={"Sync Registration Concept 2"}
+                  options={syncAttributes}
+                  value={subjectType.syncRegistrationConcept2}
+                  onChange={value => onSyncConceptChange("syncRegistrationConcept2", value)}
+                />
+              </>
+            )}
           </Box>
         </div>
       </CustomAccordianDetails>
