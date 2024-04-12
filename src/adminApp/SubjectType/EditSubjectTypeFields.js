@@ -2,7 +2,7 @@ import React from "react";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import _ from "lodash";
-import Types from "./Types";
+import Types, { SubjectTypeType } from "./Types";
 import MenuItem from "@material-ui/core/MenuItem";
 import { AvniImageUpload } from "../../common/components/AvniImageUpload";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
@@ -10,10 +10,7 @@ import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { findRegistrationForms } from "../domain/formMapping";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import GroupRoles from "./GroupRoles";
-import {
-  sampleSubjectProgramEligibilityCheckRule,
-  sampleSubjectSummaryRule
-} from "../../formDesigner/common/SampleRule";
+import { sampleSubjectProgramEligibilityCheckRule, sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
 import PropTypes from "prop-types";
 import { JSEditor } from "../../common/components/JSEditor";
 
@@ -37,7 +34,7 @@ const EditSubjectTypeFields = props => {
         onChange={event => dispatch({ type: "type", payload: event.target.value })}
         style={{ width: "200px" }}
         required
-        options={Types.types.map(({ type }, index) => (
+        options={SubjectTypeType.getAll().map((type, index) => (
           <MenuItem value={type} key={index}>
             {type}
           </MenuItem>
@@ -100,14 +97,9 @@ const EditSubjectTypeFields = props => {
         onValueChange={event => dispatch({ type: "subjectSummaryRule", payload: event })}
       />
       <p />
-      <AvniFormLabel
-        label={"Subject Program Eligibility Check Rule"}
-        toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"}
-      />
+      <AvniFormLabel label={"Subject Program Eligibility Check Rule"} toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"} />
       <JSEditor
-        value={
-          subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()
-        }
+        value={subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()}
         onValueChange={event => dispatch({ type: "programEligibilityCheckRule", payload: event })}
       />
     </>

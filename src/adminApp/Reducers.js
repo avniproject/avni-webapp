@@ -1,6 +1,6 @@
 import Types from "./SubjectType/Types";
-import { default as UUID } from "uuid";
 import { isEmpty, map } from "lodash";
+import WebSubjectType from "../common/model/WebSubjectType";
 
 function getUpdatedProgram(program, action) {
   let newProgram = { ...program };
@@ -20,13 +20,11 @@ export function programReducer(program, action) {
         programSubjectLabel: action.payload.programSubjectLabel,
         enrolmentSummaryRule: action.payload.enrolmentSummaryRule,
         enrolmentEligibilityCheckRule: action.payload.enrolmentEligibilityCheckRule,
-        enrolmentEligibilityCheckDeclarativeRule:
-          action.payload.enrolmentEligibilityCheckDeclarativeRule,
+        enrolmentEligibilityCheckDeclarativeRule: action.payload.enrolmentEligibilityCheckDeclarativeRule,
         manualEnrolmentEligibilityCheckRule: action.payload.manualEnrolmentEligibilityCheckRule,
         manualEligibilityCheckRequired: action.payload.manualEligibilityCheckRequired,
         allowMultipleEnrolments: action.payload.allowMultipleEnrolments,
-        manualEnrolmentEligibilityCheckDeclarativeRule:
-          action.payload.manualEnrolmentEligibilityCheckDeclarativeRule,
+        manualEnrolmentEligibilityCheckDeclarativeRule: action.payload.manualEnrolmentEligibilityCheckDeclarativeRule,
         active: action.payload.active,
         loaded: true,
         programId: action.payload.programId
@@ -88,25 +86,16 @@ export function subjectTypeReducer(subjectType, action) {
       return { ...subjectType, active: action.payload };
     case "type":
       const type = action.payload;
-      if (!Types.isGroup(type)) {
-        return { ...subjectType, type, groupRoles: [] };
-      }
-      const groupRoles = Types.isHousehold(type) ? _getHouseholdRoles() : [];
-      const memberSubjectType = Types.isHousehold(type)
-        ? map(groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
-        : "";
+      const { groupRoles, memberSubjectType } = WebSubjectType.updateType(subjectType, type);
       return { ...subjectType, type, groupRoles, memberSubjectType };
     case "householdMemberSubject":
-      const roles = map(
-        subjectType.groupRoles,
-        ({ groupRoleUUID, role, minimumNumberOfMembers, maximumNumberOfMembers }) => ({
-          subjectMemberName: action.payload,
-          groupRoleUUID,
-          role,
-          minimumNumberOfMembers,
-          maximumNumberOfMembers
-        })
-      );
+      const roles = map(subjectType.groupRoles, ({ groupRoleUUID, role, minimumNumberOfMembers, maximumNumberOfMembers }) => ({
+        subjectMemberName: action.payload,
+        groupRoleUUID,
+        role,
+        minimumNumberOfMembers,
+        maximumNumberOfMembers
+      }));
       return { ...subjectType, groupRoles: roles, memberSubjectType: action.payload };
     case "setData":
       return {
@@ -200,19 +189,5 @@ export function subjectTypeReducer(subjectType, action) {
       return subjectType;
   }
 }
-
-const _getHouseholdRoles = () => {
-  const roles = [];
-  roles.push(_getRole("Head of household", 1, 1));
-  roles.push(_getRole("Member", 1, 100));
-  return roles;
-};
-
-const _getRole = (role, minimumNumberOfMembers, maximumNumberOfMembers) => ({
-  groupRoleUUID: UUID.v4(),
-  role,
-  minimumNumberOfMembers,
-  maximumNumberOfMembers
-});
 
 const _getNullOrValue = value => (isEmpty(value) ? null : value);

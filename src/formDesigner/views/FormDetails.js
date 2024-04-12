@@ -51,6 +51,8 @@ import {
 import { FormTypeEntities } from "../common/constants";
 import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
+import { Concept } from "openchs-models";
+import { SubjectTypeType } from "../../adminApp/SubjectType/Types";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -59,9 +61,7 @@ export const isText = concept => concept.dataType === "Text";
 export const areValidFormatValuesValid = formElement => {
   if (!isNumeric(formElement.concept) && !isText(formElement.concept)) return true;
   if (!formElement.validFormat) return true;
-  const result =
-    isEmpty(formElement.validFormat.regex) === isEmpty(formElement.validFormat.descriptionKey);
-  return result;
+  return isEmpty(formElement.validFormat.regex) === isEmpty(formElement.validFormat.descriptionKey);
 };
 
 export function TabContainer({ skipStyles, ...props }) {
@@ -76,6 +76,44 @@ export function TabContainer({ skipStyles, ...props }) {
 TabContainer.propTypes = {
   children: PropTypes.node.isRequired
 };
+
+const personStaticFormElements = [
+  { name: "First name", dataType: Concept.dataType.Text },
+  { name: "Last name", dataType: Concept.dataType.Text },
+  { name: "Date of birth", dataType: Concept.dataType.Date },
+  { name: "Age", dataType: Concept.dataType.Numeric },
+  { name: "Gender", dataType: Concept.dataType.Coded },
+  { name: "Address", dataType: Concept.dataType.Coded }
+];
+
+const nonPersonStaticFormElements = [
+  { name: "Name", dataType: Concept.dataType.Text },
+  { name: "Address", dataType: Concept.dataType.Coded }
+];
+
+const householdStaticFormElements = [
+  { name: "Name", dataType: Concept.dataType.Text },
+  { name: "Total members", dataType: Concept.dataType.Numeric },
+  { name: "Address", dataType: Concept.dataType.Coded }
+];
+
+const userStaticFormElements = [{ name: "First name", dataType: Concept.dataType.Text }];
+
+function getStaticFormElements(subjectType) {
+  if (_.isEmpty(subjectType)) {
+    return [];
+  }
+  switch (subjectType.type) {
+    case SubjectTypeType.Person:
+      return personStaticFormElements;
+    case SubjectTypeType.Household:
+      return householdStaticFormElements;
+    case SubjectTypeType.User:
+      return userStaticFormElements;
+    default:
+      return nonPersonStaticFormElements;
+  }
+}
 
 class FormDetails extends Component {
   constructor(props) {
@@ -199,10 +237,7 @@ class FormDetails extends Component {
                 keyValueObject["durationOptions"] = [];
               }
             }
-            if (
-              fe.concept.dataType === "Coded" &&
-              keyValueObject["ExcludedAnswers"] !== undefined
-            ) {
+            if (fe.concept.dataType === "Coded" && keyValueObject["ExcludedAnswers"] !== undefined) {
               _.forEach(fe.concept.answers, answer => {
                 if (keyValueObject["ExcludedAnswers"].includes(answer.name) && !answer.voided) {
                   answer["excluded"] = true;
@@ -255,30 +290,16 @@ class FormDetails extends Component {
   // Group level events
   deleteGroup(index, elementIndex = -1) {
     if (elementIndex === -1) {
-      this.setState(
-        produce(draft => formDesignerDeleteGroup(draft, draft.form.formElementGroups, index))
-      );
+      this.setState(produce(draft => formDesignerDeleteGroup(draft, draft.form.formElementGroups, index)));
     } else {
-      this.setState(
-        produce(draft =>
-          formDesignerDeleteFormElement(
-            draft,
-            draft.form.formElementGroups[index].formElements,
-            elementIndex
-          )
-        )
-      );
+      this.setState(produce(draft => formDesignerDeleteFormElement(draft, draft.form.formElementGroups[index].formElements, elementIndex)));
     }
   }
 
   handleRegex(index, propertyName, value, elementIndex) {
     this.setState(
       produce(draft => {
-        formDesignerHandleRegex(
-          draft.form.formElementGroups[index].formElements[elementIndex],
-          propertyName,
-          value
-        );
+        formDesignerHandleRegex(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
   }
@@ -286,11 +307,7 @@ class FormDetails extends Component {
   handleModeForDate(index, propertyName, value, elementIndex) {
     this.setState(
       produce(draft => {
-        formDesignerHandleModeForDate(
-          draft.form.formElementGroups[index].formElements[elementIndex],
-          propertyName,
-          value
-        );
+        formDesignerHandleModeForDate(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
   }
@@ -298,11 +315,7 @@ class FormDetails extends Component {
   updateConceptElementData(index, propertyName, value, elementIndex = -1) {
     this.setState(
       produce(draft => {
-        formDesignerUpdateConceptElementData(
-          draft.form.formElementGroups[index].formElements[elementIndex],
-          propertyName,
-          value
-        );
+        formDesignerUpdateConceptElementData(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
   }
@@ -310,13 +323,7 @@ class FormDetails extends Component {
   updateSkipLogicRule = (index, elementIndex, value) => {
     this.setState(
       produce(draft => {
-        formDesignerHandleGroupElementChange(
-          draft,
-          draft.form.formElementGroups[index],
-          "rule",
-          value,
-          elementIndex
-        );
+        formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "rule", value, elementIndex);
       })
     );
   };
@@ -324,13 +331,7 @@ class FormDetails extends Component {
   updateSkipLogicJSON = (index, elementIndex, value) => {
     this.setState(
       produce(draft => {
-        formDesignerHandleGroupElementChange(
-          draft,
-          draft.form.formElementGroups[index],
-          "declarativeRule",
-          value,
-          elementIndex
-        );
+        formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "declarativeRule", value, elementIndex);
       })
     );
   };
@@ -338,13 +339,7 @@ class FormDetails extends Component {
   updateFormElementGroupRule = (index, value) => {
     this.setState(
       produce(draft => {
-        formDesignerHandleGroupElementChange(
-          draft,
-          draft.form.formElementGroups[index],
-          "rule",
-          value,
-          -1
-        );
+        formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "rule", value, -1);
       })
     );
   };
@@ -352,33 +347,17 @@ class FormDetails extends Component {
   updateFormElementGroupRuleJSON = (index, value) => {
     this.setState(
       produce(draft => {
-        formDesignerHandleGroupElementChange(
-          draft,
-          draft.form.formElementGroups[index],
-          "declarativeRule",
-          value,
-          -1
-        );
+        formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], "declarativeRule", value, -1);
       })
     );
   };
 
-  onUpdateDragDropOrder = (
-    groupSourceIndex,
-    sourceElementIndex,
-    destinationElementIndex,
-    groupOrElement = 1,
-    groupDestinationIndex
-  ) => {
+  onUpdateDragDropOrder = (groupSourceIndex, sourceElementIndex, destinationElementIndex, groupOrElement = 1, groupDestinationIndex) => {
     if (groupOrElement === 1) {
       this.setState(
         produce(draft => {
-          const sourceElement =
-            draft.form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex];
-          const destinationElement =
-            draft.form.formElementGroups[groupDestinationIndex].formElements[
-              destinationElementIndex
-            ];
+          const sourceElement = draft.form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex];
+          const destinationElement = draft.form.formElementGroups[groupDestinationIndex].formElements[destinationElementIndex];
           sourceElement.parentFormElementUuid = destinationElement.parentFormElementUuid;
           return formDesignerUpdateDragDropOrderForFirstGroup(
             draft,
@@ -468,12 +447,7 @@ class FormDetails extends Component {
   handleExcludedAnswers = (name, status, index, elementIndex) => {
     this.setState(
       produce(draft =>
-        formDesignerHandleExcludedAnswers(
-          draft,
-          draft.form.formElementGroups[index].formElements[elementIndex],
-          name,
-          status
-        )
+        formDesignerHandleExcludedAnswers(draft, draft.form.formElementGroups[index].formElements[elementIndex], name, status)
       )
     );
   };
@@ -481,11 +455,7 @@ class FormDetails extends Component {
   handleConceptFormLibrary = (index, value, elementIndex, inlineConcept = false) => {
     this.setState(
       produce(draft => {
-        formDesignerHandleConceptFormLibrary(
-          draft.form.formElementGroups[index].formElements[elementIndex],
-          value,
-          inlineConcept
-        );
+        formDesignerHandleConceptFormLibrary(draft.form.formElementGroups[index].formElements[elementIndex], value, inlineConcept);
       })
     );
   };
@@ -505,26 +475,14 @@ class FormDetails extends Component {
 
   handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
     this.setState(
-      produce(draft =>
-        formDesignerHandleGroupElementChange(
-          draft,
-          draft.form.formElementGroups[index],
-          propertyName,
-          value,
-          elementIndex
-        )
-      )
+      produce(draft => formDesignerHandleGroupElementChange(draft, draft.form.formElementGroups[index], propertyName, value, elementIndex))
     );
   }
 
   handleInlineNumericAttributes(index, propertyName, value, elementIndex) {
     this.setState(
       produce(draft => {
-        formDesignerHandleInlineNumericAttributes(
-          draft.form.formElementGroups[index].formElements[elementIndex],
-          propertyName,
-          value
-        );
+        formDesignerHandleInlineNumericAttributes(draft.form.formElementGroups[index].formElements[elementIndex], propertyName, value);
       })
     );
   }
@@ -543,20 +501,11 @@ class FormDetails extends Component {
 
   handleInlineCodedAnswerAddition = (groupIndex, elementIndex) => {
     this.setState(
-      produce(draft =>
-        formDesignerHandleInlineCodedAnswerAddition(
-          draft.form.formElementGroups[groupIndex].formElements[elementIndex]
-        )
-      )
+      produce(draft => formDesignerHandleInlineCodedAnswerAddition(draft.form.formElementGroups[groupIndex].formElements[elementIndex]))
     );
   };
 
-  onToggleInlineConceptCodedAnswerAttribute = (
-    propertyName,
-    groupIndex,
-    elementIndex,
-    answerIndex
-  ) => {
+  onToggleInlineConceptCodedAnswerAttribute = (propertyName, groupIndex, elementIndex, answerIndex) => {
     this.setState(
       produce(draft => {
         formDesignerOnToggleInlineConceptCodedAnswerAttribute(
@@ -582,10 +531,7 @@ class FormDetails extends Component {
   onMoveUp = (groupIndex, elementIndex, answerIndex) => {
     this.setState(
       produce(draft => {
-        formDesignerOnConceptAnswerMoveUp(
-          draft.form.formElementGroups[groupIndex].formElements[elementIndex],
-          answerIndex
-        );
+        formDesignerOnConceptAnswerMoveUp(draft.form.formElementGroups[groupIndex].formElements[elementIndex], answerIndex);
       })
     );
   };
@@ -593,21 +539,14 @@ class FormDetails extends Component {
   onMoveDown = (groupIndex, elementIndex, answerIndex) => {
     this.setState(
       produce(draft => {
-        formDesignerOnConceptAnswerMoveDown(
-          draft.form.formElementGroups[groupIndex].formElements[elementIndex],
-          answerIndex
-        );
+        formDesignerOnConceptAnswerMoveDown(draft.form.formElementGroups[groupIndex].formElements[elementIndex], answerIndex);
       })
     );
   };
 
   onAlphabeticalSort = (groupIndex, elementIndex) => {
     this.setState(
-      produce(draft =>
-        formDesignerOnConceptAnswerAlphabeticalSort(
-          draft.form.formElementGroups[groupIndex].formElements[elementIndex]
-        )
-      )
+      produce(draft => formDesignerOnConceptAnswerAlphabeticalSort(draft.form.formElementGroups[groupIndex].formElements[elementIndex]))
     );
   };
 
@@ -669,11 +608,7 @@ class FormDetails extends Component {
         if (elementIndex === -1) {
           formDesignerAddFormElementGroup(draft, draft.form.formElementGroups, index);
         } else {
-          formDesignerAddFormElement(
-            draft,
-            draft.form.formElementGroups[index].formElements,
-            elementIndex
-          );
+          formDesignerAddFormElement(draft, draft.form.formElementGroups[index].formElements, elementIndex);
         }
       })
     );
@@ -691,9 +626,7 @@ class FormDetails extends Component {
   }
 
   validateFormLevelRules(form, declarativeRule, ruleKey, generateRuleFuncName) {
-    const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(
-      declarativeRule
-    );
+    const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(declarativeRule);
     if (!_.isEmpty(validationError)) {
       form.ruleError[ruleKey] = validationError;
       return true;
@@ -712,23 +645,14 @@ class FormDetails extends Component {
       produce(draft => {
         draft.nameError = draft.name === "";
         draft.form.ruleError = {};
-        const {
-          validationDeclarativeRule,
-          decisionDeclarativeRule,
-          visitScheduleDeclarativeRule
-        } = draft.form;
+        const { validationDeclarativeRule, decisionDeclarativeRule, visitScheduleDeclarativeRule } = draft.form;
         const isValidationError = this.validateFormLevelRules(
           draft.form,
           validationDeclarativeRule,
           "validationRule",
           "generateFormValidationRule"
         );
-        const isDecisionError = this.validateFormLevelRules(
-          draft.form,
-          decisionDeclarativeRule,
-          "decisionRule",
-          "generateDecisionRule"
-        );
+        const isDecisionError = this.validateFormLevelRules(draft.form, decisionDeclarativeRule, "decisionRule", "generateDecisionRule");
         const isVisitScheduleError = this.validateFormLevelRules(
           draft.form,
           visitScheduleDeclarativeRule,
@@ -740,9 +664,7 @@ class FormDetails extends Component {
           group.errorMessage = {};
           group.error = false;
           group.expanded = false;
-          const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(
-            group.declarativeRule
-          );
+          const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(group.declarativeRule);
           const isGroupNameEmpty = group.name.trim() === "";
           if (!group.voided && (isGroupNameEmpty || !_.isEmpty(validationError))) {
             group.error = true;
@@ -751,9 +673,7 @@ class FormDetails extends Component {
             if (isGroupNameEmpty) group.errorMessage.name = true;
             if (!_.isEmpty(validationError)) group.errorMessage.ruleError = validationError;
           } else if (!declarativeRuleHolder.isEmpty()) {
-            group.rule = declarativeRuleHolder.generateFormElementGroupRule(
-              this.getEntityNameForRules()
-            );
+            group.rule = declarativeRuleHolder.generateFormElementGroupRule(this.getEntityNameForRules());
           }
           let groupError = false;
           group.formElements.forEach(fe => {
@@ -765,18 +685,14 @@ class FormDetails extends Component {
                 fe.errorMessage[key] = false;
               });
             }
-            const {
-              declarativeRuleHolder,
-              validationError
-            } = this.getDeclarativeRuleValidationError(fe.declarativeRule);
+            const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(fe.declarativeRule);
             if (
               !fe.voided &&
               (fe.name === "" ||
                 fe.concept.dataType === "" ||
                 fe.concept.dataType === "NA" ||
                 (fe.concept.dataType === "Coded" && fe.type === "") ||
-                (fe.concept.dataType === "Video" &&
-                  parseInt(fe.keyValues.durationLimitInSecs) < 0) ||
+                (fe.concept.dataType === "Video" && parseInt(fe.keyValues.durationLimitInSecs) < 0) ||
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0) ||
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0) ||
                 !areValidFormatValuesValid(fe) ||
@@ -792,10 +708,8 @@ class FormDetails extends Component {
               if (fe.concept.dataType === "Coded" && fe.type === "") fe.errorMessage.type = true;
               if (fe.concept.dataType === "Video" && parseInt(fe.keyValues.durationLimitInSecs) < 0)
                 fe.errorMessage.durationLimitInSecs = true;
-              if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0)
-                fe.errorMessage.maxHeight = true;
-              if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0)
-                fe.errorMessage.maxWidth = true;
+              if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0) fe.errorMessage.maxHeight = true;
+              if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0) fe.errorMessage.maxWidth = true;
               if (!areValidFormatValuesValid(fe)) fe.errorMessage.validFormat = true;
               if (!_.isEmpty(validationError)) {
                 fe.errorMessage.ruleError = validationError;
@@ -811,10 +725,8 @@ class FormDetails extends Component {
         if (flag) {
           if (numberGroupError !== 0) {
             errormsg += "There is a error in " + numberGroupError + " form group";
-            if (numberElementError !== 0)
-              errormsg += " and " + numberElementError + " form element.";
-          } else if (numberElementError !== 0)
-            errormsg += "There is a error in " + numberElementError + " form element.";
+            if (numberElementError !== 0) errormsg += " and " + numberElementError + " form element.";
+          } else if (numberElementError !== 0) errormsg += "There is a error in " + numberElementError + " form element.";
         }
         draft.saveCall = !flag;
         draft.errorMsg = errormsg;
@@ -859,11 +771,7 @@ class FormDetails extends Component {
           element.keyValues.maxWidth === "" && delete element.keyValues.maxWidth;
         }
 
-        if (
-          element.validFormat &&
-          isEmpty(element.validFormat.regex) &&
-          isEmpty(element.validFormat.descriptionKey)
-        ) {
+        if (element.validFormat && isEmpty(element.validFormat.regex) && isEmpty(element.validFormat.descriptionKey)) {
           delete element.validFormat;
         }
 
@@ -920,24 +828,12 @@ class FormDetails extends Component {
       const groupDestinationIndex = result.destination.droppableId.replace("Group", "");
       const sourceElementIndex = result.source.index;
       const destinationElementIndex = result.destination.index;
-      this.onUpdateDragDropOrder(
-        groupSourceIndex,
-        sourceElementIndex,
-        destinationElementIndex,
-        1,
-        groupDestinationIndex
-      );
+      this.onUpdateDragDropOrder(groupSourceIndex, sourceElementIndex, destinationElementIndex, 1, groupDestinationIndex);
     } else {
       const groupSourceIndex = result.source.droppableId.replace("Group", "");
       const sourceElementIndex = result.draggableId.replace("Element", "");
       const destinationElementIndex = result.destination.index;
-      this.onUpdateDragDropOrder(
-        groupSourceIndex,
-        sourceElementIndex,
-        destinationElementIndex,
-        0,
-        null
-      );
+      this.onUpdateDragDropOrder(groupSourceIndex, sourceElementIndex, destinationElementIndex, 0, null);
     }
   };
 
@@ -970,8 +866,7 @@ class FormDetails extends Component {
 
   onSaveInlineConcept = (groupIndex, elementIndex) => {
     let clonedForm = cloneDeep(this.state.form);
-    let clonedFormElement =
-      clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex];
+    let clonedFormElement = clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex];
     const updateState = () => this.setState({ form: clonedForm });
     formDesignerOnSaveInlineConcept(clonedFormElement, updateState);
   };
@@ -985,44 +880,7 @@ class FormDetails extends Component {
   };
 
   render() {
-    const personStaticFormElements = [
-      { name: "First name", dataType: "Text" },
-      { name: "Last name", dataType: "Text" },
-      { name: "Date of birth", dataType: "Date" },
-      { name: "Age", dataType: "Numeric" },
-      { name: "Gender", dataType: "Coded" },
-      { name: "Address", dataType: "Coded" }
-    ];
-
-    const nonPersonStaticFormElements = [
-      { name: "Name", dataType: "Text" },
-      { name: "Address", dataType: "Coded" }
-    ];
-
-    const householdStaticFormElements = [
-      { name: "Name", dataType: "Text" },
-      { name: "Total members", dataType: "Numeric" },
-      { name: "Address", dataType: "Coded" }
-    ];
-
-    const getStaticFormElements = () => {
-      if (_.isEmpty(this.state.subjectType)) {
-        return [];
-      }
-      switch (this.state.subjectType.type) {
-        case "Person":
-          return personStaticFormElements;
-        case "Household":
-          return householdStaticFormElements;
-        default:
-          return nonPersonStaticFormElements;
-      }
-    };
-
-    const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(
-      this.props.userInfo,
-      this.state.formType
-    );
+    const hasFormEditPrivilege = UserInfo.hasFormEditPrivilege(this.props.userInfo, this.state.formType);
     const form = (
       <Grid container>
         <Grid container alignContent="flex-end">
@@ -1087,11 +945,7 @@ class FormDetails extends Component {
         </Grid>
 
         <Grid item sm={12}>
-          <Tabs
-            style={{ background: "#2196f3", color: "white" }}
-            value={this.state.activeTabIndex}
-            onChange={this.onTabHandleChange}
-          >
+          <Tabs style={{ background: "#2196f3", color: "white" }} value={this.state.activeTabIndex} onChange={this.onTabHandleChange}>
             <Tab label="Details" />
             <Tab label="Rules" />
           </Tabs>
@@ -1105,11 +959,11 @@ class FormDetails extends Component {
                 )}
               </Grid>
             </Grid>
-            {this.state.formType === "IndividualProfile" && !_.isEmpty(getStaticFormElements()) && (
+            {this.state.formType === "IndividualProfile" && !_.isEmpty(getStaticFormElements(this.state.subjectType)) && (
               <div style={{ marginBottom: 30 }}>
                 <StaticFormElementGroup
                   name={"First page questions (non editable)"}
-                  formElements={getStaticFormElements()}
+                  formElements={getStaticFormElements(this.state.subjectType)}
                 />
               </div>
             )}
@@ -1155,9 +1009,7 @@ class FormDetails extends Component {
           <Title title="Form Details" />
 
           {this.state.dataLoaded ? form : <div>Loading</div>}
-          {this.state.redirectToWorkflow && redirectTo !== undefined && (
-            <Redirect to={`/appdesigner/${redirectTo.stateName}`} />
-          )}
+          {this.state.redirectToWorkflow && redirectTo !== undefined && <Redirect to={`/appdesigner/${redirectTo.stateName}`} />}
           {this.state.successAlert && (
             <CustomizedSnackbar
               message="Successfully updated the form"
