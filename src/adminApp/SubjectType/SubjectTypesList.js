@@ -37,14 +37,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
       render: rowData => {
         const formName = get(findRegistrationForm(formMappings, rowData), "formName");
         return hasEditPrivilege(userInfo) ? (
-          <a
-            href={`#/appdesigner/forms/${get(
-              findRegistrationForm(formMappings, rowData),
-              "formUUID"
-            )}`}
-          >
-            {formName}
-          </a>
+          <a href={`#/appdesigner/forms/${get(findRegistrationForm(formMappings, rowData), "formUUID")}`}>{formName}</a>
         ) : (
           formName
         );
@@ -114,9 +107,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && (
-                <CreateComponent onSubmit={addNewConcept} name="New Subject type" />
-              )}
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Subject type" />}
             </div>
 
             <AvniMaterialTable
@@ -125,6 +116,7 @@ const SubjectTypesList = ({ history, userInfo }) => {
               columns={columns}
               fetchData={fetchData}
               options={{
+                pageSize: 10,
                 addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,

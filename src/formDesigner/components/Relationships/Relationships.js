@@ -22,10 +22,7 @@ const Relationships = ({ history, userInfo }) => {
   const columns = [
     {
       title: "Name",
-      render: rowData =>
-        !rowData.voided && (
-          <a href={`#/appDesigner/relationship/${rowData.id}/show`}>{rowData.name}</a>
-        )
+      render: rowData => !rowData.voided && <a href={`#/appDesigner/relationship/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
       title: "Genders",
@@ -95,8 +92,7 @@ const Relationships = ({ history, userInfo }) => {
         <div className="container">
           {isIndividualSubjectTypeAvailable === "false" && (
             <div style={{ color: "red", size: "10" }}>
-              Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create an
-              Person subject type to enable this screen.
+              Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create an Person subject type to enable this screen.
             </div>
           )}
           {isIndividualSubjectTypeAvailable === "true" && (
@@ -113,6 +109,7 @@ const Relationships = ({ history, userInfo }) => {
                 columns={columns}
                 fetchData={result}
                 options={{
+                  pageSize: 10,
                   addRowPosition: "first",
                   sorting: true,
                   debounceInterval: 500,

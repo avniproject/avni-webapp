@@ -81,8 +81,7 @@ const RelationshipTypeList = ({ userInfo }) => {
         <div className="container">
           {isIndividualSubjectTypeAvailable === "false" && (
             <div style={{ color: "red", size: "10" }}>
-              Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create an
-              Person subject type to enable this screen.
+              Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create an Person subject type to enable this screen.
             </div>
           )}
           {isIndividualSubjectTypeAvailable === "true" && (
@@ -99,6 +98,7 @@ const RelationshipTypeList = ({ userInfo }) => {
                 columns={columns}
                 fetchData={result}
                 options={{
+                  pageSize: 10,
                   addRowPosition: "first",
                   sorting: true,
                   debounceInterval: 500,

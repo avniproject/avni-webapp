@@ -18,9 +18,7 @@ const columns = [
     defaultSort: "asc",
     sorting: false,
     field: "displayKey",
-    render: rowData => (
-      <a href={`#/appDesigner/applicationMenu/${rowData.id}/show`}>{rowData.displayKey}</a>
-    )
+    render: rowData => <a href={`#/appDesigner/applicationMenu/${rowData.id}/show`}>{rowData.displayKey}</a>
   },
   {
     title: "Type",
@@ -74,6 +72,7 @@ const ApplicationMenuList = ({ history, userInfo }) => {
               columns={columns}
               fetchData={fetchData}
               options={{
+                pageSize: 10,
                 addRowPosition: "first",
                 sorting: false,
                 debounceInterval: 500,
@@ -85,12 +84,7 @@ const ApplicationMenuList = ({ history, userInfo }) => {
               actions={
                 hasEditPrivilege(userInfo) && [
                   EntityListUtil.createEditAction(history, "applicationMenu", "application menu"),
-                  EntityListUtil.createVoidAction(
-                    tableRef,
-                    "menuItem",
-                    "application menu",
-                    "displayKey"
-                  )
+                  EntityListUtil.createVoidAction(tableRef, "menuItem", "application menu", "displayKey")
                 ]
               }
               route={"/appdesigner/applicationMenu"}

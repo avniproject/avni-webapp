@@ -56,12 +56,7 @@ const ProgramList = ({ history, userInfo }) => {
       field: "formName",
       sorting: false,
       render: rowData => (
-        <a
-          href={`#/appdesigner/forms/${get(
-            findProgramEnrolmentForm(formMappings, rowData),
-            "formUUID"
-          )}`}
-        >
+        <a href={`#/appdesigner/forms/${get(findProgramEnrolmentForm(formMappings, rowData), "formUUID")}`}>
           {get(findProgramEnrolmentForm(formMappings, rowData), "formName")}
         </a>
       )
@@ -71,12 +66,7 @@ const ProgramList = ({ history, userInfo }) => {
       field: "formName",
       sorting: false,
       render: rowData => (
-        <a
-          href={`#/appdesigner/forms/${get(
-            findProgramExitForm(formMappings, rowData),
-            "formUUID"
-          )}`}
-        >
+        <a href={`#/appdesigner/forms/${get(findProgramExitForm(formMappings, rowData), "formUUID")}`}>
           {get(findProgramExitForm(formMappings, rowData), "formName")}
         </a>
       )
@@ -86,13 +76,7 @@ const ProgramList = ({ history, userInfo }) => {
       field: "colour",
       type: "string",
       sorting: false,
-      render: rowData => (
-        <div
-          style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}
-        >
-          &nbsp;
-        </div>
-      )
+      render: rowData => <div style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}>&nbsp;</div>
     }
   ];
 
@@ -106,8 +90,7 @@ const ProgramList = ({ history, userInfo }) => {
       let apiUrl = "/web/program?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
         .then(response => response.data)
@@ -154,9 +137,7 @@ const ProgramList = ({ history, userInfo }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && (
-                <CreateComponent onSubmit={addNewConcept} name="New Program" />
-              )}
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Program" />}
             </div>
 
             <AvniMaterialTable
@@ -165,6 +146,7 @@ const ProgramList = ({ history, userInfo }) => {
               columns={columns}
               fetchData={fetchData}
               options={{
+                pageSize: 10,
                 addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,

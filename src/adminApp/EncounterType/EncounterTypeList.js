@@ -5,10 +5,7 @@ import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
-import {
-  findProgramEncounterCancellationForm,
-  findProgramEncounterForm
-} from "../domain/formMapping";
+import { findProgramEncounterCancellationForm, findProgramEncounterForm } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
 import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import { connect } from "react-redux";
@@ -45,9 +42,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
       title: "Name",
       defaultSort: "asc",
       sorting: false,
-      render: rowData => (
-        <a href={`#/appDesigner/encounterType/${rowData.id}/show`}>{rowData.name}</a>
-      )
+      render: rowData => <a href={`#/appDesigner/encounterType/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
       title: "Subject Type",
@@ -65,26 +60,14 @@ const EncounterTypeList = ({ history, userInfo }) => {
     {
       title: "Programs",
       sorting: false,
-      render: rowData => (
-        <ShowPrograms
-          rowDetails={rowData}
-          program={program}
-          formMapping={formMappings}
-          setMapping={setFormMappings}
-        />
-      )
+      render: rowData => <ShowPrograms rowDetails={rowData} program={program} formMapping={formMappings} setMapping={setFormMappings} />
     },
     {
       title: "Encounter Form",
       field: "formName",
       sorting: false,
       render: rowData => (
-        <a
-          href={`#/appdesigner/forms/${get(
-            findProgramEncounterForm(formMappings, rowData),
-            "formUUID"
-          )}`}
-        >
+        <a href={`#/appdesigner/forms/${get(findProgramEncounterForm(formMappings, rowData), "formUUID")}`}>
           {get(findProgramEncounterForm(formMappings, rowData), "formName")}
         </a>
       )
@@ -94,12 +77,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
       field: "formName",
       sorting: false,
       render: rowData => (
-        <a
-          href={`#/appdesigner/forms/${get(
-            findProgramEncounterCancellationForm(formMappings, rowData),
-            "formUUID"
-          )}`}
-        >
+        <a href={`#/appdesigner/forms/${get(findProgramEncounterCancellationForm(formMappings, rowData), "formUUID")}`}>
           {get(findProgramEncounterCancellationForm(formMappings, rowData), "formName")}
         </a>
       )
@@ -111,8 +89,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
       let apiUrl = "/web/encounterType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
         .then(response => response.data)
@@ -140,8 +117,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
     icon: () => <Delete />,
     tooltip: "Delete encounter type",
     onClick: (event, rowData) => {
-      const voidedMessage =
-        "Do you really want to delete the encounter type " + rowData.name + " ?";
+      const voidedMessage = "Do you really want to delete the encounter type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http.delete("/web/encounterType/" + rowData.id).then(response => {
           if (response.status === 200) {
@@ -160,9 +136,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              {hasEditPrivilege(userInfo) && (
-                <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />
-              )}
+              {hasEditPrivilege(userInfo) && <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />}
             </div>
             <AvniMaterialTable
               title=""
@@ -170,6 +144,7 @@ const EncounterTypeList = ({ history, userInfo }) => {
               columns={columns}
               fetchData={fetchData}
               options={{
+                pageSize: 10,
                 addRowPosition: "first",
                 sorting: true,
                 debounceInterval: 500,
