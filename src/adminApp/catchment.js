@@ -110,6 +110,9 @@ const validateCatchment = (values, allLocations) => {
   const errors = {};
   if (!allLocations) return errors;
   if (_.isEmpty(values.locationIds)) errors.locationIds = ["It can not be empty"];
+  if (!values.name || !values.name.trim()) {
+    errors.name = ["Catchment name should contain at least one non-whitespace character"];
+  }
   return errors;
 };
 
