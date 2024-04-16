@@ -169,21 +169,24 @@ class CreateEditConcept extends Component {
       http
         .get(encodedURL)
         .then(response => {
-          this.setState({
-            answers
-          });
+          const conceptUuid = response.data.uuid;
+          return http.delete(`/concept/${conceptUuid}`);
+        })
+        .then(deletionResponse => {
+          const updatedAnswers = [...this.state.answers];
+          updatedAnswers.splice(index, 1);
+          this.setState({ answers: updatedAnswers });
         })
         .catch(error => {
-          answers.splice(index, 1);
-          this.setState({
-            answers
-          });
+          console.error("Error occurred while deleting concept:", error);
+          const updatedAnswers = [...this.state.answers];
+          updatedAnswers.splice(index, 1);
+          this.setState({ answers: updatedAnswers });
         });
     } else {
-      answers.splice(index, 1);
-      this.setState({
-        answers
-      });
+      const updatedAnswers = [...this.state.answers];
+      updatedAnswers.splice(index, 1);
+      this.setState({ answers: updatedAnswers });
     }
   };
 
@@ -315,11 +318,7 @@ class CreateEditConcept extends Component {
           if (response.status === 200 && this.props.isCreatePage) {
             error["nameError"] = true;
           }
-          if (
-            response.status === 200 &&
-            response.data.uuid !== this.state.uuid &&
-            !this.props.isCreatePage
-          ) {
+          if (response.status === 200 && response.data.uuid !== this.state.uuid && !this.props.isCreatePage) {
             error["nameError"] = true;
           }
 
@@ -360,16 +359,12 @@ class CreateEditConcept extends Component {
           });
 
         if (this.state.dataType === "Location") {
-          const lowestLevelKeyValue = this.state.keyValues.find(
-            keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs"
-          );
+          const lowestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
           if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
             error["lowestAddressLevelRequired"] = true;
           }
 
-          const highestLevelKeyValue = this.state.keyValues.find(
-            keyValue => keyValue.key === "highestAddressLevelTypeUUID"
-          );
+          const highestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
           if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
             this.onDeleteKeyValue(2);
           }
@@ -385,10 +380,7 @@ class CreateEditConcept extends Component {
           this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
         }
 
-        const emptyKeyValues = filter(
-          this.state.keyValues,
-          ({ key, value }) => key === "" || value === ""
-        );
+        const emptyKeyValues = filter(this.state.keyValues, ({ key, value }) => key === "" || value === "");
         if (emptyKeyValues.length > 0) {
           error["keyValueError"] = true;
         }
@@ -527,10 +519,7 @@ class CreateEditConcept extends Component {
 
   onKeyValueChange = (keyValue, index) => {
     const keyValues = this.state.keyValues;
-    keyValues[index] =
-      typeof keyValue.value === "object"
-        ? this.handleObjectValue(keyValue)
-        : this.castValueToBooleanOrInt(keyValue);
+    keyValues[index] = typeof keyValue.value === "object" ? this.handleObjectValue(keyValue) : this.castValueToBooleanOrInt(keyValue);
     this.setState({ ...this.state, keyValues });
   };
 
@@ -586,9 +575,7 @@ class CreateEditConcept extends Component {
       }
     };
 
-    const conceptCreationMessage = this.props.isCreatePage
-      ? "Concept created successfully."
-      : "Concept updated successfully.";
+    const conceptCreationMessage = this.props.isCreatePage ? "Concept created successfully." : "Concept updated successfully.";
 
     const appBarTitle = this.props.isCreatePage ? "Create Concept" : "Edit Concept";
 
@@ -654,17 +641,9 @@ class CreateEditConcept extends Component {
     }
 
     if (this.state.dataType === "PhoneNumber") {
-      const verificationKey = find(
-        this.state.keyValues,
-        ({ key, value }) => key === "verifyPhoneNumber"
-      );
+      const verificationKey = find(this.state.keyValues, ({ key, value }) => key === "verifyPhoneNumber");
       if (verificationKey) {
-        dataType = (
-          <PhoneNumberConcept
-            onKeyValueChange={this.onKeyValueChange}
-            checked={verificationKey.value}
-          />
-        );
+        dataType = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
       } else {
         this.setState(prevState => ({
           ...prevState,
@@ -698,9 +677,7 @@ class CreateEditConcept extends Component {
               />
               {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
               {!this.state.error.isEmptyName &&
-                (this.state.error.nameError && (
-                  <FormHelperText error>Same name concept already exist.</FormHelperText>
-                ))}
+                (this.state.error.nameError && <FormHelperText error>Same name concept already exist.</FormHelperText>)}
             </div>
 
             <div>
@@ -723,9 +700,7 @@ class CreateEditConcept extends Component {
                         );
                       })}
                     </Select>
-                    {this.state.error.dataTypeSelectionAlert && (
-                      <FormHelperText error>*Required</FormHelperText>
-                    )}
+                    {this.state.error.dataTypeSelectionAlert && <FormHelperText error>*Required</FormHelperText>}
                   </FormControl>
                 </ToolTipContainer>
               )}
@@ -743,11 +718,7 @@ class CreateEditConcept extends Component {
             {!this.props.isCreatePage && (
               <>
                 <p />
-                <ConceptActiveSwitch
-                  active={this.state.active}
-                  handleActive={this.handleActive}
-                  conceptUUID={this.state.uuid}
-                />
+                <ConceptActiveSwitch active={this.state.active} handleActive={this.handleActive} conceptUUID={this.state.uuid} />
                 <p />
               </>
             )}
@@ -765,18 +736,11 @@ class CreateEditConcept extends Component {
 
           <Grid container item sm={12}>
             <Grid item sm={2}>
-              <SaveComponent
-                name="save"
-                onSubmit={this.handleSubmit}
-                styleClass={{ marginLeft: "12px", marginTop: "10px" }}
-              />{" "}
+              <SaveComponent name="save" onSubmit={this.handleSubmit} styleClass={{ marginLeft: "12px", marginTop: "10px" }} />{" "}
             </Grid>
             <Grid item sm={10}>
               {!this.props.isCreatePage && (
-                <Button
-                  style={{ float: "right", color: "red", marginTop: "10px" }}
-                  onClick={() => this.onDeleteConcept()}
-                >
+                <Button style={{ float: "right", color: "red", marginTop: "10px" }} onClick={() => this.onDeleteConcept()}>
                   <DeleteIcon /> Delete
                 </Button>
               )}
@@ -791,9 +755,7 @@ class CreateEditConcept extends Component {
             />
           )}
         </DocumentationContainer>
-        {this.state.redirectShow && (
-          <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />
-        )}
+        {this.state.redirectShow && <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />}
         {this.state.redirectOnDelete && <Redirect to={`/appDesigner/concepts`} />}
       </Box>
     );
