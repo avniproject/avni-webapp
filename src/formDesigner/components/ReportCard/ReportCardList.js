@@ -7,8 +7,7 @@ import { Privilege } from "openchs-models";
 const columns = [
   {
     title: "Name",
-    render: rowData =>
-      !rowData.voided && <a href={`#/appDesigner/reportCard/${rowData.id}/show`}>{rowData.name}</a>
+    render: rowData => !rowData.voided && <a href={`#/appDesigner/reportCard/${rowData.id}/show`}>{rowData.name}</a>
   },
   {
     title: "Description",

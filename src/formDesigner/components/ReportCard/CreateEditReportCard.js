@@ -134,11 +134,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       ]);
       isValid = false;
     }
-    if (
-      !isStandardReportCard &&
-      nested &&
-      (count < MinimumNumberOfNestedCards || count > MaximumNumberOfNestedCards)
-    ) {
+    if (!isStandardReportCard && nested && (count < MinimumNumberOfNestedCards || count > MaximumNumberOfNestedCards)) {
       setError([
         ...error,
         {
@@ -181,9 +177,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           setError([
             {
               key: "SERVER_ERROR",
-              message: `${get(error, "response.data") ||
-                get(error, "message") ||
-                "error while saving card"}`
+              message: `${get(error, "response.data") || get(error, "message") || "error while saving card"}`
             }
           ]);
         });
@@ -237,14 +231,18 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           toolTipKey={"APP_DESIGNER_CARD_DESCRIPTION"}
         />
         <p />
-        <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_CARD_COLOR"} />
-        <PopoverColorPicker
-          id="colour"
-          label="Colour"
-          color={card.color}
-          onChange={color => dispatch({ type: "color", payload: color })}
-        />
-        {getErrorByKey(error, "EMPTY_COLOR")}
+        {!isStandardReportCard && (
+          <React.Fragment>
+            <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_CARD_COLOR"} />
+            <PopoverColorPicker
+              id="colour"
+              label="Colour"
+              color={card.color}
+              onChange={color => dispatch({ type: "color", payload: color })}
+            />
+            {getErrorByKey(error, "EMPTY_COLOR")}
+          </React.Fragment>
+        )}
         <p />
         <AvniImageUpload
           onSelect={setFile}
@@ -290,13 +288,11 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
                 payload: { nested: card.nested, count: event.target.value }
               })
             }
-            options={Array.from({ length: MaximumNumberOfNestedCards }, (_, i) => i + 1).map(
-              (num, index) => (
-                <MenuItem value={num} key={index}>
-                  {num}
-                </MenuItem>
-              )
-            )}
+            options={Array.from({ length: MaximumNumberOfNestedCards }, (_, i) => i + 1).map((num, index) => (
+              <MenuItem value={num} key={index}>
+                {num}
+              </MenuItem>
+            ))}
             toolTipKey={"APP_DESIGNER_CARD_COUNT"}
           />
         )}

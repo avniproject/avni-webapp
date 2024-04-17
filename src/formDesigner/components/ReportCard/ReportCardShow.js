@@ -43,11 +43,13 @@ const ReportCardShow = props => {
         <p />
         <ShowLabelValue label={"Description"} value={card.description} />
         <p />
-        <div>
-          <FormLabel style={{ fontSize: "13px" }}>{"Colour"}</FormLabel>
-          <br />
-          <ColorValue colour={card.color} />
-        </div>
+        {!isStandardReportCard && (
+          <React.Fragment>
+            <FormLabel style={{ fontSize: "13px" }}>{"Colour"}</FormLabel>
+            <br />
+            <ColorValue colour={card.color} />
+          </React.Fragment>
+        )}
         <p />
         {!isStandardReportCard && (
           <React.Fragment>
@@ -70,10 +72,7 @@ const ReportCardShow = props => {
         <p />
         {isStandardReportCard && (
           <React.Fragment>
-            <ShowLabelValue
-              label={"Standard Report Card Type"}
-              value={standardReportCardType.name}
-            />
+            <ShowLabelValue label={"Standard Report Card Type"} value={standardReportCardType.name} />
             <p />
           </React.Fragment>
         )}
