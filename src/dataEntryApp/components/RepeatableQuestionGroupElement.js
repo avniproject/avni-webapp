@@ -34,7 +34,7 @@ export function RepeatableQuestionGroupElement({
   return repeatableQuestionGroupValue.map((x, index) => {
     const isLastElement = !hasNoObservation && repeatableQuestionGroupValue.length === index + 1;
     return (
-      <>
+      <div key={index}>
         <QuestionGroupFormElement
           formElement={formElement}
           filteredFormElements={filteredFormElements}
@@ -53,7 +53,7 @@ export function RepeatableQuestionGroupElement({
           </>
         )}
         {!isLastElement && <LineBreak num={2} />}
-      </>
+      </div>
     );
   });
 }
