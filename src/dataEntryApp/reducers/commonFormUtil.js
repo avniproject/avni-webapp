@@ -22,7 +22,7 @@ const fetchFilteredFormElementsAndUpdateEntityObservations = (formElementGroup, 
 
 const getUpdatedNextFilteredFormElements = (formElementStatuses, nextGroup, entity, nextFilteredFormElements) => {
   if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, nextGroup.getFormElements())) {
-    let { updatedNextFilteredFormElements } = filterFormElementsWithStatus(nextGroup, entity);
+    let { filteredFormElements: updatedNextFilteredFormElements } = filterFormElementsWithStatus(nextGroup, entity);
     return updatedNextFilteredFormElements;
   }
   return nextFilteredFormElements;
