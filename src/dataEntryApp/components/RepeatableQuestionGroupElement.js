@@ -12,7 +12,7 @@ function AddMoreButton({ addNewQuestionGroup, formElement }) {
 function RemoveButton({ removeQuestionGroup, formElement, index }) {
   return (
     <Button onClick={() => removeQuestionGroup(formElement, index)} color="primary">
-      {"Remove"}
+      {"Remove Above"}
     </Button>
   );
 }
