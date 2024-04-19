@@ -17,7 +17,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: "10px",
-    border: "1px solid rgba(0, 0, 0, 0.12)",
     width: "50%"
   },
   gridLabelStyle: {
@@ -31,10 +30,7 @@ const useStyles = makeStyles(theme => ({
 export default ({ formElement: fe, value, update, validationResults, uuid, isGrid }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const validationResult = find(
-    validationResults,
-    validationResult => validationResult.formIdentifier === uuid
-  );
+  const validationResult = find(validationResults, validationResult => validationResult.formIdentifier === uuid);
 
   const error = () => {
     if (validationResult && !validationResult.success) {
@@ -64,11 +60,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
 
   return (
     <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
-      <Typography
-        variant="body1"
-        gutterBottom={!isGrid}
-        className={isGrid ? classes.gridLabelStyle : classes.labelStyle}
-      >
+      <Typography variant="body1" gutterBottom={!isGrid} className={isGrid ? classes.gridLabelStyle : classes.labelStyle}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
         {!isNil(fe.concept.unit) && !isEmpty(fe.concept.unit.trim()) ? ` (${fe.concept.unit})` : ""}

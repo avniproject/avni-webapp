@@ -15,6 +15,7 @@ import LocationFormElement from "./LocationFormElement";
 import LandingSubjectFormElement from "./LandingSubjectFormElement";
 import QuestionGroupFormElement from "./QuestionGroupFormElement";
 import { RepeatableQuestionGroupElement } from "./RepeatableQuestionGroupElement";
+import { makeStyles } from "@material-ui/core/styles";
 
 const div = () => <div />;
 
@@ -42,6 +43,14 @@ const elements = {
   RepeatableQuestionGroup: RepeatableQuestionGroupElement
 };
 
+const useStyles = makeStyles(theme => ({
+  gridContainerStyle: {
+    borderWidth: "2px",
+    borderStyle: "inset",
+    padding: "5px"
+  }
+}));
+
 export const FormElement = ({
   children: formElement,
   value,
@@ -57,12 +66,10 @@ export const FormElement = ({
   addNewQuestionGroup,
   removeQuestionGroup
 }) => {
+  const classes = useStyles();
   const type = formElement.getType();
   if (type === Concept.dataType.Id) {
-    formElement.keyValues = [
-      ...formElement.keyValues,
-      KeyValue.fromResource({ key: "editable", value: false })
-    ];
+    formElement.keyValues = [...formElement.keyValues, KeyValue.fromResource({ key: "editable", value: false })];
     formElement.mandatory = false;
   }
 
@@ -81,9 +88,9 @@ export const FormElement = ({
   };
   const Element = elements[type];
   return (
-    <div>
+    <div className={isGrid ? classes.gridContainerStyle : {}}>
       {!ignoreLineBreak && <LineBreak num={feIndex === 0 ? 0 : 2} />}
-      {/*this check can be removed later when DEA supports all the data types (Location is not supported yet)*/}
+      {/*this check can be removed later when DEA supports all the data types (Encounter and GroupAffiliation is not supported yet)*/}
       {Element && <Element {...props} />}
       {/* <LineBreak num={1} /> */}
     </div>

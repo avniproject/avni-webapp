@@ -4,6 +4,19 @@ import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 import _ from "lodash";
 import { PrimitiveValue } from "openchs-models";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(theme => ({
+  gridContainerStyle: {
+    border: "1px solid rgba(0, 0, 0, 0.12)"
+  },
+  gridLabelStyle: {
+    color: "rgba(0, 0, 0, 0.54)",
+    flex: 0.5,
+    marginRight: "15px",
+    borderRight: "1px solid rgba(0, 0, 0, 0.12)"
+  }
+}));
 
 function getQuestionGroupLabel(formElement, isRepeatable, repeatableIndex) {
   if (isRepeatable) return `${formElement.name} - ${repeatableIndex + 1}`;
@@ -19,6 +32,7 @@ export default function QuestionGroupFormElement({
   isRepeatable = false,
   questionGroupIndex
 }) {
+  const classes = useStyles();
   const allChildren = sortBy(
     filter(
       filteredFormElements,
@@ -49,48 +63,36 @@ export default function QuestionGroupFormElement({
 
   return (
     <Fragment>
-      <div>{getQuestionGroupLabel(formElement, isRepeatable, questionGroupIndex)}</div>
-      <div style={{ flexDirection: "row", alignItems: "center", marginTop: "10px" }}>
-        {map(textNumericAndNotes, childFormElement => (
-          <FormElement
-            key={childFormElement.uuid}
-            concept={childFormElement.concept}
-            obsHolder={obsHolder}
-            value={questionGroup.getValueForConcept(childFormElement.concept)}
-            validationResults={validationResults}
-            uuid={childFormElement.uuid}
-            update={value => {
-              updateObs(formElement, value, childFormElement, questionGroupIndex);
-            }}
-            feIndex={childFormElement.displayOrder}
-            filteredFormElements={filteredFormElements}
-            ignoreLineBreak={true}
-            isGrid={true}
-          >
-            {childFormElement}
-          </FormElement>
-        ))}
-      </div>
-      <div style={{ marginRight: "15px" }}>
-        {map(otherQuestions, childFormElement => (
-          <div key={childFormElement.uuid} style={{ marginTop: "20px" }}>
+      <div className={classes.gridLabelStyle}>{getQuestionGroupLabel(formElement, isRepeatable, questionGroupIndex)}</div>
+      <div className={classes.gridContainerStyle}>
+        {map(allChildren, childFormElement => {
+          let nullReplacement = Concept.dataType.Coded === childFormElement.concept.datatype ? new PrimitiveValue() : null;
+          const value = _.includes(
+            [Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes],
+            childFormElement.concept.datatype
+          )
+            ? questionGroup.getValueForConcept(childFormElement.concept)
+            : getSelectedAnswer(childFormElement.concept, nullReplacement);
+          return (
             <FormElement
+              key={childFormElement.uuid}
               concept={childFormElement.concept}
               obsHolder={obsHolder}
-              value={getSelectedAnswer(childFormElement.concept, new PrimitiveValue())}
+              value={value}
               validationResults={validationResults}
               uuid={childFormElement.uuid}
-              update={value => {
-                updateObs(formElement, value, childFormElement, questionGroupIndex);
+              update={newValue => {
+                updateObs(formElement, newValue, childFormElement, questionGroupIndex);
               }}
               feIndex={childFormElement.displayOrder}
               filteredFormElements={filteredFormElements}
               ignoreLineBreak={true}
+              isGrid={true}
             >
               {childFormElement}
             </FormElement>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </Fragment>
   );
