@@ -44,12 +44,7 @@ export default (observationValue, { isExit, isCancel }) => {
 
   const observations = [];
 
-  observations.push(
-    Observation.create(
-      conceptA1,
-      JSON.stringify(new PrimitiveValue(observationValue, Concept.dataType.Numeric))
-    )
-  );
+  observations.push(Observation.create(conceptA1, JSON.stringify(new PrimitiveValue(observationValue, Concept.dataType.Numeric))));
 
   subject.observations = observations;
   encounter[isCancel ? "cancelObservations" : "observations"] = observations;
@@ -58,24 +53,8 @@ export default (observationValue, { isExit, isCancel }) => {
 
   const form = EntityFactory.createForm("foo");
   const formElementGroup1 = EntityFactory.createFormElementGroup("bar", 1, form);
-  const formElement1 = EntityFactory.createFormElement(
-    "a1",
-    false,
-    conceptA1,
-    1,
-    "",
-    formElementGroup1
-  );
-  const formElement2 = EntityFactory.createFormElement(
-    "a2",
-    false,
-    conceptA2,
-    2,
-    "",
-    formElementGroup1
-  );
-  formElementGroup1.addFormElement(formElement1);
-  formElementGroup1.addFormElement(formElement2);
+  const formElement1 = EntityFactory.createFormElement("a1", false, conceptA1, 1, "", formElementGroup1);
+  const formElement2 = EntityFactory.createFormElement("a2", false, conceptA2, 2, "", formElementGroup1);
 
   return {
     programEnrolment,
