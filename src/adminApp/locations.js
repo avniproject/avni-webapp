@@ -2,6 +2,7 @@ import React from "react";
 import {
   Datagrid,
   List,
+  ExportButton,
   TextField,
   Show,
   SimpleShowLayout,
@@ -47,6 +48,7 @@ export const LocationList = props => (
     bulkActions={false}
     sort={{ field: "title", order: "ASC" }}
     filters={<LocationFilter />}
+    actions={<CustomListActions />}
   >
     <Datagrid rowClick="show">
       <TextField label="Name" source="title" />
@@ -54,6 +56,12 @@ export const LocationList = props => (
       <TextField label="Full Address" source="titleLineage" />
     </Datagrid>
   </List>
+);
+
+const CustomListActions = props => (
+  <Toolbar {...props}>
+    <ExportButton maxResults={5000} {...props} />
+  </Toolbar>
 );
 
 const SubLocationsGrid = props =>
