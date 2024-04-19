@@ -1,4 +1,4 @@
-import { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy, some, union } from "lodash";
+import _, { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy, some, union } from "lodash";
 import formElementService, { filterFormElements, getFormElementStatuses } from "dataEntryApp/services/FormElementService";
 import { Concept, FormElementGroup, ObservationsHolder, StaticFormElementGroup, ValidationResult } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
@@ -11,6 +11,30 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
     filteredFormElements: formElementGroup.filterElements(formElementStatuses),
     formElementStatuses
   };
+};
+
+const fetchFilteredFormElementsAndUpdateEntityObservations = (formElementGroup, entity) => {
+  const { filteredFormElements, formElementStatuses } = filterFormElementsWithStatus(formElementGroup, entity);
+  const obsHolder = new ObservationsHolder(entity.observations);
+  obsHolder.updatePrimitiveCodedObs(filteredFormElements, formElementStatuses);
+  return filteredFormElements;
+};
+
+const getUpdatedNextFilteredFormElements = (formElementStatuses, nextGroup, entity, nextFilteredFormElements) => {
+  if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, nextGroup.getFormElements())) {
+    let { updatedNextFilteredFormElements } = filterFormElementsWithStatus(nextGroup, entity);
+    return updatedNextFilteredFormElements;
+  }
+  return nextFilteredFormElements;
+};
+
+// We need to re-fetch the statuses to make sure any hidden form element due to empty values shows up this time.
+const hasQuestionGroupWithValueInElementStatus = (formElementStatuses, allFormElements) => {
+  return _.some(formElementStatuses, ({ uuid, value }) => {
+    if (value) {
+      return _.get(_.find(allFormElements, fe => fe.uuid === uuid), "concept.datatype") === Concept.dataType.QuestionGroup;
+    }
+  });
 };
 
 const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) => {
@@ -32,10 +56,11 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) 
 
   let formElementGroupWithoutObs = find(sortBy(form.nonVoidedFormElementGroups(), "displayOrder"), formElementGroup => {
     let obsArr = [];
-    if (!!filterFormElements(formElementGroup, entity) && filterFormElements(formElementGroup, entity).length === 0) {
+    const filteredFormElements = filterFormElements(formElementGroup, entity);
+    if (!!filteredFormElements && filteredFormElements.length === 0) {
       return false;
     }
-    filterFormElements(formElementGroup, entity).forEach(formElement => {
+    filteredFormElements.forEach(formElement => {
       return isObsPresent(formElement) ? obsArr.push(formElement) : "";
     });
     return obsArr.length === 0;
@@ -56,8 +81,9 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) 
 
   const getReturnObject = (formElementGroup, entity, isSummaryPage = false) => {
     const indexOfGroup = findIndex(form.getFormElementGroups(), feg => feg.uuid === formElementGroup.uuid) + 1;
+    const filteredFormElements = fetchFilteredFormElementsAndUpdateEntityObservations(formElementGroup, entity);
     return {
-      filteredFormElements: filterFormElements(formElementGroup, entity),
+      filteredFormElements: filteredFormElements,
       formElementGroup: formElementGroup,
       wizard: new Wizard(form.numberOfPages, indexOfGroup, indexOfGroup),
       onSummaryPage: isSummaryPage
@@ -144,7 +170,13 @@ const onNext = ({
     return onNext(nextState(nextGroup, [], allRuleValidationResults, obsHolder.observations, entity, false, wizard));
   } else {
     obsHolder.updatePrimitiveCodedObs(nextFilteredFormElements, formElementStatuses);
-    return nextState(nextGroup, nextFilteredFormElements, allRuleValidationResults, obsHolder.observations, entity, false, wizard);
+    const updatedNextFilteredFormElements = getUpdatedNextFilteredFormElements(
+      formElementStatuses,
+      nextGroup,
+      entity,
+      nextFilteredFormElements
+    );
+    return nextState(nextGroup, updatedNextFilteredFormElements, allRuleValidationResults, obsHolder.observations, entity, false, wizard);
   }
 };
 
