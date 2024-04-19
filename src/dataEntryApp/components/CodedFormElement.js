@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  FormHelperText
-} from "@material-ui/core";
+import { FormControl, FormControlLabel, FormGroup, FormLabel, FormHelperText } from "@material-ui/core";
 import { xor, first, filter, find } from "lodash";
 import Checkbox from "./Checkbox";
 import Radio from "./Radio";
@@ -24,22 +18,18 @@ export const CodedFormElement = ({
   validationResults,
   uuid,
   errorMsg,
+  disabled,
   ...props
 }) => {
   const { t } = useTranslation();
-  const validationResult = find(
-    validationResults,
-    validationResult => validationResult.formIdentifier === uuid
-  );
+  const validationResult = find(validationResults, validationResult => validationResult.formIdentifier === uuid);
 
-  const color = item =>
-    isChecked(item) && item.abnormal ? Colors.ValidationError : Colors.DefaultPrimary;
+  const color = item => (isChecked(item) && item.abnormal ? Colors.ValidationError : Colors.DefaultPrimary);
 
   const renderError = () => {
     return validationResult || errorMsg ? (
       <FormHelperText style={{ marginBottom: "20px" }}>
-        {(validationResult && t(validationResult.messageKey, validationResult.extra)) ||
-          t(errorMsg)}
+        {(validationResult && t(validationResult.messageKey, validationResult.extra)) || t(errorMsg)}
       </FormHelperText>
     ) : (
       ""
@@ -67,6 +57,7 @@ export const CodedFormElement = ({
                       checked={isChecked(item)}
                       onChange={() => onChange(item)}
                       value={item.uuid}
+                      disabled={disabled}
                     />
                   ) : (
                     <Radio
@@ -74,6 +65,7 @@ export const CodedFormElement = ({
                       checked={isChecked(item)}
                       onChange={() => onChange(first(xor([item], filter(items, isChecked))))}
                       value={item.uuid}
+                      disabled={disabled}
                     />
                   )
                 }
