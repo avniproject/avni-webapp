@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { filter, includes, map, sortBy, get } from "lodash";
+import { filter, map, sortBy, get } from "lodash";
 import { FormElement } from "./FormElement";
 import { Concept, QuestionGroup } from "avni-models";
 import _ from "lodash";
