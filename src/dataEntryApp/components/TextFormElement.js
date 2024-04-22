@@ -16,7 +16,6 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: "10px",
     width: "50%"
   },
   gridLabelStyle: {
