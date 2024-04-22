@@ -26,12 +26,16 @@ class SubjectProfileService {
       })
       .catch(error => {
         console.error(`Failed to fetch latest value of the individual from backend server for uuid: ${subjectUuid} Error: ${error}`);
-        throw error;
+        this.resetSubject(subjectUuid);
       });
   }
 
   addSubject(uuid, subject) {
     this.subjectProfiles.set(uuid, subject);
+  }
+
+  resetSubject(subjectUuid) {
+    this.subjectProfiles.delete(subjectUuid);
   }
 }
 
