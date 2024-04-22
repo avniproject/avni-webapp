@@ -43,13 +43,6 @@ export default function QuestionGroupFormElement({
     ),
     "displayOrder"
   );
-  const textNumericAndNotes = filter(allChildren, ({ concept }) =>
-    includes([Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes], concept.datatype)
-  );
-  const otherQuestions = filter(
-    allChildren,
-    ({ concept }) => !includes([Concept.dataType.Text, Concept.dataType.Numeric, Concept.dataType.Notes], concept.datatype)
-  );
   const observation = obsHolder.findObservation(formElement.concept);
   let questionGroup;
   if (_.isNil(observation)) questionGroup = new QuestionGroup();
