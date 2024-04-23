@@ -41,7 +41,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid, isGri
     return false;
   };
 
-  const textColor = error() ? Colors.ValidationError : Colors.DefaultPrimary;
+  const textColor = error() ? Colors.ValidationError : fe.editable ? Colors.DefaultPrimary : Colors.DefaultDisabled;
 
   const rangeText = (lowNormal, hiNormal) => {
     let rangeText = null;
