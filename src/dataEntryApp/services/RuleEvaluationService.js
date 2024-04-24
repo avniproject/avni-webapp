@@ -31,7 +31,6 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
         .map(r => runRuleAndSaveFailure(r, entityName, entity, formElementGroup, new Date()))
         .reduce((all, curr) => all.concat(curr), [])
         .reduce(updateMapUsingKeyPattern(), new Map())
-        .values()
     : new Map();
   const allFEGFormElements = formElementGroup.getFormElements();
   const formElementStatusAfterGroupRule = runFormElementGroupRule(formElementGroup, entity, entityName, mapOfBundleFormElementStatuses);
