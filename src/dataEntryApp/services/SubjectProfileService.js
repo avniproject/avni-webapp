@@ -1,9 +1,14 @@
 import api from "../api";
 import { mapProfile } from "../../common/subjectModelMapper";
+import _ from "lodash";
 
 class SubjectProfileService {
   constructor() {
     this.subjectProfiles = new Map();
+    this.debouncedFetchSubjectByUUID = _.debounce(this.fetchSubjectByUUID, 500, {
+      leading: true,
+      trailing: false
+    });
   }
 
   getSubjectByUUID(subjectUuid) {
@@ -12,6 +17,10 @@ class SubjectProfileService {
 
   findSubjectByUUID(subjectUuid) {
     return this.subjectProfiles.has(subjectUuid);
+  }
+
+  get getDebouncedFetchSubjectByUUIDFunc() {
+    return this.debouncedFetchSubjectByUUID;
   }
 
   /**
