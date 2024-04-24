@@ -91,8 +91,7 @@ export default {
 
 export function getFormElementStatuses(entity, formElementGroup, observationsHolder) {
   const formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
-  const filteredFormElements = formElementGroup.filterElements(formElementStatuses);
-  const sortedFilteredFormElements = FormElementGroup._sortedFormElements(filteredFormElements);
+  const sortedFilteredFormElements = formElementGroup.filterElements(formElementStatuses);
   const allFormElements = formElementGroup.getFormElements();
   const removedObs = observationsHolder.removeNonApplicableObs(allFormElements, sortedFilteredFormElements);
   if (isEmpty(removedObs)) {
