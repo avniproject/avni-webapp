@@ -6,12 +6,7 @@ export default {
   updateObservations(observationsHolder, formElement, value, childFormElement, questionGroupIndex) {
     if (!isNil(childFormElement) && !isNil(childFormElement.groupUuid)) {
       if (formElement.repeatable) {
-        observationsHolder.updateRepeatableGroupQuestion(
-          questionGroupIndex,
-          formElement,
-          childFormElement,
-          value
-        );
+        observationsHolder.updateRepeatableGroupQuestion(questionGroupIndex, formElement, childFormElement, value);
       } else {
         observationsHolder.updateGroupQuestion(formElement, childFormElement, value);
       }
@@ -50,19 +45,10 @@ export default {
     ) {
       const observation = observationsHolder.toggleSingleSelectAnswer(formElement.concept, value);
       return observation && observation.getValueWrapper();
-    } else if (
-      formElement.concept.datatype === Concept.dataType.Duration &&
-      !isNil(formElement.durationOptions)
-    ) {
-      const observation = observationsHolder.updateCompositeDurationValue(
-        formElement.concept,
-        value
-      );
+    } else if (formElement.concept.datatype === Concept.dataType.Duration && !isNil(formElement.durationOptions)) {
+      const observation = observationsHolder.updateCompositeDurationValue(formElement.concept, value);
       return observation && observation.getValueWrapper();
-    } else if (
-      formElement.concept.datatype === Concept.dataType.Date &&
-      !isNil(formElement.durationOptions)
-    ) {
+    } else if (formElement.concept.datatype === Concept.dataType.Date && !isNil(formElement.durationOptions)) {
       observationsHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
       return value;
     } else if (formElement.concept.datatype === Concept.dataType.PhoneNumber) {
@@ -79,42 +65,26 @@ export default {
     }
   },
 
-  validate(
-    formElement,
-    value,
-    observations,
-    validationResults,
-    formElementStatuses,
-    childFormElement
-  ) {
+  validate(formElement, value, observations, validationResults, formElementStatuses, childFormElement) {
     const validationResult = formElement.validate(value);
+    const isChildFormElement = !isNil(childFormElement) && childFormElement.groupUuid === formElement.uuid;
     remove(
       validationResults,
       existingValidationResult =>
-        existingValidationResult.formIdentifier === validationResult.formIdentifier
+        existingValidationResult.formIdentifier === validationResult.formIdentifier ||
+        (isChildFormElement &&
+          existingValidationResult.formIdentifier === childFormElement.uuid &&
+          existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex)
     );
     validationResults.push(validationResult);
     const ruleValidationErrors = getRuleValidationErrors(formElementStatuses);
-    const hiddenFormElementStatus = filter(
-      formElementStatuses,
-      status => status.visibility === false
-    );
-    const ruleErrorsAdded = addPreviousValidationErrors(
-      ruleValidationErrors,
-      validationResult,
-      validationResults
-    );
-    const isChildFormElement =
-      !isNil(childFormElement) && childFormElement.groupUuid === formElement.uuid;
-    remove(
-      ruleErrorsAdded,
-      result =>
-        result.success || (isChildFormElement && result.formIdentifier === childFormElement.uuid)
-    );
+    const hiddenFormElementStatus = filter(formElementStatuses, status => status.visibility === false);
+    const ruleErrorsAdded = addPreviousValidationErrors(ruleValidationErrors, validationResult, validationResults);
+    remove(ruleErrorsAdded, result => result.success);
     return differenceWith(
       ruleErrorsAdded,
       hiddenFormElementStatus,
-      (a, b) => a.formIdentifier === b.uuid
+      (a, b) => a.formIdentifier === b.uuid && a.questionGroupIndex === b.questionGroupIndex
     );
   }
 };
@@ -124,10 +94,7 @@ export function getFormElementStatuses(entity, formElementGroup, observationsHol
   const filteredFormElements = formElementGroup.filterElements(formElementStatuses);
   const sortedFilteredFormElements = FormElementGroup._sortedFormElements(filteredFormElements);
   const allFormElements = formElementGroup.getFormElements();
-  const removedObs = observationsHolder.removeNonApplicableObs(
-    allFormElements,
-    sortedFilteredFormElements
-  );
+  const removedObs = observationsHolder.removeNonApplicableObs(allFormElements, sortedFilteredFormElements);
   if (isEmpty(removedObs)) {
     return formElementStatuses;
   }
@@ -141,27 +108,40 @@ const getRuleValidationErrors = formElementStatuses => {
       new ValidationResult(
         isEmpty(status.validationErrors),
         status.uuid,
-        head(status.validationErrors)
+        head(status.validationErrors),
+        null,
+        status.questionGroupIndex,
+        ValidationResult.ValidationTypes.Rule
       )
   );
 };
 
 const checkValidationResult = (ruleValidationErrors, validationResult) => {
-  return map(ruleValidationErrors, error =>
-    error.formIdentifier === validationResult.formIdentifier && !validationResult.success
-      ? validationResult
-      : error
-  );
+  return map(ruleValidationErrors, error => {
+    const { formIdentifier, questionGroupIndex, success } = validationResult;
+    if (
+      error.formIdentifier === formIdentifier &&
+      (isNil(error.questionGroupIndex) || error.questionGroupIndex === questionGroupIndex) &&
+      !success
+    ) {
+      return validationResult;
+    }
+    if (error.formIdentifier === formIdentifier && isNil(error.questionGroupIndex)) error.addQuestionGroupIndex(questionGroupIndex);
+    return error;
+  });
 };
 
 const addPreviousValidationErrors = (ruleValidationErrors, validationResult, previousErrors) => {
-  const otherFEFailedStatuses = previousErrors.filter(
-    ({ formIdentifier, success }) => validationResult.formIdentifier !== formIdentifier && !success
+  const validationResultsThatNeedToBePreserved = previousErrors.filter(
+    ({ validationType }) => validationType !== ValidationResult.ValidationTypes.Rule
   );
-  return [
-    ...checkValidationResult(ruleValidationErrors, validationResult),
-    ...otherFEFailedStatuses
-  ];
+  const otherFEFailedStatuses = validationResultsThatNeedToBePreserved.filter(
+    ({ formIdentifier, success, questionGroupIndex }) =>
+      validationResult.formIdentifier !== formIdentifier &&
+      !success &&
+      (isNil(questionGroupIndex) || questionGroupIndex !== validationResult.questionGroupIndex)
+  );
+  return [...checkValidationResult(ruleValidationErrors, validationResult), ...otherFEFailedStatuses];
 };
 
 export const filterFormElements = (formElementGroup, entity) => {
