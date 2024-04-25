@@ -18,25 +18,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function PhoneNumberFormElement({
-  obsHolder,
-  formElement,
-  update,
-  validationResults,
-  uuid
-}) {
+export default function PhoneNumberFormElement({ obsHolder, formElement, update, validationResults, uuid }) {
   const classes = useStyles();
   const { mandatory, name, concept, editable } = formElement;
   const observation = obsHolder.findObservation(concept);
   const { t } = useTranslation();
-  const validationResult = find(validationResults, ({ formIdentifier }) => formIdentifier === uuid);
+  const validationResult = find(
+    validationResults,
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === formElement.questionGroupIndex
+  );
   const label = `${t(name)} ${mandatory ? "*" : ""}`;
   const isError = validationResult && !validationResult.success;
   const textColor = isError ? Colors.ValidationError : Colors.DefaultPrimary;
   const phoneNumber = isNil(observation) ? new PhoneNumber() : observation.getValueWrapper();
   const isVerified = phoneNumber.isVerified();
-  const isUnverified =
-    get(validationResult, "success", true) && !isVerified && size(phoneNumber.getValue()) === 10;
+  const isUnverified = get(validationResult, "success", true) && !isVerified && size(phoneNumber.getValue()) === 10;
 
   const renderVerifyOption = () => {
     const number = phoneNumber.getValue();

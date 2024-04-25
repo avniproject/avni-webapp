@@ -7,7 +7,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
-    validationResult => validationResult.formIdentifier === uuid
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
 
   return (

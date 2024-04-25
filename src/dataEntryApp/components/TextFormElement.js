@@ -29,7 +29,10 @@ const useStyles = makeStyles(theme => ({
 export default ({ formElement: fe, value, update, validationResults, uuid, isGrid, helpText }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const validationResult = find(validationResults, validationResult => validationResult.formIdentifier === uuid);
+  const validationResult = find(
+    validationResults,
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
+  );
   return (
     <div className={isGrid ? classes.gridContainerStyle : classes.containerStyle}>
       <Typography

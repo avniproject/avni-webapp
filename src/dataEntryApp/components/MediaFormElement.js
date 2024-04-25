@@ -7,7 +7,10 @@ import { MediaUploader } from "./MediaUploader";
 export default function MediaFormElement({ formElement, value, update, validationResults, uuid }) {
   const { t } = useTranslation();
   const { mandatory, name } = formElement;
-  const validationResult = find(validationResults, ({ formIdentifier }) => formIdentifier === uuid);
+  const validationResult = find(
+    validationResults,
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === formElement.questionGroupIndex
+  );
   const label = `${t(name)} ${mandatory ? "*" : ""}`;
 
   return (

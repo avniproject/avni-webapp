@@ -72,7 +72,7 @@ export default function QuestionGroupFormElement({
               concept={childFormElement.concept}
               obsHolder={obsHolder}
               value={value}
-              validationResults={validationResults}
+              validationResults={validationResults.filter(itr => itr.questionGroupIndex === questionGroupIndex)}
               uuid={childFormElement.uuid}
               update={newValue => {
                 updateObs(formElement, newValue, childFormElement, questionGroupIndex);

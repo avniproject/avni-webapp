@@ -12,26 +12,19 @@ import http from "common/utils/httpClient";
 import { selectOrganisationConfig } from "../sagas/selectors";
 import HierarchicalLocationSelect from "./HierarchicalLocationSelect";
 
-export default function LocationFormElement({
-  obsHolder,
-  formElement,
-  update,
-  validationResults,
-  uuid
-}) {
+export default function LocationFormElement({ obsHolder, formElement, update, validationResults, uuid }) {
   const { t } = useTranslation();
   const { mandatory, name, concept } = formElement;
   const observation = obsHolder.findObservation(concept);
-  const validationResult = find(validationResults, vr => vr.formIdentifier === uuid);
+  const validationResult = find(
+    validationResults,
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === formElement.questionGroupIndex
+  );
   const orgConfig = useSelector(selectOrganisationConfig);
 
-  const lowestAddressLevelTypeUUIDs = concept.recordValueByKey(
-    Concept.keys.lowestAddressLevelTypeUUIDs
-  );
+  const lowestAddressLevelTypeUUIDs = concept.recordValueByKey(Concept.keys.lowestAddressLevelTypeUUIDs);
 
-  const addressLevelTypes = filter(useSelector(selectAllAddressLevelTypes), alt =>
-    includes(lowestAddressLevelTypeUUIDs, alt.uuid)
-  );
+  const addressLevelTypes = filter(useSelector(selectAllAddressLevelTypes), alt => includes(lowestAddressLevelTypeUUIDs, alt.uuid));
   const [level, setLevel] = React.useState(head(addressLevelTypes));
   const locationUUID = isNil(observation) ? null : observation.getReadableValue();
   const [location, setLocation] = React.useState();

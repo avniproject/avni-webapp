@@ -1,20 +1,8 @@
 import React from "react";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  KeyboardDatePicker,
-  KeyboardDateTimePicker,
-  MuiPickersUtilsProvider
-} from "@material-ui/pickers";
+import { KeyboardDatePicker, KeyboardDateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography
-} from "@material-ui/core";
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
 import { find, get, isNil } from "lodash";
@@ -35,18 +23,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const DateTimeFormElement = ({
-  formElement: fe,
-  value,
-  update,
-  validationResults,
-  uuid
-}) => {
+export const DateTimeFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const validationResult = find(
     validationResults,
-    validationResult => validationResult.formIdentifier === uuid
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
 
   return (
@@ -86,16 +68,11 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
   const classes = useStyles();
   const validationResult = find(
     validationResults,
-    validationResult => validationResult.formIdentifier === uuid
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
 
   return durationValue ? (
-    <DateAndDurationFormElement
-      formElement={fe}
-      value={value}
-      update={update}
-      validationResult={validationResult}
-    />
+    <DateAndDurationFormElement formElement={fe} value={value} update={update} validationResult={validationResult} />
   ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
@@ -123,12 +100,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
   );
 };
 
-export const DateAndDurationFormElement = ({
-  formElement: fe,
-  value,
-  update,
-  validationResult
-}) => {
+export const DateAndDurationFormElement = ({ formElement: fe, value, update, validationResult }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
@@ -209,12 +181,7 @@ export const DateAndDurationFormElement = ({
             onChange={durationValue => onDurationChange(durationValue)}
           />
           {durationValue.map(item => (
-            <FormControlLabel
-              value={item}
-              style={{ marginLeft: 20 }}
-              control={<Radio color="primary" />}
-              label={t(item)}
-            />
+            <FormControlLabel value={item} style={{ marginLeft: 20 }} control={<Radio color="primary" />} label={t(item)} />
           ))}
         </RadioGroup>
       </form>

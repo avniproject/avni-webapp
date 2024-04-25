@@ -40,7 +40,10 @@ const SubjectFormElement = props => {
     }
   }, []);
 
-  const validationResult = find(props.validationResults, validationResult => validationResult.formIdentifier === props.uuid);
+  const validationResult = find(
+    props.validationResults,
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === props.uuid && questionGroupIndex === props.formElement.questionGroupIndex
+  );
 
   const onSelectedSubjectsChange = event => {
     const toggledSubject = isMultiSelect ? first(xor(event, selectedSubjects)) : event || selectedSubjects;

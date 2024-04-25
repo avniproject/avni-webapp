@@ -9,7 +9,7 @@ export const CodedConceptFormElement = ({ children: fe, validationResults, uuid,
       items={sortBy(fe.getAnswers(), "answerOrder").map(answer => assign(answer.concept, { abnormal: answer.abnormal }))}
       multiSelect={fe.type === "MultiSelect"}
       mandatory={fe.mandatory}
-      validationResults={validationResults}
+      validationResults={validationResults.filter(itr => itr.questionGroupIndex === fe.questionGroupIndex)}
       uuid={uuid}
       disabled={!fe.editable}
       {...props}

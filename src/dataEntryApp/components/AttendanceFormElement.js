@@ -26,31 +26,23 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const AttendanceFormElement = ({
-  formElement,
-  update,
-  validationResults,
-  uuid,
-  value = [],
-  displayAllGroupMembers
-}) => {
+const AttendanceFormElement = ({ formElement, update, validationResults, uuid, value = [], displayAllGroupMembers }) => {
   const classes = useStyles();
-  const subjectUUID = useSelector(state =>
-    get(state, "dataEntry.subjectProfile.subjectProfile.uuid")
-  );
+  const subjectUUID = useSelector(state => get(state, "dataEntry.subjectProfile.subjectProfile.uuid"));
   const [memberSubjects, setMemberSubjects] = useState([]);
   const { mandatory, name, answersToShow } = formElement;
   const { t } = useTranslation();
-  const validationResult = find(validationResults, ({ formIdentifier }) => formIdentifier === uuid);
+  const validationResult = find(
+    validationResults,
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === formElement.questionGroupIndex
+  );
   const label = `${t(name)} ${mandatory ? "*" : ""}`;
 
   useEffect(() => {
     if (displayAllGroupMembers) {
       api.fetchGroupMembers(subjectUUID).then(groupSubjects => {
         const subjectTypeUUID = formElement.concept.recordValueByKey(Concept.keys.subjectTypeUUID);
-        const groupSubjectsMatchingRole = groupSubjects.filter(
-          groupSubject => groupSubject.member.subjectType.uuid === subjectTypeUUID
-        );
+        const groupSubjectsMatchingRole = groupSubjects.filter(groupSubject => groupSubject.member.subjectType.uuid === subjectTypeUUID);
         const mappedGroupSubjects = mapGroupMembers(groupSubjectsMatchingRole);
         const memberSubjects = map(mappedGroupSubjects, ({ memberSubject }) => memberSubject);
         subjectService.addSubjects(memberSubjects);
@@ -95,9 +87,7 @@ const AttendanceFormElement = ({
           );
         })}
       </FormGroup>
-      <FormHelperText>
-        {validationResult && t(validationResult.messageKey, validationResult.extra)}
-      </FormHelperText>
+      <FormHelperText>{validationResult && t(validationResult.messageKey, validationResult.extra)}</FormHelperText>
     </Fragment>
   );
 };

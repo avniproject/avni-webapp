@@ -10,16 +10,12 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
-    validationResult => validationResult.formIdentifier === uuid
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Typography
-        variant="body1"
-        gutterBottom
-        style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
-      >
+      <Typography variant="body1" gutterBottom style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}>
         {t(fe.name)}
         {fe.mandatory ? "*" : ""}
       </Typography>

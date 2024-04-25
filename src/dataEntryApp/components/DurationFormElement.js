@@ -27,11 +27,7 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
         name={name}
         type="number"
         value={localVal}
-        helperText={
-          validationResult &&
-          duration.isEmpty &&
-          t(validationResult.messageKey, validationResult.extra)
-        }
+        helperText={validationResult && duration.isEmpty && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success && duration.isEmpty}
         onChange={e => {
           const value = e.target.value;
@@ -43,22 +39,14 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
   );
 };
 
-const CompositeDurationFormElement = ({
-  formElement: fe,
-  value,
-  update,
-  validationResults,
-  uuid
-}) => {
-  const compositeDuration = value
-    ? CompositeDuration.fromObs(value)
-    : CompositeDuration.fromOpts(fe.durationOptions);
+const CompositeDurationFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
+  const compositeDuration = value ? CompositeDuration.fromObs(value) : CompositeDuration.fromOpts(fe.durationOptions);
   const classes = useStyles();
 
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
-    validationResult => validationResult.formIdentifier === uuid
+    ({ formIdentifier, questionGroupIndex }) => formIdentifier === uuid && questionGroupIndex === fe.questionGroupIndex
   );
 
   return (
