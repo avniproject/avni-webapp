@@ -7,6 +7,6 @@ export default props => (
   <Checkbox
     {...props}
     icon={<RadioIcon fontSize="small" />}
-    checkedIcon={<RadioCheckedIcon fontSize="small" color="primary" />}
+    checkedIcon={<RadioCheckedIcon fontSize="small" color={props.disabled ? "default" : "primary"} />}
   />
 );
