@@ -66,13 +66,12 @@ export default {
   },
 
   validate(formElement, value, observations, validationResults, formElementStatuses, childFormElement) {
+    const validationResult = formElement.validate(value);
     const isChildFormElement = !isNil(childFormElement) && childFormElement.groupUuid === formElement.uuid;
-    const validationResult = isChildFormElement ? childFormElement.validate(value) : formElement.validate(value);
-    isChildFormElement && validationResult.addQuestionGroupIndex(childFormElement.questionGroupIndex);
     remove(
       validationResults,
       existingValidationResult =>
-        (!isChildFormElement && existingValidationResult.formIdentifier === validationResult.formIdentifier) ||
+        existingValidationResult.formIdentifier === validationResult.formIdentifier ||
         (isChildFormElement &&
           existingValidationResult.formIdentifier === childFormElement.uuid &&
           existingValidationResult.questionGroupIndex === childFormElement.questionGroupIndex)
