@@ -1,11 +1,18 @@
 import api from "../api";
 import { mapProfile } from "../../common/subjectModelMapper";
 import _ from "lodash";
-
+const memoizeDebounce = (func, wait = 0, options = {}) => {
+  let mem = _.memoize(function() {
+    return _.debounce(func, wait, options);
+  }, options.resolver);
+  return function() {
+    mem.apply(this, arguments).apply(this, arguments);
+  };
+};
 class SubjectProfileService {
   constructor() {
     this.subjectProfiles = new Map();
-    this.debouncedFetchSubjectByUUID = _.debounce(this.fetchSubjectByUUID, 500, {
+    this.memoizeDebouncedFetchSubjectByUUID = memoizeDebounce(this.fetchSubjectByUUID, 500, {
       leading: true,
       trailing: false
     });
@@ -20,7 +27,7 @@ class SubjectProfileService {
   }
 
   get getDebouncedFetchSubjectByUUIDFunc() {
-    return this.debouncedFetchSubjectByUUID;
+    return this.memoizeDebouncedFetchSubjectByUUID;
   }
 
   /**
