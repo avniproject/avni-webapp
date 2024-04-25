@@ -40,15 +40,10 @@ const SubjectFormElement = props => {
     }
   }, []);
 
-  const validationResult = find(
-    props.validationResults,
-    validationResult => validationResult.formIdentifier === props.uuid
-  );
+  const validationResult = find(props.validationResults, validationResult => validationResult.formIdentifier === props.uuid);
 
   const onSelectedSubjectsChange = event => {
-    const toggledSubject = isMultiSelect
-      ? first(xor(event, selectedSubjects))
-      : event || selectedSubjects;
+    const toggledSubject = isMultiSelect ? first(xor(event, selectedSubjects)) : event || selectedSubjects;
     if (!isEmpty(toggledSubject)) {
       //empty check required as backspace on empty control triggers an onChange
       const changedSubjectUuid = toggledSubject.value.uuid;
@@ -67,10 +62,7 @@ const SubjectFormElement = props => {
     const filteredSubjects =
       isMultiSelect && selectedSubjects
         ? searchResults.listOfRecords.filter(
-            subject =>
-              selectedSubjects
-                .map(selectedSubject => selectedSubject.value.uuid)
-                .indexOf(subject.uuid) === -1
+            subject => selectedSubjects.map(selectedSubject => selectedSubject.value.uuid).indexOf(subject.uuid) === -1
           )
         : searchResults.listOfRecords;
 
@@ -117,9 +109,7 @@ const SubjectFormElement = props => {
           />
         </Grid>
       </Grid>
-      <FormHelperText>
-        {validationResult && t(validationResult.messageKey, validationResult.extra)}
-      </FormHelperText>
+      <FormHelperText error={true}>{validationResult && t(validationResult.messageKey, validationResult.extra)}</FormHelperText>
     </>
   );
 };
