@@ -91,11 +91,11 @@ export default {
 
 export function getFormElementStatuses(entity, formElementGroup, observationsHolder) {
   const formElementStatuses = getFormElementsStatuses(entity, formElementGroup);
-  const sortedFilteredFormElements = formElementGroup.filterElements(formElementStatuses);
+  const filteredFormElements = formElementGroup.filterElements(formElementStatuses);
   const allFormElements = formElementGroup.getFormElements();
-  const removedObs = observationsHolder.removeNonApplicableObs(allFormElements, sortedFilteredFormElements);
+  const removedObs = observationsHolder.removeNonApplicableObs(allFormElements, filteredFormElements);
   if (isEmpty(removedObs)) {
-    return formElementStatuses;
+    return { formElementStatuses, filteredFormElements };
   }
   return getFormElementStatuses(entity, formElementGroup, observationsHolder);
 }

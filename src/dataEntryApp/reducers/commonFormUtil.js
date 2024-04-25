@@ -14,9 +14,13 @@ const filterFormElementsWithStatus = (formElementGroup, entity) => {
 };
 
 const fetchFilteredFormElementsAndUpdateEntityObservations = (formElementGroup, entity) => {
-  const { filteredFormElements, formElementStatuses } = filterFormElementsWithStatus(formElementGroup, entity);
   const obsHolder = new ObservationsHolder(entity.observations);
+  const { filteredFormElements, formElementStatuses } = getFormElementStatuses(entity, formElementGroup, obsHolder);
   obsHolder.updatePrimitiveCodedObs(filteredFormElements, formElementStatuses);
+  if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElementGroup.getFormElements())) {
+    const { filteredFormElements: filteredFormElementsLatest } = getFormElementStatuses(entity, formElementGroup, obsHolder);
+    return filteredFormElementsLatest;
+  }
   return filteredFormElements;
 };
 
@@ -219,15 +223,17 @@ const handleValidationResult = (newValidationResults, existingValidationResults)
   return existingValidationResultClones;
 };
 
-function getFilteredFormElements(entity, formElement, observationsHolder) {
-  const formElementStatuses = getFormElementStatuses(entity, formElement.formElementGroup, observationsHolder);
-  const filteredFormElements = FormElementGroup._sortedFormElements(formElement.formElementGroup.filterElements(formElementStatuses));
-  return { formElementStatuses, filteredFormElements };
-}
-
 function postObservationsUpdate(entity, formElement, observationsHolder, obsValue, existingValidationResults, childFormElement) {
-  const { formElementStatuses, filteredFormElements } = getFilteredFormElements(entity, formElement, observationsHolder);
+  let { formElementStatuses, filteredFormElements } = getFormElementStatuses(entity, formElement.formElementGroup, observationsHolder);
   observationsHolder.updatePrimitiveCodedObs(filteredFormElements, formElementStatuses);
+  if (hasQuestionGroupWithValueInElementStatus(formElementStatuses, formElement.formElementGroup.getFormElements())) {
+    const { filteredFormElements: filteredFormElementsLatest } = getFormElementStatuses(
+      entity,
+      formElement.formElementGroup,
+      observationsHolder
+    );
+    filteredFormElements = filteredFormElementsLatest;
+  }
 
   const validationResults = formElementService.validate(
     formElement,
@@ -270,13 +276,13 @@ function getRepeatableQuestionGroup(observations, concept) {
 function addNewQuestionGroup(entity, formElement, observations) {
   const repeatableQuestionGroup = getRepeatableQuestionGroup(observations, formElement.concept);
   repeatableQuestionGroup.addQuestionGroup();
-  return getFilteredFormElements(entity, formElement, new ObservationsHolder(observations));
+  return getFormElementStatuses(entity, formElement.formElementGroup, new ObservationsHolder(observations));
 }
 
 function removeQuestionGroup(entity, formElement, observations, index) {
   const repeatableQuestionGroup = getRepeatableQuestionGroup(observations, formElement.concept);
   repeatableQuestionGroup.removeQuestionGroup(index);
-  return getFilteredFormElements(entity, formElement, new ObservationsHolder(observations));
+  return getFormElementStatuses(entity, formElement.formElementGroup, new ObservationsHolder(observations));
 }
 
 const getValidationResult = (validationResults, formElementIdentifier) =>
