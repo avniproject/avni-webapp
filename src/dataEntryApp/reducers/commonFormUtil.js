@@ -1,6 +1,6 @@
 import _, { filter, find, findIndex, isEmpty, isNil, remove, sortBy, unionBy, some, union } from "lodash";
 import formElementService, { filterFormElements, getFormElementStatuses } from "dataEntryApp/services/FormElementService";
-import { Concept, FormElementGroup, ObservationsHolder, StaticFormElementGroup, ValidationResult } from "openchs-models";
+import { Concept, ObservationsHolder, StaticFormElementGroup, ValidationResult } from "openchs-models";
 import { getFormElementsStatuses } from "dataEntryApp/services/RuleEvaluationService";
 import Wizard from "dataEntryApp/state/Wizard";
 import WebFormElementGroup from "../../common/model/WebFormElementGroup";

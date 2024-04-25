@@ -1,5 +1,5 @@
-import { Concept, FormElementGroup, ValidationResult, QuestionGroup } from "avni-models";
-import { differenceWith, some, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
+import { Concept, ValidationResult, QuestionGroup } from "avni-models";
+import { differenceWith, filter, flatMap, head, isEmpty, isNil, map, remove } from "lodash";
 import { getFormElementsStatuses } from "./RuleEvaluationService";
 
 export default {
