@@ -2,7 +2,7 @@ import { get } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
-import { nestedFormElements } from "../services/FormElementService";
+import { getNonNestedFormElements } from "../services/FormElementService";
 
 export const FormElementGroup = ({
   obsHolder,
@@ -15,13 +15,13 @@ export const FormElementGroup = ({
   addNewQuestionGroup,
   removeQuestionGroup
 }) => {
-  const nestedElements = nestedFormElements(filteredFormElements);
+  const nonNestedFormElements = getNonNestedFormElements(filteredFormElements);
   return (
     <div>
       <LineBreak num={1} />
       {children && renderChildren ? children : ""}
 
-      {nestedElements.map((fe, index) => {
+      {nonNestedFormElements.map((fe, index) => {
         const observation = obsHolder.findObservation(fe.concept);
         let observationValue;
         if (observation) {

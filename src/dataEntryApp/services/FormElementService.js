@@ -148,11 +148,10 @@ export const filterFormElements = (formElementGroup, entity) => {
   return formElementGroup.filterElements(formElementStatuses);
 };
 
-export function nestedFormElements(formElements) {
+export function getNonNestedFormElements(formElements) {
   const nested = [];
   formElements.forEach(x => {
-    if (isNil(x.group)) nested.push(x);
-    else if (!some(nested, y => y.uuid === x.group.uuid)) nested.push(x.group);
+    isNil(x.group) && nested.push(x);
   });
   return nested;
 }
