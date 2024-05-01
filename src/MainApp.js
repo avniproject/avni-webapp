@@ -34,6 +34,11 @@ const generateClassName = createGenerateClassName({
 
 httpClient.initHeadersForDevEnv();
 
+// Wrapper to debug if the error is reported by the fallback or unhandled rejection
+function ErrorBoundaryFallback({ error, onClose }) {
+  return <ErrorFallback error={error} onClose={onClose} />;
+}
+
 const MainApp = () => {
   const [initialised, setInitialised] = useState(false);
   const [unhandledRejectionError, setUnhandledError] = useState(null);
@@ -52,9 +57,7 @@ const MainApp = () => {
   }, []);
 
   window.onunhandledrejection = function(error) {
-    const unhandledError = ErrorMessageUtil.fromWindowUnhandledError(error, x =>
-      setUnhandledError(x)
-    );
+    const unhandledError = ErrorMessageUtil.fromWindowUnhandledError(error, x => setUnhandledError(x));
     console.error("Unhandled Rejection Error", JSON.stringify(unhandledError));
     setUnhandledError(unhandledError);
   };
@@ -68,15 +71,9 @@ const MainApp = () => {
     <StylesProvider generateClassName={generateClassName}>
       <ThemeProvider theme={theme}>
         {!unhandledRejectionError && (
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
             <Provider store={store}>
-              <HashRouter>
-                {httpClient.idp.idpType === IdpDetails.none ? (
-                  <App />
-                ) : (
-                  <SecureApp genericConfig={genericConfig} />
-                )}
-              </HashRouter>
+              <HashRouter>{httpClient.idp.idpType === IdpDetails.none ? <App /> : <SecureApp genericConfig={genericConfig} />}</HashRouter>
             </Provider>
           </ErrorBoundary>
         )}
