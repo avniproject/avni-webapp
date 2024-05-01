@@ -46,7 +46,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
     mapOfFormElementStatuses = applicableFormElements
       .map(formElement => {
         if (formElement.groupUuid) {
-          return getTheChildFormElementStatues(formElement, entity, entityName, mapOfBundleFormElementStatuses);
+          return getTheChildFormElementStatuses(formElement, entity, entityName, mapOfBundleFormElementStatuses);
         }
         return runFormElementStatusRule(formElement, entity, entityName, null, mapOfBundleFormElementStatuses);
       })
@@ -57,7 +57,7 @@ export const getFormElementsStatuses = (entity, formElementGroup) => {
   return [...mapOfFormElementStatuses.values()];
 };
 
-const getTheChildFormElementStatues = (childFormElement, entity, entityName, mapOfBundleFormElementStatuses) => {
+const getTheChildFormElementStatuses = (childFormElement, entity, entityName, mapOfBundleFormElementStatuses) => {
   const size = getRepeatableObservationSize(childFormElement, entity);
   return _.range(size)
     .map(questionGroupIndex => {
