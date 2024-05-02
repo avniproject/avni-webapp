@@ -11,6 +11,7 @@ import { OrgSettings } from "./components/OrgSettings";
 import OrganisationCategory from "./domain/OrganisationCategory";
 import OrganisationService from "../common/service/OrganisationService";
 import _ from "lodash";
+import CurrentUserService from "../common/service/CurrentUserService";
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {
@@ -37,7 +38,7 @@ export const OrganisationDetail = ({ organisation: { name, id }, hasEditPrivileg
   }
 
   useEffect(() => {
-    OrganisationService.getOrganisation(id).then(x => setOrganisation(x));
+    OrganisationService.getApplicableOrganisation(id).then(x => setOrganisation(x));
   }, []);
 
   return (
@@ -51,7 +52,7 @@ export const OrganisationDetail = ({ organisation: { name, id }, hasEditPrivileg
                 Organisation Name : {name}
               </Typography>
             </Grid>
-            {hasEditPrivilege && !_.isNil(organisation) && (
+            {!CurrentUserService.isOrganisationImpersonated() && hasEditPrivilege && !_.isNil(organisation) && (
               <Grid item>
                 <Button className={classes.deleteButton} variant="contained" color="secondary" onClick={() => onDeleteClick()}>
                   Delete all data
