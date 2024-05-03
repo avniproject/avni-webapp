@@ -52,6 +52,7 @@ export const OrganisationList = ({ history, ...props }) => {
     <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<OrganisationFilter />}>
       <Datagrid>
         <TextField source="name" label="Name" />
+        <TextField source="category" label="Category" />
         <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
