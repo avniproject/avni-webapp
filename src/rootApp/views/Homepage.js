@@ -20,17 +20,14 @@ import {
   Help
 } from "@material-ui/icons";
 
-const Homepage = ({ userInfo }) => {
+const Homepage = ({ userInfo, organisation }) => {
   httpClient.saveAuthTokenForAnalyticsApp();
 
   const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
-  const showDataEntryApp = UserInfo.hasPrivilege(
-    userInfo,
-    Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp
-  );
+  const showDataEntryApp = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp);
 
   return (
-    <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
+    <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategory}`}>
       <Grid container justifyContent="center">
         <HomePageCard
           href={"/#/admin/user"}
@@ -62,11 +59,7 @@ const Homepage = ({ userInfo }) => {
           name={"Translations"}
           customIconComponent={<Translate color="primary" style={{ fontSize: 100 }} />}
         />
-        <HomePageCard
-          href={"/#/export"}
-          name={"Reports"}
-          customIconComponent={<Assessment color="primary" style={{ fontSize: 100 }} />}
-        />
+        <HomePageCard href={"/#/export"} name={"Reports"} customIconComponent={<Assessment color="primary" style={{ fontSize: 100 }} />} />
         {showDataEntryApp && (
           <HomePageCard
             href={"/#/app"}
@@ -76,11 +69,7 @@ const Homepage = ({ userInfo }) => {
         )}
         {showAnalytics && (
           <HomePageCard
-            href={
-              ApplicationContext.isDevEnv()
-                ? `http://localhost:3000/avni-media?authToken=${httpClient.getAuthToken()}`
-                : "/avni-media"
-            }
+            href={ApplicationContext.isDevEnv() ? `http://localhost:3000/avni-media?authToken=${httpClient.getAuthToken()}` : "/avni-media"}
             name={"Media Viewer "}
             customIconComponent={<Collections color="primary" style={{ fontSize: 100 }} />}
           />
@@ -96,6 +85,7 @@ const Homepage = ({ userInfo }) => {
 };
 
 const mapStateToProps = state => ({
-  userInfo: state.app.userInfo
+  userInfo: state.app.userInfo,
+  organisation: state.app.organisation
 });
 export default connect(mapStateToProps)(Homepage);
