@@ -60,8 +60,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 class MediaData {
-  static MissingSignedMediaMessage =
-    "Please check the url for this observation as it could not be signed.";
+  static MissingSignedMediaMessage = "Unable to fetch media. Value: ";
 
   constructor(url, type, altTag, unsignedUrl) {
     this.url = url;
@@ -71,14 +70,7 @@ class MediaData {
   }
 }
 
-function includeAdditionalRows(
-  additionalRows,
-  fegIndex,
-  t,
-  renderText,
-  renderFEGView,
-  StyledTableRow
-) {
+function includeAdditionalRows(additionalRows, fegIndex, t, renderText, renderFEGView, StyledTableRow) {
   const additionalObsRows = [];
   additionalRows &&
     additionalRows.forEach((row, index) => {
@@ -98,15 +90,7 @@ function includeAdditionalRows(
   return renderFEGView("Miscellaneous Information", "feg-" + fegIndex, additionalObsRows);
 }
 
-function renderSingleQuestionGroup(
-  valueWrapper,
-  index,
-  customKey,
-  t,
-  observation,
-  StyledTableRow,
-  renderValue
-) {
+function renderSingleQuestionGroup(valueWrapper, index, customKey, t, observation, StyledTableRow, renderValue) {
   const groupObservations = valueWrapper ? valueWrapper.getValue() : [];
   return (
     <div style={{ borderStyle: "inset", borderWidth: "2px" }}>
@@ -127,20 +111,13 @@ function renderSingleQuestionGroup(
 
 function initMediaObservations(observations) {
   const mediaObservations = [
-    ...observations.filter(obs =>
-      includes(
-        [Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File],
-        obs.concept.datatype
-      )
-    )
+    ...observations.filter(obs => includes([Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File], obs.concept.datatype))
   ];
   //TODO handle Repeatable Question Group media observations
   observations
     .filter(obs => obs.concept.isQuestionGroup())
     .map(
-      qgObservation =>
-        qgObservation.valueJSON.groupObservations &&
-        mediaObservations.push(...qgObservation.valueJSON.groupObservations)
+      qgObservation => qgObservation.valueJSON.groupObservations && mediaObservations.push(...qgObservation.valueJSON.groupObservations)
     );
   return mediaObservations;
 }
@@ -205,25 +182,23 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   const renderSubject = (subject, addLineBreak) => {
     return (
       <div>
-        <Link to={`/app/subject?uuid=${subject.entityObject.uuid}`}>
-          {Individual.getFullName(subject.entityObject)}
-        </Link>
+        <Link to={`/app/subject?uuid=${subject.entityObject.uuid}`}>{Individual.getFullName(subject.entityObject)}</Link>
         {addLineBreak && <br />}
       </div>
     );
   };
 
-  const mediaPreviewMap = unsignedMediaUrl => ({
+  const mediaPreviewMap = (signedMediaUrl, unsignedMediaUrl) => ({
     [Concept.dataType.Image]: (
       <img
-        src={unsignedMediaUrl}
-        alt={""}
+        src={signedMediaUrl}
+        alt={MediaData.MissingSignedMediaMessage + unsignedMediaUrl}
         align={"center"}
         width={200}
         height={200}
         onClick={event => {
           event.preventDefault();
-          showMediaOverlay(unsignedMediaUrl);
+          showMediaOverlay(signedMediaUrl);
         }}
       />
     ),
@@ -279,30 +254,18 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           </Box>
         </Grid>
         <Collapse in={open[observationValue]} timeout="auto" unmountOnExit>
-          <Grid
-            container
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            onClick={() => updateOpen(observationValue)}
-          >
+          <Grid container direction="row" alignItems="center" spacing={1} onClick={() => updateOpen(observationValue)}>
             {mediaUrls.map((unsignedMediaUrl, index) => {
               const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
-              const couldntSignMessage =
-                MediaData.MissingSignedMediaMessage + ". Value: " + unsignedMediaUrl;
+              const couldntSignMessage = MediaData.MissingSignedMediaMessage + unsignedMediaUrl;
               const signedMediaUrl = _.get(mediaData, "url");
               return (
                 <Grid item key={index}>
                   {_.isNil(signedMediaUrl) ? (
                     couldntSignMessage
                   ) : (
-                    <Box
-                      display={"flex"}
-                      flexDirection={"row"}
-                      alignItems={"flex-start"}
-                      className={classes.boxStyle}
-                    >
-                      {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
+                    <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
+                      {mediaPreviewMap(signedMediaUrl, unsignedMediaUrl)[concept.datatype]}
                     </Box>
                   )}
                 </Grid>
@@ -362,14 +325,8 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           const mediaUrls = isMultiSelect ? observationValue : [observationValue];
           return mediaUrls.map(async unsignedMediaUrl => {
             const signedUrl = await getSignedUrl(unsignedMediaUrl);
-            const type =
-              obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype);
-            return new MediaData(
-              _.get(signedUrl, "data"),
-              type,
-              obs.concept.name,
-              unsignedMediaUrl
-            );
+            const type = obs.concept.datatype === "Image" ? "photo" : lowerCase(obs.concept.datatype);
+            return new MediaData(_.get(signedUrl, "data"), type, obs.concept.name, unsignedMediaUrl);
           });
         })
       );
@@ -392,9 +349,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   }));
 
   const isNotAssociatedWithForm = isNil(form);
-  const orderedObs = isNotAssociatedWithForm
-    ? observations
-    : form.orderObservationsPerFEG(observations);
+  const orderedObs = isNotAssociatedWithForm ? observations : form.orderObservationsPerFEG(observations);
   const mediaObservations = initMediaObservations(observations);
 
   React.useEffect(() => {
@@ -414,29 +369,19 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     let questionGroupRows = null;
 
     if ("repeatableObservations" in valueWrapper) {
-      questionGroupRows = _.map(
-        valueWrapper.repeatableObservations,
-        (questionGroupValueWrapper, rqgIndex) =>
-          renderSingleQuestionGroup(
-            questionGroupValueWrapper,
-            index + "rqg" + rqgIndex,
-            customKey,
-            t,
-            observation,
-            StyledTableRow,
-            renderValue
-          )
+      questionGroupRows = _.map(valueWrapper.repeatableObservations, (questionGroupValueWrapper, rqgIndex) =>
+        renderSingleQuestionGroup(
+          questionGroupValueWrapper,
+          index + "rqg" + rqgIndex,
+          customKey,
+          t,
+          observation,
+          StyledTableRow,
+          renderValue
+        )
       );
     } else {
-      questionGroupRows = renderSingleQuestionGroup(
-        valueWrapper,
-        index + "qg-0",
-        customKey,
-        t,
-        observation,
-        StyledTableRow,
-        renderValue
-      );
+      questionGroupRows = renderSingleQuestionGroup(valueWrapper, index + "qg-0", customKey, t, observation, StyledTableRow, renderValue);
     }
 
     return (
@@ -444,13 +389,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
         <TableRow key={`${index}-${customKey}`}>
           <TableCell style={{ padding: 0, background: "rgb(232 232 232)" }} colSpan={6}>
             <Box sx={{ margin: 2 }}>
-              <Typography
-                style={{ marginLeft: "10px" }}
-                color="textSecondary"
-                variant="body1"
-                gutterBottom
-                component="div"
-              >
+              <Typography style={{ marginLeft: "10px" }} color="textSecondary" variant="body1" gutterBottom component="div">
                 {t(observation.concept["name"])}
               </Typography>
               <Table size="small" aria-label="questionGroupRows">
@@ -496,9 +435,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const renderObservationValue = (observation, index, isNotAssociatedWithForm) => {
     if (isNotAssociatedWithForm) {
-      return observation.concept.isQuestionGroup()
-        ? renderGroupQuestionView(observation, index)
-        : renderNormalView(observation, index);
+      return observation.concept.isQuestionGroup() ? renderGroupQuestionView(observation, index) : renderNormalView(observation, index);
     } else {
       const fegRows = _.map(observation.sortedObservationsArray, (obs, feIndex) =>
         renderObservationValue(obs, "feg-" + index + "fe-" + feIndex, true)
@@ -507,33 +444,19 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     }
   };
 
-  const rows = _.filter(
-    orderedObs,
-    obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray)
-  ).map((obs, fegIndex) => renderObservationValue(obs, fegIndex, isNotAssociatedWithForm));
+  const rows = _.filter(orderedObs, obs => isNotAssociatedWithForm || !_.isEmpty(obs.sortedObservationsArray)).map((obs, fegIndex) =>
+    renderObservationValue(obs, fegIndex, isNotAssociatedWithForm)
+  );
 
   additionalRows &&
     !_.isEmpty(additionalRows) &&
-    rows.push(
-      includeAdditionalRows(
-        additionalRows,
-        rows.length,
-        t,
-        renderText,
-        renderFEGView,
-        StyledTableRow
-      )
-    );
+    rows.push(includeAdditionalRows(additionalRows, rows.length, t, renderText, renderFEGView, StyledTableRow));
 
   return isEmpty(rows) ? (
     <div />
   ) : (
     <div>
-      <Table
-        className={clsx(classes.tableContainer, highlight && classes.highlightBackground)}
-        size="small"
-        aria-label="a dense table"
-      >
+      <Table className={clsx(classes.tableContainer, highlight && classes.highlightBackground)} size="small" aria-label="a dense table">
         <TableBody>{rows}</TableBody>
       </Table>
       {showMedia && (
