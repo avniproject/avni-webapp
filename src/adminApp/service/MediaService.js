@@ -5,7 +5,7 @@ class MediaService {
     try {
       return await http.get(http.withParams(`/media/signedUrl`, { url: url })).then(res => res.data);
     } catch (exception) {
-      return "Unable to fetch media. Value: " + url;
+      return "Unable to fetch media";
     }
   }
 }
