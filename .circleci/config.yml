@@ -209,6 +209,12 @@ jobs:
       - image: cimg/deploy:2023.09-node
     working_directory: ~/
     steps:
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::118388513628:role/avni_circleci_instance_connect"
+          region: "ap-south-1"
+      - setup_server_access:
+          instance-id: "i-0879e9c88952968ea"
+          availability-zone: "ap-south-1a"
       - deploy_ansible:
           env: "staging"
 
@@ -217,6 +223,12 @@ jobs:
       - image: cimg/deploy:2023.09-node
     working_directory: ~/
     steps:
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::118388513628:role/avni_circleci_instance_connect"
+          region: "ap-south-1"
+      - setup_server_access:
+          instance-id: "i-0cdce9ae698eb3462"
+          availability-zone: "ap-south-1b"
       - deploy_ansible:
           env: "prerelease"
 
@@ -225,6 +237,12 @@ jobs:
       - image: cimg/node:20.2.0
     working_directory: ~/
     steps:
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::118388513628:role/avni_circleci_instance_connect"
+          region: "ap-south-1"
+      - setup_server_access:
+          instance-id: "i-0f30399b30e24a49b"
+          availability-zone: "ap-south-1a"
       - deploy:
           hostname: "ssh.perf.avniproject.org"
 
@@ -233,6 +251,12 @@ jobs:
       - image: cimg/deploy:2023.09-node
     working_directory: ~/
     steps:
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::118388513628:role/avni_circleci_instance_connect"
+          region: "ap-south-1"
+      - setup_server_access:
+          instance-id: "i-07df2679f68762a68"
+          availability-zone: "ap-south-1a"
       - deploy_ansible:
           env: "prod"
 
@@ -293,7 +317,9 @@ workflows:
           requires:
             - app_build
       - STAGING_deploy:
-          context: non-prod-deploy
+          context:            
+            - AWS_OIDC
+            - non-prod-deploy
           requires:
             - STAGING_approve
       - cypress/run:
@@ -310,7 +336,9 @@ workflows:
           requires:
             - app_build
       - PERF_deploy:
-          context: non-prod-deploy
+          context: 
+            - AWS_OIDC
+            - non-prod-deploy
           requires:
             - PERF_approve
       - PRERELEASE_approve:
@@ -318,7 +346,9 @@ workflows:
           requires:
             - app_build
       - PRERELEASE_deploy:
-          context: non-prod-deploy
+          context: 
+            - AWS_OIDC
+            - non-prod-deploy
           requires:
             - PRERELEASE_approve
       - PRODUCTION_approve:
@@ -326,7 +356,9 @@ workflows:
           requires:
             - app_build
       - PRODUCTION_deploy:
-          context: prod-deploy
+          context: 
+            - AWS_OIDC
+            - prod-deploy
           requires:
             - PRODUCTION_approve
       - RWB_STAGING_approve:
