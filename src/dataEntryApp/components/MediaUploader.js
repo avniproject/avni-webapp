@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { get, isEmpty, includes, lowerCase, isArrayLikeObject, omit } from "lodash";
+import { get, isEmpty, includes, lowerCase, isArrayLikeObject, omit, startsWith } from "lodash";
 import { Box, Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../../common/utils/httpClient";
@@ -51,9 +51,7 @@ const isValidFile = (allowedTypes, type) => {
 };
 
 const isValidType = (formElement, type, isFile) => {
-  return isFile
-    ? isValidFile(formElement.allowedTypes, type)
-    : includes(type, lowerCase(formElement.getType()));
+  return isFile ? isValidFile(formElement.allowedTypes, type) : includes(type, lowerCase(formElement.getType()));
 };
 
 function addObsResultsToPreview(observationValue, setPreview) {
@@ -91,13 +89,7 @@ function invokeUpdate(update, mediaUrl) {
   update(mediaUrl);
 }
 
-function addMediaUrlToLocalObsValue(
-  update,
-  fileName,
-  isMultiSelect,
-  localObsValue,
-  setLocalObsValue
-) {
+function addMediaUrlToLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue) {
   invokeUpdate(update, fileName);
   if (isMultiSelect) {
     setLocalObsValue(locObsValue =>
@@ -110,13 +102,7 @@ function addMediaUrlToLocalObsValue(
   }
 }
 
-function removeMediaUrlFromLocalObsValue(
-  update,
-  fileName,
-  isMultiSelect,
-  localObsValue,
-  setLocalObsValue
-) {
+function removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue) {
   invokeUpdate(update, fileName);
   if (isMultiSelect && isArrayLikeObject(localObsValue)) {
     setLocalObsValue(locObsValue => locObsValue.filter(item => item !== fileName));
@@ -128,15 +114,12 @@ function removeMediaUrlFromLocalObsValue(
 function consolidateAlerts(etFiles, formElement, isFileDataType, alerts) {
   etFiles.forEach(file => {
     if (!isValidType(formElement, file.type, isFileDataType)) {
-      alerts.push(
-        `Selected files type not supported for file ${file.name}. Please choose proper files.\n`
-      );
+      alerts.push(`Selected files type not supported for file ${file.name}. Please choose proper files.\n`);
     }
     if (isFileDataType && isBiggerFile(formElement, file.size)) {
       const oneMBInBytes = 1000000;
       alerts.push(
-        `Selected file size ${file.size /
-          oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
+        `Selected file size ${file.size / oneMBInBytes} MB is more than the set max file size ${formElement.allowedMaxSize /
           oneMBInBytes} MB for file ${file.name}.\n`
       );
     }
@@ -161,18 +144,10 @@ function uploadMediaAndUpdateObservationValue(
         .uploadFile("/web/uploadMedia", file)
         .then(r => {
           setUploadButtonClicked(oldValue => oldValue - 1);
-          addMediaUrlToLocalObsValue(
-            update,
-            r.data,
-            isMultiSelect,
-            localObsValue,
-            setLocalObsValue
-          );
+          addMediaUrlToLocalObsValue(update, r.data, isMultiSelect, localObsValue, setLocalObsValue);
         })
         .catch(r => {
-          const error = `${get(r, "response.data") ||
-            get(r, "message") ||
-            "Unknown error occurred while uploadButtonClicked media"}`;
+          const error = `${get(r, "response.data") || get(r, "message") || "Unknown error occurred while uploadButtonClicked media"}`;
           setUploadButtonClicked(oldValue => oldValue - 1);
           onDelete(file.name);
           alert(error);
@@ -181,6 +156,7 @@ function uploadMediaAndUpdateObservationValue(
   });
 }
 
+const MissingSignedMediaMessage = "Unable to fetch media. Value: ";
 export const MediaUploader = ({ label, obsValue, mediaType, update, formElement }) => {
   const classes = useStyles();
   const Icon = iconMap[mediaType];
@@ -216,38 +192,16 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
       alert(alerts);
       return;
     }
-    uploadMediaAndUpdateObservationValue(
-      etFiles,
-      setUploadButtonClicked,
-      setLocalObsValue,
-      isMultiSelect,
-      localObsValue,
-      update,
-      onDelete
-    );
+    uploadMediaAndUpdateObservationValue(etFiles, setUploadButtonClicked, setLocalObsValue, isMultiSelect, localObsValue, update, onDelete);
   };
 
   const onDelete = fileName => {
-    removeMediaUrlFromLocalObsValue(
-      update,
-      fileName,
-      isMultiSelect,
-      localObsValue,
-      setLocalObsValue
-    );
+    removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue);
     removeFileFromPreview(fileName, preview, setPreview);
   };
 
-  const mediaPreviewMap = fileToPreview => ({
-    image: (
-      <img
-        src={fileToPreview}
-        alt={label}
-        width={200}
-        height={200}
-        onClick={() => setOpenImage(fileToPreview)}
-      />
-    ),
+  const mediaPreviewMap = (fileToPreview, label) => ({
+    image: <img src={fileToPreview} alt={label} width={200} height={200} onClick={() => setOpenImage(fileToPreview)} />,
     video: (
       <video preload="auto" controls width={200} height={200} controlsList="nodownload">
         <source src={fileToPreview} type="video/mp4" />
@@ -260,13 +214,25 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
 
   const renderMedia = fileName => {
     return (
-      <Box
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems={"flex-start"}
-        className={classes.boxStyle}
-      >
-        {mediaPreviewMap(preview[fileName])[mediaType]}
+      <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
+        {startsWith(preview[fileName], MissingSignedMediaMessage) ? (
+          <p
+            style={{
+              color: "orangered",
+              margin: "5px",
+              padding: "5px",
+              border: "1px solid #999",
+              width: "200px",
+              height: "200px",
+              textAlign: "center",
+              overflow: "scroll"
+            }}
+          >
+            {preview[fileName]}
+          </p>
+        ) : (
+          mediaPreviewMap(preview[fileName], MissingSignedMediaMessage + fileName)[mediaType]
+        )}
         <Button style={{ float: "left", color: "red" }} onClick={() => onDelete(fileName)}>
           <CloseIcon />
         </Button>
@@ -288,12 +254,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
     });
     return (
       <div className="imagePreviewContainer">
-        <ReactImageVideoLightbox
-          data={data}
-          startIndex={startIndex}
-          showResourceCount={true}
-          onCloseCallback={() => setOpenImage()}
-        />
+        <ReactImageVideoLightbox data={data} startIndex={startIndex} showResourceCount={true} onCloseCallback={() => setOpenImage()} />
       </div>
     );
   };
