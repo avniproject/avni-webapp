@@ -156,7 +156,7 @@ function uploadMediaAndUpdateObservationValue(
   });
 }
 
-const MissingSignedMediaMessage = "Unable to fetch media. Value: ";
+const MissingSignedMediaMessage = "Unable to fetch media";
 export const MediaUploader = ({ label, obsValue, mediaType, update, formElement }) => {
   const classes = useStyles();
   const Icon = iconMap[mediaType];
@@ -231,7 +231,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
             {preview[fileName]}
           </p>
         ) : (
-          mediaPreviewMap(preview[fileName], MissingSignedMediaMessage + fileName)[mediaType]
+          mediaPreviewMap(preview[fileName], MissingSignedMediaMessage)[mediaType]
         )}
         <Button style={{ float: "left", color: "red" }} onClick={() => onDelete(fileName)}>
           <CloseIcon />

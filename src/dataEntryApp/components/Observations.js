@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 class MediaData {
-  static MissingSignedMediaMessage = "Unable to fetch media. Value: ";
+  static MissingSignedMediaMessage = "Unable to fetch media.";
 
   constructor(url, type, altTag, unsignedUrl) {
     this.url = url;
@@ -188,11 +188,11 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
     );
   };
 
-  const mediaPreviewMap = (signedMediaUrl, unsignedMediaUrl) => ({
+  const mediaPreviewMap = signedMediaUrl => ({
     [Concept.dataType.Image]: (
       <img
         src={signedMediaUrl}
-        alt={MediaData.MissingSignedMediaMessage + unsignedMediaUrl}
+        alt={MediaData.MissingSignedMediaMessage}
         align={"center"}
         width={200}
         height={200}
@@ -212,7 +212,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           event.stopPropagation();
         }}
       >
-        <source src={unsignedMediaUrl} type="video/mp4" />
+        <source src={signedMediaUrl} type="video/mp4" />
         Sorry, your browser doesn't support embedded videos.
       </video>
     )
@@ -257,15 +257,30 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
           <Grid container direction="row" alignItems="center" spacing={1} onClick={() => updateOpen(observationValue)}>
             {mediaUrls.map((unsignedMediaUrl, index) => {
               const mediaData = _.find(mediaDataList, x => x.unsignedUrl === unsignedMediaUrl);
-              const couldntSignMessage = MediaData.MissingSignedMediaMessage + unsignedMediaUrl;
+              const couldntSignMessage = MediaData.MissingSignedMediaMessage;
               const signedMediaUrl = _.get(mediaData, "url");
               return (
                 <Grid item key={index}>
                   {_.isNil(signedMediaUrl) ? (
-                    couldntSignMessage
+                    <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
+                      <p
+                        style={{
+                          color: "orangered",
+                          margin: "5px",
+                          padding: "5px",
+                          border: "1px solid #999",
+                          width: "200px",
+                          height: "200px",
+                          textAlign: "center",
+                          overflow: "scroll"
+                        }}
+                      >
+                        {couldntSignMessage}
+                      </p>
+                    </Box>
                   ) : (
                     <Box display={"flex"} flexDirection={"row"} alignItems={"flex-start"} className={classes.boxStyle}>
-                      {mediaPreviewMap(signedMediaUrl, unsignedMediaUrl)[concept.datatype]}
+                      {mediaPreviewMap(signedMediaUrl)[concept.datatype]}
                     </Box>
                   )}
                 </Grid>
