@@ -67,7 +67,7 @@ commands:
       - run: |
           pwd
           cd ~/avni-infra/configure
-          VAULT_PASSWORD_FILE=~/.vault-pass.txt web_zip_path=~/artifacts make deploy-avni-webapp-<< parameters.env >>
+          VAULT_PASSWORD_FILE=~/.vault-pass.txt web_zip_path=~/artifacts/ make deploy-avni-webapp-<< parameters.env >>
 
       - run: rm ~/.vault-pass.txt
 
@@ -114,7 +114,7 @@ jobs:
   app_build:
     docker:
       - image: cimg/node:20.2.0
-    resource_class: large
+    resource_class: medium+
 
     working_directory: ~/openchs-webapp
 
