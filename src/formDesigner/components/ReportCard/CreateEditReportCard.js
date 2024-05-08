@@ -1,7 +1,7 @@
 import React from "react";
 import { ReportCardReducer } from "./ReportCardReducer";
 import http from "../../../common/utils/httpClient";
-import _, { get, isEmpty, isNil } from "lodash";
+import { get, isNil } from "lodash";
 import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
@@ -22,21 +22,13 @@ import { bucketName, uploadImage } from "../../../common/utils/S3Client";
 import { getErrorByKey } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
+import { SubjectTypeSelect } from "../../../common/components/SubjectTypeSelect";
+import { StandardReportCardType } from "openchs-models";
+import WebReportCard from "../../../common/model/WebReportCard";
+import DashboardService from "../../../common/service/DashboardService";
 
-const MinimumNumberOfNestedCards = 1;
-const MaximumNumberOfNestedCards = 9;
-const initialState = {
-  name: "",
-  description: "",
-  color: "#ff0000",
-  query: "",
-  nested: false,
-  count: MinimumNumberOfNestedCards,
-  iconFileS3Key: "",
-  standardReportCardType: {}
-};
 export const CreateEditReportCard = ({ edit, ...props }) => {
-  const [card, dispatch] = React.useReducer(ReportCardReducer, initialState);
+  const [card, dispatch] = React.useReducer(ReportCardReducer, WebReportCard.createNewReportCard());
   const [error, setError] = React.useState([]);
   const [id, setId] = React.useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
@@ -46,107 +38,36 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   React.useEffect(() => {
     if (edit) {
-      http
-        .get(`/web/card/${props.match.params.id}`)
-        .then(res => res.data)
-        .then(res => {
-          dispatch({ type: "setData", payload: res });
-        });
+      DashboardService.getReportCard(props.match.params.id).then(res => {
+        dispatch({ type: "setData", payload: res });
+      });
     }
   }, []);
 
   React.useEffect(() => {
-    if (card.standardReportCardTypeId != null) {
-      http
-        .get(`/web/standardReportCardType/${card.standardReportCardTypeId}`)
-        .then(res => res.data)
-        .then(res => {
-          dispatch({ type: "setData", payload: { ...card } });
-          setIsStandardReportCard(true);
-        });
+    if (edit) {
+      setIsStandardReportCard(!isNil(card.standardReportCardType));
     }
-  }, [card.standardReportCardTypeId]);
+  }, [isNil(card.standardReportCardType)]);
 
   React.useEffect(() => {
-    http
-      .get("/web/standardReportCardType")
-      .then(res => res.data)
-      .then(res => {
-        setStandardReportCardTypes(res.map(({ name, id }) => ({ name, id })));
-      });
+    DashboardService.getStandardReportCardTypes().then(setStandardReportCardTypes);
   }, []);
-
-  React.useEffect(() => {
-    if (!_.isEmpty(standardReportCardTypes) && card.standardReportCardTypeId != null) {
-      dispatch({
-        type: "standardReportCardType",
-        payload: standardReportCardTypes.find(x => x.id === card.standardReportCardTypeId)
-      });
-    }
-  }, [standardReportCardTypes, card.standardReportCardTypeId]);
 
   React.useEffect(() => {
     if (isStandardReportCard) {
       dispatch({ type: "query", payload: null });
-      dispatch({ type: "nested", payload: { nested: false, count: MinimumNumberOfNestedCards } });
+      dispatch({ type: "nested", payload: { nested: false, count: WebReportCard.MinimumNumberOfNestedCards } });
     } else {
       dispatch({ type: "standardReportCardType", payload: null });
     }
   }, [isStandardReportCard]);
 
   const validateRequest = () => {
-    const { name, color, query, nested, count, standardReportCardType } = card;
-    let isValid = true;
-    setError([]);
-    if (isEmpty(name)) {
-      setError([...error, { key: "EMPTY_NAME", message: "Name cannot be empty" }]);
-      isValid = false;
-    }
-    if (isEmpty(color)) {
-      setError([...error, { key: "EMPTY_COLOR", message: "Colour cannot be empty" }]);
-      isValid = false;
-    }
-    if (isStandardReportCard && isEmpty(standardReportCardType)) {
-      setError([...error, { key: "EMPTY_TYPE", message: "Standard Report Type cannot be empty" }]);
-      isValid = false;
-    }
-    if (!isStandardReportCard && isEmpty(query)) {
-      setError([...error, { key: "EMPTY_QUERY", message: "Query cannot be empty" }]);
-      isValid = false;
-    }
-    if (isStandardReportCard && nested) {
-      setError([
-        ...error,
-        {
-          key: "DISALLOWED_NESTED",
-          message: "Standard Report Type Card cannot be marked as Nested"
-        }
-      ]);
-      isValid = false;
-    }
-    if (isStandardReportCard && count !== 1) {
-      setError([
-        ...error,
-        {
-          key: "INVALID_NESTED_CARD_COUNT",
-          message: "Standard Report Type Card count should always be 1"
-        }
-      ]);
-      isValid = false;
-    }
-    if (!isStandardReportCard && nested && (count < MinimumNumberOfNestedCards || count > MaximumNumberOfNestedCards)) {
-      setError([
-        ...error,
-        {
-          key: "INVALID_NESTED_CARD_COUNT",
-          message: "Nested Card count cannot be less than 1 or greater than 9"
-        }
-      ]);
-      isValid = false;
-    }
-
-    //TODO Check if validation of response entity format is doable on query
-    return isValid;
+    const errors = card.validate(isStandardReportCard);
+    console.log(errors);
+    setError(errors);
+    return errors.length === 0;
   };
 
   const onSave = async () => {
@@ -156,18 +77,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         alert(error);
         return;
       }
-      const url = edit ? `/web/card/${props.match.params.id}` : "/web/card";
-      const methodName = edit ? "put" : "post";
-      return http[methodName](url, {
-        name: card.name,
-        description: card.description,
-        color: card.color,
-        query: card.query,
-        nested: card.nested,
-        count: card.count,
-        standardReportCardTypeId: card.standardReportCardType && card.standardReportCardType.id,
-        iconFileS3Key: s3FileKey
-      })
+      card.iconFileS3Key = s3FileKey;
+
+      DashboardService.saveReportCard(card)
         .then(res => {
           if (res.status === 200) {
             setId(res.data.id);
@@ -186,7 +98,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   const onDelete = () => {
     if (window.confirm("Do you really want to delete card record?")) {
-      http.delete(`/web/card/${props.match.params.id}`).then(response => {
+      http.delete(`/web/reportCard/${props.match.params.id}`).then(response => {
         if (response.status === 200) {
           setRedirectAfterDelete(true);
         }
@@ -268,7 +180,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             onChange={event =>
               dispatch({
                 type: "nested",
-                payload: { nested: !card.nested, count: MinimumNumberOfNestedCards }
+                payload: { nested: !card.nested, count: WebReportCard.MinimumNumberOfNestedCards }
               })
             }
             name="Is Nested Report Card?"
@@ -288,7 +200,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
                 payload: { nested: card.nested, count: event.target.value }
               })
             }
-            options={Array.from({ length: MaximumNumberOfNestedCards }, (_, i) => i + 1).map((num, index) => (
+            options={Array.from({ length: WebReportCard.MaximumNumberOfNestedCards }, (_, i) => i + 1).map((num, index) => (
               <MenuItem value={num} key={index}>
                 {num}
               </MenuItem>
@@ -300,19 +212,22 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {isStandardReportCard && (
           <AvniSelect
             label={`Select standard card type ${isStandardReportCard ? "*" : ""}`}
-            value={_.isEmpty(card.standardReportCardType) ? "" : card.standardReportCardType}
+            value={get(card, "standardReportCardType.name")}
             onChange={event => {
-              dispatch({ type: "standardReportCardType", payload: event.target.value });
+              dispatch({ type: "standardReportCardType", payload: standardReportCardTypes.find(x => event.target.value === x.name) });
             }}
             style={{ width: "200px" }}
             required
             options={standardReportCardTypes.map((type, index) => (
-              <MenuItem value={type} key={index}>
+              <MenuItem value={type.name} key={index}>
                 {type.name}
               </MenuItem>
             ))}
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
+        )}
+        {isStandardReportCard && StandardReportCardType.subjectTypeFilterSupported[card.standardReportCardType] && (
+          <SubjectTypeSelect isMulti={false} />
         )}
         {!isStandardReportCard && (
           <React.Fragment>

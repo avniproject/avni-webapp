@@ -10,15 +10,7 @@ import UserInfo from "../../common/model/UserInfo";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/DeleteOutline";
 
-const ResourceListView = ({
-  history,
-  title,
-  resourceName,
-  resourceURLName,
-  columns,
-  userInfo,
-  editPrivilegeType
-}) => {
+const ResourceListView = ({ history, title, resourceName, resourceURLName, columns, userInfo, editPrivilegeType }) => {
   const [redirect, setRedirect] = useState(false);
   const [result, setResult] = useState([]);
   const tableRef = React.createRef();
@@ -76,11 +68,10 @@ const ResourceListView = ({
               search: false,
               rowStyle: rowData => ({
                 backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
-              })
+              }),
+              pageSize: 10
             }}
-            actions={
-              UserInfo.hasPrivilege(userInfo, editPrivilegeType) && [editResource, voidResource]
-            }
+            actions={UserInfo.hasPrivilege(userInfo, editPrivilegeType) && [editResource, voidResource]}
             route={`/appdesigner/${resourceURLName}`}
           />
         </div>

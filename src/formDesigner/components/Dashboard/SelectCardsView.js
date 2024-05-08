@@ -13,7 +13,7 @@ export const SelectCardsView = ({ dashboardCards, addCards }) => {
 
   React.useEffect(() => {
     http
-      .get(`/web/card`)
+      .get(`/web/reportCard`)
       .then(res => res.data)
       .then(res => setCards(res));
   }, []);
@@ -46,13 +46,7 @@ export const SelectCardsView = ({ dashboardCards, addCards }) => {
           />
         </Grid>
         <Grid item xs={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={addCardsToDashboard}
-            disabled={buttonDisabled}
-            fullWidth={true}
-          >
+          <Button variant="contained" color="primary" onClick={addCardsToDashboard} disabled={buttonDisabled} fullWidth={true}>
             Add
           </Button>
         </Grid>

@@ -1,13 +1,10 @@
 import { find, isEmpty, sortBy } from "lodash";
 import http from "../utils/httpClient";
-import {
-  DashboardFilterConfig,
-  GroupSubjectTypeFilter,
-  ObservationBasedFilter,
-  CustomFilter
-} from "openchs-models";
+import { DashboardFilterConfig, GroupSubjectTypeFilter, ObservationBasedFilter, CustomFilter } from "openchs-models";
 import EntityService from "./EntityService";
 import _ from "lodash";
+import WebReportCard from "../model/WebReportCard";
+import WebStandardReportCardType from "../model/WebStandardReportCardType";
 
 const dashboardEndpoint = "/web/dashboard";
 
@@ -70,10 +67,7 @@ class DashboardService {
 
       const { subjectTypes, programs, encounterTypes } = operationalModules;
       const filterConfigInResponse = x.filterConfig;
-      filterConfig.subjectType = EntityService.findByUuid(
-        subjectTypes,
-        filterConfigInResponse.subjectTypeUUID
-      );
+      filterConfig.subjectType = EntityService.findByUuid(subjectTypes, filterConfigInResponse.subjectTypeUUID);
       filterConfig.widget = filterConfigInResponse.widget;
       filterConfig.type = filterConfigInResponse.type;
       if (filterConfigInResponse.type === CustomFilter.type.GroupSubject) {
@@ -87,11 +81,11 @@ class DashboardService {
         const observationBasedFilter = new ObservationBasedFilter();
         observationBasedFilter.scope = filterConfigInResponse.observationBasedFilter.scope;
         observationBasedFilter.concept = filterConfigInResponse.observationBasedFilter.concept;
-        observationBasedFilter.programs = filterConfigInResponse.observationBasedFilter.programUUIDs.map(
-          p => EntityService.findByUuid(programs, p)
+        observationBasedFilter.programs = filterConfigInResponse.observationBasedFilter.programUUIDs.map(p =>
+          EntityService.findByUuid(programs, p)
         );
-        observationBasedFilter.encounterTypes = filterConfigInResponse.observationBasedFilter.encounterTypeUUIDs.map(
-          e => EntityService.findByUuid(encounterTypes, e)
+        observationBasedFilter.encounterTypes = filterConfigInResponse.observationBasedFilter.encounterTypeUUIDs.map(e =>
+          EntityService.findByUuid(encounterTypes, e)
         );
         filterConfig.observationBasedFilter = observationBasedFilter;
       }
@@ -105,9 +99,24 @@ class DashboardService {
     return http
       .get(`${dashboardEndpoint}/${id}`)
       .then(res => res.data)
-      .then(dashboardResponse =>
-        DashboardService.mapDashboardFromResource(dashboardResponse, operationalModules)
-      );
+      .then(dashboardResponse => DashboardService.mapDashboardFromResource(dashboardResponse, operationalModules));
+  }
+
+  static getStandardReportCardTypes() {
+    return http
+      .get("/web/standardReportCardType")
+      .then(res => res.data)
+      .then(standardReportCardTypes => standardReportCardTypes.map(x => WebStandardReportCardType.fromResource(x)));
+  }
+
+  static getReportCard(id) {
+    return http.get(`/web/reportCard/${id}`).then(res => WebReportCard.fromResource(res.data));
+  }
+
+  static saveReportCard(card) {
+    const url = card.isNew() ? "/web/reportCard" : `/web/reportCard/${card.id}`;
+    const methodName = card.isNew() ? "post" : "put";
+    return http[methodName](url, card.toResource());
   }
 }
 

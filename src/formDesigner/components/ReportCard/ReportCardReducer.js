@@ -1,32 +1,30 @@
+import WebReportCard from "../../../common/model/WebReportCard";
+
 export const ReportCardReducer = (reportCard, action) => {
   switch (action.type) {
     case "name":
-      return { ...reportCard, name: action.payload };
+      reportCard.name = action.payload;
+      break;
     case "description":
-      return { ...reportCard, description: action.payload };
+      reportCard.description = action.payload;
+      break;
     case "color":
-      return { ...reportCard, color: action.payload };
+      reportCard.colour = action.payload;
+      break;
     case "query":
-      return { ...reportCard, query: action.payload };
+      reportCard.query = action.payload;
+      break;
     case "nested":
-      return { ...reportCard, nested: action.payload.nested, count: action.payload.count };
+      reportCard.nested = action.payload.nested;
+      reportCard.countOfCards = action.payload.count;
+      break;
     case "standardReportCardType":
-      return { ...reportCard, standardReportCardType: action.payload };
-    case "standardReportCardTypeId":
-      return { ...reportCard, standardReportCardTypeId: action.payload };
+      reportCard.standardReportCardType = action.payload;
+      break;
     case "setData":
-      return {
-        ...reportCard,
-        name: action.payload.name,
-        description: action.payload.description,
-        color: action.payload.color,
-        query: action.payload.query,
-        standardReportCardTypeId: action.payload.standardReportCardTypeId,
-        iconFileS3Key: action.payload.iconFileS3Key,
-        nested: action.payload.nested,
-        count: action.payload.count
-      };
+      return WebReportCard.clone(action.payload);
     default:
-      return reportCard;
+      break;
   }
+  return WebReportCard.clone(reportCard);
 };

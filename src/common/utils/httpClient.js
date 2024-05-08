@@ -73,10 +73,7 @@ class HttpClient {
 
   async setHeaders(options) {
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });
-    if (
-      !options.headers.has("Content-Type") &&
-      !(options.body && options.body instanceof FormData)
-    ) {
+    if (!options.headers.has("Content-Type") && !(options.body && options.body instanceof FormData)) {
       options.headers.set("Content-Type", "application/json");
     }
     if (!isEmpty(this.authSession)) {
@@ -159,12 +156,16 @@ class HttpClient {
   getPageData(embeddedResourceCollectionName, ...args) {
     return this.getData(args).then(responseBodyJson => {
       return {
-        data: responseBodyJson._embedded
-          ? responseBodyJson._embedded[embeddedResourceCollectionName]
-          : [],
+        data: responseBodyJson._embedded ? responseBodyJson._embedded[embeddedResourceCollectionName] : [],
         page: responseBodyJson.page.number,
         totalCount: responseBodyJson.page.totalElements
       };
+    });
+  }
+
+  getAllData(embeddedResourceCollectionName, ...args) {
+    return this.getData(args).then(response => {
+      return response._embedded ? response._embedded[embeddedResourceCollectionName] : [];
     });
   }
 
