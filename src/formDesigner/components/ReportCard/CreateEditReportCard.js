@@ -23,7 +23,6 @@ import { getErrorByKey } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
 import { SubjectTypeSelect } from "../../../common/components/SubjectTypeSelect";
-import { StandardReportCardType } from "openchs-models";
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
 
@@ -226,9 +225,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
         )}
-        {isStandardReportCard && StandardReportCardType.subjectTypeFilterSupported[card.standardReportCardType] && (
-          <SubjectTypeSelect isMulti={false} />
-        )}
+        {isStandardReportCard && card.isSubjectTypeFilterSupported() && <SubjectTypeSelect isMulti={false} />}
         {!isStandardReportCard && (
           <React.Fragment>
             <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />

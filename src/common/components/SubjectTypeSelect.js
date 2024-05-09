@@ -4,14 +4,23 @@ import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import httpClient from "../utils/httpClient";
 
-function getSelectedValues(options, selectedEntities) {
-  return _.intersectionWith(options, selectedEntities, (a, b) => {
+function getSelectedValue(options, selectedEntities, isMulti) {
+  const selected = _.intersectionWith(options, selectedEntities, (a, b) => {
     return a.value.uuid === b.uuid;
   });
+  if (isMulti) {
+    return selected.length === 1 ? selected[0] : null;
+  }
+  return selected;
+}
+
+function getSelected(selectedValue, isMulti) {
+  return isMulti ? selectedValue : selectedValue[0];
 }
 
 export function SubjectTypeSelect({ isMulti }) {
   const [subjectTypes, setSubjectTypes] = useState([]);
+  const [selectedSubjectTypes, setSelectedSubjectTypes] = useState(isMulti ? [] : null);
 
   useEffect(() => {
     httpClient.getAllData("subjectType", "/web/subjectType").then(response => {
@@ -29,9 +38,9 @@ export function SubjectTypeSelect({ isMulti }) {
       <Select
         isMulti={isMulti}
         placeholder={"Select subject type"}
-        value={getSelectedValues()}
+        value={getSelectedValue(subjectTypes, selectedSubjectTypes, isMulti)}
         options={subjectTypes}
-        onChange={() => {}}
+        onChange={e => setSelectedSubjectTypes(getSelected(e.value, isMulti))}
         maxMenuHeight={200}
       />
     </div>
