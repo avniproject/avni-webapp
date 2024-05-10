@@ -113,12 +113,17 @@ function initMediaObservations(observations) {
   const mediaObservations = [
     ...observations.filter(obs => includes([Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File], obs.concept.datatype))
   ];
-  //TODO handle Repeatable Question Group media observations
   observations
     .filter(obs => obs.concept.isQuestionGroup())
-    .map(
-      qgObservation => qgObservation.valueJSON.groupObservations && mediaObservations.push(...qgObservation.valueJSON.groupObservations)
-    );
+    .forEach(qgObservation => {
+      if (qgObservation.valueJSON.repeatableObservations) {
+        qgObservation.valueJSON.repeatableObservations.forEach(
+          rqg => rqg.groupObservations && mediaObservations.push(...rqg.groupObservations)
+        );
+      } else {
+        qgObservation.valueJSON.groupObservations && mediaObservations.push(...qgObservation.valueJSON.groupObservations);
+      }
+    });
   return mediaObservations;
 }
 
