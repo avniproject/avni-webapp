@@ -317,9 +317,7 @@ workflows:
           requires:
             - app_build
       - STAGING_deploy:
-          context:            
-            - AWS_OIDC
-            - non-prod-deploy
+          context: non-prod-deploy
           requires:
             - STAGING_approve
       - cypress/run:
@@ -336,9 +334,7 @@ workflows:
           requires:
             - app_build
       - PERF_deploy:
-          context: 
-            - AWS_OIDC
-            - non-prod-deploy
+          context: non-prod-deploy
           requires:
             - PERF_approve
       - PRERELEASE_approve:
@@ -346,9 +342,7 @@ workflows:
           requires:
             - app_build
       - PRERELEASE_deploy:
-          context: 
-            - AWS_OIDC
-            - non-prod-deploy
+          context: non-prod-deploy
           requires:
             - PRERELEASE_approve
       - PRODUCTION_approve:
@@ -356,9 +350,7 @@ workflows:
           requires:
             - app_build
       - PRODUCTION_deploy:
-          context: 
-            - AWS_OIDC
-            - prod-deploy
+          context: prod-deploy
           requires:
             - PRODUCTION_approve
       - RWB_STAGING_approve:
