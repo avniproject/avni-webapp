@@ -67,7 +67,7 @@ commands:
       - run: |
           pwd
           cd ~/avni-infra/configure
-          VAULT_PASSWORD_FILE=~/.vault-pass.txt web_zip_path=~/artifacts/ make deploy-avni-webapp-<< parameters.env >>
+          VAULT_PASSWORD_FILE=~/.vault-pass.txt web_zip_path=~/artifacts make deploy-avni-webapp-<< parameters.env >>
 
       - run: rm ~/.vault-pass.txt
 
@@ -114,7 +114,7 @@ jobs:
   app_build:
     docker:
       - image: cimg/node:20.2.0
-    resource_class: medium+
+    resource_class: large
 
     working_directory: ~/openchs-webapp
 
@@ -317,9 +317,7 @@ workflows:
           requires:
             - app_build
       - STAGING_deploy:
-          context:            
-            - AWS_OIDC
-            - non-prod-deploy
+          context: non-prod-deploy
           requires:
             - STAGING_approve
       - cypress/run:
@@ -336,9 +334,7 @@ workflows:
           requires:
             - app_build
       - PERF_deploy:
-          context: 
-            - AWS_OIDC
-            - non-prod-deploy
+          context: non-prod-deploy
           requires:
             - PERF_approve
       - PRERELEASE_approve:
@@ -346,9 +342,7 @@ workflows:
           requires:
             - app_build
       - PRERELEASE_deploy:
-          context: 
-            - AWS_OIDC
-            - non-prod-deploy
+          context: non-prod-deploy
           requires:
             - PRERELEASE_approve
       - PRODUCTION_approve:
@@ -356,9 +350,7 @@ workflows:
           requires:
             - app_build
       - PRODUCTION_deploy:
-          context: 
-            - AWS_OIDC
-            - prod-deploy
+          context: prod-deploy
           requires:
             - PRODUCTION_approve
       - RWB_STAGING_approve:
