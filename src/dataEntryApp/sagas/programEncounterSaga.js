@@ -1,25 +1,25 @@
-import { all, call, fork, put, select, takeLatest, takeEvery } from "redux-saga/effects";
+import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import { find, keys } from "lodash";
 import {
-  types,
-  setProgramEnrolment,
-  setUnplanProgramEncounters,
-  saveProgramEncounterComplete,
   onLoadSuccess,
+  saveProgramEncounterComplete,
   selectProgramEncounterState,
+  setFilteredFormElements,
+  setProgramEnrolment,
   setState,
-  setFilteredFormElements
+  setUnplanProgramEncounters,
+  types
 } from "dataEntryApp/reducers/programEncounterReducer";
 import api from "../api";
 import {
-  selectFormMappingForSubjectType,
+  selectFormMappingForCancelProgramEncounter,
   selectFormMappingForProgramEncounter,
-  selectFormMappingForCancelProgramEncounter
+  selectFormMappingForSubjectType
 } from "./programEncounterSelector";
 import { mapForm } from "../../common/adapters";
-import { ProgramEncounter, ModelGeneral as General, ObservationsHolder, AbstractEncounter } from "avni-models";
+import { AbstractEncounter, ModelGeneral as General, ObservationsHolder, ProgramEncounter } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
-import { mapProgramEncounter, mapProgramEnrolment, mapProfile, mapObservations } from "common/subjectModelMapper";
+import { mapObservations, mapProfile, mapProgramEncounter, mapProgramEnrolment } from "common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
@@ -101,7 +101,7 @@ export function* createProgramEncounterWorker({ encounterTypeUuid, enrolUuid }) 
     ? mapObservations(latestProgramEncounter.content[0].observations)
     : [];
   programEncounter.encounterType = find(state.dataEntry.metadata.operationalModules.encounterTypes, eT => eT.uuid === encounterTypeUuid);
-  programEncounter.name = programEncounter.encounterType.name;
+  programEncounter.name = programEncounter.encounterType.displayName;
   yield setProgramEncounterDetails(programEncounter, programEnrolmentJson);
 }
 
