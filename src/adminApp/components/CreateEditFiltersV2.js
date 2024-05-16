@@ -7,7 +7,7 @@ import Box from "@material-ui/core/Box";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
-import { CustomFilter, DashboardFilterConfig, MetaDataService } from "openchs-models";
+import { CustomFilter, MetaDataService } from "openchs-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -74,7 +74,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   const [filterConfig: DashboardFilterConfig, setFilterConfig] = useState(
     isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
   );
-
+  
   const subjectTypeOptions = mapToOptions(subjectTypes);
   const programOptions = mapToOptions(MetaDataService.getProgramsForSubjectType(programs, null, formMappings));
   const encounterTypeOptions = mapToOptions(
@@ -105,7 +105,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   const [conceptSuggestions, setConceptSuggestions] = useState([]);
   const loadConcept = (value, callback) => {
     if (!value) {
-      return callback([]);
+      callback([]);
     }
     ConceptService.searchDashboardFilterConcepts(value).then(concepts => {
       const conceptOptions = map(concepts, concept => ({
