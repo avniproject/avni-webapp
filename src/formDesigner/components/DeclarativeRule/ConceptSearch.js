@@ -3,25 +3,16 @@ import { includes, map } from "lodash";
 import http from "../../../common/utils/httpClient";
 import CommonSearch from "../../common/CommonSearch";
 
-const ConceptSearch = ({
-  value,
-  onChange,
-  nonSupportedTypes = [],
-  isMulti,
-  placeholder,
-  defaultOptions = []
-}) => {
+const ConceptSearch = ({ value, onChange, nonSupportedTypes = [], isMulti, placeholder, defaultOptions = [] }) => {
   const loadConcept = (value, callback) => {
-    return http.get("/search/concept?name=" + value).then(response => {
+    http.get("/search/concept?name=" + value).then(response => {
       const concepts = response.data;
-      const filteredConcepts = concepts.filter(
-        concept => !includes(nonSupportedTypes, concept.dataType)
-      );
+      const filteredConcepts = concepts.filter(concept => !includes(nonSupportedTypes, concept.dataType));
       const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
         label: name,
         value: { name, uuid, dataType, toString: () => uuid }
       }));
-      return callback(conceptOptions);
+      callback(conceptOptions);
     });
   };
 

@@ -7,7 +7,7 @@ import Box from "@material-ui/core/Box";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
-import { CustomFilter, DashboardFilterConfig, MetaDataService } from "openchs-models";
+import { CustomFilter, MetaDataService } from "openchs-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -15,28 +15,14 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ConceptService from "../../common/service/ConceptService";
 
-function MultipleEntitySelect({
-  name,
-  placeholder,
-  selectedEntities,
-  options,
-  onChange,
-  toolTipKey
-}) {
+function MultipleEntitySelect({ name, placeholder, selectedEntities, options, onChange, toolTipKey }) {
   const selectedValues = _.intersectionWith(options, selectedEntities, (a, b) => {
     return a.value.uuid === b.uuid;
   });
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
-      <Select
-        isMulti
-        placeholder={placeholder}
-        value={selectedValues}
-        options={options}
-        onChange={onChange}
-        maxMenuHeight={200}
-      />
+      <Select isMulti placeholder={placeholder} value={selectedValues} options={options} onChange={onChange} maxMenuHeight={200} />
     </div>
   );
 }
@@ -46,13 +32,7 @@ function SingleSelect({ name, placeholder, value, options, onChange, toolTipKey 
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
-      <Select
-        placeholder={placeholder}
-        value={selectValue}
-        options={options}
-        onChange={onChange}
-        maxMenuHeight={200}
-      />
+      <Select placeholder={placeholder} value={selectValue} options={options} onChange={onChange} maxMenuHeight={200} />
     </div>
   );
 }
@@ -75,12 +55,7 @@ function isSaveDisabled(filterConfig, filterName) {
   return !filterConfig.isValid() || _.isEmpty(filterName);
 }
 
-export const CreateEditFiltersV2 = ({
-  selectedFilter,
-  operationalModules,
-  documentationFileName,
-  dashboardFilterSave
-}) => {
+export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, documentationFileName, dashboardFilterSave }) => {
   const isNew = _.isNil(_.get(selectedFilter, "uuid"));
   const { t } = useTranslation();
   const typeOptions = values(CustomFilter.getDashboardFilterTypes()).map(s => ({
@@ -100,9 +75,7 @@ export const CreateEditFiltersV2 = ({
     isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
   );
 
-  const programOptions = mapToOptions(
-    MetaDataService.getProgramsForSubjectType(programs, null, formMappings)
-  );
+  const programOptions = mapToOptions(MetaDataService.getProgramsForSubjectType(programs, null, formMappings));
   const encounterTypeOptions = mapToOptions(
     MetaDataService.getEncounterTypes_For_SubjectTypeAndPrograms(
       encounterTypes,
@@ -111,9 +84,7 @@ export const CreateEditFiltersV2 = ({
       formMappings
     )
   );
-  const groupSubjectTypeOptions = mapToOptions(
-    MetaDataService.getPossibleGroupSubjectTypesFor(subjectTypes, filterConfig.subjectType)
-  );
+  const groupSubjectTypeOptions = mapToOptions(MetaDataService.getPossibleGroupSubjectTypesFor(subjectTypes, filterConfig.subjectType));
 
   const [messageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
@@ -133,7 +104,7 @@ export const CreateEditFiltersV2 = ({
   const [conceptSuggestions, setConceptSuggestions] = useState([]);
   const loadConcept = (value, callback) => {
     if (!value) {
-      return callback([]);
+      callback([]);
     }
     ConceptService.searchDashboardFilterConcepts(value).then(concepts => {
       const conceptOptions = map(concepts, concept => ({
@@ -194,11 +165,7 @@ export const CreateEditFiltersV2 = ({
               <Box m={1} />
               {filterConfig.isConceptTypeFilter() && (
                 <div style={{ width: 400 }}>
-                  <AvniFormLabel
-                    label={"Select Concept"}
-                    toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"}
-                    position={"top"}
-                  />
+                  <AvniFormLabel label={"Select Concept"} toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"} position={"top"} />
                   <AsyncSelect
                     cacheOptions
                     defaultOptions={conceptSuggestions}
@@ -276,11 +243,7 @@ export const CreateEditFiltersV2 = ({
               <Box m={1} />
             </div>
             <Box m={1}>
-              <SaveComponent
-                name={t("save")}
-                onSubmit={saveFilter}
-                disabledFlag={isSaveDisabled(filterConfig, filterName)}
-              />
+              <SaveComponent name={t("save")} onSubmit={saveFilter} disabledFlag={isSaveDisabled(filterConfig, filterName)} />
             </Box>
             <p />
           </Box>
