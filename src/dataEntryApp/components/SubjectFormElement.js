@@ -56,7 +56,7 @@ const SubjectFormElement = props => {
     }
   };
 
-  const loadSubjects = async (inputValue, callback) => {
+  const loadSubjects = (inputValue, callback) => {
     SubjectSearchService.search({
       name: inputValue,
       subjectType: subjectTypeUuid

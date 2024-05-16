@@ -13,14 +13,14 @@ import api from "../api/index";
 import AsyncSelect from "react-select/async";
 import SubjectSearchService from "../services/SubjectSearchService";
 import FormLabel from "@material-ui/core/FormLabel";
+import { debounce } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
     // padding: theme.spacing(3, 2),
     margin: theme.spacing(1, 3),
     flexGrow: 1,
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   innerPaper: {
     padding: theme.spacing(2, 2),
@@ -72,20 +72,11 @@ const constructSubjectLabel = (subject, isSearchFlow = false) => {
   }
 };
 
-const GroupMembershipAddEdit = ({
-  match,
-  groupSubject,
-  memberGroupSubjects,
-  groupRoles,
-  ...props
-}) => {
+const GroupMembershipAddEdit = ({ match, groupSubject, memberGroupSubjects, groupRoles, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const memberGroupSubject =
-    memberGroupSubjects &&
-    memberGroupSubjects.find(
-      memberGroupSubject => memberGroupSubject.uuid === match.queryParams.uuid
-    );
+    memberGroupSubjects && memberGroupSubjects.find(memberGroupSubject => memberGroupSubject.uuid === match.queryParams.uuid);
   const [memberSubject, setMemberSubject] = React.useState(
     memberGroupSubject && {
       label: constructSubjectLabel(memberGroupSubject.memberSubject),
@@ -93,38 +84,35 @@ const GroupMembershipAddEdit = ({
     }
   );
   const groupRole = memberGroupSubject && memberGroupSubject.groupRole;
-  const [selectedRole, setSelectedRole] = React.useState(
-    groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null
-  );
+  const [selectedRole, setSelectedRole] = React.useState(groupRole ? groupRoles.find(role => role.uuid === groupRole.uuid) : null);
   // const isHousehold = groupSubject.isHousehold();
-  const editFlow =
-    match.queryParams.uuid != null && memberGroupSubject != null && groupRole != null;
+  const editFlow = match.queryParams.uuid != null && memberGroupSubject != null && groupRole != null;
 
   const returnToGroupSubjectProfile = () => {
     props.history.push(`/app/subject/subjectProfile?uuid=${groupSubject.uuid}`);
   };
 
-  const searchSubjects = async subjectName => {
-    const searchResults = await SubjectSearchService.search({
-      name: subjectName,
-      subjectTypeUUID: selectedRole.memberSubjectTypeUUID
-    });
-    const subjectUuidsToFilter = memberGroupSubjects
-      ? memberGroupSubjects.map(groupSubject => groupSubject.memberSubject.uuid)
-      : [];
-
-    return searchResults.listOfRecords
-      .filter(subject => subjectUuidsToFilter.indexOf(subject.uuid) === -1)
-      .map(subject => {
-        return { label: constructSubjectLabel(subject, true), value: subject };
-      });
+  const searchSubjects = (subjectName, callback) => {
+    SubjectSearchService.search({ name: subjectName, subjectTypeUUID: selectedRole.memberSubjectTypeUUID })
+      .then(searchResults =>
+        searchResults.listOfRecords
+          .filter(subject =>
+            memberGroupSubjects
+              ? memberGroupSubjects.map(groupSubject => groupSubject.memberSubject.uuid).indexOf(subject.uuid) === -1
+              : true
+          )
+          .map(subject => ({ label: constructSubjectLabel(subject, true), value: subject }))
+      )
+      .then(callback);
   };
+
+  const debounceSearchSubjects = debounce(searchSubjects, 500);
 
   const renderSearch = () => {
     return (
       <AsyncSelect
         // cacheOptions          //disabled because subject types could be different depending on role
-        loadOptions={searchSubjects}
+        loadOptions={debounceSearchSubjects}
         name={"Search by Name"}
         isMulti={false}
         isSearchable
@@ -153,23 +141,14 @@ const GroupMembershipAddEdit = ({
 
   const onRoleChange = uuid => {
     const updatedRole = groupRoles.find(role => role.uuid === uuid);
-    if (
-      !editFlow &&
-      selectedRole &&
-      selectedRole.memberSubjectTypeUUID !== updatedRole.memberSubjectTypeUUID
-    ) {
+    if (!editFlow && selectedRole && selectedRole.memberSubjectTypeUUID !== updatedRole.memberSubjectTypeUUID) {
       setMemberSubject(null);
     }
     setSelectedRole(updatedRole);
   };
 
   const hasSelectionChanged = () => {
-    return (
-      memberSubject &&
-      (groupRole
-        ? selectedRole && selectedRole.uuid !== groupRole.uuid
-        : selectedRole && selectedRole.uuid !== null)
-    );
+    return memberSubject && (groupRole ? selectedRole && selectedRole.uuid !== groupRole.uuid : selectedRole && selectedRole.uuid !== null);
   };
 
   return (
@@ -201,10 +180,7 @@ const GroupMembershipAddEdit = ({
                     control={
                       <Radio
                         color="primary"
-                        disabled={
-                          item.maximumNumberOfMembers <=
-                          memberGroupSubjects.filter(mgs => mgs.groupRole.uuid === item.uuid).length
-                        }
+                        disabled={item.maximumNumberOfMembers <= memberGroupSubjects.filter(mgs => mgs.groupRole.uuid === item.uuid).length}
                       />
                     }
                     label={t(item.role)}
@@ -219,28 +195,12 @@ const GroupMembershipAddEdit = ({
             </Grid>
           </Grid>
         </div>
-        <Box
-          className={classes.bottomboxstyle}
-          display="flex"
-          flexDirection={"row"}
-          flexWrap="wrap"
-          justifyContent="flex-start"
-        >
+        <Box className={classes.bottomboxstyle} display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
           <Box>
-            <Button
-              variant="outlined"
-              className={classes.cancelBtn}
-              onClick={returnToGroupSubjectProfile}
-            >
+            <Button variant="outlined" className={classes.cancelBtn} onClick={returnToGroupSubjectProfile}>
               CANCEL
             </Button>
-            <Button
-              variant="contained"
-              className={classes.addBtn}
-              color="primary"
-              onClick={handleSave}
-              disabled={!hasSelectionChanged()}
-            >
+            <Button variant="contained" className={classes.addBtn} color="primary" onClick={handleSave} disabled={!hasSelectionChanged()}>
               SAVE
             </Button>
           </Box>
