@@ -31,11 +31,7 @@ const AddressLevelsByType = ({ label, addressLevelsIds = [], setAddressLevelsIds
     fetchLocation(value, callback);
   };
 
-  const debouncedLoadLocation = debounce(loadLocations, 250, {
-    leading: false,
-    trailing: true,
-    maxWait: 1000
-  });
+  const debouncedLoadLocation = debounce(loadLocations, 500);
 
   function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();

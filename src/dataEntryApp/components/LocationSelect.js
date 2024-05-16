@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { deburr, get, isEmpty, map } from "lodash";
+import { debounce, deburr, get, isEmpty, map } from "lodash";
 import { locationNameRenderer } from "../utils/LocationUtil";
 import { addressLevelService } from "../services/AddressLevelService";
 import AsyncSelect from "react-select/async";
@@ -48,10 +48,12 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
 
   const loadLocations = (value, callback) => {
     if (!value) {
-      return callback([]);
+      callback([]);
     }
-    return fetchLocation(value, callback);
+    fetchLocation(value, callback);
   };
+
+  const debouncedLoadLocations = debounce(loadLocations, 500);
 
   const makeParameter = (key, value) => {
     return value ? `&${key}=${value}` : "";
@@ -60,13 +62,11 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
   function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();
     let title = encodeURIComponent(inputValue);
-    let apiUrl = `/locations/search/find?title=${title}${makeParameter(
-      "typeId",
-      typeId
-    )}${makeParameter("parentId", parentId)}&size=100&page=0`;
-    return httpClient
-      .get(apiUrl)
-      .then(response => callback(getLocationOptions(get(response, "data.content", []))));
+    let apiUrl = `/locations/search/find?title=${title}${makeParameter("typeId", typeId)}${makeParameter(
+      "parentId",
+      parentId
+    )}&size=100&page=0`;
+    httpClient.get(apiUrl).then(response => callback(getLocationOptions(get(response, "data.content", []))));
   }
 
   const getLocationOptions = locations =>
@@ -86,7 +86,7 @@ const LocationSelect = ({ onSelect, selectedLocation, placeholder, typeId, paren
         value={selectedLocationValue}
         placeholder={t(placeholder)}
         onChange={onLocationSelected}
-        loadOptions={loadLocations}
+        loadOptions={debouncedLoadLocations}
         formatOptionLabel={formatOptionLabel}
       />
     </div>
