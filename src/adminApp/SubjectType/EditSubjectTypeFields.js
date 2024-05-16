@@ -106,15 +106,11 @@ const EditSubjectTypeFields = props => {
         onValueChange={event => dispatch({ type: "subjectSummaryRule", payload: event })}
       />
       <p />
-      {!isUserSubjectType && (
-        <>
-          <AvniFormLabel label={"Subject Program Eligibility Check Rule"} toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"} />
-          <JSEditor
-            value={subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()}
-            onValueChange={event => dispatch({ type: "programEligibilityCheckRule", payload: event })}
-          />
-        </>
-      )}
+      <AvniFormLabel label={"Subject Program Eligibility Check Rule"} toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"} />
+      <JSEditor
+        value={subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()}
+        onValueChange={event => dispatch({ type: "programEligibilityCheckRule", payload: event })}
+      />
     </>
   );
 };
