@@ -17,31 +17,40 @@ import { JSEditor } from "../../common/components/JSEditor";
 const EditSubjectTypeFields = props => {
   const { subjectType, onRemoveFile, onSetFile, formList, groupValidationError, dispatch } = props;
 
+  const isUserSubjectType = subjectType.type === SubjectTypeType.User;
   return (
     <>
-      <AvniTextField
-        id="name"
-        label="Name"
-        autoComplete="off"
-        value={subjectType.name}
-        onChange={event => dispatch({ type: "name", payload: event.target.value })}
-        toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
-      />
-      <p />
-      <AvniSelect
-        label="Select Type *"
-        value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
-        onChange={event => dispatch({ type: "type", payload: event.target.value })}
-        style={{ width: "200px" }}
-        required
-        options={SubjectTypeType.getAll().map((type, index) => (
-          <MenuItem value={type} key={index}>
-            {type}
-          </MenuItem>
-        ))}
-        toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
-      />
-      <p />
+      {!isUserSubjectType && (
+        <>
+          <AvniTextField
+            id="name"
+            label="Name"
+            autoComplete="off"
+            value={subjectType.name}
+            onChange={event => dispatch({ type: "name", payload: event.target.value })}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
+          />
+          <p />
+        </>
+      )}
+      {!isUserSubjectType && (
+        <>
+          <AvniSelect
+            label="Select Type *"
+            value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
+            onChange={event => dispatch({ type: "type", payload: event.target.value })}
+            style={{ width: "200px" }}
+            required
+            options={SubjectTypeType.getAll().map((type, index) => (
+              <MenuItem value={type} key={index}>
+                {type}
+              </MenuItem>
+            ))}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
+          />
+          <p />
+        </>
+      )}
       <AvniImageUpload
         onSelect={onSetFile}
         label={"Icon"}
@@ -97,11 +106,15 @@ const EditSubjectTypeFields = props => {
         onValueChange={event => dispatch({ type: "subjectSummaryRule", payload: event })}
       />
       <p />
-      <AvniFormLabel label={"Subject Program Eligibility Check Rule"} toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"} />
-      <JSEditor
-        value={subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()}
-        onValueChange={event => dispatch({ type: "programEligibilityCheckRule", payload: event })}
-      />
+      {!isUserSubjectType && (
+        <>
+          <AvniFormLabel label={"Subject Program Eligibility Check Rule"} toolTipKey={"SUBJECT_PROGRAM_ELIGIBILITY_CHECK_RULE"} />
+          <JSEditor
+            value={subjectType.programEligibilityCheckRule || sampleSubjectProgramEligibilityCheckRule()}
+            onValueChange={event => dispatch({ type: "programEligibilityCheckRule", payload: event })}
+          />
+        </>
+      )}
     </>
   );
 };
