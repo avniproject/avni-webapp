@@ -74,7 +74,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   const [filterConfig: DashboardFilterConfig, setFilterConfig] = useState(
     isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
   );
-  
+
   const subjectTypeOptions = mapToOptions(subjectTypes);
   const programOptions = mapToOptions(MetaDataService.getProgramsForSubjectType(programs, null, formMappings));
   const encounterTypeOptions = mapToOptions(
