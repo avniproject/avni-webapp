@@ -110,6 +110,8 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     dispatch({ type: type, payload: event.target.value });
   };
 
+  const standardReportCardTypeName = get(card, "standardReportCardType.name") || "";
+
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={"Create offline Card"} />
@@ -211,7 +213,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {isStandardReportCard && (
           <AvniSelect
             label={`Select standard card type ${isStandardReportCard ? "*" : ""}`}
-            value={get(card, "standardReportCardType.name")}
+            value={standardReportCardTypeName}
             onChange={event => {
               dispatch({ type: "standardReportCardType", payload: standardReportCardTypes.find(x => event.target.value === x.name) });
             }}

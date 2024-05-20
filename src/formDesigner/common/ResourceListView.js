@@ -69,6 +69,7 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
               rowStyle: rowData => ({
                 backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
               }),
+              pageSizeOptions: [10, 25, 100],
               pageSize: 10
             }}
             actions={UserInfo.hasPrivilege(userInfo, editPrivilegeType) && [editResource, voidResource]}
