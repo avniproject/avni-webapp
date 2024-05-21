@@ -1,6 +1,7 @@
 import { map } from "lodash";
 import { default as UUID } from "uuid";
 import Types, { SubjectTypeType } from "../../adminApp/SubjectType/Types";
+import { SubjectType } from "openchs-models";
 
 function getHouseholdRoles() {
   const roles = [];
@@ -31,6 +32,17 @@ class WebSubjectType {
     const groupRoles = Types.isHousehold(type) ? getHouseholdRoles() : [];
     const memberSubjectType = Types.isHousehold(type) ? map(groupRoles, ({ subjectMemberName }) => subjectMemberName)[0] : "";
     return { groupRoles, memberSubjectType };
+  }
+
+  static fromResource(resource) {
+    const subjectType = new SubjectType();
+    subjectType.uuid = resource.uuid;
+    subjectType.name = resource.name;
+    return subjectType;
+  }
+
+  static fromResources(resources) {
+    return resources.map(WebSubjectType.fromResource);
   }
 }
 

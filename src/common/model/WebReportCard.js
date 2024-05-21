@@ -1,8 +1,23 @@
 import { ReportCard } from "openchs-models";
 import { isEmpty, isNil } from "lodash";
 import WebStandardReportCardType from "./WebStandardReportCardType";
+import WebSubjectType from "./WebSubjectType";
+import WebProgram from "./WebProgram";
+import WebEncounterType from "./WebEncounterType";
 
-function populateRecordCardFields(reportCard, iconFileS3Key, name, description, query, nested, id, countOfCards) {
+function populateRecordCardFields(
+  reportCard,
+  iconFileS3Key,
+  name,
+  description,
+  query,
+  nested,
+  id,
+  countOfCards,
+  standardReportCardInputSubjectTypes,
+  standardReportCardInputPrograms,
+  standardReportCardInputEncounterTypes
+) {
   reportCard.id = id;
   reportCard.iconFileS3Key = iconFileS3Key;
   reportCard.name = name;
@@ -10,6 +25,9 @@ function populateRecordCardFields(reportCard, iconFileS3Key, name, description, 
   reportCard.query = query;
   reportCard.nested = nested;
   reportCard.countOfCards = countOfCards;
+  reportCard.standardReportCardInputSubjectTypes = standardReportCardInputSubjectTypes;
+  reportCard.standardReportCardInputPrograms = standardReportCardInputPrograms;
+  reportCard.standardReportCardInputEncounterTypes = standardReportCardInputEncounterTypes;
 }
 
 class WebReportCard extends ReportCard {
@@ -42,7 +60,7 @@ class WebReportCard extends ReportCard {
 
   static createNewReportCard() {
     const webReportCard = new WebReportCard();
-    populateRecordCardFields(webReportCard, "", "", "", [], false, null, WebReportCard.MinimumNumberOfNestedCards);
+    populateRecordCardFields(webReportCard, "", "", "", [], false, null, WebReportCard.MinimumNumberOfNestedCards, [], [], []);
     webReportCard.colour = "#ff0000";
     return webReportCard;
   }
@@ -57,7 +75,10 @@ class WebReportCard extends ReportCard {
       other.query,
       other.nested,
       other.id,
-      other.countOfCards
+      other.countOfCards,
+      [...other.standardReportCardInputSubjectTypes],
+      [...other.standardReportCardInputPrograms],
+      [...other.standardReportCardInputEncounterTypes]
     );
     webReportCard.standardReportCardType = other.standardReportCardType;
     webReportCard.colour = other.colour;
@@ -74,7 +95,10 @@ class WebReportCard extends ReportCard {
       resource.query,
       resource.nested,
       resource.id,
-      resource.count
+      resource.count,
+      WebSubjectType.fromResources(resource.standardReportCardInputSubjectTypes),
+      WebProgram.fromResources(resource.standardReportCardInputPrograms),
+      WebEncounterType.fromResources(resource.standardReportCardInputEncounterTypes)
     );
     webReportCard.colour = resource.color;
     if (!isNil(resource.standardReportCardType))

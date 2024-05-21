@@ -1,5 +1,5 @@
 import React from "react";
-import { ReportCardReducer } from "./ReportCardReducer";
+import { ReportCardReducer, ReportCardReducerKeys } from "./ReportCardReducer";
 import http from "../../../common/utils/httpClient";
 import { get, isNil } from "lodash";
 import Box from "@material-ui/core/Box";
@@ -22,9 +22,9 @@ import { bucketName, uploadImage } from "../../../common/utils/S3Client";
 import { getErrorByKey } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
-import { SubjectTypeSelect } from "../../../common/components/SubjectTypeSelect";
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
+import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
 
 export const CreateEditReportCard = ({ edit, ...props }) => {
   const [card, dispatch] = React.useReducer(ReportCardReducer, WebReportCard.createNewReportCard());
@@ -38,7 +38,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   React.useEffect(() => {
     if (edit) {
       DashboardService.getReportCard(props.match.params.id).then(res => {
-        dispatch({ type: "setData", payload: res });
+        dispatch({ type: ReportCardReducerKeys.setData, payload: res });
       });
     }
   }, []);
@@ -55,10 +55,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   React.useEffect(() => {
     if (isStandardReportCard) {
-      dispatch({ type: "query", payload: null });
-      dispatch({ type: "nested", payload: { nested: false, count: WebReportCard.MinimumNumberOfNestedCards } });
+      dispatch({ type: ReportCardReducerKeys.query, payload: null });
+      dispatch({ type: ReportCardReducerKeys.nested, payload: { nested: false, count: WebReportCard.MinimumNumberOfNestedCards } });
     } else {
-      dispatch({ type: "standardReportCardType", payload: null });
+      dispatch({ type: ReportCardReducerKeys.standardReportCardType, payload: null });
     }
   }, [isStandardReportCard]);
 
@@ -129,7 +129,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           label="Name*"
           autoComplete="off"
           value={card.name}
-          onChange={event => onChange("name", event, "EMPTY_NAME")}
+          onChange={event => onChange(ReportCardReducerKeys.name, event, "EMPTY_NAME")}
           toolTipKey={"APP_DESIGNER_CARD_NAME"}
         />
         {getErrorByKey(error, "EMPTY_NAME")}
@@ -140,7 +140,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           label="Description"
           autoComplete="off"
           value={card.description}
-          onChange={event => dispatch({ type: "description", payload: event.target.value })}
+          onChange={event => dispatch({ type: ReportCardReducerKeys.description, payload: event.target.value })}
           toolTipKey={"APP_DESIGNER_CARD_DESCRIPTION"}
         />
         <p />
@@ -151,7 +151,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
               id="colour"
               label="Colour"
               color={card.color}
-              onChange={color => dispatch({ type: "color", payload: color })}
+              onChange={color => dispatch({ type: ReportCardReducerKeys.color, payload: color })}
             />
             {getErrorByKey(error, "EMPTY_COLOR")}
           </React.Fragment>
@@ -180,7 +180,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             checked={!isStandardReportCard && card.nested}
             onChange={event =>
               dispatch({
-                type: "nested",
+                type: ReportCardReducerKeys.nested,
                 payload: { nested: !card.nested, count: WebReportCard.MinimumNumberOfNestedCards }
               })
             }
@@ -197,7 +197,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             required={!isStandardReportCard && card.nested}
             onChange={event =>
               dispatch({
-                type: "nested",
+                type: ReportCardReducerKeys.nested,
                 payload: { nested: card.nested, count: event.target.value }
               })
             }
@@ -215,7 +215,10 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             label={`Select standard card type ${isStandardReportCard ? "*" : ""}`}
             value={standardReportCardTypeName}
             onChange={event => {
-              dispatch({ type: "standardReportCardType", payload: standardReportCardTypes.find(x => event.target.value === x.name) });
+              dispatch({
+                type: ReportCardReducerKeys.standardReportCardType,
+                payload: standardReportCardTypes.find(x => event.target.value === x.name)
+              });
             }}
             style={{ width: "200px" }}
             required
@@ -227,13 +230,23 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
         )}
-        {isStandardReportCard && card.isSubjectTypeFilterSupported() && <SubjectTypeSelect isMulti={false} />}
+        {isStandardReportCard && card.isSubjectTypeFilterSupported() && (
+          <>
+            <br />
+            <FormMetaDataSelect
+              selectedSubjectTypes={card.standardReportCardInputSubjectTypes}
+              selectedPrograms={card.standardReportCardInputPrograms}
+              selectedEncounterTypes={card.standardReportCardInputEncounterTypes}
+              onChange={formMetaData => dispatch({ type: ReportCardReducerKeys.cardFormMetaData, payload: formMetaData })}
+            />
+          </>
+        )}
         {!isStandardReportCard && (
           <React.Fragment>
             <AvniFormLabel label={"Query"} toolTipKey={"APP_DESIGNER_CARD_QUERY"} />
             <JSEditor
               value={card.query || sampleCardQuery(card.nested)}
-              onValueChange={event => dispatch({ type: "query", payload: event })}
+              onValueChange={event => dispatch({ type: ReportCardReducerKeys.query, payload: event })}
             />
           </React.Fragment>
         )}
