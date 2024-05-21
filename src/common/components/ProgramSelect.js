@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import httpClient from "../utils/httpClient";
 import NamedSelectableEntities from "../model/NamedSelectableEntities";
 import WebProgram from "../model/WebProgram";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
 
 export function ProgramSelect({ isMulti, selectedSubjectTypes, selectedPrograms, onChange }) {
   const [programs, setPrograms] = useState(NamedSelectableEntities.createEmpty());
@@ -19,16 +21,23 @@ export function ProgramSelect({ isMulti, selectedSubjectTypes, selectedPrograms,
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={"Program"} position={"top"} style={{ fontSize: 12 }} />
-      <Select
-        isMulti={isMulti}
-        placeholder={"Select program"}
-        value={programs.getSelectedValue(selectedPrograms, isMulti)}
-        options={options}
-        onChange={e => {
-          onChange(programs.toggle(selectedPrograms, e.value, isMulti));
-        }}
-        maxMenuHeight={200}
-      />
+      <div style={{ flexDirection: "row", display: "flex", alignItems: "center" }}>
+        <div style={{ width: "300px", marginRight: 10 }}>
+          <Select
+            isMulti={isMulti}
+            placeholder={"Select program"}
+            value={programs.getSelectedValue(selectedPrograms, isMulti)}
+            options={options}
+            onChange={e => {
+              onChange(programs.toggle(selectedPrograms, e.value, isMulti));
+            }}
+            maxMenuHeight={200}
+          />
+        </div>
+        <IconButton onClick={() => onChange([])}>
+          <DeleteIcon />
+        </IconButton>
+      </div>
     </div>
   );
 }

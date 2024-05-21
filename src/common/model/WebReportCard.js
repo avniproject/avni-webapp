@@ -159,7 +159,10 @@ class WebReportCard extends ReportCard {
       nested: this.nested,
       count: this.countOfCards,
       standardReportCardTypeId: this.standardReportCardType && this.standardReportCardType.id,
-      iconFileS3Key: this.iconFileS3Key
+      iconFileS3Key: this.iconFileS3Key,
+      standardReportCardInputSubjectTypes: this.standardReportCardInputSubjectTypes.map(x => x.uuid),
+      standardReportCardInputPrograms: this.standardReportCardInputPrograms.map(x => x.uuid),
+      standardReportCardInputEncounterTypes: this.standardReportCardInputEncounterTypes.map(x => x.uuid)
     };
   }
 }

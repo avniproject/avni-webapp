@@ -230,9 +230,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
           />
         )}
-        {isStandardReportCard && card.isSubjectTypeFilterSupported() && (
+        {card.isSubjectTypeFilterSupported() && (
           <>
-            <br />
+            <p />
             <FormMetaDataSelect
               selectedSubjectTypes={card.standardReportCardInputSubjectTypes}
               selectedPrograms={card.standardReportCardInputPrograms}
@@ -259,6 +259,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {getErrorByKey(error, "DISALLOWED_NESTED")}
         <p />
         {getErrorByKey(error, "INVALID_NESTED_CARD_COUNT")}
+        <br />
         <Grid container direction={"row"}>
           <Grid item xs={1}>
             <SaveComponent name="save" onSubmit={onSave} />

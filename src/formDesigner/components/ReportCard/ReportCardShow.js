@@ -58,10 +58,23 @@ function RenderCard({ reportCard }) {
       </div>
       <p />
       {reportCard.isStandardReportType() && (
-        <React.Fragment>
-          <ShowLabelValue label={"Standard Report Card Type"} value={reportCard.standardReportCardType.name} />
-          <p />
-        </React.Fragment>
+        <ShowLabelValue label={"Standard Report Card Type"} value={reportCard.standardReportCardType.name} />
+      )}
+      {reportCard.isSubjectTypeFilterSupported() && (
+        <>
+          <br />
+          <ShowLabelValue
+            label={"Subject types"}
+            value={reportCard.standardReportCardInputSubjectTypes.map(subjectType => subjectType.name).join(", ")}
+          />
+          <br />
+          <ShowLabelValue label={"Programs"} value={reportCard.standardReportCardInputPrograms.map(program => program.name).join(", ")} />
+          <br />
+          <ShowLabelValue
+            label={"Encounter types"}
+            value={reportCard.standardReportCardInputEncounterTypes.map(encounterType => encounterType.name).join(", ")}
+          />
+        </>
       )}
       {!reportCard.isStandardReportType() && <RuleDisplay fieldLabel={"Query"} ruleText={reportCard.query} />}
     </div>

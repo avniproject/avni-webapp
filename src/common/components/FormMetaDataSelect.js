@@ -11,27 +11,35 @@ export default function({ isMulti = false, selectedSubjectTypes = [], selectedPr
         selectedSubjectTypes={selectedSubjectTypes}
         onChange={x => onChange({ subjectTypes: x, programs: [], encounterTypes: [] })}
       />
-      <br />
-      <ProgramSelect
-        isMulti={isMulti}
-        selectedSubjectTypes={selectedSubjectTypes}
-        selectedPrograms={selectedPrograms}
-        onChange={x => onChange({ subjectTypes: selectedSubjectTypes, programs: x, encounterTypes: [] })}
-      />
-      <br />
-      <EncounterTypeSelect
-        isMulti={isMulti}
-        selectedSubjectTypes={selectedSubjectTypes}
-        selectedPrograms={selectedPrograms}
-        selectedEncounterTypes={selectedEncounterTypes}
-        onChange={x =>
-          onChange({
-            subjectTypes: selectedSubjectTypes,
-            programs: selectedPrograms,
-            encounterTypes: x
-          })
-        }
-      />
+      <p />
+      {selectedSubjectTypes.length > 0 && (
+        <>
+          <ProgramSelect
+            isMulti={isMulti}
+            selectedSubjectTypes={selectedSubjectTypes}
+            selectedPrograms={selectedPrograms}
+            onChange={x => onChange({ subjectTypes: selectedSubjectTypes, programs: x, encounterTypes: [] })}
+          />
+          <p />
+        </>
+      )}
+      {selectedSubjectTypes.length > 0 && (
+        <>
+          <EncounterTypeSelect
+            isMulti={isMulti}
+            selectedSubjectTypes={selectedSubjectTypes}
+            selectedPrograms={selectedPrograms}
+            selectedEncounterTypes={selectedEncounterTypes}
+            onChange={x =>
+              onChange({
+                subjectTypes: selectedSubjectTypes,
+                programs: selectedPrograms,
+                encounterTypes: x
+              })
+            }
+          />
+        </>
+      )}
     </>
   );
 }

@@ -9,15 +9,18 @@ import AvniMaterialTable from "adminApp/components/AvniMaterialTable";
 import UserInfo from "../../common/model/UserInfo";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/DeleteOutline";
+import { LinearProgress } from "@material-ui/core";
 
 const ResourceListView = ({ history, title, resourceName, resourceURLName, columns, userInfo, editPrivilegeType }) => {
   const [redirect, setRedirect] = useState(false);
   const [result, setResult] = useState([]);
+  const [resultFetched, setResultFetched] = useState(false);
   const tableRef = React.createRef();
 
   useEffect(() => {
     http.get(`/web/${resourceName}`).then(response => {
       const result = response.data.filter(({ voided }) => !voided);
+      setResultFetched(true);
       setResult(result);
     });
   }, []);
@@ -51,30 +54,33 @@ const ResourceListView = ({ history, title, resourceName, resourceURLName, colum
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={title} />
         <div className="container">
-          {UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
+          {resultFetched && UserInfo.hasPrivilege(userInfo, editPrivilegeType) && (
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
               <CreateComponent onSubmit={() => setRedirect(true)} name={`New ${title}`} />
             </div>
           )}
-          <AvniMaterialTable
-            title=""
-            ref={tableRef}
-            columns={columns}
-            fetchData={result}
-            options={{
-              addRowPosition: "first",
-              sorting: true,
-              debounceInterval: 500,
-              search: false,
-              rowStyle: rowData => ({
-                backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
-              }),
-              pageSizeOptions: [10, 25, 100],
-              pageSize: 10
-            }}
-            actions={UserInfo.hasPrivilege(userInfo, editPrivilegeType) && [editResource, voidResource]}
-            route={`/appdesigner/${resourceURLName}`}
-          />
+          {!resultFetched && <LinearProgress />}
+          {resultFetched && (
+            <AvniMaterialTable
+              title=""
+              ref={tableRef}
+              columns={columns}
+              fetchData={result}
+              options={{
+                addRowPosition: "first",
+                sorting: true,
+                debounceInterval: 500,
+                search: false,
+                rowStyle: rowData => ({
+                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                }),
+                pageSizeOptions: [10, 25, 100],
+                pageSize: 10
+              }}
+              actions={UserInfo.hasPrivilege(userInfo, editPrivilegeType) && [editResource, voidResource]}
+              route={`/appdesigner/${resourceURLName}`}
+            />
+          )}
         </div>
       </Box>
       {redirect && <Redirect to={`/appDesigner/${resourceURLName}/create`} />}
