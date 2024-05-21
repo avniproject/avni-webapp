@@ -19,6 +19,7 @@ export function EncounterTypeSelect({ isMulti, selectedSubjectTypes = [], select
   }, [selectedSubjectTypes]);
 
   const options = encounterTypes.getOptions();
+  if (options.length === 0) return null;
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={"Encounter type"} position={"top"} style={{ fontSize: 12 }} />

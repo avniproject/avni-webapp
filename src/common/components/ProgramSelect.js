@@ -18,6 +18,7 @@ export function ProgramSelect({ isMulti, selectedSubjectTypes, selectedPrograms,
   }, [selectedSubjectTypes]);
 
   const options = programs.getOptions();
+  if (options.length === 0) return null;
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={"Program"} position={"top"} style={{ fontSize: 12 }} />
