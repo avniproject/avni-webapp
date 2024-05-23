@@ -28,27 +28,25 @@ import EnableDisableButton from "./components/EnableDisableButton";
 import {
   CustomToolbar,
   formatRoles,
+  getPhoneValidator,
   isRequired,
-  mobileNumberFormatter,
-  mobileNumberParser,
   PasswordTextField,
   UserFilter,
   UserTitle,
-  validateEmail,
-  validatePhone
+  validateEmail
 } from "./UserHelper";
 import { TitleChip } from "./components/TitleChip";
 import OrganisationService from "../common/service/OrganisationService";
 
-export const AccountOrgAdminUserCreate = ({ user, ...props }) => (
+export const AccountOrgAdminUserCreate = ({ user, region, ...props }) => (
   <Create {...props}>
-    <UserForm user={user} />
+    <UserForm user={user} region={region} />
   </Create>
 );
 
-export const AccountOrgAdminUserEdit = ({ user, ...props }) => (
+export const AccountOrgAdminUserEdit = ({ user, region, ...props }) => (
   <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false} filter={{ searchURI: "orgAdmin" }}>
-    <UserForm edit user={user} />
+    <UserForm edit user={user} region={region} />
   </Edit>
 );
 
@@ -99,7 +97,7 @@ export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
   </Show>
 );
 
-const UserForm = ({ edit, user, ...props }) => {
+const UserForm = ({ edit, user, region, ...props }) => {
   const [nameSuffix, setNameSuffix] = useState("");
   const getOrgData = id => id && OrganisationService.getOrganisation(id).then(data => setNameSuffix(data.usernameSuffix));
 
@@ -155,14 +153,7 @@ const UserForm = ({ edit, user, ...props }) => {
       {!edit && <PasswordTextField />}
       <TextInput source="name" label="Name of the Person" validate={isRequired} autoComplete="off" />
       <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete="off" />
-      <TextInput
-        source="phoneNumber"
-        label="10 digit mobile number"
-        validate={validatePhone}
-        format={mobileNumberFormatter}
-        parse={mobileNumberParser}
-        autoComplete="off"
-      />
+      <TextInput source="phoneNumber" validate={getPhoneValidator(region)} autoComplete="off" />
     </SimpleForm>
   );
 };

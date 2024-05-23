@@ -16,18 +16,8 @@ import {
   AccountOrgAdminUserEdit,
   AccountOrgAdminUserList
 } from "./AccountOrgAdminUser";
-import {
-  OrganisationCreate,
-  OrganisationDetails,
-  OrganisationEdit,
-  OrganisationList
-} from "./Organisation";
-import {
-  organisationGroupCreate,
-  organisationGroupEdit,
-  OrganisationGroupList,
-  OrganisationGroupShow
-} from "./OrganisationGroup";
+import { OrganisationCreate, OrganisationDetails, OrganisationEdit, OrganisationList } from "./Organisation";
+import { organisationGroupCreate, organisationGroupEdit, OrganisationGroupList, OrganisationGroupShow } from "./OrganisationGroup";
 
 class DeploymentManager extends Component {
   static childContextTypes = {
@@ -39,7 +29,7 @@ class DeploymentManager extends Component {
   }
 
   render() {
-    const { user } = this.props;
+    const { user, userInfo } = this.props;
 
     return (
       <Admin
@@ -62,9 +52,9 @@ class DeploymentManager extends Component {
           name="accountOrgAdmin"
           options={{ label: "Admins" }}
           list={AccountOrgAdminUserList}
-          create={WithProps({ user }, AccountOrgAdminUserCreate)}
-          show={WithProps({ user }, AccountOrgAdminUserDetail)}
-          edit={WithProps({ user }, AccountOrgAdminUserEdit)}
+          create={WithProps({ user, region: userInfo.region }, AccountOrgAdminUserCreate)}
+          show={WithProps({ user, region: userInfo.region }, AccountOrgAdminUserDetail)}
+          edit={WithProps({ user, region: userInfo.region }, AccountOrgAdminUserEdit)}
         />
         <Resource
           name="organisation"
@@ -89,6 +79,7 @@ class DeploymentManager extends Component {
 
 const mapStateToProps = state => ({
   user: state.app.authSession,
+  userInfo: state.app.userInfo,
   organisations: state.app.organisations
 });
 

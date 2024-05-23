@@ -1,16 +1,7 @@
 import React from "react";
-import { isEmpty, isEqual, isNil } from "lodash";
-import { phoneCountryPrefix } from "../common/constants";
-import {
-  email,
-  Filter,
-  regex,
-  required,
-  SaveButton,
-  TextInput,
-  Toolbar,
-  minLength
-} from "react-admin";
+import { isEmpty, isEqual } from "lodash";
+import { email, Filter, minLength, required, SaveButton, TextInput, Toolbar } from "react-admin";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const UserTitle = ({ record, titlePrefix }) => {
   return (
@@ -57,21 +48,21 @@ export const PasswordTextField = props => (
   </sub>
 );
 
-export const mobileNumberFormatter = (v = "") =>
-  isNil(v) ? v : v.substring(phoneCountryPrefix.length);
-export const mobileNumberParser = v =>
-  v.startsWith(phoneCountryPrefix) ? v : phoneCountryPrefix.concat(v);
-
 export const isRequired = required("This field is required");
 export const validateEmail = [isRequired, email("Please enter a valid email address")];
-export const validatePhone = [
-  isRequired,
-  regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")
-];
-export const validatePassword = [
-  isRequired,
-  minLength(8, "Password too small, enter at least 8 characters.")
-];
+
+const getValidatePhoneValidator = function(region) {
+  return value => {
+    const isValid = isValidPhoneNumber(value, region);
+    return isValid ? undefined : "Invalid phone number";
+  };
+};
+
+export const getPhoneValidator = function(region) {
+  return [isRequired, getValidatePhoneValidator(region)];
+};
+
+export const validatePassword = [isRequired, minLength(8, "Password too small, enter at least 8 characters.")];
 export const validatePasswords = ({ password, confirmPassword }) => {
   const errors = {};
   if (!isEqual(password, confirmPassword)) {

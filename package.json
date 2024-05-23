@@ -73,7 +73,8 @@
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
     "rules-config": "github:avniproject/rules-config#fe552da405368bfd138e2f38e605c1d307e3ebe4",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "libphonenumber-js": "^1.11.1"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",

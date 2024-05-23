@@ -12131,6 +12131,11 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+libphonenumber-js@^1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.1.tgz#2596683e1876bfee74082bb49339fe0a85ae34f9"
+  integrity sha512-Wze1LPwcnzvcKGcRHFGFECTaLzxOtujwpf924difr5zniyYv1C2PiW0419qDR7m8lKDxsImu5mwxFuXhXpjmvw==
+
 lie@~3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/lie/-/lie-3.3.0.tgz#dcf82dee545f46074daf200c7c1c5a08e0f40f6a"
@@ -13606,10 +13611,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.31.64:
-  version "1.31.64"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.64.tgz#a89230a5dd1c22f7cd59f4aa9f8535248f40d456"
-  integrity sha512-VRXuweEK5FkRU3nwfXczci1cJUex6oRphiI1/81dk458bBs5BajBnk1YCq76qVesGJFCBl3FCn8R7Kt/F3yNsQ==
+openchs-models@1.31.75:
+  version "1.31.75"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.75.tgz#4d4c007692616a01eb94819fe4dc7c5dca8881de"
+  integrity sha512-mQEyV0eHqLXcyArq4zw745gdiEFu9vp925KOHJajwS+l58PRkzdDc1wq6EwAm3jajFxOYucp2gd6aGH81Op5xQ==
   dependencies:
     uuid "^9.0.1"
 
