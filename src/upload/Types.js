@@ -1,11 +1,11 @@
 import UploadTypes from "./UploadTypes";
 
 const typesForStaticDownload = Object.freeze({
-  locations: { name: "Locations" },
   metadataZip: { name: "Metadata Zip" }
 });
 
 const typesForDynamicDownload = Object.freeze({
+  locations: { name: "Locations" },
   usersAndCatchments: { name: "Users & Catchments" }
 });
 
