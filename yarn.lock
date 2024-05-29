@@ -13611,10 +13611,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.31.75:
-  version "1.31.75"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.75.tgz#4d4c007692616a01eb94819fe4dc7c5dca8881de"
-  integrity sha512-mQEyV0eHqLXcyArq4zw745gdiEFu9vp925KOHJajwS+l58PRkzdDc1wq6EwAm3jajFxOYucp2gd6aGH81Op5xQ==
+openchs-models@1.31.77:
+  version "1.31.77"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.77.tgz#e3edb6c275e6477acd1eefdf36968ab0a80f3bfe"
+  integrity sha512-hZHPtlyzoP+euqhGC+6hN6Ziy3Bt4zBH2I8OdSSzd6AgloJVmB8IgL26QKo0HioqS1xQ7hujECXH536zaikrXA==
   dependencies:
     uuid "^9.0.1"
 
@@ -16934,6 +16934,19 @@ rsvp@^4.8.4:
 "rules-config@github:avniproject/rules-config#fe552da405368bfd138e2f38e605c1d307e3ebe4":
   version "0.0.1"
   resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/fe552da405368bfd138e2f38e605c1d307e3ebe4"
+  dependencies:
+    "@quasar/babel-preset-app" "^2.0.1"
+    babel-preset-env "^1.7.0"
+    babel-register "^6.26.0"
+    chai "^4.1.2"
+    lodash "^4.17.11"
+    moment "^2.29.4"
+    superagent "^3.8.3"
+    test "^0.6.0"
+    uglifyjs-webpack-plugin "^1.2.5"
+    webpack "^3.12.0"
+    webpack-cli "^3.0.3"
+    webpack-node-externals "1.6.0"
 
 run-async@^2.2.0, run-async@^2.4.0:
   version "2.4.1"

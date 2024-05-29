@@ -67,7 +67,8 @@ class DashboardService {
 
       const { subjectTypes, programs, encounterTypes } = operationalModules;
       const filterConfigInResponse = x.filterConfig;
-      filterConfig.subjectType = EntityService.findByUuid(subjectTypes, filterConfigInResponse.subjectTypeUUID);
+      filterConfig.subjectType =
+        filterConfigInResponse.subjectTypeUUID && EntityService.findByUuid(subjectTypes, filterConfigInResponse.subjectTypeUUID);
       filterConfig.widget = filterConfigInResponse.widget;
       filterConfig.type = filterConfigInResponse.type;
       if (filterConfigInResponse.type === CustomFilter.type.GroupSubject) {

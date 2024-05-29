@@ -4,6 +4,7 @@ import _ from "lodash";
 import Edit from "@material-ui/icons/Edit";
 import Delete from "@material-ui/icons/DeleteOutline";
 import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
+import EntityService from "../../../common/service/EntityService";
 
 function getFilterColumns(operationalModules) {
   if (_.isNil(operationalModules.subjectTypes)) return [];
@@ -13,6 +14,15 @@ function getFilterColumns(operationalModules) {
       title: "Name",
       render: rowData => {
         return rowData.name;
+      }
+    },
+    {
+      title: "Subject Type",
+      render: rowData => {
+        const subjectType =
+          rowData.filterConfig.subjectType &&
+          EntityService.findByUuid(operationalModules.subjectTypes, rowData.filterConfig.subjectType.uuid);
+        return subjectType ? subjectType.name : "";
       }
     },
     {
