@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { filter, get, isEmpty, isNil, concat } from "lodash";
+import _, { concat, get, isEmpty, isNil } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 import Button from "@material-ui/core/Button";
 import FileUpload from "../common/components/FileUpload";
-import { staticTypesWithStaticDownload, staticTypesWithDynamicDownload } from "./Types";
+import { staticTypesWithDynamicDownload, staticTypesWithStaticDownload } from "./Types";
 import api from "./api";
 import DropDown from "../common/components/DropDown";
 import { getStatuses, getUploadTypes } from "./reducers";
@@ -19,7 +19,10 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { LocationModes } from "./LocationModes";
-import _ from "lodash";
+import Tooltip from "@material-ui/core/Tooltip";
+import { LocationHierarchy } from "./LocationHierarchy";
+import Typography from "@material-ui/core/Typography";
+import { Box } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -38,20 +41,15 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [file, setFile] = React.useState();
   const [autoApprove, setAutoApprove] = React.useState(false);
   const [mode, setMode] = React.useState("relaxed");
+  const [hierarchy, setHierarchy] = React.useState();
+  const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
 
   const selectFile = (content, userfile) => setFile(userfile);
   const getUploadTypeCode = name =>
-    staticTypesWithStaticDownload.getCode(name) ||
-    staticTypesWithDynamicDownload.getCode(name) ||
-    uploadTypes.getCode(name);
+    staticTypesWithStaticDownload.getCode(name) || staticTypesWithDynamicDownload.getCode(name) || uploadTypes.getCode(name);
 
   const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(
-      getUploadTypeCode(uploadType),
-      file,
-      autoApprove,
-      mode
-    );
+    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode);
     if (!ok && error) {
       alert(error);
     }
@@ -67,11 +65,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     if (staticTypesWithStaticDownload.getCode(entityForDownload)) {
       await api.downloadSample(staticTypesWithStaticDownload.getCode(entityForDownload));
     } else if (
-      !_.isUndefined(
-        (uploadType =
-          uploadTypes.getCode(entityForDownload) ||
-          staticTypesWithDynamicDownload.getCode(entityForDownload))
-      )
+      !_.isUndefined((uploadType = uploadTypes.getCode(entityForDownload) || staticTypesWithDynamicDownload.getCode(entityForDownload)))
     ) {
       await api.downloadDynamicSample(uploadType);
     }
@@ -80,25 +74,17 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 
   React.useEffect(() => {
     getUploadTypes();
+    api.fetchLocationHierarchies().then(json => setConfiguredHierarchies(JSON.parse(json)));
   }, []);
 
-  const uploadOptions = () =>
-    concat(
-      staticTypesWithStaticDownload.names,
-      staticTypesWithDynamicDownload.names,
-      uploadTypes.names
-    );
-
-  const downloadOptions = () =>
-    filter(
-      uploadOptions(),
-      ({ name }) => name !== staticTypesWithStaticDownload.getName("metadataZip")
-    );
+  const uploadAndDownloadOptions = () =>
+    concat(staticTypesWithStaticDownload.names, staticTypesWithDynamicDownload.names, uploadTypes.names);
 
   const dropdownHandler = option => {
     setAutoApprove(false);
     setMode("relaxed");
     setUploadType(option);
+    option !== staticTypesWithStaticDownload.getName("metadataZip") && setEntityForDownload(option);
   };
 
   return (
@@ -107,84 +93,62 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
       <Grid item xs={12} style={{ minWidth: 1200, maxWidth: 1400 }}>
         <Paper className={classes.uploadDownloadSection}>
           <DocumentationContainer filename={"Upload.md"}>
-            <Grid container>
-              <Grid item xs={12} sm={6}>
-                <Grid container item>
-                  Upload
-                </Grid>
-                <Grid container item spacing={2}>
-                  <Grid container item xs={12} sm={3}>
-                    <DropDown
-                      name="Type"
-                      value={uploadType}
-                      onChange={dropdownHandler}
-                      options={uploadOptions()}
-                    />
-                  </Grid>
-                  <Grid
-                    container
-                    item
-                    direction="column"
-                    justifyContent="center"
-                    alignItems="flex-start"
-                    xs={12}
-                    sm={9}
-                    spacing={2}
-                  >
-                    <Grid item>
-                      <FileUpload
-                        canSelect={!isEmpty(uploadType)}
-                        canUpload={!isNil(file)}
-                        onSelect={selectFile}
-                        onUpload={uploadFile}
-                      />
-                    </Grid>
-                    <Grid item>Selected File: {get(file, "name", "")}</Grid>
-                  </Grid>
-                </Grid>
+            <Grid container item spacing={2}>
+              <Grid container item>
+                Upload
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Grid container item>
-                  Download Sample
+              <Grid container item>
+                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={12} sm={6} spacing={2}>
+                  <DropDown name="Type" value={uploadType} onChange={dropdownHandler} options={uploadAndDownloadOptions()} />
+                  <Tooltip title="Download Sample file for selected Upload type" placement="bottom-start" arrow>
+                    <Button color="primary" onClick={downloadSampleFile} disabled={isEmpty(entityForDownload)}>
+                      <CloudDownload disabled={isEmpty(entityForDownload)} />
+                      <span style={{ marginLeft: "1em" }}>Download Sample</span>
+                    </Button>
+                  </Tooltip>
                 </Grid>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  justifyContent="flex-start"
-                  alignItems="center"
-                >
-                  <DropDown
-                    name="Type"
-                    value={entityForDownload}
-                    onChange={setEntityForDownload}
-                    options={downloadOptions()}
-                  />
-                  <Button
-                    color="primary"
-                    onClick={downloadSampleFile}
-                    disabled={isEmpty(entityForDownload)}
-                  >
-                    <CloudDownload disabled={isEmpty(entityForDownload)} />
-                    {" Download"}
-                  </Button>
+                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={12} sm={6} spacing={2}>
+                  <Grid item>
+                    <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />
+                  </Grid>
+                  <Grid item>
+                    <span style={{ marginLeft: "1em" }}>Selected File: {get(file, "name", "")}</span>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
-            {uploadTypes.isApprovalEnabled(uploadType) && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={autoApprove}
-                    onChange={event => setAutoApprove(event.target.checked)}
-                    name="autoApprove"
-                    color="primary"
+            <Grid container>
+              <Grid container item>
+                {uploadTypes.isApprovalEnabled(uploadType) && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={autoApprove}
+                        onChange={event => setAutoApprove(event.target.checked)}
+                        name="autoApprove"
+                        color="primary"
+                      />
+                    }
+                    label={"Approve automatically"}
                   />
-                }
-                label={"Approve automatically"}
-              />
-            )}
-            {uploadType === "Locations" && <LocationModes mode={mode} setMode={setMode} />}
+                )}
+              </Grid>
+              <Grid container item>
+                {uploadType === "Locations" && <LocationModes mode={mode} setMode={setMode} />}
+              </Grid>
+              <Grid container item>
+                {uploadType === "Locations" && mode === "relaxed" && configuredHierarchies && configuredHierarchies.length > 0 && (
+                  <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
+                )}
+                {uploadType === "Locations" && mode === "relaxed" && (!configuredHierarchies || configuredHierarchies.length === 0) && (
+                  <Box>
+                    <Typography color="error" display="block" gutterBottom>
+                      Invalid or missing Location Hierarchy.
+                    </Typography>
+                  </Box>
+                )}
+              </Grid>
+            </Grid>
           </DocumentationContainer>
         </Paper>
       </Grid>

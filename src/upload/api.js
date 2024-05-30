@@ -4,9 +4,7 @@ import { get } from "lodash";
 
 export default {
   fetchUploadJobStatuses: (params = {}) => {
-    return http
-      .fetchJson(http.withParams("/import/status", { size: 5, ...params }))
-      .then(r => r.json);
+    return http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then(r => r.json);
   },
   bulkUpload: (type, file, autoApprove, locationUploadMode) =>
     http
@@ -17,11 +15,16 @@ export default {
   fetchUploadTypes: () => {
     return http.fetchJson(http.withParams("/web/importTypes")).then(r => r.json);
   },
+  fetchLocationHierarchies: () => {
+    return http
+      .fetchJson(http.withParams("/web/locationHierarchies"))
+      .then(r => r.json)
+      .catch(r => "[]");
+  },
   async downloadSample(type) {
     const file = await fetch(`/bulkuploads/sample/${type}.csv`);
     const content = await file.text();
     files.download(`sample-${type}.csv`, content);
   },
-  downloadDynamicSample: type =>
-    http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`)
+  downloadDynamicSample: type => http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`)
 };
