@@ -20,7 +20,7 @@ export const LocationModes = ({ mode, setMode }) => {
             <FormControlLabel value="relaxed" control={<Radio color="primary" />} label="Create" />
           </div>
         </Tooltip>
-        <Tooltip title="Edit locations' name, parent, GPS co-ordinates or properties" placement="bottom-start" arrow>
+        <Tooltip title="Edit locations' name, parent, GPS coordinates or properties" placement="bottom-start" arrow>
           <div>
             <FormControlLabel value="strict" control={<Radio color="primary" />} label="Edit" />
           </div>
