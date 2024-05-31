@@ -26,5 +26,11 @@ export default {
     const content = await file.text();
     files.download(`sample-${type}.csv`, content);
   },
-  downloadDynamicSample: type => http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`)
+  downloadDynamicSample: type => http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`),
+  downloadLocationsSample: (type, locationUploadMode, locationHierarchy) => {
+    return http.downloadFile(
+      `/web/importSample?uploadType=${type}&locationUploadMode=${locationUploadMode}&locationHierarchy=${locationHierarchy}`,
+      `sample-${type}.csv`
+    );
+  }
 };

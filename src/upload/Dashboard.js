@@ -68,7 +68,11 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     } else if (
       !_.isUndefined((uploadType = uploadTypes.getCode(entityForDownload) || staticTypesWithDynamicDownload.getCode(entityForDownload)))
     ) {
-      await api.downloadDynamicSample(uploadType);
+      if (uploadType === "locations") {
+        await api.downloadLocationsSample(uploadType, mode, hierarchy);
+      } else {
+        await api.downloadDynamicSample(uploadType);
+      }
     }
   };
 
