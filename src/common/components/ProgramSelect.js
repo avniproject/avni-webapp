@@ -35,9 +35,11 @@ export function ProgramSelect({ isMulti, selectedSubjectTypes, selectedPrograms,
             maxMenuHeight={200}
           />
         </div>
-        <IconButton onClick={() => onChange([])}>
-          <DeleteIcon />
-        </IconButton>
+        {selectedPrograms.length > 0 && (
+          <IconButton onClick={() => onChange([])}>
+            <DeleteIcon />
+          </IconButton>
+        )}
       </div>
     </div>
   );

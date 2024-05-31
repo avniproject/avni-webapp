@@ -3,11 +3,16 @@ import ColorValue from "../../common/ColorValue";
 import ResourceListView from "../../common/ResourceListView";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
+import _ from "lodash";
 
 const columns = [
   {
     title: "Name",
     render: rowData => !rowData.voided && <a href={`#/appDesigner/reportCard/${rowData.id}/show`}>{rowData.name}</a>
+  },
+  {
+    title: "Standard Report Card",
+    render: rowData => _.get(rowData, "standardReportCardType.name")
   },
   {
     title: "Description",

@@ -36,9 +36,11 @@ export function EncounterTypeSelect({ isMulti, selectedSubjectTypes = [], select
             maxMenuHeight={200}
           />
         </div>
-        <IconButton onClick={() => onChange([])}>
-          <DeleteIcon />
-        </IconButton>
+        {selectedEncounterTypes.length > 0 && (
+          <IconButton onClick={() => onChange([])}>
+            <DeleteIcon />
+          </IconButton>
+        )}
       </div>
     </div>
   );
