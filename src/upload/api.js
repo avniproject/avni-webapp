@@ -18,8 +18,8 @@ export default {
   fetchLocationHierarchies: () => {
     return http
       .fetchJson(http.withParams("/web/locationHierarchies"))
-      .then(r => r.json)
-      .catch(r => "[]");
+      .then(response => Object.entries(response.json).map(([value, label]) => ({ value, label })))
+      .catch(() => []);
   },
   async downloadSample(type) {
     const file = await fetch(`/bulkuploads/sample/${type}.csv`);

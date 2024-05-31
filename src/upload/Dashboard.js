@@ -55,6 +55,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     }
     setFile();
     setUploadType("");
+    setEntityForDownload("");
     setTimeout(() => {
       getStatuses(0);
     }, 1000);
@@ -69,12 +70,14 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     ) {
       await api.downloadDynamicSample(uploadType);
     }
-    setEntityForDownload("");
   };
 
   React.useEffect(() => {
     getUploadTypes();
-    api.fetchLocationHierarchies().then(json => setConfiguredHierarchies(JSON.parse(json)));
+    api.fetchLocationHierarchies().then(locHierarchies => {
+      setHierarchy(get(locHierarchies[0], "value"));
+      setConfiguredHierarchies(locHierarchies);
+    });
   }, []);
 
   const uploadAndDownloadOptions = () =>
@@ -87,6 +90,11 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     option !== staticTypesWithStaticDownload.getName("metadataZip") && setEntityForDownload(option);
   };
 
+  const isSampleDownloadDisallowed =
+    isEmpty(entityForDownload) ||
+    (uploadType === "Locations" && isEmpty(mode)) ||
+    (uploadType === "Locations" && mode === "relaxed" && isEmpty(hierarchy));
+
   return (
     <Grid container spacing={2} className={classes.root}>
       <Title title={"Upload"} />
@@ -98,16 +106,16 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                 Upload
               </Grid>
               <Grid container item>
-                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={12} sm={6} spacing={2}>
+                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <DropDown name="Type" value={uploadType} onChange={dropdownHandler} options={uploadAndDownloadOptions()} />
                   <Tooltip title="Download Sample file for selected Upload type" placement="bottom-start" arrow>
-                    <Button color="primary" onClick={downloadSampleFile} disabled={isEmpty(entityForDownload)}>
-                      <CloudDownload disabled={isEmpty(entityForDownload)} />
+                    <Button color="primary" onClick={downloadSampleFile} disabled={isSampleDownloadDisallowed}>
+                      <CloudDownload disabled={isSampleDownloadDisallowed} />
                       <span style={{ marginLeft: "1em" }}>Download Sample</span>
                     </Button>
                   </Tooltip>
                 </Grid>
-                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={12} sm={6} spacing={2}>
+                <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <Grid item>
                     <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />
                   </Grid>
@@ -137,16 +145,17 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                 {uploadType === "Locations" && <LocationModes mode={mode} setMode={setMode} />}
               </Grid>
               <Grid container item>
-                {uploadType === "Locations" && mode === "relaxed" && configuredHierarchies && configuredHierarchies.length > 0 && (
-                  <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
-                )}
-                {uploadType === "Locations" && mode === "relaxed" && (!configuredHierarchies || configuredHierarchies.length === 0) && (
-                  <Box>
-                    <Typography color="error" display="block" gutterBottom>
-                      Invalid or missing Location Hierarchy.
-                    </Typography>
-                  </Box>
-                )}
+                {uploadType === "Locations" &&
+                  mode === "relaxed" &&
+                  (configuredHierarchies && configuredHierarchies.length > 0 ? (
+                    <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
+                  ) : (
+                    <Box>
+                      <Typography color="error" display="block" gutterBottom>
+                        Invalid or missing Location Hierarchy.
+                      </Typography>
+                    </Box>
+                  ))}
               </Grid>
             </Grid>
           </DocumentationContainer>
