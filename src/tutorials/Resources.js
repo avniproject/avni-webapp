@@ -21,7 +21,7 @@ const Resources = () => {
           content={
             "Are you trying out Avni for the first time? Here's all the information you'll need"
           }
-          href={"https://avni.readme.io/docs/implementers-guide"}
+          href={"https://avni.readme.io/docs/implementers-concept-guide-introduction"}
           iconComponent={<Description color="primary" style={{ fontSize: 60, color: "#009688" }} />}
         />
       </Grid>
