@@ -7,7 +7,7 @@ import Box from "@material-ui/core/Box";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
-import { CustomFilter, MetaDataService } from "openchs-models";
+import { CustomFilter, DashboardFilterConfig, MetaDataService } from "openchs-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -71,9 +71,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   const { programs, subjectTypes, encounterTypes, formMappings } = operationalModules;
 
   const [filterName, setFilterName] = useState(isNew ? "" : selectedFilter.name);
-  const [filterConfig: DashboardFilterConfig, setFilterConfig] = useState(
-    isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
-  );
+  const [filterConfig, setFilterConfig] = useState(isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig);
 
   const subjectTypeOptions = mapToOptions(subjectTypes);
   const programOptions = mapToOptions(MetaDataService.getProgramsForSubjectType(programs, null, formMappings));
