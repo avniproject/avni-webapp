@@ -59,13 +59,7 @@ export const formDesignerAddFormElement = (draft, draftFormElements, elementInde
   draft.detectBrowserCloseEvent = true;
 };
 
-export const formDesignerHandleGroupElementChange = (
-  draft,
-  draftFormElementGroup,
-  propertyName,
-  value,
-  elementIndex = -1
-) => {
+export const formDesignerHandleGroupElementChange = (draft, draftFormElementGroup, propertyName, value, elementIndex = -1) => {
   if (elementIndex === -1) {
     draftFormElementGroup[propertyName] = value;
   } else {
@@ -74,35 +68,19 @@ export const formDesignerHandleGroupElementChange = (
   draft.detectBrowserCloseEvent = true;
 };
 
-export const formDesignerHandleInlineNumericAttributes = (
-  draftFormElement,
-  propertyName,
-  value
-) => {
+export const formDesignerHandleInlineNumericAttributes = (draftFormElement, propertyName, value) => {
   draftFormElement["inlineNumericDataTypeAttributes"][propertyName] = value;
 };
 
-export const formDesignerHandleInlineCodedConceptAnswers = (
-  draftFormElement,
-  answerName,
-  answerIndex
-) => {
+export const formDesignerHandleInlineCodedConceptAnswers = (draftFormElement, answerName, answerIndex) => {
   draftFormElement.inlineCodedAnswers[answerIndex].name = answerName;
 };
 
-export const formDesignerOnToggleInlineConceptCodedAnswerAttribute = (
-  draftFormElement,
-  propertyName,
-  answerIndex
-) => {
-  draftFormElement.inlineCodedAnswers[answerIndex][propertyName] = !draftFormElement
-    .inlineCodedAnswers[answerIndex][propertyName];
+export const formDesignerOnToggleInlineConceptCodedAnswerAttribute = (draftFormElement, propertyName, answerIndex) => {
+  draftFormElement.inlineCodedAnswers[answerIndex][propertyName] = !draftFormElement.inlineCodedAnswers[answerIndex][propertyName];
 };
 
-export const formDesignerOnDeleteInlineConceptCodedAnswerDelete = (
-  draftFormElement,
-  answerIndex
-) => {
+export const formDesignerOnDeleteInlineConceptCodedAnswerDelete = (draftFormElement, answerIndex) => {
   draftFormElement.inlineCodedAnswers.splice(answerIndex, 1);
 };
 
@@ -121,12 +99,7 @@ export const formDesignerOnConceptAnswerAlphabeticalSort = draftFormElement => {
   draftFormElement.inlineCodedAnswers = alphabeticalSort(conceptAnswers);
 };
 
-export const formDesignerHandleInlineConceptAttributes = (
-  draftFormElement,
-  attributeName,
-  propertyName,
-  value
-) => {
+export const formDesignerHandleInlineConceptAttributes = (draftFormElement, attributeName, propertyName, value) => {
   draftFormElement[attributeName][propertyName] = value;
 };
 
@@ -143,23 +116,20 @@ export const formDesignerHandleInlineCodedAnswerAddition = draftFormElement => {
   });
 };
 
-export const formDesignerHandleGroupElementKeyValueChange = (
-  draft,
-  draftFormElement,
-  propertyName,
-  value
-) => {
-  if (
-    includes(
-      ["IdSourceUUID", "unique", "groupSubjectTypeUUID", "groupSubjectRoleUUID"],
-      propertyName
-    )
-  ) {
+export const formDesignerHandleGroupElementKeyValueChange = (draft, draftFormElement, propertyName, value) => {
+  if (propertyName === "durationOptions") {
+    if (value === "") {
+      draftFormElement.keyValues.durationOptions = [];
+      draftFormElement.keyValues.durationOptionsError = true;
+    } else {
+      draftFormElement.keyValues.durationOptions = value;
+      draftFormElement.keyValues.durationOptionsError = false;
+    }
+  }
+  if (includes(["IdSourceUUID", "unique", "groupSubjectTypeUUID", "groupSubjectRoleUUID"], propertyName)) {
     draftFormElement.keyValues[propertyName] = value;
   } else if (propertyName === "editable") {
-    value === "undefined"
-      ? (draftFormElement.keyValues[propertyName] = false)
-      : delete draftFormElement.keyValues[propertyName];
+    value === "undefined" ? (draftFormElement.keyValues[propertyName] = false) : delete draftFormElement.keyValues[propertyName];
   } else if (["datePickerMode", "timePickerMode"].includes(propertyName)) {
     draftFormElement.keyValues[propertyName] = value;
   } else if (
@@ -183,10 +153,7 @@ export const formDesignerHandleGroupElementKeyValueChange = (
       draftFormElement.keyValues["durationOptions"] = [];
     }
     if (draftFormElement.keyValues["durationOptions"].includes(propertyName)) {
-      draftFormElement.keyValues["durationOptions"].splice(
-        draftFormElement.keyValues["durationOptions"].indexOf(propertyName),
-        1
-      );
+      draftFormElement.keyValues["durationOptions"].splice(draftFormElement.keyValues["durationOptions"].indexOf(propertyName), 1);
     } else {
       draftFormElement.keyValues["durationOptions"].push(value);
     }
@@ -215,9 +182,7 @@ export const formDesignerHandleExcludedAnswers = (draft, draftFormElement, name,
 };
 
 export const formDesignerHandleModeForDate = (draftFormElement, propertyName, value) => {
-  value === "durationOptions"
-    ? delete draftFormElement.keyValues["datePickerMode"]
-    : delete draftFormElement.keyValues["durationOptions"];
+  value === "durationOptions" ? delete draftFormElement.keyValues["datePickerMode"] : delete draftFormElement.keyValues["durationOptions"];
   draftFormElement[propertyName] = value;
 };
 
@@ -226,11 +191,7 @@ export const formDesignerHandleRegex = (draftFormElement, propertyName, value) =
   draftFormElement[propertyName] = value;
 };
 
-export const formDesignerHandleConceptFormLibrary = (
-  draftFormElement,
-  value,
-  inlineConcept = false
-) => {
+export const formDesignerHandleConceptFormLibrary = (draftFormElement, value, inlineConcept = false) => {
   if (inlineConcept) {
     draftFormElement.showConceptLibrary = value;
     draftFormElement.inlineConceptErrorMessage = formDesignerGetEmptyFormElement().inlineConceptErrorMessage;
@@ -292,16 +253,12 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
     lowNormal: clonedFormElement["inlineNumericDataTypeAttributes"].lowNormal,
     highNormal: clonedFormElement["inlineNumericDataTypeAttributes"].highNormal,
     unit:
-      clonedFormElement["inlineNumericDataTypeAttributes"].unit === ""
-        ? null
-        : clonedFormElement["inlineNumericDataTypeAttributes"].unit,
+      clonedFormElement["inlineNumericDataTypeAttributes"].unit === "" ? null : clonedFormElement["inlineNumericDataTypeAttributes"].unit,
     answers: clonedFormElement["inlineCodedAnswers"]
   };
 
   if (inlineConceptObject.dataType === "Location") {
-    if (
-      clonedFormElement["inlineLocationDataTypeKeyValues"].lowestAddressLevelTypeUUIDs.length === 0
-    ) {
+    if (clonedFormElement["inlineLocationDataTypeKeyValues"].lowestAddressLevelTypeUUIDs.length === 0) {
       locationValidation = true;
     } else {
       const keyValues = [];
@@ -313,9 +270,7 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
         key: "lowestAddressLevelTypeUUIDs",
         value: clonedFormElement["inlineLocationDataTypeKeyValues"].lowestAddressLevelTypeUUIDs
       };
-      if (
-        !isEmpty(clonedFormElement["inlineLocationDataTypeKeyValues"].highestAddressLevelTypeUUID)
-      ) {
+      if (!isEmpty(clonedFormElement["inlineLocationDataTypeKeyValues"].highestAddressLevelTypeUUID)) {
         keyValues[2] = {
           key: "highestAddressLevelTypeUUID",
           value: clonedFormElement["inlineLocationDataTypeKeyValues"].highestAddressLevelTypeUUID
@@ -366,23 +321,15 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
   }
 
   if (inlineConceptObject.dataType === "Numeric") {
-    if (
-      parseInt(inlineConceptObject.lowAbsolute) === null ||
-      parseInt(inlineConceptObject.highAbsolute) === null
-    ) {
+    if (parseInt(inlineConceptObject.lowAbsolute) === null || parseInt(inlineConceptObject.highAbsolute) === null) {
       absoluteValidation = false;
-    } else if (
-      parseInt(inlineConceptObject.lowAbsolute) > parseInt(inlineConceptObject.highAbsolute)
-    ) {
+    } else if (parseInt(inlineConceptObject.lowAbsolute) > parseInt(inlineConceptObject.highAbsolute)) {
       absoluteValidation = true;
     } else {
       absoluteValidation = false;
     }
 
-    if (
-      parseInt(inlineConceptObject.lowNormal) === null ||
-      parseInt(inlineConceptObject.highNormal === null)
-    ) {
+    if (parseInt(inlineConceptObject.lowNormal) === null || parseInt(inlineConceptObject.highNormal === null)) {
       normalValidation = false;
     } else if (parseInt(inlineConceptObject.lowNormal) > parseInt(inlineConceptObject.highNormal)) {
       normalValidation = true;
@@ -430,12 +377,7 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
               counter = counter + 1;
 
               if (counter === length) {
-                !flagForEmptyAnswer &&
-                  formDesignerOnSubmitInlineConcept(
-                    inlineConceptObject,
-                    clonedFormElement,
-                    updateState
-                  );
+                !flagForEmptyAnswer && formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
               }
             }
           })
@@ -460,12 +402,7 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
                     console.log("Dynamic concept added through Coded", response);
                     counter = counter + 1;
                     if (counter === length) {
-                      !flagForEmptyAnswer &&
-                        formDesignerOnSubmitInlineConcept(
-                          inlineConceptObject,
-                          clonedFormElement,
-                          updateState
-                        );
+                      !flagForEmptyAnswer && formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
                     }
                   }
                 });
@@ -481,29 +418,15 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
       formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
     }
   } else {
-    clonedFormElement.inlineConceptErrorMessage["name"] =
-      inlineConceptObject.name.trim() === "" ? "concept name is required" : "";
-    clonedFormElement.inlineConceptErrorMessage["dataType"] =
-      inlineConceptObject.dataType === "" ? "concept datatype is required" : "";
+    clonedFormElement.inlineConceptErrorMessage["name"] = inlineConceptObject.name.trim() === "" ? "concept name is required" : "";
+    clonedFormElement.inlineConceptErrorMessage["dataType"] = inlineConceptObject.dataType === "" ? "concept datatype is required" : "";
     clonedFormElement.inlineNumericDataTypeAttributes.error["normalValidation"] = normalValidation;
-    clonedFormElement.inlineNumericDataTypeAttributes.error[
-      "absoluteValidation"
-    ] = absoluteValidation;
-    clonedFormElement.inlineLocationDataTypeKeyValues.error[
-      "lowestAddressLevelRequired"
-    ] = locationValidation;
-    clonedFormElement.inlineSubjectDataTypeKeyValues.error[
-      "subjectTypeRequired"
-    ] = subjectValidation;
-    clonedFormElement.inlineEncounterDataTypeKeyValues.error[
-      "encounterTypeRequired"
-    ] = encounterTypeUUIDValidation;
-    clonedFormElement.inlineEncounterDataTypeKeyValues.error[
-      "encounterScopeRequired"
-    ] = encounterScopeValidation;
-    clonedFormElement.inlineEncounterDataTypeKeyValues.error[
-      "encounterIdentifierRequired"
-    ] = encounterIdentifierValidation;
+    clonedFormElement.inlineNumericDataTypeAttributes.error["absoluteValidation"] = absoluteValidation;
+    clonedFormElement.inlineLocationDataTypeKeyValues.error["lowestAddressLevelRequired"] = locationValidation;
+    clonedFormElement.inlineSubjectDataTypeKeyValues.error["subjectTypeRequired"] = subjectValidation;
+    clonedFormElement.inlineEncounterDataTypeKeyValues.error["encounterTypeRequired"] = encounterTypeUUIDValidation;
+    clonedFormElement.inlineEncounterDataTypeKeyValues.error["encounterScopeRequired"] = encounterScopeValidation;
+    clonedFormElement.inlineEncounterDataTypeKeyValues.error["encounterIdentifierRequired"] = encounterIdentifierValidation;
 
     updateState();
   }
@@ -532,21 +455,14 @@ export const formDesignerUpdateDragDropOrderForFirstGroup = (
         }
       });
     } else {
-      draftDestinationFormElementGroup.formElements.splice(
-        destinationElementIndex,
-        0,
-        sourceElement
-      );
+      draftDestinationFormElementGroup.formElements.splice(destinationElementIndex, 0, sourceElement);
     }
     draftSourceFormElementGroup.formElements[sourceElementIndex].voided = true;
   } else {
     draftSourceFormElementGroup.formElements.forEach((element, index) => {
       if (!element.voided) {
         if (counter === destinationElementIndex) {
-          const sourceElement = draftSourceFormElementGroup.formElements.splice(
-            sourceElementIndex,
-            1
-          )[0];
+          const sourceElement = draftSourceFormElementGroup.formElements.splice(sourceElementIndex, 1)[0];
           draftSourceFormElementGroup.formElements.splice(index, 0, sourceElement);
         }
         counter += 1;
