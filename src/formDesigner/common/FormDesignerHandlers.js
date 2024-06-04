@@ -149,6 +149,15 @@ export const formDesignerHandleGroupElementKeyValueChange = (
   propertyName,
   value
 ) => {
+  if (propertyName === "durationOptions") {
+    if (value === "") {
+      draftFormElement.keyValues.durationOptions = [];
+      draftFormElement.keyValues.durationOptionsError = true;
+    } else {
+      draftFormElement.keyValues.durationOptions = value;
+      draftFormElement.keyValues.durationOptionsError = false;
+    }
+  }
   if (
     includes(
       ["IdSourceUUID", "unique", "groupSubjectTypeUUID", "groupSubjectRoleUUID"],
