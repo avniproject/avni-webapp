@@ -84,7 +84,7 @@ const editFilter = (dashboard, { modifiedFilter, selectedFilter }) => {
 
 const deleteFilter = (dashboard, { selectedFilter }) => {
   const filters = reject(dashboard.filters, x => x.uuid === selectedFilter.uuid);
-  return { ...dashboard, filters };
+  return { ...dashboard, filters: [...filters] };
 };
 
 export const DashboardReducer = (dashboard, action) => {
