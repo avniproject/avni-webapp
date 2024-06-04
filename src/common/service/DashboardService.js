@@ -5,6 +5,8 @@ import EntityService from "./EntityService";
 import _ from "lodash";
 import WebReportCard from "../model/WebReportCard";
 import WebStandardReportCardType from "../model/WebStandardReportCardType";
+import WebDashboard from "../model/reports/WebDashboard";
+import WebDashboardSection from "../model/reports/WebDashboardSection";
 
 const dashboardEndpoint = "/web/dashboard";
 
@@ -30,7 +32,7 @@ class DashboardService {
         message: "Section view type cannot be blank. Please select a view type"
       });
     }
-    if (!!find(sections, ({ cards }) => isEmpty(cards))) {
+    if (!!find(sections, section => isEmpty(WebDashboardSection.getReportCards(section)))) {
       errors.push({ key: "EMPTY_SECTIONS", message: "Please add cards to the section." });
     }
     return errors;
@@ -39,15 +41,7 @@ class DashboardService {
   static save(dashboard, edit, id) {
     const url = edit ? `${dashboardEndpoint}/${id}` : "/web/dashboard";
     const methodName = edit ? "put" : "post";
-    const payload = { ...dashboard };
-    payload.filters = dashboard.filters.map(x => {
-      return {
-        name: x.name,
-        voided: x.voided,
-        uuid: x.uuid,
-        filterConfig: x.filterConfig.toServerRequest()
-      };
-    });
+    const payload = WebDashboard.toResource(dashboard);
     return http[methodName](url, payload).then(res => {
       if (res.status === 200) {
         return res.data;

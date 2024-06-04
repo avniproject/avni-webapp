@@ -1,22 +1,11 @@
 import React, { Component } from "react";
-import {
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText
-} from "@material-ui/core";
+import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { isEmpty } from "lodash";
 import { DragNDropComponent } from "../../common/DragNDropComponent";
-
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
+import PropTypes from "prop-types";
+import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
 class CreateEditDashboardSectionCards extends Component {
   constructor(props) {
@@ -24,12 +13,17 @@ class CreateEditDashboardSectionCards extends Component {
     this.onDragEnd = this.onDragEnd.bind(this);
   }
 
+  static propTypes = {
+    section: PropTypes.object.isRequired,
+    sectionUpdated: PropTypes.func.isRequired
+  };
+
   onDragEnd(result) {
     if (!result.destination) {
       return;
     }
-    const cards = reorder(this.props.cards, result.source.index, result.destination.index);
-    this.props.changeDisplayOrder(cards);
+    const section = WebDashboardSection.reorderCards(this.props.section, result.source.index, result.destination.index);
+    this.props.sectionUpdated(section);
   }
 
   renderCard(card) {
@@ -38,9 +32,7 @@ class CreateEditDashboardSectionCards extends Component {
         <ListItem>
           <ListItemText primary={card.name} secondary={card.description} />
           <ListItemSecondaryAction>
-            <IconButton
-              onClick={() => this.props.history.push(`/appDesigner/reportCard/${card.id}/show`)}
-            >
+            <IconButton onClick={() => this.props.history.push(`/appDesigner/reportCard/${card.id}/show`)}>
               <VisibilityIcon />
             </IconButton>
             <IconButton onClick={() => this.props.deleteCard(card)}>
@@ -53,11 +45,11 @@ class CreateEditDashboardSectionCards extends Component {
   }
 
   render() {
-    const cards = this.props.cards;
+    const cards = WebDashboardSection.getReportCards(this.props.section);
     return (
       !isEmpty(cards) && (
         <DragNDropComponent
-          dataList={this.props.cards}
+          dataList={cards}
           onDragEnd={this.onDragEnd}
           renderOtherSummary={card => this.renderCard(card)}
           summaryDirection={"column"}

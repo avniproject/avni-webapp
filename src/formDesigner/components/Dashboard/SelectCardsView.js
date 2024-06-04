@@ -3,30 +3,30 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import http from "../../../common/utils/httpClient";
 import Select from "react-select";
-import { differenceBy, intersectionWith, map } from "lodash";
+import _, { map } from "lodash";
+import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
-export const SelectCardsView = ({ dashboardCards, addCards }) => {
-  const [cards, setCards] = React.useState([]);
+export const SelectCardsView = ({ dashboardSection, addCards }) => {
+  const [allCards, setAllCards] = React.useState([]);
   const [cardsToBeAdded, setCardsToBeAdded] = React.useState([]);
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
   const cardSelectRef = React.useRef(null);
 
   React.useEffect(() => {
     http
       .get(`/web/reportCard`)
       .then(res => res.data)
-      .then(res => setCards(res));
+      .then(res => setAllCards(res));
   }, []);
 
   const onSelectChange = event => {
-    setCardsToBeAdded(event);
-    event && event.length > 0 ? setButtonDisabled(false) : setButtonDisabled(true);
+    const selectedCards = allCards.filter(a => _.some(event, lvPair => a.id === lvPair.value));
+    setCardsToBeAdded(selectedCards);
   };
 
   const addCardsToDashboard = event => {
     event.preventDefault();
-    cardSelectRef.current.select.clearValue();
-    addCards(intersectionWith(cards, cardsToBeAdded, (c, s) => c.id === s.value));
+    addCards(cardsToBeAdded);
+    setCardsToBeAdded([]);
   };
 
   return (
@@ -38,15 +38,18 @@ export const SelectCardsView = ({ dashboardCards, addCards }) => {
             ref={cardSelectRef}
             isMulti
             isSearchable
-            options={map(differenceBy(cards, dashboardCards, "id"), ({ id, name }) => ({
+            options={map(WebDashboardSection.getCardsNotAdded(dashboardSection, allCards), ({ id, name }) => ({
               label: name,
               value: id
             }))}
             onChange={onSelectChange}
+            value={cardsToBeAdded.map(x => {
+              return { value: x.id, label: x.name };
+            })}
           />
         </Grid>
         <Grid item xs={2}>
-          <Button variant="contained" color="primary" onClick={addCardsToDashboard} disabled={buttonDisabled} fullWidth={true}>
+          <Button variant="contained" color="primary" onClick={addCardsToDashboard} disabled={cardsToBeAdded.length === 0} fullWidth={true}>
             Add
           </Button>
         </Grid>

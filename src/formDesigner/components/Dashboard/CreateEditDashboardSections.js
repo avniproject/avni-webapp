@@ -1,7 +1,7 @@
 import React from "react";
-import { Input, IconButton, Typography, Tooltip, MenuItem } from "@material-ui/core";
+import { IconButton, Input, MenuItem, Tooltip, Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { isEmpty, filter, map, size } from "lodash";
+import { filter, isEmpty, size } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -13,13 +13,6 @@ import { AvniTextField } from "../../../common/components/AvniTextField";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { DragNDropComponent } from "../../common/DragNDropComponent";
-
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -95,18 +88,18 @@ const CreateEditDashboardSections = props => {
     if (!result.destination) {
       return;
     }
-    const sections = reorder(props.sections, result.source.index, result.destination.index);
-    props.dispatch({ type: "changeSectionDisplayOrder", payload: sections });
+    props.dispatch({
+      type: "changeSectionDisplayOrder",
+      payload: { sourceIndex: result.source.index, destIndex: result.destination.index }
+    });
   };
 
   const addCards = (cards, section) => {
-    const updatedCards = updateDisplayOrder([...section.cards, ...cards]);
-    props.dispatch({ type: "updateSectionField", payload: { section, cards: updatedCards } });
+    props.dispatch({ type: "addCards", payload: { section, cards } });
   };
 
   const renderSection = (section, index) => {
-    const viewTypes =
-      section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
+    const viewTypes = section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
     return (
       <Grid container>
         <Grid item xs={12}>
@@ -133,33 +126,12 @@ const CreateEditDashboardSections = props => {
             toolTipKey="APP_DESIGNER_DASHBOARD_SECTION_VIEW_TYPE"
           />
           <br />
-          <AvniFormLabel
-            label={"Add cards"}
-            toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_ADD_CARDS"}
-          />
-          <SelectCardsView
-            dashboardCards={filter(section.cards, card => card.voided === false)}
-            dispatch={props.dispatch}
-            addCards={cards => addCards(cards, section)}
-          />
+          <AvniFormLabel label={"Add cards"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_ADD_CARDS"} />
+          <SelectCardsView dashboardSection={section} addCards={cards => addCards(cards, section)} />
           <CreateEditDashboardSectionCards
             section={section}
-            cards={filter(
-              section.cards,
-              card =>
-                card.voided === false &&
-                filter(
-                  section.dashboardSectionCardMappings,
-                  sectionCardMapping => sectionCardMapping.voided === false
-                )
-                  .map(sectionCardMapping => sectionCardMapping.reportCardUUID)
-                  .includes(card.uuid)
-            )}
-            // cards={section.cards}
             dispatch={props.dispatch}
-            changeDisplayOrder={cards =>
-              props.dispatch({ type: "changeDisplayOrder", payload: { cards, section } })
-            }
+            sectionUpdated={section => props.dispatch({ type: "sectionUpdated", payload: { section } })}
             deleteCard={card => props.dispatch({ type: "deleteCard", payload: { card, section } })}
             history={props.history}
           />
@@ -197,13 +169,7 @@ const CreateEditDashboardSections = props => {
       </Grid>
       <Grid item sm={3}>
         <Typography className={classes.questionCount}>
-          {size(
-            filter(
-              section.dashboardSectionCardMappings,
-              sectionCardMapping => sectionCardMapping.voided === false
-            )
-          )}{" "}
-          cards
+          {size(filter(section.dashboardSectionCardMappings, sectionCardMapping => sectionCardMapping.voided === false))} cards
         </Typography>
       </Grid>
       <Grid item sm={2}>
@@ -220,9 +186,7 @@ const CreateEditDashboardSections = props => {
         <DragNDropComponent
           dataList={props.sections}
           onDragEnd={onDragEnd}
-          renderOtherSummary={(section, index, expanded) =>
-            renderOtherSummary(section, index, expanded)
-          }
+          renderOtherSummary={(section, index, expanded) => renderOtherSummary(section, index, expanded)}
           renderDetails={section => renderSection(section)}
           summaryDirection={"row"}
         />
@@ -232,10 +196,3 @@ const CreateEditDashboardSections = props => {
 };
 
 export default CreateEditDashboardSections;
-
-const updateDisplayOrder = items => {
-  return map(items, (item, index) => {
-    item.displayOrder = index + 1;
-    return item;
-  });
-};

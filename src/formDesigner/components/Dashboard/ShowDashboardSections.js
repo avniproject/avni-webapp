@@ -108,15 +108,8 @@ const ShowDashboardSections = ({ sections, history }) => {
         <div>
           {map(orderBy(sections, "displayOrder"), (section, index) => (
             <div>
-              <ExpansionPanel
-                key={index}
-                expanded={expanded === "panel" + index}
-                onChange={handleChange("panel" + index)}
-              >
-                <ExpansionPanelSummary
-                  aria-controls={"panel" + index + "bh-content"}
-                  id={"panel" + index + "bh-header"}
-                >
+              <ExpansionPanel key={index} expanded={expanded === "panel" + index} onChange={handleChange("panel" + index)}>
+                <ExpansionPanelSummary aria-controls={"panel" + index + "bh-content"} id={"panel" + index + "bh-header"}>
                   <Grid container direction={"row"}>
                     <Grid container item sm={12} alignItems={"center"}>
                       <Grid item sm={1}>
@@ -134,12 +127,7 @@ const ShowDashboardSections = ({ sections, history }) => {
                       </Grid>
                       <Grid item sm={3}>
                         <Typography className={classes.questionCount}>
-                          {size(
-                            filter(
-                              section.dashboardSectionCardMappings,
-                              sectionCardMapping => sectionCardMapping.voided === false
-                            )
-                          )}{" "}
+                          {size(filter(section.dashboardSectionCardMappings, sectionCardMapping => sectionCardMapping.voided === false))}{" "}
                           cards
                         </Typography>
                       </Grid>
@@ -157,17 +145,7 @@ const ShowDashboardSections = ({ sections, history }) => {
                     <Grid item xs={12}>
                       <ShowDashboardSectionCards
                         section={section}
-                        cards={filter(
-                          section.cards,
-                          card =>
-                            card.voided === false &&
-                            filter(
-                              section.dashboardSectionCardMappings,
-                              sectionCardMapping => sectionCardMapping.voided === false
-                            )
-                              .map(sectionCardMapping => sectionCardMapping.reportCardUUID)
-                              .includes(card.uuid)
-                        )}
+                        cards={section.dashboardSectionCardMappings.map(x => x.card)}
                         history={history}
                       />
                     </Grid>

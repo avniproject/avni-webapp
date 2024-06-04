@@ -21,15 +21,10 @@ import ShowDashboardFilters from "./ShowDashboardFilters";
 import { CreateEditFilterDialog } from "./CreateEditFilterDialog";
 import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
+import WebDashboard from "../../../common/model/reports/WebDashboard";
 
-const initialState = { name: "", description: "", sections: [], filters: [] };
-const CreateEditDashboard = ({
-  edit,
-  history,
-  operationalModules,
-  getOperationalModules,
-  ...props
-}) => {
+const initialState = WebDashboard.createNew();
+const CreateEditDashboard = ({ edit, history, operationalModules, getOperationalModules, ...props }) => {
   const [dashboard, dispatch] = React.useReducer(DashboardReducer, initialState);
   const [error, setError] = React.useState([]);
   const [id, setId] = React.useState();
@@ -93,9 +88,7 @@ const CreateEditDashboard = ({
         setError([
           {
             key: "SERVER_ERROR",
-            message: `${get(error, "response.data") ||
-              get(error, "message") ||
-              "error while saving dashboard"}`
+            message: `${get(error, "response.data") || get(error, "message") || "error while saving dashboard"}`
           }
         ])
       );
@@ -148,12 +141,7 @@ const CreateEditDashboard = ({
           {getErrorByKey(error, "EMPTY_SECTIONS")}
         </Grid>
         <Grid item>
-          <CreateEditDashboardSections
-            sections={dashboard.sections}
-            dispatch={dispatch}
-            history={history}
-            error={error}
-          />
+          <CreateEditDashboardSections sections={dashboard.sections} dispatch={dispatch} history={history} error={error} />
         </Grid>
         {getErrorByKey(error, "EMPTY_CARDS")}
         <br />
