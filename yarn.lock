@@ -4688,10 +4688,10 @@ autosuggest-highlight@^3.1.1:
   dependencies:
     diacritic "0.0.2"
 
-avni-health-modules@0.0.25:
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.25.tgz#157ccf77673e99c915bad25aa4fdf8907dfed29e"
-  integrity sha512-jrtj+7DoT26RRCkobdseYUpVzzIEN6d1iDM7kYXIF4e/8n/GbjfjjtjFRUJnQxCt0+s7zjKj7LjI85o22i4GnQ==
+avni-health-modules@0.0.26:
+  version "0.0.26"
+  resolved "https://registry.yarnpkg.com/avni-health-modules/-/avni-health-modules-0.0.26.tgz#0f049655895482fbc638be8f21371d0b857b48c4"
+  integrity sha512-M7D/XrouylzeZUbC6E4hwZF7eXs4RVWoEG5l5vqm7p5K0mmF1PbXjCk7uebUVJJXArMAE5PXFbEtjbzUTKMZoQ==
 
 aws-amplify-react@^2.3.0:
   version "2.6.3"
@@ -13606,10 +13606,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.31.64:
-  version "1.31.64"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.64.tgz#a89230a5dd1c22f7cd59f4aa9f8535248f40d456"
-  integrity sha512-VRXuweEK5FkRU3nwfXczci1cJUex6oRphiI1/81dk458bBs5BajBnk1YCq76qVesGJFCBl3FCn8R7Kt/F3yNsQ==
+openchs-models@1.31.74:
+  version "1.31.74"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.31.74.tgz#81164cb002b0bbe6aec86892b9b8eea524b7cad6"
+  integrity sha512-NdIBF0o69SNytOMYu0HS9PHbeHFmcDr2Zpa6+h24RrQeJLDxMN6fz8yQRyHDWqzuIisS0XQXieb3nQW9WnWjaQ==
   dependencies:
     uuid "^9.0.1"
 
