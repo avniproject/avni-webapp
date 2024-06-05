@@ -1,4 +1,12 @@
 class WebDashboardSectionCardMapping {
+  static newCard(card, displayOrder) {
+    return {
+      card: card,
+      displayOrder: displayOrder,
+      voided: false
+    };
+  }
+
   static toResources(dashboardSectionCardMappings) {
     return dashboardSectionCardMappings.map(dashboardSectionCardMapping => {
       return {

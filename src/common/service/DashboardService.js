@@ -1,8 +1,7 @@
-import { find, isEmpty, sortBy } from "lodash";
+import { find, isEmpty } from "lodash";
 import http from "../utils/httpClient";
-import { DashboardFilterConfig, GroupSubjectTypeFilter, ObservationBasedFilter, CustomFilter } from "openchs-models";
+import { CustomFilter, DashboardFilterConfig, GroupSubjectTypeFilter, ObservationBasedFilter } from "openchs-models";
 import EntityService from "./EntityService";
-import _ from "lodash";
 import WebReportCard from "../model/WebReportCard";
 import WebStandardReportCardType from "../model/WebStandardReportCardType";
 import WebDashboard from "../model/reports/WebDashboard";
@@ -51,10 +50,6 @@ class DashboardService {
 
   static mapDashboardFromResource(dashboardResponse, operationalModules) {
     const dashboard = { ...dashboardResponse };
-    _.forEach(dashboard.sections, section => {
-      section.cards = sortBy(section.cards, "displayOrder");
-    });
-
     dashboard.filters = dashboardResponse.filters.map(x => {
       const filter = { ...x };
       const filterConfig = new DashboardFilterConfig();
@@ -112,6 +107,10 @@ class DashboardService {
     const url = card.isNew() ? "/web/reportCard" : `/web/reportCard/${card.id}`;
     const methodName = card.isNew() ? "post" : "put";
     return http[methodName](url, card.toResource());
+  }
+
+  static getAllReportCards() {
+    return http.get(`/web/reportCard`).then(res => res.data);
   }
 }
 

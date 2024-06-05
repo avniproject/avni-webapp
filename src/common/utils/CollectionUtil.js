@@ -11,6 +11,26 @@ class CollectionUtil {
       {}
     );
   }
+
+  static switchItemPosition(array, startIndex, endIndex, fieldToUpdate) {
+    const workingItems = [...array];
+    let removedElement;
+    array.forEach((mapping, index) => {
+      if (index === startIndex) {
+        removedElement = _.pullAt(workingItems, index)[0];
+      }
+    });
+
+    array.forEach((mapping, index) => {
+      if (index === endIndex) {
+        workingItems.splice(index, 0, removedElement);
+      }
+    });
+
+    workingItems.forEach((item, index) => {
+      item[fieldToUpdate] = index + 1;
+    });
+  }
 }
 
 export default CollectionUtil;

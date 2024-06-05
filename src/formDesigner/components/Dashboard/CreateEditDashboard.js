@@ -80,7 +80,10 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
 
   const onSave = () => {
     const errors = DashboardService.validate(dashboard);
-    if (!isEmpty(errors)) setError(errors);
+    if (!isEmpty(errors)) {
+      setError(errors);
+      return;
+    }
 
     DashboardService.save(dashboard, edit, props.match.params.id)
       .then(data => setId(data.id))
@@ -141,7 +144,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           {getErrorByKey(error, "EMPTY_SECTIONS")}
         </Grid>
         <Grid item>
-          <CreateEditDashboardSections sections={dashboard.sections} dispatch={dispatch} history={history} error={error} />
+          <CreateEditDashboardSections sections={WebDashboard.getSections(dashboard)} dispatch={dispatch} history={history} error={error} />
         </Grid>
         {getErrorByKey(error, "EMPTY_CARDS")}
         <br />

@@ -1,10 +1,10 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import http from "../../../common/utils/httpClient";
 import Select from "react-select";
 import _, { map } from "lodash";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
+import DashboardService from "../../../common/service/DashboardService";
 
 export const SelectCardsView = ({ dashboardSection, addCards }) => {
   const [allCards, setAllCards] = React.useState([]);
@@ -12,10 +12,7 @@ export const SelectCardsView = ({ dashboardSection, addCards }) => {
   const cardSelectRef = React.useRef(null);
 
   React.useEffect(() => {
-    http
-      .get(`/web/reportCard`)
-      .then(res => res.data)
-      .then(res => setAllCards(res));
+    DashboardService.getAllReportCards().then(res => setAllCards(res));
   }, []);
 
   const onSelectChange = event => {

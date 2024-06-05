@@ -6,6 +6,7 @@ import { isEmpty } from "lodash";
 import { DragNDropComponent } from "../../common/DragNDropComponent";
 import PropTypes from "prop-types";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
+import { dashboardReducerActions } from "./DashboardReducer";
 
 class CreateEditDashboardSectionCards extends Component {
   constructor(props) {
@@ -15,15 +16,17 @@ class CreateEditDashboardSectionCards extends Component {
 
   static propTypes = {
     section: PropTypes.object.isRequired,
-    sectionUpdated: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired
   };
 
   onDragEnd(result) {
     if (!result.destination) {
       return;
     }
-    const section = WebDashboardSection.reorderCards(this.props.section, result.source.index, result.destination.index);
-    this.props.sectionUpdated(section);
+    this.props.dispatch({
+      type: dashboardReducerActions.reorderCards,
+      payload: { section: this.props.section, startIndex: result.source.index, endIndex: result.destination.index }
+    });
   }
 
   renderCard(card) {

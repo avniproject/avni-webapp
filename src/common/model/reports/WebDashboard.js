@@ -1,9 +1,14 @@
 import _ from "lodash";
 import WebDashboardSection from "./WebDashboardSection";
+import CollectionUtil from "../../utils/CollectionUtil";
 
 class WebDashboard {
   static createNew() {
     return { name: "", description: "", sections: [], filters: [] };
+  }
+
+  static getSections(dashboard) {
+    return _.sortBy(dashboard.sections.filter(x => !x.voided), "displayOrder");
   }
 
   static removeSection(dashboard, section) {
@@ -20,10 +25,7 @@ class WebDashboard {
   }
 
   static reOrderSections(dashboard, sourceIndex, destIndex) {
-    const result = [...dashboard.sections];
-    const [removed] = result.splice(sourceIndex, 1);
-    result.splice(destIndex, 0, removed);
-    dashboard.sections = result;
+    CollectionUtil.switchItemPosition(dashboard.sections, sourceIndex, destIndex, "displayOrder");
     return { ...dashboard };
   }
 

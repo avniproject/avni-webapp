@@ -1,12 +1,12 @@
 import React from "react";
 import {
   ExpansionPanel as MuiExpansionPanel,
+  ExpansionPanelDetails,
   ExpansionPanelSummary as MuiExpansionPanelSummary,
-  Typography,
   Tooltip,
-  ExpansionPanelDetails
+  Typography
 } from "@material-ui/core";
-import { isEmpty, filter, map, orderBy, size } from "lodash";
+import { isEmpty, map, orderBy } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -14,6 +14,7 @@ import ListIcon from "@material-ui/icons/List";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import ShowDashboardSectionCards from "./ShowDashboardSectionCards";
 import { ShowLabelValue } from "../../common/ShowLabelValue";
+import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -127,8 +128,7 @@ const ShowDashboardSections = ({ sections, history }) => {
                       </Grid>
                       <Grid item sm={3}>
                         <Typography className={classes.questionCount}>
-                          {size(filter(section.dashboardSectionCardMappings, sectionCardMapping => sectionCardMapping.voided === false))}{" "}
-                          cards
+                          {WebDashboardSection.getReportCards(section).length} cards
                         </Typography>
                       </Grid>
                     </Grid>
@@ -143,11 +143,7 @@ const ShowDashboardSections = ({ sections, history }) => {
                       <ShowLabelValue label={"View Type"} value={section.viewType} />
                     </Grid>
                     <Grid item xs={12}>
-                      <ShowDashboardSectionCards
-                        section={section}
-                        cards={section.dashboardSectionCardMappings.map(x => x.card)}
-                        history={history}
-                      />
+                      <ShowDashboardSectionCards section={section} cards={WebDashboardSection.getReportCards(section)} history={history} />
                     </Grid>
                   </Grid>
                 </ExpansionPanelDetails>

@@ -1,12 +1,21 @@
 import { ModelGeneral as General } from "openchs-models";
 import _ from "lodash";
 import WebDashboardSectionCardMapping from "./WebDashboardSectionCardMapping";
+import CollectionUtil from "../../utils/CollectionUtil";
 
 class WebDashboardSection {
   dashboardSectionCardMappings;
 
+  static getReportCardMappings(section) {
+    return _.sortBy(section.dashboardSectionCardMappings.filter(x => !x.voided), "displayOrder");
+  }
+
   static getReportCards(section) {
-    return section.dashboardSectionCardMappings.filter(x => !x.voided).map(x => x.card);
+    return WebDashboardSection.getReportCardMappings(section).map(x => x.card);
+  }
+
+  static getReportCardMapping(section, cardId) {
+    return _.find(section.dashboardSectionCardMappings, x => x.card.id === cardId);
   }
 
   static newSection() {
@@ -24,15 +33,14 @@ class WebDashboardSection {
   static removeCard(section, card) {
     const mapping = _.find(section.dashboardSectionCardMappings, x => x.card.uuid === card.uuid);
     mapping.voided = true;
+    mapping.displayOrder = -1;
     section.dashboardSectionCardMappings = [...section.dashboardSectionCardMappings];
     return { ...section };
   }
 
   static reorderCards(section, startIndex, endIndex) {
-    const result = [...section.dashboardSectionCardMappings];
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    section.dashboardSectionCardMappings = result;
+    const reportCardMappings = WebDashboardSection.getReportCardMappings(section);
+    CollectionUtil.switchItemPosition(reportCardMappings, startIndex, endIndex, "displayOrder");
     return { ...section };
   }
 
@@ -48,10 +56,7 @@ class WebDashboardSection {
       ) + 1;
 
     cards.forEach(card => {
-      section.dashboardSectionCardMappings.push({
-        card: card,
-        displayOrder: nextDisplayOrder
-      });
+      section.dashboardSectionCardMappings.push(WebDashboardSectionCardMapping.newCard(card, nextDisplayOrder));
       nextDisplayOrder++;
     });
 

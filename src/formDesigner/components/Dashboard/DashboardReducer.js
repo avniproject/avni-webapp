@@ -1,4 +1,4 @@
-import _, { concat, reject, sortBy } from "lodash";
+import _, { concat, reject } from "lodash";
 import { ModelGeneral as General } from "openchs-models";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
@@ -8,18 +8,12 @@ const addSection = dashboard => {
 };
 
 const updateSectionField = (dashboard, { section, ...fields }) => {
-  const sections = reject(dashboard.sections, it => it.uuid === section.uuid);
   const updatedSection = { ...section, ...fields };
-  sections.push(updatedSection);
-  return { ...dashboard, sections: sortBy(sections, "displayOrder") };
+  return WebDashboard.updateSection(dashboard, updatedSection);
 };
 
 const deleteCard = (dashboard, { card, section }) => {
   return WebDashboard.updateSection(dashboard, WebDashboardSection.removeCard(section, card));
-};
-
-const sectionUpdated = (dashboard, { section }) => {
-  return WebDashboard.updateSection(dashboard, section);
 };
 
 const changeSectionDisplayOrder = (dashboard, { sourceIndex, destIndex }) => {
@@ -59,6 +53,26 @@ const addCards = (dashboard, { section, cards }) => {
   return WebDashboard.updateSection(dashboard, WebDashboardSection.addCards(section, cards));
 };
 
+const reorderCards = (dashboard, { section, startIndex, endIndex }) => {
+  return WebDashboard.updateSection(dashboard, WebDashboardSection.reorderCards(section, startIndex, endIndex));
+};
+
+export const dashboardReducerActions = {
+  name: "name",
+  description: "description",
+  addSection: "addSection",
+  updateSectionField: "updateSectionField",
+  addCards: "addCards",
+  deleteCard: "deleteCard",
+  changeSectionDisplayOrder: "changeSectionDisplayOrder",
+  deleteSection: "deleteSection",
+  setData: "setData",
+  addFilter: "addFilter",
+  editFilter: "editFilter",
+  deleteFilter: "deleteFilter",
+  reorderCards: "reorderCards"
+};
+
 export const DashboardReducer = (dashboard, action) => {
   const actionFns = {
     name: (dashboard, name) => ({ ...dashboard, name }),
@@ -67,13 +81,13 @@ export const DashboardReducer = (dashboard, action) => {
     updateSectionField: updateSectionField,
     addCards: addCards,
     deleteCard: deleteCard,
-    sectionUpdated: sectionUpdated,
     changeSectionDisplayOrder: changeSectionDisplayOrder,
     deleteSection: deleteSection,
     setData: setData,
     addFilter: addFilter,
     editFilter: editFilter,
-    deleteFilter: deleteFilter
+    deleteFilter: deleteFilter,
+    reorderCards: reorderCards
   };
   const actionFn = actionFns[action.type] || (() => dashboard);
   return actionFn(dashboard, action.payload);
