@@ -92,7 +92,7 @@ const ReportCardShow = props => {
       editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
       userInfo={props.userInfo}
       mapResource={resource => WebReportCard.fromResource(resource)}
-      defaultResource={WebReportCard.createNew()}
+      defaultResource={WebReportCard.createNewReportCard()}
     />
   );
 };
