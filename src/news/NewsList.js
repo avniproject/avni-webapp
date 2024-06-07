@@ -40,8 +40,7 @@ function NewsList({ userInfo }) {
     {
       title: "Published On",
       field: "publishedDate",
-      render: rowData =>
-        isNil(rowData.publishedDate) ? "-" : getFormattedDateTime(rowData.publishedDate)
+      render: rowData => (isNil(rowData.publishedDate) ? "-" : getFormattedDateTime(rowData.publishedDate))
     },
     {
       title: "Action",
@@ -60,10 +59,7 @@ function NewsList({ userInfo }) {
             title=""
             components={{
               Container: props => <Fragment>{props.children}</Fragment>,
-              Toolbar: props =>
-                canEditNews && (
-                  <CustomToolbar setOpenCreate={setOpenCreate} totalNews={news.length} {...props} />
-                )
+              Toolbar: props => canEditNews && <CustomToolbar setOpenCreate={setOpenCreate} totalNews={news.length} {...props} />
             }}
             tableRef={tableRef}
             columns={columns}
@@ -75,6 +71,7 @@ function NewsList({ userInfo }) {
               debounceInterval: 500,
               search: false,
               headerStyle: {
+                zIndex: 1,
                 color: "rgb(68, 68, 68)",
                 fontWeight: "bold"
               },
@@ -85,12 +82,7 @@ function NewsList({ userInfo }) {
             }}
           />
         </Paper>
-        <CreateEditNews
-          open={openCreate}
-          headerTitle={"Add news broadcast"}
-          handleClose={() => setOpenCreate(false)}
-          edit={false}
-        />
+        <CreateEditNews open={openCreate} headerTitle={"Add news broadcast"} handleClose={() => setOpenCreate(false)} edit={false} />
       </DocumentationContainer>
     </ScreenWithAppBar>
   );
