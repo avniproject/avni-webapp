@@ -29,17 +29,8 @@ const useStyles = makeStyles({
   }
 });
 
-const customFilters = ({
-  operationalModules,
-  getOperationalModules,
-  history,
-  organisation,
-  filename,
-  userInfo
-}) => {
-  const typeOfFilter = history.location.pathname.endsWith("myDashboardFilters")
-    ? "myDashboardFilters"
-    : "searchFilters";
+const customFilters = ({ operationalModules, getOperationalModules, history, organisation, filename, userInfo }) => {
+  const typeOfFilter = history.location.pathname.endsWith("myDashboardFilters") ? "myDashboardFilters" : "searchFilters";
   React.useEffect(() => {
     getOperationalModules();
   }, []);
@@ -68,17 +59,12 @@ const customFilters = ({
 
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
-      const settings = _.filter(
-        res.data._embedded.organisationConfig,
-        config => config.organisationId === organisation.id
-      );
+      const settings = _.filter(res.data._embedded.organisationConfig, config => config.organisationId === organisation.id);
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
       res.data._embedded.organisationConfig[0] &&
         setWorklistUpdationRule(
-          res.data._embedded.organisationConfig[0].worklistUpdationRule
-            ? res.data._embedded.organisationConfig[0].worklistUpdationRule
-            : ""
+          res.data._embedded.organisationConfig[0].worklistUpdationRule ? res.data._embedded.organisationConfig[0].worklistUpdationRule : ""
         );
     });
   }, []);
@@ -119,21 +105,13 @@ const customFilters = ({
     onClick: (event, rowData) => {
       const voidedMessage = `Do you want to delete ${rowData.titleKey} filter ?`;
       if (window.confirm(voidedMessage)) {
-        const filteredFilters = omitTableData(
-          settings.settings[filterType].filter(f => f.titleKey !== rowData.titleKey)
-        );
+        const filteredFilters = omitTableData(settings.settings[filterType].filter(f => f.titleKey !== rowData.titleKey));
         const newSettings = {
           uuid: settings.uuid,
           settings: {
             languages: settings.settings.languages,
-            myDashboardFilters:
-              filterType === "myDashboardFilters"
-                ? filteredFilters
-                : omitTableData(settings.settings.myDashboardFilters),
-            searchFilters:
-              filterType === "searchFilters"
-                ? filteredFilters
-                : omitTableData(settings.settings.searchFilters)
+            myDashboardFilters: filterType === "myDashboardFilters" ? filteredFilters : omitTableData(settings.settings.myDashboardFilters),
+            searchFilters: filterType === "searchFilters" ? filteredFilters : omitTableData(settings.settings.searchFilters)
           },
           worklistUpdationRule: worklistUpdationRule
         };
@@ -181,13 +159,14 @@ const customFilters = ({
         }}
         columns={filterDisplayColumns}
         data={buildFilterData(settings.settings[filterType], subjectTypes)}
-        options={{ search: false, paging: false }}
-        actions={
-          hasEditPrivilege(userInfo) && [
-            editFilter(filterType, `Edit ${_.startCase(filterType)}`),
-            deleteFilter(filterType)
-          ]
-        }
+        options={{
+          headerStyle: {
+            zIndex: 1
+          },
+          search: false,
+          paging: false
+        }}
+        actions={hasEditPrivilege(userInfo) && [editFilter(filterType, `Edit ${_.startCase(filterType)}`), deleteFilter(filterType)]}
       />
     </Box>
   );
@@ -196,11 +175,7 @@ const customFilters = ({
     <div />
   ) : (
     <Box>
-      {typeOfFilter === "myDashboardFilters" ? (
-        <Title title="My Dashboard Filters" />
-      ) : (
-        <Title title="Search Filters" />
-      )}
+      {typeOfFilter === "myDashboardFilters" ? <Title title="My Dashboard Filters" /> : <Title title="Search Filters" />}
       <Paper className={styles.root}>
         <p />
         {renderFilterTable(typeOfFilter)}
@@ -233,8 +208,7 @@ export const buildFilterData = (filters, subjectTypes) => {
   });
 };
 
-export const omitTableData = filters =>
-  _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type", "Subject"]));
+export const omitTableData = filters => _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type", "Subject"]));
 
 export default withRouter(
   connect(

@@ -60,6 +60,9 @@ const SentMessagesTable = ({ sentMessages, isMsgsSentAvailable }) => {
         pageSizeOptions: [10, 15, 20],
         addRowPosition: "first",
         sorting: true,
+        headerStyle: {
+          zIndex: 1
+        },
         debounceInterval: 500,
         search: false,
         toolbar: false

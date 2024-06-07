@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { get, isEmpty, includes, lowerCase, isArrayLikeObject, omit, startsWith } from "lodash";
+import { get, includes, isArrayLikeObject, isEmpty, lowerCase, omit, startsWith } from "lodash";
 import { Box, Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import http from "../../common/utils/httpClient";
@@ -180,7 +180,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   useEffect(() => {
     if (openImage) {
       const LightBoxContainer = document.querySelector("div.imagePreviewContainer");
-      LightBoxContainer.firstChild.style.zIndex = 1;
+      LightBoxContainer.firstChild.style.zIndex = 2;
     }
   }, [openImage]);
 

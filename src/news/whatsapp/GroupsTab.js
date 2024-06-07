@@ -2,10 +2,7 @@ import AddEditContactGroup from "./AddEditContactGroup";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { Fragment, useCallback, useState } from "react";
 import { LinearProgress, Snackbar } from "@material-ui/core";
-import {
-  MaterialTableToolBar,
-  MaterialTableToolBarButton
-} from "../../common/material-table/MaterialTableToolBar";
+import { MaterialTableToolBar, MaterialTableToolBarButton } from "../../common/material-table/MaterialTableToolBar";
 import ContactService from "../api/ContactService";
 import _ from "lodash";
 import ErrorMessage from "../../common/components/ErrorMessage";
@@ -42,12 +39,7 @@ const GroupsTab = ({ groups, columns }) => {
 
   return (
     <div className="container">
-      {addingContactGroup && (
-        <AddEditContactGroup
-          onClose={() => setAddingContactGroup(false)}
-          onSave={() => onContactSaved()}
-        />
-      )}
+      {addingContactGroup && <AddEditContactGroup onClose={() => setAddingContactGroup(false)} onSave={() => onContactSaved()} />}
       {!_.isNil(error) && <ErrorMessage error={error} />}
       {displayProgress && <LinearProgress style={{ marginBottom: 30 }} />}
       <MaterialTable
@@ -61,11 +53,7 @@ const GroupsTab = ({ groups, columns }) => {
               <MaterialTableToolBar
                 toolBarButtons={[
                   new MaterialTableToolBarButton(rows => onDelete(rows), true, "Delete"),
-                  new MaterialTableToolBarButton(
-                    () => setAddingContactGroup(true),
-                    false,
-                    "Add Contact Group"
-                  )
+                  new MaterialTableToolBarButton(() => setAddingContactGroup(true), false, "Add Contact Group")
                 ]}
                 {...props}
               />
@@ -83,6 +71,9 @@ const GroupsTab = ({ groups, columns }) => {
           pageSizeOptions: [10, 15, 25],
           addRowPosition: "first",
           sorting: false,
+          headerStyle: {
+            zIndex: 1
+          },
           debounceInterval: 500,
           filtering: false,
           selection: true,
