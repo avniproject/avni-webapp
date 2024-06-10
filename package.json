@@ -125,6 +125,8 @@
     "pretty-quick": "^1.11.1",
     "redux-saga-test-plan": "^3.7.0",
     "source-map-explorer": "^2.0.1",
-    "@babel/helper-environment-visitor": "7.22.20"
+    "@babel/helper-environment-visitor": "7.22.20",
+    "@babel/helper-string-parser": "7.22.5",
+    "picocolors": "1.0.1"
   }
 }

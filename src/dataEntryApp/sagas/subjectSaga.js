@@ -158,6 +158,7 @@ export function* setRegistrationOnLoadState(registrationForm, subject, identifie
     const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
       registrationForm,
       subject,
+      true,
       true
     );
 
