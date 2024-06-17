@@ -705,6 +705,10 @@ function FormElementDetails({ userInfo, ...props }) {
         {props.formElementData.concept.dataType === "Date" &&
           showPicker("date", cssClasses, props, disableFormElement)}
 
+        {props.formElementData.errorMessage && props.formElementData.errorMessage.durationOptions && (
+          <div style={{ color: "red", fontSize: "13px" }}>Duration options must be selected.</div>
+        )}
+
         {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
           <Grid container item sm={12}>
             <AvniFormLabel
