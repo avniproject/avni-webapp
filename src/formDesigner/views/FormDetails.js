@@ -714,6 +714,15 @@ class FormDetails extends Component {
               if (!_.isEmpty(validationError)) {
                 fe.errorMessage.ruleError = validationError;
               }
+            }  else if (
+              (fe.concept.dataType === "Date" || fe.concept.dataType === "Duration") &&
+              (!fe.keyValues.durationOptions || fe.keyValues.durationOptions.length === 0)
+            ) {
+              fe.error = true;
+              fe.expanded = true;
+              fe.errorMessage.durationOptions = true;
+              flag = groupError = true;
+              numberElementError += 1;
             } else if (!declarativeRuleHolder.isEmpty()) {
               fe.rule = declarativeRuleHolder.generateViewFilterRule(this.getEntityNameForRules());
             }
