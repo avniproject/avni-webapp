@@ -77,7 +77,12 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType, prog
     identifierAssignmentService.addIdentifiersToObservations(enrolForm, programEnrolment.observations, identifierAssignments);
   }
 
-  const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(enrolForm, programEnrolment);
+  const { formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty } = commonFormUtil.onLoad(
+    enrolForm,
+    programEnrolment,
+    false,
+    !isNewEnrolment
+  );
   yield put.resolve(
     onLoadSuccess(
       programEnrolment,
@@ -195,6 +200,7 @@ export function* updateEnrolmentObsWorker({ formElement, value, childFormElement
 function* addNewQuestionGroupWatcher() {
   yield takeEvery(enrolmentTypes.ADD_NEW_QG, addNewQuestionGroupWorker);
 }
+
 export function* addNewQuestionGroupWorker({ formElement }) {
   const state = yield select(selectProgramEnrolmentState);
   const programEnrolment = state.programEnrolment.cloneForEdit();
@@ -211,6 +217,7 @@ export function* addNewQuestionGroupWorker({ formElement }) {
 function* removeQuestionGroupWatcher() {
   yield takeEvery(enrolmentTypes.REMOVE_QG, removeQuestionGroupWorker);
 }
+
 export function* removeQuestionGroupWorker({ formElement, questionGroupIndex }) {
   const state = yield select(selectProgramEnrolmentState);
   const programEnrolment = state.programEnrolment.cloneForEdit();
