@@ -125,7 +125,6 @@ class FormDetails extends Component {
       name: "",
       timed: false,
       errorMsg: "",
-      saveCall: false,
       createFlag: true,
       activeTabIndex: 0,
       successAlert: false,
@@ -659,7 +658,7 @@ class FormDetails extends Component {
           "visitScheduleRule",
           "generateVisitScheduleRule"
         );
-        flag = isValidationError || isDecisionError || isVisitScheduleError;
+        flag = isValidationError || isDecisionError || isVisitScheduleError || draft.nameError;
         _.forEach(draft.form.formElementGroups, group => {
           group.errorMessage = {};
           group.error = false;
@@ -714,7 +713,7 @@ class FormDetails extends Component {
               if (!_.isEmpty(validationError)) {
                 fe.errorMessage.ruleError = validationError;
               }
-            }  else if (
+            } else if (
               (fe.concept.dataType === "Date" || fe.concept.dataType === "Duration") &&
               (!fe.keyValues.durationOptions || fe.keyValues.durationOptions.length === 0)
             ) {
@@ -737,9 +736,9 @@ class FormDetails extends Component {
             if (numberElementError !== 0) errormsg += " and " + numberElementError + " form element.";
           } else if (numberElementError !== 0) errormsg += "There is a error in " + numberElementError + " form element.";
         }
-        draft.saveCall = !flag;
         draft.errorMsg = errormsg;
-      })
+      }),
+      () => flag === false && this.updateForm()
     );
   }
 
@@ -805,7 +804,6 @@ class FormDetails extends Component {
         if (response.status === 200) {
           this.setState({
             redirectToWorkflow: true,
-            saveCall: false,
             successAlert: true,
             defaultSnackbarStatus: true,
             detectBrowserCloseEvent: false
@@ -815,7 +813,6 @@ class FormDetails extends Component {
       .then(() => this.getForm())
       .catch(error => {
         this.setState({
-          saveCall: false,
           errorMsg: "Server error received " + error.response.data
         });
       });
@@ -1026,7 +1023,6 @@ class FormDetails extends Component {
               defaultSnackbarStatus={this.state.defaultSnackbarStatus}
             />
           )}
-          {this.state.saveCall && !this.state.nameError && this.updateForm()}
         </Box>
       </FormDesignerContext.Provider>
     );
