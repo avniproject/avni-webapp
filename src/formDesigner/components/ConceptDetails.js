@@ -19,12 +19,75 @@ import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 
-function ConceptDetails({ userInfo, ...props }) {
+function ConceptDetails({ subjectType, formMappings, userInfo, ...props }) {
   const [editAlert, setEditAlert] = useState(false);
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
   const [addressLevelTypes, setAddressLevelTypes] = useState([]);
   const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
+  const [fdata, setFdata] = useState({});
+  const [idToNameConverter, setIdToNameConverter] = useState({});
+
+  const fetchFormData = async formUuid => {
+    try {
+      const response = await http.get(`/forms/export?formUUID=${formUuid}`);
+      const form = response.data;
+      const formDetails = {};
+      const idToName = {};
+      form.formElementGroups.forEach(feg => {
+        feg.formElements.forEach(fe => {
+          const concept = fe.concept;
+          if (!feg.voided && !fe.voided) {
+            if (!formDetails[form.name]) {
+              formDetails[form.name] = [];
+            }
+            const elementDetails = {
+              formName: form.name,
+              sectionName: feg.name,
+              questionName: fe.name,
+              parentUUID: fe.parentFormElementUuid,
+              conceptName: concept.name,
+              dataType: concept.dataType
+            };
+            formDetails[form.name].push(elementDetails);
+            idToName[fe.uuid] = fe.name;
+          }
+        });
+      });
+
+      setFdata(prevFdata => ({
+        ...prevFdata,
+        ...formDetails
+      }));
+      setIdToNameConverter(prevdata => ({
+        ...prevdata,
+        ...idToName
+      }));
+    } catch (error) {
+      console.error("Error fetching form data:", error);
+      alert("Failed to fetch form data. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
+    const fetchUsageAndFormDetails = async () => {
+      try {
+        const usageResponse = await http.get(`/web/concept/usage/${props.match.params.uuid}`);
+        setUsage(usageResponse.data);
+
+        if (usageResponse.data.forms) {
+          usageResponse.data.forms.forEach(form => {
+            fetchFormData(form.formUUID);
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching usage data:", error);
+      }
+    };
+
+    fetchUsageAndFormDetails();
+  }, [props.match.params.uuid]);
+
   useEffect(() => {
     http.get("/web/concept/" + props.match.params.uuid).then(response => {
       setData(response.data);
@@ -48,12 +111,14 @@ function ConceptDetails({ userInfo, ...props }) {
         });
       }
     });
+
     http.get("/web/concept/usage/" + props.match.params.uuid).then(response => {
       setUsage(response.data);
     });
   }, [props.match.params.uuid]);
 
   const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -86,41 +151,31 @@ function ConceptDetails({ userInfo, ...props }) {
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Low absolute</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.lowAbsolute) ? data.lowAbsolute : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.lowAbsolute) ? data.lowAbsolute : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>High Absolute</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.highAbsolute) ? data.highAbsolute : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.highAbsolute) ? data.highAbsolute : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Low Normal</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.lowNormal) ? data.lowNormal : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.lowNormal) ? data.lowNormal : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>High normal</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.highNormal) ? data.highNormal : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.highNormal) ? data.highNormal : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Unit</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.unit) ? data.unit : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.unit) ? data.unit : <RemoveIcon />}</span>
               </div>
             </>
           )}
@@ -133,25 +188,15 @@ function ConceptDetails({ userInfo, ...props }) {
                   return (
                     !answer.voided && (
                       <div key={index} style={{ width: "100%" }}>
-                        <TextField
-                          id="name"
-                          value={answer.answerConcept.name}
-                          style={{ width: "300px" }}
-                          margin="normal"
-                          disabled={true}
-                        />
+                        <TextField id="name" value={answer.answerConcept.name} style={{ width: "300px" }} margin="normal" disabled={true} />
                         <FormControlLabel
-                          control={
-                            <Checkbox checked={answer.abnormal ? true : false} name="abnormal" />
-                          }
+                          control={<Checkbox checked={answer.abnormal ? true : false} name="abnormal" />}
                           label="abnormal"
                           style={{ marginLeft: "5px" }}
                           disabled={true}
                         />
                         <FormControlLabel
-                          control={
-                            <Checkbox checked={answer.unique ? true : false} name="unique" />
-                          }
+                          control={<Checkbox checked={answer.unique ? true : false} name="unique" />}
                           label="unique"
                           disabled={true}
                         />
@@ -169,10 +214,7 @@ function ConceptDetails({ userInfo, ...props }) {
                 <FormLabel style={{ fontSize: "13px" }}>Within Catchment</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value ===
-                  true
-                    ? "Yes"
-                    : "No"}
+                  {data.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value === true ? "Yes" : "No"}
                 </span>
               </div>
               <p />
@@ -182,14 +224,9 @@ function ConceptDetails({ userInfo, ...props }) {
                 <span style={{ fontSize: "15px" }}>
                   {addressLevelTypes
                     .filter(addressLevelType =>
-                      data.keyValues
-                        .find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs")
-                        .value.includes(addressLevelType.value)
+                      data.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs").value.includes(addressLevelType.value)
                     )
-                    .map(
-                      (addressLevelType, index, array) =>
-                        addressLevelType.label + (index === array.length - 1 ? "" : ", ")
-                    )}
+                    .map((addressLevelType, index, array) => addressLevelType.label + (index === array.length - 1 ? "" : ", "))}
                 </span>
               </div>
               <p />
@@ -197,14 +234,10 @@ function ConceptDetails({ userInfo, ...props }) {
                 <FormLabel style={{ fontSize: "13px" }}>Highest Location Level</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.keyValues.find(
-                    keyValue => keyValue.key === "highestAddressLevelTypeUUID"
-                  ) !== undefined ? (
+                  {data.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID") !== undefined ? (
                     addressLevelTypes.find(
                       addressLevelType =>
-                        data.keyValues.find(
-                          keyValue => keyValue.key === "highestAddressLevelTypeUUID"
-                        ).value === addressLevelType.value
+                        data.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID").value === addressLevelType.value
                     ).label
                   ) : (
                     <RemoveIcon />
@@ -221,9 +254,7 @@ function ConceptDetails({ userInfo, ...props }) {
                 <span style={{ fontSize: "15px" }}>
                   {
                     subjectTypeOptions.find(
-                      subjectType =>
-                        data.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID")
-                          .value === subjectType.uuid
+                      subjectType => data.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID").value === subjectType.uuid
                     ).name
                   }
                 </span>
@@ -239,13 +270,7 @@ function ConceptDetails({ userInfo, ...props }) {
               data.keyValues.map((keyValue, index) => {
                 return (
                   <div key={index}>
-                    <TextField
-                      id="outlined-required"
-                      label="Key"
-                      variant="outlined"
-                      disabled={true}
-                      value={keyValue.key}
-                    />
+                    <TextField id="outlined-required" label="Key" variant="outlined" disabled={true} value={keyValue.key} />
                     <TextField
                       id="outlined-required"
                       label="Value"
@@ -266,35 +291,55 @@ function ConceptDetails({ userInfo, ...props }) {
           <>
             {data.dataType !== "NA" && (
               <>
-                <FormLabel style={{ fontSize: "13px" }}>Used in forms</FormLabel>
+                <FormLabel style={{ fontSize: "13px" }}>Used in forms (Form name → Page name → Question Name)</FormLabel>
                 <br />
-                {isEmpty(usage.forms) && (
-                  <span style={{ fontSize: "15px" }}>Not used in the form.</span>
-                )}
+                {isEmpty(usage.forms) && <span style={{ fontSize: "15px" }}>Not used in the form.</span>}
 
                 {usage.forms && (
-                  <ul>
-                    {" "}
-                    {usage.forms.map((form, index) => {
+                  <div>
+                    {Object.keys(fdata).map(formName => {
+                      const form = usage.forms.find(form => form.formName === formName);
+                      // Group elements by section name
+                      const sections = fdata[formName].reduce((acc, element) => {
+                        if (!acc[element.sectionName]) {
+                          acc[element.sectionName] = [];
+                        }
+                        acc[element.sectionName].push(element);
+                        return acc;
+                      }, {});
+
                       return (
-                        <>
-                          <li key={index}>
-                            <a href={`#/appDesigner/forms/${form.formUUID}`}>{form.formName}</a>
-                            <p />
-                          </li>
-                        </>
+                        <div key={formName}>
+                          {Object.keys(sections).map(sectionName => (
+                            <div key={sectionName} style={{ marginBottom: "10px" }}>
+                              {/* Render questions under the section */}
+                              {sections[sectionName].map((element, index) => (
+                                <div key={index} style={{ display: "flex", alignItems: "center" }}>
+                                  {element.conceptName === data.name && (
+                                    <span style={{ fontSize: "15px" }}>
+                                      <a href={`#/appDesigner/forms/${form.formUUID}`} style={{ textDecoration: "none" }}>
+                                        {formName}
+                                      </a>
+                                      &nbsp;→&nbsp;{sectionName}
+                                      {element.parentUUID && <>&nbsp;→&nbsp;{idToNameConverter[element.parentUUID]}</>}
+                                      &nbsp;→&nbsp;{element.questionName}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
                       );
                     })}
-                  </ul>
+                  </div>
                 )}
               </>
             )}
 
             <FormLabel style={{ fontSize: "13px" }}>Answer to</FormLabel>
             <br />
-            {isEmpty(usage.concepts) && (
-              <span style={{ fontSize: "15px" }}>Not used in any answer.</span>
-            )}
+            {isEmpty(usage.concepts) && <span style={{ fontSize: "15px" }}>Not used in any answer.</span>}
             {usage.concepts && (
               <ul>
                 {usage.concepts.map(concept => {
