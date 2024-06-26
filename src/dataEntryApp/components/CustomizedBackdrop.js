@@ -22,7 +22,7 @@ const useStyle = makeStyles(theme => ({
 
 const CustomizedBackdrop = React.forwardRef(function Backdrop(props, ref) {
   const classes = useStyle();
-  const open = props.load ? false : true;
+  const open = !props.load;
   const invisible = false;
   return (
     <Fade in={open}>

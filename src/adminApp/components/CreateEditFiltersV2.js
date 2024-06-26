@@ -22,7 +22,14 @@ function MultipleEntitySelect({ name, placeholder, selectedEntities, options, on
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
-      <Select isMulti placeholder={placeholder} value={selectedValues} options={options} onChange={onChange} maxMenuHeight={200} />
+      <Select
+        isMulti
+        placeholder={placeholder}
+        value={selectedValues}
+        options={options}
+        onChange={newValue => onChange(_.isNil(newValue) ? [] : newValue)}
+        maxMenuHeight={200}
+      />
     </div>
   );
 }
@@ -117,6 +124,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
 
   function onTypeChange(type) {
     filterConfig.setType(type);
+    filterConfig.widget = null;
     updateFilterConfig();
   }
 
