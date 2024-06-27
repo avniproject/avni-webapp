@@ -15,10 +15,7 @@ import ContactService from "../api/ContactService";
 import { Edit } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import AddEditContactGroup from "./AddEditContactGroup";
-import {
-  MaterialTableToolBar,
-  MaterialTableToolBarButton
-} from "../../common/material-table/MaterialTableToolBar";
+import { MaterialTableToolBar, MaterialTableToolBarButton } from "../../common/material-table/MaterialTableToolBar";
 import ReceiverType from "./ReceiverType";
 import GroupMessageTab from "./GroupMessageTab";
 import { useTranslation } from "react-i18next";
@@ -29,21 +26,14 @@ const tableRef = React.createRef();
 
 const fetchData = (query, contactGroupId, onContactGroupLoaded) => {
   return new Promise(resolve =>
-    ContactService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(
-      data => {
-        onContactGroupLoaded(data);
-        resolve(data["contacts"]);
-      }
-    )
+    ContactService.getContactGroupContacts(contactGroupId, query.page, query.pageSize).then(data => {
+      onContactGroupLoaded(data);
+      resolve(data["contacts"]);
+    })
   );
 };
 
-function Members({
-  contactGroupId,
-  contactGroupMembersUpdated,
-  contactGroupMembersVersion,
-  onContactGroupLoaded
-}) {
+function Members({ contactGroupId, contactGroupMembersUpdated, contactGroupMembersVersion, onContactGroupLoaded }) {
   const { t } = useTranslation();
   const [addingSubjects, setAddingSubject] = useState(false);
   const [addingUsers, setAddingUser] = useState(false);
@@ -112,11 +102,7 @@ function Members({
         />
       )}
       {addingUsers && (
-        <AddContactGroupUsers
-          contactGroupId={contactGroupId}
-          onClose={() => setAddingUser(false)}
-          onUserAdd={user => onUserAdd()}
-        />
+        <AddContactGroupUsers contactGroupId={contactGroupId} onClose={() => setAddingUser(false)} onUserAdd={user => onUserAdd()} />
       )}
       {(userAdded || subjectAdded || error || userDeleted) && (
         <CustomizedSnackbar
@@ -149,11 +135,7 @@ function Members({
           Toolbar: props => (
             <MaterialTableToolBar
               toolBarButtons={[
-                new MaterialTableToolBarButton(
-                  contactRows => removeContactFromGroup(contactRows),
-                  true,
-                  "Delete"
-                ),
+                new MaterialTableToolBarButton(contactRows => removeContactFromGroup(contactRows), true, "Delete"),
                 new MaterialTableToolBarButton(() => addingSubject(), false, "Add Subject"),
                 new MaterialTableToolBarButton(() => addingUser(), false, "Add User")
               ]}
@@ -167,6 +149,9 @@ function Members({
         options={{
           addRowPosition: "first",
           sorting: false,
+          headerStyle: {
+            zIndex: 1
+          },
           debounceInterval: 500,
           search: false,
           selection: true,
@@ -228,26 +213,18 @@ const WhatsAppContactGroup = ({ match }) => {
           sx={{ borderRight: 1, borderColor: "divider" }}
         >
           <Tab label="Members" value={ContactGroupTabs.members} onClick={() => setSelectedTab(1)} />
-          <Tab
-            label="Messages"
-            value={ContactGroupTabs.messages}
-            onClick={() => setSelectedTab(2)}
-          />
+          <Tab label="Messages" value={ContactGroupTabs.messages} onClick={() => setSelectedTab(2)} />
         </Tabs>
 
         {selectedTab === ContactGroupTabs.members && (
           <Members
             contactGroupId={contactGroupId}
             onContactGroupLoaded={contactGroup => setGroup(contactGroup["group"])}
-            contactGroupMembersUpdated={() =>
-              updateContactGroupVersion(contactGroupVersion => contactGroupVersion + 1)
-            }
+            contactGroupMembersUpdated={() => updateContactGroupVersion(contactGroupVersion => contactGroupVersion + 1)}
             contactGroupMembersVersion={contactGroupVersion}
           />
         )}
-        {selectedTab === ContactGroupTabs.messages && (
-          <GroupMessageTab contactGroupId={contactGroupId} receiverType={ReceiverType.Group} />
-        )}
+        {selectedTab === ContactGroupTabs.messages && <GroupMessageTab contactGroupId={contactGroupId} receiverType={ReceiverType.Group} />}
         <Snackbar
           open={updatedContactGroup}
           autoHideDuration={3000}

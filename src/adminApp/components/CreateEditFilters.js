@@ -2,28 +2,13 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "@material-ui/core";
 import Select from "react-select";
-import {
-  deburr,
-  includes,
-  isNil,
-  reject,
-  startCase,
-  values,
-  map,
-  head,
-  filter,
-  get,
-  find,
-  isEmpty,
-  pickBy,
-  identity
-} from "lodash";
+import { deburr, filter, find, get, head, identity, includes, isEmpty, isNil, map, pickBy, reject, startCase, values } from "lodash";
 import Box from "@material-ui/core/Box";
 import http from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
-import { CustomFilter, Concept } from "avni-models";
+import { Concept, CustomFilter } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
@@ -31,17 +16,7 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
 
-const nonSupportedTypes = [
-  "Duration",
-  "Image",
-  "Video",
-  "Subject",
-  "Location",
-  "PhoneNumber",
-  "GroupAffiliation",
-  "Audio",
-  "File"
-];
+const nonSupportedTypes = ["Duration", "Image", "Video", "Subject", "Location", "PhoneNumber", "GroupAffiliation", "Audio", "File"];
 export const CreateEditFilters = ({
   omitTableData,
   selectedFilter,
@@ -57,9 +32,7 @@ export const CreateEditFilters = ({
   const allTypes = values(CustomFilter.type);
   const filterTypes =
     filterType === "myDashboardFilters"
-      ? reject(allTypes, t =>
-          [CustomFilter.type.Name, CustomFilter.type.Age, CustomFilter.type.SearchAll].includes(t)
-        )
+      ? reject(allTypes, t => [CustomFilter.type.Name, CustomFilter.type.Age, CustomFilter.type.SearchAll].includes(t))
       : allTypes;
   const typeOptions = filterTypes.map(t => ({ label: startCase(t), value: t }));
 
@@ -101,12 +74,7 @@ export const CreateEditFilters = ({
   const subjectTypeOptions = mapToOptions(subjectTypes);
 
   const mapPreviousParamsToOptions = (scopeKey, options) => {
-    return (
-      (scopeParameters &&
-        scopeParameters[scopeKey] &&
-        options.filter(({ value }) => scopeParameters[scopeKey].includes(value))) ||
-      []
-    );
+    return (scopeParameters && scopeParameters[scopeKey] && options.filter(({ value }) => scopeParameters[scopeKey].includes(value))) || [];
   };
 
   const mapPreviousToOptions = (prevValue, options) => {
@@ -114,19 +82,11 @@ export const CreateEditFilters = ({
   };
 
   const [filterName, setFilterName] = useState(titleKey);
-  const [selectedSubject, setSubject] = useState(
-    mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions)
-  );
+  const [selectedSubject, setSubject] = useState(mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions));
   const groupSubjectTypeOptions = mapToOptions(
-    filter(
-      subjectTypes,
-      ({ group }) =>
-        !!group && !get(find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value), "group")
-    )
+    filter(subjectTypes, ({ group }) => !!group && !get(find(subjectTypes, ({ uuid }) => uuid === selectedSubject.value), "group"))
   );
-  const [selectedGroupSubject, setGroupSubjectType] = useState(
-    mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions)
-  );
+  const [selectedGroupSubject, setGroupSubjectType] = useState(mapPreviousToOptions(groupSubjectTypeUUID, subjectTypeOptions));
   const [selectedType, setType] = useState(mapPreviousToOptions(type, typeOptions));
   const [selectedConcept, setConcept] = React.useState(
     (conceptName && {
@@ -136,23 +96,15 @@ export const CreateEditFilters = ({
       ""
   );
   const [selectedScope, setScope] = useState(mapPreviousToOptions(scope, scopeOptions));
-  const [selectedEncounter, setEncounter] = useState(
-    mapPreviousParamsToOptions("encounterTypeUUIDs", encounterTypeOptions)
-  );
-  const [selectedProgram, setProgram] = useState(
-    mapPreviousParamsToOptions("programUUIDs", programOptions)
-  );
+  const [selectedEncounter, setEncounter] = useState(mapPreviousParamsToOptions("encounterTypeUUIDs", encounterTypeOptions));
+  const [selectedProgram, setProgram] = useState(mapPreviousParamsToOptions("programUUIDs", programOptions));
   const [selectedWidget, setWidget] = useState(mapPreviousToOptions(widget, widgetOptions));
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
   const saveDisabled = () => {
     if (selectedType.value === CustomFilter.type.Concept) {
-      const allRequiredStatus =
-        isEmpty(filterName) ||
-        isEmpty(selectedScope) ||
-        isEmpty(selectedConcept) ||
-        isEmpty(selectedSubject);
+      const allRequiredStatus = isEmpty(filterName) || isEmpty(selectedScope) || isEmpty(selectedConcept) || isEmpty(selectedSubject);
       switch (selectedScope.value) {
         case CustomFilter.scope.Registration:
           return allRequiredStatus;
@@ -217,22 +169,15 @@ export const CreateEditFilters = ({
   const getNewFilterData = newFilter => {
     const setting = settings;
     const oldFilters = setting.settings[filterType];
-    const newFilters = isNil(selectedFilter)
-      ? [...oldFilters, newFilter]
-      : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
+    const newFilters = isNil(selectedFilter) ? [...oldFilters, newFilter] : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
     return {
       uuid: setting.uuid,
       worklistUpdationRule: worklistUpdationRule,
       settings: {
         languages: setting.settings.languages,
         myDashboardFilters:
-          filterType === "myDashboardFilters"
-            ? omitTableData(newFilters)
-            : omitTableData(setting.settings.myDashboardFilters),
-        searchFilters:
-          filterType === "searchFilters"
-            ? omitTableData(newFilters)
-            : omitTableData(setting.settings.searchFilters)
+          filterType === "myDashboardFilters" ? omitTableData(newFilters) : omitTableData(setting.settings.myDashboardFilters),
+        searchFilters: filterType === "searchFilters" ? omitTableData(newFilters) : omitTableData(setting.settings.searchFilters)
       }
     };
   };
@@ -250,13 +195,7 @@ export const CreateEditFilters = ({
     return (
       <div style={{ width: 400 }}>
         <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
-        <Select
-          isMulti
-          placeholder={placeholder}
-          value={value}
-          options={options}
-          onChange={onChange}
-        />
+        <Select isMulti placeholder={placeholder} value={value} options={options} onChange={onChange} />
       </div>
     );
   };
@@ -264,14 +203,12 @@ export const CreateEditFilters = ({
   const [suggestions, setSuggestions] = React.useState([]);
   const loadConcept = (value, callback) => {
     if (!value) {
-      return callback([]);
+      callback([]);
     }
     const inputValue = deburr(value.trim()).toLowerCase();
     http.get("/search/concept?name=" + encodeURIComponent(inputValue)).then(response => {
       const concepts = response.data;
-      const filteredConcepts = concepts.filter(
-        concept => !includes(nonSupportedTypes, concept.dataType)
-      );
+      const filteredConcepts = concepts.filter(concept => !includes(nonSupportedTypes, concept.dataType));
       const conceptOptions = map(filteredConcepts, ({ name, uuid, dataType }) => ({
         label: name,
         value: { uuid, dataType }
@@ -299,22 +236,10 @@ export const CreateEditFilters = ({
   };
 
   const widgetRequired = () => {
-    const {
-      RegistrationDate,
-      EnrolmentDate,
-      ProgramEncounterDate,
-      EncounterDate
-    } = CustomFilter.type;
-    const widgetConceptDataTypes = [
-      Concept.dataType.Date,
-      Concept.dataType.DateTime,
-      Concept.dataType.Time,
-      Concept.dataType.Numeric
-    ];
+    const { RegistrationDate, EnrolmentDate, ProgramEncounterDate, EncounterDate } = CustomFilter.type;
+    const widgetConceptDataTypes = [Concept.dataType.Date, Concept.dataType.DateTime, Concept.dataType.Time, Concept.dataType.Numeric];
     return (
-      [RegistrationDate, EnrolmentDate, ProgramEncounterDate, EncounterDate].includes(
-        selectedType.value
-      ) ||
+      [RegistrationDate, EnrolmentDate, ProgramEncounterDate, EncounterDate].includes(selectedType.value) ||
       (selectedConcept.value && widgetConceptDataTypes.includes(selectedConcept.value.dataType))
     );
   };
@@ -326,11 +251,7 @@ export const CreateEditFilters = ({
         <DocumentationContainer filename={documentationFileName}>
           <Box>
             <div className="container" style={{ float: "left", marginBottom: 10 }}>
-              {title && (
-                <div style={{ fontSize: 20, color: "rgba(0, 0, 0)", marginBottom: 20 }}>
-                  {title}
-                </div>
-              )}
+              {title && <div style={{ fontSize: 20, color: "rgba(0, 0, 0)", marginBottom: 20 }}>{title}</div>}
               <FormControl fullWidth>
                 <AvniTextField
                   id="Filter Name"
@@ -352,14 +273,7 @@ export const CreateEditFilters = ({
                 "APP_DESIGNER_FILTER_SUBJECT_TYPE"
               )}
               <Box m={1} />
-              {renderSelect(
-                "Type",
-                "Filter Type",
-                selectedType,
-                typeOptions,
-                type => onTypeChange(type),
-                "APP_DESIGNER_FILTER_TYPE"
-              )}
+              {renderSelect("Type", "Filter Type", selectedType, typeOptions, type => onTypeChange(type), "APP_DESIGNER_FILTER_TYPE")}
               <Box m={1} />
               {selectedType.value === CustomFilter.type.GroupSubject &&
                 renderSelect(
@@ -373,11 +287,7 @@ export const CreateEditFilters = ({
               <Box m={1} />
               {selectedType.value === "Concept" && (
                 <div style={{ width: 400 }}>
-                  <AvniFormLabel
-                    label={"Select Concept"}
-                    toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"}
-                    position={"top"}
-                  />
+                  <AvniFormLabel label={"Select Concept"} toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"} position={"top"} />
                   <AsyncSelect
                     cacheOptions
                     defaultOptions={suggestions}
@@ -422,8 +332,7 @@ export const CreateEditFilters = ({
                 )}
               <Box m={1} />
               {selectedType.value === "Concept" &&
-                (selectedScope.value === CustomFilter.scope.ProgramEncounter ||
-                  selectedScope.value === CustomFilter.scope.Encounter) &&
+                (selectedScope.value === CustomFilter.scope.ProgramEncounter || selectedScope.value === CustomFilter.scope.Encounter) &&
                 renderMultiSelect(
                   "Encounter Type",
                   "Select Encounter Type",

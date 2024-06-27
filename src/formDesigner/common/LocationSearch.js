@@ -12,13 +12,13 @@ const LocationSearch = ({ value, onChange, isMulti }) => {
 
   const loadLocation = (value, callback) => {
     let apiUrl = `/locations/search/find?title=${value}&size=100&page=0`;
-    return http.get(apiUrl).then(response => {
+    http.get(apiUrl).then(response => {
       const locations = get(response, "data.content", []);
       const locationOptions = map(locations, ({ title, uuid, typeString }) => ({
         label: `${title} (${typeString})`,
         value: { name: title, title, uuid, typeString, toString: () => uuid }
       }));
-      return callback(locationOptions);
+      callback(locationOptions);
     });
   };
 

@@ -158,22 +158,21 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          {subjectType.type === SubjectTypeType.User ? (
+          {subjectType.type === SubjectTypeType.User && (
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Type</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>{subjectType.type}</span>
             </div>
-          ) : (
-            <EditSubjectTypeFields
-              subjectType={subjectType}
-              onSetFile={setFile}
-              onRemoveFile={setRemoveFile}
-              formList={formList}
-              groupValidationError={groupValidationError}
-              dispatch={dispatch}
-            />
           )}
+          <EditSubjectTypeFields
+            subjectType={subjectType}
+            onSetFile={setFile}
+            onRemoveFile={setRemoveFile}
+            formList={formList}
+            groupValidationError={groupValidationError}
+            dispatch={dispatch}
+          />
           {organisationConfig && organisationConfig.enableMessaging ? (
             <MessageRules
               rules={rules}

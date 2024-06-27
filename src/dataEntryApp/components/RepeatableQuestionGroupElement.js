@@ -31,8 +31,11 @@ export function RepeatableQuestionGroupElement({
   if (hasNoObservation) repeatableQuestionGroup = new RepeatableQuestionGroup();
   const repeatableQuestionGroupValue = repeatableQuestionGroup.getValue();
   const hasMultipleElements = repeatableQuestionGroupValue.length > 1;
+  const oneOfTheQuestionGroupObservationsIsEmpty = _.some(repeatableQuestionGroupValue, x => _.isEmpty(x.groupObservations));
   return repeatableQuestionGroupValue.map((x, index) => {
-    const isLastElement = !hasNoObservation && repeatableQuestionGroupValue.length === index + 1;
+    const isLastElement =
+      !hasNoObservation && !oneOfTheQuestionGroupObservationsIsEmpty && repeatableQuestionGroupValue.length === index + 1;
+    const quesGrpValidationResults = validationResults.filter(itr => itr.questionGroupIndex === index);
     return (
       <div key={index}>
         <QuestionGroupFormElement
@@ -40,7 +43,7 @@ export function RepeatableQuestionGroupElement({
           filteredFormElements={filteredFormElements}
           obsHolder={obsHolder}
           updateObs={updateObs}
-          validationResults={validationResults}
+          validationResults={quesGrpValidationResults}
           isRepeatable={true}
           questionGroupIndex={index}
           key={index}

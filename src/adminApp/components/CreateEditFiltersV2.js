@@ -22,7 +22,14 @@ function MultipleEntitySelect({ name, placeholder, selectedEntities, options, on
   return (
     <div style={{ width: 400 }}>
       <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
-      <Select isMulti placeholder={placeholder} value={selectedValues} options={options} onChange={onChange} maxMenuHeight={200} />
+      <Select
+        isMulti
+        placeholder={placeholder}
+        value={selectedValues}
+        options={options}
+        onChange={newValue => onChange(_.isNil(newValue) ? [] : newValue)}
+        maxMenuHeight={200}
+      />
     </div>
   );
 }
@@ -71,9 +78,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   const { programs, subjectTypes, encounterTypes, formMappings } = operationalModules;
 
   const [filterName, setFilterName] = useState(isNew ? "" : selectedFilter.name);
-  const [filterConfig: DashboardFilterConfig, setFilterConfig] = useState(
-    isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig
-  );
+  const [filterConfig, setFilterConfig] = useState(isNew ? new DashboardFilterConfig() : selectedFilter.filterConfig);
 
   const subjectTypeOptions = mapToOptions(subjectTypes);
   const programOptions = mapToOptions(MetaDataService.getProgramsForSubjectType(programs, null, formMappings));
@@ -105,7 +110,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
   const [conceptSuggestions, setConceptSuggestions] = useState([]);
   const loadConcept = (value, callback) => {
     if (!value) {
-      return callback([]);
+      callback([]);
     }
     ConceptService.searchDashboardFilterConcepts(value).then(concepts => {
       const conceptOptions = map(concepts, concept => ({
@@ -119,6 +124,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
 
   function onTypeChange(type) {
     filterConfig.setType(type);
+    filterConfig.widget = null;
     updateFilterConfig();
   }
 

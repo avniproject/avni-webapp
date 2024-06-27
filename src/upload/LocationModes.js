@@ -14,15 +14,15 @@ export const LocationModes = ({ mode, setMode }) => {
   return (
     <FormControl component="fieldset" style={{ marginTop: "20px" }}>
       <FormLabel component="legend">Select Mode</FormLabel>
-      <RadioGroup row aria-label="mode" name="mode1" value={mode || "relaxed"} onChange={handleChange}>
+      <RadioGroup row aria-label="mode" name="mode1" value={mode || "CREATE"} onChange={handleChange}>
         <Tooltip title="Create new locations" placement="bottom-start" arrow>
           <div>
-            <FormControlLabel value="relaxed" control={<Radio color="primary" />} label="Create" />
+            <FormControlLabel value="CREATE" control={<Radio color="primary" />} label="Create" />
           </div>
         </Tooltip>
         <Tooltip title="Edit locations' name, parent, GPS coordinates or properties" placement="bottom-start" arrow>
           <div>
-            <FormControlLabel value="strict" control={<Radio color="primary" />} label="Edit" />
+            <FormControlLabel value="EDIT" control={<Radio color="primary" />} label="Edit" />
           </div>
         </Tooltip>
       </RadioGroup>
