@@ -19,102 +19,27 @@ import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 import { Privilege } from "openchs-models";
 
-function ConceptDetails({ subjectType, formMappings, userInfo, ...props }) {
+function ConceptDetails({ subjectType, userInfo, ...props }) {
   const [editAlert, setEditAlert] = useState(false);
   const [data, setData] = useState({});
   const [usage, setUsage] = useState({});
-  const [addressLevelTypes, setAddressLevelTypes] = useState([]);
-  const [subjectTypeOptions, setSubjectTypeOptions] = React.useState([]);
-  const [fdata, setFdata] = useState({});
-  const [idToNameConverter, setIdToNameConverter] = useState({});
-
-  const fetchFormData = async formUuid => {
-    try {
-      const response = await http.get(`/forms/export?formUUID=${formUuid}`);
-      const form = response.data;
-      const formDetails = {};
-      const idToName = {};
-      form.formElementGroups.forEach(feg => {
-        feg.formElements.forEach(fe => {
-          const concept = fe.concept;
-          if (!feg.voided && !fe.voided) {
-            if (!formDetails[form.name]) {
-              formDetails[form.name] = [];
-            }
-            const elementDetails = {
-              formName: form.name,
-              sectionName: feg.name,
-              questionName: fe.name,
-              parentUUID: fe.parentFormElementUuid,
-              conceptName: concept.name,
-              dataType: concept.dataType
-            };
-            formDetails[form.name].push(elementDetails);
-            idToName[fe.uuid] = fe.name;
-          }
-        });
-      });
-
-      setFdata(prevFdata => ({
-        ...prevFdata,
-        ...formDetails
-      }));
-      setIdToNameConverter(prevdata => ({
-        ...prevdata,
-        ...idToName
-      }));
-    } catch (error) {
-      console.error("Error fetching form data:", error);
-      alert("Failed to fetch form data. Please try again later.");
-    }
-  };
+  const [addressLevelTypes] = useState([]);
+  const [subjectTypeOptions] = React.useState([]);
 
   useEffect(() => {
-    const fetchUsageAndFormDetails = async () => {
+    const fetchUsageAndConceptDetails = async () => {
       try {
         const usageResponse = await http.get(`/web/concept/usage/${props.match.params.uuid}`);
         setUsage(usageResponse.data);
 
-        if (usageResponse.data.forms) {
-          usageResponse.data.forms.forEach(form => {
-            fetchFormData(form.formUUID);
-          });
-        }
+        const conceptResponse = await http.get("/web/concept/" + props.match.params.uuid);
+        setData(conceptResponse.data);
       } catch (error) {
-        console.error("Error fetching usage data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchUsageAndFormDetails();
-  }, [props.match.params.uuid]);
-
-  useEffect(() => {
-    http.get("/web/concept/" + props.match.params.uuid).then(response => {
-      setData(response.data);
-      if (response.data.dataType === "Location") {
-        http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
-          if (response.status === 200) {
-            const addressLevelTypes = response.data.content.map(addressLevelType => ({
-              label: addressLevelType.name,
-              value: addressLevelType.uuid,
-              level: addressLevelType.level,
-              parent: addressLevelType.parent
-            }));
-            setAddressLevelTypes(addressLevelTypes);
-          }
-        });
-      }
-
-      if (response.data.dataType === "Subject") {
-        http.get("/web/operationalModules").then(response => {
-          setSubjectTypeOptions(response.data.subjectTypes);
-        });
-      }
-    });
-
-    http.get("/web/concept/usage/" + props.match.params.uuid).then(response => {
-      setUsage(response.data);
-    });
+    fetchUsageAndConceptDetails();
   }, [props.match.params.uuid]);
 
   const hasEditPrivilege = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditConcept);
@@ -297,41 +222,17 @@ function ConceptDetails({ subjectType, formMappings, userInfo, ...props }) {
 
                 {usage.forms && (
                   <div>
-                    {Object.keys(fdata).map(formName => {
-                      const form = usage.forms.find(form => form.formName === formName);
-                      // Group elements by section name
-                      const sections = fdata[formName].reduce((acc, element) => {
-                        if (!acc[element.sectionName]) {
-                          acc[element.sectionName] = [];
-                        }
-                        acc[element.sectionName].push(element);
-                        return acc;
-                      }, {});
-
-                      return (
-                        <div key={formName}>
-                          {Object.keys(sections).map(sectionName => (
-                            <div key={sectionName} style={{ marginBottom: "10px" }}>
-                              {/* Render questions under the section */}
-                              {sections[sectionName].map((element, index) => (
-                                <div key={index} style={{ display: "flex", alignItems: "center" }}>
-                                  {element.conceptName === data.name && (
-                                    <span style={{ fontSize: "15px" }}>
-                                      <a href={`#/appDesigner/forms/${form.formUUID}`} style={{ textDecoration: "none" }}>
-                                        {formName}
-                                      </a>
-                                      &nbsp;→&nbsp;{sectionName}
-                                      {element.parentUUID && <>&nbsp;→&nbsp;{idToNameConverter[element.parentUUID]}</>}
-                                      &nbsp;→&nbsp;{element.questionName}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
+                    {usage.forms.map(form => (
+                      <div key={form.formUUID}>
+                        <a href={`#/appDesigner/forms/${form.formUUID}`} style={{ textDecoration: "none", fontSize: "15px" }}>
+                          {form.formName}
+                        </a>
+                        <span style={{ fontSize: "15px" }}>
+                          {" "}
+                          → {form.formElementGroupName} → {form.formElementName}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </>
