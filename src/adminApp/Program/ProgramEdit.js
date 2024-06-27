@@ -59,9 +59,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
           setFormList(response.data.forms);
           setSubjectTypes(response.data.subjectTypes);
           const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
-          setSubjectType(
-            response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
-          );
+          setSubjectType(response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]);
 
           const enrolmentForm = findProgramEnrolmentForm(formMap, result);
           dispatch({ type: "programEnrolmentForm", payload: enrolmentForm });
@@ -121,12 +119,14 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
             />
           )}
           <br />
-          <AvniSwitch
-            checked={program.active}
-            onChange={event => dispatch({ type: "active", payload: event.target.checked })}
-            name="Active"
-            toolTipKey={"APP_DESIGNER_PROGRAM_ACTIVE"}
-          />
+          {program.loaded && (
+            <AvniSwitch
+              checked={program.active}
+              onChange={event => dispatch({ type: "active", payload: event.target.checked })}
+              name="Active"
+              toolTipKey={"APP_DESIGNER_PROGRAM_ACTIVE"}
+            />
+          )}
           <br />
           {organisationConfig && organisationConfig.enableMessaging ? (
             <MessageRules
