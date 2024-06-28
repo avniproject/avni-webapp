@@ -1,5 +1,5 @@
 import { ReportCard } from "openchs-models";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, isNil, isInteger, toNumber, lowerCase } from "lodash";
 import WebStandardReportCardType from "./WebStandardReportCardType";
 import WebSubjectType from "./WebSubjectType";
 import WebProgram from "./WebProgram";
@@ -16,7 +16,8 @@ function populateRecordCardFields(
   countOfCards,
   standardReportCardInputSubjectTypes,
   standardReportCardInputPrograms,
-  standardReportCardInputEncounterTypes
+  standardReportCardInputEncounterTypes,
+  standardReportCardInputRecentDuration
 ) {
   reportCard.id = id;
   reportCard.iconFileS3Key = iconFileS3Key;
@@ -28,6 +29,7 @@ function populateRecordCardFields(
   reportCard.standardReportCardInputSubjectTypes = standardReportCardInputSubjectTypes;
   reportCard.standardReportCardInputPrograms = standardReportCardInputPrograms;
   reportCard.standardReportCardInputEncounterTypes = standardReportCardInputEncounterTypes;
+  reportCard.standardReportCardInputRecentDuration = standardReportCardInputRecentDuration;
 }
 
 class WebReportCard extends ReportCard {
@@ -60,7 +62,10 @@ class WebReportCard extends ReportCard {
 
   static createNewReportCard() {
     const webReportCard = new WebReportCard();
-    populateRecordCardFields(webReportCard, "", "", "", [], false, null, WebReportCard.MinimumNumberOfNestedCards, [], [], []);
+    populateRecordCardFields(webReportCard, "", "", "", [], false, null, WebReportCard.MinimumNumberOfNestedCards, [], [], [], {
+      value: "1",
+      unit: "days"
+    });
     webReportCard.colour = "#ff0000";
     return webReportCard;
   }
@@ -78,7 +83,8 @@ class WebReportCard extends ReportCard {
       other.countOfCards,
       [...other.standardReportCardInputSubjectTypes],
       [...other.standardReportCardInputPrograms],
-      [...other.standardReportCardInputEncounterTypes]
+      [...other.standardReportCardInputEncounterTypes],
+      other.standardReportCardInputRecentDuration
     );
     webReportCard.standardReportCardType = other.standardReportCardType;
     webReportCard.colour = other.colour;
@@ -98,7 +104,8 @@ class WebReportCard extends ReportCard {
       resource.count,
       WebSubjectType.fromResources(resource.standardReportCardInputSubjectTypes),
       WebProgram.fromResources(resource.standardReportCardInputPrograms),
-      WebEncounterType.fromResources(resource.standardReportCardInputEncounterTypes)
+      WebEncounterType.fromResources(resource.standardReportCardInputEncounterTypes),
+      resource.standardReportCardInputRecentDuration
     );
     webReportCard.colour = resource.color;
     if (!isNil(resource.standardReportCardType))
@@ -110,7 +117,7 @@ class WebReportCard extends ReportCard {
     return isNil(this.id);
   }
 
-  validate(isStandardReportCard) {
+  validateCard(isStandardReportCard) {
     const errors = [];
     if (isEmpty(this.name)) {
       errors.push({ key: "EMPTY_NAME", message: "Name cannot be empty" });
@@ -146,6 +153,19 @@ class WebReportCard extends ReportCard {
         message: "Nested Card count cannot be less than 1 or greater than 9"
       });
     }
+    if (isStandardReportCard && this.isRecentType()) {
+      const recentDurationValueAsNumber = toNumber(this.standardReportCardInputRecentDuration.value);
+      if (
+        !isInteger(recentDurationValueAsNumber) ||
+        !(recentDurationValueAsNumber > 0) ||
+        lowerCase(this.standardReportCardInputRecentDuration.value).indexOf("e") > -1
+      ) {
+        errors.push({
+          key: "INVALID_DURATION",
+          message: "Recent duration is mandatory and should be a positive number"
+        });
+      }
+    }
     return errors;
   }
 
@@ -162,7 +182,8 @@ class WebReportCard extends ReportCard {
       iconFileS3Key: this.iconFileS3Key,
       standardReportCardInputSubjectTypes: this.standardReportCardInputSubjectTypes.map(x => x.uuid),
       standardReportCardInputPrograms: this.standardReportCardInputPrograms.map(x => x.uuid),
-      standardReportCardInputEncounterTypes: this.standardReportCardInputEncounterTypes.map(x => x.uuid)
+      standardReportCardInputEncounterTypes: this.standardReportCardInputEncounterTypes.map(x => x.uuid),
+      standardReportCardInputRecentDuration: this.standardReportCardInputRecentDuration
     };
   }
 }
