@@ -17,9 +17,10 @@ const ResourceShowView = ({
   render,
   mapResource = _.identity,
   userInfo,
-  editPrivilegeType
+  editPrivilegeType,
+  defaultResource
 }) => {
-  const [resource, setResource] = React.useState({});
+  const [resource, setResource] = React.useState(defaultResource);
   const [editAlert, setEditAlert] = useState(false);
 
   useEffect(() => {

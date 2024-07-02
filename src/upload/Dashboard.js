@@ -40,7 +40,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [entityForDownload, setEntityForDownload] = React.useState("");
   const [file, setFile] = React.useState();
   const [autoApprove, setAutoApprove] = React.useState(false);
-  const [mode, setMode] = React.useState("relaxed");
+  const [mode, setMode] = React.useState("CREATE");
   const [hierarchy, setHierarchy] = React.useState();
   const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
 
@@ -49,7 +49,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     staticTypesWithStaticDownload.getCode(name) || staticTypesWithDynamicDownload.getCode(name) || uploadTypes.getCode(name);
 
   const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode);
+    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy);
     if (!ok && error) {
       alert(error);
     }
@@ -89,7 +89,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 
   const dropdownHandler = option => {
     setAutoApprove(false);
-    setMode("relaxed");
+    setMode("CREATE");
     setUploadType(option);
     option !== staticTypesWithStaticDownload.getName("metadataZip") && setEntityForDownload(option);
   };
@@ -97,7 +97,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const isSampleDownloadDisallowed =
     isEmpty(entityForDownload) ||
     (uploadType === "Locations" && isEmpty(mode)) ||
-    (uploadType === "Locations" && mode === "relaxed" && isEmpty(hierarchy));
+    (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
 
   return (
     <Grid container spacing={2} className={classes.root}>
@@ -150,7 +150,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
               </Grid>
               <Grid container item>
                 {uploadType === "Locations" &&
-                  mode === "relaxed" &&
+                  mode === "CREATE" &&
                   (configuredHierarchies && configuredHierarchies.length > 0 ? (
                     <LocationHierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} configuredHierarchies={configuredHierarchies} />
                   ) : (

@@ -3,6 +3,8 @@ import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import MaterialTable from "material-table";
 import api from "../api";
 import {
+  getAssignmentValue,
+  getFilterPayload,
   getMetadataOptions,
   initialState,
   SubjectAssignmentReducer
@@ -16,7 +18,6 @@ import { refreshTable } from "../util/util";
 import { AssignmentToolBar } from "../components/AssignmentToolBar";
 import Paper from "@material-ui/core/Paper";
 import { includes, map, mapValues } from "lodash";
-import { getAssignmentValue, getFilterPayload } from "../reducers/SubjectAssignmentReducer";
 import { SubjectAssignmentAction } from "../components/SubjectAssignmentAction";
 import materialTableIcons from "../../common/material-table/MaterialTableIcons";
 
@@ -91,6 +92,9 @@ const SubjectAssignment = () => {
                   pageSizeOptions: [10, 15, 25],
                   addRowPosition: "first",
                   sorting: true,
+                  headerStyle: {
+                    zIndex: 1
+                  },
                   debounceInterval: 500,
                   search: false,
                   maxBodyHeight: "75vh",
@@ -141,11 +145,7 @@ const SubjectAssignment = () => {
     );
   };
 
-  return (
-    <ScreenWithAppBar appbarTitle={"Subject Assignment"}>
-      {state.loaded && renderData()}
-    </ScreenWithAppBar>
-  );
+  return <ScreenWithAppBar appbarTitle={"Subject Assignment"}>{state.loaded && renderData()}</ScreenWithAppBar>;
 };
 
 export default SubjectAssignment;

@@ -11,7 +11,7 @@
     "@material-ui/styles": "4.11.5",
     "@nivo/bar": "^0.62.0",
     "@nivo/pie": "^0.62.0",
-    "avni-health-modules": "0.0.25",
+    "avni-health-modules": "0.0.26",
     "aws-amplify": "^1.1.19",
     "aws-amplify-react": "^2.3.0",
     "axios": "^0.27.2",
@@ -36,7 +36,7 @@
     "material-table": "1.43.0",
     "moment": "^2.22.2",
     "openchs-idi": "git+https://github.com/avniproject/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
-    "openchs-models": "1.31.77",
+    "openchs-models": "1.31.86",
     "popper.js": "^1.14.3",
     "prismjs": "^1.17.1",
     "prop-types": "^15.7.2",
@@ -125,6 +125,8 @@
     "pretty-quick": "^1.11.1",
     "redux-saga-test-plan": "^3.7.0",
     "source-map-explorer": "^2.0.1",
-    "@babel/helper-environment-visitor": "7.22.20"
+    "@babel/helper-environment-visitor": "7.22.20",
+    "@babel/helper-string-parser": "7.22.5",
+    "picocolors": "1.0.1"
   }
 }

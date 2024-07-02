@@ -8,7 +8,8 @@ export const ReportCardReducerKeys = {
   nested: "nested",
   standardReportCardType: "standardReportCardType",
   setData: "setData",
-  cardFormMetaData: "cardFormMetaData"
+  cardFormMetaData: "cardFormMetaData",
+  duration: "duration"
 };
 
 export const ReportCardReducer = (reportCard, action) => {
@@ -39,6 +40,16 @@ export const ReportCardReducer = (reportCard, action) => {
       reportCard.standardReportCardInputSubjectTypes = subjectTypes;
       reportCard.standardReportCardInputPrograms = programs;
       reportCard.standardReportCardInputEncounterTypes = encounterTypes;
+      break;
+    case ReportCardReducerKeys.duration:
+      if (action.payload) {
+        const { value, unit } = action.payload;
+        reportCard.standardReportCardInputRecentDuration = {};
+        reportCard.standardReportCardInputRecentDuration.value = value;
+        reportCard.standardReportCardInputRecentDuration.unit = unit;
+      } else {
+        reportCard.standardReportCardInputRecentDuration = null;
+      }
       break;
     default:
       break;

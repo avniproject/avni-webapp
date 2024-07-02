@@ -110,7 +110,8 @@ export default function(state = initialState, action) {
         organisation: {
           id: action.payload.organisationId,
           name: action.payload.organisationName,
-          usernameSuffix: action.payload.usernameSuffix
+          usernameSuffix: action.payload.usernameSuffix,
+          organisationCategory: action.payload.organisationCategory
         },
         userInfo: action.payload
       };

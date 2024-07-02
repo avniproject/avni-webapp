@@ -3,20 +3,7 @@ import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import {
-  filter,
-  uniqBy,
-  get,
-  isEmpty,
-  join,
-  map,
-  flatten,
-  find,
-  reject,
-  isNil,
-  size,
-  head
-} from "lodash";
+import { filter, find, flatten, get, head, isEmpty, isNil, join, map, reject, size, uniqBy } from "lodash";
 import { extensionScopeTypes } from "../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "../subjectDashBoard/components/extension/ExtensionOption";
 import { Grid } from "@material-ui/core";
@@ -36,13 +23,10 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const customSearchFields = get(organisationConfigs, "organisationConfig.searchResultFields", []);
   const subjectType = find(subjectTypes, ({ uuid }) => uuid === get(searchRequest, "subjectType"));
   const isPerson = get(subjectType, "type", "Person") === "Person";
-  const getResultConcepts = customSearchFields =>
-    map(customSearchFields, ({ searchResultConcepts }) => searchResultConcepts);
+  const getResultConcepts = customSearchFields => map(customSearchFields, ({ searchResultConcepts }) => searchResultConcepts);
   const customColumns = isEmpty(subjectType)
     ? getResultConcepts(customSearchFields)
-    : getResultConcepts(
-        filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid)
-      );
+    : getResultConcepts(filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid));
 
   const renderNameWithIcon = ({ uuid, fullName, firstName, profilePicture, subjectTypeName }) => {
     return (
@@ -87,9 +71,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           render: row => row.subjectTypeName && t(row.subjectTypeName)
         }
       : null,
-    isPerson
-      ? { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) }
-      : null,
+    isPerson ? { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) } : null,
     isPerson
       ? {
           title: t("age"),
@@ -166,6 +148,9 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           pageSizeOptions: [10, 15, 20],
           addRowPosition: "first",
           sorting: true,
+          headerStyle: {
+            zIndex: 1
+          },
           debounceInterval: 500,
           search: false,
           selection: !isEmpty(searchExtensions)

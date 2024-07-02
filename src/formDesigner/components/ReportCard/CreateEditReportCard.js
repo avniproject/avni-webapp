@@ -1,7 +1,7 @@
 import React from "react";
 import { ReportCardReducer, ReportCardReducerKeys } from "./ReportCardReducer";
 import http from "../../../common/utils/httpClient";
-import { get, isNil } from "lodash";
+import { get, isNil, sortBy } from "lodash";
 import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
@@ -25,6 +25,8 @@ import { PopoverColorPicker } from "../../../common/components/PopoverColorPicke
 import WebReportCard from "../../../common/model/WebReportCard";
 import DashboardService from "../../../common/service/DashboardService";
 import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
+import { StandardReportCardType } from "openchs-models";
+import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
 
 export const CreateEditReportCard = ({ edit, ...props }) => {
   const [card, dispatch] = React.useReducer(ReportCardReducer, WebReportCard.createNewReportCard());
@@ -62,8 +64,15 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
     }
   }, [isStandardReportCard]);
 
+  React.useEffect(() => {
+    //to handle existing recent type cards without duration configured
+    if (card.isRecentType() && isNil(card.standardReportCardInputRecentDuration)) {
+      dispatch({ type: ReportCardReducerKeys.duration, payload: { value: "1", unit: "days" } });
+    }
+  }, [card]);
+
   const validateRequest = () => {
-    const errors = card.validate(isStandardReportCard);
+    const errors = card.validateCard(isStandardReportCard);
     console.log(errors);
     setError(errors);
     return errors.length === 0;
@@ -144,18 +153,14 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           toolTipKey={"APP_DESIGNER_CARD_DESCRIPTION"}
         />
         <p />
-        {!isStandardReportCard && (
-          <React.Fragment>
-            <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_CARD_COLOR"} />
-            <PopoverColorPicker
-              id="colour"
-              label="Colour"
-              color={card.color}
-              onChange={color => dispatch({ type: ReportCardReducerKeys.color, payload: color })}
-            />
-            {getErrorByKey(error, "EMPTY_COLOR")}
-          </React.Fragment>
-        )}
+        <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_CARD_COLOR"} />
+        <PopoverColorPicker
+          id="colour"
+          label="Colour"
+          color={card.colour}
+          onChange={color => dispatch({ type: ReportCardReducerKeys.color, payload: color })}
+        />
+        {getErrorByKey(error, "EMPTY_COLOR")}
         <p />
         <AvniImageUpload
           onSelect={setFile}
@@ -219,15 +224,44 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
                 type: ReportCardReducerKeys.standardReportCardType,
                 payload: standardReportCardTypes.find(x => event.target.value === x.name)
               });
+              dispatch({
+                type: ReportCardReducerKeys.duration,
+                payload: card.isRecentType() ? { value: "1", unit: "days" } : null
+              });
             }}
-            style={{ width: "200px" }}
+            style={{ width: "250px" }}
             required
-            options={standardReportCardTypes.map((type, index) => (
+            options={sortBy(standardReportCardTypes, ["name"]).map((type, index) => (
               <MenuItem value={type.name} key={index}>
                 {type.name}
               </MenuItem>
             ))}
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
+          />
+        )}
+        {isStandardReportCard && card.isRecentType() && (
+          <ValueTextUnitSelect
+            label={`${card.standardReportCardType.name} in the last*`}
+            value={get(card, "standardReportCardInputRecentDuration.value")}
+            unit={get(card, "standardReportCardInputRecentDuration.unit")}
+            units={StandardReportCardType.recentCardDurationUnits.map((unit, index) => (
+              <MenuItem value={unit} key={index}>
+                {unit}
+              </MenuItem>
+            ))}
+            onValueChange={event =>
+              dispatch({
+                type: ReportCardReducerKeys.duration,
+                payload: { value: event.target.value, unit: card.standardReportCardInputRecentDuration.unit }
+              })
+            }
+            onUnitChange={event =>
+              dispatch({
+                type: ReportCardReducerKeys.duration,
+                payload: { value: card.standardReportCardInputRecentDuration.value, unit: event.target.value }
+              })
+            }
+            errorMsg={getErrorByKey(error, "INVALID_DURATION")}
           />
         )}
         {card.isSubjectTypeFilterSupported() && (

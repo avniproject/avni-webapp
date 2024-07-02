@@ -1,19 +1,13 @@
 import React from "react";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
-import { map, isEqual, isFunction, deburr, get, sortBy, noop } from "lodash";
+import { debounce, deburr, get, isEqual, isFunction, map, noop, sortBy } from "lodash";
 import AsyncSelect from "react-select/async";
 import httpClient from "../utils/httpClient";
 import { Grid } from "@material-ui/core";
 import { locationNameRenderer } from "../../dataEntryApp/utils/LocationUtil";
 
-const AddressLevelsByType = ({
-  label,
-  addressLevelsIds = [],
-  setAddressLevelsIds,
-  setError = noop,
-  skipGrid = false
-}) => {
+const AddressLevelsByType = ({ label, addressLevelsIds = [], setAddressLevelsIds, setError = noop, skipGrid = false }) => {
   const [selectedAddresses, setSelectedAddresses] = React.useState([]);
   const [defaultOptions, setDefaultOptions] = React.useState([]);
 
@@ -32,18 +26,18 @@ const AddressLevelsByType = ({
 
   const loadLocations = (value, callback) => {
     if (!value) {
-      return callback([]);
+      callback([]);
     }
-    return fetchLocation(value, callback);
+    fetchLocation(value, callback);
   };
+
+  const debouncedLoadLocation = debounce(loadLocations, 500);
 
   function fetchLocation(value, callback) {
     const inputValue = deburr(value.trim()).toLowerCase();
     let title = encodeURIComponent(inputValue);
     let apiUrl = `/locations/search/find?title=${title}&size=100&page=0`;
-    return httpClient
-      .get(apiUrl)
-      .then(response => callback(getLocationOptions(get(response, "data.content", []))));
+    httpClient.get(apiUrl).then(response => callback(getLocationOptions(get(response, "data.content", []))));
   }
 
   const getLocationOptions = locations =>
@@ -75,7 +69,7 @@ const AddressLevelsByType = ({
         value={selectedAddresses}
         placeholder={`Start typing and select`}
         onChange={onChange}
-        loadOptions={loadLocations}
+        loadOptions={debouncedLoadLocation}
         formatOptionLabel={({ optionLabel }) => <div>{optionLabel}</div>}
       />
     </FormControl>

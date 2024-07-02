@@ -49,6 +49,15 @@ const ShowDashboardFilters = ({ filters, editAction, deleteAction, operationalMo
       columns={getFilterColumns(operationalModules)}
       data={activeFilters}
       options={{ search: false, paging: false, toolbar: false }}
+      data={filters}
+      options={{
+        headerStyle: {
+          zIndex: 1
+        },
+        search: false,
+        paging: false,
+        toolbar: false
+      }}
       actions={
         editAction || deleteAction
           ? [

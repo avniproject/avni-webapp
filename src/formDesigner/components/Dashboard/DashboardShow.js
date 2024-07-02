@@ -10,6 +10,7 @@ import { withRouter } from "react-router-dom";
 import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
 import { Privilege } from "openchs-models";
+import WebDashboard from "../../../common/model/reports/WebDashboard";
 
 function render(dashboard, operationalModules) {
   return (
@@ -20,7 +21,7 @@ function render(dashboard, operationalModules) {
       <p />
       <FormLabel style={{ fontSize: "13px" }}>{"Sections"}</FormLabel>
       <br />
-      <ShowDashboardSections sections={dashboard.sections} />
+      <ShowDashboardSections sections={WebDashboard.getSections(dashboard)} />
       <br />
       <FormLabel style={{ fontSize: "13px" }}>{"Filters"}</FormLabel>
       <br />
@@ -46,11 +47,10 @@ const DashboardShow = props => {
       resourceName={"dashboard"}
       resourceURLName={"dashboard"}
       render={dashboard => render(dashboard, operationalModules)}
-      mapResource={resource =>
-        DashboardService.mapDashboardFromResource(resource, operationalModules)
-      }
+      mapResource={resource => DashboardService.mapDashboardFromResource(resource, operationalModules)}
       userInfo={props.userInfo}
       editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
+      defaultResource={WebDashboard.createNew()}
     />
   );
 };

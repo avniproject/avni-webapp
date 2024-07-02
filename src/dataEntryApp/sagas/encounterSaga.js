@@ -1,20 +1,20 @@
-import { all, call, fork, put, select, takeLatest, takeEvery } from "redux-saga/effects";
+import { all, call, fork, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 import { find, keys } from "lodash";
 import {
-  types,
-  setEncounterFormMappings,
-  saveEncounterComplete,
   onLoadSuccess,
+  saveEncounterComplete,
+  setEligibleEncounters,
+  setEncounterFormMappings,
   setFilteredFormElements,
-  setEligibleEncounters
+  types
 } from "../reducers/encounterReducer";
 import api from "../api";
-import { selectFormMappingsForSubjectType, selectFormMappingForEncounter, selectFormMappingForCancelEncounter } from "./encounterSelector";
+import { selectFormMappingForCancelEncounter, selectFormMappingForEncounter, selectFormMappingsForSubjectType } from "./encounterSelector";
 import { mapForm } from "../../common/adapters";
 import { Encounter, ModelGeneral as General, ObservationsHolder } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
-import { mapProfile, mapEncounter, mapObservations } from "../../common/subjectModelMapper";
+import { mapEncounter, mapObservations, mapProfile } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
 import { selectDecisions, selectVisitSchedules } from "dataEntryApp/reducers/serverSideRulesReducer";
 import commonFormUtil from "dataEntryApp/reducers/commonFormUtil";
@@ -89,7 +89,7 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   encounter.observations =
     encounterTypeDetails.immutable && latestEncounter.content[0] ? mapObservations(latestEncounter.content[0].observations) : [];
   encounter.encounterType = find(state.dataEntry.metadata.operationalModules.encounterTypes, eT => eT.uuid === encounterTypeUuid);
-  encounter.name = encounter.encounterType.name;
+  encounter.name = encounter.encounterType.displayName;
 
   yield setEncounterDetails(encounter, subjectProfileJson);
 }

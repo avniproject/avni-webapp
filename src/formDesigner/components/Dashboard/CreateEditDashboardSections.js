@@ -1,7 +1,7 @@
 import React from "react";
-import { Input, IconButton, Typography, Tooltip, MenuItem } from "@material-ui/core";
+import { IconButton, Input, MenuItem, Tooltip, Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { isEmpty, filter, map, size } from "lodash";
+import { isEmpty } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -13,13 +13,8 @@ import { AvniTextField } from "../../../common/components/AvniTextField";
 import { AvniFormLabel } from "../../../common/components/AvniFormLabel";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { DragNDropComponent } from "../../common/DragNDropComponent";
-
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
+import { dashboardReducerActions } from "./DashboardReducer";
+import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -70,106 +65,59 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CreateEditDashboardSections = props => {
-  const classes = useStyles();
+function EditSection({ section, index, dispatch, history }) {
+  const viewTypes = section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
+  return (
+    <Grid container>
+      <Grid item xs={12}>
+        <AvniTextField
+          multiline
+          id={"description" + index}
+          label="Section Description"
+          autoComplete="off"
+          value={section.description}
+          onChange={event =>
+            dispatch({ type: dashboardReducerActions.updateSectionField, payload: { section, description: event.target.value } })
+          }
+          toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_DESCRIPTION"}
+        />
+        <br />
+        <AvniSelect
+          style={{ width: "200px" }}
+          onChange={event =>
+            dispatch({ type: dashboardReducerActions.updateSectionField, payload: { section, viewType: event.target.value } })
+          }
+          options={viewTypes.map(viewType => (
+            <MenuItem value={viewType} key={viewType}>
+              {viewType}
+            </MenuItem>
+          ))}
+          value={section.viewType}
+          label="Section View Type"
+          toolTipKey="APP_DESIGNER_DASHBOARD_SECTION_VIEW_TYPE"
+        />
+        <br />
+        <AvniFormLabel label={"Add cards"} toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_ADD_CARDS"} />
+        <SelectCardsView
+          dashboardSection={section}
+          addCards={cards => dispatch({ type: dashboardReducerActions.addCards, payload: { section, cards } })}
+        />
+        <CreateEditDashboardSectionCards
+          section={section}
+          dispatch={dispatch}
+          deleteCard={card => dispatch({ type: dashboardReducerActions.deleteCard, payload: { card, section } })}
+          history={history}
+        />
+      </Grid>
+    </Grid>
+  );
+}
 
+function DashboardSectionSummary({ section, index, expanded, dispatch }) {
+  const classes = useStyles();
   const stopPropagation = e => e.stopPropagation();
 
-  const changeSectionName = (section, name) => {
-    props.dispatch({ type: "updateSectionField", payload: { section, name } });
-  };
-
-  const changeSectionDescription = (section, description) => {
-    props.dispatch({ type: "updateSectionField", payload: { section, description } });
-  };
-
-  const changeSectionViewType = (section, viewType) => {
-    props.dispatch({ type: "updateSectionField", payload: { section, viewType } });
-  };
-
-  const handleDelete = section => {
-    props.dispatch({ type: "deleteSection", payload: section });
-  };
-
-  const onDragEnd = result => {
-    if (!result.destination) {
-      return;
-    }
-    const sections = reorder(props.sections, result.source.index, result.destination.index);
-    props.dispatch({ type: "changeSectionDisplayOrder", payload: sections });
-  };
-
-  const addCards = (cards, section) => {
-    const updatedCards = updateDisplayOrder([...section.cards, ...cards]);
-    props.dispatch({ type: "updateSectionField", payload: { section, cards: updatedCards } });
-  };
-
-  const renderSection = (section, index) => {
-    const viewTypes =
-      section.viewType === "Default" ? ["Default", "Tile", "List"] : ["Tile", "List"];
-    return (
-      <Grid container>
-        <Grid item xs={12}>
-          <AvniTextField
-            multiline
-            id={"description" + index}
-            label="Section Description"
-            autoComplete="off"
-            value={section.description}
-            onChange={event => changeSectionDescription(section, event.target.value)}
-            toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_DESCRIPTION"}
-          />
-          <br />
-          <AvniSelect
-            style={{ width: "200px" }}
-            onChange={event => changeSectionViewType(section, event.target.value)}
-            options={viewTypes.map(viewType => (
-              <MenuItem value={viewType} key={viewType}>
-                {viewType}
-              </MenuItem>
-            ))}
-            value={section.viewType}
-            label="Section View Type"
-            toolTipKey="APP_DESIGNER_DASHBOARD_SECTION_VIEW_TYPE"
-          />
-          <br />
-          <AvniFormLabel
-            label={"Add cards"}
-            toolTipKey={"APP_DESIGNER_DASHBOARD_SECTION_ADD_CARDS"}
-          />
-          <SelectCardsView
-            dashboardCards={filter(section.cards, card => card.voided === false)}
-            dispatch={props.dispatch}
-            addCards={cards => addCards(cards, section)}
-          />
-          <CreateEditDashboardSectionCards
-            section={section}
-            cards={filter(
-              section.cards,
-              card =>
-                card.voided === false &&
-                filter(
-                  section.dashboardSectionCardMappings,
-                  sectionCardMapping => sectionCardMapping.voided === false
-                )
-                  .map(sectionCardMapping => sectionCardMapping.reportCardUUID)
-                  .includes(card.uuid)
-            )}
-            // cards={section.cards}
-            dispatch={props.dispatch}
-            changeDisplayOrder={cards =>
-              props.dispatch({ type: "changeDisplayOrder", payload: { cards, section } })
-            }
-            deleteCard={card => props.dispatch({ type: "deleteCard", payload: { card, section } })}
-            history={props.history}
-          />
-        </Grid>
-      </Grid>
-    );
-  };
-  const sections = props.sections;
-
-  const renderOtherSummary = (section, index, expanded) => (
+  return (
     <Grid container item sm={12} alignItems={"center"}>
       <Grid item sm={2}>
         <Tooltip title={"Grouped Questions"}>
@@ -190,29 +138,37 @@ const CreateEditDashboardSections = props => {
             disableUnderline={true}
             onClick={stopPropagation}
             value={section.name}
-            onChange={event => changeSectionName(section, event.target.value)}
+            onChange={event =>
+              dispatch({ type: dashboardReducerActions.updateSectionField, payload: { section, name: event.target.value } })
+            }
             autoComplete="off"
           />
         </Typography>
       </Grid>
       <Grid item sm={3}>
-        <Typography className={classes.questionCount}>
-          {size(
-            filter(
-              section.dashboardSectionCardMappings,
-              sectionCardMapping => sectionCardMapping.voided === false
-            )
-          )}{" "}
-          cards
-        </Typography>
+        <Typography className={classes.questionCount}>{WebDashboardSection.getReportCards(section).length} cards</Typography>
       </Grid>
       <Grid item sm={2}>
-        <IconButton aria-label="delete" onClick={() => handleDelete(section)}>
+        <IconButton aria-label="delete" onClick={() => dispatch({ type: dashboardReducerActions.deleteSection, payload: section })}>
           <DeleteIcon />
         </IconButton>
       </Grid>
     </Grid>
   );
+}
+
+const CreateEditDashboardSections = props => {
+  const onDragEnd = result => {
+    if (!result.destination) {
+      return;
+    }
+    props.dispatch({
+      type: dashboardReducerActions.changeSectionDisplayOrder,
+      payload: { sourceIndex: result.source.index, destIndex: result.destination.index }
+    });
+  };
+
+  const sections = props.sections;
 
   return (
     <React.Fragment>
@@ -220,10 +176,12 @@ const CreateEditDashboardSections = props => {
         <DragNDropComponent
           dataList={props.sections}
           onDragEnd={onDragEnd}
-          renderOtherSummary={(section, index, expanded) =>
-            renderOtherSummary(section, index, expanded)
-          }
-          renderDetails={section => renderSection(section)}
+          renderOtherSummary={(section, index, expanded) => (
+            <DashboardSectionSummary index={index} section={section} expanded={expanded} dispatch={props.dispatch} />
+          )}
+          renderDetails={(section, index) => (
+            <EditSection dispatch={props.dispatch} section={section} history={props.history} index={index} />
+          )}
           summaryDirection={"row"}
         />
       )}
@@ -232,10 +190,3 @@ const CreateEditDashboardSections = props => {
 };
 
 export default CreateEditDashboardSections;
-
-const updateDisplayOrder = items => {
-  return map(items, (item, index) => {
-    item.displayOrder = index + 1;
-    return item;
-  });
-};

@@ -1,69 +1,31 @@
-import { map, reject, sortBy, concat } from "lodash";
-import _ from "lodash";
+import _, { concat, reject } from "lodash";
 import { ModelGeneral as General } from "openchs-models";
+import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
+import WebDashboard from "../../../common/model/reports/WebDashboard";
 
 const addSection = dashboard => {
-  const newSection = {
-    name: "",
-    description: "",
-    viewType: "",
-    displayOrder: 100,
-    cards: [],
-    uuid: General.randomUUID()
-  };
-  const newSections = updateDisplayOrder([
-    ...sortBy(dashboard.sections, "displayOrder"),
-    newSection
-  ]);
-  return { ...dashboard, sections: newSections };
+  return WebDashboard.addNewSection(dashboard);
 };
 
 const updateSectionField = (dashboard, { section, ...fields }) => {
-  const sections = reject(dashboard.sections, it => it === section);
-  sections.push({ ...section, ...fields });
-  return { ...dashboard, sections: sortBy(sections, "displayOrder") };
+  const updatedSection = { ...section, ...fields };
+  return WebDashboard.updateSection(dashboard, updatedSection);
 };
 
 const deleteCard = (dashboard, { card, section }) => {
-  const sections = map(dashboard.sections, ds => {
-    if (section === ds) {
-      ds.cards = reject(ds.cards, it => it === card);
-    }
-    return ds;
-  });
-  return { ...dashboard, sections };
+  return WebDashboard.updateSection(dashboard, WebDashboardSection.removeCard(section, card));
 };
 
-const changeDisplayOrder = (dashboard, { cards, section }) => {
-  const cardsInOrder = updateDisplayOrder(cards);
-  const updatedSections = map(dashboard.sections, ds => {
-    if (section === ds) {
-      ds.cards = cardsInOrder;
-      return ds;
-    } else return ds;
-  });
-  return { ...dashboard, sections: updatedSections };
+const changeSectionDisplayOrder = (dashboard, { sourceIndex, destIndex }) => {
+  return WebDashboard.reOrderSections(dashboard, sourceIndex, destIndex);
 };
 
-const changeSectionDisplayOrder = (dashboard, sections) => ({
-  ...dashboard,
-  sections: updateDisplayOrder(sections)
-});
-
-const deleteSection = (dashboard, section) => ({
-  ...dashboard,
-  sections: reject(dashboard.sections, it => it === section)
-});
+const deleteSection = (dashboard, section) => {
+  return WebDashboard.removeSection(dashboard, section);
+};
 
 const setData = (thisIsNotNecessaryInThisCase, dashboard) => {
   return { ...dashboard };
-};
-
-const updateDisplayOrder = items => {
-  return map(items, (item, index) => {
-    item.displayOrder = index + 1;
-    return item;
-  });
 };
 
 const addFilter = (dashboard, { modifiedFilter }) => {
@@ -87,20 +49,45 @@ const deleteFilter = (dashboard, { selectedFilter }) => {
   return { ...dashboard, filters };
 };
 
+const addCards = (dashboard, { section, cards }) => {
+  return WebDashboard.updateSection(dashboard, WebDashboardSection.addCards(section, cards));
+};
+
+const reorderCards = (dashboard, { section, startIndex, endIndex }) => {
+  return WebDashboard.updateSection(dashboard, WebDashboardSection.reorderCards(section, startIndex, endIndex));
+};
+
+export const dashboardReducerActions = {
+  name: "name",
+  description: "description",
+  addSection: "addSection",
+  updateSectionField: "updateSectionField",
+  addCards: "addCards",
+  deleteCard: "deleteCard",
+  changeSectionDisplayOrder: "changeSectionDisplayOrder",
+  deleteSection: "deleteSection",
+  setData: "setData",
+  addFilter: "addFilter",
+  editFilter: "editFilter",
+  deleteFilter: "deleteFilter",
+  reorderCards: "reorderCards"
+};
+
 export const DashboardReducer = (dashboard, action) => {
   const actionFns = {
     name: (dashboard, name) => ({ ...dashboard, name }),
     description: (dashboard, description) => ({ ...dashboard, description }),
     addSection: addSection,
     updateSectionField: updateSectionField,
+    addCards: addCards,
     deleteCard: deleteCard,
-    changeDisplayOrder: changeDisplayOrder,
     changeSectionDisplayOrder: changeSectionDisplayOrder,
     deleteSection: deleteSection,
     setData: setData,
     addFilter: addFilter,
     editFilter: editFilter,
-    deleteFilter: deleteFilter
+    deleteFilter: deleteFilter,
+    reorderCards: reorderCards
   };
   const actionFn = actionFns[action.type] || (() => dashboard);
   return actionFn(dashboard, action.payload);

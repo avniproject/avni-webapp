@@ -60,6 +60,13 @@ function RenderCard({ reportCard }) {
       {reportCard.isStandardReportType() && (
         <ShowLabelValue label={"Standard Report Card Type"} value={reportCard.standardReportCardType.name} />
       )}
+      <p />
+      {reportCard.isStandardReportType() && reportCard.isRecentType() && !_.isNil(reportCard.standardReportCardInputRecentDuration) && (
+        <ShowLabelValue
+          label={`${reportCard.standardReportCardType.name} in the last`}
+          value={`${reportCard.standardReportCardInputRecentDuration.value} ${reportCard.standardReportCardInputRecentDuration.unit}`}
+        />
+      )}
       {reportCard.isSubjectTypeFilterSupported() && (
         <>
           <br />
@@ -92,6 +99,7 @@ const ReportCardShow = props => {
       editPrivilegeType={Privilege.PrivilegeType.EditOfflineDashboardAndReportCard}
       userInfo={props.userInfo}
       mapResource={resource => WebReportCard.fromResource(resource)}
+      defaultResource={WebReportCard.createNewReportCard()}
     />
   );
 };
