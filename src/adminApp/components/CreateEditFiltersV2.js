@@ -156,7 +156,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                 toolTipKey="APP_DESIGNER_FILTER_TYPE"
               />
               <Box m={1} />
-              {!_.isEmpty(filterConfig.type) && !filterConfig.isSubjectTypeFilter() && subjectTypeOptions.length > 0 && (
+              {!_.isEmpty(filterConfig.type) && filterConfig.requiresSpecificSubjectType() && subjectTypeOptions.length > 0 && (
                 <SingleEntitySelect
                   name="Subject Type"
                   placeholder="Select Subject Type"
