@@ -36,6 +36,8 @@ class WebReportCard extends ReportCard {
   static MinimumNumberOfNestedCards = 1;
   static MaximumNumberOfNestedCards = 9;
 
+  standardReportCardInputRecentDuration;
+
   get id() {
     return this.that.id;
   }
