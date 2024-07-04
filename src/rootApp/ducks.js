@@ -111,7 +111,8 @@ export default function(state = initialState, action) {
           id: action.payload.organisationId,
           name: action.payload.organisationName,
           usernameSuffix: action.payload.usernameSuffix,
-          organisationCategory: action.payload.organisationCategory
+          organisationCategory: action.payload.organisationCategory,
+          region: action.payload.region
         },
         userInfo: action.payload
       };

@@ -37,6 +37,7 @@ import {
 } from "./UserHelper";
 import { TitleChip } from "./components/TitleChip";
 import OrganisationService from "../common/service/OrganisationService";
+import ApplicationContext from "../ApplicationContext";
 
 export const AccountOrgAdminUserCreate = ({ user, region, ...props }) => (
   <Create {...props}>
@@ -106,6 +107,8 @@ const UserForm = ({ edit, user, region, ...props }) => {
     resource,
     save
   });
+  const autoComplete = ApplicationContext.isDevEnv() ? "on" : "off";
+
   return (
     <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="list">
       <FormDataConsumer>
@@ -151,9 +154,9 @@ const UserForm = ({ edit, user, region, ...props }) => {
         </Fragment>
       )}
       {!edit && <PasswordTextField />}
-      <TextInput source="name" label="Name of the Person" validate={isRequired} autoComplete="off" />
-      <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete="off" />
-      <TextInput source="phoneNumber" validate={getPhoneValidator(region)} autoComplete="off" />
+      <TextInput source="name" label="Name of the Person" validate={isRequired} autoComplete={autoComplete} />
+      <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete={autoComplete} />
+      <TextInput source="phoneNumber" validate={getPhoneValidator(region)} autoComplete={autoComplete} />
     </SimpleForm>
   );
 };
