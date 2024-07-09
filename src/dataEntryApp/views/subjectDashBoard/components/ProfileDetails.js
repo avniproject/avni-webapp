@@ -124,15 +124,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProfileDetails = ({
-  profileDetails,
-  getPrograms,
-  programs,
-  subjectUuid,
-  match,
-  load,
-  tabsStatus
-}) => {
+const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match, load, tabsStatus, organisationConfigs }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
   const [openComment, setOpenComment] = React.useState(false);
@@ -162,11 +154,7 @@ const ProfileDetails = ({
     <DialogContent>
       <form className={classes.form} noValidate>
         <FormControl className={classes.formControl}>
-          <InputLabel
-            shrink
-            id="demo-simple-select-placeholder-label-label"
-            className={errorStatus ? classes.errorText : ""}
-          >
+          <InputLabel shrink id="demo-simple-select-placeholder-label-label" className={errorStatus ? classes.errorText : ""}>
             {t("Program")}
           </InputLabel>
 
@@ -195,8 +183,7 @@ const ProfileDetails = ({
     </DialogContent>
   );
 
-  const allowEnrolment =
-    tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided && isMultipleProgramEligible;
+  const allowEnrolment = tabsStatus && tabsStatus.showProgramTab && !profileDetails.voided && isMultipleProgramEligible;
 
   return (
     <div className={classes.tableView}>
@@ -222,34 +209,22 @@ const ProfileDetails = ({
             <Table aria-label="caption table" className={classes.tableContainer}>
               <TableHead>
                 <TableRow className={classes.tableHeader}>
-                  {profileDetails.subjectType.isPerson() && (
-                    <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
-                  )}
-                  {profileDetails.subjectType.isPerson() && (
-                    <TableCell className={classes.tableCell}>{t("age")}</TableCell>
-                  )}
-                  {profileDetails.lowestAddressLevel.titleLineage && (
-                    <TableCell className={classes.tableCell}>{t("Address")}</TableCell>
-                  )}
+                  {profileDetails.subjectType.isPerson() && <TableCell className={classes.tableCell}>{t("gender")}</TableCell>}
+                  {profileDetails.subjectType.isPerson() && <TableCell className={classes.tableCell}>{t("age")}</TableCell>}
+                  {profileDetails.lowestAddressLevel.titleLineage && <TableCell className={classes.tableCell}>{t("Address")}</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow>
                   {profileDetails.subjectType.isPerson() && (
-                    <TableCell className={classes.tableCellDetails}>
-                      {t(profileDetails.gender.name)}
-                    </TableCell>
+                    <TableCell className={classes.tableCellDetails}>{t(profileDetails.gender.name)}</TableCell>
                   )}
                   {profileDetails.subjectType.isPerson() && (
                     <TableCell className={classes.tableCellDetails}>
-                      {profileDetails.dateOfBirth
-                        ? AgeUtil.getDisplayAge(profileDetails.dateOfBirth, i18n)
-                        : "-"}
+                      {profileDetails.dateOfBirth ? AgeUtil.getDisplayAge(profileDetails.dateOfBirth, i18n) : "-"}
                     </TableCell>
                   )}
-                  <TableCell className={classes.tableCellDetails}>
-                    {profileDetails.lowestAddressLevel.titleLineage}
-                  </TableCell>
+                  <TableCell className={classes.tableCellDetails}>{profileDetails.lowestAddressLevel.titleLineage}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -261,6 +236,7 @@ const ProfileDetails = ({
             typeUUID={profileDetails.subjectType.uuid}
             typeName={profileDetails.subjectType.name}
             scopeType={extensionScopeTypes.subjectDashboard}
+            configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
           />
           <Grid item>
             {enableComment && (
@@ -312,17 +288,11 @@ const ProfileDetails = ({
             ) : (
               !isEmpty(programs) && (
                 <Link
-                  to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${
-                    programs[0].name
-                  }&formType=ProgramEnrolment&subjectTypeName=${profileDetails.subjectType.name}`}
+                  to={`/app/subject/enrol?uuid=${subjectUuid}&programName=${programs[0].name}&formType=ProgramEnrolment&subjectTypeName=${
+                    profileDetails.subjectType.name
+                  }`}
                 >
-                  <Fab
-                    id={programs[0].name}
-                    className={classes.enrollButtonStyle}
-                    variant="extended"
-                    color="primary"
-                    aria-label="add"
-                  >
+                  <Fab id={programs[0].name} className={classes.enrollButtonStyle} variant="extended" color="primary" aria-label="add">
                     {t(`Enrol in ${programs[0].name}`)}
                   </Fab>
                 </Link>
@@ -338,7 +308,8 @@ const ProfileDetails = ({
 const mapStateToProps = state => ({
   programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
   load: state.dataEntry.loadReducer.load,
-  tabsStatus: state.dataEntry.subjectProfile.tabsStatus
+  tabsStatus: state.dataEntry.subjectProfile.tabsStatus,
+  organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
 
 const mapDispatchToProps = {

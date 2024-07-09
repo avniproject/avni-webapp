@@ -7,21 +7,12 @@ import {
   setVoidServerError,
   setSubjectDashboardLoaded
 } from "../reducers/subjectDashboardReducer";
-import {
-  mapProfile,
-  mapGroupMembers,
-  mapProgram,
-  mapGeneral
-} from "../../common/subjectModelMapper";
+import { mapProfile, mapGroupMembers, mapProgram, mapGeneral } from "../../common/subjectModelMapper";
 import api from "../api";
 import commonApi from "../../common/service";
 import { setLoad } from "../reducers/loadReducer";
 import { selectSubjectProfile, selectOperationalModules } from "./selectors";
-import {
-  getRegistrationForm,
-  selectRegistrationForm,
-  setRegistrationForm
-} from "../reducers/registrationReducer";
+import { getRegistrationForm, selectRegistrationForm, setRegistrationForm } from "../reducers/registrationReducer";
 import { filter, isEmpty, map, includes, get } from "lodash";
 import { setSubjectProgram } from "../reducers/programSubjectDashboardReducer";
 import { setSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
@@ -51,9 +42,11 @@ export function* loadSubjectDashboardWatcher() {
 
 export function* loadSubjectDashboardWorker({ subjectUUID }) {
   yield put.resolve(setSubjectDashboardLoaded(false));
-  yield call(subjectProfileFetchWorker, { subjectUUID });
-  yield call(subjectGeneralFetchWorker, { subjectGeneralUUID: subjectUUID });
-  yield call(subjectProgramFetchWorker, { subjectProgramUUID: subjectUUID });
+  yield all([
+    call(subjectProfileFetchWorker, { subjectUUID }),
+    call(subjectGeneralFetchWorker, { subjectGeneralUUID: subjectUUID }),
+    call(subjectProgramFetchWorker, { subjectProgramUUID: subjectUUID })
+  ]);
   yield put.resolve(setSubjectDashboardLoaded(true));
 }
 
@@ -65,8 +58,10 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
   yield put.resolve(setLoad(false));
   yield put.resolve(setRegistrationForm());
   yield put.resolve(setSubjectProfile());
-  const organisationConfigs = yield call(commonApi.fetchOrganisationConfigs);
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
+  const [organisationConfigs, subjectProfileJson] = yield all([
+    call(commonApi.fetchOrganisationConfigs),
+    call(api.fetchSubjectProfile, subjectUUID)
+  ]);
   const subjectProfile = mapProfile(subjectProfileJson);
   const subjectType = subjectProfile.subjectType;
   const operationalModules = yield select(selectOperationalModules);
@@ -76,17 +71,13 @@ export function* subjectProfileFetchWorker({ subjectUUID }) {
     filter(
       operationalModules.formMappings,
       ({ subjectTypeUUID, programUUID }) =>
-        subjectTypeUUID === subjectType.uuid &&
-        !isEmpty(programUUID) &&
-        includes(programUUIDs, programUUID)
+        subjectTypeUUID === subjectType.uuid && !isEmpty(programUUID) && includes(programUUIDs, programUUID)
     ).length > 0;
   const hasAnyGeneralEncounters =
     filter(
       operationalModules.formMappings,
       ({ subjectTypeUUID, formType, encounterTypeUUID }) =>
-        subjectTypeUUID === subjectType.uuid &&
-        formType === "Encounter" &&
-        includes(encounterTypeUUIDs, encounterTypeUUID)
+        subjectTypeUUID === subjectType.uuid && formType === "Encounter" && includes(encounterTypeUUIDs, encounterTypeUUID)
     ).length > 0;
   const showGeneralTab = showProgramTab && hasAnyGeneralEncounters;
   const displayGeneralInfoInProfileTab = hasAnyGeneralEncounters && !showGeneralTab;

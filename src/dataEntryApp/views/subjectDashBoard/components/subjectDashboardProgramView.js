@@ -14,18 +14,10 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { withParams } from "../../../../common/components/utils";
 import { getProgramEnrolmentForm } from "../../../reducers/programSubjectDashboardReducer";
 import { filter, get, isEmpty, isNil } from "lodash";
-import {
-  clearVoidServerError,
-  voidProgramEncounter,
-  voidProgramEnrolment
-} from "../../../reducers/subjectDashboardReducer";
+import { clearVoidServerError, voidProgramEncounter, voidProgramEnrolment } from "../../../reducers/subjectDashboardReducer";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import MessageDialog from "../../../components/MessageDialog";
-import {
-  fetchProgramSummary,
-  selectFetchingRulesResponse,
-  selectProgramSummary
-} from "../../../reducers/serverSideRulesReducer";
+import { fetchProgramSummary, selectFetchingRulesResponse, selectProgramSummary } from "../../../reducers/serverSideRulesReducer";
 import { RuleSummary } from "./RuleSummary";
 import { extensionScopeTypes } from "../../../../formDesigner/components/Extensions/ExtensionReducer";
 import { ExtensionOption } from "./extension/ExtensionOption";
@@ -68,8 +60,7 @@ const useStyles = makeStyles(theme => ({
   expansionPanel: {
     marginBottom: "11px",
     borderRadius: "5px",
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   paper: {
     textAlign: "left",
@@ -147,16 +138,13 @@ const ProgramView = ({
   voidError,
   clearVoidServerError,
   voidProgramEnrolment,
-  voidProgramEncounter
+  voidProgramEncounter,
+  organisationConfigs
 }) => {
   React.useEffect(() => {
     const formType = programData.programExitDateTime ? "ProgramExit" : "ProgramEnrolment";
-    getProgramEnrolmentForm(
-      subjectProfile.subjectType.name,
-      programData.program.operationalProgramName,
-      formType
-    );
-  }, [programData]);
+    getProgramEnrolmentForm(subjectProfile.subjectType.name, programData.program.operationalProgramName, formType);
+  }, [programData.program.operationalProgramName]);
 
   const classes = useStyles();
   const { t } = useTranslation();
@@ -172,12 +160,11 @@ const ProgramView = ({
 
   useEffect(() => {
     dispatch(fetchProgramSummary(programData.uuid));
-  }, [dispatch, programData]);
+  }, [dispatch, programData.uuid]);
 
   const plannedVisits = filter(
     get(programData, "encounters", []),
-    ({ voided, encounterDateTime, cancelDateTime }) =>
-      !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
+    ({ voided, encounterDateTime, cancelDateTime }) => !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
   );
 
   return (
@@ -188,22 +175,17 @@ const ProgramView = ({
           typeUUID={programData.program.uuid}
           typeName={programData.program.operationalProgramName}
           scopeType={extensionScopeTypes.programEnrolment}
+          configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
         />
         <Grid item xs={4} container direction="row" justify="flex-start" alignItems="flex-start">
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
-        {!subjectVoided && isNotExited && (
-          <NewProgramEncounterButton enrolmentUUID={programData.uuid} />
-        )}
+        {!subjectVoided && isNotExited && <NewProgramEncounterButton enrolmentUUID={programData.uuid} />}
       </Grid>
       <Paper className={classes.root}>
-        <RuleSummary
-          title={"programSummary"}
-          isFetching={isFetchingSummary}
-          summaryObservations={programSummary}
-        />
+        <RuleSummary title={"programSummary"} isFetching={isFetchingSummary} summaryObservations={programSummary} />
         {programData && programData.programExitDateTime && (
           <EnrolmentDetails
             t={t}
@@ -271,9 +253,7 @@ const ProgramView = ({
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
-            {isExpanded && (
-              <CompletedVisits entityUuid={programData.uuid} isForProgramEncounters={true} />
-            )}
+            {isExpanded && <CompletedVisits entityUuid={programData.uuid} isForProgramEncounters={true} />}
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </Paper>
@@ -284,12 +264,7 @@ const ProgramView = ({
         message={t("ProgramEnrolmentVoidAlertMessage")}
         onConfirm={() => voidProgramEnrolment(programData.uuid)}
       />
-      <MessageDialog
-        title={t("ProgramEnrolmentErrorTitle")}
-        open={!isEmpty(voidError)}
-        message={voidError}
-        onOk={clearVoidServerError}
-      />
+      <MessageDialog title={t("ProgramEnrolmentErrorTitle")} open={!isEmpty(voidError)} message={voidError} onOk={clearVoidServerError} />
     </div>
   );
 };
@@ -298,7 +273,8 @@ const mapStateToProps = state => ({
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEnrolmentForm: state.dataEntry.subjectProgram.programEnrolmentForm,
-  voidError: state.dataEntry.subjectProfile.voidError
+  voidError: state.dataEntry.subjectProfile.voidError,
+  organisationConfigs: state.dataEntry.metadata.organisationConfigs
 });
 
 const mapDispatchToProps = {
