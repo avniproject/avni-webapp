@@ -49,7 +49,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     staticTypesWithStaticDownload.getCode(name) || staticTypesWithDynamicDownload.getCode(name) || uploadTypes.getCode(name);
 
   const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy);
+    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file, autoApprove, mode, hierarchy || 0);
     if (!ok && error) {
       alert(error);
     }
