@@ -7,12 +7,18 @@ const DashboardList = ({ history, userInfo }) => {
   const columns = [
     {
       title: "Name",
-      render: rowData =>
-        !rowData.voided && <a href={`#/appDesigner/dashboard/${rowData.id}/show`}>{rowData.name}</a>
+      render: rowData => !rowData.voided && <a href={`#/appDesigner/dashboard/${rowData.id}/show`}>{rowData.name}</a>,
+      sorting: false
+    },
+    {
+      title: "Filters",
+      render: rowData => rowData.filters.map(filter => filter.name).join(", "),
+      sorting: false
     },
     {
       title: "Description",
-      render: rowData => rowData.description
+      render: rowData => rowData.description,
+      sorting: false
     }
   ];
 

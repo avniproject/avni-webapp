@@ -215,7 +215,7 @@ export const CreateEditFiltersV2 = ({ selectedFilter, operationalModules, docume
                   value={_.get(filterConfig.observationBasedFilter, "scope")}
                   options={scopeOptions}
                   onChange={scope => {
-                    filterConfig.observationBasedFilter.scope = scope.value;
+                    filterConfig.observationBasedFilter.setScope(scope.value);
                     updateFilterConfig();
                   }}
                   toolTipKey="APP_DESIGNER_FILTER_SEARCH_SCOPE"
