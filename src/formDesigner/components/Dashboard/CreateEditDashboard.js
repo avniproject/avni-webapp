@@ -122,6 +122,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
         {getErrorByKey(error, "EMPTY_NAME")}
         <p />
         <AvniTextField
+          style={{ width: "12em" }}
           multiline
           id="description"
           label="Dashboard Description"
