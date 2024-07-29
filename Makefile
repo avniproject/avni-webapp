@@ -11,9 +11,6 @@ deps:
 start:
 	yarn start
 
-start-dark:
-	yarn start-dark
-
 start-with-staging:
 	yarn start-with-staging
 

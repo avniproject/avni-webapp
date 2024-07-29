@@ -24,7 +24,7 @@ import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import OrganisationCategory from "./domain/OrganisationCategory";
+import OrganisationCategory, { OrganisationStatus } from "./domain/OrganisationCategory";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -39,9 +39,23 @@ const OrganisationCategoryInput = () => {
       validate={isRequired}
       choices={[
         { id: OrganisationCategory.Production, name: OrganisationCategory.Production },
-        { id: OrganisationCategory.UAT, name: OrganisationCategory.UAT },
         { id: OrganisationCategory.Prototype, name: OrganisationCategory.Prototype },
-        { id: OrganisationCategory.Temporary, name: OrganisationCategory.Temporary }
+        { id: OrganisationCategory.Temporary, name: OrganisationCategory.Temporary },
+        { id: OrganisationCategory.Trial, name: OrganisationCategory.Trial },
+        { id: OrganisationCategory.UAT, name: OrganisationCategory.UAT }
+      ]}
+    />
+  );
+};
+
+const OrganisationStatusInput = () => {
+  return (
+    <SelectInput
+      source="status"
+      validate={isRequired}
+      choices={[
+        { id: OrganisationStatus.Live, name: OrganisationStatus.Live },
+        { id: OrganisationStatus.Archived, name: OrganisationStatus.Archived }
       ]}
     />
   );
@@ -60,6 +74,7 @@ export const OrganisationList = ({ history, ...props }) => {
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
+        <TextField source="status" label="Status" />
         <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" sortable={false} />
         <ShowButton />
         <OpenOrganisation porps={props} />
@@ -78,6 +93,7 @@ export const OrganisationDetails = props => {
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
         <TextField source="category" label="Category" />
+        <TextField source="status" label="Status" />
         <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
@@ -106,6 +122,7 @@ export const OrganisationEdit = props => {
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
         <OrganisationCategoryInput />
+        <OrganisationStatusInput />
         <BooleanField source="analyticsDataSyncActive" />
         <ToggleAnalyticsButton />
         <br />
@@ -140,6 +157,7 @@ export const OrganisationCreate = props => {
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
         <OrganisationCategoryInput />
+        <OrganisationStatusInput />
         <ReferenceInput
           resource="account"
           source="accountId"
