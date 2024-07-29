@@ -1,9 +1,10 @@
-import { ReportCard } from "openchs-models";
+import { CustomFilter, ReportCard, StandardReportCardType } from "openchs-models";
 import { isEmpty, isNil, isInteger, toNumber, lowerCase } from "lodash";
 import WebStandardReportCardType from "./WebStandardReportCardType";
 import WebSubjectType from "./WebSubjectType";
 import WebProgram from "./WebProgram";
 import WebEncounterType from "./WebEncounterType";
+import _ from "lodash";
 
 function populateRecordCardFields(
   reportCard,
@@ -169,6 +170,18 @@ class WebReportCard extends ReportCard {
       }
     }
     return errors;
+  }
+
+  static supportsFilter(card, filter) {
+    const { PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist } = StandardReportCardType.type;
+    const { Address } = CustomFilter.type;
+    const dontSupportAllFilters = [PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist].includes(
+      _.get(card, "standardReportCardType.name")
+    );
+    if (dontSupportAllFilters && ![Address].includes(filter.filterConfig.type)) {
+      return false;
+    }
+    return true;
   }
 
   toResource() {

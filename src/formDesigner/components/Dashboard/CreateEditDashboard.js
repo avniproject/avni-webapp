@@ -157,7 +157,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
           dashboard={dashboard}
           setShowAddFilterModal={setShowAddFilterModal}
         />
-        <Grid container>
+        <Grid container style={{ marginTop: 100 }}>
           <Grid item container sm={6} justifyContent={"flex-start"}>
             <AvniFormLabel label={"Filters"} toolTipKey={"APP_DESIGNER_DASHBOARD_FILTERS"} />
           </Grid>
@@ -167,6 +167,8 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
             </Button>
           </Grid>
         </Grid>
+        <p />
+        {getErrorByKey(error, "INCOMPATIBLE_FILTER_AND_CARD")}
         <Grid item>
           <ShowDashboardFilters
             operationalModules={operationalModules}

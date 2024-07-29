@@ -1,8 +1,11 @@
 import _ from "lodash";
 import WebDashboardSection from "./WebDashboardSection";
 import CollectionUtil from "../../utils/CollectionUtil";
+import WebReportCard from "../WebReportCard";
 
 class WebDashboard {
+  sections;
+
   static createNew() {
     return { name: "", description: "", sections: [], filters: [] };
   }
@@ -33,6 +36,20 @@ class WebDashboard {
     dashboard.sections.push(WebDashboardSection.newSection());
     dashboard.sections = _.sortBy(dashboard.sections, "displayOrder");
     return { ...dashboard };
+  }
+
+  static getIncompatibleCardsAndFilters(dashboard) {
+    const incompatibles = [];
+    dashboard.sections.forEach(section => {
+      WebDashboardSection.getReportCards(section).forEach(card => {
+        dashboard.filters.forEach(filter => {
+          if (!WebReportCard.supportsFilter(card, filter)) {
+            incompatibles.push({ card, filter });
+          }
+        });
+      });
+    });
+    return incompatibles;
   }
 
   static toResource(dashboard) {

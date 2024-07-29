@@ -34,6 +34,11 @@ class DashboardService {
     if (!!find(sections, section => isEmpty(WebDashboardSection.getReportCards(section)))) {
       errors.push({ key: "EMPTY_SECTIONS", message: "Please add cards to the section." });
     }
+    const incompatibleCardsAndFilters = WebDashboard.getIncompatibleCardsAndFilters(dashboard);
+    if (incompatibleCardsAndFilters.length !== 0) {
+      const message = incompatibleCardsAndFilters.map(({ card, filter }) => `{Card: ${card.name}, Filter: ${filter.name}}`).join(". ");
+      errors.push({ key: "INCOMPATIBLE_FILTER_AND_CARD", message: `Incompatible filter card combinations: ${message}` });
+    }
     return errors;
   }
 
