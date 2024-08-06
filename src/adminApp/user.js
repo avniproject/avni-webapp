@@ -171,11 +171,12 @@ const SubjectTypeSyncAttributeShow = ({ subjectType, syncConceptValueMap, ...pro
 const ConceptSyncAttributeShow = ({ subjectType, syncConceptValueMap, syncAttributeName, ...props }) => {
   const syncSettings = get(props.record, ["syncSettings", subjectType.name], {});
   const conceptUUID = get(syncSettings, [syncAttributeName]);
+  const syncConceptName = subjectType[syncAttributeName].name;
   if (isEmpty(conceptUUID)) return null;
 
   return (
     <div>
-      <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>{startCase(syncAttributeName)}</span>
+      <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>{startCase(syncConceptName)}</span>
       {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
         <Chip style={{ margin: "0.2em" }} label={syncConceptValueMap.get(value) || value} key={value} />
       ))}

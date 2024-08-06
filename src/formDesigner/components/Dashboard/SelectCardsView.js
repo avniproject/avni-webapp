@@ -29,7 +29,7 @@ export const SelectCardsView = ({ dashboardSection, addCards }) => {
   return (
     <div>
       <Grid container spacing={2}>
-        <Grid item xs={10}>
+        <Grid item xs={10} style={{ zIndex: 2 }}>
           <Select
             name="addCard"
             ref={cardSelectRef}

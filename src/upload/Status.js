@@ -29,13 +29,7 @@ const createStyles = makeStyles(theme => ({
   }
 }));
 
-const Status = ({
-  viewVersion,
-  statuses,
-  getStatuses,
-  page = 0,
-  uploadTypes = new UploadTypes()
-}) => {
+const Status = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = new UploadTypes() }) => {
   const classes = createStyles();
   React.useEffect(() => {
     getStatuses(0);
@@ -47,12 +41,7 @@ const Status = ({
 
   return (
     <Box>
-      <Button
-        color="primary"
-        variant="contained"
-        onClick={() => getStatuses(page)}
-        style={{ float: "right", margin: "10px" }}
-      >
+      <Button color="primary" variant="contained" onClick={() => getStatuses(page)} style={{ float: "right", margin: "10px" }}>
         <RefreshIcon style={{ marginRight: 5 }} />
         {"REFRESH STATUS"}
       </Button>
@@ -80,10 +69,7 @@ const Status = ({
         <TableBody>
           {map(get(statuses, "content"), jobStatus => (
             <TableRow key={jobStatus.uuid}>
-              <Tooltip
-                title={<span style={{ fontSize: "2em" }}>{jobStatus.fileName}</span>}
-                placement="bottom"
-              >
+              <Tooltip title={<span style={{ fontSize: "2em" }}>{jobStatus.fileName}</span>} placement="bottom">
                 <TableCell component="th" scope="jobStatus" className={classes.filename}>
                   {jobStatus.fileName}
                 </TableCell>
@@ -91,15 +77,14 @@ const Status = ({
               <TableCell align="right">
                 {staticTypesWithStaticDownload.getName(jobStatus.type) ||
                   staticTypesWithDynamicDownload.getName(jobStatus.type) ||
-                  uploadTypes.getName(jobStatus.type)}
+                  uploadTypes.getName(jobStatus.type) ||
+                  jobStatus.type}
               </TableCell>
               <TableCell align="right">{formatDate(jobStatus.createTime)}</TableCell>
               <TableCell align="right">{formatDate(jobStatus.startTime)}</TableCell>
               <TableCell align="right">{formatDate(jobStatus.endTime)}</TableCell>
               <TableCell align="right">
-                {jobStatus.status === "COMPLETED" && 0 < jobStatus.skipped
-                  ? "Completed with errors"
-                  : capitalize(jobStatus.status)}
+                {jobStatus.status === "COMPLETED" && 0 < jobStatus.skipped ? "Completed with errors" : capitalize(jobStatus.status)}
               </TableCell>
               <TableCell align="right">{jobStatus.total}</TableCell>
               <TableCell align="right">{jobStatus.completed}</TableCell>
