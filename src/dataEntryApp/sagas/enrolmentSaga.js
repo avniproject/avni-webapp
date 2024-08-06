@@ -12,7 +12,8 @@ import {
   setFilteredFormElements as setFilteredFormElementsEnrolment,
   setInitialState,
   setState as setProgramEnrolmentState,
-  types as enrolmentTypes
+  types as enrolmentTypes,
+  saveEnrolmentFailed
 } from "../reducers/programEnrolReducer";
 import { assign, keys } from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
@@ -117,8 +118,12 @@ export function* saveProgramEnrolmentWorker(params) {
       identifierAssignments
     );
 
-    yield call(api.saveProgramEnrolment, resource);
-    yield put(saveProgramComplete());
+    const response = yield call(api.saveProgramEnrolment, resource);
+    if (response.success) {
+      yield put(saveProgramComplete());
+    } else {
+      yield put(saveEnrolmentFailed(response.errorMessage));
+    }
   } catch (e) {
     console.log(e);
   }
@@ -138,8 +143,9 @@ export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
   programEnrolment.programExitObservations = [];
 
   let resource = programEnrolment.toResource;
-  yield call(api.saveProgramEnrolment, resource);
-  yield put(saveProgramComplete());
+  const response = yield call(api.saveProgramEnrolment, resource);
+  if (response.success) yield put(saveProgramComplete());
+  else yield put(saveEnrolmentFailed(response.errorMessage));
 }
 
 export function* undoExitProgramEnrolmentWatcher() {

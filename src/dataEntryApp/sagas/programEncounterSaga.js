@@ -3,6 +3,7 @@ import { find, keys } from "lodash";
 import {
   onLoadSuccess,
   saveProgramEncounterComplete,
+  saveProgramEncounterFailed,
   selectProgramEncounterState,
   setFilteredFormElements,
   setProgramEnrolment,
@@ -130,6 +131,7 @@ export function* createProgramEncounterForScheduledWorker({ programEncounterUuid
 function* updateEncounterObsWatcher() {
   yield takeEvery(types.UPDATE_OBS, updateEncounterObsWorker);
 }
+
 export function* updateEncounterObsWorker({ formElement, value, childFormElement, questionGroupIndex }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
@@ -155,6 +157,7 @@ export function* updateEncounterObsWorker({ formElement, value, childFormElement
 function* addNewQuestionGroupWatcher() {
   yield takeEvery(types.ADD_NEW_QG, addNewQuestionGroupWorker);
 }
+
 export function* addNewQuestionGroupWorker({ formElement }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
@@ -171,6 +174,7 @@ export function* addNewQuestionGroupWorker({ formElement }) {
 function* removeQuestionGroupWatcher() {
   yield takeEvery(types.REMOVE_QG, removeNewQuestionGroupWorker);
 }
+
 export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
@@ -192,6 +196,7 @@ export function* removeNewQuestionGroupWorker({ formElement, questionGroupIndex 
 export function* saveProgramEncounterWatcher() {
   yield takeLatest(types.SAVE_PROGRAM_ENCOUNTER, saveProgramEncounterWorker);
 }
+
 export function* saveProgramEncounterWorker(params) {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
@@ -204,13 +209,18 @@ export function* saveProgramEncounterWorker(params) {
   resource.visitSchedules = visitSchedules;
   resource.decisions = decisions;
 
-  yield call(api.saveProgramEncouter, resource);
-  yield put(saveProgramEncounterComplete());
+  const response = yield call(api.saveProgramEncouter, resource);
+  if (response.success) {
+    yield put(saveProgramEncounterComplete());
+  } else {
+    yield put(saveProgramEncounterFailed(response.message));
+  }
 }
 
 function* editProgramEncounterWatcher() {
   yield takeLatest(types.EDIT_PROGRAM_ENCOUNTER, editProgramEncounterWorker);
 }
+
 export function* editProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(api.fetchProgramEnrolments, programEncounterJson.enrolmentUUID);
@@ -248,6 +258,7 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
 function* updateEncounterCancelObsWatcher() {
   yield takeEvery(types.UPDATE_CANCEL_OBS, updateEncounterCancelObsWorker);
 }
+
 export function* updateEncounterCancelObsWorker({ formElement, value, childFormElement }) {
   const state = yield select(selectProgramEncounterState);
   const programEncounter = state.programEncounter.cloneForEdit();
@@ -272,6 +283,7 @@ export function* updateEncounterCancelObsWorker({ formElement, value, childFormE
 export function* createCancelProgramEncounterWatcher() {
   yield takeLatest(types.CREATE_CANCEL_PROGRAM_ENCOUNTER, createCancelProgramEncounterWorker);
 }
+
 export function* createCancelProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(api.fetchProgramEnrolments, programEncounterJson.enrolmentUUID);
@@ -284,6 +296,7 @@ export function* createCancelProgramEncounterWorker({ programEncounterUuid }) {
 export function* editCancelProgramEncounterWatcher() {
   yield takeLatest(types.EDIT_CANCEL_PROGRAM_ENCOUNTER, editCancelProgramEncounterWorker);
 }
+
 export function* editCancelProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
   const programEnrolmentJson = yield call(api.fetchProgramEnrolments, programEncounterJson.enrolmentUUID);

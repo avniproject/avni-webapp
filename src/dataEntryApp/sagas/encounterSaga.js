@@ -3,6 +3,7 @@ import { find, keys } from "lodash";
 import {
   onLoadSuccess,
   saveEncounterComplete,
+  saveEncounterFailed,
   setEligibleEncounters,
   setEncounterFormMappings,
   setFilteredFormElements,
@@ -189,8 +190,9 @@ export function* saveEncounterWorker(params) {
   resource.visitSchedules = visitSchedules;
   resource.decisions = decisions;
 
-  yield call(api.saveEncounter, resource);
-  yield put(saveEncounterComplete());
+  const response = yield call(api.saveEncounter, resource);
+  if (response.success) yield put(saveEncounterComplete());
+  else yield put(saveEncounterFailed(response.errorMessage));
 }
 
 function* editEncounterWatcher() {

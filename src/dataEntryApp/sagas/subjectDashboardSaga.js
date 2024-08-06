@@ -166,9 +166,9 @@ export function* voidProgramEnrolmentWatcher() {
 
 export function* voidProgramEnrolmentWorker({ uuid }) {
   yield put.resolve(setLoad(false));
-  const [response, error] = yield call(api.voidProgramEnrolment, uuid);
-  if (!response && error) {
-    yield put(setVoidServerError(error));
+  const response = yield call(api.voidProgramEnrolment, uuid);
+  if (!response.success) {
+    yield put(setVoidServerError(response.errorMessage));
   } else {
     const subject = yield select(selectSubjectProfile);
     const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);

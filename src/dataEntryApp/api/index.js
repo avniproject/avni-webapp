@@ -14,10 +14,12 @@ export default {
       .then(response => response.json),
 
   saveProgramEnrolment: programEnrolment =>
-    httpClient.fetchJson("/web/programEnrolments", {
-      method: "POST",
-      body: JSON.stringify(programEnrolment)
-    }),
+    httpClient
+      .fetchJson("/web/programEnrolments", {
+        method: "POST",
+        body: JSON.stringify(programEnrolment)
+      })
+      .then(response => response.json),
 
   searchResult: searchData =>
     httpClient.fetchJson("/web/searchAPI/v2", {
@@ -26,10 +28,12 @@ export default {
     }),
 
   saveProgramEncouter: programEncounter =>
-    httpClient.fetchJson("/web/programEncounters", {
-      method: "POST",
-      body: JSON.stringify(programEncounter)
-    }),
+    httpClient
+      .fetchJson("/web/programEncounters", {
+        method: "POST",
+        body: JSON.stringify(programEncounter)
+      })
+      .then(response => response.json),
 
   saveRelationShip: Relationaldata =>
     httpClient.fetchJson("/individualRelationships", {
@@ -43,10 +47,12 @@ export default {
     }),
 
   saveEncounter: encounter =>
-    httpClient.fetchJson("/web/encounters", {
-      method: "POST",
-      body: JSON.stringify(encounter)
-    }),
+    httpClient
+      .fetchJson("/web/encounters", {
+        method: "POST",
+        body: JSON.stringify(encounter)
+      })
+      .then(response => response.json),
 
   fetchProgramEncounter: uuid =>
     httpClient.fetchJson(`/web/programEncounter/${uuid}`).then(response => {
@@ -131,21 +137,9 @@ export default {
     httpClient.delete(`/web/subject/${uuid}`).then(response => {
       return response.data;
     }),
-  voidEncounter: uuid =>
-    httpClient
-      .delete(`/web/encounter/${uuid}`)
-      .then(response => [response, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
-  voidProgramEnrolment: uuid =>
-    httpClient
-      .delete(`/web/programEnrolment/${uuid}`)
-      .then(response => [response, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
-  voidProgramEncounter: uuid =>
-    httpClient
-      .delete(`/web/programEncounter/${uuid}`)
-      .then(response => [response, null])
-      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  voidEncounter: uuid => httpClient.delete(`/web/encounter/${uuid}`).then(response => response.data),
+  voidProgramEnrolment: uuid => httpClient.delete(`/web/programEnrolment/${uuid}`).then(response => response.data),
+  voidProgramEncounter: uuid => httpClient.delete(`/web/programEncounter/${uuid}`).then(response => response.data),
   fetchCommentThreads: subjectUUID =>
     httpClient.fetchJson(`/web/commentThreads?subjectUUID=${subjectUUID}`).then(response => response.json),
   newCommentThread: payload => httpClient.post("/web/commentThread", payload).then(r => r.data),
