@@ -96,7 +96,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       setError([
         {
           key: "DUPLICATE_ENTRY",
-          message: `Card with name '${card.name}' already exists.`
+          message: "Report Card with same name already exists."
         }
       ]);
       return;
@@ -164,6 +164,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           toolTipKey={"APP_DESIGNER_CARD_NAME"}
         />
         {getErrorByKey(error, "EMPTY_NAME")}
+        {getErrorByKey(error, "DUPLICATE_ENTRY")}
         <p />
         <AvniTextField
           multiline
@@ -315,8 +316,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         {getErrorByKey(error, "DISALLOWED_NESTED")}
         <p />
         {getErrorByKey(error, "INVALID_NESTED_CARD_COUNT")}
-        <p />
-        {getErrorByKey(error, "DUPLICATE_ENTRY")}
         <br />
         <Grid container direction={"row"}>
           <Grid item xs={1}>
