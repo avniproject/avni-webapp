@@ -8,6 +8,7 @@ import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import FormWizardHeader from "dataEntryApp/views/registration/FormWizardHeader";
 import FormWizardButton from "dataEntryApp/views/registration/FormWizardButton";
 import { FormElementGroup as FormElementGroupComponent } from "dataEntryApp/components/FormElementGroup";
+import _ from "lodash";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -127,7 +128,8 @@ const FormWizard = ({
   onSummaryPage,
   wizard,
   addNewQuestionGroup,
-  removeQuestionGroup
+  removeQuestionGroup,
+  saveErrorMessageKey
 }) => {
   if (!form) return <div />;
 
@@ -141,9 +143,7 @@ const FormWizard = ({
   const classes = useStyle();
   const { t } = useTranslation();
 
-  const isRegistrationFirstPage =
-    registrationFlow &&
-    (subject.subjectType.isPerson() ? wizard.isNonFormPage() : wizard.isFirstFormPage());
+  const isRegistrationFirstPage = registrationFlow && (subject.subjectType.isPerson() ? wizard.isNonFormPage() : wizard.isFirstFormPage());
 
   const isFirstPage = registrationFlow
     ? subject.subjectType.isPerson()
@@ -169,12 +169,7 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {onSummaryPage ? (
-              <Summary
-                observations={observations}
-                additionalRows={additionalRows}
-                form={form}
-                fetchRulesResponse={fetchRulesResponse}
-              />
+              <Summary observations={observations} additionalRows={additionalRows} form={form} fetchRulesResponse={fetchRulesResponse} />
             ) : (
               <FormElementGroupComponent
                 key={formElementGroup.uuid}
@@ -209,13 +204,14 @@ const FormWizard = ({
                   id={onSummaryPage ? "save" : "next"}
                 />
               </Box>
+              {!_.isEmpty(saveErrorMessageKey) && (
+                <Typography style={{ marginLeft: 20 }} color={"error"}>
+                  {t(saveErrorMessageKey)}
+                </Typography>
+              )}
             </Box>
             {redirect && <Redirect to={onSaveGoto} />}
-            {saved && (
-              <CustomizedSnackbar
-                message={t(message || "Your details have been successfully registered.")}
-              />
-            )}
+            {saved && <CustomizedSnackbar message={t(message || "Your details have been successfully registered.")} />}
           </Paper>
         </div>
       )}
