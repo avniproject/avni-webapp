@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  BooleanField,
   Create,
   Datagrid,
   DisabledInput,
@@ -16,15 +17,12 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
-  Toolbar,
-  BooleanField,
-  SelectInput
+  Toolbar
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import OrganisationCategory from "./domain/OrganisationCategory";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -32,27 +30,14 @@ export const OrganisationFilter = props => (
   </Filter>
 );
 
-const OrganisationCategoryInput = () => {
-  return (
-    <SelectInput
-      source="category"
-      validate={isRequired}
-      choices={[
-        { id: OrganisationCategory.Production, name: OrganisationCategory.Production },
-        { id: OrganisationCategory.UAT, name: OrganisationCategory.UAT },
-        { id: OrganisationCategory.Prototype, name: OrganisationCategory.Prototype },
-        { id: OrganisationCategory.Temporary, name: OrganisationCategory.Temporary }
-      ]}
-    />
-  );
-};
-
 export const OrganisationList = ({ history, ...props }) => {
   return (
     <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<OrganisationFilter />}>
       <Datagrid>
         <TextField source="name" label="Name" />
-        <TextField source="category" label="Category" />
+        <ReferenceField label="Category" source="categoryId" reference="organisationCategory" linkType={false}>
+          <TextField source="name" />
+        </ReferenceField>
         <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
@@ -77,7 +62,18 @@ export const OrganisationDetails = props => {
         <TextField source="schemaName" label="Schema Name" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
-        <TextField source="category" label="Category" />
+        <ReferenceField
+          resource="organisationCategory"
+          source="categoryId"
+          reference="organisationCategory"
+          label="Category"
+          linkType={false}
+        >
+          <TextField source="name" />
+        </ReferenceField>
+        <ReferenceField resource="organisationStatus" source="statusId" reference="organisationStatus" label="Status" linkType={false}>
+          <TextField source="name" />
+        </ReferenceField>
         <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
@@ -105,7 +101,24 @@ export const OrganisationEdit = props => {
         <DisabledInput source="schemaName" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
-        <OrganisationCategoryInput />
+        <ReferenceInput
+          resource="organisationCategory"
+          source="categoryId"
+          reference="organisationCategory"
+          label="Organisation Category"
+          validate={required("Please select a category")}
+        >
+          <CustomSelectInput source="name" />
+        </ReferenceInput>
+        <ReferenceInput
+          resource="organisationStatus"
+          source="statusId"
+          reference="organisationStatus"
+          label="Organisation Status"
+          validate={required("Please select a status")}
+        >
+          <CustomSelectInput source="name" />
+        </ReferenceInput>
         <BooleanField source="analyticsDataSyncActive" />
         <ToggleAnalyticsButton />
         <br />
@@ -139,7 +152,24 @@ export const OrganisationCreate = props => {
         <TextInput source="schemaName" validate={isRequired} />
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
-        <OrganisationCategoryInput />
+        <ReferenceInput
+          resource="organisationCategory"
+          source="categoryId"
+          reference="organisationCategory"
+          label="Organisation Category"
+          validate={required("Please select a category")}
+        >
+          <CustomSelectInput source="name" />
+        </ReferenceInput>
+        <ReferenceInput
+          resource="organisationStatus"
+          source="statusId"
+          reference="organisationStatus"
+          label="Organisation Status"
+          validate={required("Please select a status")}
+        >
+          <CustomSelectInput source="name" />
+        </ReferenceInput>
         <ReferenceInput
           resource="account"
           source="accountId"

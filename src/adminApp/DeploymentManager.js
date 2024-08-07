@@ -16,18 +16,8 @@ import {
   AccountOrgAdminUserEdit,
   AccountOrgAdminUserList
 } from "./AccountOrgAdminUser";
-import {
-  OrganisationCreate,
-  OrganisationDetails,
-  OrganisationEdit,
-  OrganisationList
-} from "./Organisation";
-import {
-  organisationGroupCreate,
-  organisationGroupEdit,
-  OrganisationGroupList,
-  OrganisationGroupShow
-} from "./OrganisationGroup";
+import { OrganisationCreate, OrganisationDetails, OrganisationEdit, OrganisationList } from "./Organisation";
+import { organisationGroupCreate, organisationGroupEdit, OrganisationGroupList, OrganisationGroupShow } from "./OrganisationGroup";
 
 class DeploymentManager extends Component {
   static childContextTypes = {
@@ -82,6 +72,8 @@ class DeploymentManager extends Component {
           show={OrganisationGroupShow}
           edit={organisationGroupEdit}
         />
+        <Resource name={"organisationCategory"} />
+        <Resource name={"organisationStatus"} />
       </Admin>
     );
   }
