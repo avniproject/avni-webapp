@@ -9,15 +9,15 @@ import UserInfo from "../../common/model/UserInfo";
 import { connect } from "react-redux";
 import ApplicationContext from "../../ApplicationContext";
 import {
-  SupervisorAccount,
-  Build,
-  Description,
-  AssignmentTurnedIn,
-  Translate,
   Assessment,
-  Keyboard,
+  AssignmentTurnedIn,
+  Build,
   Collections,
-  Help
+  Description,
+  Help,
+  Keyboard,
+  SupervisorAccount,
+  Translate
 } from "@material-ui/icons";
 
 const Homepage = ({ userInfo, organisation }) => {
@@ -27,7 +27,7 @@ const Homepage = ({ userInfo, organisation }) => {
   const showDataEntryApp = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategory}`}>
+    <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategoryName}`}>
       <Grid container justifyContent="center">
         <HomePageCard
           href={"/#/admin/user"}
