@@ -23,7 +23,6 @@ import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
-import OrganisationCategory, { OrganisationStatus } from "./domain/OrganisationCategory";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -122,7 +121,6 @@ export const OrganisationEdit = props => {
         >
           <CustomSelectInput source="name" />
         </ReferenceInput>
-        <OrganisationStatusInput />
         <BooleanField source="analyticsDataSyncActive" />
         <ToggleAnalyticsButton />
         <br />
@@ -174,7 +172,6 @@ export const OrganisationCreate = props => {
         >
           <CustomSelectInput source="name" />
         </ReferenceInput>
-        <OrganisationStatusInput />
         <ReferenceInput
           resource="account"
           source="accountId"
