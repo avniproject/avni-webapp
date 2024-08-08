@@ -23,16 +23,13 @@ import { isEmpty, sortBy } from "lodash";
 import GroupMembershipCardView from "../../../components/GroupMembershipCardView";
 import MessageDialog from "../../../components/MessageDialog";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchSubjectSummary,
-  selectFetchingRulesResponse,
-  selectSubjectSummary
-} from "../../../reducers/serverSideRulesReducer";
+import { fetchSubjectSummary, selectFetchingRulesResponse, selectSubjectSummary } from "../../../reducers/serverSideRulesReducer";
 import { RuleSummary } from "./RuleSummary";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import { Individual } from "avni-models";
 import SubjectDashboardMessagesTab from "./SubjectDashboardMessagesTab";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -64,8 +61,7 @@ const useStyles = makeStyles(theme => ({
   expansionPanel: {
     marginBottom: "11px",
     borderRadius: "5px",
-    boxShadow:
-      "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   card: {
     boxShadow: "0px 0px 0px 0px rgba(0,0,0,0.12)",
@@ -111,7 +107,8 @@ const SubjectDashboardProfileTab = ({
   general,
   displayGeneralInfoInProfileTab,
   msgs,
-  showMessagesTab
+  showMessagesTab,
+  unVoidErrorKey
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -166,8 +163,7 @@ const SubjectDashboardProfileTab = ({
           <Typography component={"span"}>
             <p className={classes.expansionHeading}>{t("registrationDetails")}</p>
             <p className={classes.expansionSubHeading}>
-              {t("registrationDate")}:{" "}
-              {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+              {t("registrationDate")}: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
             </p>
             {!hideDOB && profile.dateOfBirth && (
               <p className={classes.expansionSubHeading}>
@@ -179,10 +175,7 @@ const SubjectDashboardProfileTab = ({
         <ExpansionPanelDetails>
           <Grid item xs={12}>
             <List>
-              <Observations
-                observations={profile ? profile.observations : []}
-                form={registrationForm}
-              />
+              <Observations observations={profile ? profile.observations : []} form={registrationForm} />
             </List>
             {
               <Button color="primary" onClick={() => setVoidConfirmation(true)}>
@@ -192,11 +185,7 @@ const SubjectDashboardProfileTab = ({
             {/* <Button color="primary">{t("edit")}</Button> */}
             {
               <Button color="primary" id={"edit-profile"}>
-                <InternalLink
-                  to={`/app/editSubject?uuid=${profile.uuid}&type=${profile.subjectType.name}`}
-                >
-                  {t("edit")}{" "}
-                </InternalLink>
+                <InternalLink to={`/app/editSubject?uuid=${profile.uuid}&type=${profile.subjectType.name}`}>{t("edit")} </InternalLink>
               </Button>
             }
           </Grid>
@@ -233,10 +222,7 @@ const SubjectDashboardProfileTab = ({
         </ExpansionPanelDetails>
         {
           <Button color="primary">
-            <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}>
-              {" "}
-              {t("addARelative")}{" "}
-            </InternalLink>{" "}
+            <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}> {t("addARelative")} </InternalLink>{" "}
           </Button>
         }
       </ExpansionPanel>
@@ -271,15 +257,10 @@ const SubjectDashboardProfileTab = ({
                   </ExpansionPanelSummary>
                   <ExpansionPanelDetails>
                     <GridCardView
-                      cards={sortBy(groupMembers, [
-                        groupMember => groupMember.memberSubject.firstName.toLowerCase()
-                      ])
+                      cards={sortBy(groupMembers, [groupMember => groupMember.memberSubject.firstName.toLowerCase()])
                         .filter(groupMember => groupMember.groupRole.uuid === profileRole.uuid)
                         .map(groupMember => (
-                          <GroupSubjectMemberCardView
-                            setMembersChanged={setMembersChanged}
-                            groupSubject={groupMember}
-                          />
+                          <GroupSubjectMemberCardView setMembersChanged={setMembersChanged} groupSubject={groupMember} />
                         ))}
                     />
                   </ExpansionPanelDetails>
@@ -325,13 +306,7 @@ const SubjectDashboardProfileTab = ({
   }
 
   const renderDialog = (title, open, setOpen, message, onConfirm) => (
-    <ConfirmDialog
-      title={title}
-      open={open}
-      setOpen={setOpen}
-      message={message}
-      onConfirm={onConfirm}
-    />
+    <ConfirmDialog title={title} open={open} setOpen={setOpen} message={message} onConfirm={onConfirm} />
   );
 
   return (
@@ -339,6 +314,11 @@ const SubjectDashboardProfileTab = ({
       {profile && profile.voided ? (
         <Paper className={classes.root}>
           <SubjectVoided onUnVoid={() => setUnVoidConfirmation(true)} showUnVoid={true} />
+          {!_.isEmpty(unVoidErrorKey) && (
+            <Typography variant="button" color={"error"}>
+              {t(unVoidErrorKey)}
+            </Typography>
+          )}
           {renderDialog(
             "Un-Void the subject",
             unVoidConfirmation,
@@ -349,25 +329,13 @@ const SubjectDashboardProfileTab = ({
         </Paper>
       ) : (
         <Paper className={classes.root}>
-          {!profile.voided && displayGeneralInfoInProfileTab && (
-            <NewGeneralEncounterButton subjectUuid={profile.uuid} />
-          )}
-          <RuleSummary
-            title={"subjectSummary"}
-            isFetching={isFetchingSummary}
-            summaryObservations={subjectSummary}
-          />
+          {!profile.voided && displayGeneralInfoInProfileTab && <NewGeneralEncounterButton subjectUuid={profile.uuid} />}
+          <RuleSummary title={"subjectSummary"} isFetching={isFetchingSummary} summaryObservations={subjectSummary} />
           {renderSubjectProfile()}
           {showRelatives && profile.isPerson() && renderRelatives()}
           {showGroupMembers && renderGroupMembers()}
           {profile.memberships && profile.memberships.length > 0 && renderGroupMemberships()}
-          {renderDialog(
-            t("SubjectVoidAlertTitle"),
-            voidConfirmation,
-            setVoidConfirmation,
-            t("SubjectVoidAlertMessage"),
-            voidSubject
-          )}
+          {renderDialog(t("SubjectVoidAlertTitle"), voidConfirmation, setVoidConfirmation, t("SubjectVoidAlertMessage"), voidSubject)}
           {displayGeneralInfoInProfileTab && (
             <SubjectDashboardGeneralTab
               subjectUuid={profile.uuid}
@@ -387,12 +355,7 @@ const SubjectDashboardProfileTab = ({
           )}
         </Paper>
       )}
-      <MessageDialog
-        title={t("SubjectErrorTitle")}
-        open={!isEmpty(voidError)}
-        message={voidError}
-        onOk={clearVoidServerError}
-      />
+      <MessageDialog title={t("SubjectErrorTitle")} open={!isEmpty(voidError)} message={t(voidError)} onOk={clearVoidServerError} />
     </Fragment>
   );
 };

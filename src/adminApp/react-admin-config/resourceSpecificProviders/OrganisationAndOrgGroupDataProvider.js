@@ -15,7 +15,7 @@ class OrganisationAndOrgGroupDataProvider {
         const entityUUIDs = raListResponse.data.map(x => x.uuid);
         return EtlJobService.getJobStatuses(entityUUIDs).then(jobStatuses => {
           const map = CollectionUtil.toObject(jobStatuses.data, "entityUUID", "analyticsEnabled");
-          raListResponse.data.forEach(x => (x["analyticsDataSyncActive"] = map[x["uuid"]]));
+          raListResponse.data.forEach(x => (x["analyticsDataSyncActive"] = map[x["uuid"]] || false));
           return raListResponse;
         });
       });

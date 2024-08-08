@@ -129,8 +129,9 @@ export const saveComplete = () => ({
   type: types.SAVE_COMPLETE
 });
 
-export const saveCompleteFalse = () => ({
-  type: types.SAVE_COMPLETE_FALSE
+export const saveCompleteFalse = saveErrorMessageKey => ({
+  type: types.SAVE_COMPLETE_FALSE,
+  saveErrorMessageKey
 });
 
 export const setValidationResults = validationResults => ({
@@ -231,7 +232,8 @@ const initialState = {
   selectedAddressLevelType: { id: -1, name: "" },
   loaded: false,
   profilePictureFile: null,
-  removeProfilePicture: false
+  removeProfilePicture: false,
+  saveErrorMessageKey: null
 };
 
 // reducer
@@ -278,6 +280,7 @@ export default (state = initialState, action) => {
     case types.SAVE_COMPLETE_FALSE: {
       return {
         ...state,
+        saveErrorMessageKey: action.saveErrorMessageKey,
         saved: false
       };
     }
@@ -299,6 +302,7 @@ export default (state = initialState, action) => {
         filteredFormElements: action.filteredFormElements,
         loaded: true,
         saved: false,
+        saveErrorMessageKey: null,
         onSummaryPage: action.onSummaryPage,
         wizard: action.wizard,
         isFormEmpty: action.isFormEmpty,

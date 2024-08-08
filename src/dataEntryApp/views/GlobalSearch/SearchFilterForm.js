@@ -111,13 +111,7 @@ export default withRouter(
   )
 );
 
-function SearchFilterForm({
-  match,
-  operationalModules,
-  genders,
-  organisationConfigs,
-  searchRequest
-}) {
+function SearchFilterForm({ match, operationalModules, genders, organisationConfigs, searchRequest }) {
   const classes = useStyles();
   const { t } = useTranslation();
   return (
@@ -167,16 +161,14 @@ const searchFilterConcept = function(event, searchFilterForm, fieldName, setSele
 
             return {
               ...concept,
-              values: Object.keys(selectedCodedValue).filter(
-                selectedId => selectedCodedValue[selectedId]
-              )
+              values: Object.keys(selectedCodedValue).filter(selectedId => selectedCodedValue[selectedId])
             };
           } else {
             return {
               ...concept
             };
           }
-        } else if (concept.conceptDataType === "Text") {
+        } else if (["Text", "Id"].includes(concept.conceptDataType)) {
           if (concept.conceptUUID === searchFilterForm.conceptUUID) {
             const selectedText = event.target.value;
             return {
@@ -267,7 +259,7 @@ const getSelectedConceptApi = function(selectedConcepts) {
         }
       } else if (selectedConcept.conceptDataType === "Coded" && selectedConcept.values.length > 0) {
         return selectedConcept.values;
-      } else if (selectedConcept.conceptDataType === "Text") {
+      } else if (["Text", "Id"].includes(selectedConcept.conceptDataType)) {
         return selectedConcept.value;
       } else if (selectedConcept.conceptDataType === "Numeric") {
         if (selectedConcept.widget === "Range") {
@@ -286,14 +278,8 @@ const getConceptRequests = function(selectedConcepts) {
     if (["Date", "DateTime", "Time"].includes(conceptRequest.conceptDataType)) {
       return {
         uuid: conceptRequest.conceptUUID,
-        minValue:
-          conceptRequest.minValue !== null
-            ? moment(conceptRequest.minValue).format("YYYY-MM-DD")
-            : null,
-        maxValue:
-          conceptRequest.maxValue !== null
-            ? moment(conceptRequest.maxValue).format("YYYY-MM-DD")
-            : null,
+        minValue: conceptRequest.minValue !== null ? moment(conceptRequest.minValue).format("YYYY-MM-DD") : null,
+        maxValue: conceptRequest.maxValue !== null ? moment(conceptRequest.maxValue).format("YYYY-MM-DD") : null,
         searchScope: conceptRequest.scope,
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget
@@ -306,7 +292,7 @@ const getConceptRequests = function(selectedConcepts) {
         widget: conceptRequest.widget,
         values: conceptRequest.values
       };
-    } else if (conceptRequest.conceptDataType === "Text") {
+    } else if (["Text", "Id"].includes(conceptRequest.conceptDataType)) {
       return {
         uuid: conceptRequest.conceptUUID,
         searchScope: conceptRequest.scope,
@@ -330,9 +316,7 @@ const getConceptRequests = function(selectedConcepts) {
 };
 
 const getInitialConceptList = function(selectedSearchFilter) {
-  const conceptList = selectedSearchFilter.filter(
-    searchElement => searchElement.type === "Concept"
-  );
+  const conceptList = selectedSearchFilter.filter(searchElement => searchElement.type === "Concept");
 
   return conceptList
     .filter(concept => concept.conceptDataType !== null)
@@ -343,21 +327,14 @@ const getInitialConceptList = function(selectedSearchFilter) {
         Time: { ...concept, minValue: null, maxValue: null },
         Numeric: { ...concept, minValue: null, maxValue: null },
         Coded: { ...concept, values: [] },
-        Text: { ...concept, value: "" }
+        Text: { ...concept, value: "" },
+        Id: { ...concept, value: "" }
       };
       return defaultState[concept.conceptDataType];
     });
 };
 
-export const SearchForm = ({
-  operationalModules,
-  genders,
-  organisationConfigs,
-  searchRequest,
-  searchTo,
-  cancelTo,
-  onSearch
-}) => {
+export const SearchForm = ({ operationalModules, genders, organisationConfigs, searchRequest, searchTo, cancelTo, onSearch }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const searchProps = _.isFunction(onSearch) ? {} : { to: searchTo, component: Link };
@@ -375,20 +352,14 @@ export const SearchForm = ({
     searchAll
   } = searchRequest;
 
-  const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(
-    subjectType || _.get(operationalModules.subjectTypes[0], "uuid")
-  );
+  const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(subjectType || _.get(operationalModules.subjectTypes[0], "uuid"));
 
   const initialSubjectTypeSearchFilter =
     organisationConfigs &&
     organisationConfigs.organisationConfig.searchFilters &&
-    organisationConfigs.organisationConfig.searchFilters.filter(
-      searchFilter => searchFilter.subjectTypeUUID === selectedSubjectTypeUUID
-    );
+    organisationConfigs.organisationConfig.searchFilters.filter(searchFilter => searchFilter.subjectTypeUUID === selectedSubjectTypeUUID);
 
-  const [selectedSearchFilter, setSelectedSearchFilter] = useState(
-    initialSubjectTypeSearchFilter || []
-  );
+  const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjectTypeSearchFilter || []);
 
   // name age search all
   const [enterValue, setEnterValue] = useState({
@@ -452,9 +423,7 @@ export const SearchForm = ({
 
   const initialConceptList = getInitialConceptList(selectedSearchFilter);
 
-  const allConceptRelatedFilters = _.map(initialConceptList, item =>
-    _.merge(item, _.find(concept, { uuid: item.conceptUUID }))
-  );
+  const allConceptRelatedFilters = _.map(initialConceptList, item => _.merge(item, _.find(concept, { uuid: item.conceptUUID })));
   const [selectedConcepts, setSelectedConcept] = useState(allConceptRelatedFilters);
 
   // is voided
@@ -478,9 +447,7 @@ export const SearchForm = ({
     setSelectedSubjectTypeUUID(subjectTypeUUID);
     const selectedSubjectTypeSearchFilter =
       organisationConfigs.organisationConfig.searchFilters &&
-      organisationConfigs.organisationConfig.searchFilters.filter(
-        searchFilter => searchFilter.subjectTypeUUID === subjectTypeUUID
-      );
+      organisationConfigs.organisationConfig.searchFilters.filter(searchFilter => searchFilter.subjectTypeUUID === subjectTypeUUID);
     setSelectedSearchFilter(selectedSubjectTypeSearchFilter || []);
     resetFilters();
   };
@@ -519,11 +486,7 @@ export const SearchForm = ({
                 />
               </Grid>
               <Grid item xs={12}>
-                <NonConceptForm
-                  searchFilterForms={selectedSearchFilter}
-                  selectedDate={selectedDate}
-                  onDateChange={searchFilterDates}
-                />
+                <NonConceptForm searchFilterForms={selectedSearchFilter} selectedDate={selectedDate} onDateChange={searchFilterDates} />
               </Grid>
               <Grid item xs={12}>
                 <CodedConceptForm
@@ -536,10 +499,7 @@ export const SearchForm = ({
                 />
               </Grid>
               <Grid item xs={12}>
-                <IncludeVoidedForm
-                  includeVoided={includeVoided}
-                  includeVoidedChange={includeVoidedChange}
-                />
+                <IncludeVoidedForm includeVoided={includeVoided} includeVoidedChange={includeVoidedChange} />
               </Grid>
             </Grid>
           </div>

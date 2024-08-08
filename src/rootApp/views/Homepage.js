@@ -27,7 +27,7 @@ const Homepage = ({ userInfo, organisation }) => {
   const showDataEntryApp = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.ViewEditEntitiesOnDataEntryApp);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategory}`}>
+    <ScreenWithAppBar appbarTitle={`Avni Web Console - ${organisation.organisationCategoryName}`}>
       <Grid container justifyContent="center">
         <HomePageCard
           href={"/#/admin/user"}

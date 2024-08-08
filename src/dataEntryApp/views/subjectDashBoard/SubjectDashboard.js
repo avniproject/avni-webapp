@@ -42,7 +42,8 @@ const SubjectDashboard = ({
   getGroupMembers,
   groupMembers,
   voidError,
-  clearVoidServerError
+  clearVoidServerError,
+  unVoidErrorKey
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -60,6 +61,7 @@ const SubjectDashboard = ({
       <Paper className={classes.root}>
         <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
         <SubjectDashboardTabs
+          unVoidErrorKey={unVoidErrorKey}
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
@@ -93,6 +95,7 @@ const SubjectDashboard = ({
 };
 
 const mapStateToProps = state => ({
+  unVoidErrorKey: state.dataEntry.subjectProfile.unVoidErrorKey,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,

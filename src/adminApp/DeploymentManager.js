@@ -72,6 +72,8 @@ class DeploymentManager extends Component {
           show={OrganisationGroupShow}
           edit={organisationGroupEdit}
         />
+        <Resource name={"organisationCategory"} />
+        <Resource name={"organisationStatus"} />
       </Admin>
     );
   }

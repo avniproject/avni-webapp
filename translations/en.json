@@ -439,6 +439,10 @@
     "noSentMessages": "No sent messages",
     "noMessagesYetToBeSent": "No messages scheduled to be sent",
     "newLongitudinalExportWarningMessage": "(Only first 10,000 rows matching the request filters will be exported to the csv file!)",
-    "legacyLongitudinalExportWarningMessage": "(Only first 10,000 rows matching the request filters will be exported to the csv file!)"
+    "legacyLongitudinalExportWarningMessage": "(Only first 10,000 rows matching the request filters will be exported to the csv file!)",
+    "notDirectlyAssignedToThisUser": "Not directly assigned to this user",
+    "notInThisUsersCatchment": "Not in this user's catchment",
+    "userSyncAttributeNotConfigured": "User sync attribute not configured",
+    "syncAttributeForUserNotValidForUpdate": "Sync attribute for user not valid for update"
   }
 }

@@ -329,6 +329,10 @@
     "invalidDateFormat": "वैध तारीख नाही",
     "resetFilter": "फिल्टर रीसेट करा",
     "visitDate": "भेटीची तारीख",
-    "profilePicture": "परिचय चित्र"
+    "profilePicture": "परिचय चित्र",
+    "notDirectlyAssignedToThisUser": "या वापरकर्त्याला सीधे नियुक्त केलेले नाही",
+    "notInThisUsersCatchment": "या वापरकर्त्याच्या कॅचमेंटमध्ये नाही",
+    "userSyncAttributeNotConfigured": "वापरकर्ता सिंक विशेषता संरचित नाही",
+    "syncAttributeForUserNotValidForUpdate": "वापरकर्ता सिंक विशेषता अपडेटसाठी वैध नाही"
   }
 }
