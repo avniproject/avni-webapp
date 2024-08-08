@@ -30,7 +30,8 @@ export const types = {
   GET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}GET_ELIGIBLE_PROGRAM_ENCOUNTERS`,
   SET_ELIGIBLE_PROGRAM_ENCOUNTERS: `${prefix}SET_ELIGIBLE_PROGRAM_ENCOUNTERS`,
   ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
-  REMOVE_QG: `${prefix}REMOVE_QG`
+  REMOVE_QG: `${prefix}REMOVE_QG`,
+  SAVE_PROGRAM_ENCOUNTER_FAILED: `${prefix}SAVE_PROGRAM_ENCOUNTER_FAILED`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -121,6 +122,11 @@ export const saveProgramEncounterComplete = () => ({
   type: types.SAVE_PROGRAM_ENCOUNTER_COMPLETE
 });
 
+export const saveProgramEncounterFailed = message => ({
+  type: types.SAVE_PROGRAM_ENCOUNTER_FAILED,
+  encounterSaveErrorKey: message
+});
+
 export const updateProgramEncounter = (field, value) => ({
   type: types.UPDATE_PROGRAM_ENCOUNTER,
   field,
@@ -207,11 +213,19 @@ export const selectProgramEncounterState = state => state.dataEntry.programEncou
 
 const initialState = {
   saved: false,
-  validationResults: []
+  validationResults: [],
+  encounterSaveErrorKey: null
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case types.SAVE_PROGRAM_ENCOUNTER_FAILED: {
+      return {
+        ...state,
+        saved: false,
+        encounterSaveErrorKey: action.encounterSaveErrorKey
+      };
+    }
     case types.SET_PROGRAM_ENROLMENT: {
       return {
         ...state,
@@ -239,6 +253,7 @@ export default (state = initialState, action) => {
     case types.ON_LOAD_SUCCESS: {
       return {
         ...state,
+        encounterSaveErrorKey: null,
         programEncounter: action.programEncounter,
         programEncounterForm: action.programEncounterForm,
         formElementGroup: action.formElementGroup,

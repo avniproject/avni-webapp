@@ -5,7 +5,8 @@ import {
   setTabsStatus,
   setGroupMembers,
   setVoidServerError,
-  setSubjectDashboardLoaded
+  setSubjectDashboardLoaded,
+  unVoidFailed
 } from "../reducers/subjectDashboardReducer";
 import { mapProfile, mapGroupMembers, mapProgram, mapGeneral } from "../../common/subjectModelMapper";
 import api from "../api";
@@ -120,24 +121,31 @@ export function* voidSubjectWatcher() {
 export function* voidSubject() {
   yield put.resolve(setLoad(false));
   const subject = yield select(selectSubjectProfile);
-  const [response, error] = yield call(api.voidSubject, subject.uuid);
-  if (!response && error) {
-    yield put(setVoidServerError(error));
-  } else {
+  const response = yield call(api.voidSubject, subject.uuid);
+  if (response.success) {
     subject.voided = response.data.voided;
     yield put(setSubjectProfile(subject));
+  } else {
+    yield put(setVoidServerError(response.errorMessage));
   }
   yield put.resolve(setLoad(true));
 }
 
 export function* unVoidSubject() {
+  // This should be re-written such that the subject is reloaded from server instead of managing the state in the web app
   yield put.resolve(setLoad(false));
   const subject = yield select(selectSubjectProfile);
-  subject.voided = false;
   const resource = subject.toResource;
-  yield call(api.saveSubject, resource);
-  yield put(setSubjectProfile(subject));
-  yield put.resolve(setLoad(true));
+  resource.voided = false;
+  const response = yield call(api.saveSubject, resource);
+  if (response.success) {
+    subject.voided = false;
+    yield put(setSubjectProfile(subject));
+    yield put.resolve(setLoad(true));
+  } else {
+    yield put(unVoidFailed(response.errorMessage));
+    yield put.resolve(setLoad(true));
+  }
 }
 
 export function* unVoidSubjectWatcher() {
@@ -162,9 +170,9 @@ export function* voidProgramEnrolmentWatcher() {
 
 export function* voidProgramEnrolmentWorker({ uuid }) {
   yield put.resolve(setLoad(false));
-  const [response, error] = yield call(api.voidProgramEnrolment, uuid);
-  if (!response && error) {
-    yield put(setVoidServerError(error));
+  const response = yield call(api.voidProgramEnrolment, uuid);
+  if (!response.success) {
+    yield put(setVoidServerError(response.errorMessage));
   } else {
     const subject = yield select(selectSubjectProfile);
     const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);

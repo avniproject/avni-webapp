@@ -357,6 +357,10 @@
     "GeneralEncounterVoidAlertMessage": "क्या आप वाकई इस एनकाउंटर को हटाना चाहते हैं? हटाए जाने के बाद आप इस एनकाउंटर को नहीं देख पाएंगे।",
     "programExitDetails": "कार्यक्रम से बाहर निकलने का विवरण",
     "visitDate": "यात्रा तिथि",
-    "profilePicture": "प्रोफ़ाइल फोटो"
+    "profilePicture": "प्रोफ़ाइल फोटो",
+    "notDirectlyAssignedToThisUser": "इस उपयोगकर्ता को सीधे नहीं असाइन किया गया है",
+    "notInThisUsersCatchment": "इस उपयोगकर्ता के कैचमेंट में नहीं है",
+    "userSyncAttributeNotConfigured": "उपयोगकर्ता सिंक विशेषता कॉन्फ़िगर नहीं है",
+    "syncAttributeForUserNotValidForUpdate": "उपयोगकर्ता के लिए सिंक विशेषता अपडेट के लिए वैध नहीं है"
   }
 }

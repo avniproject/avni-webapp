@@ -278,6 +278,10 @@
     "beneficiaryNotFoundMessage": "கொடுக்கப்பட்ட விவரங்களுக்குத் தனிப்பட்ட பதிவைப் பெற முடியவில்லை",
     "resetFilter": "வடிப்பானை மீட்டமை",
     "visitDate": "வருகை தேதி",
-    "profilePicture": "சுயவிவர படம்"
+    "profilePicture": "சுயவிவர படம்",
+    "notDirectlyAssignedToThisUser": "இந்த பயனருக்கு உட்பட்டிருக்கவில்லை",
+    "notInThisUsersCatchment": "இந்த பயனருக்கு உட்பட்டிருக்கவில்லை",
+    "userSyncAttributeNotConfigured": "பயனர் ஒத்திசைவு விஶேஷம் கட்டமைக்கப்படவில்லை",
+    "syncAttributeForUserNotValidForUpdate": "பயனர் ஒத்திசைவு விஶேஷம் மேம்படுத்த முடியாது"
   }
 }

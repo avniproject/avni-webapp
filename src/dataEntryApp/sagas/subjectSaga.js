@@ -2,6 +2,7 @@ import { Individual, ObservationsHolder, StaticFormElementGroup } from "avni-mod
 import {
   onLoadSuccess,
   saveComplete,
+  saveCompleteFalse,
   selectAddressLevelType,
   selectIdentifierAssignments,
   selectRegistrationState,
@@ -77,8 +78,12 @@ export function* saveSubjectWorker() {
     identifierAssignments
   );
 
-  yield call(api.saveSubject, resource);
-  yield put(saveComplete());
+  const response = yield call(api.saveSubject, resource);
+  if (response.success) {
+    yield put(saveComplete());
+  } else {
+    yield put(saveCompleteFalse(response.errorMessage));
+  }
 }
 
 function* loadNewRegistrationPageWatcher() {

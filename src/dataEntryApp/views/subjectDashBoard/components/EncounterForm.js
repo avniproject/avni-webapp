@@ -36,7 +36,8 @@ const mapFormStateToProps = state => ({
   entity: state.dataEntry.encounterReducer.encounter,
   formElementGroup: state.dataEntry.encounterReducer.formElementGroup,
   onSummaryPage: state.dataEntry.encounterReducer.onSummaryPage,
-  wizard: state.dataEntry.encounterReducer.wizard
+  wizard: state.dataEntry.encounterReducer.wizard,
+  saveErrorMessageKey: state.dataEntry.encounterReducer.encounterSaveErrorKey
 });
 
 const mapFormDispatchToProps = {

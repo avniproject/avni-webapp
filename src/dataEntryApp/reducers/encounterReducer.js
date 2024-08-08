@@ -29,7 +29,8 @@ export const types = {
   GET_ELIGIBLE_ENCOUNTERS: `${prefix}GET_ELIGIBLE_ENCOUNTERS`,
   SET_ELIGIBLE_ENCOUNTERS: `${prefix}SET_ELIGIBLE_ENCOUNTERS`,
   ADD_NEW_QG: `${prefix}ADD_NEW_QG`,
-  REMOVE_QG: `${prefix}REMOVE_QG`
+  REMOVE_QG: `${prefix}REMOVE_QG`,
+  SAVE_ENCOUNTER_FAILED: `${prefix}SAVE_ENCOUNTER_FAILED`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -99,6 +100,11 @@ export const saveEncounter = isCancel => ({
 
 export const saveEncounterComplete = () => ({
   type: types.SAVE_ENCOUNTER_COMPLETE
+});
+
+export const saveEncounterFailed = message => ({
+  type: types.SAVE_ENCOUNTER_FAILED,
+  encounterSaveErrorKey: message
 });
 
 export const updateEncounter = (field, value) => ({
@@ -194,11 +200,19 @@ export const selectEncounterState = state => state.dataEntry.encounterReducer;
 const initialState = {
   saved: false,
   validationResults: [],
+  encounterSaveErrorKey: null,
   eligibleEncounters: { scheduledEncounters: [], eligibleEncounterTypeUUIDs: [] }
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case types.SAVE_ENCOUNTER_FAILED: {
+      return {
+        ...state,
+        saved: false,
+        encounterSaveErrorKey: action.encounterSaveErrorKey
+      };
+    }
     case types.SET_ENCOUNTER_FORM_MAPPINGS: {
       return {
         ...state,
@@ -220,6 +234,7 @@ export default (state = initialState, action) => {
     case types.ON_LOAD_SUCCESS: {
       return {
         ...state,
+        encounterSaveErrorKey: null,
         encounter: action.encounter,
         encounterForm: action.encounterForm,
         formElementGroup: action.formElementGroup,

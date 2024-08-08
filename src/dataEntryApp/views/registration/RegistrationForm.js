@@ -27,7 +27,8 @@ const mapFormStateToProps = state => {
     entity: registrationState.subject,
     formElementGroup: registrationState.formElementGroup,
     onSummaryPage: registrationState.onSummaryPage,
-    wizard: registrationState.wizard
+    wizard: registrationState.wizard,
+    saveErrorMessageKey: registrationState.saveErrorMessageKey
   };
 };
 

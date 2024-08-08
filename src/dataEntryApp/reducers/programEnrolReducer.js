@@ -10,6 +10,7 @@ export const types = {
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   UPDATE_EXIT_OBS: `${prefix}UPDATE_EXIT_OBS`,
   SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
+  SAVE_ENROLMENT_FAILED: `${prefix}SAVE_ENROLMENT_FAILED`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
   SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`,
   SET_LOADED: `${prefix}SET_LOADED`,
@@ -99,6 +100,11 @@ export const saveProgramComplete = () => ({
   type: types.SAVE_PROGRAM_COMPLETE
 });
 
+export const saveEnrolmentFailed = messageKey => ({
+  type: types.SAVE_ENROLMENT_FAILED,
+  enrolmentSaveErrorKey: messageKey
+});
+
 export const setInitialState = () => ({
   type: types.SET_INITIAL_STATE
 });
@@ -165,11 +171,15 @@ export const selectIdentifierAssignments = state => selectProgramEnrolmentState(
 const initialState = {
   saved: false,
   validationResults: [],
-  load: false
+  load: false,
+  enrolmentSaveErrorKey: null
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case types.SAVE_ENROLMENT_FAILED: {
+      return { ...state, enrolmentSaveErrorKey: action.enrolmentSaveErrorKey };
+    }
     case types.SET_INITIAL_STATE: {
       return { ...initialState, validationResults: [] };
     }
@@ -194,6 +204,7 @@ const reducer = (state = initialState, action) => {
     case types.ON_LOAD_SUCCESS: {
       return {
         ...state,
+        enrolmentSaveErrorKey: null,
         programEnrolment: action.programEnrolment,
         enrolForm: action.enrolForm,
         formElementGroup: action.formElementGroup,

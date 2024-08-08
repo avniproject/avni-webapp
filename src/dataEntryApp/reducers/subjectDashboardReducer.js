@@ -6,6 +6,7 @@ export const types = {
   GET_PROGRAMS: `${prefix}GET_PROGRAMS`,
   SET_PROGRAMS: `${prefix}SET_PROGRAMS`,
   VOID_SUBJECT: `${prefix}VOID_SUBJECT`,
+  UN_VOID_SUBJECT_FAILED: `${prefix}UN_VOID_SUBJECT_FAILED`,
   UN_VOID_SUBJECT: `${prefix}UN_VOID_SUBJECT`,
   SET_TABS_STATUS: `${prefix}SET_TABS_STATUS`,
   GET_GROUP_MEMBERS: `${prefix}GET_GROUP_MEMBERS`,
@@ -26,6 +27,11 @@ export const getSubjectProfile = subjectUUID => ({
 export const setSubjectProfile = subjectProfile => ({
   type: types.SET_SUBJECT_PROFILE,
   subjectProfile
+});
+
+export const unVoidFailed = message => ({
+  type: types.UN_VOID_SUBJECT_FAILED,
+  unVoidErrorKey: message
 });
 
 export const voidSubject = () => ({
@@ -99,6 +105,12 @@ export const setSubjectDashboardLoaded = loaded => ({
 
 export default function(state = {}, action) {
   switch (action.type) {
+    case types.UN_VOID_SUBJECT_FAILED: {
+      return {
+        ...state,
+        unVoidErrorKey: action.unVoidErrorKey
+      };
+    }
     case types.SET_SUBJECT_PROFILE: {
       return {
         ...state,
@@ -132,7 +144,8 @@ export default function(state = {}, action) {
     case types.SET_SUBJECT_DASHBOARD_LOADED: {
       return {
         ...state,
-        dashboardLoaded: action.loaded
+        dashboardLoaded: action.loaded,
+        unVoidErrorKey: null
       };
     }
     default:
