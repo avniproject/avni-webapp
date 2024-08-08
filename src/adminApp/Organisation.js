@@ -35,16 +35,16 @@ export const OrganisationList = ({ history, ...props }) => {
     <List {...props} bulkActions={false} filter={{ searchURI: "find" }} filters={<OrganisationFilter />}>
       <Datagrid>
         <TextField source="name" label="Name" />
-        <ReferenceField label="Category" source="categoryId" reference="organisationCategory" linkType={false}>
+        <ReferenceField label="Category" source="categoryId" reference="organisationCategory" linkType={false} sortBy={"category.name"}>
           <TextField source="name" />
         </ReferenceField>
         <ReferenceField label="Parent organisation" source="parentOrganisationId" reference="organisation" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
-        <TextField source="dbUser" label="DB User" />
-        <TextField source="schemaName" label="Schema Name" />
-        <TextField source="mediaDirectory" label="Media Directory" />
-        <TextField source="usernameSuffix" label="Username Suffix" />
+        <TextField source="dbUser" label="DB User" sortBy={"dbUser"} />
+        <TextField source="schemaName" label="Schema Name" sortBy={"schemaName"} />
+        <TextField source="mediaDirectory" label="Media Directory" sortBy={"mediaDirectory"} />
+        <TextField source="usernameSuffix" label="Username Suffix" sortBy={"usernameSuffix"} />
         <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" sortable={false} />
         <ShowButton />
         <OpenOrganisation porps={props} />
