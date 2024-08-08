@@ -13616,10 +13616,10 @@ open@^7.1.0:
     grunt "^1.0.3"
     webpack "^4.13.0"
 
-openchs-models@1.32.1:
-  version "1.32.1"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.32.1.tgz#0ff3e458915e2ac33e495db21b1bc9caf7591207"
-  integrity sha512-b45Hg+NmNHm6XB4CxfZysiG2iGJOfFFMD9CoPGe/PK/FaYm1jBVcd2m4n9j2rJIX2JHap6EyffvCnE+CelOUZg==
+openchs-models@1.32.2:
+  version "1.32.2"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-1.32.2.tgz#22a2f297487f5a9d7e5228abfc2c2ad5e3c3b38f"
+  integrity sha512-EWoAoTsRZO1u9uNSYSmjQlP3bsJlXda2elHE29GKZNISmN6YpqNd7UUbGLOOlqZ0Ft4Kve57jxjhgzvUg88hTQ==
   dependencies:
     uuid "^9.0.1"
 
