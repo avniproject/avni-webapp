@@ -36,6 +36,18 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   const [isStandardReportCard, setIsStandardReportCard] = React.useState(false);
   const [standardReportCardTypes, setStandardReportCardTypes] = React.useState([]);
   const [file, setFile] = React.useState();
+  const [cardName, setCardName] = React.useState(new Set());
+
+  const cardNameSet = new Set(cardName);
+
+  React.useEffect(() => {
+    DashboardService.getAllReportCards().then(res => {
+      res.forEach(item => {
+        cardNameSet.add(item.name);
+        setCardName(cardNameSet);
+      });
+    });
+  }, []);
 
   React.useEffect(() => {
     if (edit) {
@@ -79,6 +91,16 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   };
 
   const onSave = async () => {
+    console.log(cardNameSet);
+    if (cardNameSet.has(card.name)) {
+      setError([
+        {
+          key: "DUPLICATE_ENTRY",
+          message: "Report Card with same name already exists."
+        }
+      ]);
+      return;
+    }
     if (validateRequest()) {
       const [s3FileKey, error] = await uploadImage(card.iconFileS3Key, file, bucketName.ICONS);
       if (error) {
@@ -142,6 +164,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           toolTipKey={"APP_DESIGNER_CARD_NAME"}
         />
         {getErrorByKey(error, "EMPTY_NAME")}
+        {getErrorByKey(error, "DUPLICATE_ENTRY")}
         <p />
         <AvniTextField
           multiline
