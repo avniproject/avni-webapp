@@ -11,7 +11,6 @@ import { OrgSettings } from "./components/OrgSettings";
 import OrganisationCategory from "./domain/OrganisationCategory";
 import OrganisationService from "../common/service/OrganisationService";
 import _ from "lodash";
-import CurrentUserService from "../common/service/CurrentUserService";
 
 const useStyles = makeStyles(theme => ({
   deleteButton: {
@@ -23,7 +22,12 @@ function isProduction(organisation) {
   return organisation.category === OrganisationCategory.Production;
 }
 
-export const OrganisationDetail = ({ organisation: { name, id }, hasEditPrivilege }) => {
+export const OrganisationDetail = ({
+  organisation: { name, id },
+  hasEditPrivilege,
+  hasOrgAdminConfigDeletionPrivilege,
+  hasOrgMetadataDeletionPrivilege
+}) => {
   const classes = useStyles();
   const [openModal, setOpenModal] = React.useState(false);
   const [organisation, setOrganisation] = React.useState(null);
@@ -52,7 +56,7 @@ export const OrganisationDetail = ({ organisation: { name, id }, hasEditPrivileg
                 Organisation Name : {name}
               </Typography>
             </Grid>
-            {!CurrentUserService.isOrganisationImpersonated() && hasEditPrivilege && !_.isNil(organisation) && (
+            {hasEditPrivilege && !_.isNil(organisation) && (
               <Grid item>
                 <Button className={classes.deleteButton} variant="contained" color="secondary" onClick={() => onDeleteClick()}>
                   Delete all data
@@ -64,7 +68,15 @@ export const OrganisationDetail = ({ organisation: { name, id }, hasEditPrivileg
           <OrgSettings hasEditPrivilege={hasEditPrivilege} />
         </Grid>
 
-        {hasEditPrivilege && <DeleteData openModal={openModal} setOpenModal={setOpenModal} orgName={name} />}
+        {hasEditPrivilege && (
+          <DeleteData
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            orgName={name}
+            hasOrgMetadataDeletionPrivilege={hasOrgMetadataDeletionPrivilege}
+            hasOrgAdminConfigDeletionPrivilege={hasOrgAdminConfigDeletionPrivilege}
+          />
+        )}
       </DocumentationContainer>
 
       <Snackbar open={showCannotDeleteMessage} autoHideDuration={5000} onClose={() => setShowCannotDeleteMessage(false)}>

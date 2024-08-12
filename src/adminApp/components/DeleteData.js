@@ -26,10 +26,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
+export const DeleteData = ({ openModal, setOpenModal, orgName, hasOrgMetadataDeletionPrivilege, hasOrgAdminConfigDeletionPrivilege }) => {
   const classes = useStyles();
 
   const [deleteMetadata, setDeleteMetadata] = React.useState(false);
+  const [deleteAdminConfig, setDeleteAdminConfig] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [confirmText, setConfirmText] = React.useState();
   const [showAlert, setShowAlert] = React.useState(false);
@@ -39,17 +40,16 @@ export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
     "This will remove all transactional data such as subjects, " +
     "program enrolments and encounters entered through the Field App. Do you want to continue?";
   const deleteMetadataMessage =
-    "Delete Everything! (This will delete all metadata such as subject types, " +
-    "encounter types and form definitions)";
+    "Delete all Metadata (such as subject types, " + "encounter types and form definitions) except admin related configurations";
+  const deleteAdminConfigurationMessage = "Delete all admin configurations except Administrators";
   const deleteClientDataMessage =
-    "This only deletes data from the server database. " +
-    "Please make sure you delete data from the field app manually.";
+    "This only deletes data from the server database. " + "Please make sure you delete data from the field app manually.";
 
   const deleteData = () => {
     setOpenModal(false);
     setLoading(true);
     http
-      .delete(`/implementation/delete?deleteMetadata=${deleteMetadata}`)
+      .delete(`/implementation/delete?deleteMetadata=${deleteMetadata}&deleteAdminConfig=${deleteAdminConfig}`)
       .then(res => {
         if (res.status === 200) {
           setLoading(false);
@@ -59,9 +59,7 @@ export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
       })
       .catch(error => {
         setLoading(false);
-        const errorMessage = `${get(error, "response.data") ||
-          get(error, "message") ||
-          "unknown error"}`;
+        const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
         setMessage({ title: `Error occurred while deleting data`, content: errorMessage });
         setShowAlert(true);
       });
@@ -69,17 +67,8 @@ export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
 
   return (
     <div>
-      <Modal
-        onClose={MuiComponentHelper.getDialogClosingHandler(() => setOpenModal(false))}
-        open={openModal}
-      >
-        <Grid
-          container
-          direction={"column"}
-          spacing={3}
-          className={classes.paper}
-          style={{ top: "25%", left: "30%" }}
-        >
+      <Modal onClose={MuiComponentHelper.getDialogClosingHandler(() => setOpenModal(false))} open={openModal}>
+        <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
           <Grid item container spacing={1} xs={12}>
             <Grid item xs={1}>
               {" "}
@@ -90,19 +79,36 @@ export const DeleteData = ({ openModal, setOpenModal, orgName }) => {
             </Grid>
           </Grid>
           <Grid item>{deleteClientDataMessage}</Grid>
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={deleteMetadata}
-                  onChange={event => setDeleteMetadata(event.target.checked)}
-                  name="deleteMetadata"
-                  color="primary"
-                />
-              }
-              label={deleteMetadataMessage}
-            />
-          </Grid>
+          {hasOrgMetadataDeletionPrivilege && (
+            <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={deleteMetadata}
+                    onChange={event => setDeleteMetadata(event.target.checked)}
+                    name="deleteMetadata"
+                    color="primary"
+                  />
+                }
+                label={deleteMetadataMessage}
+              />
+            </Grid>
+          )}
+          {hasOrgAdminConfigDeletionPrivilege && (
+            <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={deleteAdminConfig}
+                    onChange={event => setDeleteAdminConfig(event.target.checked)}
+                    name="deleteAdminConfig"
+                    color="primary"
+                  />
+                }
+                label={deleteAdminConfigurationMessage}
+              />
+            </Grid>
+          )}
           <Grid item>
             <TextField
               fullWidth

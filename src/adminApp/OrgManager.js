@@ -8,19 +8,9 @@ import { authProvider, LogoutButton } from "./react-admin-config";
 import { adminHistory, store } from "../common/store";
 import { UserCreate, UserDetail, UserEdit, UserList } from "./user";
 import { CatchmentCreate, CatchmentDetail, CatchmentEdit, CatchmentList } from "./catchment";
-import {
-  LocationTypeCreate,
-  LocationTypeDetail,
-  LocationTypeEdit,
-  LocationTypeList
-} from "./addressLevelType";
+import { LocationTypeCreate, LocationTypeDetail, LocationTypeEdit, LocationTypeList } from "./addressLevelType";
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
-import {
-  IdentifierSourceCreate,
-  IdentifierSourceDetail,
-  IdentifierSourceEdit,
-  IdentifierSourceList
-} from "./IdentifierSource";
+import { IdentifierSourceCreate, IdentifierSourceDetail, IdentifierSourceEdit, IdentifierSourceList } from "./IdentifierSource";
 import {
   IdentifierUserAssignmentCreate,
   IdentifierUserAssignmentDetail,
@@ -64,6 +54,7 @@ class OrgManager extends Component {
       EditIdentifierUserAssignment,
       UploadMetadataAndData,
       EditOrganisationConfiguration,
+      DeleteOrganisationConfiguration,
       EditLanguage,
       PhoneVerification
     } = Privilege.PrivilegeType;
@@ -120,14 +111,8 @@ class OrgManager extends Component {
             <Resource
               name="user"
               list={UserList}
-              create={
-                hasPrivilege(userInfo, EditUserConfiguration) &&
-                WithProps({ organisation, userInfo }, UserCreate)
-              }
-              show={WithProps(
-                { user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) },
-                UserDetail
-              )}
+              create={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation, userInfo }, UserCreate)}
+              show={WithProps({ user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) }, UserDetail)}
               edit={hasPrivilege(userInfo, EditUserConfiguration) && UserEdit}
             />
           ) : (
@@ -158,12 +143,8 @@ class OrgManager extends Component {
             options={{ label: "Identifier User Assignment" }}
             list={IdentifierUserAssignmentList}
             show={IdentifierUserAssignmentDetail}
-            create={
-              hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentCreate
-            }
-            edit={
-              hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentEdit
-            }
+            create={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentCreate}
+            edit={hasPrivilege(userInfo, EditIdentifierUserAssignment) && IdentifierUserAssignmentEdit}
           />
           <Resource
             name="organisationDetails"
@@ -171,17 +152,15 @@ class OrgManager extends Component {
             list={WithProps(
               {
                 organisation,
-                hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration)
+                hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration),
+                hasOrgMetadataDeletionPrivilege: hasPrivilege(userInfo, UploadMetadataAndData),
+                hasOrgAdminConfigDeletionPrivilege: hasPrivilege(userInfo, DeleteOrganisationConfiguration)
               },
               OrganisationDetail
             )}
           />
           {hasPrivilege(userInfo, PhoneVerification) ? (
-            <Resource
-              name="phoneNumberVerification"
-              options={{ label: "Phone Verification" }}
-              list={Msg91Config}
-            />
+            <Resource name="phoneNumberVerification" options={{ label: "Phone Verification" }} list={Msg91Config} />
           ) : (
             <div />
           )}
