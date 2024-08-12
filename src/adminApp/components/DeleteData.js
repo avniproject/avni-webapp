@@ -37,13 +37,12 @@ export const DeleteData = ({ openModal, setOpenModal, orgName, hasOrgMetadataDel
   const [message, setMessage] = React.useState({});
 
   const warningMessage =
-    "This will remove all transactional data such as subjects, " +
-    "program enrolments and encounters entered through the Field App. Do you want to continue?";
+    "This will remove all transactional data such as subjects, program enrolments and encounters entered through the Field App. Do you want to continue?";
   const deleteMetadataMessage =
-    "Delete all Metadata (such as subject types, " + "encounter types and form definitions) except admin related configurations";
+    "Delete all Metadata (such as subject types, encounter types and form definitions) except admin related configurations";
   const deleteAdminConfigurationMessage = "Delete all admin configurations except Administrators";
   const deleteClientDataMessage =
-    "This only deletes data from the server database. " + "Please make sure you delete data from the field app manually.";
+    "This only deletes data from the server database. Please make sure you delete data from the field app manually.";
 
   const deleteData = () => {
     setOpenModal(false);
