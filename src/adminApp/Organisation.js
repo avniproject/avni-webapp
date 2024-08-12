@@ -101,24 +101,8 @@ export const OrganisationEdit = props => {
         <DisabledInput source="schemaName" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
-        <ReferenceInput
-          resource="organisationCategory"
-          source="categoryId"
-          reference="organisationCategory"
-          label="Organisation Category"
-          validate={required("Please select a category")}
-        >
-          <CustomSelectInput source="name" />
-        </ReferenceInput>
-        <ReferenceInput
-          resource="organisationStatus"
-          source="statusId"
-          reference="organisationStatus"
-          label="Organisation Status"
-          validate={required("Please select a status")}
-        >
-          <CustomSelectInput source="name" />
-        </ReferenceInput>
+        <OrganisationCategoryInput />
+        <OrganisationStatusInput />
         <BooleanField source="analyticsDataSyncActive" />
         <ToggleAnalyticsButton />
         <br />
@@ -143,6 +127,36 @@ const CustomToolbar = props => (
   </Toolbar>
 );
 
+function OrganisationCategoryInput() {
+  return (
+    <ReferenceInput
+      resource="organisationCategory"
+      source="categoryId"
+      reference="organisationCategory"
+      label="Organisation Category"
+      validate={required("Please select a category")}
+      sort={{ field: "name", order: "ASC" }}
+    >
+      <CustomSelectInput source="name" />
+    </ReferenceInput>
+  );
+}
+
+function OrganisationStatusInput() {
+  return (
+    <ReferenceInput
+      resource="organisationStatus"
+      source="statusId"
+      reference="organisationStatus"
+      label="Organisation Status"
+      validate={required("Please select a status")}
+      sort={{ field: "name", order: "ASC" }}
+    >
+      <CustomSelectInput source="name" />
+    </ReferenceInput>
+  );
+}
+
 export const OrganisationCreate = props => {
   return (
     <Create title="Create New Organisation" {...props}>
@@ -152,24 +166,8 @@ export const OrganisationCreate = props => {
         <TextInput source="schemaName" validate={isRequired} />
         <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
-        <ReferenceInput
-          resource="organisationCategory"
-          source="categoryId"
-          reference="organisationCategory"
-          label="Organisation Category"
-          validate={required("Please select a category")}
-        >
-          <CustomSelectInput source="name" />
-        </ReferenceInput>
-        <ReferenceInput
-          resource="organisationStatus"
-          source="statusId"
-          reference="organisationStatus"
-          label="Organisation Status"
-          validate={required("Please select a status")}
-        >
-          <CustomSelectInput source="name" />
-        </ReferenceInput>
+        <OrganisationCategoryInput />
+        <OrganisationStatusInput />
         <ReferenceInput
           resource="account"
           source="accountId"
