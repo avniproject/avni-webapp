@@ -30,6 +30,7 @@ export const OrganisationDetail = ({
 }) => {
   const classes = useStyles();
   const [openModal, setOpenModal] = React.useState(false);
+  const [dataDeletedIndicator, setDataDeletedIndicator] = React.useState(false);
   const [organisation, setOrganisation] = React.useState(null);
   const [showCannotDeleteMessage, setShowCannotDeleteMessage] = React.useState(false);
 
@@ -65,7 +66,7 @@ export const OrganisationDetail = ({
             )}
           </Grid>
 
-          <OrgSettings hasEditPrivilege={hasEditPrivilege} />
+          <OrgSettings hasEditPrivilege={hasEditPrivilege} dataDeletedIndicator={dataDeletedIndicator} />
         </Grid>
 
         {hasEditPrivilege && (
@@ -75,6 +76,7 @@ export const OrganisationDetail = ({
             orgName={name}
             hasOrgMetadataDeletionPrivilege={hasOrgMetadataDeletionPrivilege}
             hasOrgAdminConfigDeletionPrivilege={hasOrgAdminConfigDeletionPrivilege}
+            setDataDeletedIndicator={setDataDeletedIndicator}
           />
         )}
       </DocumentationContainer>

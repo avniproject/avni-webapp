@@ -5,12 +5,12 @@ import React from "react";
 import http from "common/utils/httpClient";
 import { getOperationalModules } from "../../reports/reducers";
 import { useDispatch } from "react-redux";
-import { toNumber, noop } from "lodash";
+import { noop, toNumber } from "lodash";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { setOrganisationConfig } from "../../rootApp/ducks";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
-export const OrgSettings = ({ hasEditPrivilege }) => {
+export const OrgSettings = ({ hasEditPrivilege, dataDeletedIndicator }) => {
   const [orgSettings, setOrgSettings] = React.useState();
   const [showEncryptionWarningMessage, setShowEncryptionWarningMessage] = React.useState(false);
   const [defaultSnackbarStatus, setDefaultSnackbarStatus] = React.useState(true);
@@ -23,7 +23,7 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
       .fetchJson("/web/organisationConfig")
       .then(response => response.json)
       .then(({ organisationConfig }) => setOrgSettings(organisationConfig));
-  }, []);
+  }, [dataDeletedIndicator]);
 
   const onSettingsChange = (settingsName, value) => {
     const payload = { settings: { [settingsName]: value } };
@@ -41,7 +41,7 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
       <Grid item>
         <AvniSwitch
           switchFirst
-          checked={orgSettings[key]}
+          checked={orgSettings[key] || false}
           onChange={event => {
             if (event.target.checked === true) onEnabled();
             onSettingsChange(key, event.target.checked);
@@ -82,21 +82,9 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
         </Typography>
       </Grid>
       <Grid item container spacing={1} direction={"column"}>
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.draftSave,
-          "Draft save",
-          "ADMIN_SAVE_DRAFT"
-        )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.hideDateOfBirth,
-          "Hide Date of Birth on DEA",
-          "ADMIN_HIDE_DOB"
-        )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.enableComments,
-          "Enable comments",
-          "ADMIN_ENABLE_COMMENTS"
-        )}
+        {renderSimpleSetting(organisationConfigSettingKeys.draftSave, "Draft save", "ADMIN_SAVE_DRAFT")}
+        {renderSimpleSetting(organisationConfigSettingKeys.hideDateOfBirth, "Hide Date of Birth on DEA", "ADMIN_HIDE_DOB")}
+        {renderSimpleSetting(organisationConfigSettingKeys.enableComments, "Enable comments", "ADMIN_ENABLE_COMMENTS")}
         {renderSimpleSetting(
           organisationConfigSettingKeys.enableMobileAppDbEncryption,
           "Enable mobile app db encryption",
@@ -104,28 +92,10 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
           false,
           () => setShowEncryptionWarningMessage(true)
         )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.showSummaryButton,
-          "Show summary button",
-          "ADMIN_SHOW_SUMMARY_BUTTON"
-        )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.enableMessaging,
-          "Enable Messaging",
-          "ENABLE_MESSAGING_BUTTON"
-        )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.useKeycloakAsIDP,
-          "Use Keycloak as IDP",
-          "USE_KEYCLOAK_AS_IDP",
-          true
-        )}
-        {renderSimpleSetting(
-          organisationConfigSettingKeys.useMinioForStorage,
-          "Use MinIO for Storage",
-          "USE_MINIO_FOR_STORAGE",
-          true
-        )}
+        {renderSimpleSetting(organisationConfigSettingKeys.showSummaryButton, "Show summary button", "ADMIN_SHOW_SUMMARY_BUTTON")}
+        {renderSimpleSetting(organisationConfigSettingKeys.enableMessaging, "Enable Messaging", "ENABLE_MESSAGING_BUTTON")}
+        {renderSimpleSetting(organisationConfigSettingKeys.useKeycloakAsIDP, "Use Keycloak as IDP", "USE_KEYCLOAK_AS_IDP", true)}
+        {renderSimpleSetting(organisationConfigSettingKeys.useMinioForStorage, "Use MinIO for Storage", "USE_MINIO_FOR_STORAGE", true)}
         {renderSimpleSetting(
           organisationConfigSettingKeys.skipRuleExecution,
           "Skip rule executions on upload",
@@ -149,12 +119,7 @@ export const OrgSettings = ({ hasEditPrivilege }) => {
           label="Inline address count"
           autoComplete="off"
           value={orgSettings.maxAddressDisplayInlineCount}
-          onChange={event =>
-            onSettingsChange(
-              organisationConfigSettingKeys.maxAddressDisplayInlineCount,
-              toNumber(event.target.value)
-            )
-          }
+          onChange={event => onSettingsChange(organisationConfigSettingKeys.maxAddressDisplayInlineCount, toNumber(event.target.value))}
           toolTipKey={"MAX_ADDRESS_DISPLAY_INLINE_COUNT"}
         />
         {showEncryptionWarningMessage && (

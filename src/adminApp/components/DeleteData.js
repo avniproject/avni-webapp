@@ -26,7 +26,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const DeleteData = ({ openModal, setOpenModal, orgName, hasOrgMetadataDeletionPrivilege, hasOrgAdminConfigDeletionPrivilege }) => {
+export const DeleteData = ({
+  openModal,
+  setOpenModal,
+  orgName,
+  hasOrgMetadataDeletionPrivilege,
+  hasOrgAdminConfigDeletionPrivilege,
+  setDataDeletedIndicator
+}) => {
   const classes = useStyles();
 
   const [deleteMetadata, setDeleteMetadata] = useState(false);
@@ -57,6 +64,7 @@ export const DeleteData = ({ openModal, setOpenModal, orgName, hasOrgMetadataDel
       .delete(`/implementation/delete?deleteMetadata=${deleteMetadata}&deleteAdminConfig=${deleteAdminConfig}`)
       .then(res => {
         if (res.status === 200) {
+          setDataDeletedIndicator(prevValue => !prevValue);
           setLoading(false);
           setMessage({ title: "Successfully deleted data", content: deleteClientDataMessage });
           setShowAlert(true);
