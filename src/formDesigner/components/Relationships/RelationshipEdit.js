@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
-import { cloneDeep } from "lodash";
+import { cloneDeep, get } from "lodash";
 import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Button from "@material-ui/core/Button";
@@ -26,11 +26,13 @@ function RelationshipEdit(props) {
 
   useEffect(() => {
     http.get("/web/subjectType").then(response => {
-      response.data._embedded.subjectType.forEach(subjectType => {
-        if (subjectType.type === "Person") {
-          setIsIndividualSubjectTypeAvailable(true);
-        }
-      });
+      const subjectTypes = get(response, "data._embedded.subjectType");
+      subjectTypes &&
+        subjectTypes.forEach(subjectType => {
+          if (subjectType.type === "Person") {
+            setIsIndividualSubjectTypeAvailable(true);
+          }
+        });
     });
 
     http.get("/web/gender").then(response => {
@@ -103,16 +105,10 @@ function RelationshipEdit(props) {
           </Grid>
 
           {!isIndividualSubjectTypeAvailable && (
-            <div style={{ color: "red", size: "10" }}>
-              Go to subject type and please create Person subject type{" "}
-            </div>
+            <div style={{ color: "red", size: "10" }}>Go to subject type and please create Person subject type </div>
           )}
-          {error === "existName" && (
-            <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>
-          )}
-          {error === "emptyName" && (
-            <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>
-          )}
+          {error === "existName" && <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>}
+          {error === "emptyName" && <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>}
 
           <TextField
             id="name"
@@ -127,12 +123,7 @@ function RelationshipEdit(props) {
             {genders.map(gender => {
               return (
                 <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={relationshipGenders.includes(gender.name) ? true : false}
-                      name={gender.name}
-                    />
-                  }
+                  control={<Checkbox checked={relationshipGenders.includes(gender.name) ? true : false} name={gender.name} />}
                   label={gender.name}
                   key={gender.uuid}
                   onClick={() => checkGender(gender.name)}
@@ -144,17 +135,10 @@ function RelationshipEdit(props) {
 
           <Grid container item sm={12}>
             <Grid item sm={1}>
-              <SaveComponent
-                name="save"
-                onSubmit={() => onSubmitRelationship()}
-                disabledFlag={!setIsIndividualSubjectTypeAvailable}
-              />{" "}
+              <SaveComponent name="save" onSubmit={() => onSubmitRelationship()} disabledFlag={!setIsIndividualSubjectTypeAvailable} />{" "}
             </Grid>
             <Grid item sm={11}>
-              <Button
-                style={{ float: "right", color: "red" }}
-                onClick={() => onDeleteRelationship()}
-              >
+              <Button style={{ float: "right", color: "red" }} onClick={() => onDeleteRelationship()}>
                 <DeleteIcon /> Delete
               </Button>
             </Grid>

@@ -6,7 +6,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import _, { isEmpty } from "lodash";
+import _, { get, isEmpty } from "lodash";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { Redirect } from "react-router-dom";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
@@ -26,11 +26,13 @@ function RelationshipTypeCreate() {
   useEffect(() => {
     let flag = false;
     http.get("/web/subjectType").then(response => {
-      response.data._embedded.subjectType.forEach(subjectType => {
-        if (subjectType.type === "Person") {
-          flag = true;
-        }
-      });
+      const subjectTypes = get(response, "data._embedded.subjectType");
+      subjectTypes &&
+        subjectTypes.forEach(subjectType => {
+          if (subjectType.type === "Person") {
+            flag = true;
+          }
+        });
       setIsIndividualSubjectTypeAvailable(flag);
     });
 
@@ -63,12 +65,8 @@ function RelationshipTypeCreate() {
     } else {
       let relationError = {};
 
-      relationError["individualAIsToBRelationError"] = !isEmpty(individualAIsToBRelation)
-        ? ""
-        : "Please select relation";
-      relationError["individualBIsToARelationError"] = !isEmpty(individualBIsToARelation)
-        ? ""
-        : "Please select reverse relation";
+      relationError["individualAIsToBRelationError"] = !isEmpty(individualAIsToBRelation) ? "" : "Please select relation";
+      relationError["individualBIsToARelationError"] = !isEmpty(individualBIsToARelation) ? "" : "Please select reverse relation";
       setError(relationError);
     }
   };
@@ -79,9 +77,7 @@ function RelationshipTypeCreate() {
         <Title title={"Create Relationship Type"} />
         <DocumentationContainer filename={"RelationshipType.md"}>
           {!isIndividualSubjectTypeAvailable && (
-            <div style={{ color: "red", size: "10" }}>
-              Please create an Person subject type to enable this screen{" "}
-            </div>
+            <div style={{ color: "red", size: "10" }}>Please create an Person subject type to enable this screen </div>
           )}
 
           {error.individualAIsToBRelationError !== "" && (

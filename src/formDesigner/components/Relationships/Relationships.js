@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import http from "common/utils/httpClient";
-import { isEqual } from "lodash";
+import { cloneDeep, get, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
-import { cloneDeep } from "lodash";
 
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
@@ -42,11 +41,13 @@ const Relationships = ({ history, userInfo }) => {
   useEffect(() => {
     let flag = "false";
     http.get("/web/subjectType").then(response => {
-      response.data._embedded.subjectType.forEach(subjectType => {
-        if (subjectType.type === "Person") {
-          flag = "true";
-        }
-      });
+      const subjectTypes = get(response, "data._embedded.subjectType");
+      subjectTypes &&
+        subjectTypes.forEach(subjectType => {
+          if (subjectType.type === "Person") {
+            flag = "true";
+          }
+        });
       setIsIndividualSubjectTypeAvailable(flag);
     });
 
@@ -61,7 +62,7 @@ const Relationships = ({ history, userInfo }) => {
   };
   const editRelationship = rowData => ({
     icon: () => <Edit />,
-    tooltip: "Edit relarionship",
+    tooltip: "Edit relationship",
     onClick: event => history.push(`/appDesigner/relationship/${rowData.id}`),
     disabled: rowData.voided
   });
