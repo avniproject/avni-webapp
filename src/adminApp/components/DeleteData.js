@@ -3,7 +3,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core";
 import http from "common/utils/httpClient";
@@ -29,12 +29,18 @@ const useStyles = makeStyles(theme => ({
 export const DeleteData = ({ openModal, setOpenModal, orgName, hasOrgMetadataDeletionPrivilege, hasOrgAdminConfigDeletionPrivilege }) => {
   const classes = useStyles();
 
-  const [deleteMetadata, setDeleteMetadata] = React.useState(false);
-  const [deleteAdminConfig, setDeleteAdminConfig] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [confirmText, setConfirmText] = React.useState();
-  const [showAlert, setShowAlert] = React.useState(false);
-  const [message, setMessage] = React.useState({});
+  const [deleteMetadata, setDeleteMetadata] = useState(false);
+  const [deleteAdminConfig, setDeleteAdminConfig] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [confirmText, setConfirmText] = useState();
+  const [showAlert, setShowAlert] = useState(false);
+  const [message, setMessage] = useState({});
+
+  useEffect(() => {
+    if (!deleteMetadata) {
+      setDeleteAdminConfig(false);
+    }
+  }, [deleteMetadata]);
 
   const warningMessage =
     "This will remove all transactional data such as subjects, program enrolments and encounters entered through the Field App. Do you want to continue?";
@@ -93,7 +99,7 @@ export const DeleteData = ({ openModal, setOpenModal, orgName, hasOrgMetadataDel
               />
             </Grid>
           )}
-          {hasOrgAdminConfigDeletionPrivilege && (
+          {hasOrgAdminConfigDeletionPrivilege && deleteMetadata && (
             <Grid item>
               <FormControlLabel
                 control={
