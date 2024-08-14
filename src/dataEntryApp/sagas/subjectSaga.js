@@ -99,6 +99,7 @@ export function* loadNewRegistrationPageWorker({ subjectTypeName }) {
     yield put.resolve(getGenders());
   }
   let subject = Individual.createEmptySubjectInstance();
+  subject.uuid = null; //new subject
   subject.subjectType = subjectType;
 
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
