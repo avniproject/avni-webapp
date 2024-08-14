@@ -37,13 +37,16 @@ import EnableDisableButton from "./components/EnableDisableButton";
 import http, { httpClient } from "common/utils/httpClient";
 import {
   CustomToolbar,
+  doesNotStartOrEndWithWhitespaces,
   getPhoneValidator,
   isRequired,
   UserFilter,
   UserTitle,
+  validateDisplayName,
   validateEmail,
   validatePassword,
-  validatePasswords
+  validatePasswords,
+  validateUserName
 } from "./UserHelper";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
@@ -420,7 +423,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                 <AvniTextInput
                   resettable
                   source="ignored"
-                  validate={isRequired}
+                  validate={validateUserName}
                   label={"Login ID (username)"}
                   onChange={(e, newVal) => !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))}
                   {...rest}
@@ -457,7 +460,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                       resettable
                       source="confirmPassword"
                       label="Verify password"
-                      validate={isRequired}
+                      validate={validatePassword}
                       toolTipKey={"ADMIN_USER_CUSTOM_PASSWORD"}
                     />
                   </Fragment>
@@ -467,9 +470,8 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           }}
         </FormDataConsumer>
       )}
-      <AvniTextInput source="name" label="Name of the Person" validate={isRequired} toolTipKey={"ADMIN_USER_NAME"} />
+      <AvniTextInput source="name" label="Name of the Person" validate={validateDisplayName} toolTipKey={"ADMIN_USER_NAME"} />
       <AvniTextInput source="email" label="Email Address" validate={validateEmail} toolTipKey={"ADMIN_USER_EMAIL"} multiline />
-
       <AvniTextInput source="phoneNumber" validate={getPhoneValidator(organisation.region)} toolTipKey={"ADMIN_USER_PHONE_NUMBER"} />
       <LineBreak />
       <FormDataConsumer>
@@ -542,7 +544,12 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
           label="Enable Call Masking"
           toolTipKey={"ADMIN_USER_SETTINGS_ENABLE_CALL_MASKING"}
         />
-        <AvniTextInput source="settings.idPrefix" label="Identifier prefix" toolTipKey={"ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX"} />
+        <AvniTextInput
+          source="settings.idPrefix"
+          validate={doesNotStartOrEndWithWhitespaces}
+          label="Identifier prefix"
+          toolTipKey={"ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX"}
+        />
         <br />
         <AvniRadioButtonGroupInput
           source="settings.datePickerMode"

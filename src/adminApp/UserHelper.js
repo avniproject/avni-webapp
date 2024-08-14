@@ -1,6 +1,6 @@
 import React from "react";
 import { isEmpty, isEqual } from "lodash";
-import { email, Filter, minLength, required, SaveButton, TextInput, Toolbar } from "react-admin";
+import { email, Filter, minLength, regex, required, SaveButton, TextInput, Toolbar } from "react-admin";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const UserTitle = ({ record, titlePrefix }) => {
@@ -49,7 +49,11 @@ export const PasswordTextField = props => (
 );
 
 export const isRequired = required("This field is required");
+export const doesNotHaveWhitespaces = regex(/^\S+$/, "This field should not contain whitespaces");
+export const doesNotStartOrEndWithWhitespaces = regex(/^\S$|^\S[\s\S]*\S$/, "This field should not start or end with whitespaces");
+export const validateUserName = [isRequired, doesNotHaveWhitespaces];
 export const validateEmail = [isRequired, email("Please enter a valid email address")];
+export const validateDisplayName = [isRequired, doesNotStartOrEndWithWhitespaces];
 
 const getValidatePhoneValidator = function(region) {
   return value => {
@@ -59,10 +63,10 @@ const getValidatePhoneValidator = function(region) {
 };
 
 export const getPhoneValidator = function(region) {
-  return [isRequired, getValidatePhoneValidator(region)];
+  return [isRequired, doesNotStartOrEndWithWhitespaces, getValidatePhoneValidator(region)];
 };
 
-export const validatePassword = [isRequired, minLength(8, "Password too small, enter at least 8 characters.")];
+export const validatePassword = [isRequired, doesNotHaveWhitespaces, minLength(8, "Password too small, enter at least 8 characters.")];
 export const validatePasswords = ({ password, confirmPassword }) => {
   const errors = {};
   if (!isEqual(password, confirmPassword)) {
