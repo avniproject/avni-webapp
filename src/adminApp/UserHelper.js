@@ -66,7 +66,11 @@ export const getPhoneValidator = function(region) {
   return [isRequired, doesNotStartOrEndWithWhitespaces, getValidatePhoneValidator(region)];
 };
 
-export const validatePassword = [isRequired, doesNotHaveWhitespaces, minLength(8, "Password too small, enter at least 8 characters.")];
+export const validatePassword = [
+  isRequired,
+  doesNotStartOrEndWithWhitespaces,
+  minLength(8, "Password too small, enter at least 8 characters.")
+];
 export const validatePasswords = ({ password, confirmPassword }) => {
   const errors = {};
   if (!isEqual(password, confirmPassword)) {
