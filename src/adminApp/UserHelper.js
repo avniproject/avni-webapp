@@ -51,7 +51,7 @@ export const PasswordTextField = props => (
 export const isRequired = required("This field is required");
 export const doesNotHaveWhitespaces = regex(/^\S+$/, "This field should not contain whitespaces");
 export const doesNotStartOrEndWithWhitespaces = regex(/^\S$|^\S[\s\S]*\S$/, "This field should not start or end with whitespaces");
-export const validateUserName = [isRequired, doesNotHaveWhitespaces];
+export const validateUserName = [isRequired, doesNotHaveWhitespaces, minLength(4, "Username too small, enter at least 4 characters.")];
 export const validateEmail = [isRequired, email("Please enter a valid email address")];
 export const validateDisplayName = [isRequired, doesNotStartOrEndWithWhitespaces];
 
