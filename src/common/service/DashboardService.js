@@ -37,7 +37,10 @@ class DashboardService {
     const incompatibleCardsAndFilters = WebDashboard.getIncompatibleCardsAndFilters(dashboard);
     if (incompatibleCardsAndFilters.length !== 0) {
       const message = incompatibleCardsAndFilters.map(({ card, filter }) => `{Card: ${card.name}, Filter: ${filter.name}}`).join(". ");
-      errors.push({ key: "INCOMPATIBLE_FILTER_AND_CARD", message: `Incompatible filter card combinations: ${message}` });
+      errors.push({
+        key: "INCOMPATIBLE_FILTER_AND_CARD",
+        message: `Standard report cards of types related to Approval, Comments, Tasks and Checklist currently doesn't support any filter other than Address. Incompatible Filter : Card combinations are as follows: ${message}`
+      });
     }
     return errors;
   }
