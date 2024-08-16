@@ -75,7 +75,6 @@ export const formDesignerAddFormElement = (draft, draftFormElements, elementInde
 };
 
 export const formDesignerHandleGroupElementChange = (draft, draftFormElementGroup, propertyName, value, elementIndex = -1) => {
-  console.log("formDesignerHandleGroupElementChange", propertyName, value, elementIndex);
   if (elementIndex === -1) {
     draftFormElementGroup[propertyName] = value;
   } else {
