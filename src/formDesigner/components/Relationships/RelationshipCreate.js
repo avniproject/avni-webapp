@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
-import { cloneDeep } from "lodash";
+import { cloneDeep, get } from "lodash";
 import { Redirect } from "react-router-dom";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
@@ -21,11 +21,13 @@ function RelationshipCreate() {
   useEffect(() => {
     let flag = false;
     http.get("/web/subjectType").then(response => {
-      response.data._embedded.subjectType.forEach(subjectType => {
-        if (subjectType.type === "Person") {
-          flag = true;
-        }
-      });
+      const subjectTypes = get(response, "data._embedded.subjectType");
+      subjectTypes &&
+        subjectTypes.forEach(subjectType => {
+          if (subjectType.type === "Person") {
+            flag = true;
+          }
+        });
       setIsIndividualSubjectTypeAvailable(flag);
     });
 
@@ -75,16 +77,10 @@ function RelationshipCreate() {
         <Title title={"Create Relationship"} />
         <DocumentationContainer filename={"Relationship.md"}>
           {!isIndividualSubjectTypeAvailable && (
-            <div style={{ color: "red", size: "10" }}>
-              Please create an Person subject type to enable this screen{" "}
-            </div>
+            <div style={{ color: "red", size: "10" }}>Please create an Person subject type to enable this screen </div>
           )}
-          {error === "existName" && (
-            <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>
-          )}
-          {error === "emptyName" && (
-            <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>
-          )}
+          {error === "existName" && <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>}
+          {error === "emptyName" && <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>}
 
           <TextField
             id="name"
@@ -99,12 +95,7 @@ function RelationshipCreate() {
             {genders.map(gender => {
               return (
                 <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={relationshipGenders.includes(gender.name) ? true : false}
-                      name={gender.name}
-                    />
-                  }
+                  control={<Checkbox checked={relationshipGenders.includes(gender.name) ? true : false} name={gender.name} />}
                   label={gender.name}
                   key={gender.uuid}
                   onClick={() => checkGender(gender.name)}
@@ -112,11 +103,7 @@ function RelationshipCreate() {
               );
             })}
             <br />
-            <SaveComponent
-              name="save"
-              onSubmit={() => onSubmitRelationship()}
-              disabledFlag={!isIndividualSubjectTypeAvailable}
-            />
+            <SaveComponent name="save" onSubmit={() => onSubmitRelationship()} disabledFlag={!isIndividualSubjectTypeAvailable} />
           </div>
           {id !== "" && <Redirect to={"/appDesigner/relationship/" + id + "/show"} />}
         </DocumentationContainer>

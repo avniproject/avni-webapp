@@ -54,6 +54,7 @@ class OrgManager extends Component {
       EditIdentifierUserAssignment,
       UploadMetadataAndData,
       EditOrganisationConfiguration,
+      DeleteOrganisationConfiguration,
       EditLanguage,
       PhoneVerification
     } = Privilege.PrivilegeType;
@@ -112,7 +113,7 @@ class OrgManager extends Component {
               list={UserList}
               create={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation, userInfo }, UserCreate)}
               show={WithProps({ user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) }, UserDetail)}
-              edit={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation }, UserEdit)}
+              edit={hasPrivilege(userInfo, EditUserConfiguration) && UserEdit}
             />
           ) : (
             <div />
@@ -151,7 +152,9 @@ class OrgManager extends Component {
             list={WithProps(
               {
                 organisation,
-                hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration)
+                hasEditPrivilege: hasPrivilege(userInfo, EditOrganisationConfiguration),
+                hasOrgMetadataDeletionPrivilege: hasPrivilege(userInfo, UploadMetadataAndData),
+                hasOrgAdminConfigDeletionPrivilege: hasPrivilege(userInfo, DeleteOrganisationConfiguration)
               },
               OrganisationDetail
             )}
