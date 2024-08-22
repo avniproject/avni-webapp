@@ -28,22 +28,11 @@ import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
 
 export const LocationTypeList = props => (
-  <List
-    {...props}
-    bulkActions={false}
-    title="Location Types"
-    sort={{ field: "level", order: "DESC" }}
-  >
+  <List {...props} bulkActions={false} title="Location Types" sort={{ field: "level", order: "DESC" }}>
     <Datagrid rowClick="show">
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
-      <ReferenceField
-        label="Parent"
-        source="parentId"
-        reference="addressLevelType"
-        linkType="show"
-        allowEmpty
-      >
+      <ReferenceField label="Parent" source="parentId" reference="addressLevelType" linkType="show" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
     </Datagrid>
@@ -55,17 +44,8 @@ const ParentReferenceField = ({ showToolTip, ...props }) => {
   return isNil(props.record.parentId) ? (
     <None />
   ) : (
-    <Container
-      toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
-      styles={{ paddingTop: 10, marginRight: "10px" }}
-    >
-      <ReferenceField
-        {...props}
-        source="parentId"
-        linkType="show"
-        reference="addressLevelType"
-        allowEmpty
-      >
+    <Container toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"} styles={{ paddingTop: 10, marginRight: "10px" }}>
+      <ReferenceField {...props} source="parentId" linkType="show" reference="addressLevelType" allowEmpty>
         <FunctionField render={record => record.name} />
       </ReferenceField>
     </Container>
@@ -92,40 +72,19 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && (
-      <DeleteButton
-        undoable={false}
-        disabled={!props.record.voidable}
-        style={{ marginLeft: "auto" }}
-      />
-    )}
+    {edit && <DeleteButton undoable={false} style={{ marginLeft: "auto" }} />}
   </Toolbar>
 );
 
 const LocationTypeForm = ({ edit, ...props }) => {
   return (
     <SimpleForm toolbar={<CreateEditToolbar edit={edit} />} {...props} redirect="show">
-      <AvniTextInput
-        source="name"
-        label="Name"
-        validate={required()}
-        toolTipKey={"ADMIN_LOCATION_TYPE_NAME"}
-      />
-      <AvniTextInput
-        source="level"
-        label="Level"
-        validate={[required(), number()]}
-        toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"}
-      />
+      <AvniTextInput source="name" label="Name" validate={required()} toolTipKey={"ADMIN_LOCATION_TYPE_NAME"} />
+      <AvniTextInput source="level" label="Level" validate={[required(), number()]} toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"} />
       {edit ? (
         <ParentReferenceField label="Parent Type" showToolTip={true} />
       ) : (
-        <AvniReferenceInput
-          source="parentId"
-          reference="addressLevelType"
-          label="Parent"
-          toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
-        >
+        <AvniReferenceInput source="parentId" reference="addressLevelType" label="Parent" toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}>
           <SelectInput optionText="name" resettable />
         </AvniReferenceInput>
       )}
