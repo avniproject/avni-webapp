@@ -12,7 +12,7 @@ import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import Box from "@material-ui/core/Box";
-import { size, filter, includes, replace } from "lodash";
+import { filter, includes, replace, size, split } from "lodash";
 import http from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";
 
@@ -25,8 +25,7 @@ function InlineConcept(props) {
   }, []);
 
   const renderInlinePhoneNumber = () => {
-    const onKeyValueChange = ({ key, value }) =>
-      props.handleInlinePhoneNumberAttributes(props.groupIndex, key, value, props.index);
+    const onKeyValueChange = ({ key, value }) => props.handleInlinePhoneNumberAttributes(props.groupIndex, key, value, props.index);
     return (
       <PhoneNumberConcept
         onKeyValueChange={(keyValue, index) => onKeyValueChange(keyValue)}
@@ -39,7 +38,7 @@ function InlineConcept(props) {
     <>
       {props.formElementData.inlineConceptErrorMessage.inlineConceptError !== "" && (
         <div style={{ color: "red", fontSize: "10px" }}>
-          {props.formElementData.inlineConceptErrorMessage.inlineConceptError}
+          {split(props.formElementData.inlineConceptErrorMessage.inlineConceptError, /\n|\r/, 1)}
         </div>
       )}
       <Grid item={true} sm={12}>
@@ -50,47 +49,32 @@ function InlineConcept(props) {
             value={props.formElementData.inlineConceptName}
             autoComplete="off"
             onChange={event =>
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "inlineConceptName",
-                replace(event.target.value, "|", ""),
-                props.index
-              )
+              props.handleGroupElementChange(props.groupIndex, "inlineConceptName", replace(event.target.value, "|", ""), props.index)
             }
           />
         </FormControl>
       </Grid>
       {props.formElementData.inlineConceptErrorMessage.name !== "" && (
-        <div style={{ color: "red", fontSize: "10px" }}>
-          {props.formElementData.inlineConceptErrorMessage.name}
-        </div>
+        <div style={{ color: "red", fontSize: "10px" }}>{props.formElementData.inlineConceptErrorMessage.name}</div>
       )}
       <Grid item={true} sm={12}>
         <AvniSelect
           label="Datatype *"
           value={props.formElementData.inlineConceptDataType}
-          onChange={event =>
-            props.handleGroupElementChange(
-              props.groupIndex,
-              "inlineConceptDataType",
-              event.target.value,
-              props.index
-            )
-          }
+          onChange={event => props.handleGroupElementChange(props.groupIndex, "inlineConceptDataType", event.target.value, props.index)}
           style={{ width: "200px", marginBottom: "10px" }}
           required
-          options={filter(inlineConceptDataType, t => !includes(props.dataTypesToIgnore, t)).map(
-            datatype => {
-              return (
-                <MenuItem value={datatype} key={datatype}>
-                  {datatype}
-                </MenuItem>
-              );
-            }
-          )}
+          options={filter(inlineConceptDataType, t => !includes(props.dataTypesToIgnore, t)).map(datatype => {
+            return (
+              <MenuItem value={datatype} key={datatype}>
+                {datatype}
+              </MenuItem>
+            );
+          })}
           toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
         />
       </Grid>
+
       {props.formElementData.inlineConceptDataType === "Numeric" && (
         <NumericConcept
           onNumericConceptAttributeAssignment={props.handleInlineNumericAttributes}
@@ -103,11 +87,7 @@ function InlineConcept(props) {
 
       {props.formElementData.inlineConceptDataType === "Coded" && (
         <Box mt={2}>
-          <Button
-            type="button"
-            color="primary"
-            onClick={() => props.onAlphabeticalSort(props.groupIndex, props.index)}
-          >
+          <Button type="button" color="primary" onClick={() => props.onAlphabeticalSort(props.groupIndex, props.index)}>
             Sort alphabetically
           </Button>
           {props.formElementData.inlineCodedAnswers.map((answer, index) => {
@@ -135,11 +115,7 @@ function InlineConcept(props) {
       {props.formElementData.inlineConceptDataType === "Coded" && (
         <>
           <br />
-          <Button
-            color="primary"
-            margin="normal"
-            onClick={event => props.handleInlineCodedAnswerAddition(props.groupIndex, props.index)}
-          >
+          <Button color="primary" margin="normal" onClick={event => props.handleInlineCodedAnswerAddition(props.groupIndex, props.index)}>
             Add new answer
           </Button>
           <br />
