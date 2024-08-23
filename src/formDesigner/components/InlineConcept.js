@@ -12,7 +12,7 @@ import { LocationConcept } from "./LocationConcept";
 import { SubjectConcept } from "./SubjectConcept";
 import { PhoneNumberConcept } from "./PhoneNumberConcept";
 import Box from "@material-ui/core/Box";
-import { filter, includes, replace, size, split } from "lodash";
+import { filter, includes, replace, size } from "lodash";
 import http from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";
 
@@ -41,9 +41,7 @@ function InlineConcept(props) {
   return (
     <>
       {props.formElementData.inlineConceptErrorMessage.inlineConceptError !== "" && (
-        <div style={{ color: "red", fontSize: "10px" }}>
-          {split(props.formElementData.inlineConceptErrorMessage.inlineConceptError, /\n|\r/, 1)}
-        </div>
+        <div style={{ color: "red", fontSize: "10px" }}>{props.formElementData.inlineConceptErrorMessage.inlineConceptError}</div>
       )}
       <Grid item={true} sm={12}>
         <FormControl fullWidth>

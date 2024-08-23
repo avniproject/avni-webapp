@@ -1,4 +1,4 @@
-import _, { cloneDeep, includes, isEmpty } from "lodash";
+import _, { cloneDeep, includes, isEmpty, replace, split } from "lodash";
 import { default as UUID } from "uuid";
 import http from "common/utils/httpClient";
 import { alphabeticalSort, moveDown, moveUp } from "../views/CreateEditConcept";
@@ -236,7 +236,8 @@ const formDesignerOnSubmitInlineConcept = (inlineConceptObject, formElement, upd
       }
     })
     .catch(error => {
-      formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
+      const errorMessage = split(replace(error.response.data, /^org\..*\: /, ""), /\n|\r/, 1);
+      formElement.inlineConceptErrorMessage["inlineConceptError"] = errorMessage;
       updateState();
     });
 };
