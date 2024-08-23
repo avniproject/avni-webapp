@@ -16,6 +16,10 @@ import { filter, includes, replace, size, split } from "lodash";
 import http from "../../common/utils/httpClient";
 import { EncounterConcept } from "./EncounterConcept";
 
+function getKeyValues(obj) {
+  return Object.keys(obj).map(key => ({ key: key, value: obj[key] }));
+}
+
 function InlineConcept(props) {
   const [operationalModules, setOperationalModules] = React.useState({});
   React.useEffect(() => {
@@ -129,9 +133,9 @@ function InlineConcept(props) {
         <>
           <LocationConcept
             updateConceptKeyValues={props.handleInlineLocationAttributes}
-            keyValues={[]}
+            keyValues={getKeyValues(props.formElementData.inlineLocationDataTypeKeyValues)}
             error={props.formElementData.inlineLocationDataTypeKeyValues.error}
-            isCreatePage={true}
+            isCreatePage={false}
             inlineConcept={true}
             groupIndex={props.groupIndex}
             index={props.index}
@@ -144,8 +148,9 @@ function InlineConcept(props) {
         <>
           <SubjectConcept
             updateKeyValues={props.handleInlineSubjectAttributes}
+            keyValues={getKeyValues(props.formElementData.inlineSubjectDataTypeKeyValues)}
             error={props.formElementData.inlineSubjectDataTypeKeyValues.error}
-            isCreatePage={true}
+            isCreatePage={false}
             inlineConcept={true}
             groupIndex={props.groupIndex}
             index={props.index}
