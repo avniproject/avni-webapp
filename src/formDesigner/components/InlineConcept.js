@@ -74,6 +74,9 @@ function InlineConcept(props) {
           toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
         />
       </Grid>
+      {props.formElementData.inlineConceptErrorMessage.dataType !== "" && (
+        <div style={{ color: "red", fontSize: "10px" }}>{props.formElementData.inlineConceptErrorMessage.dataType}</div>
+      )}
 
       {props.formElementData.inlineConceptDataType === "Numeric" && (
         <NumericConcept
