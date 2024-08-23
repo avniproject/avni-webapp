@@ -30,11 +30,11 @@ function RenderCard({ reportCard }) {
       <p />
       <ShowLabelValue label={"Description"} value={reportCard.description} />
       <p />
-      {!reportCard.isStandardReportType() && (
+      {reportCard.colour && (
         <React.Fragment>
           <FormLabel style={{ fontSize: "13px" }}>{"Colour"}</FormLabel>
           <br />
-          <ColorValue colour={reportCard.color} />
+          <ColorValue colour={reportCard.colour} />
         </React.Fragment>
       )}
       <p />
