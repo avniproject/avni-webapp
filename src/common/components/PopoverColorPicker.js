@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
-import { HexColorPicker } from "react-colorful";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 import { makeStyles } from "@material-ui/core";
 
 // Source: https://codesandbox.io/s/opmco
@@ -36,12 +36,15 @@ const useClickOutside = (ref, handler) => {
 
 const useStyles = makeStyles(theme => ({
   picker: {
-    position: "relative"
+    position: "relative",
+    display: "flex",
+    flexDirection: "row"
   },
 
   swatch: {
     width: "28px",
     height: "28px",
+    marginRight: "6px",
     borderRadius: "8px",
     border: "3px solid #fff",
     boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1)",
@@ -68,17 +71,13 @@ export const PopoverColorPicker = ({ color, onChange }) => {
 
   return (
     <div className={classes.picker}>
-      <div
-        className={classes.swatch}
-        style={{ backgroundColor: color }}
-        onClick={() => toggle(true)}
-      />
-
+      <div className={classes.swatch} style={{ backgroundColor: color }} onClick={() => toggle(true)} />
       {isOpen && (
         <div className={classes.popOver} ref={popover}>
           <HexColorPicker color={color} onChange={onChange} />
         </div>
       )}
+      <HexColorInput color={color} onChange={onChange} placeholder="Type a color" prefixed />
     </div>
   );
 };
