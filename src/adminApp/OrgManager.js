@@ -113,7 +113,7 @@ class OrgManager extends Component {
               list={UserList}
               create={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation, userInfo }, UserCreate)}
               show={WithProps({ user, hasEditUserPrivilege: hasPrivilege(userInfo, EditUserConfiguration) }, UserDetail)}
-              edit={hasPrivilege(userInfo, EditUserConfiguration) && UserEdit}
+              edit={hasPrivilege(userInfo, EditUserConfiguration) && WithProps({ organisation }, UserEdit)}
             />
           ) : (
             <div />
