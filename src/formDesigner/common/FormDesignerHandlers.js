@@ -236,7 +236,7 @@ const formDesignerOnSubmitInlineConcept = (inlineConceptObject, formElement, upd
       }
     })
     .catch(error => {
-      const errorMessage = split(replace(error.response.data, /^org\..*\: /, ""), /\n|\r/, 1);
+      const errorMessage = split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
       formElement.inlineConceptErrorMessage["inlineConceptError"] = errorMessage;
       updateState();
     });
