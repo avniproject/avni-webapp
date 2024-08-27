@@ -127,7 +127,7 @@ export const formDesignerHandleInlineCodedAnswerAddition = draftFormElement => {
     editable: true,
     voided: false,
     order: 0,
-    isEmptyAnswer: false
+    isAnswerHavingError: { isErrored: false, type: "" }
   });
 };
 
@@ -371,9 +371,9 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
       inlineConceptObject.answers.forEach(answer => {
         if (answer.name.trim() === "") {
           flagForEmptyAnswer = true;
-          answer.isEmptyAnswer = true;
+          answer.isAnswerHavingError = { isErrored: true, type: "required" };
         } else {
-          answer.isEmptyAnswer = false;
+          answer.isAnswerHavingError = { isErrored: false, type: "" };
         }
         http
           .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
@@ -510,7 +510,7 @@ export const formDesignerGetEmptyFormElement = () => {
         editable: true,
         voided: false,
         order: 0,
-        isEmptyAnswer: false
+        isAnswerHavingError: { isErrored: false, type: "" }
       }
     ],
     showConceptLibrary: "",

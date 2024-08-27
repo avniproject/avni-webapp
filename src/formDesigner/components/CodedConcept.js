@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import { size } from "lodash";
+import { get, size } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -23,11 +23,11 @@ const useStyles = makeStyles(theme => ({
 
 export const CodedConceptUI = props => {
   const action = actionName => {
-    props.inlineConcept
-      ? props[actionName](props.groupIndex, props.elementIndex, props.index)
-      : props[actionName](props.index);
+    props.inlineConcept ? props[actionName](props.groupIndex, props.elementIndex, props.index) : props[actionName](props.index);
   };
 
+  const isDuplicateAnswerValue =
+    get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "duplicate";
   return (
     <Grid item container spacing={1} alignItems={"center"}>
       <Grid item>
@@ -43,7 +43,10 @@ export const CodedConceptUI = props => {
           elementIndex={props.elementIndex}
           groupIndex={props.groupIndex}
         />
-        {props.answer.isEmptyAnswer && <FormHelperText error>Answer is required.</FormHelperText>}
+        {get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "required" && (
+          <FormHelperText error>Answer is required.</FormHelperText>
+        )}
+        {isDuplicateAnswerValue && <FormHelperText error>Duplicate answers specified, correct them to proceed.</FormHelperText>}
       </Grid>
       <Grid item>
         <FormControlLabel
@@ -52,12 +55,7 @@ export const CodedConceptUI = props => {
               checked={props.answer.abnormal}
               onChange={e =>
                 props.inlineConcept
-                  ? props.onToggleAnswerField(
-                      "abnormal",
-                      props.groupIndex,
-                      props.elementIndex,
-                      props.index
-                    )
+                  ? props.onToggleAnswerField("abnormal", props.groupIndex, props.elementIndex, props.index)
                   : props.onToggleAnswerField(e, props.index)
               }
               value={props.answer.abnormal}
@@ -76,12 +74,7 @@ export const CodedConceptUI = props => {
               checked={props.answer.unique}
               onChange={e =>
                 props.inlineConcept
-                  ? props.onToggleAnswerField(
-                      "unique",
-                      props.groupIndex,
-                      props.elementIndex,
-                      props.index
-                    )
+                  ? props.onToggleAnswerField("unique", props.groupIndex, props.elementIndex, props.index)
                   : props.onToggleAnswerField(e, props.index)
               }
               value={props.answer.unique}
@@ -96,29 +89,20 @@ export const CodedConceptUI = props => {
       <Grid item>
         <Grid item container direction={"row"} alignItems={"center"}>
           <Grid item>
-            <Button
-              disabled={props.index === 0}
-              color="primary"
-              type="button"
-              onClick={() => action("onMoveUp")}
-            >
+            <Button disabled={props.index === 0} color="primary" type="button" onClick={() => action("onMoveUp")}>
               <ArrowDropUpIcon /> Move up
             </Button>
           </Grid>
           <Grid item>
-            <Button
-              disabled={props.index + 1 === props.totalAnswers}
-              color="primary"
-              type="button"
-              onClick={() => action("onMoveDown")}
-            >
+            <Button disabled={props.index + 1 === props.totalAnswers} color="primary" type="button" onClick={() => action("onMoveDown")}>
               <ArrowDropDownIcon /> Move down
             </Button>
           </Grid>
           <Grid item>
             <Button
-              style={{ color: "#ff0000" }}
+              style={{ color: "#ff0000", opacity: isDuplicateAnswerValue ? 0.5 : 1 }}
               type="button"
+              disabled={isDuplicateAnswerValue}
               onClick={() => action("onDeleteAnswer")}
             >
               <DeleteIcon fontSize={"small"} /> Remove
@@ -141,12 +125,7 @@ export default function CodedConcept(props) {
   return (
     <>
       <Grid container style={{ marginTop: 20 }}>
-        <Button
-          type="button"
-          className={useStyles.button}
-          color="primary"
-          onClick={props.onAlphabeticalSort}
-        >
+        <Button type="button" className={useStyles.button} color="primary" onClick={props.onAlphabeticalSort}>
           Sort alphabetically
         </Button>
         {props.answers.map((answer, index) => {
@@ -171,12 +150,7 @@ export default function CodedConcept(props) {
         })}
       </Grid>
 
-      <Button
-        type="button"
-        className={useStyles.button}
-        color="primary"
-        onClick={props.onAddAnswer}
-      >
+      <Button type="button" className={useStyles.button} color="primary" onClick={props.onAddAnswer}>
         Add New Answer
       </Button>
     </>

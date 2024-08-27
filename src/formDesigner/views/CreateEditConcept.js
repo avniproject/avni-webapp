@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, sortBy, trim, toLower, replace } from "lodash";
+import { filter, find, replace, sortBy, toLower, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -78,7 +78,7 @@ class CreateEditConcept extends Component {
           editable: true,
           voided: false,
           order: 0,
-          isEmptyAnswer: false
+          isAnswerHavingError: { isErrored: false, type: "" }
         }
       ],
       conceptCreationAlert: false,
@@ -199,7 +199,7 @@ class CreateEditConcept extends Component {
           editable: true,
           voided: false,
           order: 0,
-          isEmptyAnswer: false
+          isAnswerHavingError: { isErrored: false, type: "" }
         }
       ]
     });
@@ -315,11 +315,7 @@ class CreateEditConcept extends Component {
           if (response.status === 200 && this.props.isCreatePage) {
             error["nameError"] = true;
           }
-          if (
-            response.status === 200 &&
-            response.data.uuid !== this.state.uuid &&
-            !this.props.isCreatePage
-          ) {
+          if (response.status === 200 && response.data.uuid !== this.state.uuid && !this.props.isCreatePage) {
             error["nameError"] = true;
           }
 
@@ -349,27 +345,33 @@ class CreateEditConcept extends Component {
           error["normalValidation"] = true;
         }
 
-        this.state.dataType === "Coded" &&
+        if (this.state.dataType === "Coded") {
           answers.forEach(answer => {
-            if (answer.name.trim() === "") {
-              answer["isEmptyAnswer"] = true;
-              error["isEmptyAnswer"] = true;
-            } else {
-              answer["isEmptyAnswer"] = false;
+            answer["isAnswerHavingError"] = { isErrored: false, type: "" };
+          });
+          answers
+            .filter(answer => answer.name.trim() === "")
+            .forEach(answer => {
+              answer["isAnswerHavingError"] = { isErrored: true, type: "required" };
+            });
+          let uniqueAnswerNames = new Set();
+          answers.forEach(answer => {
+            if (uniqueAnswerNames.size === uniqueAnswerNames.add(answer.name).size) {
+              answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
             }
           });
+          if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
+            error["isAnswerHavingError"] = true;
+          }
+        }
 
         if (this.state.dataType === "Location") {
-          const lowestLevelKeyValue = this.state.keyValues.find(
-            keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs"
-          );
+          const lowestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs");
           if (lowestLevelKeyValue === undefined || lowestLevelKeyValue.value.length === 0) {
             error["lowestAddressLevelRequired"] = true;
           }
 
-          const highestLevelKeyValue = this.state.keyValues.find(
-            keyValue => keyValue.key === "highestAddressLevelTypeUUID"
-          );
+          const highestLevelKeyValue = this.state.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID");
           if (highestLevelKeyValue !== undefined && highestLevelKeyValue.value === "") {
             this.onDeleteKeyValue(2);
           }
@@ -385,10 +387,7 @@ class CreateEditConcept extends Component {
           this.validateKeyValues(error, "encounterIdentifier", "encounterIdentifierRequired");
         }
 
-        const emptyKeyValues = filter(
-          this.state.keyValues,
-          ({ key, value }) => key === "" || value === ""
-        );
+        const emptyKeyValues = filter(this.state.keyValues, ({ key, value }) => key === "" || value === "");
         if (emptyKeyValues.length > 0) {
           error["keyValueError"] = true;
         }
@@ -527,10 +526,7 @@ class CreateEditConcept extends Component {
 
   onKeyValueChange = (keyValue, index) => {
     const keyValues = this.state.keyValues;
-    keyValues[index] =
-      typeof keyValue.value === "object"
-        ? this.handleObjectValue(keyValue)
-        : this.castValueToBooleanOrInt(keyValue);
+    keyValues[index] = typeof keyValue.value === "object" ? this.handleObjectValue(keyValue) : this.castValueToBooleanOrInt(keyValue);
     this.setState({ ...this.state, keyValues });
   };
 
@@ -586,9 +582,7 @@ class CreateEditConcept extends Component {
       }
     };
 
-    const conceptCreationMessage = this.props.isCreatePage
-      ? "Concept created successfully."
-      : "Concept updated successfully.";
+    const conceptCreationMessage = this.props.isCreatePage ? "Concept created successfully." : "Concept updated successfully.";
 
     const appBarTitle = this.props.isCreatePage ? "Create Concept" : "Edit Concept";
 
@@ -654,17 +648,9 @@ class CreateEditConcept extends Component {
     }
 
     if (this.state.dataType === "PhoneNumber") {
-      const verificationKey = find(
-        this.state.keyValues,
-        ({ key, value }) => key === "verifyPhoneNumber"
-      );
+      const verificationKey = find(this.state.keyValues, ({ key, value }) => key === "verifyPhoneNumber");
       if (verificationKey) {
-        dataType = (
-          <PhoneNumberConcept
-            onKeyValueChange={this.onKeyValueChange}
-            checked={verificationKey.value}
-          />
-        );
+        dataType = <PhoneNumberConcept onKeyValueChange={this.onKeyValueChange} checked={verificationKey.value} />;
       } else {
         this.setState(prevState => ({
           ...prevState,
@@ -698,9 +684,7 @@ class CreateEditConcept extends Component {
               />
               {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
               {!this.state.error.isEmptyName &&
-                (this.state.error.nameError && (
-                  <FormHelperText error>Same name concept already exist.</FormHelperText>
-                ))}
+                (this.state.error.nameError && <FormHelperText error>Same name concept already exist.</FormHelperText>)}
             </div>
 
             <div>
@@ -723,9 +707,7 @@ class CreateEditConcept extends Component {
                         );
                       })}
                     </Select>
-                    {this.state.error.dataTypeSelectionAlert && (
-                      <FormHelperText error>*Required</FormHelperText>
-                    )}
+                    {this.state.error.dataTypeSelectionAlert && <FormHelperText error>*Required</FormHelperText>}
                   </FormControl>
                 </ToolTipContainer>
               )}
@@ -743,11 +725,7 @@ class CreateEditConcept extends Component {
             {!this.props.isCreatePage && (
               <>
                 <p />
-                <ConceptActiveSwitch
-                  active={this.state.active}
-                  handleActive={this.handleActive}
-                  conceptUUID={this.state.uuid}
-                />
+                <ConceptActiveSwitch active={this.state.active} handleActive={this.handleActive} conceptUUID={this.state.uuid} />
                 <p />
               </>
             )}
@@ -765,18 +743,11 @@ class CreateEditConcept extends Component {
 
           <Grid container item sm={12}>
             <Grid item sm={2}>
-              <SaveComponent
-                name="save"
-                onSubmit={this.handleSubmit}
-                styleClass={{ marginLeft: "12px", marginTop: "10px" }}
-              />{" "}
+              <SaveComponent name="save" onSubmit={this.handleSubmit} styleClass={{ marginLeft: "12px", marginTop: "10px" }} />{" "}
             </Grid>
             <Grid item sm={10}>
               {!this.props.isCreatePage && (
-                <Button
-                  style={{ float: "right", color: "red", marginTop: "10px" }}
-                  onClick={() => this.onDeleteConcept()}
-                >
+                <Button style={{ float: "right", color: "red", marginTop: "10px" }} onClick={() => this.onDeleteConcept()}>
                   <DeleteIcon /> Delete
                 </Button>
               )}
@@ -791,9 +762,7 @@ class CreateEditConcept extends Component {
             />
           )}
         </DocumentationContainer>
-        {this.state.redirectShow && (
-          <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />
-        )}
+        {this.state.redirectShow && <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />}
         {this.state.redirectOnDelete && <Redirect to={`/appDesigner/concepts`} />}
       </Box>
     );
