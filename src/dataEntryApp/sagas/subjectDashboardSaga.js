@@ -185,9 +185,9 @@ export function* voidProgramEncounterWatcher() {
 
 export function* voidProgramEncounterWorker({ uuid }) {
   yield put.resolve(setLoad(false));
-  const [response, error] = yield call(api.voidProgramEncounter, uuid);
-  if (!response && error) {
-    yield put(setVoidServerError(error));
+  const response = yield call(api.voidProgramEncounter, uuid);
+  if (!response.success) {
+    yield put(setVoidServerError(response.errorMessage));
   } else {
     const subject = yield select(selectSubjectProfile);
     const subjectProgram = yield call(api.fetchSubjectProgram, subject.uuid);
@@ -202,9 +202,9 @@ export function* voidGeneralEncounterWatcher() {
 
 export function* voidGeneralEncounterWorker({ uuid }) {
   yield put.resolve(setLoad(false));
-  const [response, error] = yield call(api.voidEncounter, uuid);
-  if (!response && error) {
-    yield put(setVoidServerError(error));
+  const response = yield call(api.voidEncounter, uuid);
+  if (!response.success) {
+    yield put(setVoidServerError(response.errorMessage));
   } else {
     const subject = yield select(selectSubjectProfile);
     const subjectGeneral = yield call(api.fetchSubjectGeneral, subject.uuid);
