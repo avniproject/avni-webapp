@@ -46,7 +46,7 @@ export const CodedConceptUI = props => {
         {get(props.answer, "isAnswerHavingError.isErrored") && props.answer.isAnswerHavingError.type === "required" && (
           <FormHelperText error>Answer is required.</FormHelperText>
         )}
-        {isDuplicateAnswerValue && <FormHelperText error>Duplicate answers specified, correct them to proceed.</FormHelperText>}
+        {isDuplicateAnswerValue && <FormHelperText error>Duplicate answer specified</FormHelperText>}
       </Grid>
       <Grid item>
         <FormControlLabel

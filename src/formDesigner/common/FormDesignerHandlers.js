@@ -1,7 +1,7 @@
 import _, { cloneDeep, includes, isEmpty, replace, split } from "lodash";
 import { default as UUID } from "uuid";
 import http from "common/utils/httpClient";
-import { alphabeticalSort, moveDown, moveUp } from "../views/CreateEditConcept";
+import { alphabeticalSort, moveDown, moveUp, validateCodedConceptAnswers } from "../views/CreateEditConcept";
 
 export const formDesignerUpdateConceptElementData = (draftFormElement, propertyName, value) => {
   draftFormElement["concept"][propertyName] = value;
@@ -363,64 +363,63 @@ export const formDesignerOnSaveInlineConcept = (clonedFormElement, updateState) 
     if (inlineConceptObject.dataType === "Coded") {
       const length = inlineConceptObject.answers.length;
       let counter = 0;
-      let flagForEmptyAnswer = false;
+      let flagForInvalidAnswer = false;
       if (length === 0) {
         formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
       }
+      validateCodedConceptAnswers(inlineConceptObject.answers);
+      if (inlineConceptObject.answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
+        flagForInvalidAnswer = true;
+        clonedFormElement.inlineConceptErrorMessage["inlineConceptError"] = "One or more invalid answer values specified for Coded Concept";
+      }
+      if (flagForInvalidAnswer === true) {
+        updateState();
+      } else {
+        inlineConceptObject.answers.forEach(answer => {
+          http
+            .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
+            .then(response => {
+              if (response.status === 200) {
+                answer.uuid = response.data.uuid;
+                answer.order = counter;
+                counter = counter + 1;
 
-      inlineConceptObject.answers.forEach(answer => {
-        if (answer.name.trim() === "") {
-          flagForEmptyAnswer = true;
-          answer.isAnswerHavingError = { isErrored: true, type: "required" };
-        } else {
-          answer.isAnswerHavingError = { isErrored: false, type: "" };
-        }
-        http
-          .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
-          .then(response => {
-            if (response.status === 200) {
-              answer.uuid = response.data.uuid;
-              answer.order = counter;
-              counter = counter + 1;
-
-              if (counter === length) {
-                !flagForEmptyAnswer && formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
+                if (counter === length) {
+                  formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
+                }
               }
-            }
-          })
-          .catch(error => {
-            if (error.response.status === 404) {
-              answer.uuid = UUID.v4();
-              http
-                .post("/concepts", [
-                  {
-                    name: answer.name,
-                    uuid: answer.uuid,
-                    dataType: "NA",
-                    lowAbsolute: null,
-                    highAbsolute: null,
-                    lowNormal: null,
-                    highNormal: null,
-                    unit: null
-                  }
-                ])
-                .then(response => {
-                  if (response.status === 200) {
-                    console.log("Dynamic concept added through Coded", response);
-                    counter = counter + 1;
-                    if (counter === length) {
-                      !flagForEmptyAnswer && formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                answer.uuid = UUID.v4();
+                http
+                  .post("/concepts", [
+                    {
+                      name: answer.name,
+                      uuid: answer.uuid,
+                      dataType: "NA",
+                      lowAbsolute: null,
+                      highAbsolute: null,
+                      lowNormal: null,
+                      highNormal: null,
+                      unit: null
                     }
-                  }
-                });
-            } else {
-              console.log(error);
-            }
-          });
-        if (flagForEmptyAnswer === true) {
-          updateState();
-        }
-      });
+                  ])
+                  .then(response => {
+                    if (response.status === 200) {
+                      console.log("Dynamic concept added through Coded", response);
+                      counter = counter + 1;
+                      if (counter === length) {
+                        formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
+                      }
+                    }
+                  });
+              } else {
+                console.log(error);
+              }
+            });
+        });
+      }
     } else {
       formDesignerOnSubmitInlineConcept(inlineConceptObject, clonedFormElement, updateState);
     }

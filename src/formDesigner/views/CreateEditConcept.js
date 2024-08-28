@@ -52,6 +52,35 @@ export const alphabeticalSort = conceptAnswers => {
   return sortBy([...conceptAnswers], ans => toLower(ans.name));
 };
 
+export const validateCodedConceptAnswers = answers => {
+  resetAnswerErrorState(answers);
+  checkForEmptyAnswerNames(answers);
+  checkForDuplicateAnswers(answers);
+};
+
+const resetAnswerErrorState = answers => {
+  answers.forEach(answer => {
+    answer["isAnswerHavingError"] = { isErrored: false, type: "" };
+  });
+};
+
+const checkForEmptyAnswerNames = answers => {
+  answers
+    .filter(answer => answer.name.trim() === "")
+    .forEach(answer => {
+      answer["isAnswerHavingError"] = { isErrored: true, type: "required" };
+    });
+};
+
+const checkForDuplicateAnswers = answers => {
+  const uniqueCodedAnswerNames = new Set();
+  answers.forEach(answer => {
+    if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
+      answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
+    }
+  });
+};
+
 class CreateEditConcept extends Component {
   constructor(props) {
     super(props);
@@ -346,20 +375,7 @@ class CreateEditConcept extends Component {
         }
 
         if (this.state.dataType === "Coded") {
-          answers.forEach(answer => {
-            answer["isAnswerHavingError"] = { isErrored: false, type: "" };
-          });
-          answers
-            .filter(answer => answer.name.trim() === "")
-            .forEach(answer => {
-              answer["isAnswerHavingError"] = { isErrored: true, type: "required" };
-            });
-          let uniqueAnswerNames = new Set();
-          answers.forEach(answer => {
-            if (uniqueAnswerNames.size === uniqueAnswerNames.add(answer.name).size) {
-              answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
-            }
-          });
+          validateCodedConceptAnswers(answers);
           if (answers.some(answer => answer["isAnswerHavingError"].isErrored)) {
             error["isAnswerHavingError"] = true;
           }
