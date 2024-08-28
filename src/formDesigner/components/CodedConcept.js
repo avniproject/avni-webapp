@@ -99,12 +99,7 @@ export const CodedConceptUI = props => {
             </Button>
           </Grid>
           <Grid item>
-            <Button
-              style={{ color: "#ff0000", opacity: isDuplicateAnswerValue ? 0.5 : 1 }}
-              type="button"
-              disabled={isDuplicateAnswerValue}
-              onClick={() => action("onDeleteAnswer")}
-            >
+            <Button style={{ color: "#ff0000" }} type="button" onClick={() => action("onDeleteAnswer")}>
               <DeleteIcon fontSize={"small"} /> Remove
             </Button>
           </Grid>
