@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, replace, sortBy, toLower, trim } from "lodash";
+import { filter, find, isEmpty, replace, sortBy, toLower, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -191,7 +191,7 @@ class CreateEditConcept extends Component {
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
-    if (answers[index].name !== "") {
+    if (!isEmpty(answers[index].name) && !isEmpty(answers[index].uuid)) {
       answers[index].voided = true;
       const encodedURL = `/web/concept?name=${encodeURIComponent(answers[index].name)}`;
 
