@@ -172,6 +172,7 @@ export default ({
               general={general}
               subjectTypeUuid={profile.subjectType.uuid}
               subjectVoided={profile.voided}
+              voidError={voidError}
             />
           </Paper>
         </TabContent>

@@ -7,15 +7,16 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
-import { filter, isNil } from "lodash";
+import { filter, isEmpty, isNil } from "lodash";
 import { connect } from "react-redux";
 import SubjectVoided from "../../../components/SubjectVoided";
 import PlannedVisitsTable from "../PlannedVisitsTable";
-import { voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
+import { clearVoidServerError, voidGeneralEncounter } from "../../../reducers/subjectDashboardReducer";
 import CompletedVisits from "./CompletedVisits";
 import { NewGeneralEncounterButton } from "./NewGeneralEncounterButton";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import _ from "lodash";
+import MessageDialog from "../../../components/MessageDialog";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -25,8 +26,7 @@ const useStyles = makeStyles(theme => ({
   expansionPanel: {
     marginBottom: "11px",
     borderRadius: "5px",
-    boxShadow:
-      "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   root: {
     flexGrow: 1,
@@ -70,7 +70,9 @@ const SubjectDashboardGeneralTab = ({
   subjectTypeUuid,
   subjectVoided,
   voidGeneralEncounter,
-  displayGeneralInfoInProfileTab
+  displayGeneralInfoInProfileTab,
+  voidError,
+  clearVoidServerError
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -79,17 +81,14 @@ const SubjectDashboardGeneralTab = ({
 
   const plannedVisits = filter(
     general,
-    ({ voided, encounterDateTime, cancelDateTime }) =>
-      !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
+    ({ voided, encounterDateTime, cancelDateTime }) => !voided && isNil(encounterDateTime) && isNil(cancelDateTime)
   );
   const ContainerComponent = displayGeneralInfoInProfileTab ? Box : Paper;
 
   return (
     <ContainerComponent className={displayGeneralInfoInProfileTab ? "" : classes.root}>
       {subjectVoided && <SubjectVoided showUnVoid={false} />}
-      {!subjectVoided && !displayGeneralInfoInProfileTab && (
-        <NewGeneralEncounterButton subjectUuid={subjectUuid} />
-      )}
+      {!subjectVoided && !displayGeneralInfoInProfileTab && <NewGeneralEncounterButton subjectUuid={subjectUuid} />}
       <ExpansionPanel className={classes.expansionPanel}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
@@ -131,17 +130,17 @@ const SubjectDashboardGeneralTab = ({
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
-          {isExpanded && (
-            <CompletedVisits entityUuid={subjectUuid} isForProgramEncounters={false} />
-          )}
+          {isExpanded && <CompletedVisits entityUuid={subjectUuid} isForProgramEncounters={false} />}
         </ExpansionPanelDetails>
       </ExpansionPanel>
+      <MessageDialog title={t("SubjectErrorTitle")} open={!isEmpty(voidError)} message={t(voidError)} onOk={clearVoidServerError} />
     </ContainerComponent>
   );
 };
 
 const mapDispatchToProps = {
-  voidGeneralEncounter
+  voidGeneralEncounter,
+  clearVoidServerError
 };
 
 export default connect(
