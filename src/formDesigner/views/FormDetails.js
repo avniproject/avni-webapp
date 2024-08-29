@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, isEmpty } from "lodash";
+import _, { cloneDeep, isEmpty, replace, split } from "lodash";
 import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -813,8 +813,9 @@ class FormDetails extends Component {
       })
       .then(() => this.getForm())
       .catch(error => {
+        const errorMessage = split(replace(error.response.data, /^org\..*: /, ""), /\n|\r/, 1);
         this.setState({
-          errorMsg: "Server error received " + error.response.data
+          errorMsg: "Server error received: " + errorMessage
         });
       });
   };
