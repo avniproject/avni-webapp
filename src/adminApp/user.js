@@ -1,10 +1,10 @@
-import _, { filter, get, isEmpty, isFinite, isNil, map, some, startCase, sortBy } from "lodash";
+import _, { filter, get, isEmpty, isFinite, isNil, map, some, sortBy, startCase } from "lodash";
 import React, { cloneElement, Fragment, useContext, useEffect, useState } from "react";
 import {
   ArrayField,
   ArrayInput,
-  Create,
   ChipField,
+  Create,
   Datagrid,
   DisabledInput,
   Edit,
@@ -85,9 +85,7 @@ const UserGroupsDisplay = ({ record, style }) => (
     {_.isArrayLike(record.userGroups) &&
       record.userGroups
         .filter(ug => ug && !ug.voided)
-        .map(userGroup => (
-          <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />
-        ))}
+        .map(userGroup => <Chip style={{ margin: "0.2em" }} label={userGroup.groupName} key={userGroup.groupName} />)}
   </div>
 );
 
@@ -110,13 +108,7 @@ export const UserList = ({ ...props }) => {
       <Datagrid rowClick="show">
         <TextField label="Login ID" source="username" />
         <TextField source="name" label="Name of the Person" />
-        <ReferenceField
-          label="Catchment"
-          source="catchmentId"
-          reference="catchment"
-          linkType="show"
-          allowEmpty
-        >
+        <ReferenceField label="Catchment" source="catchmentId" reference="catchment" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
         <TextField source="email" label="Email Address" />
@@ -124,13 +116,7 @@ export const UserList = ({ ...props }) => {
         <UserGroupsDisplay style={{ maxWidth: "40em" }} label="User Groups" />
         <FunctionField
           label="Status"
-          render={user =>
-            user.voided === true
-              ? "Deleted"
-              : user.disabledInCognito === true
-              ? "Disabled"
-              : "Active"
-          }
+          render={user => (user.voided === true ? "Deleted" : user.disabledInCognito === true ? "Disabled" : "Active")}
         />
       </Datagrid>
     </List>
@@ -145,12 +131,7 @@ const CustomShowActions = ({ hasEditUserPrivilege, basePath, data, resource }) =
           <Fragment>
             <EditButton label="Edit User" basePath={basePath} record={data} />
             <ResetPasswordButton basePath={basePath} record={data} resource={resource} />
-            <EnableDisableButton
-              disabled={data.disabledInCognito}
-              basePath={basePath}
-              record={data}
-              resource={resource}
-            />
+            <EnableDisableButton disabled={data.disabledInCognito} basePath={basePath} record={data} resource={resource} />
           </Fragment>
         )}
       </CardActions>
@@ -169,9 +150,7 @@ const formatLang = lang =>
 
 const SubjectTypeSyncAttributeShow = ({ subjectType, syncConceptValueMap, ...props }) => (
   <div style={{ marginTop: 8, padding: 10, border: "3px solid rgba(0, 0, 0, 0.05)" }}>
-    <Typography gutterBottom variant={"subtitle1"}>{`Sync settings for Subject Type: ${
-      subjectType.name
-    }`}</Typography>
+    <Typography gutterBottom variant={"subtitle1"}>{`Sync settings for Subject Type: ${subjectType.name}`}</Typography>
     {subjectType.syncAttribute1 && (
       <ConceptSyncAttributeShow
         subjectType={subjectType}
@@ -191,27 +170,16 @@ const SubjectTypeSyncAttributeShow = ({ subjectType, syncConceptValueMap, ...pro
   </div>
 );
 
-const ConceptSyncAttributeShow = ({
-  subjectType,
-  syncConceptValueMap,
-  syncAttributeName,
-  ...props
-}) => {
+const ConceptSyncAttributeShow = ({ subjectType, syncConceptValueMap, syncAttributeName, ...props }) => {
   const syncSettings = get(props.record, ["syncSettings", subjectType.name], {});
   const conceptUUID = get(syncSettings, [syncAttributeName]);
   if (isEmpty(conceptUUID)) return null;
 
   return (
     <div>
-      <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>
-        {startCase(syncAttributeName)}
-      </span>
+      <span style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginRight: 10 }}>{startCase(syncAttributeName)}</span>
       {map(get(syncSettings, `${syncAttributeName}Values`, []), value => (
-        <Chip
-          style={{ margin: "0.2em" }}
-          label={syncConceptValueMap.get(value) || value}
-          key={value}
-        />
+        <Chip style={{ margin: "0.2em" }} label={syncConceptValueMap.get(value) || value} key={value} />
       ))}
     </div>
   );
@@ -222,23 +190,13 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
   fetchSyncAttributeData(setSyncAttributesData);
 
   return (
-    <Show
-      title={<UserTitle />}
-      actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} user={user} />}
-      {...props}
-    >
+    <Show title={<UserTitle />} actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} user={user} />} {...props}>
       <SimpleShowLayout>
         <TextField source="username" label="Login ID (username)" />
         <TextField source="name" label="Name of the Person" />
         <TextField source="email" label="Email Address" />
         <TextField source="phoneNumber" label="Phone Number" />
-        <ReferenceField
-          label="Catchment"
-          source="catchmentId"
-          reference="catchment"
-          linkType="show"
-          allowEmpty
-        >
+        <ReferenceField label="Catchment" source="catchmentId" reference="catchment" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
         <ArrayField style={{ maxWidth: "20em" }} label="User Groups" source="userGroupNames">
@@ -248,11 +206,13 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
             </StringToLabelObject>
           </SingleFieldList>
         </ArrayField>
-        <FunctionField
-          label="Operating Scope"
-          render={user => formatOperatingScope(user.operatingIndividualScope)}
-        />
+        <FunctionField label="Operating Scope" render={user => formatOperatingScope(user.operatingIndividualScope)} />
         <LineBreak />
+        <h4>Sync Settings</h4>
+        <FunctionField
+          label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
+          render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
+        />
         {map(syncAttributesData.subjectTypes, st => (
           <SubjectTypeSyncAttributeShow
             subjectType={st}
@@ -260,53 +220,32 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
             syncConceptValueMap={syncAttributesData.syncConceptValueMap}
           />
         ))}
-        <FunctionField
-          label="Preferred Language"
-          render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")}
-        />
-        <FunctionField
-          label="Date Picker Mode"
-          render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")}
-        />
-        <FunctionField
-          label="Time Picker Mode"
-          render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")}
-        />
+        <FunctionField label="Preferred Language" render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")} />
+        <FunctionField label="Date Picker Mode" render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")} />
+        <FunctionField label="Time Picker Mode" render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")} />
         <FunctionField
           label="Track Location"
-          render={user =>
-            !isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : ""
-          }
+          render={user => (!isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : "")}
         />
         <FunctionField
           label="Beneficiary Mode"
-          render={user =>
-            !isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : ""
-          }
+          render={user => (!isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : "")}
         />
         <FunctionField
           label="Disable dashboard auto refresh"
-          render={user =>
-            !isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : ""
-          }
+          render={user => (!isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : "")}
         />
         <FunctionField
           label="Disable auto sync"
-          render={user =>
-            !isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : ""
-          }
+          render={user => (!isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : "")}
         />
         <FunctionField
           label="Register + Enrol"
-          render={user =>
-            !isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : ""
-          }
+          render={user => (!isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : "")}
         />
         <FunctionField
           label="Enable Call Masking"
-          render={user =>
-            !isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : ""
-          }
+          render={user => (!isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : "")}
         />
         <TextField label="Identifier prefix" source="settings.idPrefix" />
         <FunctionField label="Created" render={audit => createdAudit(audit)} />
@@ -328,23 +267,9 @@ This might take time depending on the data.`;
 
 const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
   <div style={{ marginTop: 8, padding: 10, border: "3px solid rgba(0, 0, 0, 0.05)" }}>
-    <Typography gutterBottom variant={"h6"}>{`Sync settings for Subject Type: ${
-      subjectType.name
-    }`}</Typography>
-    {subjectType.syncAttribute1 && (
-      <ConceptSyncAttribute
-        subjectType={subjectType}
-        syncAttributeName={"syncAttribute1"}
-        {...props}
-      />
-    )}
-    {subjectType.syncAttribute2 && (
-      <ConceptSyncAttribute
-        subjectType={subjectType}
-        syncAttributeName={"syncAttribute2"}
-        {...props}
-      />
-    )}
+    <Typography gutterBottom variant={"h6"}>{`Sync settings for Subject Type: ${subjectType.name}`}</Typography>
+    {subjectType.syncAttribute1 && <ConceptSyncAttribute subjectType={subjectType} syncAttributeName={"syncAttribute1"} {...props} />}
+    {subjectType.syncAttribute2 && <ConceptSyncAttribute subjectType={subjectType} syncAttributeName={"syncAttribute2"} {...props} />}
   </div>
 );
 
@@ -352,26 +277,16 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
   return (
     <FormDataConsumer>
       {({ formData, dispatch }) => {
-        const syncAttributeConceptUUID = get(
-          formData,
-          `syncSettings.${[subjectType.name]}.${syncAttributeName}`
-        );
+        const syncAttributeConceptUUID = get(formData, `syncSettings.${[subjectType.name]}.${syncAttributeName}`);
         const syncAttributeConcept = subjectType[syncAttributeName];
-        const selectedValue = get(
-          formData,
-          `syncSettings.${[subjectType.name]}.${syncAttributeName}`
-        );
+        const selectedValue = get(formData, `syncSettings.${[subjectType.name]}.${syncAttributeName}`);
         const defaultValue = selectedValue ? { defaultValue: selectedValue } : {};
 
         const [answerConcepts, setAnswerConcepts] = useState([]);
-        const syncAttributeValuesFieldName = `syncSettings.${[
-          subjectType.name
-        ]}.${syncAttributeName}Values`;
+        const syncAttributeValuesFieldName = `syncSettings.${[subjectType.name]}.${syncAttributeName}Values`;
 
         const selectedSyncAttributeValueIds = get(formData, syncAttributeValuesFieldName);
-        const selectedAnswerConcepts = filter(answerConcepts, x =>
-          some(selectedSyncAttributeValueIds, y => x.id === y)
-        );
+        const selectedAnswerConcepts = filter(answerConcepts, x => some(selectedSyncAttributeValueIds, y => x.id === y));
 
         useEffect(() => {
           if (isEmpty(syncAttributeConceptUUID)) setAnswerConcepts([]);
@@ -409,31 +324,16 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
                       options={answerConcepts.map(ReactSelectHelper.toReactSelectItem)}
                       style={{ width: "auto" }}
                       onChange={event => {
-                        const selectedValues = ReactSelectHelper.getCurrentValues(event).map(
-                          x => x.id
-                        );
-                        dispatch(
-                          change(REDUX_FORM_NAME, syncAttributeValuesFieldName, selectedValues)
-                        );
+                        const selectedValues = ReactSelectHelper.getCurrentValues(event).map(x => x.id);
+                        dispatch(change(REDUX_FORM_NAME, syncAttributeValuesFieldName, selectedValues));
                       }}
                     />
                   ) : (
                     <Fragment>
-                      <div
-                        style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginTop: "5px" }}
-                      >
-                        {"Values to sync"}
-                      </div>
-                      <ArrayInput
-                        source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`}
-                        label={""}
-                        resettable
-                      >
+                      <div style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginTop: "5px" }}>{"Values to sync"}</div>
+                      <ArrayInput source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`} label={""} resettable>
                         <SimpleFormIterator>
-                          <TextInput
-                            label={`${startCase(syncAttributeName)} Value`}
-                            validate={isRequired}
-                          />
+                          <TextInput label={`${startCase(syncAttributeName)} Value`} validate={isRequired} />
                         </SimpleFormIterator>
                       </ArrayInput>
                     </Fragment>
@@ -454,14 +354,8 @@ const getSyncConceptValueMap = async sortedSubjectTypes => {
   const syncConceptValueMap = new Map();
   const codedConceptUUIDSet = new Set();
   sortedSubjectTypes.forEach(subject => {
-    const syncAttribute1UUID =
-      subject.syncAttribute1 &&
-      subject.syncAttribute1.dataType === "Coded" &&
-      subject.syncAttribute1.id;
-    const syncAttribute2UUID =
-      subject.syncAttribute2 &&
-      subject.syncAttribute2.dataType === "Coded" &&
-      subject.syncAttribute2.id;
+    const syncAttribute1UUID = subject.syncAttribute1 && subject.syncAttribute1.dataType === "Coded" && subject.syncAttribute1.id;
+    const syncAttribute2UUID = subject.syncAttribute2 && subject.syncAttribute2.dataType === "Coded" && subject.syncAttribute2.id;
     syncAttribute1UUID && codedConceptUUIDSet.add(syncAttribute1UUID);
     syncAttribute2UUID && codedConceptUUIDSet.add(syncAttribute2UUID);
   });
@@ -479,11 +373,7 @@ function fetchSyncAttributeData(setSyncAttributesData) {
   useEffect(() => {
     let isMounted = true;
     http.get("/subjectType/syncAttributesData").then(res => {
-      const {
-        subjectTypes,
-        anySubjectTypeDirectlyAssignable,
-        anySubjectTypeSyncByLocation
-      } = res.data;
+      const { subjectTypes, anySubjectTypeDirectlyAssignable, anySubjectTypeSyncByLocation } = res.data;
       const sortedSubjectTypes = sortBy(subjectTypes, "id");
 
       getSyncConceptValueMap(sortedSubjectTypes).then(syncConceptValueMap => {
@@ -506,17 +396,13 @@ function fetchSyncAttributeData(setSyncAttributesData) {
 const UserForm = ({ edit, nameSuffix, ...props }) => {
   const [languages, setLanguages] = useState([]);
   const [syncAttributesData, setSyncAttributesData] = useState(initialSyncAttributes);
-  const isSyncSettingsRequired =
-    syncAttributesData.subjectTypes.length > 0 ||
-    syncAttributesData.isAnySubjectTypeDirectlyAssignable;
+  const isSyncSettingsRequired = syncAttributesData.subjectTypes.length > 0 || syncAttributesData.isAnySubjectTypeDirectlyAssignable;
 
   useEffect(() => {
     http.get("/organisationConfig").then(res => {
       const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
         ? [localeChoices[0]]
-        : filter(localeChoices, l =>
-            res.data._embedded.organisationConfig[0].settings.languages.includes(l.id)
-          );
+        : filter(localeChoices, l => res.data._embedded.organisationConfig[0].settings.languages.includes(l.id));
       setLanguages(organisationLocales);
     });
   }, []);
@@ -529,12 +415,7 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
     save
   });
   return (
-    <SimpleForm
-      toolbar={<CustomToolbar />}
-      {...sanitizeProps(props)}
-      redirect="show"
-      validate={validatePasswords}
-    >
+    <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show" validate={validatePasswords}>
       {edit ? (
         <DisabledInput source="username" label="Login ID (username)" />
       ) : (
@@ -547,10 +428,7 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
                   source="ignored"
                   validate={isRequired}
                   label={"Login ID (username)"}
-                  onChange={(e, newVal) =>
-                    !isEmpty(newVal) &&
-                    dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
-                  }
+                  onChange={(e, newVal) => !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))}
                   {...rest}
                   toolTipKey={"ADMIN_USER_USER_NAME"}
                 >
@@ -595,19 +473,8 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
           }}
         </FormDataConsumer>
       )}
-      <AvniTextInput
-        source="name"
-        label="Name of the Person"
-        validate={isRequired}
-        toolTipKey={"ADMIN_USER_NAME"}
-      />
-      <AvniTextInput
-        source="email"
-        label="Email Address"
-        validate={validateEmail}
-        toolTipKey={"ADMIN_USER_EMAIL"}
-        multiline
-      />
+      <AvniTextInput source="name" label="Name of the Person" validate={isRequired} toolTipKey={"ADMIN_USER_NAME"} />
+      <AvniTextInput source="email" label="Email Address" validate={validateEmail} toolTipKey={"ADMIN_USER_EMAIL"} multiline />
 
       <AvniTextInput
         source="phoneNumber"
@@ -631,18 +498,11 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
               reference="catchment"
               label="Which catchment?"
               filterToQuery={searchText => ({ name: searchText })}
-              validate={
-                syncAttributesData.isAnySubjectTypeSyncByLocation &&
-                required("Please select a catchment")
-              }
+              validate={syncAttributesData.isAnySubjectTypeSyncByLocation && required("Please select a catchment")}
               onChange={(e, newVal) => {
                 if (edit) alert(catchmentChangeMessage);
                 dispatch(
-                  change(
-                    REDUX_FORM_NAME,
-                    "operatingIndividualScope",
-                    isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                  )
+                  change(REDUX_FORM_NAME, "operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE)
                 );
               }}
               {...rest}
@@ -659,26 +519,12 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
             User Groups
           </Typography>
         </ToolTipContainer>
-        <ReferenceArrayInput
-          resource="group"
-          reference="group"
-          source="groupIds"
-          filter={{ isNotEveryoneGroup: true }}
-        >
-          <SelectArrayInput
-            style={{ minWidth: "16em" }}
-            label="Associated User Groups"
-            options={{ fullWidth: true }}
-            optionText="name"
-          />
+        <ReferenceArrayInput resource="group" reference="group" source="groupIds" filter={{ isNotEveryoneGroup: true }}>
+          <SelectArrayInput style={{ minWidth: "16em" }} label="Associated User Groups" options={{ fullWidth: true }} optionText="name" />
         </ReferenceArrayInput>
         <LineBreak num={1} />
       </Fragment>
-      <DisabledInput
-        source="operatingIndividualScope"
-        defaultValue={operatingScopes.NONE}
-        style={{ display: "none" }}
-      />
+      <DisabledInput source="operatingIndividualScope" defaultValue={operatingScopes.NONE} style={{ display: "none" }} />
       <Fragment>
         <LineBreak num={1} />
         <ToolTipContainer toolTipKey={"ADMIN_USER_SETTINGS"} alignItems={"center"}>
@@ -687,11 +533,7 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
           </Typography>
         </ToolTipContainer>
         <SelectInput source="settings.locale" label="Preferred Language" choices={languages} />
-        <AvniBooleanInput
-          source="settings.trackLocation"
-          label="Track location"
-          toolTipKey={"ADMIN_USER_SETTINGS_TRACK_LOCATION"}
-        />
+        <AvniBooleanInput source="settings.trackLocation" label="Track location" toolTipKey={"ADMIN_USER_SETTINGS_TRACK_LOCATION"} />
         <AvniBooleanInput
           source="settings.showBeneficiaryMode"
           label="Beneficiary mode"
@@ -707,21 +549,13 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
           label="Disable auto sync"
           toolTipKey={"ADMIN_USER_SETTINGS_DISABLE_AUTO_SYNC"}
         />
-        <AvniBooleanInput
-          source="settings.registerEnrol"
-          label="Register + Enrol"
-          toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"}
-        />
+        <AvniBooleanInput source="settings.registerEnrol" label="Register + Enrol" toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"} />
         <AvniBooleanInput
           source="settings.enableCallMasking"
           label="Enable Call Masking"
           toolTipKey={"ADMIN_USER_SETTINGS_ENABLE_CALL_MASKING"}
         />
-        <AvniTextInput
-          source="settings.idPrefix"
-          label="Identifier prefix"
-          toolTipKey={"ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX"}
-        />
+        <AvniTextInput source="settings.idPrefix" label="Identifier prefix" toolTipKey={"ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX"} />
         <br />
         <AvniRadioButtonGroupInput
           source="settings.datePickerMode"
@@ -744,6 +578,12 @@ const UserForm = ({ edit, nameSuffix, ...props }) => {
                 Sync Settings
               </Typography>
             </ToolTipContainer>
+            <AvniBooleanInput
+              style={{ marginLeft: "10px", marginTop: "10px" }}
+              source="ignoreSyncSettingsInDEA"
+              label="Ignore below listed Sync settings in the Data Entry app"
+              toolTipKey={"IGNORE_SYNC_SETTINGS_IN_DEA"}
+            />
             {map(syncAttributesData.subjectTypes, st => (
               <SubjectTypeSyncAttributes subjectType={st} key={get(st, "name")} {...props} />
             ))}
