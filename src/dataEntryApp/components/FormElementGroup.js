@@ -10,7 +10,6 @@ export const FormElementGroup = ({
   children,
   validationResults,
   filteredFormElements,
-  entity,
   renderChildren,
   addNewQuestionGroup,
   removeQuestionGroup

@@ -120,7 +120,6 @@ const FormWizard = ({
   registrationFlow,
   children,
   filteredFormElements,
-  entity,
   fetchRulesResponse,
   formElementGroup,
   onNext,
@@ -177,7 +176,6 @@ const FormWizard = ({
                 updateObs={updateObs}
                 validationResults={validationResults}
                 filteredFormElements={filteredFormElements}
-                entity={entity}
                 renderChildren={isFirstPage}
                 addNewQuestionGroup={addNewQuestionGroup}
                 removeQuestionGroup={removeQuestionGroup}

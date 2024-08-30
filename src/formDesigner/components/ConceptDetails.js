@@ -86,41 +86,31 @@ function ConceptDetails({ userInfo, ...props }) {
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Low absolute</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.lowAbsolute) ? data.lowAbsolute : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.lowAbsolute) ? data.lowAbsolute : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>High Absolute</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.highAbsolute) ? data.highAbsolute : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.highAbsolute) ? data.highAbsolute : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Low Normal</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.lowNormal) ? data.lowNormal : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.lowNormal) ? data.lowNormal : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>High normal</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.highNormal) ? data.highNormal : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.highNormal) ? data.highNormal : <RemoveIcon />}</span>
               </div>
               <p />
               <div>
                 <FormLabel style={{ fontSize: "13px" }}>Unit</FormLabel>
                 <br />
-                <span style={{ fontSize: "15px" }}>
-                  {!isNil(data.unit) ? data.unit : <RemoveIcon />}
-                </span>
+                <span style={{ fontSize: "15px" }}>{!isNil(data.unit) ? data.unit : <RemoveIcon />}</span>
               </div>
             </>
           )}
@@ -133,28 +123,14 @@ function ConceptDetails({ userInfo, ...props }) {
                   return (
                     !answer.voided && (
                       <div key={index} style={{ width: "100%" }}>
-                        <TextField
-                          id="name"
-                          value={answer.answerConcept.name}
-                          style={{ width: "300px" }}
-                          margin="normal"
-                          disabled={true}
-                        />
+                        <TextField id="name" value={answer.answerConcept.name} style={{ width: "300px" }} margin="normal" disabled={true} />
                         <FormControlLabel
-                          control={
-                            <Checkbox checked={answer.abnormal ? true : false} name="abnormal" />
-                          }
+                          control={<Checkbox checked={!!answer.abnormal} name="abnormal" />}
                           label="abnormal"
                           style={{ marginLeft: "5px" }}
                           disabled={true}
                         />
-                        <FormControlLabel
-                          control={
-                            <Checkbox checked={answer.unique ? true : false} name="unique" />
-                          }
-                          label="unique"
-                          disabled={true}
-                        />
+                        <FormControlLabel control={<Checkbox checked={!!answer.unique} name="unique" />} label="unique" disabled={true} />
                       </div>
                     )
                   );
@@ -169,10 +145,7 @@ function ConceptDetails({ userInfo, ...props }) {
                 <FormLabel style={{ fontSize: "13px" }}>Within Catchment</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value ===
-                  true
-                    ? "Yes"
-                    : "No"}
+                  {data.keyValues.find(keyValue => keyValue.key === "isWithinCatchment").value === true ? "Yes" : "No"}
                 </span>
               </div>
               <p />
@@ -182,14 +155,9 @@ function ConceptDetails({ userInfo, ...props }) {
                 <span style={{ fontSize: "15px" }}>
                   {addressLevelTypes
                     .filter(addressLevelType =>
-                      data.keyValues
-                        .find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs")
-                        .value.includes(addressLevelType.value)
+                      data.keyValues.find(keyValue => keyValue.key === "lowestAddressLevelTypeUUIDs").value.includes(addressLevelType.value)
                     )
-                    .map(
-                      (addressLevelType, index, array) =>
-                        addressLevelType.label + (index === array.length - 1 ? "" : ", ")
-                    )}
+                    .map((addressLevelType, index, array) => addressLevelType.label + (index === array.length - 1 ? "" : ", "))}
                 </span>
               </div>
               <p />
@@ -197,14 +165,10 @@ function ConceptDetails({ userInfo, ...props }) {
                 <FormLabel style={{ fontSize: "13px" }}>Highest Location Level</FormLabel>
                 <br />
                 <span style={{ fontSize: "15px" }}>
-                  {data.keyValues.find(
-                    keyValue => keyValue.key === "highestAddressLevelTypeUUID"
-                  ) !== undefined ? (
+                  {data.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID") !== undefined ? (
                     addressLevelTypes.find(
                       addressLevelType =>
-                        data.keyValues.find(
-                          keyValue => keyValue.key === "highestAddressLevelTypeUUID"
-                        ).value === addressLevelType.value
+                        data.keyValues.find(keyValue => keyValue.key === "highestAddressLevelTypeUUID").value === addressLevelType.value
                     ).label
                   ) : (
                     <RemoveIcon />
@@ -221,9 +185,7 @@ function ConceptDetails({ userInfo, ...props }) {
                 <span style={{ fontSize: "15px" }}>
                   {
                     subjectTypeOptions.find(
-                      subjectType =>
-                        data.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID")
-                          .value === subjectType.uuid
+                      subjectType => data.keyValues.find(keyValue => keyValue.key === "subjectTypeUUID").value === subjectType.uuid
                     ).name
                   }
                 </span>
@@ -235,6 +197,7 @@ function ConceptDetails({ userInfo, ...props }) {
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Key values</FormLabel>
             <br />
+            <br />
             {data.keyValues &&
               data.keyValues.map((keyValue, index) => {
                 return (
@@ -244,6 +207,7 @@ function ConceptDetails({ userInfo, ...props }) {
                       label="Key"
                       variant="outlined"
                       disabled={true}
+                      style={{ width: "350px" }}
                       value={keyValue.key}
                     />
                     <TextField
@@ -252,7 +216,7 @@ function ConceptDetails({ userInfo, ...props }) {
                       variant="outlined"
                       value={keyValue.value}
                       disabled={true}
-                      style={{ marginLeft: "10px" }}
+                      style={{ marginLeft: "10px", width: "350px" }}
                     />
                     <p />
                   </div>
@@ -268,9 +232,7 @@ function ConceptDetails({ userInfo, ...props }) {
               <>
                 <FormLabel style={{ fontSize: "13px" }}>Used in forms</FormLabel>
                 <br />
-                {isEmpty(usage.forms) && (
-                  <span style={{ fontSize: "15px" }}>Not used in the form.</span>
-                )}
+                {isEmpty(usage.forms) && <span style={{ fontSize: "15px" }}>Not used in the form.</span>}
 
                 {usage.forms && (
                   <ul>
@@ -292,9 +254,7 @@ function ConceptDetails({ userInfo, ...props }) {
 
             <FormLabel style={{ fontSize: "13px" }}>Answer to</FormLabel>
             <br />
-            {isEmpty(usage.concepts) && (
-              <span style={{ fontSize: "15px" }}>Not used in any answer.</span>
-            )}
+            {isEmpty(usage.concepts) && <span style={{ fontSize: "15px" }}>Not used in any answer.</span>}
             {usage.concepts && (
               <ul>
                 {usage.concepts.map(concept => {

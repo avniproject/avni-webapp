@@ -23,9 +23,14 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
   const orgConfig = useSelector(selectOrganisationConfig);
 
   const lowestAddressLevelTypeUUIDs = concept.recordValueByKey(Concept.keys.lowestAddressLevelTypeUUIDs);
+  const highestAddressLevelTypeUUID = concept.recordValueByKey(Concept.keys.highestAddressLevelTypeUUID);
 
-  const addressLevelTypes = filter(useSelector(selectAllAddressLevelTypes), alt => includes(lowestAddressLevelTypeUUIDs, alt.uuid));
-  const [level, setLevel] = React.useState(head(addressLevelTypes));
+  const allAddressLevelTypes = useSelector(selectAllAddressLevelTypes);
+  const applicableAddressLevelTypes = filter(
+    allAddressLevelTypes,
+    alt => includes(lowestAddressLevelTypeUUIDs, alt.uuid) || alt.uuid === highestAddressLevelTypeUUID
+  );
+  const [level, setLevel] = React.useState(head(applicableAddressLevelTypes));
   const locationUUID = isNil(observation) ? null : observation.getReadableValue();
   const [location, setLocation] = React.useState();
 
@@ -35,7 +40,7 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
         if (response.status === 200) {
           const location = response.data;
           setLocation(location);
-          const currentLevel = addressLevelTypes.find(alt => alt.name === location.type);
+          const currentLevel = applicableAddressLevelTypes.find(alt => alt.name === location.type);
           setLevel(currentLevel);
           addressLevelService.addAddressLevel(location);
         } else {
@@ -49,7 +54,7 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
     <React.Fragment>
       <RadioButtonsGroup
         label={`${t(name)}${mandatory ? "*" : ""}`}
-        items={addressLevelTypes.map(a => ({ id: a.id, name: a.name, level: a.level }))}
+        items={applicableAddressLevelTypes.map(a => ({ id: a.id, name: a.name, level: a.level }))}
         value={level.id}
         onChange={setLevel}
       />
