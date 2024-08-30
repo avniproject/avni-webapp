@@ -184,6 +184,12 @@ class WebReportCard extends ReportCard {
     return true;
   }
 
+  static getShortDisplayName(reportCard) {
+    return reportCard.standardReportCardType
+      ? `${reportCard.name} (StandardType: ${reportCard.standardReportCardType.name})`
+      : reportCard.name;
+  }
+
   toResource() {
     return {
       id: this.id,

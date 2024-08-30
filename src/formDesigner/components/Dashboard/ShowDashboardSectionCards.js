@@ -3,6 +3,7 @@ import { List, ListItem, ListItemText } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import { isEmpty, map, orderBy } from "lodash";
 import Grid from "@material-ui/core/Grid";
+import WebReportCard from "../../../common/model/WebReportCard";
 
 const ShowDashboardSectionCards = ({ cards }) => {
   return (
@@ -15,7 +16,7 @@ const ShowDashboardSectionCards = ({ cards }) => {
                 <Grid container direction={"column"}>
                   <Grid item>
                     <ListItem>
-                      <ListItemText primary={card.name} secondary={card.description} />
+                      <ListItemText primary={WebReportCard.getShortDisplayName(card)} secondary={card.description} />
                     </ListItem>
                   </Grid>
                 </Grid>
