@@ -270,6 +270,18 @@ const SubjectTypeSyncAttributes = ({ subjectType, ...props }) => (
   </div>
 );
 
+//workaround for the bug https://github.com/marmelab/react-admin/issues/3249
+//workaround source: https://github.com/marmelab/react-admin/pull/4394#issue-560679684
+//TODO: this should be removed after react-admin upgrade
+export const SimpleFormIteratorWithUndefinedDefault = props => {
+  const originPush = props.fields.push;
+  props.fields.push = data => {
+    originPush(JSON.stringify(data) === "{}" ? undefined : data);
+  };
+
+  return <SimpleFormIterator {...props} />;
+};
+
 const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }) => {
   return (
     <FormDataConsumer>
@@ -329,9 +341,9 @@ const ConceptSyncAttribute = ({ subjectType, syncAttributeName, edit, ...props }
                     <Fragment>
                       <div style={{ color: "rgba(0, 0, 0, 0.54)", fontSize: "12px", marginTop: "5px" }}>{"Values to sync"}</div>
                       <ArrayInput source={`syncSettings.${[subjectType.name]}.${syncAttributeName}Values`} label={""} resettable>
-                        <SimpleFormIterator>
+                        <SimpleFormIteratorWithUndefinedDefault>
                           <TextInput label={`${startCase(syncAttributeName)} Value`} validate={isRequired} />
-                        </SimpleFormIterator>
+                        </SimpleFormIteratorWithUndefinedDefault>
                       </ArrayInput>
                     </Fragment>
                   )
