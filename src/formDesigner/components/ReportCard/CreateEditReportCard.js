@@ -231,9 +231,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             }}
             style={{ width: "250px" }}
             required
-            options={sortBy(standardReportCardTypes, ["name"]).map((type, index) => (
+            options={sortBy(standardReportCardTypes, ["description"]).map((type, index) => (
               <MenuItem value={type.name} key={index}>
-                {type.name}
+                {type.description}
               </MenuItem>
             ))}
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}

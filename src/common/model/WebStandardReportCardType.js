@@ -16,6 +16,7 @@ class WebStandardReportCardType extends StandardReportCardType {
     webStandardReportCardType.name = resource.name;
     webStandardReportCardType.description = resource.description;
     webStandardReportCardType.voided = resource.voided;
+    webStandardReportCardType.type = resource.type;
     return webStandardReportCardType;
   }
 }

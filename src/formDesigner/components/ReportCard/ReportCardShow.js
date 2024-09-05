@@ -58,12 +58,12 @@ function RenderCard({ reportCard }) {
       </div>
       <p />
       {reportCard.isStandardReportType() && (
-        <ShowLabelValue label={"Standard Report Card Type"} value={reportCard.standardReportCardType.name} />
+        <ShowLabelValue label={"Standard Report Card Type"} value={reportCard.standardReportCardType.description} />
       )}
       <p />
       {reportCard.isStandardReportType() && reportCard.isRecentType() && !_.isNil(reportCard.standardReportCardInputRecentDuration) && (
         <ShowLabelValue
-          label={`${reportCard.standardReportCardType.name} in the last`}
+          label={`${reportCard.standardReportCardType.description} in the last`}
           value={`${reportCard.standardReportCardInputRecentDuration.value} ${reportCard.standardReportCardInputRecentDuration.unit}`}
         />
       )}
