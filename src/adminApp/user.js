@@ -210,6 +210,11 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
         </ArrayField>
         <FunctionField label="Operating Scope" render={user => formatOperatingScope(user.operatingIndividualScope)} />
         <LineBreak />
+        <h4>Sync Settings</h4>
+        <FunctionField
+          label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
+          render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
+        />
         {map(syncAttributesData.subjectTypes, st => (
           <SubjectTypeSyncAttributeShow
             subjectType={st}
@@ -572,6 +577,12 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
                 Sync Settings
               </Typography>
             </ToolTipContainer>
+            <AvniBooleanInput
+              style={{ marginLeft: "10px", marginTop: "10px" }}
+              source="ignoreSyncSettingsInDEA"
+              label="Ignore below listed Sync settings in the Data Entry app"
+              toolTipKey={"IGNORE_SYNC_SETTINGS_IN_DEA"}
+            />
             {map(syncAttributesData.subjectTypes, st => (
               <SubjectTypeSyncAttributes subjectType={st} key={get(st, "name")} {...props} />
             ))}

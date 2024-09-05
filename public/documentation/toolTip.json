@@ -196,5 +196,6 @@
   "ENABLE_MESSAGING_BUTTON": "Enable messaging through WhatsApp. Requires a Glific account",
   "APP_DESIGNER_MESSAGE_RULE_NAME": "Name",
   "APP_DESIGNER_SELECT_MESSAGE_TEMPLATE": "Choose the message template",
-  "APP_DESIGNER_SELECT_RECEIVER_TYPE": "Choose the receiver type"
+  "APP_DESIGNER_SELECT_RECEIVER_TYPE": "Choose the receiver type",
+  "IGNORE_SYNC_SETTINGS_IN_DEA": "Ignore the SubjectType sync settings restrictions in the Data Entry app."
 }
