@@ -14,10 +14,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+// temp fix to ensure there is no crash. don't merge this.
+function getFileName(obsValue) {
+  if (isNil(obsValue)) {
+    return "";
+  } else if (Array.isArray(obsValue)) {
+    return obsValue.length > 0 ? obsValue[0] : "";
+  }
+  return obsValue;
+}
+
 export const FilePreview = ({ url, obsValue }) => {
   const classes = useStyles();
   const getDisplayFileName = () => {
-    const fileName = isNil(obsValue) ? "" : obsValue;
+    const fileName = getFileName(obsValue);
     const originalName = get(fileName.trim().match(/[0-9A-Fa-f-]{36}\.\w+$/), 0);
     const nameLength = size(originalName);
     const MAX_CHAR_ALLOWED = 12;
