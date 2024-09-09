@@ -241,7 +241,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         )}
         {isStandardReportCard && card.isRecentType() && (
           <ValueTextUnitSelect
-            label={`${card.standardReportCardType.name} in the last*`}
+            label={`${card.standardReportCardType.description} in the last*`}
             value={get(card, "standardReportCardInputRecentDuration.value")}
             unit={get(card, "standardReportCardInputRecentDuration.unit")}
             units={StandardReportCardType.recentCardDurationUnits.map((unit, index) => (
