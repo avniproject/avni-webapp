@@ -40,7 +40,7 @@ const MetadataDiff = () => {
 
     Object.keys(data).forEach(formName => {
       const formData = data[formName];
-      if (!hasNoModification(formData) && formName !== "formMapping.json") {
+      if (!hasNoModification(formData) && formName !== "formMappings.json") {
         filteredData[formName] = formData;
       }
     });
