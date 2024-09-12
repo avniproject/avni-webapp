@@ -23,6 +23,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
+import MetadataDiff from "./MetadataDiff";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -31,6 +32,15 @@ const useStyles = makeStyles(theme => ({
   },
   uploadDownloadSection: {
     padding: theme.spacing(2)
+  },
+  reviewButton: {
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    backgroundColor: "#2196F3",
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#1976D2"
+    }
   }
 }));
 
@@ -43,6 +53,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [mode, setMode] = React.useState("CREATE");
   const [hierarchy, setHierarchy] = React.useState();
   const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
+  const [reviewMode, setReviewMode] = React.useState(false);
 
   const selectFile = (content, userfile) => setFile(userfile);
   const getUploadTypeCode = name =>
@@ -103,6 +114,14 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     (uploadType === "Locations" && isEmpty(mode)) ||
     (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
 
+  const handleReviewClick = () => {
+    setReviewMode(true);
+  };
+
+  if (reviewMode) {
+    return <MetadataDiff />;
+  }
+
   return (
     <Grid container spacing={2} className={classes.root}>
       <Title title={"Upload"} />
@@ -123,6 +142,13 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     </Button>
                   </Tooltip>
                 </Grid>
+                {uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
+                  <Grid item>
+                    <Button className={classes.reviewButton} onClick={handleReviewClick}>
+                      Review
+                    </Button>
+                  </Grid>
+                )}
                 <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <Grid item>
                     <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />
