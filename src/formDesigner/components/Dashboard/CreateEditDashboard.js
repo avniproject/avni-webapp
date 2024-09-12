@@ -23,9 +23,8 @@ import DashboardService from "../../../common/service/DashboardService";
 import OperationalModules from "../../../common/model/OperationalModules";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
 
-const initialState = WebDashboard.createNew();
 const CreateEditDashboard = ({ edit, history, operationalModules, getOperationalModules, ...props }) => {
-  const [dashboard, dispatch] = React.useReducer(DashboardReducer, initialState);
+  const [dashboard, dispatch] = React.useReducer(DashboardReducer, WebDashboard.createNew());
   const [error, setError] = React.useState([]);
   const [id, setId] = React.useState();
   const [redirectAfterDelete, setRedirectAfterDelete] = React.useState(false);
