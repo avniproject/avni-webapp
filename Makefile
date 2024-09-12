@@ -20,6 +20,10 @@ start-with-prerelease:
 start-with-prod:
 	yarn start-with-prod
 
+start-with-rwb-prod:
+	cp env_templates/.env.prod.local.template .env.development.local
+	yarn start-with-rwb-prod
+
 storybook:
 	yarn storybook
 
