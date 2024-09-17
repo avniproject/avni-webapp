@@ -16,7 +16,10 @@ const ShowDashboardSectionCards = ({ cards }) => {
                 <Grid container direction={"column"}>
                   <Grid item>
                     <ListItem>
-                      <ListItemText primary={WebReportCard.getShortDisplayName(card)} secondary={card.description} />
+                      <ListItemText
+                        primary={card.name}
+                        secondary={`(${WebReportCard.getStandardReportCardTypeName(card)}) ${card.description}`}
+                      />
                     </ListItem>
                   </Grid>
                 </Grid>

@@ -59,6 +59,10 @@ class WebReportCard extends ReportCard {
     return this.toEntity("standardReportCardType", WebStandardReportCardType);
   }
 
+  static getStandardReportCardTypeName(card) {
+    return card.standardReportCardType ? card.standardReportCardType.name : "";
+  }
+
   set standardReportCardType(x) {
     this.that.standardReportCardType = this.fromObject(x);
   }
@@ -173,10 +177,10 @@ class WebReportCard extends ReportCard {
   }
 
   static supportsFilter(card, filter) {
-    const { PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist } = StandardReportCardType.type;
+    const { PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist } = StandardReportCardType.types;
     const { Address } = CustomFilter.type;
     const dontSupportAllFilters = [PendingApproval, Approved, Rejected, CallTasks, OpenSubjectTasks, Comments, DueChecklist].includes(
-      _.get(card, "standardReportCardType.name")
+      _.get(card, "standardReportCardType.type")
     );
     if (dontSupportAllFilters && ![Address].includes(filter.filterConfig.type)) {
       return false;

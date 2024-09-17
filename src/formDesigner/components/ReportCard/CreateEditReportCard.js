@@ -231,9 +231,9 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             }}
             style={{ width: "250px" }}
             required
-            options={sortBy(standardReportCardTypes, ["name"]).map((type, index) => (
+            options={sortBy(standardReportCardTypes, ["description"]).map((type, index) => (
               <MenuItem value={type.name} key={index}>
-                {type.name}
+                {type.description}
               </MenuItem>
             ))}
             toolTipKey={"APP_DESIGNER_CARD_IS_STANDARD_TYPE"}
@@ -241,7 +241,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         )}
         {isStandardReportCard && card.isRecentType() && (
           <ValueTextUnitSelect
-            label={`${card.standardReportCardType.name} in the last*`}
+            label={`${card.standardReportCardType.description} in the last*`}
             value={get(card, "standardReportCardInputRecentDuration.value")}
             unit={get(card, "standardReportCardInputRecentDuration.unit")}
             units={StandardReportCardType.recentCardDurationUnits.map((unit, index) => (

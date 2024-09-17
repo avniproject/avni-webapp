@@ -16,7 +16,7 @@ const columns = [
   },
   {
     title: "Description",
-    render: rowData => rowData.description
+    render: rowData => _.truncate(rowData.description, 30)
   },
   {
     title: "Colour",
