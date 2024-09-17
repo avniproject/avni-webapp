@@ -59,6 +59,10 @@ class WebReportCard extends ReportCard {
     return this.toEntity("standardReportCardType", WebStandardReportCardType);
   }
 
+  static getStandardReportCardTypeName(card) {
+    return card.standardReportCardType ? card.standardReportCardType.name : "";
+  }
+
   set standardReportCardType(x) {
     this.that.standardReportCardType = this.fromObject(x);
   }
