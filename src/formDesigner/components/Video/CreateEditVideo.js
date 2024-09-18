@@ -3,7 +3,7 @@ import { DocumentationContainer } from "../../../common/components/Documentation
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import { get, isEmpty, isNil } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { AvniTextField } from "../../../common/components/AvniTextField";
 import { VideoReducer } from "./VideoReducer";
 import { Redirect } from "react-router-dom";
@@ -12,7 +12,7 @@ import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { getErrorByKey } from "../../common/ErrorUtil";
+import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 
 const initialState = { title: "", fileName: "", duration: "", description: "" };
 export const CreateEditVideo = ({ edit, ...props }) => {
@@ -35,10 +35,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
   const validateRequest = () => {
     const { title, fileName } = video;
     if (isEmpty(title) && isEmpty(fileName)) {
-      setError([
-        { key: "EMPTY_FILE_NAME", message: "Filename cannot be empty" },
-        { key: "EMPTY_TITLE", message: "Title cannot be empty" }
-      ]);
+      setError([{ key: "EMPTY_FILE_NAME", message: "Filename cannot be empty" }, { key: "EMPTY_TITLE", message: "Title cannot be empty" }]);
     } else if (isEmpty(title)) {
       setError([...error, { key: "EMPTY_TITLE", message: "Title cannot be empty" }]);
     } else if (isEmpty(fileName)) {
@@ -58,14 +55,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
           }
         })
         .catch(error => {
-          setError([
-            {
-              key: "SERVER_ERROR",
-              message: `${get(error, "response.data") ||
-                get(error, "message") ||
-                "error while saving video"}`
-            }
-          ]);
+          setError([createServerError(error, "error while saving video")]);
         });
     }
   };

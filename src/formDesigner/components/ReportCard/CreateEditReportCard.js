@@ -19,7 +19,7 @@ import { AvniSelect } from "../../../common/components/AvniSelect";
 import { AvniSwitch } from "../../../common/components/AvniSwitch";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
 import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
-import { getErrorByKey } from "../../common/ErrorUtil";
+import { createServerError, getErrorByKey, getServerError, hasServerError, removeServerError } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
 import WebReportCard from "../../../common/model/WebReportCard";
@@ -27,6 +27,7 @@ import DashboardService from "../../../common/service/DashboardService";
 import FormMetaDataSelect from "../../../common/components/FormMetaDataSelect";
 import { StandardReportCardType } from "openchs-models";
 import { ValueTextUnitSelect } from "../../../common/components/ValueTextUnitSelect";
+import CustomizedSnackbar from "../CustomizedSnackbar";
 
 export const CreateEditReportCard = ({ edit, ...props }) => {
   const [card, dispatch] = React.useReducer(ReportCardReducer, WebReportCard.createNewReportCard());
@@ -94,12 +95,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           }
         })
         .catch(error => {
-          setError([
-            {
-              key: "SERVER_ERROR",
-              message: `${get(error, "response.data") || get(error, "message") || "error while saving card"}`
-            }
-          ]);
+          setError([createServerError(error, "error while saving card")]);
         });
     }
   };
@@ -288,8 +284,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
         <p />
         {getErrorByKey(error, "EMPTY_QUERY")}
         <p />
-        {getErrorByKey(error, "SERVER_ERROR")}
-        <p />
         {getErrorByKey(error, "DISALLOWED_NESTED")}
         <p />
         {getErrorByKey(error, "INVALID_NESTED_CARD_COUNT")}
@@ -306,6 +300,15 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
             )}
           </Grid>
         </Grid>
+        {hasServerError(error) && (
+          <CustomizedSnackbar
+            message={getServerError(error).message}
+            getDefaultSnackbarStatus={() => setError(removeServerError(error))}
+            defaultSnackbarStatus={true}
+            autoHideDuration={3000}
+            variant={"error"}
+          />
+        )}
         {!isNil(id) && <Redirect to={`/appDesigner/reportCard/${id}/show`} />}
         {redirectAfterDelete && <Redirect to="/appDesigner/reportCard" />}
       </DocumentationContainer>

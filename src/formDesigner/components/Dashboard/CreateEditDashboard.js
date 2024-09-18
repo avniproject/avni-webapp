@@ -1,7 +1,7 @@
 import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
-import { get, isEmpty, isNil } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -14,7 +14,7 @@ import { Title } from "react-admin";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Redirect, withRouter } from "react-router-dom";
 import CreateEditDashboardSections from "./CreateEditDashboardSections";
-import { getErrorByKey } from "../../common/ErrorUtil";
+import { createServerError, getErrorByKey } from "../../common/ErrorUtil";
 import { getOperationalModules } from "../../../reports/reducers";
 import { connect } from "react-redux";
 import ShowDashboardFilters from "./ShowDashboardFilters";
@@ -86,14 +86,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
 
     DashboardService.save(dashboard, edit, props.match.params.id)
       .then(data => setId(data.id))
-      .catch(error =>
-        setError([
-          {
-            key: "SERVER_ERROR",
-            message: `${get(error, "response.data") || get(error, "message") || "error while saving dashboard"}`
-          }
-        ])
-      );
+      .catch(error => setError([createServerError(error, "error while saving dashboard")]));
   };
 
   if (!OperationalModules.isLoaded(operationalModules)) return null;

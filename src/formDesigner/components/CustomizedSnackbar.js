@@ -40,11 +40,16 @@ const useStyles1 = makeStyles(theme => ({
   }
 }));
 
-function MySnackbarContentWrapper(props) {
-  const classes = useStyles1();
-  const { className, message, onClose, variant, ...other } = props;
-  const Icon = variantIcon[variant];
+const textColors = {
+  success: "#fff",
+  warning: "#000",
+  error: "#fff"
+};
 
+function MySnackbarContentWrapper({ className, message, onClose, variant = "success", ...other }) {
+  const classes = useStyles1();
+  const Icon = variantIcon[variant];
+  const textColor = textColors[variant];
   return (
     <SnackbarContent
       className={clsx(classes[variant], className)}
@@ -52,7 +57,7 @@ function MySnackbarContentWrapper(props) {
       message={
         <span id="client-snackbar" className={classes.message}>
           <Icon className={clsx(classes.icon, classes.iconVariant)} />
-          {message}
+          <h5 style={{ color: textColor }}>{message}</h5>
         </span>
       }
       action={[
@@ -72,13 +77,20 @@ MySnackbarContentWrapper.propTypes = {
   variant: PropTypes.oneOf(["success"]).isRequired
 };
 
-export default function CustomizedSnackbar(props) {
+export default function CustomizedSnackbar({
+  getDefaultSnackbarStatus,
+  defaultSnackbarStatus,
+  onExited,
+  variant,
+  message,
+  autoHideDuration = 2000
+}) {
   function handleClose(event, reason) {
     if (reason === "clickaway") {
-      props.getDefaultSnackbarStatus(false);
+      getDefaultSnackbarStatus(false);
       return;
     }
-    props.getDefaultSnackbarStatus(false);
+    getDefaultSnackbarStatus(false);
   }
 
   return (
@@ -88,16 +100,12 @@ export default function CustomizedSnackbar(props) {
           vertical: "bottom",
           horizontal: "center"
         }}
-        open={props.defaultSnackbarStatus}
-        autoHideDuration={2000}
+        open={defaultSnackbarStatus}
+        autoHideDuration={autoHideDuration}
         onClose={handleClose}
-        TransitionProps={{ onExited: props.onExited }}
+        TransitionProps={{ onExited: onExited }}
       >
-        <MySnackbarContentWrapper
-          onClose={handleClose}
-          variant={props.variant || "success"}
-          message={props.message}
-        />
+        <MySnackbarContentWrapper onClose={handleClose} variant={variant} message={message} />
       </Snackbar>
     </div>
   );
