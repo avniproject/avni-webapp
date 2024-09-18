@@ -18,7 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem/MenuItem";
 import { AvniSelect } from "../../../common/components/AvniSelect";
 import { AvniSwitch } from "../../../common/components/AvniSwitch";
 import { AvniImageUpload } from "../../../common/components/AvniImageUpload";
-import { bucketName, uploadImage } from "../../../common/utils/S3Client";
+import { MediaFolder, uploadImage } from "../../../common/utils/S3Client";
 import { getErrorByKey } from "../../common/ErrorUtil";
 import { JSEditor } from "../../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../../common/components/PopoverColorPicker";
@@ -80,7 +80,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
 
   const onSave = async () => {
     if (validateRequest()) {
-      const [s3FileKey, error] = await uploadImage(card.iconFileS3Key, file, bucketName.ICONS);
+      const [s3FileKey, error] = await uploadImage(card.iconFileS3Key, file, MediaFolder.ICONS);
       if (error) {
         alert(error);
         return;

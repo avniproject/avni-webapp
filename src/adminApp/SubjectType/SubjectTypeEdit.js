@@ -16,7 +16,7 @@ import { findRegistrationForm } from "../domain/formMapping";
 import _, { identity } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AdvancedSettings } from "./AdvancedSettings";
-import { bucketName, uploadImage } from "../../common/utils/S3Client";
+import { MediaFolder, uploadImage } from "../../common/utils/S3Client";
 import EditSubjectTypeFields from "./EditSubjectTypeFields";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
@@ -88,7 +88,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
 
     setNameValidation(false);
     if (!groupValidationError) {
-      const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, bucketName.ICONS);
+      const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, MediaFolder.ICONS);
       if (error) {
         alert(error);
         return;

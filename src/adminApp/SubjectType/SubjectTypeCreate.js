@@ -12,7 +12,7 @@ import { useFormMappings, useLocationType } from "./effects";
 import _, { identity } from "lodash";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AdvancedSettings } from "./AdvancedSettings";
-import { bucketName, uploadImage } from "../../common/utils/S3Client";
+import { MediaFolder, uploadImage } from "../../common/utils/S3Client";
 import EditSubjectTypeFields from "./EditSubjectTypeFields";
 import { MessageReducer } from "../../formDesigner/components/MessageRule/MessageReducer";
 import { getMessageTemplates, saveMessageRules } from "../service/MessageService";
@@ -69,11 +69,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
     setNameValidation(false);
 
     if (!groupValidationError) {
-      const [s3FileKey, error] = await uploadImage(
-        subjectType.iconFileS3Key,
-        file,
-        bucketName.ICONS
-      );
+      const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, MediaFolder.ICONS);
       if (error) {
         alert(error);
         return;
@@ -132,12 +128,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
                 <></>
               )}
               <p />
-              <AdvancedSettings
-                subjectType={subjectType}
-                dispatch={dispatch}
-                locationTypes={locationTypes}
-                formMappings={formMappings}
-              />
+              <AdvancedSettings subjectType={subjectType} dispatch={dispatch} locationTypes={locationTypes} formMappings={formMappings} />
               <div />
               {nameValidation && (
                 <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>

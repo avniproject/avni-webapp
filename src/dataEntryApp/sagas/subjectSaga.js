@@ -32,7 +32,7 @@ import Wizard from "dataEntryApp/state/Wizard";
 import { filterFormElements } from "dataEntryApp/services/FormElementService";
 import { selectRegistrationForm, setFilteredFormElements, setInitialSubjectState } from "dataEntryApp/reducers/registrationReducer";
 import identifierAssignmentService from "dataEntryApp/services/IdentifierAssignmentService";
-import { bucketName, uploadImage } from "../../common/utils/S3Client";
+import { MediaFolder, uploadImage } from "../../common/utils/S3Client";
 
 export function* dataEntryLoadRegistrationFormWatcher() {
   yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
@@ -67,7 +67,11 @@ export function* saveSubjectWorker() {
   const identifierAssignments = yield select(selectIdentifierAssignments);
   const profilePictureFile = yield select(selectRegistrationProfilePictureFile);
   const removeProfilePicFile = yield select(selectRegistrationRemoveProfilePicture);
-  const [profilePicKey] = yield call(uploadImage, subject.profilePicture, profilePictureFile, bucketName.PROFILE_PICS);
+  const [profilePicKey, error] = yield call(uploadImage, subject.profilePicture, profilePictureFile, MediaFolder.PROFILE_PICS);
+  if (error) {
+    yield put(saveCompleteFalse(error));
+    return;
+  }
   subject.profilePicture = removeProfilePicFile ? null : profilePicKey;
   let resource = subject.toResource;
   resource.visitSchedules = visitSchedules;
