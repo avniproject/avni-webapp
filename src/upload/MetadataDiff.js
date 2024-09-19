@@ -33,10 +33,6 @@ const MetadataDiff = () => {
     return Object.values(obj).some(value => isNoModification(value));
   };
 
-  const shouldIncludeForm = formName => {
-    return formName !== "SomeExcludedFormName";
-  };
-
   const filterForms = data => {
     const filteredData = Object.keys(data).reduce((acc, formName) => {
       const formData = data[formName];
@@ -47,9 +43,7 @@ const MetadataDiff = () => {
     }, {});
 
     return Object.keys(filteredData).reduce((acc, formName) => {
-      if (shouldIncludeForm(formName)) {
-        acc[formName] = filteredData[formName];
-      }
+      acc[formName] = filteredData[formName];
       return acc;
     }, {});
   };
@@ -225,19 +219,18 @@ const MetadataDiff = () => {
               <FormControl variant="outlined" fullWidth style={{ marginTop: 20 }}>
                 <InputLabel>Select Form or Missing Files</InputLabel>
                 <Select value={selectedForm} onChange={handleFormChange} label="Select Form or Missing Files">
-                  {response["Missing Files in PROD ZIP"] && response["Missing Files in PROD ZIP"].length > 0 && (
-                    <MenuItem value="Missing Files in PROD ZIP">{getDisplayLabel("Missing Files in PROD ZIP")}</MenuItem>
-                  )}
-                  {response["Missing Files in UAT ZIP"] && response["Missing Files in UAT ZIP"].length > 0 && (
-                    <MenuItem value="Missing Files in UAT ZIP">{getDisplayLabel("Missing Files in UAT ZIP")}</MenuItem>
-                  )}
-                  {Object.keys(response)
-                    .filter(key => !["Missing Files in PROD ZIP", "Missing Files in UAT ZIP"].includes(key))
-                    .map(key => (
+                  {Object.entries(response).map(([key, value]) => {
+                    const shouldDisplay =
+                      key === "Missing Files in PROD ZIP" || key === "Missing Files in UAT ZIP"
+                        ? value.length > 0
+                        : !["Missing Files in PROD ZIP", "Missing Files in UAT ZIP"].includes(key);
+
+                    return shouldDisplay ? (
                       <MenuItem key={key} value={key}>
                         {getDisplayLabel(key)}
                       </MenuItem>
-                    ))}
+                    ) : null;
+                  })}
                 </Select>
               </FormControl>
               {selectedForm && response[selectedForm] && <div style={{ marginTop: 20 }}>{renderJsonWithColor(response[selectedForm])}</div>}
