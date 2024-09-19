@@ -16,6 +16,7 @@ const MetadataDiff = () => {
   };
 
   const getDisplayLabel = formKey => formLabels[formKey] || formKey;
+  const isValueChanged = value => value && typeof value === "object" && value.oldValue !== undefined && value.newValue !== undefined;
 
   const handleFileChange = (event, fileNumber) => {
     const file = event.target.files[0];
@@ -26,37 +27,31 @@ const MetadataDiff = () => {
     }
   };
 
+  const isNoModification = obj => {
+    if (typeof obj !== "object" || obj === null) return false;
+    if (obj.changeType === "noModification") return true;
+    return Object.values(obj).some(value => isNoModification(value));
+  };
+
+  const shouldIncludeForm = formName => {
+    return formName !== "SomeExcludedFormName";
+  };
+
   const filterForms = data => {
-    const filteredData = {};
-    const hasNoModification = obj => {
-      if (typeof obj !== "object" || obj === null) return false;
-
-      if (obj.changeType === "noModification") {
-        return true;
-      }
-
-      return Object.values(obj).some(value => hasNoModification(value));
-    };
-
-    Object.keys(data).forEach(formName => {
+    const filteredData = Object.keys(data).reduce((acc, formName) => {
       const formData = data[formName];
-      if (!hasNoModification(formData) && formName !== "formMappings.json") {
-        filteredData[formName] = formData;
+      if (!isNoModification(formData) && formName !== "formMappings.json") {
+        acc[formName] = formData;
       }
-    });
+      return acc;
+    }, {});
 
-    const additionalFilters = formName => {
-      return formName !== "SomeExcludedFormName";
-    };
-
-    const result = {};
-    Object.keys(filteredData).forEach(formName => {
-      if (additionalFilters(formName)) {
-        result[formName] = filteredData[formName];
+    return Object.keys(filteredData).reduce((acc, formName) => {
+      if (shouldIncludeForm(formName)) {
+        acc[formName] = filteredData[formName];
       }
-    });
-
-    return result;
+      return acc;
+    }, {});
   };
 
   const handleSubmit = async () => {
@@ -75,7 +70,6 @@ const MetadataDiff = () => {
 
     try {
       const response = await httpClient.post("/api/compare-metadata", formData);
-
       const filteredData = filterForms(response.data);
       setResponse(filteredData);
       setSelectedForm("");
@@ -106,64 +100,72 @@ const MetadataDiff = () => {
   };
 
   const renderJsonWithColor = (data, indent = 0, parentChangeType = null) => {
-    if (typeof data === "object" && data !== null) {
-      return (
-        <div style={{ marginLeft: indent, fontSize: "18px" }}>
-          {Object.keys(data).map(key => {
-            const value = data[key];
-            const changeType = value && typeof value === "object" && value.changeType ? value.changeType : parentChangeType;
-
-            if (key === "changeType" || key === "dataType") return null;
-
-            if (Array.isArray(value)) {
-              return (
-                <div key={key} style={{ marginBottom: 20 }}>
-                  <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
-                  {value.map((item, index) => (
-                    <div key={index}>{renderJsonWithColor(item, indent + 20, changeType)}</div>
-                  ))}
-                </div>
-              );
-            }
-
-            if (changeType === "modified") {
-              return (
-                <div key={key} style={{ marginBottom: 10 }}>
-                  <strong style={{ color: "orange", fontSize: "18px" }}>{key}:</strong>
-                  {value.oldValue !== undefined && (
-                    <div style={{ color: "red", fontSize: "18px" }}>
-                      <strong>oldValue:</strong> {String(value.oldValue)}
-                    </div>
-                  )}
-                  {value.newValue !== undefined && (
-                    <div style={{ color: "green", fontSize: "18px" }}>
-                      <strong>newValue:</strong> {String(value.newValue)}
-                    </div>
-                  )}
-                  {typeof value === "object" && value !== null && !value.oldValue && !value.newValue && (
-                    <div>{renderJsonWithColor(value, indent + 20, changeType)}</div>
-                  )}
-                </div>
-              );
-            }
-
-            const color = getColor(changeType);
-            return (
-              <div key={key} style={{ marginBottom: 20 }}>
-                <strong style={{ color, fontSize: "18px" }}>{key}:</strong>
-                {typeof value === "object" && value !== null ? (
-                  <div>{renderJsonWithColor(value, indent + 20, changeType)}</div>
-                ) : (
-                  <div style={{ color }}>{String(value)}</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      );
+    if (typeof data !== "object" || data === null) {
+      return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
     }
-    return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
+
+    return (
+      <div style={{ marginLeft: indent, fontSize: "18px" }}>
+        {Object.keys(data).map(key => {
+          const value = data[key];
+          const changeType = value && typeof value === "object" && value.changeType ? value.changeType : parentChangeType;
+
+          if (key === "changeType" || key === "dataType") return null;
+
+          if (isValueChanged(value)) {
+            return renderChangedValue(key, value, indent);
+          }
+
+          if (Array.isArray(value)) {
+            return renderArray(key, value, indent, changeType);
+          }
+
+          if (typeof value === "object") {
+            return renderNestedObject(key, value, indent, changeType);
+          }
+
+          return renderKeyValue(key, value, changeType);
+        })}
+      </div>
+    );
   };
+
+  const renderChangedValue = (key, value, indent) => (
+    <div key={key} style={{ marginBottom: 10 }}>
+      <strong style={{ color: "orange", fontSize: "18px" }}>{key}:</strong>
+      <div style={{ color: getColor("removed"), marginLeft: 20 }}>
+        <strong>oldValue:</strong> {renderJsonWithColor(value.oldValue, indent + 20, "removed")}
+      </div>
+      <div style={{ color: getColor("added"), marginLeft: 20 }}>
+        <strong>newValue:</strong> {renderJsonWithColor(value.newValue, indent + 20, "added")}
+      </div>
+    </div>
+  );
+
+  const renderArray = (key, array, indent, changeType) => (
+    <div key={key} style={{ marginBottom: 20 }}>
+      <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
+      {array.map((item, index) => (
+        <div key={index} style={{ marginLeft: 20 }}>
+          {renderJsonWithColor(item, indent + 20, item.changeType || changeType)}
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderNestedObject = (key, obj, indent, changeType) => (
+    <div key={key} style={{ marginBottom: 10 }}>
+      <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
+      <div style={{ marginLeft: 20 }}>{renderJsonWithColor(obj, indent + 20, obj.changeType || changeType)}</div>
+    </div>
+  );
+
+  const renderKeyValue = (key, value, changeType) => (
+    <div key={key} style={{ marginBottom: 20 }}>
+      <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
+      <div style={{ color: getColor(changeType), marginLeft: 20 }}>{String(value)}</div>
+    </div>
+  );
 
   return (
     <Paper style={{ padding: 20 }}>
