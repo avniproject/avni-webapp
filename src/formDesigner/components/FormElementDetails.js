@@ -1,15 +1,5 @@
 import React, { Fragment } from "react";
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Input,
-  InputLabel,
-  Paper,
-  Select
-} from "@material-ui/core";
+import { Button, Checkbox, FormControlLabel, FormGroup, FormLabel, Input, InputLabel, Paper, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
@@ -51,14 +41,7 @@ const showPicker = (pickerType, cssClasses, props, disableFormElement) => {
   const picker = pickers.find(picker => picker.type === pickerType);
   const pickerModes = [];
   _.forEach(picker.modes, mode => {
-    pickerModes.push(
-      <FormControlLabel
-        value={mode.id}
-        control={<Radio />}
-        label={mode.name}
-        disabled={disableFormElement}
-      />
-    );
+    pickerModes.push(<FormControlLabel value={mode.id} control={<Radio />} label={mode.name} disabled={disableFormElement} />);
   });
 
   return (
@@ -69,14 +52,7 @@ const showPicker = (pickerType, cssClasses, props, disableFormElement) => {
         aria-label={picker.label}
         name={picker.key}
         value={props.formElementData.keyValues[picker.key]}
-        onChange={event =>
-          props.handleGroupElementKeyValueChange(
-            props.groupIndex,
-            picker.key,
-            event.target.value,
-            props.index
-          )
-        }
+        onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, picker.key, event.target.value, props.index)}
         row
       >
         {pickerModes}
@@ -97,6 +73,8 @@ export const BackButton = props => {
     </Button>
   );
 };
+
+export const multiSelectFormElementConceptDataTypes = ["Coded", "Subject", "Image", "Video", "File", "Encounter"];
 
 function FormElementDetails({ userInfo, ...props }) {
   const classes = useStyles();
@@ -140,9 +118,7 @@ function FormElementDetails({ userInfo, ...props }) {
   }
 
   function groupSubjectTypeList() {
-    return _.map(props.groupSubjectTypes, ({ name, uuid }) => (
-      <MenuItem value={uuid}>{name}</MenuItem>
-    ));
+    return _.map(props.groupSubjectTypes, ({ name, uuid }) => <MenuItem value={uuid}>{name}</MenuItem>);
   }
 
   function groupRoleList() {
@@ -150,9 +126,7 @@ function FormElementDetails({ userInfo, ...props }) {
       props.groupSubjectTypes,
       ({ uuid }) => uuid === props.formElementData.keyValues.groupSubjectTypeUUID
     );
-    return _.map(selectedGroupSubjectType.groupRoles, ({ role, uuid }) => (
-      <MenuItem value={uuid}>{role}</MenuItem>
-    ));
+    return _.map(selectedGroupSubjectType.groupRoles, ({ role, uuid }) => <MenuItem value={uuid}>{role}</MenuItem>);
   }
 
   const renderDurationOptions = () => {
@@ -164,19 +138,10 @@ function FormElementDetails({ userInfo, ...props }) {
           control={
             <Checkbox
               checked={
-                props.formElementData.keyValues.durationOptions
-                  ? props.formElementData.keyValues.durationOptions.includes(duration)
-                  : false
+                props.formElementData.keyValues.durationOptions ? props.formElementData.keyValues.durationOptions.includes(duration) : false
               }
               value={duration}
-              onChange={event =>
-                props.handleGroupElementKeyValueChange(
-                  props.groupIndex,
-                  `${duration}`,
-                  event.target.value,
-                  props.index
-                )
-              }
+              onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, `${duration}`, event.target.value, props.index)}
             />
           }
           label={capitalize(duration)}
@@ -199,25 +164,13 @@ function FormElementDetails({ userInfo, ...props }) {
           <Input
             id="elementNameDetails"
             value={props.formElementData.name}
-            onChange={event =>
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "name",
-                replace(event.target.value, "|", ""),
-                props.index
-              )
-            }
+            onChange={event => props.handleGroupElementChange(props.groupIndex, "name", replace(event.target.value, "|", ""), props.index)}
             disabled={disableFormElement}
           />
         </FormControl>
         <Paper style={{ width: "100%", marginBottom: "15px" }}>
-          <div
-            position="static"
-            style={{ backgroundColor: "#2a96f3", color: "white", height: "30px" }}
-          >
-            <span style={{ marginLeft: "10px", marginTop: "15px", fontSize: "small" }}>
-              CONCEPT
-            </span>
+          <div position="static" style={{ backgroundColor: "#2a96f3", color: "white", height: "30px" }}>
+            <span style={{ marginLeft: "10px", marginTop: "15px", fontSize: "small" }}>CONCEPT</span>
           </div>
           {props.formElementData.showConceptLibrary === "" && (
             <div
@@ -231,9 +184,7 @@ function FormElementDetails({ userInfo, ...props }) {
               <Button
                 color="primary"
                 type="button"
-                onClick={event =>
-                  props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)
-                }
+                onClick={event => props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)}
                 disabled={disableFormElement}
               >
                 Select from library
@@ -245,9 +196,7 @@ function FormElementDetails({ userInfo, ...props }) {
                 <Button
                   color="primary"
                   type="button"
-                  onClick={event =>
-                    props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
-                  }
+                  onClick={event => props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)}
                   disabled={disableFormElement}
                 >
                   Create new
@@ -272,12 +221,8 @@ function FormElementDetails({ userInfo, ...props }) {
                 handleGroupElementChange={props.handleGroupElementChange}
                 handleInlineNumericAttributes={props.handleInlineNumericAttributes}
                 handleInlineCodedConceptAnswers={props.handleInlineCodedConceptAnswers}
-                onToggleInlineConceptCodedAnswerAttribute={
-                  props.onToggleInlineConceptCodedAnswerAttribute
-                }
-                onDeleteInlineConceptCodedAnswerDelete={
-                  props.onDeleteInlineConceptCodedAnswerDelete
-                }
+                onToggleInlineConceptCodedAnswerAttribute={props.onToggleInlineConceptCodedAnswerAttribute}
+                onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
                 onMoveUp={props.onMoveUp}
                 onMoveDown={props.onMoveDown}
                 onAlphabeticalSort={props.onAlphabeticalSort}
@@ -302,10 +247,9 @@ function FormElementDetails({ userInfo, ...props }) {
             >
               {" "}
               <Grid item sm={12}>
-                {props.formElementData.errorMessage &&
-                  props.formElementData.errorMessage.concept && (
-                    <div style={{ color: "red" }}>Please enter concept </div>
-                  )}
+                {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
+                  <div style={{ color: "red" }}>Please enter concept </div>
+                )}
 
                 <FormControl fullWidth>
                   {props.formElementData.newFlag && (
@@ -325,9 +269,7 @@ function FormElementDetails({ userInfo, ...props }) {
                       {disableFormElement ? (
                         props.formElementData.concept.name
                       ) : (
-                        <a
-                          href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}
-                        >
+                        <a href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}>
                           {props.formElementData.concept.name}
                         </a>
                       )}
@@ -340,68 +282,40 @@ function FormElementDetails({ userInfo, ...props }) {
                 <Grid container item sm={12}>
                   <Grid item sm={2}>
                     <FormControl>
-                      <AvniFormLabel
-                        label={"Low Absolute"}
-                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE"}
-                      />
+                      <AvniFormLabel label={"Low Absolute"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE"} />
                       <Input
                         disableUnderline={true}
-                        value={
-                          !isNil(props.formElementData.concept.lowAbsolute)
-                            ? props.formElementData.concept.lowAbsolute
-                            : "N.A"
-                        }
+                        value={!isNil(props.formElementData.concept.lowAbsolute) ? props.formElementData.concept.lowAbsolute : "N.A"}
                         disabled
                       />
                     </FormControl>
                   </Grid>
                   <Grid item sm={2}>
                     <FormControl>
-                      <AvniFormLabel
-                        label={"High Absolute"}
-                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE"}
-                      />
+                      <AvniFormLabel label={"High Absolute"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE"} />
                       <Input
                         disableUnderline={true}
-                        value={
-                          !isNil(props.formElementData.concept.highAbsolute)
-                            ? props.formElementData.concept.highAbsolute
-                            : "N.A"
-                        }
+                        value={!isNil(props.formElementData.concept.highAbsolute) ? props.formElementData.concept.highAbsolute : "N.A"}
                         disabled
                       />
                     </FormControl>
                   </Grid>
                   <Grid item sm={2}>
                     <FormControl>
-                      <AvniFormLabel
-                        label={"Low normal"}
-                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL"}
-                      />
+                      <AvniFormLabel label={"Low normal"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL"} />
                       <Input
                         disableUnderline={true}
-                        value={
-                          !isNil(props.formElementData.concept.lowNormal)
-                            ? props.formElementData.concept.lowNormal
-                            : "N.A"
-                        }
+                        value={!isNil(props.formElementData.concept.lowNormal) ? props.formElementData.concept.lowNormal : "N.A"}
                         disabled
                       />
                     </FormControl>
                   </Grid>
                   <Grid item sm={2}>
                     <FormControl>
-                      <AvniFormLabel
-                        label={"High normal"}
-                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_NORMAL"}
-                      />
+                      <AvniFormLabel label={"High normal"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_NORMAL"} />
                       <Input
                         disableUnderline={true}
-                        value={
-                          !isNil(props.formElementData.concept.highNormal)
-                            ? props.formElementData.concept.highNormal
-                            : "N.A"
-                        }
+                        value={!isNil(props.formElementData.concept.highNormal) ? props.formElementData.concept.highNormal : "N.A"}
                         disabled
                       />
                     </FormControl>
@@ -411,11 +325,7 @@ function FormElementDetails({ userInfo, ...props }) {
                       <AvniFormLabel label={"Unit"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIT"} />
                       <Input
                         disableUnderline={true}
-                        value={
-                          !isNil(props.formElementData.concept.unit)
-                            ? props.formElementData.concept.unit
-                            : "N.A"
-                        }
+                        value={!isNil(props.formElementData.concept.unit) ? props.formElementData.concept.unit : "N.A"}
                         disabled
                       />
                     </FormControl>
@@ -441,14 +351,7 @@ function FormElementDetails({ userInfo, ...props }) {
                               )
                             }
                             onDelete={event =>
-                              disableFormElement
-                                ? _.noop()
-                                : props.handleExcludedAnswers(
-                                    d.name,
-                                    true,
-                                    props.groupIndex,
-                                    props.index
-                                  )
+                              disableFormElement ? _.noop() : props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
                             }
                           />
                         );
@@ -469,10 +372,7 @@ function FormElementDetails({ userInfo, ...props }) {
             </div>
           )}
         </Paper>
-        {includes(
-          ["Coded", "Subject", "Image", "Video", "File", "Encounter"],
-          props.formElementData.concept.dataType
-        ) && (
+        {includes(multiSelectFormElementConceptDataTypes, props.formElementData.concept.dataType) && (
           <>
             <Grid item sm={6}>
               {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
@@ -483,37 +383,30 @@ function FormElementDetails({ userInfo, ...props }) {
                 <Select
                   name="type"
                   value={props.formElementData.type}
-                  onChange={event =>
-                    props.handleGroupElementChange(
-                      props.groupIndex,
-                      "type",
-                      event.target.value,
-                      props.index
-                    )
-                  }
+                  onChange={event => props.handleGroupElementChange(props.groupIndex, "type", event.target.value, props.index)}
                   required
                 >
                   <MenuItem value="SingleSelect">SingleSelect</MenuItem>
                   <MenuItem value="MultiSelect">MultiSelect</MenuItem>
                 </Select>
               </FormControl>
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.disallowedChangeError && (
+                <div style={{ color: "red", fontSize: "smaller" }}>
+                  Changing type is not allowed. Please replace this question with a new one, associate it with a different concept and set
+                  the required type.
+                  <br />
+                  If this change is absolutely required, please contact support team.
+                </div>
+              )}
             </Grid>
           </>
         )}
         <FormControl fullWidth>
-          <AvniFormLabel
-            label={t("Documentation")}
-            toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DOCUMENTATION"}
-          />
+          <AvniFormLabel label={t("Documentation")} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DOCUMENTATION"} />
           <DocumentationSearch
             value={props.formElementData.documentation}
             onChange={documentation => {
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "documentation",
-                documentation,
-                props.index
-              );
+              props.handleGroupElementChange(props.groupIndex, "documentation", documentation, props.index);
             }}
           />
         </FormControl>
@@ -537,14 +430,7 @@ function FormElementDetails({ userInfo, ...props }) {
                         )
                       }
                       onDelete={event =>
-                        disableFormElement
-                          ? _.noop()
-                          : props.handleExcludedAnswers(
-                              d.name,
-                              false,
-                              props.groupIndex,
-                              props.index
-                            )
+                        disableFormElement ? _.noop() : props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
                       }
                     />
                   );
@@ -565,44 +451,26 @@ function FormElementDetails({ userInfo, ...props }) {
                 placeholder="60"
                 value={props.formElementData.keyValues.durationLimitInSecs}
                 onChange={event =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "durationLimitInSecs",
-                    event.target.value,
-                    props.index
-                  )
+                  props.handleGroupElementKeyValueChange(props.groupIndex, "durationLimitInSecs", event.target.value, props.index)
                 }
                 margin="normal"
                 InputProps={{ inputProps: { min: 0 } }}
                 disabled={disableFormElement}
               />
-              {props.formElementData.errorMessage &&
-                props.formElementData.errorMessage.durationLimitInSecs && (
-                  <div style={{ color: "red" }}>Please enter positive number</div>
-                )}
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.durationLimitInSecs && (
+                <div style={{ color: "red" }}>Please enter positive number</div>
+              )}
             </Grid>
             <Grid item sm={1} />
             <Grid item sm={3}>
               <FormControl className={classes.formControl} disabled={disableFormElement}>
-                <AvniFormLabel
-                  label={"Video Quality"}
-                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"}
-                />
+                <AvniFormLabel label={"Video Quality"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"} />
                 <Select
                   name="videoQuality"
                   classes={cssClasses.dropDown}
-                  value={
-                    props.formElementData.keyValues.videoQuality === undefined
-                      ? "high"
-                      : props.formElementData.keyValues.videoQuality
-                  }
+                  value={props.formElementData.keyValues.videoQuality === undefined ? "high" : props.formElementData.keyValues.videoQuality}
                   onChange={event =>
-                    props.handleGroupElementKeyValueChange(
-                      props.groupIndex,
-                      "videoQuality",
-                      event.target.value,
-                      props.index
-                    )
+                    props.handleGroupElementKeyValueChange(props.groupIndex, "videoQuality", event.target.value, props.index)
                   }
                 >
                   <MenuItem value="low">Low</MenuItem>
@@ -630,21 +498,15 @@ function FormElementDetails({ userInfo, ...props }) {
                 placeholder="960"
                 value={props.formElementData.keyValues.maxHeight}
                 onChange={event =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "maxHeight",
-                    toNumber(event.target.value),
-                    props.index
-                  )
+                  props.handleGroupElementKeyValueChange(props.groupIndex, "maxHeight", toNumber(event.target.value), props.index)
                 }
                 margin="normal"
                 InputProps={{ inputProps: { min: 0 } }}
                 disabled={disableFormElement}
               />
-              {props.formElementData.errorMessage &&
-                props.formElementData.errorMessage.maxHeight && (
-                  <div style={{ color: "red" }}>Please enter positive number</div>
-                )}
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.maxHeight && (
+                <div style={{ color: "red" }}>Please enter positive number</div>
+              )}
             </Grid>
             <Grid item sm={1} />
             <Grid item sm={3}>
@@ -655,43 +517,25 @@ function FormElementDetails({ userInfo, ...props }) {
                 placeholder="1280"
                 value={props.formElementData.keyValues.maxWidth}
                 onChange={event =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "maxWidth",
-                    toNumber(event.target.value),
-                    props.index
-                  )
+                  props.handleGroupElementKeyValueChange(props.groupIndex, "maxWidth", toNumber(event.target.value), props.index)
                 }
                 margin="normal"
                 InputProps={{ inputProps: { min: 0 } }}
                 disabled={disableFormElement}
               />
-              {props.formElementData.errorMessage &&
-                props.formElementData.errorMessage.maxWidth && (
-                  <div style={{ color: "red" }}>Please enter positive number</div>
-                )}
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.maxWidth && (
+                <div style={{ color: "red" }}>Please enter positive number</div>
+              )}
             </Grid>
             <Grid item sm={1} />
             <Grid item sm={3}>
               <FormControl className={classes.formControl} disabled={disableFormElement}>
-                <AvniFormLabel
-                  label={"Image Quality"}
-                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"}
-                />
+                <AvniFormLabel label={"Image Quality"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"} />
                 <Select
                   name="imageQuality"
-                  value={
-                    props.formElementData.keyValues.imageQuality === undefined
-                      ? 1
-                      : props.formElementData.keyValues.imageQuality
-                  }
+                  value={props.formElementData.keyValues.imageQuality === undefined ? 1 : props.formElementData.keyValues.imageQuality}
                   onChange={event =>
-                    props.handleGroupElementKeyValueChange(
-                      props.groupIndex,
-                      "imageQuality",
-                      toNumber(event.target.value),
-                      props.index
-                    )
+                    props.handleGroupElementKeyValueChange(props.groupIndex, "imageQuality", toNumber(event.target.value), props.index)
                   }
                 >
                   <MenuItem value="0">Low</MenuItem>
@@ -702,8 +546,7 @@ function FormElementDetails({ userInfo, ...props }) {
           </Grid>
         )}
 
-        {props.formElementData.concept.dataType === "Date" &&
-          showPicker("date", cssClasses, props, disableFormElement)}
+        {props.formElementData.concept.dataType === "Date" && showPicker("date", cssClasses, props, disableFormElement)}
 
         {props.formElementData.errorMessage && props.formElementData.errorMessage.durationOptions && (
           <div style={{ color: "red", fontSize: "13px" }}>Duration options must be selected.</div>
@@ -711,11 +554,7 @@ function FormElementDetails({ userInfo, ...props }) {
 
         {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
           <Grid container item sm={12}>
-            <AvniFormLabel
-              style={cssClasses.label}
-              label={"Duration Options"}
-              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"}
-            />
+            <AvniFormLabel style={cssClasses.label} label={"Duration Options"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"} />
 
             <FormControl component="fieldset" disabled={disableFormElement}>
               <FormGroup row>{renderDurationOptions()}</FormGroup>
@@ -723,54 +562,30 @@ function FormElementDetails({ userInfo, ...props }) {
           </Grid>
         )}
 
-        {props.formElementData.concept.dataType === "DateTime" &&
-          showPicker("date", cssClasses, props, disableFormElement)}
+        {props.formElementData.concept.dataType === "DateTime" && showPicker("date", cssClasses, props, disableFormElement)}
 
-        {props.formElementData.concept.dataType === "Time" &&
-          showPicker("time", cssClasses, props, disableFormElement)}
+        {props.formElementData.concept.dataType === "Time" && showPicker("time", cssClasses, props, disableFormElement)}
 
         {["Text"].includes(props.formElementData.concept.dataType) && (
           <Grid item sm={12}>
-            {props.formElementData.errorMessage &&
-              props.formElementData.errorMessage.validFormat && (
-                <div style={{ color: "red" }}>
-                  {" "}
-                  Validation Regex and description key both must be empty or both must be filled
-                </div>
-              )}
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.validFormat && (
+              <div style={{ color: "red" }}> Validation Regex and description key both must be empty or both must be filled</div>
+            )}
             <FormControl fullWidth disabled={disableFormElement}>
-              <AvniFormLabel
-                label={"Validation Regex"}
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"}
-              />
+              <AvniFormLabel label={"Validation Regex"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"} />
               <Input
                 id="validFormatRegex"
                 value={get(props.formElementData, "validFormat.regex", "")}
-                onChange={event =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "regex",
-                    event.target.value,
-                    props.index
-                  )
-                }
+                onChange={event => props.handleGroupElementKeyValueChange(props.groupIndex, "regex", event.target.value, props.index)}
               />
             </FormControl>
             <FormControl fullWidth disabled={disableFormElement}>
-              <AvniFormLabel
-                label={"Validation Description Key"}
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"}
-              />
+              <AvniFormLabel label={"Validation Description Key"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"} />
               <Input
                 id="validFormatDescriptionKey"
                 value={get(props.formElementData, "validFormat.descriptionKey", "")}
                 onChange={event =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "descriptionKey",
-                    event.target.value,
-                    props.index
-                  )
+                  props.handleGroupElementKeyValueChange(props.groupIndex, "descriptionKey", event.target.value, props.index)
                 }
               />
             </FormControl>
@@ -779,10 +594,7 @@ function FormElementDetails({ userInfo, ...props }) {
         <Grid container item sm={12}>
           {props.formElementData.concept.dataType !== "QuestionGroup" && (
             <Grid item sm={4}>
-              <AvniFormControl
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}
-                disabled={disableFormElement}
-              >
+              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"} disabled={disableFormElement}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -804,26 +616,15 @@ function FormElementDetails({ userInfo, ...props }) {
               </AvniFormControl>
             </Grid>
           )}
-          {props.formElementData.concept.dataType === "Subject" && (
-            <SubjectFormElementKeyValues {...props} />
-          )}
+          {props.formElementData.concept.dataType === "Subject" && <SubjectFormElementKeyValues {...props} />}
           <Grid item sm={4}>
-            {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(
-              props.formElementData.concept.dataType
-            ) && (
-              <AvniFormControl
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}
-                disabled={disableFormElement}
-              >
+            {["Numeric", "Text", "Date", "DateTime", "Time", "Coded"].includes(props.formElementData.concept.dataType) && (
+              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"} disabled={disableFormElement}>
                 <FormControlLabel
                   control={
                     <Checkbox
                       id="editable"
-                      checked={
-                        typeof props.formElementData.keyValues.editable === "undefined"
-                          ? false
-                          : true
-                      }
+                      checked={typeof props.formElementData.keyValues.editable === "undefined" ? false : true}
                       onChange={event =>
                         props.handleGroupElementKeyValueChange(
                           props.groupIndex,
@@ -841,22 +642,14 @@ function FormElementDetails({ userInfo, ...props }) {
           </Grid>
           {["Numeric", "Text", "PhoneNumber"].includes(props.formElementData.concept.dataType) && (
             <Grid item sm={4}>
-              <AvniFormControl
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"}
-                disabled={disableFormElement}
-              >
+              <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIQUE"} disabled={disableFormElement}>
                 <FormControlLabel
                   control={
                     <Checkbox
                       id="unique"
                       checked={!!props.formElementData.keyValues.unique}
                       onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "unique",
-                          event.target.checked,
-                          props.index
-                        )
+                        props.handleGroupElementKeyValueChange(props.groupIndex, "unique", event.target.checked, props.index)
                       }
                     />
                   }
@@ -869,20 +662,12 @@ function FormElementDetails({ userInfo, ...props }) {
         {props.formElementData.concept.dataType === "Id" && (
           <Grid item sm={6}>
             <FormControl fullWidth disabled={disableFormElement}>
-              <AvniFormLabel
-                label={"Identifier Source"}
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"}
-              />
+              <AvniFormLabel label={"Identifier Source"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"} />
               <Select
                 name="identifierSource"
                 value={props.formElementData.keyValues.IdSourceUUID}
                 onChange={event =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "IdSourceUUID",
-                    event.target.value,
-                    props.index
-                  )
+                  props.handleGroupElementKeyValueChange(props.groupIndex, "IdSourceUUID", event.target.value, props.index)
                 }
                 required
               >
@@ -895,20 +680,12 @@ function FormElementDetails({ userInfo, ...props }) {
           <Grid item container spacing={5}>
             <Grid item sm={6}>
               <FormControl fullWidth disabled={disableFormElement}>
-                <AvniFormLabel
-                  label={"Group Subject Type"}
-                  toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"}
-                />
+                <AvniFormLabel label={"Group Subject Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_SUBJECT_TYPE"} />
                 <Select
                   name="groupSubjectType"
                   value={props.formElementData.keyValues.groupSubjectTypeUUID}
                   onChange={event =>
-                    props.handleGroupElementKeyValueChange(
-                      props.groupIndex,
-                      "groupSubjectTypeUUID",
-                      event.target.value,
-                      props.index
-                    )
+                    props.handleGroupElementKeyValueChange(props.groupIndex, "groupSubjectTypeUUID", event.target.value, props.index)
                   }
                   required
                 >
@@ -919,20 +696,12 @@ function FormElementDetails({ userInfo, ...props }) {
             <Grid item sm={6}>
               {props.formElementData.keyValues.groupSubjectTypeUUID && (
                 <FormControl fullWidth disabled={disableFormElement}>
-                  <AvniFormLabel
-                    label={"Group Role"}
-                    toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"}
-                  />
+                  <AvniFormLabel label={"Group Role"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_ROLE"} />
                   <Select
                     name="groupSubjectRole"
                     value={props.formElementData.keyValues.groupSubjectRoleUUID}
                     onChange={event =>
-                      props.handleGroupElementKeyValueChange(
-                        props.groupIndex,
-                        "groupSubjectRoleUUID",
-                        event.target.value,
-                        props.index
-                      )
+                      props.handleGroupElementKeyValueChange(props.groupIndex, "groupSubjectRoleUUID", event.target.value, props.index)
                     }
                     required
                   >
@@ -956,18 +725,21 @@ function FormElementDetails({ userInfo, ...props }) {
                       id="repeatable"
                       checked={!!props.formElementData.keyValues.repeatable}
                       onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "repeatable",
-                          event.target.checked,
-                          props.index
-                        )
+                        props.handleGroupElementKeyValueChange(props.groupIndex, "repeatable", event.target.checked, props.index)
                       }
                     />
                   }
                   label="Repeatable"
                 />
               </AvniFormControl>
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.disallowedChangeError && (
+                <div style={{ color: "red", fontSize: "smaller" }}>
+                  Changing repeatability is not allowed. Please replace this question with a new one, associate it with a different concept
+                  and set the required repeatability.
+                  <br />
+                  If this change is absolutely required, please contact support team.
+                </div>
+              )}
             </Grid>
             <Grid item>
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DISABLE_MANUAL_ACTIONS"}>
@@ -977,12 +749,7 @@ function FormElementDetails({ userInfo, ...props }) {
                       id="disableManualActions"
                       checked={!!props.formElementData.keyValues.disableManualActions}
                       onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "disableManualActions",
-                          event.target.checked,
-                          props.index
-                        )
+                        props.handleGroupElementKeyValueChange(props.groupIndex, "disableManualActions", event.target.checked, props.index)
                       }
                     />
                   }
@@ -994,14 +761,7 @@ function FormElementDetails({ userInfo, ...props }) {
               <ColourStyle
                 label={"Text colour"}
                 colour={props.formElementData.keyValues.textColour}
-                onChange={colour =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "textColour",
-                    colour,
-                    props.index
-                  )
-                }
+                onChange={colour => props.handleGroupElementKeyValueChange(props.groupIndex, "textColour", colour, props.index)}
                 toolTipKey={"APP_DESIGNER_GROUP_TEXT_COLOUR"}
               />
             </Grid>
@@ -1009,14 +769,7 @@ function FormElementDetails({ userInfo, ...props }) {
               <ColourStyle
                 label={"Background colour"}
                 colour={props.formElementData.keyValues.backgroundColour}
-                onChange={colour =>
-                  props.handleGroupElementKeyValueChange(
-                    props.groupIndex,
-                    "backgroundColour",
-                    colour,
-                    props.index
-                  )
-                }
+                onChange={colour => props.handleGroupElementKeyValueChange(props.groupIndex, "backgroundColour", colour, props.index)}
                 toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
               />
             </Grid>

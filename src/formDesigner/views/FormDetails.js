@@ -53,6 +53,7 @@ import { connect } from "react-redux";
 import UserInfo from "../../common/model/UserInfo";
 import { Concept } from "openchs-models";
 import { SubjectTypeType } from "../../adminApp/SubjectType/Types";
+import { multiSelectFormElementConceptDataTypes } from "../components/FormElementDetails";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -150,6 +151,8 @@ class FormDetails extends Component {
     this.handleInlineSubjectAttributes = this.handleInlineSubjectAttributes.bind(this);
     this.handleInlineEncounterAttributes = this.handleInlineEncounterAttributes.bind(this);
     this.handleInlinePhoneNumberAttributes = this.handleInlinePhoneNumberAttributes.bind(this);
+    this.multiSelectFormElementsToTypeMap = new Map();
+    this.questionGroupFormElementsToRepeatableMap = new Map();
   }
 
   onUpdateFormName = name => {
@@ -244,6 +247,12 @@ class FormDetails extends Component {
               });
             }
 
+            if (_.includes(multiSelectFormElementConceptDataTypes, fe.concept.dataType)) {
+              this.multiSelectFormElementsToTypeMap.set(fe.uuid, fe.type);
+            }
+            if (fe.concept.dataType === "QuestionGroup") {
+              this.questionGroupFormElementsToRepeatableMap.set(fe.uuid, keyValueObject["repeatable"]);
+            }
             fe.keyValues = keyValueObject;
           });
         });
@@ -624,6 +633,15 @@ class FormDetails extends Component {
     return { declarativeRuleHolder, validationError };
   }
 
+  getDisallowedChangesError(formElement) {
+    const currentType = this.multiSelectFormElementsToTypeMap.get(formElement.uuid);
+    const currentRepeatability = this.questionGroupFormElementsToRepeatableMap.get(formElement.uuid);
+    return (
+      (!_.isNil(currentType) && currentType !== formElement.type) ||
+      (!_.isNil(currentRepeatability) && currentRepeatability !== formElement.keyValues.repeatable)
+    );
+  }
+
   validateFormLevelRules(form, declarativeRule, ruleKey, generateRuleFuncName) {
     const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(declarativeRule);
     if (!_.isEmpty(validationError)) {
@@ -685,6 +703,7 @@ class FormDetails extends Component {
               });
             }
             const { declarativeRuleHolder, validationError } = this.getDeclarativeRuleValidationError(fe.declarativeRule);
+            const disallowedChangeError = this.getDisallowedChangesError(fe);
             if (
               !fe.voided &&
               (fe.name === "" ||
@@ -695,7 +714,8 @@ class FormDetails extends Component {
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0) ||
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0) ||
                 !areValidFormatValuesValid(fe) ||
-                !_.isEmpty(validationError))
+                !_.isEmpty(validationError) ||
+                disallowedChangeError)
             ) {
               numberElementError = numberElementError + 1;
               fe.error = true;
@@ -712,6 +732,9 @@ class FormDetails extends Component {
               if (!areValidFormatValuesValid(fe)) fe.errorMessage.validFormat = true;
               if (!_.isEmpty(validationError)) {
                 fe.errorMessage.ruleError = validationError;
+              }
+              if (disallowedChangeError) {
+                fe.errorMessage.disallowedChangeError = true;
               }
             } else if (
               !fe.voided &&
