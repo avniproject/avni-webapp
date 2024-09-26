@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Typography, Paper, Grid, CircularProgress, MenuItem, FormControl, Select, InputLabel } from "@material-ui/core";
 import httpClient from "common/utils/httpClient";
+import _ from "lodash";
 
 const MetadataDiff = () => {
   const [file1, setFile1] = useState(null);
@@ -10,13 +11,20 @@ const MetadataDiff = () => {
   const [loading, setLoading] = useState(false);
   const [selectedForm, setSelectedForm] = useState("");
 
+  const CHANGE_TYPE = {
+    ADDED: "added",
+    REMOVED: "removed",
+    MODIFIED: "modified",
+    NO_MODIFICATION: "noModification"
+  };
+
   const formLabels = {
     "Missing Files in PROD ZIP": "Removed from Old Metadata",
     "Missing Files in UAT ZIP": "Newly Added Metadata"
   };
 
   const getDisplayLabel = formKey => formLabels[formKey] || formKey;
-  const isValueChanged = value => value && typeof value === "object" && value.oldValue !== undefined && value.newValue !== undefined;
+  const isValueChanged = value => _.isObject(value) && !_.isNil(value.oldValue) && !_.isNil(value.newValue);
 
   const handleFileChange = (event, fileNumber) => {
     const file = event.target.files[0];
@@ -28,28 +36,35 @@ const MetadataDiff = () => {
   };
 
   const isNoModification = obj => {
-    if (typeof obj !== "object" || obj === null) return false;
-    if (obj.changeType === "noModification") return true;
-    return Object.values(obj).some(value => isNoModification(value));
+    if (!_.isObject(obj)) return false;
+    if (obj.changeType === CHANGE_TYPE.NO_MODIFICATION) return true;
+    return _.some(obj, value => isNoModification(value));
   };
 
   const filterForms = data => {
-    const filteredData = Object.keys(data).reduce((acc, formName) => {
-      const formData = data[formName];
-      if (!isNoModification(formData) && formName !== "formMappings.json") {
-        acc[formName] = formData;
-      }
-      return acc;
-    }, {});
+    const filteredData = _.reduce(
+      data,
+      (acc, formData, formName) => {
+        if (!isNoModification(formData) && formName !== "formMappings.json") {
+          acc[formName] = formData;
+        }
+        return acc;
+      },
+      {}
+    );
 
-    return Object.keys(filteredData).reduce((acc, formName) => {
-      acc[formName] = filteredData[formName];
-      return acc;
-    }, {});
+    return _.reduce(
+      filteredData,
+      (acc, formData, formName) => {
+        acc[formName] = formData;
+        return acc;
+      },
+      {}
+    );
   };
 
   const handleSubmit = async () => {
-    if (!file1 || !file2) {
+    if (_.isNil(file1) || _.isNil(file2)) {
       setError("Please select both files.");
       return;
     }
@@ -82,11 +97,11 @@ const MetadataDiff = () => {
 
   const getColor = changeType => {
     switch (changeType) {
-      case "added":
+      case CHANGE_TYPE.ADDED:
         return "green";
-      case "removed":
+      case CHANGE_TYPE.REMOVED:
         return "red";
-      case "modified":
+      case CHANGE_TYPE.MODIFIED:
         return "orange";
       default:
         return "black";
@@ -94,15 +109,14 @@ const MetadataDiff = () => {
   };
 
   const renderJsonWithColor = (data, indent = 0, parentChangeType = null) => {
-    if (typeof data !== "object" || data === null) {
+    if (!_.isObject(data)) {
       return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
     }
 
     return (
       <div style={{ marginLeft: indent, fontSize: "18px" }}>
-        {Object.keys(data).map(key => {
-          const value = data[key];
-          const changeType = value && typeof value === "object" && value.changeType ? value.changeType : parentChangeType;
+        {_.map(data, (value, key) => {
+          const changeType = _.isObject(value) && value.changeType ? value.changeType : parentChangeType;
 
           if (key === "changeType" || key === "dataType") return null;
 
@@ -110,11 +124,11 @@ const MetadataDiff = () => {
             return renderChangedValue(key, value, indent);
           }
 
-          if (Array.isArray(value)) {
+          if (_.isArray(value)) {
             return renderArray(key, value, indent, changeType);
           }
 
-          if (typeof value === "object") {
+          if (_.isObject(value)) {
             return renderNestedObject(key, value, indent, changeType);
           }
 
@@ -127,11 +141,11 @@ const MetadataDiff = () => {
   const renderChangedValue = (key, value, indent) => (
     <div key={key} style={{ marginBottom: 10 }}>
       <strong style={{ color: "orange", fontSize: "18px" }}>{key}:</strong>
-      <div style={{ color: getColor("removed"), marginLeft: 20 }}>
-        <strong>oldValue:</strong> {renderJsonWithColor(value.oldValue, indent + 20, "removed")}
+      <div style={{ color: getColor(CHANGE_TYPE.REMOVED), marginLeft: 20 }}>
+        <strong>oldValue:</strong> {renderJsonWithColor(value.oldValue, indent + 20, CHANGE_TYPE.REMOVED)}
       </div>
-      <div style={{ color: getColor("added"), marginLeft: 20 }}>
-        <strong>newValue:</strong> {renderJsonWithColor(value.newValue, indent + 20, "added")}
+      <div style={{ color: getColor(CHANGE_TYPE.ADDED), marginLeft: 20 }}>
+        <strong>newValue:</strong> {renderJsonWithColor(value.newValue, indent + 20, CHANGE_TYPE.ADDED)}
       </div>
     </div>
   );
@@ -139,7 +153,7 @@ const MetadataDiff = () => {
   const renderArray = (key, array, indent, changeType) => (
     <div key={key} style={{ marginBottom: 20 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
-      {array.map((item, index) => (
+      {_.map(array, (item, index) => (
         <div key={index} style={{ marginLeft: 20 }}>
           {renderJsonWithColor(item, indent + 20, item.changeType || changeType)}
         </div>
