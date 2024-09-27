@@ -7,6 +7,8 @@ import { connect } from "react-redux";
 import { setAuthSession } from "../ducks";
 import IdpDetails from "../security/IdpDetails";
 import BaseAuthSession from "../security/BaseAuthSession";
+import { isProdEnv } from "../../common/constants";
+import { isDisallowedPassword } from "../utils";
 
 function KeycloakSignInView({ setAuthSession }) {
   const [username, setUsername] = useState("");
@@ -14,17 +16,21 @@ function KeycloakSignInView({ setAuthSession }) {
   const [error, setError] = useState(null);
 
   function onSignIn() {
-    const [url, request] = httpClient.idp.getAuthRequest(username, password);
-    httpClient
-      .postUrlEncoded(url, request)
-      .then(x => x.data)
-      .then(data => {
-        httpClient.idp.setAccessToken(data["access_token"]);
-        setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
-      })
-      .catch(error => {
-        setError(`${error.response.statusText}: ${error.response.data["error_description"]}`);
-      });
+    if (!isProdEnv && isDisallowedPassword(password)) {
+      alert("Password change required.");
+    } else {
+      const [url, request] = httpClient.idp.getAuthRequest(username, password);
+      httpClient
+        .postUrlEncoded(url, request)
+        .then(x => x.data)
+        .then(data => {
+          httpClient.idp.setAccessToken(data["access_token"]);
+          setAuthSession(BaseAuthSession.AuthStates.SignedIn, null, IdpDetails.keycloak);
+        })
+        .catch(error => {
+          setError(`${error.response.statusText}: ${error.response.data["error_description"]}`);
+        });
+    }
   }
 
   function inputFieldChanged(e) {
