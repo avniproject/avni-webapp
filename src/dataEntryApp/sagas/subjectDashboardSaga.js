@@ -6,7 +6,8 @@ import {
   setGroupMembers,
   setVoidServerError,
   setSubjectDashboardLoaded,
-  unVoidFailed
+  unVoidFailed,
+  getSubjectProfile
 } from "../reducers/subjectDashboardReducer";
 import { mapProfile, mapGroupMembers, mapProgram, mapGeneral } from "../../common/subjectModelMapper";
 import api from "../api";
@@ -123,8 +124,7 @@ export function* voidSubject() {
   const subject = yield select(selectSubjectProfile);
   const response = yield call(api.voidSubject, subject.uuid);
   if (response.success) {
-    subject.voided = response.data.voided;
-    yield put(setSubjectProfile(subject));
+    yield put(getSubjectProfile(subject.uuid));
   } else {
     yield put(setVoidServerError(response.errorMessage));
   }
@@ -132,20 +132,17 @@ export function* voidSubject() {
 }
 
 export function* unVoidSubject() {
-  // This should be re-written such that the subject is reloaded from server instead of managing the state in the web app
   yield put.resolve(setLoad(false));
   const subject = yield select(selectSubjectProfile);
   const resource = subject.toResource;
   resource.voided = false;
   const response = yield call(api.saveSubject, resource);
   if (response.success) {
-    subject.voided = false;
-    yield put(setSubjectProfile(subject));
-    yield put.resolve(setLoad(true));
+    yield put(getSubjectProfile(subject.uuid));
   } else {
     yield put(unVoidFailed(response.errorMessage));
-    yield put.resolve(setLoad(true));
   }
+  yield put.resolve(setLoad(true));
 }
 
 export function* unVoidSubjectWatcher() {
