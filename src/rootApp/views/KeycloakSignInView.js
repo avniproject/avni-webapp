@@ -8,7 +8,7 @@ import { setAuthSession } from "../ducks";
 import IdpDetails from "../security/IdpDetails";
 import BaseAuthSession from "../security/BaseAuthSession";
 import { isProdEnv } from "../../common/constants";
-import { isDisallowedPassword } from "../utils";
+import { DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG, isDisallowedPassword } from "../utils";
 
 function KeycloakSignInView({ setAuthSession }) {
   const [username, setUsername] = useState("");
@@ -17,7 +17,7 @@ function KeycloakSignInView({ setAuthSession }) {
 
   function onSignIn() {
     if (!isProdEnv && isDisallowedPassword(password)) {
-      alert("Password change required.");
+      alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
     } else {
       const [url, request] = httpClient.idp.getAuthRequest(username, password);
       httpClient

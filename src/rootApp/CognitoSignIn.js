@@ -2,7 +2,7 @@ import React from "react";
 import { SignIn } from "aws-amplify-react";
 import SignInView from "./views/SignInView";
 import { isProdEnv } from "../common/constants";
-import { isDisallowedPassword } from "./utils";
+import { DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG, isDisallowedPassword } from "./utils";
 
 class CognitoSignIn extends SignIn {
   constructor(props) {
@@ -21,7 +21,7 @@ class CognitoSignIn extends SignIn {
         notifyInputChange={this.handleInputChange}
         onSignIn={() => {
           if (!isProdEnv && isDisallowedPassword(this.inputs.password)) {
-            alert("Password change required.");
+            alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
           } else {
             super.signIn();
           }

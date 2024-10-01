@@ -1,5 +1,6 @@
 import Auth from "@aws-amplify/auth";
 import { AWS_REGION } from "../common/constants";
+import _ from "lodash";
 
 export const configureAuth = config => {
   Auth.configure({
@@ -19,5 +20,8 @@ export const customAmplifyErrorMsgs = msg => {
 };
 
 export function isDisallowedPassword(password) {
-  return password === "password";
+  return _.toLower(password) === "password";
 }
+
+export const DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG =
+  "Password change required. Please change via forgot password flow or use an admin account to reset it.\nDo not change password for customer accounts.";
