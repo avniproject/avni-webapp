@@ -29,7 +29,7 @@ const SubjectTypeShow = props => {
   const [formMappings, setFormMappings] = useState([]);
   const [locationTypes, setLocationsTypes] = useState([]);
   const [iconPreviewUrl, setIconPreviewUrl] = React.useState("");
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -63,10 +63,7 @@ const SubjectTypeShow = props => {
     }
   }, [subjectType.iconFileS3Key]);
 
-  const hasPrivilegeEdit = UserInfo.hasPrivilege(
-    props.userInfo,
-    Privilege.PrivilegeType.EditSubjectType
-  );
+  const hasPrivilegeEdit = UserInfo.hasPrivilege(props.userInfo, Privilege.PrivilegeType.EditSubjectType);
   return (
     !_.isEmpty(subjectType) && (
       <>
@@ -103,20 +100,12 @@ const SubjectTypeShow = props => {
             <p />
             <BooleanStatusInShow status={subjectType.active} label={"Active"} />
             <p />
-            <BooleanStatusInShow
-              status={subjectType.allowProfilePicture}
-              label={"Allow Profile Picture"}
-            />
+            <BooleanStatusInShow status={subjectType.allowProfilePicture} label={"Allow Profile Picture"} />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Registration Form</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>
-                <a
-                  href={`#/appdesigner/forms/${get(
-                    findRegistrationForm(formMappings, subjectType),
-                    "formUUID"
-                  )}`}
-                >
+                <a href={`#/appdesigner/forms/${get(findRegistrationForm(formMappings, subjectType), "formUUID")}`}>
                   {get(findRegistrationForm(formMappings, subjectType), "formName")}
                 </a>
               </span>
@@ -128,17 +117,12 @@ const SubjectTypeShow = props => {
               <span style={{ fontSize: "15px" }}>{subjectType.organisationId}</span>
             </div>
             <p />
-            <RuleDisplay
-              fieldLabel={"Subject Summary Rule"}
-              ruleText={subjectType.subjectSummaryRule}
-            />
+            <RuleDisplay fieldLabel={"Subject Summary Rule"} ruleText={subjectType.subjectSummaryRule} />
             <p />
-            <RuleDisplay
-              fieldLabel={"Subject Program Eligibility Check Rule"}
-              ruleText={subjectType.programEligibilityCheckRule}
-            />
+            <RuleDisplay fieldLabel={"Subject Program Eligibility Check Rule"} ruleText={subjectType.programEligibilityCheckRule} />
             <p />
             <MessageRules
+              templateFetchError={templateFetchError}
               rules={rules}
               templates={templates}
               onChange={identity}

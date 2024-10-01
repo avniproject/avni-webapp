@@ -18,6 +18,9 @@ export const getMessageTemplates = dispatch => {
     .then(response => response.json)
     .then(payload => {
       dispatch({ type: "setTemplates", payload });
+    })
+    .catch(error => {
+      dispatch({ type: "setTemplateFetchError", error });
     });
 };
 

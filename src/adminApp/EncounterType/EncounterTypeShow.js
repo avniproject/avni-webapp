@@ -10,10 +10,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import Grid from "@material-ui/core/Grid";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get, identity } from "lodash";
-import {
-  findProgramEncounterCancellationForm,
-  findProgramEncounterForm
-} from "../domain/formMapping";
+import { findProgramEncounterCancellationForm, findProgramEncounterForm } from "../domain/formMapping";
 import { BooleanStatusInShow } from "../../common/components/BooleanStatusInShow";
 import { SystemInfo } from "../../formDesigner/components/SystemInfo";
 import RuleDisplay from "../components/RuleDisplay";
@@ -31,7 +28,7 @@ const EncounterTypeShow = props => {
   const [subjectType, setSubjectType] = useState([]);
   const [program, setProgram] = useState([]);
   const [entityType, setEntityType] = useState();
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -57,12 +54,8 @@ const EncounterTypeShow = props => {
           const formMap = response.data.formMappings;
           formMap.map(l => (l["isVoided"] = false));
 
-          const encounterTypeMappings = response.data.formMappings.filter(
-            l => l.encounterTypeUUID === result.uuid
-          );
-          _.isNil(encounterTypeMappings[0].programUUID)
-            ? setEntityType("Encounter")
-            : setEntityType("ProgramEncounter");
+          const encounterTypeMappings = response.data.formMappings.filter(l => l.encounterTypeUUID === result.uuid);
+          _.isNil(encounterTypeMappings[0].programUUID) ? setEntityType("Encounter") : setEntityType("ProgramEncounter");
 
           setFormMappings(formMap);
           setSubjectType(response.data.subjectTypes);
@@ -104,12 +97,7 @@ const EncounterTypeShow = props => {
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program</FormLabel>
             <br />
-            <ShowPrograms
-              rowDetails={encounterType}
-              program={program}
-              formMapping={formMappings}
-              setMapping={setFormMappings}
-            />
+            <ShowPrograms rowDetails={encounterType} program={program} formMapping={formMappings} setMapping={setFormMappings} />
           </div>
           <p />
           <BooleanStatusInShow status={encounterType.active} label={"Active"} />
@@ -119,12 +107,7 @@ const EncounterTypeShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Encounter Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
-              <a
-                href={`#/appdesigner/forms/${get(
-                  findProgramEncounterForm(formMappings, encounterType),
-                  "formUUID"
-                )}`}
-              >
+              <a href={`#/appdesigner/forms/${get(findProgramEncounterForm(formMappings, encounterType), "formUUID")}`}>
                 {get(findProgramEncounterForm(formMappings, encounterType), "formName")}
               </a>
             </span>
@@ -134,12 +117,7 @@ const EncounterTypeShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Encounter Cancellation Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
-              <a
-                href={`#/appdesigner/forms/${get(
-                  findProgramEncounterCancellationForm(formMappings, encounterType),
-                  "formUUID"
-                )}`}
-              >
+              <a href={`#/appdesigner/forms/${get(findProgramEncounterCancellationForm(formMappings, encounterType), "formUUID")}`}>
                 {get(findProgramEncounterCancellationForm(formMappings, encounterType), "formName")}
               </a>
             </span>
@@ -152,12 +130,10 @@ const EncounterTypeShow = props => {
           </div>
           <p />
 
-          <RuleDisplay
-            fieldLabel={"Encounter Eligibility Check Rule"}
-            ruleText={encounterType.encounterEligibilityCheckRule}
-          />
+          <RuleDisplay fieldLabel={"Encounter Eligibility Check Rule"} ruleText={encounterType.encounterEligibilityCheckRule} />
           <p />
           <MessageRules
+            templateFetchError={templateFetchError}
             rules={rules}
             templates={templates}
             onChange={identity}

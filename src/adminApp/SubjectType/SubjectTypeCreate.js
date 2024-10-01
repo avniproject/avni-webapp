@@ -32,7 +32,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
   const [locationTypes, setLocationsTypes] = useState([]);
   const [file, setFile] = React.useState();
   const [removeFile, setRemoveFile] = React.useState(false);
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -118,6 +118,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
               />
               {organisationConfig && organisationConfig.enableMessaging ? (
                 <MessageRules
+                  templateFetchError={templateFetchError}
                   rules={rules}
                   templates={templates}
                   onChange={onRulesChange}

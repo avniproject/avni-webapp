@@ -10,10 +10,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
 import _, { identity } from "lodash";
-import {
-  findProgramEncounterCancellationForm,
-  findProgramEncounterForm
-} from "../domain/formMapping";
+import { findProgramEncounterCancellationForm, findProgramEncounterForm } from "../domain/formMapping";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { validateRule } from "../../formDesigner/util";
 import EditEncounterTypeFields from "./EditEncounterTypeFields";
@@ -38,7 +35,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
   const [subjectValidation, setSubjectValidation] = useState(false);
   const [ruleValidationError, setRuleValidationError] = useState();
   const [entityType, setEntityType] = useState();
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -71,22 +68,12 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
           setSubjectType(response.data.subjectTypes);
           setProgram(response.data.programs);
 
-          const encounterTypeMappings = response.data.formMappings.filter(
-            l => l.encounterTypeUUID === result.uuid
-          );
+          const encounterTypeMappings = response.data.formMappings.filter(l => l.encounterTypeUUID === result.uuid);
 
-          _.isNil(encounterTypeMappings[0].programUUID)
-            ? setEntityType("Encounter")
-            : setEntityType("ProgramEncounter");
+          _.isNil(encounterTypeMappings[0].programUUID) ? setEntityType("Encounter") : setEntityType("ProgramEncounter");
 
-          setSubjectT(
-            response.data.subjectTypes.filter(
-              l => l.uuid === encounterTypeMappings[0].subjectTypeUUID
-            )[0]
-          );
-          setProgramT(
-            response.data.programs.filter(l => l.uuid === encounterTypeMappings[0].programUUID)[0]
-          );
+          setSubjectT(response.data.subjectTypes.filter(l => l.uuid === encounterTypeMappings[0].subjectTypeUUID)[0]);
+          setProgramT(response.data.programs.filter(l => l.uuid === encounterTypeMappings[0].programUUID)[0]);
 
           const form = findProgramEncounterForm(formMap, result);
           dispatch({ type: "programEncounterForm", payload: form });
@@ -108,9 +95,8 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
       setSubjectValidation(true);
       hasError = true;
     }
-    const { jsCode, validationError } = validateRule(
-      encounterType.encounterEligibilityCheckDeclarativeRule,
-      holder => holder.generateEligibilityRule()
+    const { jsCode, validationError } = validateRule(encounterType.encounterEligibilityCheckDeclarativeRule, holder =>
+      holder.generateEligibilityRule()
     );
     if (!_.isEmpty(validationError)) {
       hasError = true;
@@ -131,10 +117,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
         id: props.match.params.id,
         subjectTypeUuid: subjectT.uuid,
         programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
-        programEncounterCancelFormUuid: _.get(
-          encounterType,
-          "programEncounterCancellationForm.formUUID"
-        ),
+        programEncounterCancelFormUuid: _.get(encounterType, "programEncounterCancellationForm.formUUID"),
         programUuid: _.get(programT, "uuid"),
         voided: encounterTypeData.voided
       })
@@ -212,6 +195,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
               />
               {organisationConfig && organisationConfig.enableMessaging ? (
                 <MessageRules
+                  templateFetchError={templateFetchError}
                   rules={rules}
                   templates={templates}
                   onChange={onRulesChange}
@@ -223,11 +207,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
               )}
             </>
           )}
-          <EncounterTypeErrors
-            nameValidation={nameValidation}
-            subjectValidation={subjectValidation}
-            error={error}
-          />
+          <EncounterTypeErrors nameValidation={nameValidation} subjectValidation={subjectValidation} error={error} />
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>

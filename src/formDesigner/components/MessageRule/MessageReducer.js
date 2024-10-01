@@ -4,6 +4,8 @@ export const MessageReducer = (state, action) => {
       return { ...state, rules: action.payload };
     case "setTemplates":
       return { ...state, templates: action.payload };
+    case "setTemplateFetchError":
+      return { ...state, templateFetchError: action.error };
     default:
       return state;
   }

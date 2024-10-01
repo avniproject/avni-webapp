@@ -68,12 +68,7 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
       _.reduce(
         rules[0].parameters,
         (allFilled, parameter) => {
-          return (
-            allFilled &&
-            !_.isNil(parameter) &&
-            !_.isEmpty(parameter) &&
-            parameter.trim().length !== 0
-          );
+          return allFilled && !_.isNil(parameter) && !_.isEmpty(parameter) && parameter.trim().length !== 0;
         },
         true
       )
@@ -81,18 +76,8 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
   };
 
   return (
-    <Dialog
-      onClose={() => {}}
-      aria-labelledby="customized-dialog-title"
-      open={true}
-      fullWidth={true}
-      maxWidth="lg"
-    >
-      <DialogTitle
-        id="customized-dialog-title"
-        onClose={onClose}
-        style={{ backgroundColor: "#2196f3", color: "white" }}
-      >
+    <Dialog onClose={() => {}} aria-labelledby="customized-dialog-title" open={true} fullWidth={true} maxWidth="lg">
+      <DialogTitle id="customized-dialog-title" onClose={onClose} style={{ backgroundColor: "#2196f3", color: "white" }}>
         Send Message
       </DialogTitle>
       <DialogActions>
@@ -119,9 +104,7 @@ const ComposeMessageView = ({ receiverId, receiverType, onClose, onSchedulingAtt
           </Box>
 
           <Box style={{ marginTop: 20, marginLeft: 10 }}>
-            {_.size(rules[0].parameters) > 0 && (
-              <AvniFormLabel label={"Enter variables for the selected template"} required={true} />
-            )}
+            {_.size(rules[0].parameters) > 0 && <AvniFormLabel label={"Enter variables for the selected template"} required={true} />}
             {_.map(rules[0].parameters, (parameter, index) => {
               return (
                 <AvniTextField

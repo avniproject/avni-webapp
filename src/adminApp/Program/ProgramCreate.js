@@ -24,7 +24,7 @@ const ProgramCreate = ({ organisationConfig }) => {
   const [subjectTypes, setSubjectTypes] = useState([]);
   const [subjectType, setSubjectType] = useState(null);
   const [formList, setFormList] = useState([]);
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -89,6 +89,7 @@ const ProgramCreate = ({ organisationConfig }) => {
               />
               {organisationConfig && organisationConfig.enableMessaging ? (
                 <MessageRules
+                  templateFetchError={templateFetchError}
                   rules={rules}
                   templates={templates}
                   onChange={onRulesChange}

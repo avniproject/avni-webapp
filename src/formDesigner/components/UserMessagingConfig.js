@@ -12,11 +12,7 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import MessageRules from "./MessageRule/MessageRules";
 import { MessageReducer } from "./MessageRule/MessageReducer";
-import {
-  getMessageRules,
-  getMessageTemplates,
-  saveMessageRules
-} from "../../adminApp/service/MessageService";
+import { getMessageRules, getMessageTemplates, saveMessageRules } from "../../adminApp/service/MessageService";
 import { setError } from "../../dataEntryApp/reducers/serverSideRulesReducer";
 
 export const UserMessagingConfig = () => {
@@ -24,7 +20,7 @@ export const UserMessagingConfig = () => {
   const receiverType = "User";
   const entityTypeId = -1;
 
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -85,14 +81,13 @@ export const UserMessagingConfig = () => {
         <DocumentationContainer filename={"UserMessagingConfig.md"}>
           <ExpansionPanel expanded={true}>
             <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
-              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
-                User Messaging Config
-              </span>
+              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>User Messaging Config</span>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <div className="container" style={{ float: "left" }}>
                 {settings && settings.enableMessaging ? (
                   <MessageRules
+                    templateFetchError={templateFetchError}
                     rules={rules}
                     templates={templates}
                     onChange={onRulesChange}
@@ -103,8 +98,7 @@ export const UserMessagingConfig = () => {
                 ) : (
                   <div>
                     <span style={{ fontSize: "1rem", fontFamily: "Roboto", fontWeight: "400" }}>
-                      Enable Messaging for Organisation in-order to be able to do this
-                      configuration.
+                      Enable Messaging for Organisation in-order to be able to do this configuration.
                     </span>
                   </div>
                 )}

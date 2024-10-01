@@ -28,7 +28,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
   const [subjectType, setSubjectType] = useState(null);
   const [formList, setFormList] = useState([]);
   const [subjectTypes, setSubjectTypes] = useState([]);
-  const [{ rules, templates }, rulesDispatch] = useReducer(MessageReducer, {
+  const [{ rules, templates, templateFetchError }, rulesDispatch] = useReducer(MessageReducer, {
     rules: [],
     templates: []
   });
@@ -130,6 +130,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
           <br />
           {organisationConfig && organisationConfig.enableMessaging ? (
             <MessageRules
+              templateFetchError={templateFetchError}
               rules={rules}
               templates={templates}
               onChange={onRulesChange}
