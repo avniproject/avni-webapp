@@ -45,7 +45,16 @@ export const OrganisationList = ({ history, ...props }) => {
         <TextField source="schemaName" label="Schema Name" sortBy={"schemaName"} />
         <TextField source="mediaDirectory" label="Media Directory" sortBy={"mediaDirectory"} />
         <TextField source="usernameSuffix" label="Username Suffix" sortBy={"usernameSuffix"} />
-        <TextField source="status" label="Status" />
+        <ReferenceField
+          resource="organisationStatus"
+          source="statusId"
+          reference="organisationStatus"
+          label="Status"
+          linkType={false}
+          sortBy={"status.name"}
+        >
+          <TextField source="name" />
+        </ReferenceField>
         <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" sortable={false} />
         <ShowButton />
         <OpenOrganisation porps={props} />
@@ -75,7 +84,6 @@ export const OrganisationDetails = props => {
         <ReferenceField resource="organisationStatus" source="statusId" reference="organisationStatus" label="Status" linkType={false}>
           <TextField source="name" />
         </ReferenceField>
-        <TextField source="status" label="Status" />
         <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" linkType="show" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
