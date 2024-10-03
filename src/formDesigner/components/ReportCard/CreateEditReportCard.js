@@ -44,6 +44,8 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       DashboardService.getReportCard(props.match.params.id).then(res => {
         dispatch({ type: ReportCardReducerKeys.setData, payload: res });
       });
+    } else {
+      dispatch({ type: ReportCardReducerKeys.color, payload: "#ff0000" });
     }
   }, []);
 
