@@ -1,10 +1,9 @@
 import { CustomFilter, ReportCard, StandardReportCardType } from "openchs-models";
-import { isEmpty, isNil, isInteger, toNumber, lowerCase } from "lodash";
+import _, { isEmpty, isInteger, isNil, lowerCase, toNumber } from "lodash";
 import WebStandardReportCardType from "./WebStandardReportCardType";
 import WebSubjectType from "./WebSubjectType";
 import WebProgram from "./WebProgram";
 import WebEncounterType from "./WebEncounterType";
-import _ from "lodash";
 
 function populateRecordCardFields(
   reportCard,
@@ -14,7 +13,7 @@ function populateRecordCardFields(
   query,
   nested,
   id,
-  countOfCards,
+  count,
   standardReportCardInputSubjectTypes,
   standardReportCardInputPrograms,
   standardReportCardInputEncounterTypes,
@@ -26,7 +25,7 @@ function populateRecordCardFields(
   reportCard.description = description;
   reportCard.query = query;
   reportCard.nested = nested;
-  reportCard.countOfCards = countOfCards;
+  reportCard.count = count;
   reportCard.standardReportCardInputSubjectTypes = standardReportCardInputSubjectTypes;
   reportCard.standardReportCardInputPrograms = standardReportCardInputPrograms;
   reportCard.standardReportCardInputEncounterTypes = standardReportCardInputEncounterTypes;
@@ -73,7 +72,7 @@ class WebReportCard extends ReportCard {
       value: "1",
       unit: "days"
     });
-    webReportCard.colour = "#ff0000";
+    webReportCard.colour = "#ffffff";
     return webReportCard;
   }
 
@@ -87,7 +86,7 @@ class WebReportCard extends ReportCard {
       other.query,
       other.nested,
       other.id,
-      other.countOfCards,
+      other.count,
       [...other.standardReportCardInputSubjectTypes],
       [...other.standardReportCardInputPrograms],
       [...other.standardReportCardInputEncounterTypes],
@@ -144,7 +143,7 @@ class WebReportCard extends ReportCard {
         message: "Standard Report Type Card cannot be marked as Nested"
       });
     }
-    if (isStandardReportCard && this.countOfCards !== 1) {
+    if (isStandardReportCard && this.count !== 1) {
       errors.push({
         key: "INVALID_NESTED_CARD_COUNT",
         message: "Standard Report Type Card count should always be 1"
@@ -153,7 +152,7 @@ class WebReportCard extends ReportCard {
     if (
       !isStandardReportCard &&
       this.nested &&
-      (this.countOfCards < WebReportCard.MinimumNumberOfNestedCards || this.countOfCards > WebReportCard.MaximumNumberOfNestedCards)
+      (this.count < WebReportCard.MinimumNumberOfNestedCards || this.count > WebReportCard.MaximumNumberOfNestedCards)
     ) {
       errors.push({
         key: "INVALID_NESTED_CARD_COUNT",
@@ -202,7 +201,7 @@ class WebReportCard extends ReportCard {
       color: this.colour,
       query: this.query,
       nested: this.nested,
-      count: this.countOfCards,
+      count: this.count,
       standardReportCardTypeId: this.standardReportCardType && this.standardReportCardType.id,
       iconFileS3Key: this.iconFileS3Key,
       standardReportCardInputSubjectTypes: this.standardReportCardInputSubjectTypes.map(x => x.uuid),

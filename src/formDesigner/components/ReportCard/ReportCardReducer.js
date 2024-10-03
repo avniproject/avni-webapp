@@ -28,7 +28,7 @@ export const ReportCardReducer = (reportCard, action) => {
       break;
     case ReportCardReducerKeys.nested:
       reportCard.nested = action.payload.nested;
-      reportCard.countOfCards = action.payload.count;
+      reportCard.count = action.payload.count;
       break;
     case ReportCardReducerKeys.standardReportCardType:
       reportCard.standardReportCardType = action.payload;
