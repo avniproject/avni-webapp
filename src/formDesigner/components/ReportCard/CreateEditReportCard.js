@@ -39,6 +39,7 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
   const [file, setFile] = React.useState();
 
   React.useEffect(() => {
+    DashboardService.getStandardReportCardTypes().then(setStandardReportCardTypes);
     if (edit) {
       DashboardService.getReportCard(props.match.params.id).then(res => {
         dispatch({ type: ReportCardReducerKeys.setData, payload: res });
@@ -51,10 +52,6 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
       setIsStandardReportCard(!isNil(card.standardReportCardType));
     }
   }, [isNil(card.standardReportCardType)]);
-
-  React.useEffect(() => {
-    DashboardService.getStandardReportCardTypes().then(setStandardReportCardTypes);
-  }, []);
 
   React.useEffect(() => {
     if (isStandardReportCard) {
