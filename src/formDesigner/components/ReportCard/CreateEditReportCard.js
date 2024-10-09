@@ -1,7 +1,7 @@
 import React from "react";
 import { ReportCardReducer, ReportCardReducerKeys } from "./ReportCardReducer";
 import http from "../../../common/utils/httpClient";
-import { get, isNil, sortBy } from "lodash";
+import { get, isNil, replace, sortBy, split } from "lodash";
 import Box from "@material-ui/core/Box";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
@@ -94,10 +94,12 @@ export const CreateEditReportCard = ({ edit, ...props }) => {
           }
         })
         .catch(error => {
+          let errorMessage = `${get(error, "response.data") || get(error, "message") || "error while saving card"}`;
+          errorMessage = split(replace(errorMessage, /^org\..*: /, ""), /\n|\r/, 1);
           setError([
             {
               key: "SERVER_ERROR",
-              message: `${get(error, "response.data") || get(error, "message") || "error while saving card"}`
+              message: errorMessage
             }
           ]);
         });
