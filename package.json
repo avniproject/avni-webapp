@@ -72,7 +72,7 @@
     "redux-form": "^8.1.0",
     "redux-saga": "0.16.2",
     "redux-thunk": "^2.3.0",
-    "rules-config": "github:avniproject/rules-config#fe552da405368bfd138e2f38e605c1d307e3ebe4",
+    "rules-config": "github:avniproject/rules-config#23fa43bf6ba3017f9b7c94923dfa685b91ca6e5a",
     "uuid": "^3.3.2",
     "libphonenumber-js": "^1.11.1"
   },
