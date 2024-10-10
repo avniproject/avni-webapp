@@ -16941,9 +16941,9 @@ rsvp@^4.8.4:
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
 
-"rules-config@github:avniproject/rules-config#23fa43bf6ba3017f9b7c94923dfa685b91ca6e5a":
+"rules-config@github:avniproject/rules-config#64d53e8a5100437ac7b571647bd096786eba14da":
   version "0.0.1"
-  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/23fa43bf6ba3017f9b7c94923dfa685b91ca6e5a"
+  resolved "https://codeload.github.com/avniproject/rules-config/tar.gz/64d53e8a5100437ac7b571647bd096786eba14da"
 
 run-async@^2.2.0, run-async@^2.4.0:
   version "2.4.1"
