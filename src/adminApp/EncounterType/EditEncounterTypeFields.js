@@ -8,7 +8,7 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import RuleDesigner from "../../formDesigner/components/DeclarativeRule/RuleDesigner";
 import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
 import { confirmBeforeRuleEdit } from "../../formDesigner/util";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   findEncounterCancellationForms,
   findEncounterForms,
@@ -26,17 +26,28 @@ const EditEncounterTypeFields = ({
   updateProgram,
   program,
   formList,
-  ruleValidationError
+  ruleValidationError,
+  formMappings,
+  setProgram,
+  allPrograms
 }) => {
   function getCancellationForms() {
-    return _.isEmpty(programT)
-      ? findEncounterCancellationForms(formList)
-      : findProgramEncounterCancellationForms(formList);
+    return _.isEmpty(programT) ? findEncounterCancellationForms(formList) : findProgramEncounterCancellationForms(formList);
   }
 
   function getEncounterForms() {
     return _.isEmpty(programT) ? findEncounterForms(formList) : findProgramEncounterForms(formList);
   }
+
+  useEffect(() => {
+    if (!_.isEmpty(subjectT)) {
+      const matchingFormMappings = formMappings.filter(
+        formMapping => formMapping.subjectTypeUUID === subjectT.uuid && !_.isNil(formMapping.programUUID)
+      );
+      setProgram(allPrograms.filter(program => _.includes(matchingFormMappings.map(formMapping => formMapping.programUUID), program.uuid)));
+      updateProgram({});
+    }
+  }, [subjectT]);
 
   return (
     <div>
@@ -74,6 +85,7 @@ const EditEncounterTypeFields = ({
           </MenuItem>
         ))}
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
+        isClearable={true}
       />
       <p />
       <AvniSelectForm
@@ -102,10 +114,7 @@ const EditEncounterTypeFields = ({
         toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_CANCELLATION_FORM"}
       />
       <p />
-      <AvniFormLabel
-        label={"Encounter Eligibility Check Rule"}
-        toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
-      />
+      <AvniFormLabel label={"Encounter Eligibility Check Rule"} toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"} />
       {encounterType.loaded && (
         <RuleDesigner
           rulesJson={encounterType.encounterEligibilityCheckDeclarativeRule}

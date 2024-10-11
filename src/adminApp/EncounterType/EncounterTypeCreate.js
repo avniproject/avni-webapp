@@ -25,6 +25,8 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
   const [subjectType, setSubjectType] = useState([]);
   const [programT, setProgramT] = useState({});
   const [program, setProgram] = useState([]);
+  const [allPrograms, setAllPrograms] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
@@ -50,9 +52,10 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
     http.get("/web/operationalModules").then(response => {
       const formMap = response.data.formMappings;
       formMap.map(l => (l["isVoided"] = false));
+      setFormMappings(formMap);
       setFormList(response.data.forms);
       setSubjectType(response.data.subjectTypes);
-      setProgram(response.data.programs);
+      setAllPrograms(response.data.programs);
     });
   }, []);
 
@@ -154,6 +157,9 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
                 program={program}
                 formList={formList}
                 ruleValidationError={ruleValidationError}
+                formMappings={formMappings}
+                setProgram={setProgram}
+                allPrograms={allPrograms}
               />
               {organisationConfig && organisationConfig.enableMessaging ? (
                 <MessageRules
