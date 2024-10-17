@@ -5,7 +5,7 @@ import LocationSelect from "./LocationSelect";
 import RadioButtonsGroup from "./RadioButtonsGroup";
 import { useSelector } from "react-redux";
 import { selectAllAddressLevelTypes } from "../reducers/metadataReducer";
-import { filter, find, head, includes, isEmpty, isNil } from "lodash";
+import { find, includes, isEmpty, isNil, orderBy } from "lodash";
 import { ValidationError } from "./ValidationError";
 import { addressLevelService } from "../services/AddressLevelService";
 import http from "common/utils/httpClient";
@@ -26,11 +26,15 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
   const highestAddressLevelTypeUUID = concept.recordValueByKey(Concept.keys.highestAddressLevelTypeUUID);
 
   const allAddressLevelTypes = useSelector(selectAllAddressLevelTypes);
-  const applicableAddressLevelTypes = filter(
-    allAddressLevelTypes,
-    alt => includes(lowestAddressLevelTypeUUIDs, alt.uuid) || alt.uuid === highestAddressLevelTypeUUID
+  const highestAddressLevelType = find(allAddressLevelTypes, alt => alt.uuid === highestAddressLevelTypeUUID);
+  const allowedLowerAddressLevelTypes = orderBy(allAddressLevelTypes, "level", "asc").filter(alt =>
+    includes(lowestAddressLevelTypeUUIDs, alt.uuid)
   );
-  const [level, setLevel] = React.useState(head(applicableAddressLevelTypes));
+  const lowestAddressLevelType = allowedLowerAddressLevelTypes[0];
+  const applicableAddressLevelTypes = orderBy(allAddressLevelTypes, "level", "asc").filter(
+    alt => alt.level <= highestAddressLevelType.level
+  );
+  const [level, setLevel] = React.useState(lowestAddressLevelType);
   const locationUUID = isNil(observation) ? null : observation.getReadableValue();
   const [location, setLocation] = React.useState();
 
@@ -39,10 +43,10 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
       http.get(`/locations/web?uuid=${locationUUID}`).then(response => {
         if (response.status === 200) {
           const location = response.data;
-          setLocation(location);
           const currentLevel = applicableAddressLevelTypes.find(alt => alt.name === location.type);
           setLevel(currentLevel);
           addressLevelService.addAddressLevel(location);
+          setLocation(location);
         } else {
           alert(`Error while fetching location with uuid: ${locationUUID}`);
         }
@@ -54,7 +58,7 @@ export default function LocationFormElement({ obsHolder, formElement, update, va
     <React.Fragment>
       <RadioButtonsGroup
         label={`${t(name)}${mandatory ? "*" : ""}`}
-        items={applicableAddressLevelTypes.map(a => ({ id: a.id, name: a.name, level: a.level }))}
+        items={allowedLowerAddressLevelTypes.map(a => ({ id: a.id, name: a.name, level: a.level }))}
         value={level.id}
         onChange={setLevel}
       />
