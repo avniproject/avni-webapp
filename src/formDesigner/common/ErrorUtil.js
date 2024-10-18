@@ -1,11 +1,11 @@
-import { find, get, isEmpty, isNil } from "lodash";
+import { find, get, isEmpty, isNil, replace, split } from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
 import React from "react";
 
 export const getErrorByKey = (errors, errorKey) => {
   const errorByKey = find(errors, ({ key }) => key === errorKey);
   return isEmpty(errorByKey) ? null : (
-    <FormLabel error style={{ fontSize: "12px" }}>
+    <FormLabel error style={{ fontSize: "14px" }}>
       {errorByKey.message}
     </FormLabel>
   );
@@ -13,10 +13,14 @@ export const getErrorByKey = (errors, errorKey) => {
 
 const ServerErrorKey = "SERVER_ERROR";
 
+const SERVER_ERROR_STACKTRACE_STARTING_PATTERN = /^org\..*: /;
+const EMPTY_STRING = "";
+const NEW_LINE_SEPARATOR = /\n|\r/;
 export const createServerError = function(serverError, defaultMessage) {
   const formError = {};
   formError.key = ServerErrorKey;
-  formError.message = `${get(serverError, "response.data") || get(serverError, "message") || defaultMessage}`;
+  let errorMessage = `${get(serverError, "response.data") || get(serverError, "message") || defaultMessage}`;
+  formError.message = split(replace(errorMessage, SERVER_ERROR_STACKTRACE_STARTING_PATTERN, EMPTY_STRING), NEW_LINE_SEPARATOR, 1);
   return formError;
 };
 
