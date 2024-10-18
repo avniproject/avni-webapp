@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import { makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import MetabaseSVG from "./Metabase_icon.svg";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import CircularProgress from "@material-ui/core/CircularProgress";
+
+import MetabaseSVG from "./Metabase_icon.svg";
 
 const useStyles = makeStyles({
   root: {
@@ -42,57 +42,146 @@ const useStyles = makeStyles({
   }
 });
 
+const SetupActions = ({ setupEnabled, loadingSetup, handleSetupToggle, handleRefreshTables, loadingRefresh, handleCheckSyncStatus }) => {
+  const classes = useStyles();
+  return (
+    <div>
+      <Switch
+        checked={setupEnabled}
+        onChange={handleSetupToggle}
+        disabled={loadingSetup}
+        color="primary"
+        name="metabaseSetup"
+        inputProps={{ "aria-label": "Metabase Setup Toggle" }}
+      />
+      {loadingSetup && <CircularProgress size={24} />}
+      <Button
+        size="small"
+        color="primary"
+        className={classes.buttonSpacing}
+        onClick={handleRefreshTables}
+        disabled={!setupEnabled || loadingRefresh}
+      >
+        {loadingRefresh ? <CircularProgress size={24} /> : "Refresh Tables"}
+      </Button>
+      <Button size="small" color="primary" className={classes.buttonSpacing} onClick={handleCheckSyncStatus} disabled={!setupEnabled}>
+        Check Sync Status
+      </Button>
+    </div>
+  );
+};
+
 const SelfServiceReports = () => {
   const classes = useStyles();
-  const [setupEnabled, setSetupEnabled] = useState(false);
-  const [loadingSetup, setLoadingSetup] = useState(false);
-  const [loadingRefresh, setLoadingRefresh] = useState(false);
-  const [syncStatus, setSyncStatus] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage("");
-      }, 10000);
-      return () => clearTimeout(timer);
-    }
-  }, [errorMessage]);
+  const [state, setState] = useState({
+    setupEnabled: false,
+    loadingSetup: false,
+    loadingRefresh: false,
+    syncStatus: "",
+    errorMessage: "",
+    successMessage: ""
+  });
+
+  const resetMessages = () => {
+    setState(prevState => ({
+      ...prevState,
+      errorMessage: "",
+      successMessage: ""
+    }));
+  };
 
   const handleSetupToggle = async () => {
-    setLoadingSetup(true);
+    setState({ ...state, loadingSetup: true });
+    resetMessages();
     try {
-      const response = await fetch("/api/metabase/setup-toggle?enabled=" + !setupEnabled, {
+      const response = await fetch(`/api/metabase/setup-toggle?enabled=${!state.setupEnabled}`, {
         method: "POST"
       });
       const data = await response.json();
       if (response.ok) {
-        setSetupEnabled(!setupEnabled);
-        setErrorMessage(data.message.includes("could not be created") ? data.message : "");
+        setState(prevState => ({
+          ...prevState,
+          setupEnabled: !state.setupEnabled,
+          errorMessage: data.message.includes("could not be created") ? data.message : "",
+          successMessage: data.message.includes("could not be created") ? "" : "Setup toggled successfully!"
+        }));
       } else {
-        console.error("Failed to toggle setup.");
+        setState(prevState => ({
+          ...prevState,
+          errorMessage: "Failed to toggle setup."
+        }));
       }
     } catch (error) {
-      console.error("Error during setup toggle:", error);
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "Error during setup toggle: " + error.message
+      }));
+    } finally {
+      setState(prevState => ({ ...prevState, loadingSetup: false }));
     }
-    setLoadingSetup(false);
   };
 
   const handleRefreshTables = async () => {
-    setLoadingRefresh(true);
+    setState(prevState => ({
+      ...prevState,
+      loadingRefresh: true,
+      errorMessage: "",
+      successMessage: ""
+    }));
+
     try {
-      const response = await fetch("/api/metabase/create-questions", {
-        method: "POST"
+      const syncStatusResponse = await fetch("/api/metabase/sync-status", {
+        method: "GET"
       });
-      if (!response.ok) {
-        console.error("Failed to refresh tables.");
-        setErrorMessage("Failed to refresh tables. Please try again.");
+
+      if (syncStatusResponse.ok) {
+        const currentSyncStatus = await syncStatusResponse.json();
+
+        if (currentSyncStatus === "INCOMPLETE") {
+          setState(prevState => ({
+            ...prevState,
+            syncStatus: currentSyncStatus,
+            errorMessage:
+              "Metabase setup enabled, but questions could not be created. Database sync is incomplete. Please refresh tables after sync is complete.",
+            successMessage: ""
+          }));
+        } else {
+          const response = await fetch("/api/metabase/create-questions", {
+            method: "POST"
+          });
+
+          if (!response.ok) {
+            setState(prevState => ({
+              ...prevState,
+              errorMessage: "Failed to refresh tables. Please try again.",
+              successMessage: ""
+            }));
+          } else {
+            setState(prevState => ({
+              ...prevState,
+              syncStatus: currentSyncStatus,
+              errorMessage: "",
+              successMessage: "Questions created successfully!"
+            }));
+          }
+        }
+      } else {
+        setState(prevState => ({
+          ...prevState,
+          errorMessage: "Error checking sync status. Please try again.",
+          successMessage: ""
+        }));
       }
     } catch (error) {
-      console.error("Error during refresh:", error);
-      setErrorMessage("Failed to refresh tables. Please try again.");
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "Error during refresh: " + error.message,
+        successMessage: ""
+      }));
+    } finally {
+      setState(prevState => ({ ...prevState, loadingRefresh: false }));
     }
-    setLoadingRefresh(false);
   };
 
   const handleCheckSyncStatus = async () => {
@@ -102,13 +191,12 @@ const SelfServiceReports = () => {
       });
       if (response.ok) {
         const status = await response.json();
-        setSyncStatus(status);
+        setState({ ...state, syncStatus: status });
       } else {
-        setSyncStatus("Error retrieving sync status");
+        setState({ ...state, syncStatus: "Error retrieving sync status" });
       }
     } catch (error) {
-      console.error("Error fetching sync status:", error);
-      setSyncStatus("Error fetching sync status");
+      setState({ ...state, syncStatus: "Error fetching sync status" });
     }
   };
 
@@ -129,7 +217,7 @@ const SelfServiceReports = () => {
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
                       Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni
-                      integrates with Metabase to support ad hoc and self serviced reports.
+                      integrates with Metabase to support ad hoc and self-serviced reports.
                     </Typography>
                   </Grid>
                 </Grid>
@@ -137,35 +225,14 @@ const SelfServiceReports = () => {
             </CardContent>
 
             <CardActions className={classes.actionAreaContainer}>
-              <div>
-                <Switch
-                  checked={setupEnabled}
-                  onChange={handleSetupToggle}
-                  disabled={loadingSetup}
-                  color="primary"
-                  name="metabaseSetup"
-                  inputProps={{ "aria-label": "Metabase Setup Toggle" }}
-                />
-                {loadingSetup && <CircularProgress size={24} />}
-                <Button
-                  size="small"
-                  color="primary"
-                  className={classes.buttonSpacing}
-                  onClick={handleRefreshTables}
-                  disabled={!setupEnabled || loadingRefresh}
-                >
-                  {loadingRefresh ? <CircularProgress size={24} /> : "Refresh Tables"}
-                </Button>
-                <Button
-                  size="small"
-                  color="primary"
-                  className={classes.buttonSpacing}
-                  onClick={handleCheckSyncStatus}
-                  disabled={!setupEnabled}
-                >
-                  Check Sync Status
-                </Button>
-              </div>
+              <SetupActions
+                setupEnabled={state.setupEnabled}
+                loadingSetup={state.loadingSetup}
+                handleSetupToggle={handleSetupToggle}
+                handleRefreshTables={handleRefreshTables}
+                loadingRefresh={state.loadingRefresh}
+                handleCheckSyncStatus={handleCheckSyncStatus}
+              />
 
               <div className={classes.topRightButtons}>
                 <Button size="small" color="primary" href="https://www.metabase.com/docs/latest/getting-started.html" target={"_blank"}>
@@ -177,22 +244,27 @@ const SelfServiceReports = () => {
               </div>
             </CardActions>
 
-            {errorMessage && (
-              <Typography variant="body2" color="error" className={classes.errorMessage}>
-                {errorMessage}
+            {state.errorMessage ? (
+              <Typography variant="body2" className={classes.errorMessage}>
+                {state.errorMessage}
               </Typography>
-            )}
+            ) : state.successMessage ? (
+              <Typography variant="body2" component="p" className={classes.message}>
+                {state.successMessage}
+              </Typography>
+            ) : null}
 
-            {syncStatus && (
+            {/* show sync status */}
+            {state.syncStatus && (
               <Typography
                 variant="body2"
                 component="p"
                 className={classes.message}
                 style={{
-                  color: syncStatus === "COMPLETE" ? "green" : "red"
+                  color: state.syncStatus === "COMPLETE" ? "green" : "red"
                 }}
               >
-                Sync Status: {syncStatus}
+                Sync Status: {state.syncStatus}
               </Typography>
             )}
           </Card>
