@@ -716,7 +716,7 @@ function FormElementDetails({ userInfo, ...props }) {
       {props.formElementData.concept.dataType === "QuestionGroup" && (
         <Fragment>
           <QuestionGroup parentFormElementUUID={props.formElementData.uuid} {...props} />
-          <Grid container direction={"row"} spacing={10}>
+          <Grid container direction={"row"} spacing={2}>
             <Grid item>
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_REPEATABLE"}>
                 <FormControlLabel
@@ -732,14 +732,6 @@ function FormElementDetails({ userInfo, ...props }) {
                   label="Repeatable"
                 />
               </AvniFormControl>
-              {props.formElementData.errorMessage && props.formElementData.errorMessage.disallowedChangeError && (
-                <div style={{ color: "red", fontSize: "smaller" }}>
-                  Changing repeatability is not allowed. Please replace this question with a new one, associate it with a different concept
-                  and set the required repeatability.
-                  <br />
-                  If this change is absolutely required, please contact support team.
-                </div>
-              )}
             </Grid>
             <Grid item>
               <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DISABLE_MANUAL_ACTIONS"}>
@@ -772,6 +764,16 @@ function FormElementDetails({ userInfo, ...props }) {
                 onChange={colour => props.handleGroupElementKeyValueChange(props.groupIndex, "backgroundColour", colour, props.index)}
                 toolTipKey={"APP_DESIGNER_GROUP_BACKGROUND_COLOUR"}
               />
+            </Grid>
+            <Grid item>
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.disallowedChangeError && (
+                <div style={{ color: "red", fontSize: "smaller" }}>
+                  Changing repeatability is not allowed. Please replace this question with a new one, associate it with a different concept
+                  and set the required repeatability.
+                  <br />
+                  If this change is absolutely required, please contact support team.
+                </div>
+              )}
             </Grid>
           </Grid>
         </Fragment>
