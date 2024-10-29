@@ -3,9 +3,7 @@ import ApplicationContext from "../ApplicationContext";
 export const isDevEnv = ApplicationContext.isDevEnv();
 export const isProdEnv = ApplicationContext.isProdEnv();
 export const devEnvUserName = process.env.REACT_APP_DEV_ENV_USER;
-console.log("isProdEnv", isProdEnv);
-console.log("isDevEnv", isDevEnv);
-console.log("process.env.BACKEND_URL", process.env.BACKEND_URL);
+
 //Set by testing tools like Jest
 export const isTestEnv = process.env.NODE_ENV === "test";
 

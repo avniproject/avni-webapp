@@ -5,6 +5,7 @@ import KeycloakAuthSession from "./security/KeycloakAuthSession";
 import _ from "lodash";
 import NoAuthSession from "./security/NoAuthSession";
 import { SESSION_IDLE_MINUTES } from "../common/constants";
+import ApplicationContext from "../ApplicationContext";
 
 export const types = {
   SET_AUTH_SESSION: "app/SET_AUTH_SESSION",
@@ -84,7 +85,8 @@ const initialState = {
   appInitialised: false,
   organisationConfig: {},
   genericConfig: {
-    webAppTimeoutInMinutes: SESSION_IDLE_MINUTES
+    webAppTimeoutInMinutes: SESSION_IDLE_MINUTES,
+    avniEnvironment: "development"
   }
 };
 
@@ -144,10 +146,12 @@ export default function(state = initialState, action) {
       };
     }
     case types.INIT_GENERIC_CONFIG: {
+      ApplicationContext.setAvniEnvironment(action.payload.avniEnvironment);
       return {
         ...state,
         genericConfig: {
-          webAppTimeoutInMinutes: action.payload.webAppTimeoutInMinutes
+          webAppTimeoutInMinutes: action.payload.webAppTimeoutInMinutes,
+          avniEnvironment: action.payload.avniEnvironment
         }
       };
     }
