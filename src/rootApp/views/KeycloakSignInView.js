@@ -7,8 +7,8 @@ import { connect } from "react-redux";
 import { setAuthSession } from "../ducks";
 import IdpDetails from "../security/IdpDetails";
 import BaseAuthSession from "../security/BaseAuthSession";
-import { isProdEnv } from "../../common/constants";
 import { DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG, isDisallowedPassword } from "../utils";
+import ApplicationContext from "../../ApplicationContext";
 
 function KeycloakSignInView({ setAuthSession }) {
   const [username, setUsername] = useState("");
@@ -16,7 +16,7 @@ function KeycloakSignInView({ setAuthSession }) {
   const [error, setError] = useState(null);
 
   function onSignIn() {
-    if (!isProdEnv && isDisallowedPassword(password)) {
+    if (ApplicationContext.isNonProdAndNonDevEnv() && isDisallowedPassword(password)) {
       alert(DISALLOWED_PASSWORD_BLOCK_LOGIN_MSG);
     } else {
       const [url, request] = httpClient.idp.getAuthRequest(username, password);

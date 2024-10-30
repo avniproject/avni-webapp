@@ -27,10 +27,7 @@ export const LOCALES = Object.freeze({
   ASSAMESE: "as_IN"
 });
 
-export const datePickerModes = [
-  { id: "calendar", name: "Calendar" },
-  { id: "spinner", name: "Spinner" }
-];
+export const datePickerModes = [{ id: "calendar", name: "Calendar" }, { id: "spinner", name: "Spinner" }];
 export const timePickerModes = [{ id: "clock", name: "Clock" }, { id: "spinner", name: "Spinner" }];
 
 export const pickers = [

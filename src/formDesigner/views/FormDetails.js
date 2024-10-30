@@ -637,8 +637,8 @@ class FormDetails extends Component {
     const currentType = this.multiSelectFormElementsToTypeMap.get(formElement.uuid);
     const currentRepeatability = this.questionGroupFormElementsToRepeatableMap.get(formElement.uuid);
     return (
-      (!_.isNil(currentType) && currentType !== formElement.type) ||
-      (!_.isNil(currentRepeatability) && currentRepeatability !== formElement.keyValues.repeatable)
+      (this.multiSelectFormElementsToTypeMap.has(formElement.uuid) && !!currentType !== !!formElement.type) ||
+      (this.questionGroupFormElementsToRepeatableMap.has(formElement.uuid) && !!currentRepeatability !== !!formElement.keyValues.repeatable)
     );
   }
 

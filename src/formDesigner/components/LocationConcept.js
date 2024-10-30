@@ -67,7 +67,7 @@ export const LocationConcept = props => {
   }, [lowestAddressLevelTypes, addressLevelTypeHierarchy]);
 
   React.useEffect(() => {
-    defaultLowestAddressLevelIfSingleHierarchy();
+    _.isEmpty(lowestAddressLevelTypes) && defaultLowestAddressLevelIfSingleHierarchy();
   }, [addressLevelTypeHierarchy]);
 
   function generateAddressLevelTypeHierarchy() {

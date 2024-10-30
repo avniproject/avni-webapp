@@ -21,12 +21,11 @@ const HierarchicalLocationSelect = ({ minLevelTypeId, onSelect, selectedLocation
 
   function setSelectedLocationWithParents(selectedLocation) {
     return httpClient.get(`/locations/parents/${selectedLocation.uuid}`).then(response => {
-      const selectedAddressLevelsFromSelectedLocation = _.map(response.data, l => {
-        let addressLevelToPushToArray = {
+      const selectedAddressLevelsFromSelectedLocation = _.map(_.orderBy(response.data, "level", "desc"), l => {
+        return {
           addressLevelType: addressLevelTypes.find(alt => alt.name === l.typeString),
           value: l
         };
-        return addressLevelToPushToArray;
       });
       setSelectedAddressLevels(selectedAddressLevelsFromSelectedLocation);
     });
