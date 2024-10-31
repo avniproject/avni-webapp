@@ -22,6 +22,7 @@
   "APP_DESIGNER_SUBJECT_TYPE_SYNC_BY_DIRECT_ASSIGNMENT": "This will sync the subjects which are directly assigned to the users",
   "APP_DESIGNER_SUBJECT_TYPE_DISPLAY_REGISTRATION_DETAILS": "Controls if registration details are shown to the field user on subject profile screen",
   "APP_DESIGNER_SUBJECT_TYPE_DISPLAY_PLANNED_ENCOUNTERS": "Controls if planned visits are shown to the field user on the subject dashboard screens",
+  "APP_DESIGNER_SUBJECT_TYPE_ADVANCED_ADDRESS": "If this is not configured, subjects can be registered only at location type with the lowest level.",
   "APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE": "Person subject type that can be added as member to the household",
   "APP_DESIGNER_PROFILE_PICTURE_ICON": "Profile picture of an individual",
   "APP_DESIGNER_PROGRAM_NAME": "Name of the program.",

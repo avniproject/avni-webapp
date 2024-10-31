@@ -1,8 +1,8 @@
 import React from "react";
 import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import Select from "react-select";
 import { filter, includes, map } from "lodash";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 export const AddressLevelSetting = ({ levelUUIDs, setLevelUUIDs, locationTypes }) => {
   const selectedTypes = filter(locationTypes, ({ uuid }) => includes(levelUUIDs, uuid));
@@ -15,9 +15,11 @@ export const AddressLevelSetting = ({ levelUUIDs, setLevelUUIDs, locationTypes }
 
   return (
     <FormControl fullWidth component="fieldset">
-      <FormLabel component="legend">
-        {"Location type where this subject can be registered"}
-      </FormLabel>
+      <AvniFormLabel
+        component="legend"
+        toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ADVANCED_ADDRESS"}
+        label={"Location type where this subject can be registered"}
+      />
       <Select
         isMulti
         isSearchable
