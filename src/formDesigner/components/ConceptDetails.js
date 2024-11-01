@@ -241,7 +241,8 @@ function ConceptDetails({ userInfo, ...props }) {
                       return (
                         <>
                           <li key={index}>
-                            <a href={`#/appDesigner/forms/${form.formUUID}`}>{form.formName}</a>
+                            <a href={`#/appDesigner/forms/${form.formUUID}`}>{form.formName}</a> -> {form.formElementGroupName} ->{" "}
+                            {!isNil(form.formElementQGGroupName) ? form.formElementQGGroupName + " ->" : ""} {form.formElementName}
                             <p />
                           </li>
                         </>
