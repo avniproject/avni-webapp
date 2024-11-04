@@ -74,11 +74,13 @@ const checkForEmptyAnswerNames = answers => {
 
 const checkForDuplicateAnswers = answers => {
   const uniqueCodedAnswerNames = new Set();
-  answers.forEach(answer => {
-    if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
-      answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
-    }
-  });
+  answers
+    .filter(answer => answer && !answer.voided)
+    .forEach(answer => {
+      if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
+        answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
+      }
+    });
 };
 
 class CreateEditConcept extends Component {
