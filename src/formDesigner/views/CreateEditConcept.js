@@ -247,11 +247,11 @@ class CreateEditConcept extends Component {
   };
 
   removeDuplicateVoidedAnswers(answers, index, answerName) {
-    remove(answers, (answer, idx) => idx != index && answer.voided && answer.name === answerName);
+    remove(answers, (answer, idx) => idx !== index && answer.voided && answer.name === answerName);
   }
 
   removeDuplicateNonVoidedAnswers(answers, index, answerName) {
-    remove(answers, (answer, idx) => idx != index && !answer.voided && answer.name === answerName);
+    remove(answers, (answer, idx) => idx !== index && !answer.voided && answer.name === answerName);
   }
 
   onMoveUp = index => {
