@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, isEmpty, replace, sortBy, toLower, trim } from "lodash";
+import { filter, find, isEmpty, remove, replace, sortBy, toLower, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -239,6 +239,7 @@ class CreateEditConcept extends Component {
   onChangeAnswerName = (answerName, index) => {
     const answers = [...this.state.answers];
     answers[index].name = answerName;
+    remove(answers, (answer, idx) => idx != index && answer.voided && answer.name === answerName);
     this.setState({
       answers
     });
