@@ -239,11 +239,15 @@ class CreateEditConcept extends Component {
   onChangeAnswerName = (answerName, index) => {
     const answers = [...this.state.answers];
     answers[index].name = answerName;
-    remove(answers, (answer, idx) => idx != index && answer.voided && answer.name === answerName);
+    this.removeDuplicateVoidedAnswers(answers, index, answerName);
     this.setState({
       answers
     });
   };
+
+  removeDuplicateVoidedAnswers(answers, index, answerName) {
+    remove(answers, (answer, idx) => idx != index && answer.voided && answer.name === answerName);
+  }
 
   onMoveUp = index => {
     this.setState({
