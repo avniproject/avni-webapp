@@ -16,6 +16,7 @@ import { getMessageTemplates, saveMessageRules } from "../service/MessageService
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
 import Save from "@material-ui/icons/Save";
+import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const EncounterTypeCreate = ({ organisationConfig }) => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -26,6 +27,7 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
   const [programT, setProgramT] = useState({});
   const [program, setProgram] = useState([]);
   const [error, setError] = useState("");
+  const [msgError, setMsgError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
@@ -94,6 +96,7 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
       .then(response => {
         if (response.status === 200) {
           setError("");
+          setMsgError("");
           setAlert(true);
           setId(response.data.id);
           return response.data;
@@ -101,7 +104,7 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
       })
       .then(encounterType => saveMessageRules(entityType, encounterType.encounterTypeId, rules))
       .catch(error => {
-        setError(error.response.data.message);
+        error.response.data.message ? setError(error.response.data.message) : setMsgError(getDBValidationError(error));
       });
   };
 
@@ -163,6 +166,7 @@ const EncounterTypeCreate = ({ organisationConfig }) => {
                   onChange={onRulesChange}
                   entityType={entityType}
                   entityTypeId={encounterType.encounterTypeId}
+                  msgError={msgError}
                 />
               ) : (
                 <></>

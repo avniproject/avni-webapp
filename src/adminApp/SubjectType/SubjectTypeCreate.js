@@ -19,12 +19,14 @@ import { getMessageTemplates, saveMessageRules } from "../service/MessageService
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
 import Save from "@material-ui/icons/Save";
+import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const SubjectTypeCreate = ({ organisationConfig }) => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
   const [error, setError] = useState("");
+  const [msgError, setMsgError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
   const [formList, setFormList] = useState([]);
@@ -71,7 +73,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
     if (!groupValidationError) {
       const [s3FileKey, error] = await uploadImage(subjectType.iconFileS3Key, file, MediaFolder.ICONS);
       if (error) {
-        alert(error);
+        setAlert(false);
         return;
       }
       let subjectTypeSavePromise = () =>
@@ -84,18 +86,17 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
           .then(response => {
             if (response.status === 200) {
               setError("");
+              setMsgError("");
               setAlert(true);
               setId(response.data.id);
               return response;
             }
           })
-          .then(response => {
-            saveMessageRules(entityType, response.data.subjectTypeId, rules);
-          })
+          .then(response => saveMessageRules(entityType, response.data.subjectTypeId, rules))
           .catch(error => {
-            setError(error.response.data.message);
+            setAlert(false);
+            error.response.data.message ? setError(error.response.data.message) : setMsgError(getDBValidationError(error));
           });
-
       return subjectTypeSavePromise();
     }
   };
@@ -124,6 +125,7 @@ const SubjectTypeCreate = ({ organisationConfig }) => {
                   onChange={onRulesChange}
                   entityType={entityType}
                   entityTypeId={subjectType.subjectTypeId}
+                  msgError={msgError}
                 />
               ) : (
                 <></>

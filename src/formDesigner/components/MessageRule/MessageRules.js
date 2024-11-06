@@ -15,7 +15,8 @@ const MessageRules = ({
   entityTypeId,
   readOnly = false,
   fixedReceiverType = null,
-  templateFetchError
+  templateFetchError,
+  msgError
 }) => {
   const updateRules = index => newRule => {
     const newState = [...rules];
@@ -77,6 +78,11 @@ const MessageRules = ({
               }
               disabled={false}
             />
+          )}
+          {msgError && msgError !== "" && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              {msgError}
+            </FormLabel>
           )}
         </>
       )}
