@@ -44,6 +44,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const isMetadataDiffReviewEnabled = false;
 const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
   const [uploadType, setUploadType] = React.useState("");
@@ -142,7 +143,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     </Button>
                   </Tooltip>
                 </Grid>
-                {uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
+                {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
                   <Grid item>
                     <Button className={classes.reviewButton} onClick={handleReviewClick}>
                       Review

@@ -19,10 +19,12 @@ import { getMessageRules, getMessageTemplates, saveMessageRules } from "../servi
 import { identity } from "lodash";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
+import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const ProgramEdit = ({ organisationConfig, ...props }) => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
+  const [msgError, setMsgError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [subjectType, setSubjectType] = useState(null);
@@ -82,9 +84,15 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
     return ProgramService.saveProgram(program, subjectType, props.match.params.id)
       .then(saveResponse => {
         setErrors(saveResponse.errors);
-        setRedirectShow(saveResponse.status === 200);
+        if (saveResponse.errors.size === 0) {
+          setMsgError("");
+        }
       })
-      .then(() => saveMessageRules(entityType, program.programId, rules));
+      .then(() => saveMessageRules(entityType, program.programId, rules))
+      .then(() => setRedirectShow(true))
+      .catch(error => {
+        !error.response.data.message && setMsgError(getDBValidationError(error));
+      });
   };
 
   const onDelete = () => {
@@ -136,6 +144,7 @@ const ProgramEdit = ({ organisationConfig, ...props }) => {
               onChange={onRulesChange}
               entityType={entityType}
               entityTypeId={program.programId}
+              msgError={msgError}
             />
           ) : (
             <></>

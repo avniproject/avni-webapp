@@ -15,10 +15,12 @@ import MessageRules from "../../formDesigner/components/MessageRule/MessageRules
 import { identity } from "lodash";
 import { connect } from "react-redux";
 import Save from "@material-ui/icons/Save";
+import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const ProgramCreate = ({ organisationConfig }) => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [errors, setErrors] = useState(new Map());
+  const [msgError, setMsgError] = useState("");
   const [saved, setSaved] = useState(false);
   const [id, setId] = useState();
   const [subjectTypes, setSubjectTypes] = useState([]);
@@ -62,11 +64,15 @@ const ProgramCreate = ({ organisationConfig }) => {
       .then(saveResponse => {
         setErrors(saveResponse.errors);
         setSaved(saveResponse.status === 200);
-        if (saveResponse.errors.size === 0) setId(saveResponse.id);
+        if (saveResponse.errors.size === 0) {
+          setId(saveResponse.id);
+          setMsgError("");
+        }
         return saveResponse.programId;
       })
-      .then(programId => {
-        saveMessageRules(entityType, programId, rules);
+      .then(programId => saveMessageRules(entityType, programId, rules))
+      .catch(error => {
+        !error.response.data.message && setMsgError(getDBValidationError(error));
       });
   };
 
@@ -95,6 +101,7 @@ const ProgramCreate = ({ organisationConfig }) => {
                   onChange={onRulesChange}
                   entityType={entityType}
                   entityTypeId={program.programId}
+                  msgError={msgError}
                 />
               ) : (
                 <></>

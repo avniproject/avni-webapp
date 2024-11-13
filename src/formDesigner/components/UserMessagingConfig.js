@@ -13,7 +13,7 @@ import { DocumentationContainer } from "../../common/components/DocumentationCon
 import MessageRules from "./MessageRule/MessageRules";
 import { MessageReducer } from "./MessageRule/MessageReducer";
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../../adminApp/service/MessageService";
-import { setError } from "../../dataEntryApp/reducers/serverSideRulesReducer";
+import { getDBValidationError } from "../common/ErrorUtil";
 
 export const UserMessagingConfig = () => {
   const entityType = "User";
@@ -42,6 +42,7 @@ export const UserMessagingConfig = () => {
 
   const [enableMessagingConfigSave, setEnableMessagingConfigSave] = React.useState(false);
   const [notificationAlert, setNotificationAlert] = useState(false);
+  const [msgError, setMsgError] = useState("");
 
   const emptyOrgSettings = {
     enableMessaging: false
@@ -68,9 +69,10 @@ export const UserMessagingConfig = () => {
       .then(response => {
         setNotificationAlert(true);
         setEnableMessagingConfigSave(false);
+        setMsgError("");
       })
       .catch(error => {
-        setError(error.response.data.message);
+        setMsgError(getDBValidationError(error));
       });
   };
 
@@ -94,6 +96,7 @@ export const UserMessagingConfig = () => {
                     entityType={entityType}
                     entityTypeId={entityTypeId}
                     fixedReceiverType={receiverType}
+                    msgError={msgError}
                   />
                 ) : (
                   <div>

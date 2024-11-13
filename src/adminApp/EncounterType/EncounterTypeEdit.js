@@ -19,11 +19,13 @@ import { MessageReducer } from "../../formDesigner/components/MessageRule/Messag
 import { getMessageRules, getMessageTemplates, saveMessageRules } from "../service/MessageService";
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
+import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
+  const [msgError, setMsgError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [encounterTypeData, setEncounterTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
@@ -127,10 +129,14 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
       .then(response => {
         if (response.status === 200) {
           setError("");
+          setMsgError("");
         }
       })
       .then(() => saveMessageRules(entityType, encounterType.encounterTypeId, rules))
-      .then(() => setRedirectShow(true));
+      .then(() => setRedirectShow(true))
+      .catch(error => {
+        error.response.data.message ? setError(error.response.data.message) : setMsgError(getDBValidationError(error));
+      });
   };
 
   const onDelete = () => {
@@ -207,6 +213,7 @@ const EncounterTypeEdit = ({ organisationConfig, ...props }) => {
                   onChange={onRulesChange}
                   entityType={entityType}
                   entityTypeId={encounterType.encounterTypeId}
+                  msgError={msgError}
                 />
               ) : (
                 <></>

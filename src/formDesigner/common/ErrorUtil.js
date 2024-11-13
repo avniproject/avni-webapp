@@ -1,4 +1,4 @@
-import { find, get, isEmpty, isNil, replace, split } from "lodash";
+import { find, get, isEmpty, isNil, join, replace, split } from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
 import React from "react";
 
@@ -14,6 +14,7 @@ export const getErrorByKey = (errors, errorKey) => {
 const ServerErrorKey = "SERVER_ERROR";
 
 const SERVER_ERROR_STACKTRACE_STARTING_PATTERN = /^org\..*: /;
+const DB_ERROR_STACKTRACE_STARTING_PATTERN = /^javax\..*: /;
 const EMPTY_STRING = "";
 const NEW_LINE_SEPARATOR = /\n|\r/;
 export const createServerError = function(serverError, defaultMessage) {
@@ -34,4 +35,11 @@ export const hasServerError = function(errors) {
 
 export const removeServerError = function(errors) {
   return errors.filter(({ key }) => key !== ServerErrorKey);
+};
+
+export const getDBValidationError = function(serverError, defaultMessage) {
+  const formError = {};
+  formError.key = ServerErrorKey;
+  let errorMessage = `${get(serverError, "response.data") || get(serverError, "message") || defaultMessage}`;
+  return join(split(replace(errorMessage, DB_ERROR_STACKTRACE_STARTING_PATTERN, EMPTY_STRING), NEW_LINE_SEPARATOR, 3));
 };

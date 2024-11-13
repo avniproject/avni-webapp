@@ -23,12 +23,14 @@ import { getMessageRules, getMessageTemplates, saveMessageRules } from "../servi
 import MessageRules from "../../formDesigner/components/MessageRule/MessageRules";
 import { connect } from "react-redux";
 import { SubjectTypeType } from "./Types";
+import { getDBValidationError } from "../../formDesigner/common/ErrorUtil";
 
 const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [groupValidationError, setGroupValidationError] = useState(false);
   const [error, setError] = useState("");
+  const [msgError, setMsgError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
@@ -115,12 +117,13 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
           .then(response => {
             if (response.status === 200) {
               setError("");
+              setMsgError("");
             }
           })
           .then(() => saveMessageRules(entityType, subjectType.subjectTypeId, rules))
           .then(() => setRedirectShow(true))
           .catch(error => {
-            setError(error.response.data.message);
+            error.response.data.message ? setError(error.response.data.message) : setMsgError(getDBValidationError(error));
           });
 
       return subjectTypeSavePromise();
@@ -181,6 +184,7 @@ const SubjectTypeEdit = ({ organisationConfig, ...props }) => {
               onChange={onRulesChange}
               entityType={entityType}
               entityTypeId={subjectType.subjectTypeId}
+              msgError={msgError}
             />
           ) : (
             <></>

@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import { filter, find, isEmpty, replace, sortBy, toLower, trim } from "lodash";
+import { filter, find, isEmpty, remove, replace, sortBy, toLower, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
@@ -74,11 +74,13 @@ const checkForEmptyAnswerNames = answers => {
 
 const checkForDuplicateAnswers = answers => {
   const uniqueCodedAnswerNames = new Set();
-  answers.forEach(answer => {
-    if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
-      answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
-    }
-  });
+  answers
+    .filter(answer => answer && !answer.voided)
+    .forEach(answer => {
+      if (uniqueCodedAnswerNames.size === uniqueCodedAnswerNames.add(answer.name).size) {
+        answer["isAnswerHavingError"] = { isErrored: true, type: "duplicate" };
+      }
+    });
 };
 
 class CreateEditConcept extends Component {
@@ -198,6 +200,7 @@ class CreateEditConcept extends Component {
       http
         .get(encodedURL)
         .then(response => {
+          this.removeDuplicateNonVoidedAnswers(answers, index, answers[index].name);
           this.setState({
             answers
           });
@@ -237,10 +240,19 @@ class CreateEditConcept extends Component {
   onChangeAnswerName = (answerName, index) => {
     const answers = [...this.state.answers];
     answers[index].name = answerName;
+    this.removeDuplicateVoidedAnswers(answers, index, answerName);
     this.setState({
       answers
     });
   };
+
+  removeDuplicateVoidedAnswers(answers, index, answerName) {
+    remove(answers, (answer, idx) => idx !== index && answer.voided && answer.name === answerName);
+  }
+
+  removeDuplicateNonVoidedAnswers(answers, index, answerName) {
+    remove(answers, (answer, idx) => idx !== index && !answer.voided && answer.name === answerName);
+  }
 
   onMoveUp = index => {
     this.setState({
