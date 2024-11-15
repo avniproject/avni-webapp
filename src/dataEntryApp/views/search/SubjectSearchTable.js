@@ -55,7 +55,6 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     {
       title: t("name"),
       field: "fullName",
-      defaultSort: "asc",
       render: rowData => renderNameWithIcon(rowData)
     },
     ...map(flatten(customColumns), ({ name }) => ({
@@ -82,6 +81,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     {
       title: t("Address"),
       field: "addressLevel",
+      sorting: false,
       render: row => row.addressLevel
     },
     {
@@ -120,13 +120,14 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       }
       pageElement.pageNumber = query.page;
       pageElement.numberOfRecordPerPage = query.pageSize;
-      pageElement.sortColumn = query.orderBy.field;
-      pageElement.sortOrder = query.orderDirection;
+      pageElement.sortColumn = query.orderBy && query.orderBy.field;
+      pageElement.sortOrder = query.orderBy && query.orderDirection;
       searchRequest.pageElement = pageElement;
       http
         .post(apiUrl, searchRequest)
         .then(response => response.data)
         .then(result => {
+          searchRequest.totalElements = result.totalElements;
           resolve({
             data: result.listOfRecords,
             page: query.page,
