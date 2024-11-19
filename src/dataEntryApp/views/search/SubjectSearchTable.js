@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import Chip from "@material-ui/core/Chip";
@@ -12,14 +12,12 @@ import { useSelector } from "react-redux";
 import { selectSubjectTypes } from "../../reducers/metadataReducer";
 import SubjectProfilePicture from "../../components/SubjectProfilePicture";
 import materialTableIcons from "../../../common/material-table/MaterialTableIcons";
+import TablePagination from "@material-ui/core/TablePagination";
 
 const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const { i18n, t } = useTranslation();
   const subjectTypes = useSelector(selectSubjectTypes);
-  const searchExtensions = filter(
-    get(organisationConfigs, "organisationConfig.extensions", []),
-    ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults
-  );
+  const [extensions, setExtensions] = useState();
   const customSearchFields = get(organisationConfigs, "organisationConfig.searchResultFields", []);
   const subjectType = find(subjectTypes, ({ uuid }) => uuid === get(searchRequest, "subjectType"));
   const isPerson = get(subjectType, "type", "Person") === "Person";
@@ -27,6 +25,25 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
   const customColumns = isEmpty(subjectType)
     ? getResultConcepts(customSearchFields)
     : getResultConcepts(filter(customSearchFields, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid));
+
+  useEffect(() => {
+    setExtensions(get(organisationConfigs, "organisationConfig.extensions", []));
+  }, []);
+  const [pageSortCriteria, setPageSortCriteria] = useState({
+    pageSize: 10,
+    page: 0,
+    orderDirection: "",
+    orderBy: null
+  });
+  const [searchResults, setSearchResults] = useState();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchData(pageSortCriteria)
+      .then(response => setSearchResults(response.data))
+      .finally(() => setLoading(false));
+  }, [pageSortCriteria]);
 
   const renderNameWithIcon = ({ uuid, fullName, firstName, profilePicture, subjectTypeName }) => {
     return (
@@ -118,20 +135,18 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
       if (isNil(searchRequest.subjectType) && !isNil(firstSubjectTypeUUID)) {
         searchRequest.subjectType = firstSubjectTypeUUID;
       }
-      pageElement.pageNumber = query.page;
-      pageElement.numberOfRecordPerPage = query.pageSize;
-      pageElement.sortColumn = query.orderBy && query.orderBy.field;
-      pageElement.sortOrder = query.orderBy && query.orderDirection;
+      pageElement.pageNumber = pageSortCriteria.page;
+      pageElement.numberOfRecordPerPage = pageSortCriteria.pageSize;
+      pageElement.sortColumn = pageSortCriteria.orderBy && pageSortCriteria.orderBy.field;
+      pageElement.sortOrder = pageSortCriteria.orderBy && pageSortCriteria.orderDirection;
       searchRequest.pageElement = pageElement;
       http
         .post(apiUrl, searchRequest)
         .then(response => response.data)
         .then(result => {
-          searchRequest.totalElements = result.totalElements;
           resolve({
             data: result.listOfRecords,
-            page: query.page,
-            totalCount: result.totalElements
+            page: query.page
           });
         });
     });
@@ -143,10 +158,13 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         title=""
         tableRef={tableRef}
         columns={columns}
-        data={fetchData}
+        data={searchResults}
+        onOrderChange={(orderBy, orderDirection) =>
+          setPageSortCriteria(prevState => ({ ...prevState, orderBy: columns[orderBy].field, orderDirection }))
+        }
+        isLoading={loading}
         options={{
-          pageSize: 10,
-          pageSizeOptions: [10, 15, 20],
+          paging: false,
           addRowPosition: "first",
           sorting: true,
           headerStyle: {
@@ -154,7 +172,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           },
           debounceInterval: 500,
           search: false,
-          selection: !isEmpty(searchExtensions)
+          selection: !isEmpty(filter(extensions, ({ extensionScope }) => extensionScope.scopeType === extensionScopeTypes.searchResults))
         }}
         components={{
           Toolbar: props => (
@@ -162,11 +180,21 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
               <ExtensionOption
                 subjectUUIDs={join(map(props.selectedRows, "uuid"), ",")}
                 scopeType={extensionScopeTypes.searchResults}
-                configExtensions={get(organisationConfigs, "organisationConfig.extensions")}
+                configExtensions={extensions}
               />
             </div>
           )
         }}
+      />
+      <TablePagination
+        component={"div"}
+        page={pageSortCriteria.page}
+        labelRowsPerPage={""}
+        rowsPerPageOptions={[10, 15, 20]}
+        count={-1}
+        rowsPerPage={pageSortCriteria.pageSize}
+        onPageChange={(e, page) => setPageSortCriteria(prevState => ({ ...prevState, page }))}
+        onRowsPerPageChange={e => setPageSortCriteria(prevState => ({ ...prevState, pageSize: e.target.value }))}
       />
     </div>
   );
