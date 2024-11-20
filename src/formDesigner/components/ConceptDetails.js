@@ -230,7 +230,7 @@ function ConceptDetails({ userInfo, ...props }) {
           <>
             {data.dataType !== "NA" && (
               <>
-                <FormLabel style={{ fontSize: "13px" }}>Used in forms</FormLabel>
+                <FormLabel style={{ fontSize: "13px" }}>Used in forms (Form name -> Page name -> Question name)</FormLabel>
                 <br />
                 {isEmpty(usage.forms) && <span style={{ fontSize: "15px" }}>Not used in the form.</span>}
 
