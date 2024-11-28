@@ -1,5 +1,5 @@
-import _, { concat, reject } from "lodash";
-import { ModelGeneral as General } from "openchs-models";
+import _, { concat, every, reject, some } from "lodash";
+import { CustomFilter, DashboardFilterConfig, ModelGeneral as General } from "openchs-models";
 import WebDashboardSection from "../../../common/model/reports/WebDashboardSection";
 import WebDashboard from "../../../common/model/reports/WebDashboard";
 
@@ -31,7 +31,7 @@ const setData = (thisIsNotNecessaryInThisCase, dashboard) => {
 const addFilter = (dashboard, { modifiedFilter }) => {
   modifiedFilter.uuid = General.randomUUID();
   const newFilters = concat(dashboard.filters, modifiedFilter);
-  return { ...dashboard, filters: newFilters };
+  return { ...dashboard, filters: addSubjectTypeFilterIfNeeded(newFilters) };
 };
 
 const editFilter = (dashboard, { modifiedFilter, selectedFilter }) => {
@@ -41,7 +41,23 @@ const editFilter = (dashboard, { modifiedFilter, selectedFilter }) => {
     modifiedFilter.uuid = selectedFilter.uuid;
   }
   filters.push(modifiedFilter);
-  return { ...dashboard, filters };
+  return { ...dashboard, filters: addSubjectTypeFilterIfNeeded(filters) };
+};
+
+const addSubjectTypeFilterIfNeeded = dashboardFilters => {
+  if (
+    some(dashboardFilters, x => x.filterConfig.subjectType) &&
+    every(dashboardFilters, x => x.filterConfig.type !== CustomFilter.type.SubjectType)
+  ) {
+    const dashboardFilter = {
+      uuid: General.randomUUID(),
+      name: "Subject Type",
+      filterConfig: new DashboardFilterConfig()
+    };
+    dashboardFilter.filterConfig.type = CustomFilter.type.SubjectType;
+    dashboardFilters.push(dashboardFilter);
+  }
+  return dashboardFilters;
 };
 
 const deleteFilter = (dashboard, { selectedFilter }) => {

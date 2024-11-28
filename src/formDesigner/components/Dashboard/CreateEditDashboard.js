@@ -53,6 +53,7 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
   };
 
   const showFilterDialog = event => {
+    setSelectedFilter(null);
     setShowAddFilterModal(true);
     event.stopPropagation();
   };
