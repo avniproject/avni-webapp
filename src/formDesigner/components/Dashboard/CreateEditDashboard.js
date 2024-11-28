@@ -1,7 +1,7 @@
 import React from "react";
 import { DashboardReducer } from "./DashboardReducer";
 import http from "../../../common/utils/httpClient";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, isNil, reject } from "lodash";
 import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -91,6 +91,19 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
 
   if (!OperationalModules.isLoaded(operationalModules)) return null;
 
+  const onFilterDelete = selectedFilter => {
+    const errors = [];
+    DashboardService.validateForMissingSubjectTypeFilter(reject(dashboard.filters, x => x.uuid === selectedFilter.uuid), errors);
+    if (!isEmpty(errors)) {
+      setError(errors);
+      return;
+    }
+    dispatch({
+      type: "deleteFilter",
+      payload: { selectedFilter }
+    });
+  };
+
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title={"Create Offline Dashboard"} />
@@ -169,16 +182,12 @@ const CreateEditDashboard = ({ edit, history, operationalModules, getOperational
             editAction={filter => {
               setSelectedFilter(filter);
             }}
-            deleteAction={selectedFilter =>
-              dispatch({
-                type: "deleteFilter",
-                payload: { selectedFilter }
-              })
-            }
+            deleteAction={onFilterDelete}
           />
         </Grid>
         <p />
         {getErrorByKey(error, "SERVER_ERROR")}
+        {getErrorByKey(error, "MISSING_SUBJECT_TYPE_FILTER")}
         <Grid container direction={"row"}>
           <Grid item xs={1}>
             <SaveComponent name="save" onSubmit={onSave} />

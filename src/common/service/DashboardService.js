@@ -1,4 +1,4 @@
-import { find, isEmpty } from "lodash";
+import { every, find, isEmpty, some } from "lodash";
 import http from "../utils/httpClient";
 import { CustomFilter, DashboardFilterConfig, GroupSubjectTypeFilter, ObservationBasedFilter } from "openchs-models";
 import EntityService from "./EntityService";
@@ -42,7 +42,20 @@ class DashboardService {
         message: `Standard report cards of types related to Approval, Comments, Tasks and Checklist currently doesn't support any filter other than Address. Incompatible "Card <=> Filter" combinations are as follows: ${message}`
       });
     }
+    this.validateForMissingSubjectTypeFilter(dashboard.filters, errors);
     return errors;
+  }
+
+  static validateForMissingSubjectTypeFilter(dashboardFilters, errors) {
+    if (
+      some(dashboardFilters, x => x.filterConfig.subjectType) &&
+      every(dashboardFilters, x => x.filterConfig.type !== CustomFilter.type.SubjectType)
+    ) {
+      errors.push({
+        key: "MISSING_SUBJECT_TYPE_FILTER",
+        message: "One or more filters configured are dependent on the SubjectType filter."
+      });
+    }
   }
 
   static save(dashboard, edit, id) {
