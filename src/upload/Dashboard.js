@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const isMetadataDiffReviewEnabled = false;
+const isMetadataDiffReviewEnabled = true;
 const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
   const [uploadType, setUploadType] = React.useState("");
