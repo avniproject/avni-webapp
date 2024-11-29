@@ -35,7 +35,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     orderDirection: "",
     orderBy: null
   });
-  const [searchResults, setSearchResults] = useState();
+  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -66,6 +66,13 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         </Grid>
       </Grid>
     );
+  };
+
+  const labelDisplayedRows = ({ from, to }) => {
+    const reachedEnd = searchResults.length < pageSortCriteria.pageSize;
+    return `${searchResults.length === 0 && pageSortCriteria.page === 0 ? 0 : from}–${
+      reachedEnd ? from - 1 + searchResults.length : to
+    } of ${reachedEnd ? from - 1 + searchResults.length : `more than ${to}`}`;
   };
 
   const columnsToDisplay = [
@@ -160,7 +167,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         columns={columns}
         data={searchResults}
         onOrderChange={(orderBy, orderDirection) =>
-          setPageSortCriteria(prevState => ({ ...prevState, orderBy: columns[orderBy].field, orderDirection }))
+          setPageSortCriteria(prevState => ({ ...prevState, orderBy: columns[orderBy], orderDirection }))
         }
         isLoading={loading}
         options={{
@@ -191,6 +198,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         page={pageSortCriteria.page}
         labelRowsPerPage={""}
         rowsPerPageOptions={[10, 15, 20]}
+        nextIconButtonProps={{ disabled: searchResults.length < pageSortCriteria.pageSize }}
+        labelDisplayedRows={labelDisplayedRows}
         count={-1}
         rowsPerPage={pageSortCriteria.pageSize}
         onPageChange={(e, page) => setPageSortCriteria(prevState => ({ ...prevState, page }))}
