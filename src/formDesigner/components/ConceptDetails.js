@@ -260,11 +260,14 @@ function ConceptDetails({ userInfo, ...props }) {
               <ul>
                 {usage.concepts.map(concept => {
                   return (
-                    <>
-                      <li key={concept.uuid}>
-                        <a href={`#/appDesigner/concept/${concept.uuid}/show`}>{concept.name}</a>
-                      </li>
-                    </>
+                    concept.uuid &&
+                    !concept.voided && (
+                      <>
+                        <li key={concept.uuid}>
+                          <a href={`#/appDesigner/concept/${concept.uuid}/show`}>{concept.name}</a>
+                        </li>
+                      </>
+                    )
                   );
                 })}{" "}
               </ul>
