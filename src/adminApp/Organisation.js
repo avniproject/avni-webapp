@@ -253,10 +253,16 @@ export const OrganisationCreate = props => {
         if (errorData.includes("organisation_db_user_key")) {
           backendError["dbUser"] = `${data.dbUser} is already exist please use other name`;
         }
-      }
-      if (Object.keys(backendError).length !== 0) {
-        setErrors(backendError);
-        return;
+        if (errorData.includes("organisation_media_directory_key")) {
+          backendError["mediaDirectory"] = `${data.mediaDirectory} is already exist please use other name`;
+        }
+        if (Object.keys(backendError).length !== 0) {
+          setErrors(backendError);
+          return;
+        } else {
+          backendError["other"] = errorData;
+          setErrors(backendError);
+        }
       }
     }
   };
@@ -381,7 +387,9 @@ export const OrganisationCreate = props => {
             />
             {errors.statusId && <FormHelperText error>{errors.statusId}</FormHelperText>}
           </Grid>
-
+          <Grid item xs={6}>
+            {errors.other && <FormHelperText error>{errors.other}</FormHelperText>}
+          </Grid>
           <Grid container item sm={12}>
             <Grid item sm={2}>
               <SaveComponent name="save" onSubmit={handleSubmit} styleClass={{ marginTop: "10px" }} />
