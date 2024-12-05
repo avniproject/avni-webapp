@@ -44,6 +44,11 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
   const onSyncConceptChange = (name, value) => {
     const syncAttributeChangeMessage =
       "Changing sync attributes will ask the users to reset their sync. This might take time depending on the data.";
+    const decisionConceptSyncAttributeAlert =
+      "Make sure to set the value of the selected decision concept to sync the subject to mobile app.";
+    if (includes(syncAttributes.filter(concept => concept.isDecisionConcept).map(concept => concept.value), value)) {
+      window.confirm(decisionConceptSyncAttributeAlert);
+    }
     if (!isEdit) {
       changeSyncAttribute(name, value);
     } else if (window.confirm(syncAttributeChangeMessage)) {
@@ -63,6 +68,11 @@ export const AdvancedSettings = ({ subjectType, dispatch, locationTypes, formMap
               syncAttributes.push({ label: concept.name, value: concept.uuid });
             }
           });
+        });
+        forEach(form.decisionConcepts, concept => {
+          if (includes(syncAttributeDataTypes, concept.dataType)) {
+            syncAttributes.push({ label: concept.name, value: concept.uuid, isDecisionConcept: true });
+          }
         });
         setSyncAttributes(syncAttributes);
       });
