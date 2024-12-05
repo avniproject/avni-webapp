@@ -86,6 +86,7 @@ export const IdentifierSourceDetail = props => {
         <TextField source="batchGenerationSize" />
         <TextField source="minLength" />
         <TextField source="maxLength" />
+        <TextField source="minimumBalance" />
         <ReferenceField source="catchmentId" reference="catchment" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
@@ -98,12 +99,7 @@ export const IdentifierSourceDetail = props => {
 const IdentifierSourceForm = props => (
   <SimpleForm {...props} redirect="show">
     <AvniTextInput source="name" required toolTipKey={"ADMIN_ID_SOURCE_NAME"} />
-    <AvniSelectInput
-      source="type"
-      choices={Object.values(sourceType)}
-      required
-      toolTipKey={"ADMIN_ID_SOURCE_TYPE"}
-    />
+    <AvniSelectInput source="type" choices={Object.values(sourceType)} required toolTipKey={"ADMIN_ID_SOURCE_TYPE"} />
     <AvniFormDataConsumer toolTipKey={"ADMIN_ID_SOURCE_CATCHMENT"} {...props}>
       {({ formData, dispatch, ...rest }) => (
         <Fragment>
@@ -114,11 +110,7 @@ const IdentifierSourceForm = props => (
             filterToQuery={searchText => ({ name: searchText })}
             onChange={(e, newVal) => {
               dispatch(
-                change(
-                  REDUX_FORM_NAME,
-                  "operatingIndividualScope",
-                  isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                )
+                change(REDUX_FORM_NAME, "operatingIndividualScope", isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE)
               );
             }}
             {...rest}
@@ -128,11 +120,7 @@ const IdentifierSourceForm = props => (
         </Fragment>
       )}
     </AvniFormDataConsumer>
-    <AvniTextInput
-      source="batchGenerationSize"
-      required
-      toolTipKey={"ADMIN_ID_SOURCE_BATCH_SIZE"}
-    />
+    <AvniTextInput source="batchGenerationSize" required toolTipKey={"ADMIN_ID_SOURCE_BATCH_SIZE"} />
     <AvniTextInput source="minimumBalance" required toolTipKey={"ADMIN_ID_SOURCE_MIN_BALANCE"} />
     <AvniTextInput source="minLength" required toolTipKey={"ADMIN_ID_SOURCE_MIN_LENGTH"} />
     <AvniTextInput source="maxLength" required toolTipKey={"ADMIN_ID_SOURCE_MAX_LENGTH"} />
@@ -140,12 +128,7 @@ const IdentifierSourceForm = props => (
       {({ formData, ...rest }) => {
         return (
           formData.type === "userPoolBasedIdentifierGenerator" && (
-            <AvniTextInput
-              source="options.prefix"
-              label="Prefix"
-              toolTipKey={"ADMIN_ID_SOURCE_PREFIX"}
-              {...rest}
-            />
+            <AvniTextInput source="options.prefix" label="Prefix" toolTipKey={"ADMIN_ID_SOURCE_PREFIX"} {...rest} />
           )
         );
       }}
