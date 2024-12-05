@@ -16,7 +16,7 @@ export const LocationConcept = props => {
   const [highestAddressLevelType, setHighestAddressLevelType] = React.useState("");
 
   React.useEffect(() => {
-    http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
+    http.get("/addressLevelType?page=0&size=10&sort=level%2CDESC").then(response => {
       if (response.status === 200) {
         const addressLevelTypes = response.data.content.map(addressLevelType => ({
           label: addressLevelType.name,

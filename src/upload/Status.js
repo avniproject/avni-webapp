@@ -92,7 +92,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page = 0, uploadTypes = ne
               <TableCell align="right">
                 {jobStatus.status === "FAILED" || 0 < jobStatus.skipped ? (
                   <FileDownloadButton
-                    url={`/import/errorfile/?jobUuid=${jobStatus.uuid}`}
+                    url={`/import/errorfile?jobUuid=${jobStatus.uuid}`}
                     filename={`errors-${jobStatus.fileName.replace(".zip", ".csv")}`}
                     disabled={includes(["STARTING", "STARTED"], jobStatus.status)}
                   />
