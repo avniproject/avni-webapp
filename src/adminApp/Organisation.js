@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BooleanField,
-  Create,
   Datagrid,
   DisabledInput,
   Edit,
@@ -23,6 +22,16 @@ import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
 import OpenOrganisation from "./components/OpenOrganisation";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
+import { AvniTextField } from "../common/components/AvniTextField";
+import { SaveComponent } from "../common/components/SaveComponent";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import { AvniSelect } from "../common/components/AvniSelect";
+import MenuItem from "@material-ui/core/MenuItem";
+import useGetData from "../custom-hooks/useGetData";
+import httpClient from "../common/utils/httpClient";
+import { Redirect } from "react-router-dom";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -167,27 +176,219 @@ function OrganisationStatusInput() {
   );
 }
 
+const classes = {
+  textField: {
+    width: 400,
+    marginRight: 10
+  },
+  select: {
+    width: 400,
+    height: 40,
+    marginTop: 24
+  },
+  button: {
+    marginTop: 40
+  },
+  inputLabel: {
+    marginTop: 15,
+    fontSize: 16
+  }
+};
+
+const textFieldSet = new Set(["name", "dbUser", "schemaName", "mediaDirectory", "usernameSuffix"]);
 export const OrganisationCreate = props => {
+  const [data, setData] = useState({
+    name: null,
+    dbUser: null,
+    schemaName: null,
+    mediaDirectory: null,
+    usernameSuffix: null,
+    categoryId: null,
+    statusId: null
+  });
+  const [errors, setErrors] = useState({});
+  const [redirect, setRedirect] = useState(false);
+
+  const [category, categoryError] = useGetData("/organisationCategory");
+  const [status, statusError] = useGetData("/organisationStatus");
+  const categoryList = category ? category._embedded.organisationCategory.map(ele => ele) : [];
+  const statusList = status ? status._embedded.organisationStatus.map(ele => ele) : [];
+
+  const handleChange = (property, value) => {
+    setData(currentData => ({ ...currentData, [property]: value }));
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    const validationError = validate();
+    if (Object.keys(validationError).length !== 0) {
+      setErrors(validationError);
+      return;
+    }
+    sendData();
+  };
+  const validate = () => {
+    const errors = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (!value || (textFieldSet.has(key) && value.trim() === "")) {
+        errors[key] = `This field can't be null`;
+      }
+    });
+    return errors;
+  };
+
+  const sendData = async () => {
+    try {
+      const response = await httpClient.post("/organisation", data);
+      if (response.statusText === "Created") {
+        setRedirect(true);
+      }
+    } catch (responseError) {
+      const backendError = {};
+      if (responseError.response && responseError.response.data) {
+        const errorData = responseError.response.data;
+        if (errorData.includes("organisation_name_key")) {
+          backendError["name"] = `${data.name} is already exist please use other name`;
+        }
+        if (errorData.includes("organisation_db_user_key")) {
+          backendError["dbUser"] = `${data.dbUser} is already exist please use other name`;
+        }
+      }
+      if (Object.keys(backendError).length !== 0) {
+        setErrors(backendError);
+        return;
+      }
+    }
+  };
+
+  if (categoryError || statusError) {
+    return (
+      <>
+        <Box boxShadow={2} p={2} bgcolor="background.paper">
+          <Grid container style={{ backgroundColor: "#fff" }} direction="column">
+            <h1>Something Went Wrong</h1>
+          </Grid>
+        </Box>
+      </>
+    );
+  }
+
+  if (redirect) {
+    return <Redirect to={"/admin/organisation"} />;
+  }
+
   return (
-    <Create title="Create New Organisation" {...props}>
-      <SimpleForm redirect="list">
-        <TextInput source="name" validate={isRequired} />
-        <TextInput source="dbUser" validate={isRequired} />
-        <TextInput source="schemaName" validate={isRequired} />
-        <TextInput source="mediaDirectory" validate={isRequired} />
-        <TextInput source="usernameSuffix" validate={isRequired} />
-        <OrganisationCategoryInput />
-        <OrganisationStatusInput />
-        <ReferenceInput
-          resource="account"
-          source="accountId"
-          reference="account"
-          label="Account Name"
-          validate={required("Please select an account")}
-        >
-          <CustomSelectInput source="name" resettable />
-        </ReferenceInput>
-      </SimpleForm>
-    </Create>
+    <>
+      <Box boxShadow={2} p={2} bgcolor="background.paper">
+        <Grid container style={{ backgroundColor: "#fff" }} direction="column">
+          <Grid item xs={6}>
+            <AvniTextField
+              id="name"
+              label="Name*"
+              value={data.name}
+              onChange={event => handleChange("name", event.target.value)}
+              style={classes.textField}
+              margin="normal"
+              autoComplete="off"
+            />
+            {errors.name && <FormHelperText error>{errors.name}</FormHelperText>}
+          </Grid>
+
+          <Grid item xs={6}>
+            <AvniTextField
+              id="dbUser"
+              label="DB User*"
+              value={data.dbUser}
+              onChange={event => handleChange("dbUser", event.target.value)}
+              style={classes.textField}
+              margin="normal"
+              autoComplete="off"
+            />
+            {errors.dbUser && <FormHelperText error>{errors.dbUser}</FormHelperText>}
+          </Grid>
+
+          <Grid item xs={6}>
+            <AvniTextField
+              id="schemaName"
+              label="Schema Name*"
+              value={data.schemaName}
+              onChange={event => handleChange("schemaName", event.target.value)}
+              style={classes.textField}
+              margin="normal"
+              autoComplete="off"
+            />
+            {errors.schemaName && <FormHelperText error>{errors.schemaName}</FormHelperText>}
+          </Grid>
+
+          <Grid item xs={6}>
+            <AvniTextField
+              id="mediaDirectory"
+              label="Media Directory*"
+              value={data.mediaDirectory}
+              onChange={event => handleChange("mediaDirectory", event.target.value)}
+              style={classes.textField}
+              margin="normal"
+              autoComplete="off"
+            />
+            {errors.mediaDirectory && <FormHelperText error>{errors.mediaDirectory}</FormHelperText>}
+          </Grid>
+
+          <Grid item xs={6}>
+            <AvniTextField
+              id="usernameSuffix"
+              label="Ussername Suffix*"
+              value={data.usernameSuffix}
+              onChange={event => handleChange("usernameSuffix", event.target.value)}
+              style={classes.textField}
+              margin="normal"
+              autoComplete="off"
+            />
+            {errors.usernameSuffix && <FormHelperText error>{errors.usernameSuffix}</FormHelperText>}
+          </Grid>
+
+          <Grid item xs={6}>
+            <AvniSelect
+              id="categoryId"
+              label="Organisation Category*"
+              onChange={event => handleChange("categoryId", event.target.value)}
+              style={classes.select}
+              options={categoryList.map(ele => {
+                return (
+                  <MenuItem value={ele.id} key={ele.id}>
+                    {ele.name}
+                  </MenuItem>
+                );
+              })}
+              margin="normal"
+            />
+            {errors.categoryId && <FormHelperText error>{errors.categoryId}</FormHelperText>}
+          </Grid>
+
+          <Grid item xs={6}>
+            <AvniSelect
+              id="statusId"
+              label="Organisation Status*"
+              onChange={event => handleChange("statusId", event.target.value)}
+              style={classes.select}
+              options={statusList.map(ele => {
+                return (
+                  <MenuItem value={ele.id} key={ele.id}>
+                    {ele.name}
+                  </MenuItem>
+                );
+              })}
+              margin="normal"
+            />
+            {errors.statusId && <FormHelperText error>{errors.statusId}</FormHelperText>}
+          </Grid>
+
+          <Grid container item sm={12}>
+            <Grid item sm={2}>
+              <SaveComponent name="save" onSubmit={handleSubmit} styleClass={{ marginTop: "10px" }} />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 };
