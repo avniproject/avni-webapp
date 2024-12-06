@@ -167,7 +167,7 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   const [openImage, setOpenImage] = useState();
   const isFileDataType = formElement.getType() === Concept.dataType.File;
   const supportedMIMEType = isFileDataType ? getFileMimeType(formElement) : `${mediaType}/*`;
-  const isMultiSelect = formElement.isMultiSelect() && !isFileDataType;
+  const isMultiSelect = formElement.isMultiSelect();
 
   useEffect(() => {
     addObsResultsToPreview(localObsValue, setPreview);

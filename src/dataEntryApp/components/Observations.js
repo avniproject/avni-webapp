@@ -11,7 +11,7 @@ import { subjectService } from "../services/SubjectService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
-import { find, get, includes, isEmpty, isNil, lowerCase, map } from "lodash";
+import { find, includes, isEmpty, isNil, lowerCase, map } from "lodash";
 import clsx from "clsx";
 import Colors from "dataEntryApp/Colors";
 import { Link } from "react-router-dom";
@@ -298,19 +298,27 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
   };
 
   const fileOptions = conceptName => {
-    const signedURL = get(find(mediaDataList, ({ altTag }) => altTag === conceptName), "url");
-    return _.isNil(signedURL) ? (
+    const signedURLS = mediaDataList.filter(mediaData => mediaData.altTag === conceptName).map(mediaData => mediaData.url);
+    return _.isNil(signedURLS) ? (
       <TextField>MediaData.MissingSignedMediaMessage</TextField>
     ) : (
-      <Link
-        to={"#"}
-        onClick={event => {
-          event.preventDefault();
-          window.open(signedURL, "_blank");
-        }}
-      >
-        {t("View/Download File")}
-      </Link>
+      <>
+        {signedURLS.map((signedURL, index) => (
+          <>
+            <Link
+              to={"#"}
+              onClick={event => {
+                event.preventDefault();
+                window.open(signedURL, "_blank");
+              }}
+              key={index}
+            >
+              {t("View/Download File")}
+            </Link>
+            <br />
+          </>
+        ))}
+      </>
     );
   };
 
