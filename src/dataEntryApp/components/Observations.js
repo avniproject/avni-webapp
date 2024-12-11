@@ -299,12 +299,12 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
 
   const fileOptions = conceptName => {
     const signedURLS = mediaDataList.filter(mediaData => mediaData.altTag === conceptName).map(mediaData => mediaData.url);
-    return _.isNil(signedURLS) ? (
+    return _.isEmpty(signedURLS) ? (
       <TextField>MediaData.MissingSignedMediaMessage</TextField>
     ) : (
       <>
         {signedURLS.map((signedURL, index) => (
-          <>
+          <React.Fragment key={index}>
             <Link
               to={"#"}
               onClick={event => {
@@ -316,7 +316,7 @@ const Observations = ({ observations, additionalRows, form, customKey, highlight
               {t("View/Download File")}
             </Link>
             <br />
-          </>
+          </React.Fragment>
         ))}
       </>
     );
