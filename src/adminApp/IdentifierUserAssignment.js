@@ -59,9 +59,7 @@ export const IdentifierUserAssignmentDetail = props => {
 };
 
 export const UserSelectInput = props => {
-  const choices = props.choices.filter(
-    choice => choice.name != null && choice.organisationId != null
-  );
+  const choices = props.choices.filter(choice => choice.name != null && choice.organisationId != null);
   return <AutocompleteInput {...props} choices={choices} optionText="name" />;
 };
 
@@ -71,6 +69,7 @@ const IdentifierUserAssignmentForm = props => (
       {({ formData, dispatch, ...rest }) => (
         <Fragment>
           <ReferenceInput
+            perPage={10}
             source="userId"
             reference="user"
             label="Which user?"
@@ -104,11 +103,7 @@ const IdentifierUserAssignmentForm = props => (
         </Fragment>
       )}
     </AvniFormDataConsumer>
-    <AvniTextInput
-      source="identifierStart"
-      required
-      toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_START"}
-    />
+    <AvniTextInput source="identifierStart" required toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_START"} />
     <AvniTextInput source="identifierEnd" required toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_END"} />
   </SimpleForm>
 );
