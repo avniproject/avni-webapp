@@ -89,33 +89,24 @@ function invokeUpdate(update, mediaUrl) {
   update(mediaUrl);
 }
 
-function addMediaUrlToLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue, obsValue) {
+function addMediaUrlToLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue) {
+  invokeUpdate(update, fileName);
   if (isMultiSelect) {
     setLocalObsValue(locObsValue =>
       locObsValue && !isArrayLikeObject(locObsValue)
         ? [locObsValue, fileName].filter(ele => !isEmpty(ele))
         : [...(locObsValue || []), fileName].filter(ele => !isEmpty(ele))
     );
-    const files =
-      obsValue && !isArrayLikeObject(obsValue)
-        ? [obsValue, fileName].filter(ele => !isEmpty(ele))
-        : [...(obsValue || []), fileName].filter(ele => !isEmpty(ele));
-    invokeUpdate(update, files);
   } else {
     setLocalObsValue(fileName);
-    invokeUpdate(update, fileName);
   }
 }
 
-function removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue, obsValue) {
-  if (isMultiSelect && isArrayLikeObject(obsValue)) {
-    const files = obsValue.filter(item => item !== fileName);
-    invokeUpdate(update, files);
-  }
+function removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue) {
+  invokeUpdate(update, fileName);
   if (isMultiSelect && isArrayLikeObject(localObsValue)) {
     setLocalObsValue(locObsValue => locObsValue.filter(item => item !== fileName));
   } else {
-    invokeUpdate(update, fileName);
     if (localObsValue === fileName) setLocalObsValue(); //Remove previous value
   }
 }
@@ -142,8 +133,7 @@ function uploadMediaAndUpdateObservationValue(
   isMultiSelect,
   localObsValue,
   update,
-  onDelete,
-  obsValue
+  onDelete
 ) {
   etFiles.forEach(file => {
     const fileReader = new FileReader();
@@ -154,7 +144,7 @@ function uploadMediaAndUpdateObservationValue(
         .uploadFile("/web/uploadMedia", file)
         .then(r => {
           setUploadButtonClicked(oldValue => oldValue - 1);
-          addMediaUrlToLocalObsValue(update, r.data, isMultiSelect, localObsValue, setLocalObsValue, obsValue);
+          addMediaUrlToLocalObsValue(update, r.data, isMultiSelect, localObsValue, setLocalObsValue);
         })
         .catch(r => {
           const error = `${get(r, "response.data") || get(r, "message") || "Unknown error occurred while uploadButtonClicked media"}`;
@@ -202,20 +192,11 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
       alert(alerts);
       return;
     }
-    uploadMediaAndUpdateObservationValue(
-      etFiles,
-      setUploadButtonClicked,
-      setLocalObsValue,
-      isMultiSelect,
-      localObsValue,
-      update,
-      onDelete,
-      obsValue
-    );
+    uploadMediaAndUpdateObservationValue(etFiles, setUploadButtonClicked, setLocalObsValue, isMultiSelect, localObsValue, update, onDelete);
   };
 
   const onDelete = fileName => {
-    removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue, obsValue);
+    removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localObsValue, setLocalObsValue);
     removeFileFromPreview(fileName, preview, setPreview);
   };
 
