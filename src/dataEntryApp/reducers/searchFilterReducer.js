@@ -4,7 +4,7 @@ export const types = {
   ADD_SEARCH_REQUEST: `${prefix}ADD_SEARCH_REQUEST`
 };
 
-const initialState = { request: { includeVoided: false } };
+const initialState = { request: { includeVoided: false, includeDisplayCount: false } };
 
 export default function(state = initialState, action) {
   switch (action.type) {

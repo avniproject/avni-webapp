@@ -12,7 +12,7 @@ import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
 import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
-import IncludeVoidedForm from "../GlobalSearch/IncludeVoidedForm";
+import CheckBoxSearchComponent from "./CheckBoxSearchComponent";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import Grid from "@material-ui/core/Grid";
 import moment from "moment/moment";
@@ -203,6 +203,7 @@ const searchResult = function(
   selectedSubjectTypeUUID,
   enterValue,
   includeVoided,
+  includeDisplayCount,
   addressLevelIds,
   conceptRequests,
   selectedGenderSort,
@@ -217,6 +218,7 @@ const searchResult = function(
       maxValue: null
     },
     includeVoided: includeVoided,
+    includeDisplayCount: includeDisplayCount,
     addressIds: addressLevelIds,
     concept: conceptRequests,
     gender: selectedGenderSort,
@@ -427,11 +429,16 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
   const [selectedConcepts, setSelectedConcept] = useState(allConceptRelatedFilters);
 
   // is voided
-  const [includeVoided, setIncludeVoided] = React.useState(searchRequest.includeVoided || false);
+  const [checked, setChecked] = React.useState({
+    includeVoided: searchRequest.includeVoided || false,
+    includeDisplayCount: searchRequest.includeDisplayCount || false
+  });
+  const { includeVoided, includeDisplayCount } = checked;
 
-  const includeVoidedChange = event => {
-    setIncludeVoided(event.target.checked);
+  const onChecked = (key, value) => {
+    setChecked(currentChecked => ({ ...currentChecked, [key]: value }));
   };
+
   const conceptRequests = getConceptRequests(selectedConcepts);
 
   const resetFilters = () => {
@@ -440,7 +447,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
     setAddressLevelIds([]);
     setSelectedDate(initialStates.entityDate);
     setSelectedConcept(initialConceptList);
-    setIncludeVoided(false);
+    setChecked({ includeVoided: false, includeDisplayCount: false });
   };
 
   const onSubjectTypeChange = subjectTypeUUID => {
@@ -498,8 +505,21 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
                   selectedConcepts={selectedConcepts}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <IncludeVoidedForm includeVoided={includeVoided} includeVoidedChange={includeVoidedChange} />
+              <Grid container spacing={3} direction="row">
+                <Grid item>
+                  <CheckBoxSearchComponent
+                    label="Include Voided"
+                    checked={includeVoided}
+                    onChange={event => onChecked("includeVoided", event.target.checked)}
+                  />
+                </Grid>
+                <Grid item>
+                  <CheckBoxSearchComponent
+                    label="Display Count"
+                    checked={includeDisplayCount}
+                    onChange={event => onChecked("includeDisplayCount", event.target.checked)}
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </div>
@@ -515,6 +535,7 @@ export const SearchForm = ({ operationalModules, genders, organisationConfigs, s
                 selectedSubjectTypeUUID,
                 enterValue,
                 includeVoided,
+                includeDisplayCount,
                 addressLevelIds,
                 conceptRequests,
                 selectedGenderSort,
