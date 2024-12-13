@@ -111,7 +111,8 @@ function removeMediaUrlFromLocalObsValue(update, fileName, isMultiSelect, localO
   }
 }
 
-function consolidateAlerts(etFiles, formElement, isFileDataType, alerts) {
+function consolidateAlerts(etFiles, formElement, isFileDataType) {
+  const alerts = [];
   etFiles.forEach(file => {
     if (!isValidType(formElement, file.type, isFileDataType)) {
       alerts.push(`Selected files type not supported for file ${file.name}. Please choose proper files.\n`);
@@ -124,6 +125,7 @@ function consolidateAlerts(etFiles, formElement, isFileDataType, alerts) {
       );
     }
   });
+  return alerts;
 }
 
 function uploadMediaAndUpdateObservationValue(
@@ -185,9 +187,8 @@ export const MediaUploader = ({ label, obsValue, mediaType, update, formElement 
   }, [openImage]);
 
   const onMediaSelect = event => {
-    const alerts = [];
     const etFiles = Array.from(event.target.files);
-    consolidateAlerts(etFiles, formElement, isFileDataType, alerts);
+    const alerts = consolidateAlerts(etFiles, formElement, isFileDataType);
     if (!isEmpty(alerts)) {
       alert(alerts);
       return;
