@@ -29,7 +29,7 @@ function ConceptDetails({ userInfo, ...props }) {
     http.get("/web/concept/" + props.match.params.uuid).then(response => {
       setData(response.data);
       if (response.data.dataType === "Location") {
-        http.get("/addressLevelType/?page=0&size=10&sort=level%2CDESC").then(response => {
+        http.get("/addressLevelType?page=0&size=10&sort=level%2CDESC").then(response => {
           if (response.status === 200) {
             const addressLevelTypes = response.data.content.map(addressLevelType => ({
               label: addressLevelType.name,

@@ -62,7 +62,8 @@ export default apiUrl => {
     const options = {};
     switch (type) {
       case GET_LIST:
-        url = `${url}/${UrlPartsGenerator.forList(params)}`;
+        const queryParamsString = UrlPartsGenerator.forList(params);
+        url = `${url}/${queryParamsString}`;
         break;
       case GET_ONE:
         url = `${url}/${params.id}`;
@@ -90,6 +91,7 @@ export default apiUrl => {
       default:
         throw new Error(`Unsupported fetch action type ${type}`);
     }
+    url = url.replace("/?", "?");
     console.log(`Data Provider Action ${type} | Url ${url} | Resource ${resource} | Params ${JSON.stringify(params)}`);
     return { url, options };
   };
