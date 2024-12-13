@@ -202,7 +202,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         labelRowsPerPage={""}
         rowsPerPageOptions={[10, 15, 20]}
         nextIconButtonProps={{ disabled: searchResults.length < pageSortCriteria.pageSize }}
-        labelDisplayedRows={totalElements == -1 ? labelDisplayedRows : undefined}
+        labelDisplayedRows={totalElements === -1 ? labelDisplayedRows : undefined}
         count={totalElements}
         rowsPerPage={pageSortCriteria.pageSize}
         onPageChange={(e, page) => setPageSortCriteria(prevState => ({ ...prevState, page }))}
