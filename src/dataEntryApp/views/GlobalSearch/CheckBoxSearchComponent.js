@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function IncludeVoidedForm({ includeVoided, includeVoidedChange }) {
+function CheckBoxSearchComponent({ label, checked, onChange }) {
   const classes = useStyles();
   const { t } = useTranslation();
   return (
@@ -22,10 +22,8 @@ function IncludeVoidedForm({ includeVoided, includeVoidedChange }) {
         <Grid item xs={12}>
           <FormControl component="fieldset">
             <FormControlLabel
-              control={
-                <Checkbox checked={includeVoided} onChange={includeVoidedChange} color="primary" />
-              }
-              label={t("includeVoided")}
+              control={<Checkbox checked={checked} onChange={onChange} color="primary" />}
+              label={t(label)}
               labelPlacement="end"
             />
           </FormControl>
@@ -35,4 +33,4 @@ function IncludeVoidedForm({ includeVoided, includeVoidedChange }) {
   );
 }
 
-export default IncludeVoidedForm;
+export default CheckBoxSearchComponent;

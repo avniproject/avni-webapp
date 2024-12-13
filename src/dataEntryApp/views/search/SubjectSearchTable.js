@@ -35,13 +35,15 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
     orderDirection: "",
     orderBy: null
   });
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResponse, setSearchResponse] = useState({ searchResults: [], totalElements: -1 });
   const [loading, setLoading] = useState(false);
+
+  const { searchResults, totalElements } = searchResponse;
 
   useEffect(() => {
     setLoading(true);
     fetchData(pageSortCriteria)
-      .then(response => setSearchResults(response.data))
+      .then(response => setSearchResponse({ searchResults: response.data, totalElements: response.totalElements }))
       .finally(() => setLoading(false));
   }, [pageSortCriteria]);
 
@@ -153,6 +155,7 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         .then(result => {
           resolve({
             data: result.listOfRecords,
+            totalElements: result.totalElements,
             page: query.page
           });
         });
@@ -199,8 +202,8 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
         labelRowsPerPage={""}
         rowsPerPageOptions={[10, 15, 20]}
         nextIconButtonProps={{ disabled: searchResults.length < pageSortCriteria.pageSize }}
-        labelDisplayedRows={labelDisplayedRows}
-        count={-1}
+        labelDisplayedRows={totalElements == -1 ? labelDisplayedRows : undefined}
+        count={totalElements}
         rowsPerPage={pageSortCriteria.pageSize}
         onPageChange={(e, page) => setPageSortCriteria(prevState => ({ ...prevState, page }))}
         onRowsPerPageChange={e => setPageSortCriteria(prevState => ({ ...prevState, pageSize: e.target.value }))}
