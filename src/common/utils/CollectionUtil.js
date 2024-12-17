@@ -30,6 +30,8 @@ class CollectionUtil {
     workingItems.forEach((item, index) => {
       item[fieldToUpdate] = index + 1;
     });
+
+    array.splice(0, array.length, ...workingItems);
   }
 }
 
