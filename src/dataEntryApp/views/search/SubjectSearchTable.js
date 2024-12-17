@@ -196,6 +196,18 @@ const SubjectSearchTable = ({ searchRequest, organisationConfigs }) => {
           )
         }}
       />
+      <style>{`
+        .MuiTableSortLabel-icon {
+          opacity: 1;
+          visibility: visible;
+          color: #bdbdbd;
+        }
+        .MuiTableSortLabel-root.MuiTableSortLabel-active .MuiTableSortLabel-icon{
+          color: #000000; 
+          stroke: #000000; 
+          stroke-width: 0.7;
+        }
+      `}</style>
       <TablePagination
         component={"div"}
         page={pageSortCriteria.page}
