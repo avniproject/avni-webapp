@@ -14,6 +14,10 @@ function isOrderedByInputItemOrder(arr, expected) {
   });
 }
 
+function getInitItems(initOrder) {
+  return _.map(initOrder, (item, idx) => ({ name: item, displayOrder: idx + 1 }));
+}
+
 it("should convert to object", function() {
   const object = CollectionUtil.toObject([{ a: "field1", b: "2" }, { a: "field2", b: "20" }], "a", "b");
   assert.equal(object["field1"], "2");
@@ -22,7 +26,7 @@ it("should convert to object", function() {
 
 it("should reorder items as per input in ascending value of displayOrder", function() {
   const initOrder = ["item1", "item2", "item3", "item4", "item5"];
-  const initItems = _.map(initOrder, (item, idx) => ({ name: item, displayOrder: idx + 1 }));
+  const initItems = getInitItems(initOrder);
 
   const shuffledItemsFirstRound = _.shuffle(initItems);
   CollectionUtil.switchItemPosition(shuffledItemsFirstRound, 2, 0, "displayOrder"); //Move item at index 2 to 0
