@@ -14,6 +14,13 @@ function isOrderedByInputItemOrder(arr, expected) {
   });
 }
 
+function validatePositionSwitch(initItems, fromIndex, toIndex, expectedOrderOfNamesAfterRound) {
+  const shuffledItemsFirstRound = _.shuffle(initItems);
+  CollectionUtil.switchItemPosition(shuffledItemsFirstRound, fromIndex, toIndex, "displayOrder");
+  assert.isTrue(isOrderedByInputItemOrder(shuffledItemsFirstRound, expectedOrderOfNamesAfterRound));
+  assert.isTrue(isOrderedByAscendingDisplayOrder(shuffledItemsFirstRound));
+}
+
 function getInitItems(initOrder) {
   return _.map(initOrder, (item, idx) => ({ name: item, displayOrder: idx + 1 }));
 }
@@ -26,15 +33,10 @@ it("should convert to object", function() {
 
 it("should reorder items as per input in ascending value of displayOrder", function() {
   const initOrder = ["item1", "item2", "item3", "item4", "item5"];
-  const initItems = getInitItems(initOrder);
+  const expectedOrderOfNamesAfterFirstRound = ["item3", "item1", "item2", "item4", "item5"];
+  const expectedOrderOfNamesAfterSecondRound = ["item1", "item2", "item4", "item5", "item3"];
 
-  const shuffledItemsFirstRound = _.shuffle(initItems);
-  CollectionUtil.switchItemPosition(shuffledItemsFirstRound, 2, 0, "displayOrder"); //Move item at index 2 to 0
-  assert.isTrue(isOrderedByInputItemOrder(shuffledItemsFirstRound, ["item3", "item1", "item2", "item4", "item5"]));
-  assert.isTrue(isOrderedByAscendingDisplayOrder(shuffledItemsFirstRound));
-
-  const shuffledItemsSecondRound = _.shuffle(shuffledItemsFirstRound);
-  CollectionUtil.switchItemPosition(shuffledItemsSecondRound, 0, 4, "displayOrder"); //Move item at index 0 to 4
-  assert.isTrue(isOrderedByInputItemOrder(shuffledItemsSecondRound, ["item1", "item2", "item4", "item5", "item3"]));
-  assert.isTrue(isOrderedByAscendingDisplayOrder(shuffledItemsSecondRound));
+  const items = getInitItems(initOrder);
+  validatePositionSwitch(items, 2, 0, expectedOrderOfNamesAfterFirstRound);
+  validatePositionSwitch(items, 0, 4, expectedOrderOfNamesAfterSecondRound);
 });
