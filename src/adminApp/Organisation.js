@@ -16,7 +16,8 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
-  Toolbar
+  Toolbar,
+  showNotification as showNotificationAction
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
@@ -32,6 +33,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import useGetData from "../custom-hooks/useGetData";
 import httpClient from "../common/utils/httpClient";
 import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -196,7 +199,7 @@ const classes = {
 };
 
 const textFieldSet = new Set(["name", "dbUser", "schemaName", "mediaDirectory", "usernameSuffix"]);
-export const OrganisationCreate = props => {
+export const OrganisationCreateComponent = ({ showNotification }) => {
   const [data, setData] = useState({
     name: null,
     dbUser: null,
@@ -206,6 +209,7 @@ export const OrganisationCreate = props => {
     categoryId: null,
     statusId: null
   });
+
   const [errors, setErrors] = useState({});
   const [redirect, setRedirect] = useState(false);
 
@@ -241,6 +245,7 @@ export const OrganisationCreate = props => {
     try {
       const response = await httpClient.post("/organisation", data);
       if (response.statusText === "Created") {
+        showNotification(`${data.name} is created successfully`);
         setRedirect(true);
       }
     } catch (responseError) {
@@ -255,6 +260,12 @@ export const OrganisationCreate = props => {
         }
         if (errorData.includes("organisation_media_directory_key")) {
           backendError["mediaDirectory"] = `${data.mediaDirectory} is already exist please use other name`;
+        }
+        if (errorData.includes("organisation_username_suffix_key")) {
+          backendError["usernameSuffix"] = `${data.usernameSuffix} is already exist please use other name`;
+        }
+        if (errorData.includes("organisation_schema_name_key")) {
+          backendError["schemaName"] = `${data.schemaName} is already exist please use other name`;
         }
         if (Object.keys(backendError).length !== 0) {
           setErrors(backendError);
@@ -400,3 +411,12 @@ export const OrganisationCreate = props => {
     </>
   );
 };
+
+OrganisationCreateComponent.propTypes = {
+  showNotification: PropTypes.func
+};
+
+export const OrganisationCreate = connect(
+  null,
+  { showNotification: showNotificationAction }
+)(OrganisationCreateComponent);
