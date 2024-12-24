@@ -252,7 +252,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     httpClient
       .post("/organisation", data)
       .then(response => {
-        if (response.statusText === "Created") {
+        if (response.status && parseInt(response.status) > 200) {
           showNotification(`${data.name} is created successfully`);
           setRedirect(true);
         }
