@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BooleanField,
   Datagrid,
@@ -32,7 +32,7 @@ import { AvniSelect } from "../common/components/AvniSelect";
 import MenuItem from "@material-ui/core/MenuItem";
 import useGetData from "../custom-hooks/useGetData";
 import httpClient from "../common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -209,7 +209,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     categoryId: null,
     statusId: null
   });
-
+  //todo clear errors
   const [errors, setErrors] = useState({});
   const [redirect, setRedirect] = useState(false);
 
@@ -217,6 +217,13 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
   const [status, statusError] = useGetData("/organisationStatus");
   const categoryList = category ? category._embedded.organisationCategory.map(ele => ele) : [];
   const statusList = status ? status._embedded.organisationStatus.map(ele => ele) : [];
+  const history = useHistory();
+
+  useEffect(() => {
+    if (redirect) {
+      history.push("/admin/organisation");
+    }
+  }, [redirect]);
 
   const handleChange = (property, value) => {
     setData(currentData => ({ ...currentData, [property]: value }));
@@ -288,10 +295,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
         </Box>
       </>
     );
-  }
-
-  if (redirect) {
-    return <Redirect to={"/admin/organisation"} />;
   }
 
   return (
