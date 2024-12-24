@@ -248,41 +248,43 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     return errors;
   };
 
-  const sendData = async () => {
-    try {
-      const response = await httpClient.post("/organisation", data);
-      if (response.statusText === "Created") {
-        showNotification(`${data.name} is created successfully`);
-        setRedirect(true);
-      }
-    } catch (responseError) {
-      const backendError = {};
-      if (responseError.response && responseError.response.data) {
-        const errorData = responseError.response.data;
-        if (errorData.includes("organisation_name_key")) {
-          backendError["name"] = `${data.name} is already exist please use other name`;
+  const sendData = () => {
+    httpClient
+      .post("/organisation", data)
+      .then(response => {
+        if (response.statusText === "Created") {
+          showNotification(`${data.name} is created successfully`);
+          setRedirect(true);
         }
-        if (errorData.includes("organisation_db_user_key")) {
-          backendError["dbUser"] = `${data.dbUser} is already exist please use other name`;
+      })
+      .catch(responseError => {
+        const backendError = {};
+        if (responseError.response && responseError.response.data) {
+          const errorData = responseError.response.data;
+          if (errorData.includes("organisation_name_key")) {
+            backendError["name"] = `${data.name} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_db_user_key")) {
+            backendError["dbUser"] = `${data.dbUser} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_media_directory_key")) {
+            backendError["mediaDirectory"] = `${data.mediaDirectory} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_username_suffix_key")) {
+            backendError["usernameSuffix"] = `${data.usernameSuffix} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_schema_name_key")) {
+            backendError["schemaName"] = `${data.schemaName} is already exist please use other name`;
+          }
+          if (Object.keys(backendError).length !== 0) {
+            setErrors(backendError);
+            return;
+          } else {
+            backendError["other"] = errorData;
+            setErrors(backendError);
+          }
         }
-        if (errorData.includes("organisation_media_directory_key")) {
-          backendError["mediaDirectory"] = `${data.mediaDirectory} is already exist please use other name`;
-        }
-        if (errorData.includes("organisation_username_suffix_key")) {
-          backendError["usernameSuffix"] = `${data.usernameSuffix} is already exist please use other name`;
-        }
-        if (errorData.includes("organisation_schema_name_key")) {
-          backendError["schemaName"] = `${data.schemaName} is already exist please use other name`;
-        }
-        if (Object.keys(backendError).length !== 0) {
-          setErrors(backendError);
-          return;
-        } else {
-          backendError["other"] = errorData;
-          setErrors(backendError);
-        }
-      }
-    }
+      });
   };
 
   if (categoryError || statusError) {
