@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button, Typography, Paper, Grid, CircularProgress, MenuItem, FormControl, Select, InputLabel } from "@material-ui/core";
-import httpClient from "common/utils/httpClient";
+import { CircularProgress, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography } from "@material-ui/core";
 import _ from "lodash";
 import { CHANGE_TYPE } from "../adminApp/service/CompareMetadataService";
 
