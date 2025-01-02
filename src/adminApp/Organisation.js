@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BooleanField,
   Datagrid,
@@ -12,12 +12,12 @@ import {
   SaveButton,
   Show,
   ShowButton,
+  showNotification as showNotificationAction,
   SimpleForm,
   SimpleShowLayout,
   TextField,
   TextInput,
-  Toolbar,
-  showNotification as showNotificationAction
+  Toolbar
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
@@ -32,7 +32,7 @@ import { AvniSelect } from "../common/components/AvniSelect";
 import MenuItem from "@material-ui/core/MenuItem";
 import useGetData from "../custom-hooks/useGetData";
 import httpClient from "../common/utils/httpClient";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -217,6 +217,13 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
   const [status, statusError] = useGetData("/organisationStatus");
   const categoryList = category ? category._embedded.organisationCategory.map(ele => ele) : [];
   const statusList = status ? status._embedded.organisationStatus.map(ele => ele) : [];
+  const history = useHistory();
+
+  useEffect(() => {
+    if (redirect) {
+      history.push("/admin/organisation");
+    }
+  }, [redirect]);
 
   const handleChange = (property, value) => {
     setData(currentData => ({ ...currentData, [property]: value }));
@@ -241,41 +248,44 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
     return errors;
   };
 
-  const sendData = async () => {
-    try {
-      const response = await httpClient.post("/organisation", data);
-      if (response.statusText === "Created") {
-        showNotification(`${data.name} is created successfully`);
-        setRedirect(true);
-      }
-    } catch (responseError) {
-      const backendError = {};
-      if (responseError.response && responseError.response.data) {
-        const errorData = responseError.response.data;
-        if (errorData.includes("organisation_name_key")) {
-          backendError["name"] = `${data.name} is already exist please use other name`;
+  const sendData = () => {
+    httpClient
+      .post("/organisation", data)
+      .then(response => {
+        if (response.status && parseInt(response.status) >= 200 && parseInt(response.status) < 300) {
+          showNotification(`${data.name} is created successfully`);
+          showNotification(`${data.name} is created successfully`);
+          setRedirect(true);
         }
-        if (errorData.includes("organisation_db_user_key")) {
-          backendError["dbUser"] = `${data.dbUser} is already exist please use other name`;
+      })
+      .catch(responseError => {
+        const backendError = {};
+        if (responseError.response && responseError.response.data) {
+          const errorData = responseError.response.data;
+          if (errorData.includes("organisation_name_key")) {
+            backendError["name"] = `${data.name} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_db_user_key")) {
+            backendError["dbUser"] = `${data.dbUser} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_media_directory_key")) {
+            backendError["mediaDirectory"] = `${data.mediaDirectory} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_username_suffix_key")) {
+            backendError["usernameSuffix"] = `${data.usernameSuffix} is already exist please use other name`;
+          }
+          if (errorData.includes("organisation_schema_name_key")) {
+            backendError["schemaName"] = `${data.schemaName} is already exist please use other name`;
+          }
+          if (Object.keys(backendError).length !== 0) {
+            setErrors(backendError);
+            return;
+          } else {
+            backendError["other"] = errorData;
+            setErrors(backendError);
+          }
         }
-        if (errorData.includes("organisation_media_directory_key")) {
-          backendError["mediaDirectory"] = `${data.mediaDirectory} is already exist please use other name`;
-        }
-        if (errorData.includes("organisation_username_suffix_key")) {
-          backendError["usernameSuffix"] = `${data.usernameSuffix} is already exist please use other name`;
-        }
-        if (errorData.includes("organisation_schema_name_key")) {
-          backendError["schemaName"] = `${data.schemaName} is already exist please use other name`;
-        }
-        if (Object.keys(backendError).length !== 0) {
-          setErrors(backendError);
-          return;
-        } else {
-          backendError["other"] = errorData;
-          setErrors(backendError);
-        }
-      }
-    }
+      });
   };
 
   if (categoryError || statusError) {
@@ -288,10 +298,6 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
         </Box>
       </>
     );
-  }
-
-  if (redirect) {
-    return <Redirect to={"/admin/organisation"} />;
   }
 
   return (
