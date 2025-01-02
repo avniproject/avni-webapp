@@ -24,6 +24,7 @@ import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
+import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -44,6 +45,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+class ReviewStatusStatus {
+  constructor(loading, response, error) {
+    this.loading = loading;
+    this.response = response;
+    this.error = error;
+  }
+}
+
 const isMetadataDiffReviewEnabled = true;
 const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
@@ -54,7 +63,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [mode, setMode] = React.useState("CREATE");
   const [hierarchy, setHierarchy] = React.useState();
   const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
-  const [reviewMode, setReviewMode] = React.useState(false);
+  const [reviewStatus, setReviewStatus] = React.useState(null);
 
   const selectFile = (content, userfile) => setFile(userfile);
   const getUploadTypeCode = name =>
@@ -115,12 +124,20 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     (uploadType === "Locations" && isEmpty(mode)) ||
     (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
 
-  const handleReviewClick = () => {
-    setReviewMode(true);
+  const handleReviewClick = async () => {
+    try {
+      CompareMetadataService.compare(file).then(filteredData => {
+        setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
+      });
+      setReviewStatus(new ReviewStatusStatus(true, null, null));
+    } catch (err) {
+      setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
+      console.error(err);
+    }
   };
 
-  if (reviewMode) {
-    return <MetadataDiff />;
+  if (reviewStatus) {
+    return <MetadataDiff loading={reviewStatus.loading} response={reviewStatus.response} error={reviewStatus.error} />;
   }
 
   return (

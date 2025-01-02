@@ -2,21 +2,10 @@ import React, { useState } from "react";
 import { Button, Typography, Paper, Grid, CircularProgress, MenuItem, FormControl, Select, InputLabel } from "@material-ui/core";
 import httpClient from "common/utils/httpClient";
 import _ from "lodash";
+import { CHANGE_TYPE } from "../adminApp/service/CompareMetadataService";
 
-const MetadataDiff = () => {
-  const [file1, setFile1] = useState(null);
-  const [file2, setFile2] = useState(null);
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+const MetadataDiff = ({ response, error, loading }) => {
   const [selectedForm, setSelectedForm] = useState("");
-
-  const CHANGE_TYPE = {
-    ADDED: "added",
-    REMOVED: "removed",
-    MODIFIED: "modified",
-    NO_MODIFICATION: "noModification"
-  };
 
   const formLabels = {
     "Missing Files in PROD ZIP": "Removed from Old Metadata",
@@ -25,70 +14,6 @@ const MetadataDiff = () => {
 
   const getDisplayLabel = formKey => formLabels[formKey] || formKey;
   const isValueChanged = value => _.isObject(value) && !_.isNil(value.oldValue) && !_.isNil(value.newValue);
-
-  const handleFileChange = (event, fileNumber) => {
-    const file = event.target.files[0];
-    if (fileNumber === 1) {
-      setFile1(file);
-    } else if (fileNumber === 2) {
-      setFile2(file);
-    }
-  };
-
-  const isNoModification = obj => {
-    if (!_.isObject(obj)) return false;
-    if (obj.changeType === CHANGE_TYPE.NO_MODIFICATION) return true;
-    return _.some(obj, value => isNoModification(value));
-  };
-
-  const filterForms = data => {
-    const filteredData = _.reduce(
-      data,
-      (acc, formData, formName) => {
-        if (!isNoModification(formData) && formName !== "formMappings.json") {
-          acc[formName] = formData;
-        }
-        return acc;
-      },
-      {}
-    );
-
-    return _.reduce(
-      filteredData,
-      (acc, formData, formName) => {
-        acc[formName] = formData;
-        return acc;
-      },
-      {}
-    );
-  };
-
-  const handleSubmit = async () => {
-    if (_.isNil(file1) || _.isNil(file2)) {
-      setError("Please select both files.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file1", file1);
-    formData.append("file2", file2);
-
-    setLoading(true);
-    setResponse(null);
-    setError(null);
-
-    try {
-      const response = await httpClient.post("/api/compare-metadata", formData);
-      const filteredData = filterForms(response.data);
-      setResponse(filteredData);
-      setSelectedForm("");
-    } catch (err) {
-      setError("An error occurred while comparing metadata.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFormChange = event => {
     const selectedKey = event.target.value;
@@ -108,7 +33,7 @@ const MetadataDiff = () => {
     }
   };
 
-  const renderJsonWithColor = (data, indent = 0, parentChangeType = null) => {
+  const JsonWithColor = ({ data, indent = 0, parentChangeType = null }) => {
     if (!_.isObject(data)) {
       return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
     }
@@ -121,54 +46,58 @@ const MetadataDiff = () => {
           if (key === "changeType" || key === "dataType") return null;
 
           if (isValueChanged(value)) {
-            return renderChangedValue(key, value, indent);
+            return <ChangedValue key={key} value={value} indent={indent} />;
           }
 
           if (_.isArray(value)) {
-            return renderArray(key, value, indent, changeType);
+            return <Array key={key} array={value} indent={indent} changeType={changeType} />;
           }
 
           if (_.isObject(value)) {
-            return renderNestedObject(key, value, indent, changeType);
+            return <NestedObject key={key} obj={value} indent={indent} changeType={changeType} />;
           }
 
-          return renderKeyValue(key, value, changeType);
+          return <KeyValue key={key} value={value} changeType={changeType} />;
         })}
       </div>
     );
   };
 
-  const renderChangedValue = (key, value, indent) => (
+  const ChangedValue = ({ key, value, indent }) => (
     <div key={key} style={{ marginBottom: 10 }}>
       <strong style={{ color: "orange", fontSize: "18px" }}>{key}:</strong>
       <div style={{ color: getColor(CHANGE_TYPE.REMOVED), marginLeft: 20 }}>
-        <strong>oldValue:</strong> {renderJsonWithColor(value.oldValue, indent + 20, CHANGE_TYPE.REMOVED)}
+        <strong>oldValue:</strong>
+        <JsonWithColor item={value.oldValue} indent={indent + 20} changeType={CHANGE_TYPE.REMOVED} />
       </div>
       <div style={{ color: getColor(CHANGE_TYPE.ADDED), marginLeft: 20 }}>
-        <strong>newValue:</strong> {renderJsonWithColor(value.newValue, indent + 20, CHANGE_TYPE.ADDED)}
+        <strong>newValue:</strong>
+        <JsonWithColor item={value.newValue} indent={indent + 20} changeType={CHANGE_TYPE.ADDED} />
       </div>
     </div>
   );
 
-  const renderArray = (key, array, indent, changeType) => (
+  const Array = ({ key, array, indent, changeType }) => (
     <div key={key} style={{ marginBottom: 20 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
       {_.map(array, (item, index) => (
         <div key={index} style={{ marginLeft: 20 }}>
-          {renderJsonWithColor(item, indent + 20, item.changeType || changeType)}
+          <JsonWithColor item={item} indent={indent + 20} changeType={item.changeType || changeType} />
         </div>
       ))}
     </div>
   );
 
-  const renderNestedObject = (key, obj, indent, changeType) => (
+  const NestedObject = ({ key, obj, indent, changeType }) => (
     <div key={key} style={{ marginBottom: 10 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
-      <div style={{ marginLeft: 20 }}>{renderJsonWithColor(obj, indent + 20, obj.changeType || changeType)}</div>
+      <div style={{ marginLeft: 20 }}>
+        <JsonWithColor item={obj} indent={indent + 20} changeType={obj.changeType || changeType} />
+      </div>
     </div>
   );
 
-  const renderKeyValue = (key, value, changeType) => (
+  const KeyValue = ({ key, value, changeType }) => (
     <div key={key} style={{ marginBottom: 20 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
       <div style={{ color: getColor(changeType), marginLeft: 20 }}>{String(value)}</div>
@@ -183,48 +112,6 @@ const MetadataDiff = () => {
         </Typography>
       </div>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6} style={{ display: "flex", justifyContent: "flex-start" }}>
-          <input
-            accept=".zip"
-            type="file"
-            onChange={e => handleFileChange(e, 1)}
-            style={{
-              display: "block",
-              marginBottom: 50,
-              width: "150%",
-              padding: "20px",
-              fontSize: "20px",
-              cursor: "pointer"
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} md={6} style={{ display: "flex", justifyContent: "center" }}>
-          <input
-            accept=".zip"
-            type="file"
-            onChange={e => handleFileChange(e, 2)}
-            style={{
-              display: "block",
-              marginBottom: 50,
-              width: "150%",
-              padding: "20px",
-              fontSize: "20px",
-              cursor: "pointer",
-              transform: "translateX(-70%)"
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={loading}
-            style={{ marginTop: "-80px", marginLeft: "20px", fontSize: "18px" }}
-          >
-            Compare Metadata
-          </Button>
-        </Grid>
         <Grid item xs={12}>
           {loading && <CircularProgress />}
           {error && <Typography color="error">{error}</Typography>}
@@ -247,7 +134,11 @@ const MetadataDiff = () => {
                   })}
                 </Select>
               </FormControl>
-              {selectedForm && response[selectedForm] && <div style={{ marginTop: 20 }}>{renderJsonWithColor(response[selectedForm])}</div>}
+              {selectedForm && response[selectedForm] && (
+                <div style={{ marginTop: 20 }}>
+                  <JsonWithColor data={response[selectedForm]} />
+                </div>
+              )}
             </>
           )}
         </Grid>
