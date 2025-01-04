@@ -71,6 +71,16 @@ class HttpClient {
     return localStorage.getItem(IdpDetails.AuthTokenName);
   }
 
+  getIdToken() {
+    const keys = Object.keys(localStorage);
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i].endsWith("idToken")) {
+        return localStorage.getItem(keys[i]);
+      }
+    }
+    return null;
+  }
+
   async setHeaders(options) {
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });
     if (!options.headers.has("Content-Type") && !(options.body && options.body instanceof FormData)) {
