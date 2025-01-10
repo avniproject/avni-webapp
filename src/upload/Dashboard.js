@@ -160,13 +160,13 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     </Button>
                   </Tooltip>
                 </Grid>
-                {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
-                  <Grid item>
-                    <Button className={classes.reviewButton} onClick={handleReviewClick}>
-                      Review
-                    </Button>
-                  </Grid>
-                )}
+                {/*{isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (*/}
+                {/*  <Grid item>*/}
+                {/*    <Button className={classes.reviewButton} onClick={handleReviewClick}>*/}
+                {/*      Review*/}
+                {/*    </Button>*/}
+                {/*  </Grid>*/}
+                {/*)}*/}
                 <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <Grid item>
                     <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />
