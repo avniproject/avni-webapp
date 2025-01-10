@@ -3,66 +3,44 @@ import { CircularProgress, FormControl, Grid, InputLabel, MenuItem, Paper, Selec
 import _ from "lodash";
 import { CHANGE_TYPE } from "../adminApp/service/CompareMetadataService";
 
-const MetadataDiff = ({ response, error, loading }) => {
-  const [selectedForm, setSelectedForm] = useState("");
+export const JsonWithColor = ({ data, indent = 0, parentChangeType = null }) => {
+  console.log("JsonWithColor");
+  if (!_.isObject(data)) {
+    return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
+  }
 
-  const formLabels = {
-    "Missing Files in PROD ZIP": "Removed from Old Metadata",
-    "Missing Files in UAT ZIP": "Newly Added Metadata"
-  };
+  return (
+    <div style={{ marginLeft: indent, fontSize: "18px" }}>
+      {_.map(data, (value, key) => {
+        const changeType = _.isObject(value) && value.changeType ? value.changeType : parentChangeType;
 
-  const getDisplayLabel = formKey => formLabels[formKey] || formKey;
-  const isValueChanged = value => _.isObject(value) && !_.isNil(value.oldValue) && !_.isNil(value.newValue);
+        if (key === "changeType" || key === "dataType") return null;
 
-  const handleFormChange = event => {
-    const selectedKey = event.target.value;
-    setSelectedForm(selectedKey);
-  };
+        if (isValueChanged(value)) {
+          return <ChangedValue key={key} value={value} indent={indent} />;
+        }
 
-  const getColor = changeType => {
-    switch (changeType) {
-      case CHANGE_TYPE.ADDED:
-        return "green";
-      case CHANGE_TYPE.REMOVED:
-        return "red";
-      case CHANGE_TYPE.MODIFIED:
-        return "orange";
-      default:
-        return "black";
-    }
-  };
+        if (_.isArray(value)) {
+          return <Array key={key} array={value} indent={indent} changeType={changeType} />;
+        }
 
-  const JsonWithColor = ({ data, indent = 0, parentChangeType = null }) => {
-    if (!_.isObject(data)) {
-      return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
-    }
+        if (_.isObject(value)) {
+          return <NestedObject key={key} obj={value} indent={indent} changeType={changeType} />;
+        }
 
-    return (
-      <div style={{ marginLeft: indent, fontSize: "18px" }}>
-        {_.map(data, (value, key) => {
-          const changeType = _.isObject(value) && value.changeType ? value.changeType : parentChangeType;
+        return <KeyValue key={key} value={value} changeType={changeType} />;
+      })}
+    </div>
+  );
+};
 
-          if (key === "changeType" || key === "dataType") return null;
+const isValueChanged = function(value) {
+  return _.isObject(value) && !_.isNil(value.oldValue) && !_.isNil(value.newValue);
+};
 
-          if (isValueChanged(value)) {
-            return <ChangedValue key={key} value={value} indent={indent} />;
-          }
-
-          if (_.isArray(value)) {
-            return <Array key={key} array={value} indent={indent} changeType={changeType} />;
-          }
-
-          if (_.isObject(value)) {
-            return <NestedObject key={key} obj={value} indent={indent} changeType={changeType} />;
-          }
-
-          return <KeyValue key={key} value={value} changeType={changeType} />;
-        })}
-      </div>
-    );
-  };
-
-  const ChangedValue = ({ key, value, indent }) => (
+const ChangedValue = function({ key, value, indent }) {
+  console.log("ChangedValue");
+  return (
     <div key={key} style={{ marginBottom: 10 }}>
       <strong style={{ color: "orange", fontSize: "18px" }}>{key}:</strong>
       <div style={{ color: getColor(CHANGE_TYPE.REMOVED), marginLeft: 20 }}>
@@ -75,8 +53,11 @@ const MetadataDiff = ({ response, error, loading }) => {
       </div>
     </div>
   );
+};
 
-  const Array = ({ key, array, indent, changeType }) => (
+const Array = function({ key, array, indent, changeType }) {
+  console.log("Array");
+  return (
     <div key={key} style={{ marginBottom: 20 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
       {_.map(array, (item, index) => (
@@ -86,8 +67,11 @@ const MetadataDiff = ({ response, error, loading }) => {
       ))}
     </div>
   );
+};
 
-  const NestedObject = ({ key, obj, indent, changeType }) => (
+const NestedObject = function({ key, obj, indent, changeType }) {
+  console.log("NestedObject");
+  return (
     <div key={key} style={{ marginBottom: 10 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
       <div style={{ marginLeft: 20 }}>
@@ -95,13 +79,45 @@ const MetadataDiff = ({ response, error, loading }) => {
       </div>
     </div>
   );
+};
 
-  const KeyValue = ({ key, value, changeType }) => (
+const KeyValue = function({ key, value, changeType }) {
+  console.log("KeyValue");
+  return (
     <div key={key} style={{ marginBottom: 20 }}>
       <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
       <div style={{ color: getColor(changeType), marginLeft: 20 }}>{String(value)}</div>
     </div>
   );
+};
+
+const getColor = function(changeType) {
+  switch (changeType) {
+    case CHANGE_TYPE.ADDED:
+      return "green";
+    case CHANGE_TYPE.REMOVED:
+      return "red";
+    case CHANGE_TYPE.MODIFIED:
+      return "orange";
+    default:
+      return "black";
+  }
+};
+
+const MetadataDiff = ({ response, error, loading }) => {
+  const [selectedForm, setSelectedForm] = useState("");
+
+  const formLabels = {
+    "Missing Files in PROD ZIP": "Removed from Old Metadata",
+    "Missing Files in UAT ZIP": "Newly Added Metadata"
+  };
+
+  const getDisplayLabel = formKey => formLabels[formKey] || formKey;
+
+  const handleFormChange = event => {
+    const selectedKey = event.target.value;
+    setSelectedForm(selectedKey);
+  };
 
   return (
     <Paper style={{ padding: 20 }}>
