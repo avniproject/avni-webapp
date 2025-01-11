@@ -24,7 +24,7 @@ import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
-import CompareMetadataService from "../adminApp/service/CompareMetadataService";
+// import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -53,7 +53,7 @@ class ReviewStatusStatus {
   }
 }
 
-const isMetadataDiffReviewEnabled = true;
+// const isMetadataDiffReviewEnabled = true;
 const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
   const classes = useStyles();
   const [uploadType, setUploadType] = React.useState("");
@@ -124,17 +124,17 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     (uploadType === "Locations" && isEmpty(mode)) ||
     (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
 
-  const handleReviewClick = async () => {
-    try {
-      CompareMetadataService.compare(file).then(filteredData => {
-        setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
-      });
-      setReviewStatus(new ReviewStatusStatus(true, null, null));
-    } catch (err) {
-      setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
-      console.error(err);
-    }
-  };
+  // const handleReviewClick = async () => {
+  //   try {
+  //     CompareMetadataService.compare(file).then(filteredData => {
+  //       setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
+  //     });
+  //     setReviewStatus(new ReviewStatusStatus(true, null, null));
+  //   } catch (err) {
+  //     setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
+  //     console.error(err);
+  //   }
+  // };
 
   if (reviewStatus) {
     return <MetadataDiff loading={reviewStatus.loading} response={reviewStatus.response} error={reviewStatus.error} />;
