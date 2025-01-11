@@ -24,7 +24,8 @@ import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
-// import CompareMetadataService from "../adminApp/service/CompareMetadataService";
+/* eslint-disable-next-line no-unused-vars */
+import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -45,6 +46,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+/* eslint-disable-next-line no-unused-vars */
 class ReviewStatusStatus {
   constructor(loading, response, error) {
     this.loading = loading;
@@ -54,7 +56,13 @@ class ReviewStatusStatus {
 }
 
 // const isMetadataDiffReviewEnabled = true;
-const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
+const Dashboard = ({
+  getStatuses,
+  getUploadTypes,
+  uploadTypes = new UploadTypes(),
+  /* eslint-disable-next-line no-unused-vars */
+  userRoles
+}) => {
   const classes = useStyles();
   const [uploadType, setUploadType] = React.useState("");
   const [entityForDownload, setEntityForDownload] = React.useState("");
@@ -63,6 +71,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [mode, setMode] = React.useState("CREATE");
   const [hierarchy, setHierarchy] = React.useState();
   const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
+  /* eslint-disable-next-line no-unused-vars */
   const [reviewStatus, setReviewStatus] = React.useState(null);
 
   const selectFile = (content, userfile) => setFile(userfile);
