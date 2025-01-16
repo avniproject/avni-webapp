@@ -238,6 +238,7 @@
     "Videos": "व्हिडिओ",
     "location": "ठिकाण",
     "trackLocation": "ठिकाणाचा शोध",
+    "isAllowedToInvokeTokenGenerationAPI": "टोकन निर्मितीला परवानगी आहे",
     "summary": "गोषवारा / सारांश",
     "visitsPlanned": "नियोजित भेटी",
     "enrolmentDetails": "नावनोंदणी बाबत माहिती",

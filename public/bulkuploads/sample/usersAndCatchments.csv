@@ -1,9 +1,9 @@
-Location with full hierarchy,Catchment Name,Username,Full Name of User,Email,Phone,Language,Track Location,Date picker mode,Enable Beneficiary mode,Beneficiary ID Prefix
-"PHC B, Sub B, Vil B",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes,calendar,no,U29
-"PHC B, Sub B, Vil C",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes,calendar,no,U29
-"PHC B, Sub C, Vil C",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes,calendar,no,U29
-"PHC B, Sub B, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,+919876543210,English,yes,,no,U49
-"PHC B, Sub C, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,+919876543210,English,yes,,no,U49
-"PHC C, Sub C, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,+919876543210,English,yes,,no,U49
-"PHC B, Sub C, Vil C",Org X Cat C,user69@orgx,user69,email@example.com,+919876543210,English,no,spinner,no,U69
-"PHC C, Sub C, Vil C",Org X Cat C,user69@orgx,user69,email@example.com,+919876543210,English,no,spinner,no,U69
+Location with full hierarchy,Catchment Name,Username,Full Name of User,Email,Phone,Language,Track Location,Is Allowed To Invoke Token Generation API,Date picker mode,Enable Beneficiary mode,Beneficiary ID Prefix
+"PHC B, Sub B, Vil B",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes,no,calendar,no,U29
+"PHC B, Sub B, Vil C",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes,no,calendar,no,U29
+"PHC B, Sub C, Vil C",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes,no,calendar,no,U29
+"PHC B, Sub B, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,+919876543210,English,yes,no,,no,U49
+"PHC B, Sub C, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,+919876543210,English,yes,no,,no,U49
+"PHC C, Sub C, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,+919876543210,English,yes,no,,no,U49
+"PHC B, Sub C, Vil C",Org X Cat C,user69@orgx,user69,email@example.com,+919876543210,English,no,yes,spinner,no,U69
+"PHC C, Sub C, Vil C",Org X Cat C,user69@orgx,user69,email@example.com,+919876543210,English,no,yes,spinner,no,U69

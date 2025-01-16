@@ -230,6 +230,10 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
           render={user => (!isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : "")}
         />
         <FunctionField
+          label="Is Allowed To Invoke Token Generation API"
+          render={user => (!isNil(user.settings) ? (user.settings.isAllowedToInvokeTokenGenerationAPI ? "True" : "False") : "")}
+        />
+        <FunctionField
           label="Beneficiary Mode"
           render={user => (!isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : "")}
         />
@@ -540,6 +544,11 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
         </ToolTipContainer>
         <SelectInput source="settings.locale" label="Preferred Language" choices={languages} />
         <AvniBooleanInput source="settings.trackLocation" label="Track location" toolTipKey={"ADMIN_USER_SETTINGS_TRACK_LOCATION"} />
+        <AvniBooleanInput
+          source="settings.isAllowedToInvokeTokenGenerationAPI"
+          label="Is Allowed To Invoke Token Generation API"
+          toolTipKey={"ADMIN_USER_SETTINGS_IS_ALLOWED_TO_INVOKE_TOKEN_GENERATION_API"}
+        />
         <AvniBooleanInput
           source="settings.showBeneficiaryMode"
           label="Beneficiary mode"

@@ -209,6 +209,7 @@
     "giveLocationPermissionFromSettings": "செயலி > OpenCHS > OpenCHS அமைப்பிலிருந்து இருப்பிட அனுமதி வழங்கவும்",
     "location": "இடம்",
     "trackLocation": "இருப்பிட கண்காணிப்பு",
+    "isAllowedToInvokeTokenGenerationAPI": "டோக்கன் உருவாக்கம் அனுமதிக்கப்படுகிறது",
     "visitsBeingScheduled": "சந்திப்பு திட்டமிடப்பட்டுள்ளது",
     "visitName": "சந்திப்பின் நோக்கம் ",
     "schedulingFor": "திட்டமிடல்",

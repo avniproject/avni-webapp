@@ -209,6 +209,7 @@
     "giveLocationPermissionFromSettings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಅಪ್ಲಿಕೇಶನ್‌ಗಳು > ಓಪನ್‌ಎಚ್‌ಎಸ್‌ನಿಂದ ಓಪನ್‌ಎಚ್‌ಎಸ್‌ಗೆ ದಯವಿಟ್ಟು ಸ್ಥಳ ಅನುಮತಿ ನೀಡಿ",
     "location": "ಸ್ಥಳ",
     "trackLocation": "ಸ್ಥಳವನ್ನು ಪತ್ತೆ ಮಾಡಿ",
+    "isAllowedToInvokeTokenGenerationAPI": "ಟೋಕನ್ ಜನರೇಷನ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ",
     "visitsBeingScheduled": "ನಿಗದಿತ ಭೇಟಿಗಳು",
     "visitName": "ಭೇಟಿ ಹೆಸರು",
     "schedulingFor": "ಇದಕ್ಕಾಗಿ ವೇಳಾಪಟ್ಟಿ",

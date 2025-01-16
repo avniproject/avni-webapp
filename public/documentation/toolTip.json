@@ -140,6 +140,7 @@
   "APP_DESIGNER_GROUP_TEXT_COLOUR": "Text colour for the name of the group",
   "APP_DESIGNER_GROUP_BACKGROUND_COLOUR": "Background colour for the name of the group",
   "ADMIN_USER_SETTINGS_TRACK_LOCATION": "Switches on visit location tracking on the Field App",
+  "ADMIN_USER_SETTINGS_IS_ALLOWED_TO_INVOKE_TOKEN_GENERATION_API": "Allows user to invoke token generation API",
   "ADMIN_USER_SETTINGS_HIDE_EXIT": "Removes the Exit button on the Field App",
   "ADMIN_USER_SETTINGS_HIDE_ENROL": "Hides the Enrol button on the Field App",
   "ADMIN_USER_SETTINGS_HIDE_REGISTER": "Hides the Register button on the Field App",
