@@ -9,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
+import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { debounce } from "lodash";
 
 const useStyles = makeStyles({
@@ -17,6 +18,13 @@ const useStyles = makeStyles({
     backgroundColor: "#FFF",
     padding: "20px",
     position: "relative"
+  },
+  metabaseHeader: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: "0px",
+    marginBottom: "8px"
   },
   setupButtonContainer: {
     position: "absolute",
@@ -61,6 +69,22 @@ const useStyles = makeStyles({
     "&:hover": {
       backgroundColor: "#4995ec"
     }
+  },
+  metabaseLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    fontSize: "10px",
+    color: "#757575",
+    textDecoration: "none",
+    margin: 0
+  },
+  redirectIcon: {
+    fontSize: "1rem",
+    marginLeft: "5px"
+  },
+  metabaseTitle: {
+    marginBottom: 0,
+    padding: 0
   }
 });
 
@@ -210,9 +234,15 @@ const SelfServiceReports = () => {
                     <img src={MetabaseSVG} alt="Metabase logo" style={{ height: 50, width: 50 }} />
                   </Grid>
                   <Grid item xs={10}>
-                    <Typography gutterBottom variant="h4" component="h4">
-                      Metabase
-                    </Typography>
+                    <div className={classes.metabaseHeader}>
+                      <Typography variant="h4" component="h4" className={classes.metabaseTitle}>
+                        Metabase
+                      </Typography>
+                      <a href="https://metabase.com" target="_blank" rel="noopener noreferrer" className={classes.metabaseLink}>
+                        metabase.com
+                        <OpenInNewIcon className={classes.redirectIcon} />
+                      </a>
+                    </div>
                     <Typography variant="body2" color="textSecondary" component="p">
                       Metabase provides a graphical interface to create business intelligence and analytics graphs in minutes. Avni
                       integrates with Metabase to support ad hoc and self-serviced reports.
