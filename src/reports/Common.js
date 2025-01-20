@@ -3,7 +3,7 @@ import ExploreIcon from "@material-ui/icons/Explore";
 
 export const reportSideBarOptions = [
   { href: "#/export", name: "Longitudinal Export", Icon: PlayForWorkIcon },
-  { href: "#/newExport", name: "New Longitudinal Export", Icon: PlayForWorkIcon },
+  { href: "#/newExport", name: "New Longitudinal Export", Icon: PlayForWorkIcon }
   // { href: "#/cannedreports", name: "Canned Reports", Icon: AssessmentIcon },
-  { href: "#/selfservicereports", name: "Self-service Reports", Icon: ExploreIcon }
+  // { href: "#/selfservicereports", name: "Self-service Reports", Icon: ExploreIcon }
 ];
