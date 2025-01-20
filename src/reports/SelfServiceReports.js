@@ -1,215 +1,213 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
 import { makeStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Switch from "@material-ui/core/Switch";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
 import MetabaseSVG from "./Metabase_icon.svg";
+import { debounce } from "lodash";
 
 const useStyles = makeStyles({
   root: {
     maxWidth: 600,
-    backgroundColor: "#FFF"
+    backgroundColor: "#FFF",
+    padding: "20px",
+    position: "relative"
   },
-  topRightButtons: {
+  setupButtonContainer: {
+    position: "absolute",
+    top: 20,
+    right: 20,
     display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-    marginTop: "10px"
+    alignItems: "center",
+    gap: "10px"
   },
-  actionAreaContainer: {
+  setupButton: {
+    backgroundColor: "#4995ec",
+    color: "#FFF",
+    "&:hover": {
+      backgroundColor: "#4995ec"
+    }
+  },
+  setupDoneLabel: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    color: "green",
+    border: "1px solid green",
+    padding: "5px 10px",
+    borderRadius: "5px"
+  },
+  buttonsContainer: {
+    marginTop: "30px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center"
   },
-  buttonSpacing: {
-    marginLeft: "10px"
+  refreshButton: {
+    backgroundColor: "#4995ec",
+    color: "#FFF",
+    "&:hover": {
+      backgroundColor: "#4995ec"
+    }
   },
-  message: {
-    color: "green",
-    marginTop: "10px"
-  },
-  errorMessage: {
-    color: "red",
-    marginTop: "10px"
+  exploreButton: {
+    backgroundColor: "#4995ec",
+    color: "#FFF",
+    "&:hover": {
+      backgroundColor: "#4995ec"
+    }
   }
 });
-
-const SetupActions = ({ setupEnabled, loadingSetup, handleSetupToggle, handleRefreshTables, loadingRefresh, handleCheckSyncStatus }) => {
-  const classes = useStyles();
-  return (
-    <div>
-      <Switch
-        checked={setupEnabled}
-        onChange={handleSetupToggle}
-        disabled={loadingSetup}
-        color="primary"
-        name="metabaseSetup"
-        inputProps={{ "aria-label": "Metabase Setup Toggle" }}
-      />
-      {loadingSetup && <CircularProgress size={24} />}
-      <Button
-        size="small"
-        color="primary"
-        className={classes.buttonSpacing}
-        onClick={handleRefreshTables}
-        disabled={!setupEnabled || loadingRefresh}
-      >
-        {loadingRefresh ? <CircularProgress size={24} /> : "Refresh Tables"}
-      </Button>
-      <Button size="small" color="primary" className={classes.buttonSpacing} onClick={handleCheckSyncStatus} disabled={!setupEnabled}>
-        Check Sync Status
-      </Button>
-    </div>
-  );
-};
 
 const SelfServiceReports = () => {
   const classes = useStyles();
 
   const [state, setState] = useState({
-    setupEnabled: false,
-    loadingSetup: false,
-    loadingRefresh: false,
-    syncStatus: "",
+    setupLoading: false,
+    setupDone: false,
     errorMessage: "",
-    successMessage: ""
+    loadingRefresh: false
   });
 
-  const resetMessages = () => {
-    setState(prevState => ({
-      ...prevState,
-      errorMessage: "",
-      successMessage: ""
-    }));
-  };
+  useEffect(() => {
+    fetchSetupStatus();
+  }, []);
 
-  const handleSetupToggle = async () => {
-    setState({ ...state, loadingSetup: true });
-    resetMessages();
+  const fetchSetupStatus = async () => {
     try {
-      const response = await fetch(`/api/metabase/setup-toggle?enabled=${!state.setupEnabled}`, {
-        method: "POST"
-      });
-      const data = await response.json();
+      const response = await fetch("/api/metabase/setup-status");
       if (response.ok) {
+        const data = await response.json();
         setState(prevState => ({
           ...prevState,
-          setupEnabled: !state.setupEnabled,
-          errorMessage: data.message.includes("could not be created") ? data.message : "",
-          successMessage: data.message.includes("could not be created") ? "" : "Setup toggled successfully!"
+          setupDone: data.setupEnabled
         }));
       } else {
         setState(prevState => ({
           ...prevState,
-          errorMessage: "Failed to toggle setup."
+          errorMessage: "Failed to fetch setup status."
         }));
       }
     } catch (error) {
       setState(prevState => ({
         ...prevState,
-        errorMessage: "Error during setup toggle: " + error.message
+        errorMessage: `Error fetching setup status: ${error.message}`
       }));
-    } finally {
-      setState(prevState => ({ ...prevState, loadingSetup: false }));
     }
   };
 
-  const handleRefreshTables = async () => {
+  const resetMessages = () => {
+    setState(prevState => ({
+      ...prevState,
+      errorMessage: ""
+    }));
+  };
+
+  const setupReports = async () => {
+    resetMessages();
+    setState(prevState => ({ ...prevState, setupLoading: true }));
+    try {
+      const response = await fetch(`/api/metabase/setup-toggle?enabled=true`, {
+        method: "POST"
+      });
+
+      if (response.ok) {
+        const createQuestionsResponse = await fetch("/api/metabase/create-questions", {
+          method: "POST"
+        });
+
+        if (createQuestionsResponse.ok) {
+          setState(prevState => ({
+            ...prevState,
+            setupLoading: false,
+            setupDone: true
+          }));
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            setupLoading: false,
+            errorMessage: "Failed to create questions."
+          }));
+        }
+      } else {
+        setState(prevState => ({
+          ...prevState,
+          setupLoading: false,
+          errorMessage: "Failed to setup reports."
+        }));
+      }
+    } catch (error) {
+      setState(prevState => ({
+        ...prevState,
+        setupLoading: false,
+        errorMessage: `Setup failed: ${error.message}`
+      }));
+    }
+  };
+
+  const refreshReports = debounce(async () => {
     setState(prevState => ({
       ...prevState,
       loadingRefresh: true,
-      errorMessage: "",
-      successMessage: ""
+      errorMessage: ""
     }));
-
     try {
       const syncStatusResponse = await fetch("/api/metabase/sync-status", {
         method: "GET"
       });
 
       if (syncStatusResponse.ok) {
-        const currentSyncStatus = await syncStatusResponse.json();
-
-        if (currentSyncStatus === "INCOMPLETE") {
+        const syncStatus = await syncStatusResponse.json();
+        if (syncStatus === "INCOMPLETE") {
           setState(prevState => ({
             ...prevState,
-            syncStatus: currentSyncStatus,
-            errorMessage:
-              "Metabase setup enabled, but questions could not be created. Database sync is incomplete. Please refresh tables after sync is complete.",
-            successMessage: ""
+            loadingRefresh: false,
+            errorMessage: "Database sync is incomplete. Please try again later."
           }));
         } else {
           const response = await fetch("/api/metabase/create-questions", {
             method: "POST"
           });
 
-          if (!response.ok) {
+          if (response.ok) {
             setState(prevState => ({
               ...prevState,
-              errorMessage: "Failed to refresh tables. Please try again.",
-              successMessage: ""
+              loadingRefresh: false,
+              errorMessage: ""
             }));
           } else {
             setState(prevState => ({
               ...prevState,
-              syncStatus: currentSyncStatus,
-              errorMessage: "",
-              successMessage: "Questions created successfully!"
+              loadingRefresh: false,
+              errorMessage: "Failed to refresh reports."
             }));
           }
         }
-      } else {
-        setState(prevState => ({
-          ...prevState,
-          errorMessage: "Error checking sync status. Please try again.",
-          successMessage: ""
-        }));
       }
     } catch (error) {
       setState(prevState => ({
         ...prevState,
-        errorMessage: "Error during refresh: " + error.message,
-        successMessage: ""
+        loadingRefresh: false,
+        errorMessage: `Error during refresh: ${error.message}`
       }));
-    } finally {
-      setState(prevState => ({ ...prevState, loadingRefresh: false }));
     }
-  };
-
-  const handleCheckSyncStatus = async () => {
-    try {
-      const response = await fetch("/api/metabase/sync-status", {
-        method: "GET"
-      });
-      if (response.ok) {
-        const status = await response.json();
-        setState({ ...state, syncStatus: status });
-      } else {
-        setState({ ...state, syncStatus: "Error retrieving sync status" });
-      }
-    } catch (error) {
-      setState({ ...state, syncStatus: "Error fetching sync status" });
-    }
-  };
+  }, 500);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Self Service Reports`} enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
-      <Grid container alignItems={"center"} spacing={3}>
+    <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
+      <Grid container alignItems="center" spacing={3}>
         <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
           <Card className={classes.root}>
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item container direction={"row"} spacing={1}>
+                <Grid item container direction="row" spacing={1}>
                   <Grid item>
-                    <img src={MetabaseSVG} alt={"Metabase logo"} style={{ height: 50, width: 50 }} />
+                    <img src={MetabaseSVG} alt="Metabase logo" style={{ height: 50, width: 50 }} />
                   </Grid>
                   <Grid item xs={10}>
                     <Typography gutterBottom variant="h4" component="h4">
@@ -222,49 +220,36 @@ const SelfServiceReports = () => {
                   </Grid>
                 </Grid>
               </Grid>
+
+              {!state.setupDone ? (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.setupButton} onClick={setupReports} disabled={state.setupLoading}>
+                    Setup Reports
+                  </Button>
+                  {state.setupLoading && <CircularProgress size={24} />}
+                </div>
+              ) : (
+                <div className={classes.setupDoneLabel}>Setup done</div>
+              )}
             </CardContent>
 
-            <CardActions className={classes.actionAreaContainer}>
-              <SetupActions
-                setupEnabled={state.setupEnabled}
-                loadingSetup={state.loadingSetup}
-                handleSetupToggle={handleSetupToggle}
-                handleRefreshTables={handleRefreshTables}
-                loadingRefresh={state.loadingRefresh}
-                handleCheckSyncStatus={handleCheckSyncStatus}
-              />
-
-              <div className={classes.topRightButtons}>
-                <Button size="small" color="primary" href="https://www.metabase.com/docs/latest/getting-started.html" target={"_blank"}>
-                  Learn how to use Metabase
-                </Button>
-                <Button size="small" color="primary" href="https://reporting.avniproject.org" target={"_blank"}>
-                  Start exploring your data
+            {state.setupDone && (
+              <div className={classes.buttonsContainer}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <Button className={classes.refreshButton} onClick={refreshReports} disabled={state.loadingRefresh}>
+                    Refresh Reports
+                  </Button>
+                  {state.loadingRefresh && <CircularProgress size={24} />}
+                </div>
+                <Button className={classes.exploreButton} href="https://reporting.avniproject.org" target="_blank">
+                  Explore Your Data
                 </Button>
               </div>
-            </CardActions>
+            )}
 
-            {state.errorMessage ? (
-              <Typography variant="body2" className={classes.errorMessage}>
+            {state.errorMessage && (
+              <Typography variant="body2" color="error">
                 {state.errorMessage}
-              </Typography>
-            ) : state.successMessage ? (
-              <Typography variant="body2" component="p" className={classes.message}>
-                {state.successMessage}
-              </Typography>
-            ) : null}
-
-            {/* show sync status */}
-            {state.syncStatus && (
-              <Typography
-                variant="body2"
-                component="p"
-                className={classes.message}
-                style={{
-                  color: state.syncStatus === "COMPLETE" ? "green" : "red"
-                }}
-              >
-                Sync Status: {state.syncStatus}
               </Typography>
             )}
           </Card>
