@@ -24,6 +24,7 @@ import { LocationHierarchy } from "./LocationHierarchy";
 import Typography from "@material-ui/core/Typography";
 import { Box } from "@material-ui/core";
 import MetadataDiff from "./MetadataDiff";
+/* eslint-disable-next-line no-unused-vars */
 import CompareMetadataService from "../adminApp/service/CompareMetadataService";
 
 const useStyles = makeStyles(theme => ({
@@ -45,6 +46,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+/* eslint-disable-next-line no-unused-vars */
 class ReviewStatusStatus {
   constructor(loading, response, error) {
     this.loading = loading;
@@ -53,8 +55,14 @@ class ReviewStatusStatus {
   }
 }
 
-const isMetadataDiffReviewEnabled = true;
-const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(), userRoles }) => {
+// const isMetadataDiffReviewEnabled = true;
+const Dashboard = ({
+  getStatuses,
+  getUploadTypes,
+  uploadTypes = new UploadTypes(),
+  /* eslint-disable-next-line no-unused-vars */
+  userRoles
+}) => {
   const classes = useStyles();
   const [uploadType, setUploadType] = React.useState("");
   const [entityForDownload, setEntityForDownload] = React.useState("");
@@ -63,6 +71,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   const [mode, setMode] = React.useState("CREATE");
   const [hierarchy, setHierarchy] = React.useState();
   const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
+  /* eslint-disable-next-line no-unused-vars */
   const [reviewStatus, setReviewStatus] = React.useState(null);
 
   const selectFile = (content, userfile) => setFile(userfile);
@@ -124,17 +133,17 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
     (uploadType === "Locations" && isEmpty(mode)) ||
     (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
 
-  const handleReviewClick = async () => {
-    try {
-      CompareMetadataService.compare(file).then(filteredData => {
-        setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
-      });
-      setReviewStatus(new ReviewStatusStatus(true, null, null));
-    } catch (err) {
-      setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
-      console.error(err);
-    }
-  };
+  // const handleReviewClick = async () => {
+  //   try {
+  //     CompareMetadataService.compare(file).then(filteredData => {
+  //       setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
+  //     });
+  //     setReviewStatus(new ReviewStatusStatus(true, null, null));
+  //   } catch (err) {
+  //     setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
+  //     console.error(err);
+  //   }
+  // };
 
   if (reviewStatus) {
     return <MetadataDiff loading={reviewStatus.loading} response={reviewStatus.response} error={reviewStatus.error} />;
@@ -160,13 +169,13 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
                     </Button>
                   </Tooltip>
                 </Grid>
-                {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
-                  <Grid item>
-                    <Button className={classes.reviewButton} onClick={handleReviewClick}>
-                      Review
-                    </Button>
-                  </Grid>
-                )}
+                {/*{isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (*/}
+                {/*  <Grid item>*/}
+                {/*    <Button className={classes.reviewButton} onClick={handleReviewClick}>*/}
+                {/*      Review*/}
+                {/*    </Button>*/}
+                {/*  </Grid>*/}
+                {/*)}*/}
                 <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <Grid item>
                     <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />
