@@ -154,43 +154,34 @@ const SelfServiceReports = () => {
   const setupReports = async () => {
     resetMessages();
     setState(prevState => ({ ...prevState, setupLoading: true }));
-    try {
-      const response = await fetch(`/api/metabase/setup-toggle?enabled=true`, {
-        method: "POST"
-      });
-
-      if (response.ok) {
-        const createQuestionsResponse = await fetch("/api/metabase/create-questions", {
+    const attemptSetup = async () => {
+      try {
+        const response = await fetch(`/api/metabase/setup-toggle?enabled=true`, {
           method: "POST"
         });
 
-        if (createQuestionsResponse.ok) {
-          setState(prevState => ({
-            ...prevState,
-            setupLoading: false,
-            setupDone: true
-          }));
+        if (response.ok) {
+          const createQuestionsResponse = await fetch("/api/metabase/create-questions", {
+            method: "POST"
+          });
+
+          if (createQuestionsResponse.ok) {
+            setState(prevState => ({
+              ...prevState,
+              setupLoading: false,
+              setupDone: true
+            }));
+          } else {
+            throw new Error("Failed to create questions.");
+          }
         } else {
-          setState(prevState => ({
-            ...prevState,
-            setupLoading: false,
-            errorMessage: "Failed to create questions."
-          }));
+          throw new Error("Failed to setup reports.");
         }
-      } else {
-        setState(prevState => ({
-          ...prevState,
-          setupLoading: false,
-          errorMessage: "Failed to setup reports."
-        }));
+      } catch (error) {
+        setTimeout(attemptSetup, 2000);
       }
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        setupLoading: false,
-        errorMessage: `Setup failed: ${error.message}`
-      }));
-    }
+    };
+    attemptSetup();
   };
 
   const refreshReports = debounce(async () => {
