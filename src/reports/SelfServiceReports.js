@@ -11,7 +11,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { debounce } from "lodash";
-import http from "common/utils/httpClient";
 
 const useStyles = makeStyles({
   root: {
@@ -99,11 +98,8 @@ const SelfServiceReports = () => {
     loadingRefresh: false
   });
 
-  const [reportingUrl, setReportingUrl] = useState(null);
-
   useEffect(() => {
     fetchSetupStatus();
-    fetchReportingUrl();
   }, []);
 
   const fetchSetupStatus = async () => {
@@ -126,21 +122,6 @@ const SelfServiceReports = () => {
         ...prevState,
         errorMessage: `Error fetching setup status: ${error.message}`
       }));
-    }
-  };
-
-  const fetchReportingUrl = async () => {
-    try {
-      const response = await http.fetchJson("/config");
-      const responseData = await response.json();
-      if (responseData.reportingSystems && responseData.reportingSystems.length > 0) {
-        const metabaseSystem = responseData.reportingSystems.find(system => system.name.toLowerCase() === "metabase reports");
-        if (metabaseSystem) {
-          setReportingUrl(metabaseSystem.url);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching reporting URL:", error);
     }
   };
 
