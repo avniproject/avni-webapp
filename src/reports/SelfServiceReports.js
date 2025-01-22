@@ -281,7 +281,7 @@ const SelfServiceReports = () => {
                   </Button>
                   {state.loadingRefresh && <CircularProgress size={24} />}
                 </div>
-                <Button className={classes.exploreButton} href={reportingUrl || "#"} target="_blank" disabled={!reportingUrl}>
+                <Button className={classes.exploreButton} href="https://reporting-green.avniproject.org" target="_blank">
                   Explore Your Data
                 </Button>
               </div>
