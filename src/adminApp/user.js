@@ -494,6 +494,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       <AvniTextInput source="name" label="Name of the Person" validate={validateDisplayName} toolTipKey={"ADMIN_USER_NAME"} />
       <AvniTextInput source="email" label="Email Address" validate={validateEmail} toolTipKey={"ADMIN_USER_EMAIL"} multiline />
       <AvniTextInput source="phoneNumber" validate={getPhoneValidator(organisation.region)} toolTipKey={"ADMIN_USER_PHONE_NUMBER"} />
+      <DisabledInput source="organisationId" label="Organisation Id" defaultValue={organisation.id} />
       <LineBreak />
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) => (
