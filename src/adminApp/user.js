@@ -495,6 +495,7 @@ const UserForm = ({ edit, nameSuffix, organisation, ...props }) => {
       <AvniTextInput source="email" label="Email Address" validate={validateEmail} toolTipKey={"ADMIN_USER_EMAIL"} multiline />
       <AvniTextInput source="phoneNumber" validate={getPhoneValidator(organisation.region)} toolTipKey={"ADMIN_USER_PHONE_NUMBER"} />
       <DisabledInput source="organisationId" label="Organisation Id" defaultValue={organisation.id} />
+      {/*Above organisationId disabled input is required to pass orgId during userCreate to avoid issues with IDP usage when invoked as different type of users, orgAdmin / SuperAdmin, etc..*/}
       <LineBreak />
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) => (
