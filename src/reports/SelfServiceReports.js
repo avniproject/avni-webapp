@@ -159,7 +159,11 @@ const SelfServiceReports = () => {
           throw new Error("Failed to setup reports.");
         }
       } catch (error) {
-        setTimeout(attemptSetup, 2000);
+        setState(prevState => ({
+          ...prevState,
+          setupLoading: false,
+          errorMessage: error.message
+        }));
       }
     };
     attemptSetup();
