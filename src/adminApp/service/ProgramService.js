@@ -10,17 +10,15 @@ class ProgramService {
 
     if (_.isNil(subjectType)) errors.set("SubjectType", "Empty");
 
-    const { jsCodeEECDR, validationErrorEECDR } = validateRule(
-      program.enrolmentEligibilityCheckDeclarativeRule,
-      holder => holder.generateEligibilityRule()
+    const { jsCodeEECDR, validationErrorEECDR } = validateRule(program.enrolmentEligibilityCheckDeclarativeRule, holder =>
+      holder.generateEligibilityRule()
     );
     if (!_.isEmpty(validationErrorEECDR)) {
       errors.set("EnrolmentEligibilityCheckDeclarativeRule", validationErrorEECDR);
     }
 
-    const { jsCodeMEECDR, validationErrorMEECDR } = validateRule(
-      program.manualEnrolmentEligibilityCheckDeclarativeRule,
-      holder => holder.generateEligibilityRule()
+    const { jsCodeMEECDR, validationErrorMEECDR } = validateRule(program.manualEnrolmentEligibilityCheckDeclarativeRule, holder =>
+      holder.generateEligibilityRule()
     );
     if (!_.isEmpty(validationErrorMEECDR)) {
       errors.set("ManualEnrolmentEligibilityCheckDeclarativeRule", validationErrorMEECDR);
@@ -44,11 +42,11 @@ class ProgramService {
       enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
       enrolmentEligibilityCheckDeclarativeRule: program.enrolmentEligibilityCheckDeclarativeRule,
       manualEligibilityCheckRequired: program.manualEligibilityCheckRequired,
+      showGrowthChart: program.showGrowthChart,
       allowMultipleEnrolments: program.allowMultipleEnrolments,
       manualEnrolmentEligibilityCheckRule: program.manualEnrolmentEligibilityCheckRule,
       programId: program.programId,
-      manualEnrolmentEligibilityCheckDeclarativeRule:
-        program.manualEnrolmentEligibilityCheckDeclarativeRule
+      manualEnrolmentEligibilityCheckDeclarativeRule: program.manualEnrolmentEligibilityCheckDeclarativeRule
     })
       .then(response => {
         saveResponse.status = response.status;
@@ -65,16 +63,10 @@ class ProgramService {
   }
 
   static updateJSRules(program, errors, jsCodeEECDR, jsCodeMEECDR) {
-    if (
-      !_.isEmpty(jsCodeEECDR) &&
-      _.isNil(errors.get("EnrolmentEligibilityCheckDeclarativeRule"))
-    ) {
+    if (!_.isEmpty(jsCodeEECDR) && _.isNil(errors.get("EnrolmentEligibilityCheckDeclarativeRule"))) {
       program.enrolmentEligibilityCheckRule = jsCodeEECDR;
     }
-    if (
-      !_.isEmpty(jsCodeMEECDR) &&
-      _.isNil(errors.get("ManualEnrolmentEligibilityCheckDeclarativeRule"))
-    ) {
+    if (!_.isEmpty(jsCodeMEECDR) && _.isNil(errors.get("ManualEnrolmentEligibilityCheckDeclarativeRule"))) {
       program.manenrolmentEligibilityCheckRule = jsCodeMEECDR;
     }
   }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import _ from "lodash";
@@ -20,15 +20,14 @@ import { JSEditor } from "../../common/components/JSEditor";
 import { PopoverColorPicker } from "../../common/components/PopoverColorPicker";
 
 const EditProgramFields = props => {
-  const {
-    program,
-    errors,
-    subjectTypes,
-    formList,
-    dispatch,
-    onSubjectTypeChange,
-    subjectType
-  } = props;
+  const { program, errors, subjectTypes, formList, dispatch, onSubjectTypeChange, subjectType } = props;
+
+  const isNew = _.isNil(program.uuid);
+  useEffect(() => {
+    if (isNew && program.name && program.name.toLowerCase() === "child" && program.showGrowthChart !== true) {
+      dispatch({ type: "showGrowthChart", payload: true });
+    }
+  }, [isNew, program.name, program.showGrowthChart, dispatch]);
   return (
     <>
       <AvniTextField
@@ -117,9 +116,7 @@ const EditProgramFields = props => {
       <br />
       <AvniSwitch
         checked={program.allowMultipleEnrolments}
-        onChange={event =>
-          dispatch({ type: "allowMultipleEnrolments", payload: event.target.checked })
-        }
+        onChange={event => dispatch({ type: "allowMultipleEnrolments", payload: event.target.checked })}
         name="Allow multiple enrolments"
         toolTipKey={"APP_DESIGNER_ALLOW_MULTIPLE_ENROLMENTS"}
       />
@@ -127,18 +124,21 @@ const EditProgramFields = props => {
       <br />
       <AvniSwitch
         checked={program.allow}
-        onChange={event =>
-          dispatch({ type: "manualEligibilityCheckRequired", payload: event.target.checked })
-        }
+        onChange={event => dispatch({ type: "manualEligibilityCheckRequired", payload: event.target.checked })}
         name="Manual eligibility check required"
         toolTipKey={"APP_DESIGNER_PROGRAM_MANUAL_ELIGIBILITY_CHECK_REQUIRED"}
       />
 
-      <br />
-      <AvniFormLabel
-        label={"Enrolment Summary Rule"}
-        toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"}
+      <AvniSwitch
+        checked={program.showGrowthChart}
+        onChange={event => dispatch({ type: "showGrowthChart", payload: event.target.checked })}
+        name="Show growth chart"
+        toolTipKey={"APP_DESIGNER_PROGRAM_SHOW_GROWTH_CHART"}
       />
+      <br />
+
+      <br />
+      <AvniFormLabel label={"Enrolment Summary Rule"} toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"} />
       <JSEditor
         value={program.enrolmentSummaryRule || sampleEnrolmentSummaryRule()}
         onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
@@ -146,10 +146,7 @@ const EditProgramFields = props => {
 
       <br />
       <br />
-      <AvniFormLabel
-        label={"Enrolment eligibility check rule"}
-        toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
-      />
+      <AvniFormLabel label={"Enrolment eligibility check rule"} toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"} />
       {program.loaded && (
         <RuleDesigner
           rulesJson={program.enrolmentEligibilityCheckDeclarativeRule}
@@ -192,13 +189,8 @@ const EditProgramFields = props => {
       />
       {program.loaded && (
         <JSEditor
-          value={
-            program.manualEnrolmentEligibilityCheckRule ||
-            sampleManualEnrolmentEligibilityCheckRule()
-          }
-          onValueChange={event =>
-            dispatch({ type: "manualEnrolmentEligibilityCheckRule", payload: event })
-          }
+          value={program.manualEnrolmentEligibilityCheckRule || sampleManualEnrolmentEligibilityCheckRule()}
+          onValueChange={event => dispatch({ type: "manualEnrolmentEligibilityCheckRule", payload: event })}
         />
       )}
     </>

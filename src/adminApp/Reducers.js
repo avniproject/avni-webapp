@@ -23,6 +23,7 @@ export function programReducer(program, action) {
         enrolmentEligibilityCheckDeclarativeRule: action.payload.enrolmentEligibilityCheckDeclarativeRule,
         manualEnrolmentEligibilityCheckRule: action.payload.manualEnrolmentEligibilityCheckRule,
         manualEligibilityCheckRequired: action.payload.manualEligibilityCheckRequired,
+        showGrowthChart: action.payload.showGrowthChart,
         allowMultipleEnrolments: action.payload.allowMultipleEnrolments,
         manualEnrolmentEligibilityCheckDeclarativeRule: action.payload.manualEnrolmentEligibilityCheckDeclarativeRule,
         active: action.payload.active,
