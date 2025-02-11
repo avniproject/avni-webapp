@@ -195,6 +195,12 @@ const SelfServiceReports = () => {
             loadingRefresh: false,
             errorMessage: "Database sync is incomplete. Please try again later."
           }));
+        } else if (syncStatus === "NOT_STARTED") {
+          setState(prevState => ({
+            ...prevState,
+            loadingRefresh: false,
+            errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
+          }));
         } else {
           const response = await fetch("/api/metabase/create-questions", {
             method: "POST"
