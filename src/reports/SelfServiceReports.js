@@ -144,7 +144,7 @@ const SelfServiceReports = () => {
     setState(prevState => ({ ...prevState, setupLoading: true }));
     const attemptSetup = async () => {
       try {
-        const response = await fetch(`/api/metabase/setup-toggle?enabled=true`, {
+        const response = await fetch(`/api/metabase/setup`, {
           method: "POST"
         });
 
