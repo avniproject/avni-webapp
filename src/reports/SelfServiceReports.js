@@ -11,7 +11,10 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { debounce } from "lodash";
-
+import UserInfo from "../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+import userInfo from "../common/model/UserInfo";
+const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 const useStyles = makeStyles({
   root: {
     maxWidth: 600,
@@ -104,6 +107,14 @@ const SelfServiceReports = () => {
   }, []);
 
   const fetchSetupStatus = async () => {
+    if (!showAnalytics) {
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "You do not have access to analytics.",
+        setupDone: false
+      }));
+      return;
+    }
     try {
       const response = await fetch("/api/metabase/setup-status");
       if (response.ok) {
@@ -141,6 +152,13 @@ const SelfServiceReports = () => {
 
   const setupReports = async () => {
     resetMessages();
+    if (!showAnalytics) {
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "You do not have access to setup reports."
+      }));
+      return;
+    }
     setState(prevState => ({ ...prevState, setupLoading: true }));
     const attemptSetup = async () => {
       try {
@@ -177,6 +195,13 @@ const SelfServiceReports = () => {
   };
 
   const refreshReports = debounce(async () => {
+    if (!showAnalytics) {
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "You do not have access to setup reports."
+      }));
+      return;
+    }
     setState(prevState => ({
       ...prevState,
       loadingRefresh: true,
