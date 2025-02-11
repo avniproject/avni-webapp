@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { reportSideBarOptions } from "./Common";
 import Card from "@material-ui/core/Card";
@@ -94,6 +94,7 @@ const SelfServiceReports = () => {
   const [state, setState] = useState({
     setupLoading: false,
     setupDone: false,
+    allowSetup: false,
     errorMessage: "",
     loadingRefresh: false
   });
@@ -109,18 +110,24 @@ const SelfServiceReports = () => {
         const data = await response.json();
         setState(prevState => ({
           ...prevState,
+          allowSetup: true,
           setupDone: data.setupEnabled
         }));
       } else {
+        const errorResponse = await response.text();
         setState(prevState => ({
           ...prevState,
-          errorMessage: "Failed to fetch setup status."
+          errorMessage: errorResponse.includes("424 FAILED_DEPENDENCY")
+            ? "Metabase Self-service is not enabled"
+            : "Failed to fetch setup status.",
+          setupDone: false
         }));
       }
     } catch (error) {
       setState(prevState => ({
         ...prevState,
-        errorMessage: `Error fetching setup status: ${error.message}`
+        errorMessage: `Error fetching setup status: ${error.message}`,
+        setupDone: false
       }));
     }
   };
@@ -137,7 +144,7 @@ const SelfServiceReports = () => {
     setState(prevState => ({ ...prevState, setupLoading: true }));
     const attemptSetup = async () => {
       try {
-        const response = await fetch(`/api/metabase/setup-toggle?enabled=true`, {
+        const response = await fetch(`/api/metabase/setup`, {
           method: "POST"
         });
 
@@ -187,6 +194,12 @@ const SelfServiceReports = () => {
             ...prevState,
             loadingRefresh: false,
             errorMessage: "Database sync is incomplete. Please try again later."
+          }));
+        } else if (syncStatus === "NOT_STARTED") {
+          setState(prevState => ({
+            ...prevState,
+            loadingRefresh: false,
+            errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
           }));
         } else {
           const response = await fetch("/api/metabase/create-questions", {
@@ -248,7 +261,7 @@ const SelfServiceReports = () => {
 
               {!state.setupDone ? (
                 <div className={classes.setupButtonContainer}>
-                  <Button className={classes.setupButton} onClick={setupReports} disabled={state.setupLoading}>
+                  <Button className={classes.setupButton} onClick={setupReports} disabled={state.setupLoading || !state.allowSetup}>
                     Setup Reports
                   </Button>
                   {state.setupLoading && <CircularProgress size={24} />}
@@ -258,7 +271,7 @@ const SelfServiceReports = () => {
               )}
             </CardContent>
 
-            {state.setupDone && (
+            {state.allowSetup && state.setupDone && (
               <div className={classes.buttonsContainer}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <Button className={classes.refreshButton} onClick={refreshReports} disabled={state.loadingRefresh}>

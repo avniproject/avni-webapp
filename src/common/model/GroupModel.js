@@ -3,9 +3,10 @@ class GroupModel {
 
   static Everyone = "Everyone";
   static Administrators = "Administrators";
+  static MetabaseUsers = "Metabase Users";
 
   static nonRemovableGroup(name) {
-    return [this.Everyone, this.Administrators].includes(name);
+    return [this.Everyone, this.Administrators, this.MetabaseUsers].includes(name);
   }
 
   static isEveryoneWithAllPrivileges(group) {
