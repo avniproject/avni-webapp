@@ -283,6 +283,8 @@
     "notDirectlyAssignedToThisUser": "ಈ ಬೇಟಿಗಾಗಿ ನೀವು ನೇಮಕಗೊಂಡಿಲ್ಲ",
     "notInThisUsersCatchment": "ಈ ಬೇಟಿಗಾಗಿ ನೀವು ಈ ಬೇಟಿಗಾರರ ಕ್ಯಾಚ್ಮೆಂಟ್‌ನಲ್ಲಿ ಇಲ್ಲ",
     "userSyncAttributeNotConfigured": "ಬೇಟಿಗಾರರ ಸಿಂಕ್ ಗುಣಲಕ್ಷಣವನ್ನು ಕಾನ್‌ಫಿಗರ್ ಮಾಡಲಾಗಿಲ್ಲ",
-    "syncAttributeForUserNotValidForUpdate": "ಬೇಟಿಗಾರರ ಸಿಂಕ್ ಗುಣಲಕ್ಷಣವು ನವೀಕರಣಕ್ಕಾಗಿ ಮಾನ್ಯವಾಗಿಲ್ಲ"
+    "syncAttributeForUserNotValidForUpdate": "ಬೇಟಿಗಾರರ ಸಿಂಕ್ ಗುಣಲಕ್ಷಣವು ನವೀಕರಣಕ್ಕಾಗಿ ಮಾನ್ಯವಾಗಿಲ್ಲ",
+    "selectAllLabel": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
+    "unselectAllLabel": "ಎಲ್ಲಾ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ"
   }
 }
