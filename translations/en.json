@@ -444,6 +444,8 @@
     "notDirectlyAssignedToThisUser": "Not directly assigned to this user",
     "notInThisUsersCatchment": "Not in this user's catchment",
     "userSyncAttributeNotConfigured": "User sync attribute not configured",
-    "syncAttributeForUserNotValidForUpdate": "Sync attribute for user not valid for update"
+    "syncAttributeForUserNotValidForUpdate": "Sync attribute for user not valid for update",
+    "selectAllLabel": "Select All",
+    "unselectAllLabel": "Unselect All"
   }
 }
