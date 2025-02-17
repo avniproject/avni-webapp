@@ -10,7 +10,8 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import { debounce } from "lodash";
+import _, { debounce } from "lodash";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles({
   root: {
@@ -105,7 +106,7 @@ const SelfServiceReports = () => {
 
   const fetchSetupStatus = async () => {
     try {
-      const response = await fetch("/api/metabase/setup-status");
+      const response = await fetch("/web/metabase/setup-status");
       if (response.ok) {
         const data = await response.json();
         setState(prevState => ({
@@ -132,6 +133,20 @@ const SelfServiceReports = () => {
     }
   };
 
+  const tearDownMetabase = async function() {
+    setState(prevState => ({
+      ...prevState,
+      setupLoading: true
+    }));
+    await fetch(`/web/metabase/teardown`, {
+      method: "POST"
+    });
+    setState(prevState => ({
+      ...prevState,
+      setupLoading: false
+    }));
+  };
+
   const resetMessages = () => {
     setState(prevState => ({
       ...prevState,
@@ -144,12 +159,12 @@ const SelfServiceReports = () => {
     setState(prevState => ({ ...prevState, setupLoading: true }));
     const attemptSetup = async () => {
       try {
-        const response = await fetch(`/api/metabase/setup`, {
+        const response = await fetch(`/web/metabase/setup`, {
           method: "POST"
         });
 
         if (response.ok) {
-          const createQuestionsResponse = await fetch("/api/metabase/create-questions", {
+          const createQuestionsResponse = await fetch("/web/metabase/create-questions", {
             method: "POST"
           });
 
@@ -183,7 +198,7 @@ const SelfServiceReports = () => {
       errorMessage: ""
     }));
     try {
-      const syncStatusResponse = await fetch("/api/metabase/sync-status", {
+      const syncStatusResponse = await fetch("/web/metabase/sync-status", {
         method: "GET"
       });
 
@@ -202,7 +217,7 @@ const SelfServiceReports = () => {
             errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
           }));
         } else {
-          const response = await fetch("/api/metabase/create-questions", {
+          const response = await fetch("/web/metabase/create-questions", {
             method: "POST"
           });
 
@@ -229,6 +244,8 @@ const SelfServiceReports = () => {
       }));
     }
   }, 500);
+
+  const disableDelete = false;
 
   return (
     <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
@@ -281,6 +298,20 @@ const SelfServiceReports = () => {
                 </div>
                 <Button className={classes.exploreButton} href="https://reporting-green.avniproject.org" target="_blank">
                   Explore Your Data
+                </Button>
+                <Button
+                  disabled={!_.isEmpty(disableDelete)}
+                  style={
+                    !_.isEmpty(disableDelete)
+                      ? { float: "right" }
+                      : {
+                          float: "right",
+                          color: "red"
+                        }
+                  }
+                  onClick={() => tearDownMetabase()}
+                >
+                  <DeleteIcon style={{ marginRight: 2 }} /> Delete
                 </Button>
               </div>
             )}
