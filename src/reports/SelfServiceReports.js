@@ -89,6 +89,63 @@ const useStyles = makeStyles({
   }
 });
 
+async function checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState) {
+  try {
+    const syncStatusResponse = await fetch("/web/metabase/sync-status", {
+      method: "GET"
+    });
+
+    if (syncStatusResponse.ok) {
+      const syncStatus = await syncStatusResponse.json();
+      if (syncStatus === "INCOMPLETE") {
+        setState(prevState => ({
+          ...prevState,
+          setupDone: true,
+          loadingRefresh: false,
+          syncCompleted: false,
+          errorMessage: "Database sync is incomplete. Please try again later."
+        }));
+      } else if (syncStatus === "NOT_STARTED") {
+        setState(prevState => ({
+          ...prevState,
+          loadingRefresh: false,
+          setupDone: false,
+          syncCompleted: false,
+          errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
+        }));
+      } else {
+        const response = await fetch("/web/metabase/create-questions", {
+          method: "POST"
+        });
+
+        if (response.ok) {
+          setState(prevState => ({
+            ...prevState,
+            loadingRefresh: false,
+            setupDone: true,
+            syncCompleted: true,
+            errorMessage: ""
+          }));
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            loadingRefresh: false,
+            setupDone: true,
+            syncCompleted: true,
+            errorMessage: "Failed to refresh reports."
+          }));
+        }
+      }
+    }
+  } catch (error) {
+    setState(prevState => ({
+      ...prevState,
+      loadingRefresh: false,
+      errorMessage: `Error during refresh: ${error.message}`
+    }));
+  }
+}
+
 const SelfServiceReports = () => {
   const classes = useStyles();
 
@@ -96,6 +153,7 @@ const SelfServiceReports = () => {
     setupLoading: false,
     setupDone: false,
     allowSetup: false,
+    syncCompleted: false,
     errorMessage: "",
     loadingRefresh: false
   });
@@ -111,9 +169,12 @@ const SelfServiceReports = () => {
         const data = await response.json();
         setState(prevState => ({
           ...prevState,
+          loadingRefresh: true,
           allowSetup: true,
+          syncCompleted: false,
           setupDone: data.setupEnabled
         }));
+        await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
       } else {
         const errorResponse = await response.text();
         setState(prevState => ({
@@ -121,6 +182,7 @@ const SelfServiceReports = () => {
           errorMessage: errorResponse.includes("424 FAILED_DEPENDENCY")
             ? "Metabase Self-service is not enabled"
             : "Failed to fetch setup status.",
+          syncCompleted: false,
           setupDone: false
         }));
       }
@@ -128,6 +190,7 @@ const SelfServiceReports = () => {
       setState(prevState => ({
         ...prevState,
         errorMessage: `Error fetching setup status: ${error.message}`,
+        syncCompleted: false,
         setupDone: false
       }));
     }
@@ -143,7 +206,11 @@ const SelfServiceReports = () => {
     });
     setState(prevState => ({
       ...prevState,
-      setupLoading: false
+      setupLoading: false,
+      setupDone: false,
+      syncCompleted: false,
+      loadingRefresh: false,
+      errorMessage: ""
     }));
   };
 
@@ -164,19 +231,15 @@ const SelfServiceReports = () => {
         });
 
         if (response.ok) {
-          const createQuestionsResponse = await fetch("/web/metabase/create-questions", {
-            method: "POST"
-          });
-
-          if (createQuestionsResponse.ok) {
-            setState(prevState => ({
-              ...prevState,
-              setupLoading: false,
-              setupDone: true
-            }));
-          } else {
-            throw new Error("Failed to create questions.");
-          }
+          setState(prevState => ({
+            ...prevState,
+            setupLoading: false,
+            setupDone: true,
+            loadingRefresh: true,
+            syncCompleted: false,
+            errorMessage: ""
+          }));
+          await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
         } else {
           throw new Error("Failed to setup reports.");
         }
@@ -195,54 +258,10 @@ const SelfServiceReports = () => {
     setState(prevState => ({
       ...prevState,
       loadingRefresh: true,
+      syncCompleted: false,
       errorMessage: ""
     }));
-    try {
-      const syncStatusResponse = await fetch("/web/metabase/sync-status", {
-        method: "GET"
-      });
-
-      if (syncStatusResponse.ok) {
-        const syncStatus = await syncStatusResponse.json();
-        if (syncStatus === "INCOMPLETE") {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            errorMessage: "Database sync is incomplete. Please try again later."
-          }));
-        } else if (syncStatus === "NOT_STARTED") {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
-          }));
-        } else {
-          const response = await fetch("/web/metabase/create-questions", {
-            method: "POST"
-          });
-
-          if (response.ok) {
-            setState(prevState => ({
-              ...prevState,
-              loadingRefresh: false,
-              errorMessage: ""
-            }));
-          } else {
-            setState(prevState => ({
-              ...prevState,
-              loadingRefresh: false,
-              errorMessage: "Failed to refresh reports."
-            }));
-          }
-        }
-      }
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        loadingRefresh: false,
-        errorMessage: `Error during refresh: ${error.message}`
-      }));
-    }
+    await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
   }, 500);
 
   const disableDelete = false;
@@ -291,7 +310,11 @@ const SelfServiceReports = () => {
             {state.allowSetup && state.setupDone && (
               <div className={classes.buttonsContainer}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <Button className={classes.refreshButton} onClick={refreshReports} disabled={state.loadingRefresh}>
+                  <Button
+                    className={classes.refreshButton}
+                    onClick={refreshReports}
+                    disabled={state.loadingRefresh || !state.syncCompleted}
+                  >
                     Refresh Reports
                   </Button>
                   {state.loadingRefresh && <CircularProgress size={24} />}
