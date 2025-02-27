@@ -11,6 +11,12 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { debounce } from "lodash";
+import UserInfo from "../common/model/UserInfo";
+import userInfo from "../common/model/UserInfo";
+import { Privilege } from "openchs-models";
+import DeleteIcon from "@material-ui/icons/Delete";
+
+const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 
 const useStyles = makeStyles({
   root: {
@@ -88,6 +94,63 @@ const useStyles = makeStyles({
   }
 });
 
+async function checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState) {
+  try {
+    const syncStatusResponse = await fetch("/web/metabase/sync-status", {
+      method: "GET"
+    });
+
+    if (syncStatusResponse.ok) {
+      const syncStatus = await syncStatusResponse.json();
+      if (syncStatus === "INCOMPLETE") {
+        setState(prevState => ({
+          ...prevState,
+          setupDone: true,
+          loadingRefresh: false,
+          syncCompleted: false,
+          errorMessage: "Database sync is incomplete. Please try again later."
+        }));
+      } else if (syncStatus === "NOT_STARTED") {
+        setState(prevState => ({
+          ...prevState,
+          loadingRefresh: false,
+          setupDone: false,
+          syncCompleted: false,
+          errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
+        }));
+      } else {
+        const response = await fetch("/web/metabase/create-questions", {
+          method: "POST"
+        });
+
+        if (response.ok) {
+          setState(prevState => ({
+            ...prevState,
+            loadingRefresh: false,
+            setupDone: true,
+            syncCompleted: true,
+            errorMessage: ""
+          }));
+        } else {
+          setState(prevState => ({
+            ...prevState,
+            loadingRefresh: false,
+            setupDone: true,
+            syncCompleted: true,
+            errorMessage: "Failed to refresh reports."
+          }));
+        }
+      }
+    }
+  } catch (error) {
+    setState(prevState => ({
+      ...prevState,
+      loadingRefresh: false,
+      errorMessage: `Error during refresh: ${error.message}`
+    }));
+  }
+}
+
 const SelfServiceReports = () => {
   const classes = useStyles();
 
@@ -95,6 +158,7 @@ const SelfServiceReports = () => {
     setupLoading: false,
     setupDone: false,
     allowSetup: false,
+    syncCompleted: false,
     errorMessage: "",
     loadingRefresh: false
   });
@@ -104,15 +168,26 @@ const SelfServiceReports = () => {
   }, []);
 
   const fetchSetupStatus = async () => {
+    if (!showAnalytics) {
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "You do not have access to analytics.",
+        setupDone: false
+      }));
+      return;
+    }
     try {
-      const response = await fetch("/api/metabase/setup-status");
+      const response = await fetch("/web/metabase/setup-status");
       if (response.ok) {
         const data = await response.json();
         setState(prevState => ({
           ...prevState,
+          loadingRefresh: true,
           allowSetup: true,
+          syncCompleted: false,
           setupDone: data.setupEnabled
         }));
+        await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
       } else {
         const errorResponse = await response.text();
         setState(prevState => ({
@@ -120,6 +195,7 @@ const SelfServiceReports = () => {
           errorMessage: errorResponse.includes("424 FAILED_DEPENDENCY")
             ? "Metabase Self-service is not enabled"
             : "Failed to fetch setup status.",
+          syncCompleted: false,
           setupDone: false
         }));
       }
@@ -127,9 +203,28 @@ const SelfServiceReports = () => {
       setState(prevState => ({
         ...prevState,
         errorMessage: `Error fetching setup status: ${error.message}`,
+        syncCompleted: false,
         setupDone: false
       }));
     }
+  };
+
+  const tearDownMetabase = async function() {
+    setState(prevState => ({
+      ...prevState,
+      setupLoading: true
+    }));
+    await fetch(`/web/metabase/teardown`, {
+      method: "POST"
+    });
+    setState(prevState => ({
+      ...prevState,
+      setupLoading: false,
+      setupDone: false,
+      syncCompleted: false,
+      loadingRefresh: false,
+      errorMessage: ""
+    }));
   };
 
   const resetMessages = () => {
@@ -141,27 +236,30 @@ const SelfServiceReports = () => {
 
   const setupReports = async () => {
     resetMessages();
+    if (!showAnalytics) {
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "You do not have access to setup reports."
+      }));
+      return;
+    }
     setState(prevState => ({ ...prevState, setupLoading: true }));
     const attemptSetup = async () => {
       try {
-        const response = await fetch(`/api/metabase/setup`, {
+        const response = await fetch(`/web/metabase/setup`, {
           method: "POST"
         });
 
         if (response.ok) {
-          const createQuestionsResponse = await fetch("/api/metabase/create-questions", {
-            method: "POST"
-          });
-
-          if (createQuestionsResponse.ok) {
-            setState(prevState => ({
-              ...prevState,
-              setupLoading: false,
-              setupDone: true
-            }));
-          } else {
-            throw new Error("Failed to create questions.");
-          }
+          setState(prevState => ({
+            ...prevState,
+            setupLoading: false,
+            setupDone: true,
+            loadingRefresh: true,
+            syncCompleted: false,
+            errorMessage: ""
+          }));
+          await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
         } else {
           throw new Error("Failed to setup reports.");
         }
@@ -177,58 +275,23 @@ const SelfServiceReports = () => {
   };
 
   const refreshReports = debounce(async () => {
+    if (!showAnalytics) {
+      setState(prevState => ({
+        ...prevState,
+        errorMessage: "You do not have access to setup reports."
+      }));
+      return;
+    }
     setState(prevState => ({
       ...prevState,
       loadingRefresh: true,
+      syncCompleted: false,
       errorMessage: ""
     }));
-    try {
-      const syncStatusResponse = await fetch("/api/metabase/sync-status", {
-        method: "GET"
-      });
-
-      if (syncStatusResponse.ok) {
-        const syncStatus = await syncStatusResponse.json();
-        if (syncStatus === "INCOMPLETE") {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            errorMessage: "Database sync is incomplete. Please try again later."
-          }));
-        } else if (syncStatus === "NOT_STARTED") {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
-          }));
-        } else {
-          const response = await fetch("/api/metabase/create-questions", {
-            method: "POST"
-          });
-
-          if (response.ok) {
-            setState(prevState => ({
-              ...prevState,
-              loadingRefresh: false,
-              errorMessage: ""
-            }));
-          } else {
-            setState(prevState => ({
-              ...prevState,
-              loadingRefresh: false,
-              errorMessage: "Failed to refresh reports."
-            }));
-          }
-        }
-      }
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        loadingRefresh: false,
-        errorMessage: `Error during refresh: ${error.message}`
-      }));
-    }
+    await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
   }, 500);
+
+  const disableDelete = false;
 
   return (
     <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
@@ -274,13 +337,31 @@ const SelfServiceReports = () => {
             {state.allowSetup && state.setupDone && (
               <div className={classes.buttonsContainer}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <Button className={classes.refreshButton} onClick={refreshReports} disabled={state.loadingRefresh}>
+                  <Button
+                    className={classes.refreshButton}
+                    onClick={refreshReports}
+                    disabled={state.loadingRefresh || !state.syncCompleted}
+                  >
                     Refresh Reports
                   </Button>
                   {state.loadingRefresh && <CircularProgress size={24} />}
                 </div>
                 <Button className={classes.exploreButton} href="https://reporting-green.avniproject.org" target="_blank">
                   Explore Your Data
+                </Button>
+                <Button
+                  disabled={!_.isEmpty(disableDelete)}
+                  style={
+                    !_.isEmpty(disableDelete)
+                      ? { float: "right" }
+                      : {
+                          float: "right",
+                          color: "red"
+                        }
+                  }
+                  onClick={() => tearDownMetabase()}
+                >
+                  <DeleteIcon style={{ marginRight: 2 }} /> Delete
                 </Button>
               </div>
             )}
