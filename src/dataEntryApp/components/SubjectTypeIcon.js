@@ -9,23 +9,13 @@ const SubjectTypeIcon = ({ subjectType, size, style }) => {
 
   React.useEffect(() => {
     if (isIconSetup && isEmpty(signedURL)) {
-      MediaService.getMedia(subjectType.iconFileS3Key)
-        .then(res => res.data)
-        .then(res => setSignedURL(res));
+      MediaService.getMedia(subjectType.iconFileS3Key).then(res => setSignedURL(res));
     }
   }, [subjectType.name]);
 
   const renderDefaultIcon = () => {
     const defaultIconFileName = `${toLower(subjectType.type)}.png`;
-    return (
-      <img
-        src={`/icons/${defaultIconFileName}`}
-        height={size}
-        width={size}
-        alt={label}
-        style={style}
-      />
-    );
+    return <img src={`/icons/${defaultIconFileName}`} height={size} width={size} alt={label} style={style} />;
   };
 
   const renderIcon = () => {
