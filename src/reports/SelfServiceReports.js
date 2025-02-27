@@ -10,14 +10,13 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import { debounce } from "lodash";
+import _, { debounce } from "lodash";
 import UserInfo from "../common/model/UserInfo";
 import userInfo from "../common/model/UserInfo";
 import { Privilege } from "openchs-models";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
-
 const useStyles = makeStyles({
   root: {
     maxWidth: 600,
