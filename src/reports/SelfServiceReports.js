@@ -11,12 +11,11 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import MetabaseSVG from "./Metabase_icon.svg";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import _, { debounce } from "lodash";
-import UserInfo from "../common/model/UserInfo";
-import userInfo from "../common/model/UserInfo";
-import { Privilege } from "openchs-models";
 import DeleteIcon from "@material-ui/icons/Delete";
+import httpClient from "../common/utils/httpClient";
+import MetabaseSetupStatus from "./domain/MetabaseSetupStatus";
+import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 
-const showAnalytics = UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.Analytics);
 const useStyles = makeStyles({
   root: {
     maxWidth: 600,
@@ -93,204 +92,42 @@ const useStyles = makeStyles({
   }
 });
 
-async function checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState) {
-  try {
-    const syncStatusResponse = await fetch("/web/metabase/sync-status", {
-      method: "GET"
-    });
-
-    if (syncStatusResponse.ok) {
-      const syncStatus = await syncStatusResponse.json();
-      if (syncStatus === "INCOMPLETE") {
-        setState(prevState => ({
-          ...prevState,
-          setupDone: true,
-          loadingRefresh: false,
-          syncCompleted: false,
-          errorMessage: "Database sync is incomplete. Please try again later."
-        }));
-      } else if (syncStatus === "NOT_STARTED") {
-        setState(prevState => ({
-          ...prevState,
-          loadingRefresh: false,
-          setupDone: false,
-          syncCompleted: false,
-          errorMessage: "Metabase setup has not been enabled. Please enable Metabase."
-        }));
-      } else {
-        const response = await fetch("/web/metabase/create-questions", {
-          method: "POST"
-        });
-
-        if (response.ok) {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            setupDone: true,
-            syncCompleted: true,
-            errorMessage: ""
-          }));
-        } else {
-          setState(prevState => ({
-            ...prevState,
-            loadingRefresh: false,
-            setupDone: true,
-            syncCompleted: true,
-            errorMessage: "Failed to refresh reports."
-          }));
-        }
-      }
-    }
-  } catch (error) {
-    setState(prevState => ({
-      ...prevState,
-      loadingRefresh: false,
-      errorMessage: `Error during refresh: ${error.message}`
-    }));
-  }
-}
-
 const SelfServiceReports = () => {
   const classes = useStyles();
 
-  const [state, setState] = useState({
-    setupLoading: false,
-    setupDone: false,
-    allowSetup: false,
-    syncCompleted: false,
-    errorMessage: "",
-    loadingRefresh: false
-  });
+  const [statusResponse: MetabaseSetupStatus, setStatusResponse] = useState(MetabaseSetupStatus.createUnknownStatus());
 
   useEffect(() => {
     fetchSetupStatus();
   }, []);
 
-  const fetchSetupStatus = async () => {
-    if (!showAnalytics) {
-      setState(prevState => ({
-        ...prevState,
-        errorMessage: "You do not have access to analytics.",
-        setupDone: false
-      }));
-      return;
-    }
-    try {
-      const response = await fetch("/web/metabase/setup-status");
-      if (response.ok) {
-        const data = await response.json();
-        setState(prevState => ({
-          ...prevState,
-          loadingRefresh: true,
-          allowSetup: true,
-          syncCompleted: false,
-          setupDone: data.setupEnabled
-        }));
-        await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
-      } else {
-        const errorResponse = await response.text();
-        setState(prevState => ({
-          ...prevState,
-          errorMessage: errorResponse.includes("424 FAILED_DEPENDENCY")
-            ? "Metabase Self-service is not enabled"
-            : "Failed to fetch setup status.",
-          syncCompleted: false,
-          setupDone: false
-        }));
-      }
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        errorMessage: `Error fetching setup status: ${error.message}`,
-        syncCompleted: false,
-        setupDone: false
-      }));
-    }
-  };
+  async function performAction(url) {
+    const statusResponse = (await httpClient.post(url)).data;
+    setStatusResponse(MetabaseSetupStatus.fromStatusResponse(statusResponse));
+  }
 
-  const tearDownMetabase = async function() {
-    setState(prevState => ({
-      ...prevState,
-      setupLoading: true
-    }));
-    await fetch(`/web/metabase/teardown`, {
-      method: "POST"
-    });
-    setState(prevState => ({
-      ...prevState,
-      setupLoading: false,
-      setupDone: false,
-      syncCompleted: false,
-      loadingRefresh: false,
-      errorMessage: ""
-    }));
-  };
+  const fetchSetupStatus = debounce(async () => {
+    const statusResponse = (await httpClient.get("/web/metabase/status")).data;
+    setStatusResponse(MetabaseSetupStatus.fromStatusResponse(statusResponse));
+  }, 500);
 
-  const resetMessages = () => {
-    setState(prevState => ({
-      ...prevState,
-      errorMessage: ""
-    }));
-  };
+  const tearDownMetabase = debounce(async () => {
+    await performAction("/web/metabase/teardown");
+  }, 500);
 
-  const setupReports = async () => {
-    resetMessages();
-    if (!showAnalytics) {
-      setState(prevState => ({
-        ...prevState,
-        errorMessage: "You do not have access to setup reports."
-      }));
-      return;
-    }
-    setState(prevState => ({ ...prevState, setupLoading: true }));
-    const attemptSetup = async () => {
-      try {
-        const response = await fetch(`/web/metabase/setup`, {
-          method: "POST"
-        });
-
-        if (response.ok) {
-          setState(prevState => ({
-            ...prevState,
-            setupLoading: false,
-            setupDone: true,
-            loadingRefresh: true,
-            syncCompleted: false,
-            errorMessage: ""
-          }));
-          await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
-        } else {
-          throw new Error("Failed to setup reports.");
-        }
-      } catch (error) {
-        setState(prevState => ({
-          ...prevState,
-          setupLoading: false,
-          errorMessage: error.message
-        }));
-      }
-    };
-    attemptSetup();
-  };
+  const setupReports = debounce(async () => {
+    await performAction("/web/metabase/setup");
+  }, 500);
 
   const refreshReports = debounce(async () => {
-    if (!showAnalytics) {
-      setState(prevState => ({
-        ...prevState,
-        errorMessage: "You do not have access to setup reports."
-      }));
-      return;
-    }
-    setState(prevState => ({
-      ...prevState,
-      loadingRefresh: true,
-      syncCompleted: false,
-      errorMessage: ""
-    }));
-    await checkSyncStatusAndCreateQuestionsIfSyncCompleted(setState);
+    await performAction("/web/metabase/createQuestionOnly");
   }, 500);
 
   const disableDelete = false;
+
+  if (statusResponse.status === MetabaseSetupStatus.Unknown) {
+    return <>Loading...</>;
+  }
 
   return (
     <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
@@ -321,54 +158,89 @@ const SelfServiceReports = () => {
                 </Grid>
               </Grid>
 
-              {!state.setupDone ? (
+              {statusResponse.canStartSetup() && (
                 <div className={classes.setupButtonContainer}>
-                  <Button className={classes.setupButton} onClick={setupReports} disabled={state.setupLoading || !state.allowSetup}>
+                  <Button className={classes.setupButton} onClick={setupReports} disabled={statusResponse.isSetupInProgress()}>
                     Setup Reports
                   </Button>
-                  {state.setupLoading && <CircularProgress size={24} />}
                 </div>
-              ) : (
-                <div className={classes.setupDoneLabel}>Setup done</div>
               )}
-            </CardContent>
 
-            {state.allowSetup && state.setupDone && (
-              <div className={classes.buttonsContainer}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <Button
-                    className={classes.refreshButton}
-                    onClick={refreshReports}
-                    disabled={state.loadingRefresh || !state.syncCompleted}
-                  >
+              {statusResponse.isSetupInProgress() && (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.setupButton} onClick={setupReports} disabled={true}>
+                    Setup Reports
+                  </Button>
+                </div>
+              )}
+
+              {statusResponse.isSetupComplete() && (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.refreshButton} onClick={refreshReports}>
                     Refresh Reports
                   </Button>
-                  {state.loadingRefresh && <CircularProgress size={24} />}
                 </div>
-                <Button className={classes.exploreButton} href="https://reporting-green.avniproject.org" target="_blank">
-                  Explore Your Data
-                </Button>
-                <Button
-                  disabled={!_.isEmpty(disableDelete)}
-                  style={
-                    !_.isEmpty(disableDelete)
-                      ? { float: "right" }
-                      : {
-                          float: "right",
-                          color: "red"
-                        }
-                  }
-                  onClick={() => tearDownMetabase()}
-                >
-                  <DeleteIcon style={{ marginRight: 2 }} /> Delete
-                </Button>
-              </div>
-            )}
+              )}
 
-            {state.errorMessage && (
-              <Typography variant="body2" color="error">
-                {state.errorMessage}
-              </Typography>
+              {statusResponse.isCreateQuestionInProgress() && (
+                <div className={classes.setupButtonContainer}>
+                  <Button className={classes.refreshButton} disabled={true}>
+                    Refresh Reports
+                  </Button>
+                </div>
+              )}
+
+              {statusResponse.isSetupComplete() && (
+                <div className={classes.buttonsContainer}>
+                  <Button className={classes.exploreButton} href="https://reporting-green.avniproject.org" target="_blank">
+                    Explore Your Data
+                  </Button>
+                </div>
+              )}
+
+              {statusResponse.isSetupComplete() && (
+                <div className={classes.buttonsContainer}>
+                  <Button
+                    style={
+                      !_.isEmpty(disableDelete)
+                        ? { float: "right" }
+                        : {
+                            float: "right",
+                            color: "red"
+                          }
+                    }
+                    onClick={() => tearDownMetabase()}
+                  >
+                    <DeleteIcon style={{ marginRight: 2 }} /> Delete
+                  </Button>
+                </div>
+              )}
+
+              {statusResponse.isTearDownInProgress() && (
+                <div className={classes.buttonsContainer}>
+                  <Button disabled={true}>
+                    <DeleteIcon style={{ marginRight: 2 }} /> Delete
+                  </Button>
+                </div>
+              )}
+
+              {statusResponse.isAnyJobInProgress() && <CircularProgress size={24} />}
+              {statusResponse.isSetupComplete() && <div className={classes.setupDoneLabel}>Setup done</div>}
+            </CardContent>
+
+            {statusResponse.hasErrorMessage() && (
+              <>
+                <Typography variant="h6" color="error">
+                  Last attempt failed with error
+                </Typography>
+                <Typography variant="body2" color="error">
+                  {statusResponse.getShortErrorMessage()}
+                </Typography>
+                <br />
+                <CopyToClipboard text={statusResponse.getErrorMessage()}>
+                  <button>Copy error to clipboard</button>
+                </CopyToClipboard>
+              </>
             )}
           </Card>
         </Grid>
