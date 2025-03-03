@@ -59,11 +59,7 @@ const Homepage = ({ userInfo, organisation }) => {
           name={"Translations"}
           customIconComponent={<Translate color="primary" style={{ fontSize: 100 }} />}
         />
-        <HomePageCard
-          href={"/#/newExport"}
-          name={"Reports"}
-          customIconComponent={<Assessment color="primary" style={{ fontSize: 100 }} />}
-        />
+        <HomePageCard href={"/#/export"} name={"Reports"} customIconComponent={<Assessment color="primary" style={{ fontSize: 100 }} />} />
         {showDataEntryApp && (
           <HomePageCard
             href={"/#/app"}
