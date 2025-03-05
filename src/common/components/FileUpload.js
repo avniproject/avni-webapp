@@ -13,12 +13,9 @@ const useStyles = makeStyles(theme => ({
 export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   const classes = useStyles();
 
-  const [value, setValue] = React.useState("");
-
   const onSelectWrapper = event => {
     const fileReader = new FileReader();
     event.target.files[0] && fileReader.readAsText(event.target.files[0]);
-    setValue(event.target.value);
     const file = event.target.files[0];
     fileReader.onloadend = event => {
       const error = onSelect(event.target.result, file);
@@ -28,21 +25,20 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
 
   const onUploadWrapper = () => {
     onUpload();
-    setValue("");
   };
 
   return (
     <Grid container direction="row" justifyContent="flex-start" spacing={1}>
       <Button variant="contained" component="label" disabled={!canSelect} className={classes.item}>
         Choose File
-        <input type="file" value={value} onChange={onSelectWrapper} style={{ display: "none" }} />
+        <input type="file" onChange={onSelectWrapper} style={{ display: "none" }} />
       </Button>
       <Button
         variant="contained"
         color="primary"
         aria-haspopup="false"
         onClick={onUploadWrapper}
-        disabled={!canUpload || isEmpty(value)}
+        disabled={!canUpload}
         className={classes.item}
       >
         Upload
