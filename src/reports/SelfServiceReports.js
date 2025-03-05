@@ -92,6 +92,9 @@ const useStyles = makeStyles({
   }
 });
 
+// not sure why useState didn't work for maintaining this state
+let intervalId = null;
+
 const SelfServiceReports = () => {
   const classes = useStyles();
 
@@ -103,12 +106,18 @@ const SelfServiceReports = () => {
 
   async function performAction(url) {
     const statusResponse = (await httpClient.post(url)).data;
+    intervalId = setInterval(() => fetchSetupStatus(), 2000);
     setStatusResponse(MetabaseSetupStatus.fromStatusResponse(statusResponse));
   }
 
   const fetchSetupStatus = debounce(async () => {
     const statusResponse = (await httpClient.get("/web/metabase/status")).data;
-    setStatusResponse(MetabaseSetupStatus.fromStatusResponse(statusResponse));
+    const metabaseSetupStatus = MetabaseSetupStatus.fromStatusResponse(statusResponse);
+    if (!metabaseSetupStatus.isAnyJobInProgress() && intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    setStatusResponse(metabaseSetupStatus);
   }, 500);
 
   const tearDownMetabase = debounce(async () => {
