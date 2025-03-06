@@ -74,7 +74,7 @@ export const BackButton = props => {
   );
 };
 
-export const multiSelectFormElementConceptDataTypes = ["Coded", "Subject", "Image", "Video", "File", "Encounter"];
+export const multiSelectFormElementConceptDataTypes = ["Coded", "Subject", "Image", "ImageV2", "Video", "File", "Encounter"];
 
 function FormElementDetails({ userInfo, ...props }) {
   const classes = useStyles();
@@ -488,7 +488,7 @@ function FormElementDetails({ userInfo, ...props }) {
             index={props.index}
           />
         )}
-        {props.formElementData.concept.dataType === "Image" && (
+        {(props.formElementData.concept.dataType === "Image" || props.formElementData.concept.dataType === "ImageV2") && (
           <Grid container item sm={12}>
             <Grid item sm={3}>
               <TextField

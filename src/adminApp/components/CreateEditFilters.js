@@ -16,7 +16,18 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import ErrorMessageUtil from "../../common/utils/ErrorMessageUtil";
 
-const nonSupportedTypes = ["Duration", "Image", "Video", "Subject", "Location", "PhoneNumber", "GroupAffiliation", "Audio", "File"];
+const nonSupportedTypes = [
+  "Duration",
+  "Image",
+  "ImageV2",
+  "Video",
+  "Subject",
+  "Location",
+  "PhoneNumber",
+  "GroupAffiliation",
+  "Audio",
+  "File"
+];
 export const CreateEditFilters = ({
   omitTableData,
   selectedFilter,

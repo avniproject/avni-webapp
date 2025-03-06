@@ -130,6 +130,7 @@ export const dataTypeIcons = {
   Text: <TextFieldsIcon />,
   Notes: <NoteIcon />,
   Image: <ImageIcon />,
+  ImageV2: <ImageIcon />,
   DateTime: <DateRangeIcon />,
   Time: <QueryBuilderIcon />,
   Duration: <TimerIcon />,
@@ -172,22 +173,11 @@ function FormElement(props) {
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
       expanded={props.formElementData.expanded}
       className={props.formElementData.error ? classes.rootError : classes.root}
-      onChange={event =>
-        props.handleGroupElementChange(
-          props.groupIndex,
-          "expanded",
-          !props.formElementData.expanded,
-          props.index
-        )
-      }
+      onChange={event => props.handleGroupElementChange(props.groupIndex, "expanded", !props.formElementData.expanded, props.index)}
       onMouseEnter={() => setDragElement(true)}
       onMouseLeave={() => setDragElement(false)}
     >
-      <ExpansionPanelSummary
-        aria-controls={panel + "bh-content"}
-        id={panel + "bh-header"}
-        {...props.dragHandleProps}
-      >
+      <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"} {...props.dragHandleProps}>
         <Grid container direction={"row"}>
           <Grid container item alignItems={"center"} justify={"center"}>
             <DragHandler />
@@ -201,6 +191,7 @@ function FormElement(props) {
                   "Text",
                   "Notes",
                   "Image",
+                  "ImageV2",
                   "DateTime",
                   "Time",
                   "Duration",
@@ -223,11 +214,7 @@ function FormElement(props) {
                 )}
                 {props.formElementData.concept.dataType === "Coded" && (
                   <div className={classes.iconDataType}>
-                    <Tooltip
-                      title={
-                        props.formElementData.concept.dataType + " : " + props.formElementData.type
-                      }
-                    >
+                    <Tooltip title={props.formElementData.concept.dataType + " : " + props.formElementData.type}>
                       {dataTypeIcons["concept"][props.formElementData.type]}
                     </Tooltip>
                   </div>
@@ -236,9 +223,7 @@ function FormElement(props) {
             </Grid>
             <Grid item sm={10} style={{ paddingTop: "10px" }}>
               <Typography component={"span"} className={classes.heading}>
-                <span className={classes.expandIcon}>
-                  {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </span>
+                <span className={classes.expandIcon}>{props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
                 <InputLabel
                   name={"name" + panel}
                   style={{ display: "inline-block" }}
@@ -254,11 +239,7 @@ function FormElement(props) {
               <IconButton aria-label="delete" onClick={handleDelete} disabled={disableFormElement}>
                 <DeleteIcon />
               </IconButton>
-              <ToolTip
-                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"}
-                onHover
-                displayPosition={"bottom"}
-              />
+              <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} onHover displayPosition={"bottom"} />
             </Grid>
           </Grid>
         </Grid>
