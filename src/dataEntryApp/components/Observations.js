@@ -4,7 +4,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import { Concept, Observation, Individual } from "avni-models";
+import { Concept, Observation, Individual, findMediaObservations } from "avni-models";
 import { conceptService, i18n } from "../services/ConceptService";
 import { addressLevelService } from "../services/AddressLevelService";
 import { subjectService } from "../services/SubjectService";
@@ -110,26 +110,19 @@ function renderSingleQuestionGroup(valueWrapper, index, customKey, t, observatio
 }
 
 function initMediaObservations(observations) {
-  const mediaObservations = [
-    ...observations.filter(obs => includes([Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File], obs.concept.datatype))
-  ];
+  let mediaObservations = findMediaObservations(observations);
   observations
     .filter(obs => obs.concept.isQuestionGroup())
     .forEach(qgObservation => {
       if (qgObservation.valueJSON.repeatableObservations) {
         qgObservation.valueJSON.repeatableObservations.forEach(rqg => {
-          const mo = rqg.groupObservations.filter(obs =>
-            includes([Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File], obs.concept.datatype)
-          );
-          mo && mediaObservations.push(...mo);
+          mediaObservations.push(...findMediaObservations(rqg.groupObservations));
         });
       } else {
-        const mo = qgObservation.valueJSON.groupObservations.filter(obs =>
-          includes([Concept.dataType.Image, Concept.dataType.Video, Concept.dataType.File], obs.concept.datatype)
-        );
-        mo && mediaObservations.push(...mo);
+        mediaObservations.push(...findMediaObservations(qgObservation.valueJSON.groupObservations));
       }
     });
+
   return mediaObservations;
 }
 
