@@ -55,7 +55,7 @@ class ReviewStatusStatus {
   }
 }
 
-// const isMetadataDiffReviewEnabled = true;
+const isMetadataDiffReviewEnabled = true;
 const Dashboard = ({
   getStatuses,
   getUploadTypes,
@@ -71,9 +71,9 @@ const Dashboard = ({
   const [mode, setMode] = React.useState("CREATE");
   const [hierarchy, setHierarchy] = React.useState();
   const [configuredHierarchies, setConfiguredHierarchies] = React.useState([]);
-  /* eslint-disable-next-line no-unused-vars */
   const [reviewStatus, setReviewStatus] = React.useState(null);
 
+  console.log("file", file);
   const selectFile = (content, userfile) => setFile(userfile);
   const getUploadTypeCode = name =>
     staticTypesWithStaticDownload.getCode(name) || staticTypesWithDynamicDownload.getCode(name) || uploadTypes.getCode(name);
@@ -133,20 +133,27 @@ const Dashboard = ({
     (uploadType === "Locations" && isEmpty(mode)) ||
     (uploadType === "Locations" && mode === "CREATE" && isEmpty(hierarchy));
 
-  // const handleReviewClick = async () => {
-  //   try {
-  //     CompareMetadataService.compare(file).then(filteredData => {
-  //       setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
-  //     });
-  //     setReviewStatus(new ReviewStatusStatus(true, null, null));
-  //   } catch (err) {
-  //     setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
-  //     console.error(err);
-  //   }
-  // };
+  const handleReviewClick = async () => {
+    try {
+      CompareMetadataService.compare(file).then(filteredData => {
+        setReviewStatus(new ReviewStatusStatus(false, filteredData, null));
+      });
+      setReviewStatus(new ReviewStatusStatus(true, null, null));
+    } catch (err) {
+      setReviewStatus(new ReviewStatusStatus(true, null, "An error occurred while comparing metadata."));
+      console.error(err);
+    }
+  };
 
   if (reviewStatus) {
-    return <MetadataDiff loading={reviewStatus.loading} response={reviewStatus.response} error={reviewStatus.error} />;
+    return (
+      <MetadataDiff
+        loading={reviewStatus.loading}
+        response={reviewStatus.response}
+        error={reviewStatus.error}
+        endReview={() => setReviewStatus(null)}
+      />
+    );
   }
 
   return (
@@ -169,13 +176,13 @@ const Dashboard = ({
                     </Button>
                   </Tooltip>
                 </Grid>
-                {/*{isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (*/}
-                {/*  <Grid item>*/}
-                {/*    <Button className={classes.reviewButton} onClick={handleReviewClick}>*/}
-                {/*      Review*/}
-                {/*    </Button>*/}
-                {/*  </Grid>*/}
-                {/*)}*/}
+                {isMetadataDiffReviewEnabled && uploadType === staticTypesWithStaticDownload.getName("metadataZip") && file && (
+                  <Grid item>
+                    <Button className={classes.reviewButton} onClick={handleReviewClick}>
+                      Review
+                    </Button>
+                  </Grid>
+                )}
                 <Grid container item direction="column" justifyContent="center" alignItems="flex-start" xs={8} sm={4} spacing={2}>
                   <Grid item>
                     <FileUpload canSelect={!isEmpty(uploadType)} canUpload={!isNil(file)} onSelect={selectFile} onUpload={uploadFile} />

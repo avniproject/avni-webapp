@@ -1,118 +1,108 @@
 import React, { useState } from "react";
-import { CircularProgress, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography } from "@material-ui/core";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  CircularProgress,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Typography
+} from "@material-ui/core";
 import _ from "lodash";
 import { CHANGE_TYPE } from "../adminApp/service/CompareMetadataService";
+import { Link } from "react-router-dom";
+import { JsonEditor } from "../formDesigner/components/JsonEditor";
 
-export const JsonWithColor = ({ data, indent = 0, parentChangeType = null }) => {
-  console.log("JsonWithColor");
-  if (!_.isObject(data)) {
-    return <span style={{ fontSize: "18px" }}>{String(data)}</span>;
-  }
-
-  return (
-    <div style={{ marginLeft: indent, fontSize: "18px" }}>
-      {_.map(data, (value, key) => {
-        const changeType = _.isObject(value) && value.changeType ? value.changeType : parentChangeType;
-
-        if (key === "changeType" || key === "dataType") return null;
-
-        if (isValueChanged(value)) {
-          return <ChangedValue key={key} value={value} indent={indent} />;
-        }
-
-        if (_.isArray(value)) {
-          return <Array key={key} array={value} indent={indent} changeType={changeType} />;
-        }
-
-        if (_.isObject(value)) {
-          return <NestedObject key={key} obj={value} indent={indent} changeType={changeType} />;
-        }
-
-        return <KeyValue key={key} value={value} changeType={changeType} />;
-      })}
-    </div>
-  );
-};
-
-const isValueChanged = function(value) {
-  return _.isObject(value) && !_.isNil(value.oldValue) && !_.isNil(value.newValue);
-};
-
-const ChangedValue = function({ key, value, indent }) {
-  console.log("ChangedValue");
-  return (
-    <div key={key} style={{ marginBottom: 10 }}>
-      <strong style={{ color: "orange", fontSize: "18px" }}>{key}:</strong>
-      <div style={{ color: getColor(CHANGE_TYPE.REMOVED), marginLeft: 20 }}>
-        <strong>oldValue:</strong>
-        <JsonWithColor item={value.oldValue} indent={indent + 20} changeType={CHANGE_TYPE.REMOVED} />
-      </div>
-      <div style={{ color: getColor(CHANGE_TYPE.ADDED), marginLeft: 20 }}>
-        <strong>newValue:</strong>
-        <JsonWithColor item={value.newValue} indent={indent + 20} changeType={CHANGE_TYPE.ADDED} />
-      </div>
-    </div>
-  );
-};
-
-const Array = function({ key, array, indent, changeType }) {
-  console.log("Array");
-  return (
-    <div key={key} style={{ marginBottom: 20 }}>
-      <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
-      {_.map(array, (item, index) => (
-        <div key={index} style={{ marginLeft: 20 }}>
-          <JsonWithColor item={item} indent={indent + 20} changeType={item.changeType || changeType} />
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const NestedObject = function({ key, obj, indent, changeType }) {
-  console.log("NestedObject");
-  return (
-    <div key={key} style={{ marginBottom: 10 }}>
-      <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
-      <div style={{ marginLeft: 20 }}>
-        <JsonWithColor item={obj} indent={indent + 20} changeType={obj.changeType || changeType} />
-      </div>
-    </div>
-  );
-};
-
-const KeyValue = function({ key, value, changeType }) {
-  console.log("KeyValue");
-  return (
-    <div key={key} style={{ marginBottom: 20 }}>
-      <strong style={{ color: getColor(changeType), fontSize: "18px" }}>{key}:</strong>
-      <div style={{ color: getColor(changeType), marginLeft: 20 }}>{String(value)}</div>
-    </div>
-  );
+export const FileDiff = ({ changeReports }) => {
+  const renderFieldChange = (changeType, entity, change) => {
+    return (
+      <Accordion>
+        <AccordionSummary>
+          <div style={{ color: getColor(changeType), marginLeft: 20 }}>{entity}</div>
+        </AccordionSummary>
+        <AccordionDetails>
+          {_.isObject(change) ? <JsonEditor value={JSON.stringify(change, null, 2)} readOnly={true} /> : change}
+        </AccordionDetails>
+      </Accordion>
+    );
+  };
+  const renderFieldChanges = fieldChanges => {
+    return _.map(fieldChanges, change => {
+      const oldValue = !_.isNil(change.primitiveValueChange)
+        ? change.primitiveValueChange.oldValue
+        : !_.isNil(change.objectChangeReport)
+        ? change.objectChangeReport.oldValue
+        : _.map(change.collectionChangeReport, collReportItem => collReportItem.oldValue);
+      const newValue = !_.isNil(change.primitiveValueChange)
+        ? change.primitiveValueChange.newValue
+        : !_.isNil(change.objectChangeReport)
+        ? change.objectChangeReport.newValue || renderFieldChanges(change.objectChangeReport.fieldChanges)
+        : _.map(
+            change.collectionChangeReport,
+            collReportItem => collReportItem.newValue || renderFieldChanges(collReportItem.fieldChanges)
+          );
+      const changeDetail = {};
+      changeDetail.fieldName = change.fieldName;
+      if (change.changeType === CHANGE_TYPE.MISSING) {
+        changeDetail.change = "Missing";
+      } else {
+        changeDetail.change = !_.isNil(oldValue) ? oldValue + " -> " + newValue : newValue;
+      }
+      return changeDetail;
+    });
+  };
+  return _.map(changeReports, cr => {
+    const changedEntity = cr.oldValue || cr.newValue;
+    const entityName = changedEntity ? changedEntity.name || changedEntity.uuid : cr.uuid;
+    let entity = `${cr.changeType} ${entityName}`;
+    let change = null;
+    switch (cr.changeType) {
+      case CHANGE_TYPE.ADDED:
+        change = cr.newValue;
+        break;
+      case CHANGE_TYPE.MODIFIED:
+        change = !_.isNil(cr.newValue) ? cr.newValue : renderFieldChanges(cr.fieldChanges);
+        break;
+      case CHANGE_TYPE.VOIDED:
+        change = cr.newValue || renderFieldChanges(cr.fieldChanges);
+        break;
+      case CHANGE_TYPE.MISSING:
+        change = cr.oldValue;
+        break;
+      default:
+        change = null;
+    }
+    return !_.isNil(change) ? renderFieldChange(cr.changeType, entity, change) : null;
+  });
 };
 
 const getColor = function(changeType) {
   switch (changeType) {
     case CHANGE_TYPE.ADDED:
       return "green";
-    case CHANGE_TYPE.REMOVED:
-      return "red";
+    case CHANGE_TYPE.MISSING:
+      return "gray";
     case CHANGE_TYPE.MODIFIED:
       return "orange";
+    case CHANGE_TYPE.VOIDED:
+      return "red";
     default:
       return "black";
   }
 };
 
-const MetadataDiff = ({ response, error, loading }) => {
+const getChangeSummaryForFile = (fileName, changeReports) => {
+  const countsByChangeType = _.countBy(changeReports, cr => cr.changeType);
+  const summary = _.map(countsByChangeType, (value, key) => `${value} ${key}`).join(", ");
+  return `${fileName} - ${summary}`;
+};
+
+const MetadataDiff = ({ response, error, loading, endReview }) => {
   const [selectedForm, setSelectedForm] = useState("");
-
-  const formLabels = {
-    "Missing Files in PROD ZIP": "Removed from Old Metadata",
-    "Missing Files in UAT ZIP": "Newly Added Metadata"
-  };
-
-  const getDisplayLabel = formKey => formLabels[formKey] || formKey;
 
   const handleFormChange = event => {
     const selectedKey = event.target.value;
@@ -130,31 +120,41 @@ const MetadataDiff = ({ response, error, loading }) => {
         <Grid item xs={12}>
           {loading && <CircularProgress />}
           {error && <Typography color="error">{error}</Typography>}
-          {response && (
+          <Link onClick={endReview}>{"Back to Upload"}</Link>
+          <br />
+          <br />
+          {response && (!_.isNil(response.fileChangeReports) || !_.isNil(response.missingFilesInExisting)) ? (
             <>
               <FormControl variant="outlined" fullWidth style={{ marginTop: 20 }}>
                 <InputLabel>Select Form or Missing Files</InputLabel>
                 <Select value={selectedForm} onChange={handleFormChange} label="Select Form or Missing Files">
-                  {Object.entries(response).map(([key, value]) => {
-                    const shouldDisplay =
-                      key === "Missing Files in PROD ZIP" || key === "Missing Files in UAT ZIP"
-                        ? value.length > 0
-                        : !["Missing Files in PROD ZIP", "Missing Files in UAT ZIP"].includes(key);
-
-                    return shouldDisplay ? (
+                  {!_.isNil(response.fileChangeReports) &&
+                    Object.entries(response.fileChangeReports).map(([key, value]) => (
                       <MenuItem key={key} value={key}>
-                        {getDisplayLabel(key)}
+                        {getChangeSummaryForFile(key, value.changeReports)}
                       </MenuItem>
-                    ) : null;
-                  })}
+                    ))}
+                  {!_.isNil(response.missingFilesInExisting) &&
+                    Object.entries(response.missingFilesInExisting).map(([key, value]) => (
+                      <MenuItem disabled key={key} value={value}>
+                        {`${value} - New`}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
-              {selectedForm && response[selectedForm] && (
+              {selectedForm && response.fileChangeReports[selectedForm] && (
                 <div style={{ marginTop: 20 }}>
-                  <JsonWithColor data={response[selectedForm]} />
+                  {/*<JsonWithColor data={response.fileChangeReports[selectedForm].changeReports}/>*/}
+                  <FileDiff changeReports={response.fileChangeReports[selectedForm].changeReports} />
                 </div>
               )}
             </>
+          ) : (
+            !loading && (
+              <Typography variant="h5" gutterBottom>
+                No Changes
+              </Typography>
+            )
           )}
         </Grid>
       </Grid>
