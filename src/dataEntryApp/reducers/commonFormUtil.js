@@ -41,7 +41,7 @@ const hasQuestionGroupWithValueInElementStatus = (formElementStatuses, allFormEl
   });
 };
 
-const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) => {
+const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false, isImmutable = false) => {
   const firstGroupWithAtLeastOneVisibleElement = find(
     sortBy(form.nonVoidedFormElementGroups(), "displayOrder"),
     formElementGroup => filterFormElements(formElementGroup, entity).length !== 0
@@ -93,7 +93,7 @@ const onLoad = (form, entity, isIndividualRegistration = false, isEdit = false) 
       onSummaryPage: isSummaryPage
     };
   };
-  const formElementGroup = isEdit ? firstGroupWithAtLeastOneVisibleElement : formElementGroupWithoutObs;
+  const formElementGroup = isImmutable ? formElementGroupWithoutObs : firstGroupWithAtLeastOneVisibleElement;
 
   if (!!!formElementGroup) {
     return getReturnObject(lastGroupWithAtLeastOneVisibleElement, entity, true);
