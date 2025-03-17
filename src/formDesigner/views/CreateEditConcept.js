@@ -282,7 +282,7 @@ class CreateEditConcept extends Component {
 
   handleChange = stateHandler => e => {
     this.setState({
-      [stateHandler]: replace(e.target.value, "|", "")
+      [stateHandler]: replace(e.target.value.trim(), "|", "")
     });
     this.resetKeyValuesIfNeeded(stateHandler, e);
   };
