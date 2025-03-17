@@ -109,7 +109,8 @@ const SelfServiceReports = () => {
     await httpClient.post(url);
     const statusResponse = (await httpClient.get("/web/metabase/status")).data;
     setStatusResponse(MetabaseSetupStatus.fromStatusResponse(statusResponse));
-    intervalId = setInterval(() => fetchSetupStatus(), 2000);
+    fetchSetupStatus(); // Immediate first call
+    intervalId = setInterval(() => fetchSetupStatus(), 5000); // Changed to 5 seconds
   }
 
   const fetchSetupStatus = debounce(async () => {

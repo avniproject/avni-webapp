@@ -5,9 +5,14 @@ class MetabaseBatchJobStatus {
   createDateTime;
   endDateTime;
   exitMessage;
+  exitCode;
 
   isRunning() {
-    return this.status === "STARTED";
+    if (!this.createDateTime) return false;
+    const tenMinutesInMs = 10 * 60 * 1000;
+    const now = new Date();
+    const timeSinceCreation = now - this.createDateTime;
+    return this.status === "STARTED" && timeSinceCreation <= tenMinutesInMs;
   }
 
   static createFromResponse(batchJobResponse) {
@@ -16,6 +21,7 @@ class MetabaseBatchJobStatus {
     metabaseBatchJobStatus.createDateTime = new Date(batchJobResponse.createDateTime);
     metabaseBatchJobStatus.endDateTime = new Date(batchJobResponse.endDateTime);
     metabaseBatchJobStatus.exitMessage = batchJobResponse.exitMessage;
+    metabaseBatchJobStatus.exitCode = batchJobResponse.exitCode;
     return metabaseBatchJobStatus;
   }
 
