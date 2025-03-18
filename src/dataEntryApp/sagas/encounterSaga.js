@@ -215,7 +215,8 @@ export function* setEncounterDetails(encounter, subjectProfileJson, isEdit = fal
     encounterForm,
     encounter,
     false,
-    isEdit
+    isEdit,
+    encounter.encounterType.immutable
   );
 
   yield put.resolve(onLoadSuccess(encounter, encounterForm, formElementGroup, filteredFormElements, onSummaryPage, wizard, isFormEmpty));

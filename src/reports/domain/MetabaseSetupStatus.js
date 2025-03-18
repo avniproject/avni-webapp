@@ -5,10 +5,7 @@ class MetabaseBatchJobStatus {
   createDateTime;
   endDateTime;
   exitMessage;
-
-  isRunning() {
-    return this.status === "STARTED";
-  }
+  exitCode;
 
   static createFromResponse(batchJobResponse) {
     const metabaseBatchJobStatus = new MetabaseBatchJobStatus();
@@ -16,7 +13,16 @@ class MetabaseBatchJobStatus {
     metabaseBatchJobStatus.createDateTime = new Date(batchJobResponse.createDateTime);
     metabaseBatchJobStatus.endDateTime = new Date(batchJobResponse.endDateTime);
     metabaseBatchJobStatus.exitMessage = batchJobResponse.exitMessage;
+    metabaseBatchJobStatus.exitCode = batchJobResponse.exitCode;
     return metabaseBatchJobStatus;
+  }
+
+  isRunning() {
+    if (!this.createDateTime) return false;
+    const tenMinutesInMs = 10 * 60 * 1000;
+    const now = new Date();
+    const timeSinceCreation = now - this.createDateTime;
+    return this.status === "STARTED" && timeSinceCreation <= tenMinutesInMs;
   }
 
   static createUnknownStatus() {
@@ -70,14 +76,6 @@ class MetabaseSetupStatus {
 
   isSetupComplete() {
     return this.status === this.Setup;
-  }
-
-  isCreateQuestionInProgress() {
-    return this.createQuestionOnlyStatus.isRunning();
-  }
-
-  isTearDownInProgress() {
-    return this.tearDownStatus.isRunning();
   }
 
   isAnyJobInProgress() {

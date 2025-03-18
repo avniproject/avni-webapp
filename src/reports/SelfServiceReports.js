@@ -93,50 +93,90 @@ const useStyles = makeStyles({
   }
 });
 
+async function getStatusResponse() {
+  const statusResponse = (await httpClient.get("/web/metabase/status")).data;
+  return MetabaseSetupStatus.fromStatusResponse(statusResponse);
+}
+
 // not sure why useState didn't work for maintaining this state
 let intervalId = null;
 
 const SelfServiceReports = () => {
   const classes = useStyles();
 
-  const [statusResponse: MetabaseSetupStatus, setStatusResponse] = useState(MetabaseSetupStatus.createUnknownStatus());
+  const [statusResponse, setStatusResponse] = useState(MetabaseSetupStatus.createUnknownStatus());
+  const [isBusyCallingCreateQuestionOnly, setIsBusyCallingCreateQuestionOnly] = useState(false);
+  const [isBusyCallingSetup, setIsBusyCallingSetup] = useState(false);
+  const [isBusyCallingTearDown, setIsBusyCallingTearDown] = useState(false);
 
   useEffect(() => {
-    fetchSetupStatus();
+    updateStatus().then(status => {
+      if (status.isAnyJobInProgress()) {
+        pollSetupStatus();
+      }
+    });
   }, []);
 
   async function performAction(url) {
     await httpClient.post(url);
-    const statusResponse = (await httpClient.get("/web/metabase/status")).data;
-    setStatusResponse(MetabaseSetupStatus.fromStatusResponse(statusResponse));
-    intervalId = setInterval(() => fetchSetupStatus(), 2000);
+    pollSetupStatus();
   }
 
-  const fetchSetupStatus = debounce(async () => {
-    const statusResponse = (await httpClient.get("/web/metabase/status")).data;
-    const metabaseSetupStatus = MetabaseSetupStatus.fromStatusResponse(statusResponse);
-    if (!metabaseSetupStatus.isAnyJobInProgress() && intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
-    }
-    setStatusResponse(metabaseSetupStatus);
+  // have to return statusResponse and use it in the caller to get the latest status as the state update is still waiting to happen
+  async function updateStatus() {
+    const statusResponse = await getStatusResponse();
+    setStatusResponse(statusResponse);
+    return statusResponse;
+  }
+
+  const pollSetupStatus = debounce(async () => {
+    intervalId = setInterval(() => {
+      updateStatus().then(status => {
+        if (!status.isAnyJobInProgress() && intervalId) {
+          clearInterval(intervalId);
+          setIsBusyCallingCreateQuestionOnly(false);
+          setIsBusyCallingSetup(false);
+          setIsBusyCallingTearDown(false);
+          intervalId = null;
+        }
+      });
+    }, 5000);
   }, 500);
 
   const tearDownMetabase = debounce(async () => {
+    setIsBusyCallingTearDown(true);
     await performAction("/web/metabase/teardown");
   }, 500);
 
   const setupReports = debounce(async () => {
+    setIsBusyCallingSetup(true);
     await performAction("/web/metabase/setup");
   }, 500);
 
   const refreshReports = debounce(async () => {
+    setIsBusyCallingCreateQuestionOnly(true);
     await performAction("/web/metabase/update-questions");
   }, 500);
 
   if (statusResponse.status === MetabaseSetupStatus.Unknown) {
     return <>Loading...</>;
   }
+
+  const isBusyCallingAnyAction = isBusyCallingCreateQuestionOnly || isBusyCallingSetup || isBusyCallingTearDown;
+
+  const showSetupButton = statusResponse.canStartSetup() && !isBusyCallingAnyAction;
+  const showDisabledSetupButton = isBusyCallingSetup;
+
+  const showDeleteButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+  const showDisabledDeleteButton = isBusyCallingTearDown;
+
+  const showRefreshButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+  const showDisabledRefreshButton = isBusyCallingCreateQuestionOnly;
+
+  const showExploreButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
+
+  const showProgressSpinner = statusResponse.isAnyJobInProgress() || isBusyCallingAnyAction;
+  const showErrorMessage = statusResponse.hasErrorMessage();
 
   return (
     <ScreenWithAppBar appbarTitle="Self Service Reports" enableLeftMenuButton={true} sidebarOptions={reportSideBarOptions}>
@@ -154,14 +194,14 @@ const SelfServiceReports = () => {
                   <OpenInNewIcon className={classes.redirectIcon} />
                 </a>
               </div>
-              {statusResponse.canStartSetup() && (
+              {showSetupButton && (
                 <div className={classes.setupButtonContainer}>
                   <Button className={classes.setupButton} onClick={setupReports} disabled={statusResponse.isSetupInProgress()}>
                     Setup Reports
                   </Button>
                 </div>
               )}
-              {statusResponse.isSetupInProgress() && (
+              {showDisabledSetupButton && (
                 <div className={classes.setupButtonContainer}>
                   <Button className={classes.setupButton} disabled={true}>
                     Setup Reports
@@ -174,7 +214,7 @@ const SelfServiceReports = () => {
               Metabase to support ad hoc and self-serviced reports.
             </Typography>
             <Box style={{ display: "flex", flexDirection: "row-reverse" }}>
-              {statusResponse.isSetupComplete() && !statusResponse.isAnyJobInProgress() && (
+              {showDeleteButton && (
                 <div className={classes.buttonsContainer}>
                   <Button
                     style={{
@@ -187,61 +227,56 @@ const SelfServiceReports = () => {
                   </Button>
                 </div>
               )}
-              {statusResponse.isSetupComplete() && statusResponse.isAnyJobInProgress() && (
+              {showDisabledDeleteButton && (
                 <div className={classes.buttonsContainer}>
                   <Button disabled={true}>
                     <DeleteIcon /> Delete
                   </Button>
                 </div>
               )}
-              {statusResponse.isSetupComplete() && (
+              {showRefreshButton && (
                 <div className={classes.setupButtonContainer}>
                   <Button className={classes.refreshButton} onClick={refreshReports}>
                     Refresh Reports
                   </Button>
                 </div>
               )}
-              {statusResponse.isCreateQuestionInProgress() && (
+              {showDisabledRefreshButton && (
                 <div className={classes.setupButtonContainer}>
                   <Button className={classes.refreshButton} disabled={true}>
                     Refresh Reports
                   </Button>
                 </div>
               )}
-              {statusResponse.isSetupComplete() && (
+              {showExploreButton && (
                 <div className={classes.buttonsContainer}>
-                  <Button
-                    className={classes.exploreButton}
-                    href="https://reporting.avniproject.org"
-                    target="_blank"
-                    disabled={statusResponse.isAnyJobInProgress()}
-                  >
+                  <Button className={classes.exploreButton} href="https://reporting.avniproject.org" target="_blank">
                     Explore Your Data
                   </Button>
                 </div>
               )}
-              {statusResponse.isAnyJobInProgress() && (
+              {showProgressSpinner && (
                 <div className={classes.buttonsContainer}>
                   <CircularProgress size={24} />
                   <Box />
                 </div>
               )}
             </Box>
+            {showErrorMessage && (
+              <>
+                <Typography variant="h6" color="error">
+                  Last attempt failed with error
+                </Typography>
+                <Typography variant="body2" color="error">
+                  {statusResponse.getShortErrorMessage()}
+                </Typography>
+                <br />
+                <CopyToClipboard text={statusResponse.getErrorMessage()}>
+                  <button>Copy error to clipboard</button>
+                </CopyToClipboard>
+              </>
+            )}
           </Box>
-          {statusResponse.hasErrorMessage() && (
-            <>
-              <Typography variant="h6" color="error">
-                Last attempt failed with error
-              </Typography>
-              <Typography variant="body2" color="error">
-                {statusResponse.getShortErrorMessage()}
-              </Typography>
-              <br />
-              <CopyToClipboard text={statusResponse.getErrorMessage()}>
-                <button>Copy error to clipboard</button>
-              </CopyToClipboard>
-            </>
-          )}
         </CardContent>
       </Card>
     </ScreenWithAppBar>

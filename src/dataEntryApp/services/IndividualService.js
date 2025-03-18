@@ -1,4 +1,5 @@
 import { subjectProfileService } from "./SubjectProfileService";
+
 const notSupportedMessage =
   "Not supported. Please see  https://avni.readme.io/docs/writing-rules#types-of-rules-and-their-supportavailability-in-data-entry-app";
 
@@ -18,6 +19,10 @@ class IndividualService {
     subjectProfileService.getDebouncedFetchSubjectByUUIDFunc(uuid);
     // Attempts to fetch the subjectProfile value that might have been previously cached
     return subjectProfileService.getSubjectByUUID(uuid);
+  }
+
+  findAllSubjectsWithMobileNumberForType(mobileNumber, subjectTypeUUID) {
+    throw Error(notSupportedMessage);
   }
 }
 
