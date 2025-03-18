@@ -78,14 +78,6 @@ class MetabaseSetupStatus {
     return this.status === this.Setup;
   }
 
-  isCreateQuestionInProgress() {
-    return this.createQuestionOnlyStatus.isRunning();
-  }
-
-  isTearDownInProgress() {
-    return this.tearDownStatus.isRunning();
-  }
-
   isAnyJobInProgress() {
     return [this.tearDownStatus, this.createQuestionOnlyStatus, this.setupStatus].some(jobStatus => jobStatus.isRunning());
   }
