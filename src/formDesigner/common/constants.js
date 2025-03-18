@@ -17,30 +17,14 @@ class FormTypeInfo {
 
 export const FormTypeEntities = {
   IndividualProfile: new FormTypeInfo("IndividualProfile", "Subject registration", "individual"),
-  SubjectEnrolmentEligibility: new FormTypeInfo(
-    "SubjectEnrolmentEligibility",
-    "Subject enrolment eligibility",
-    "individual"
-  ),
-  ManualProgramEnrolmentEligibility: new FormTypeInfo(
-    "ManualProgramEnrolmentEligibility",
-    "Manual enrolment eligibility",
-    "individual"
-  ),
+  SubjectEnrolmentEligibility: new FormTypeInfo("SubjectEnrolmentEligibility", "Subject enrolment eligibility", "individual"),
+  ManualProgramEnrolmentEligibility: new FormTypeInfo("ManualProgramEnrolmentEligibility", "Manual enrolment eligibility", "individual"),
   ProgramEnrolment: new FormTypeInfo("ProgramEnrolment", "Program enrolment", "programEnrolment"),
   ProgramExit: new FormTypeInfo("ProgramExit", "Program exit", "programEnrolment"),
   ProgramEncounter: new FormTypeInfo("ProgramEncounter", "Program encounter", "programEncounter"),
-  ProgramEncounterCancellation: new FormTypeInfo(
-    "ProgramEncounterCancellation",
-    "Program encounter cancellation",
-    "programEncounter"
-  ),
+  ProgramEncounterCancellation: new FormTypeInfo("ProgramEncounterCancellation", "Program encounter cancellation", "programEncounter"),
   Encounter: new FormTypeInfo("Encounter", "Encounter", "encounter"),
-  IndividualEncounterCancellation: new FormTypeInfo(
-    "IndividualEncounterCancellation",
-    "Individual Encounter Cancellation",
-    "encounter"
-  ),
+  IndividualEncounterCancellation: new FormTypeInfo("IndividualEncounterCancellation", "Individual Encounter Cancellation", "encounter"),
   ChecklistItem: new FormTypeInfo("ChecklistItem", "Check list item", "checklistItem"),
   Location: new FormTypeInfo("Location", "Location"),
   Task: new FormTypeInfo("Task", "Task", "task"),
@@ -54,24 +38,15 @@ export const FormTypeEntities = {
   },
 
   isForProgramEncounter(formTypeInfo) {
-    return (
-      formTypeInfo === FormTypeEntities.ProgramEncounterCancellation ||
-      formTypeInfo === FormTypeEntities.ProgramEncounter
-    );
+    return formTypeInfo === FormTypeEntities.ProgramEncounterCancellation || formTypeInfo === FormTypeEntities.ProgramEncounter;
   },
 
   isForProgramEnrolment(formTypeInfo) {
-    return (
-      formTypeInfo === FormTypeEntities.ProgramEnrolment ||
-      formTypeInfo === FormTypeEntities.ProgramExit
-    );
+    return formTypeInfo === FormTypeEntities.ProgramEnrolment || formTypeInfo === FormTypeEntities.ProgramExit;
   },
 
   isForSubjectEncounter(formTypeInfo) {
-    return (
-      formTypeInfo === FormTypeEntities.Encounter ||
-      formTypeInfo === FormTypeEntities.IndividualEncounterCancellation
-    );
+    return formTypeInfo === FormTypeEntities.Encounter || formTypeInfo === FormTypeEntities.IndividualEncounterCancellation;
   }
 };
 
@@ -100,6 +75,7 @@ export const inlineConceptDataType = _.sortBy([
   "Time",
   "Duration",
   "Image",
+  "ImageV2",
   "Id",
   "Video",
   "Subject",

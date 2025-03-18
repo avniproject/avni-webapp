@@ -19,7 +19,8 @@ import {
   required,
   SelectArrayInput,
   SelectInput,
-  Show,
+  ShowController,
+  ShowView,
   SimpleForm,
   SimpleFormIterator,
   SimpleShowLayout,
@@ -54,7 +55,7 @@ import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
 import { Paper } from "@material-ui/core";
-import { createdAudit, modifiedAudit } from "./components/AuditUtil";
+import { activatedAudit, createdAudit, modifiedAudit } from "./components/AuditUtil";
 import ResetPasswordButton from "./components/ResetPasswordButton";
 import { AvniPasswordInput } from "./components/AvniPasswordInput";
 import Chip from "@material-ui/core/Chip";
@@ -192,72 +193,84 @@ export const UserDetail = ({ user, hasEditUserPrivilege, ...props }) => {
   fetchSyncAttributeData(setSyncAttributesData);
 
   return (
-    <Show title={<UserTitle />} actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} user={user} />} {...props}>
-      <SimpleShowLayout>
-        <TextField source="username" label="Login ID (username)" />
-        <TextField source="name" label="Name of the Person" />
-        <TextField source="email" label="Email Address" />
-        <TextField source="phoneNumber" label="Phone Number" />
-        <ReferenceField label="Catchment" source="catchmentId" reference="catchment" linkType="show" allowEmpty>
-          <TextField source="name" />
-        </ReferenceField>
-        <ArrayField style={{ maxWidth: "20em" }} label="User Groups" source="userGroupNames">
-          <SingleFieldList linkType={false}>
-            <StringToLabelObject>
-              <ChipField source="label" />
-            </StringToLabelObject>
-          </SingleFieldList>
-        </ArrayField>
-        <FunctionField label="Operating Scope" render={user => formatOperatingScope(user.operatingIndividualScope)} />
-        <LineBreak />
-        <h4>Sync Settings</h4>
-        <FunctionField
-          label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
-          render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
-        />
-        {map(syncAttributesData.subjectTypes, st => (
-          <SubjectTypeSyncAttributeShow
-            subjectType={st}
-            key={get(st, "name")}
-            syncConceptValueMap={syncAttributesData.syncConceptValueMap}
-          />
-        ))}
-        <FunctionField label="Preferred Language" render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")} />
-        <FunctionField label="Date Picker Mode" render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")} />
-        <FunctionField label="Time Picker Mode" render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")} />
-        <FunctionField
-          label="Track Location"
-          render={user => (!isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : "")}
-        />
-        <FunctionField
-          label="Is Allowed To Invoke Token Generation API"
-          render={user => (!isNil(user.settings) ? (user.settings.isAllowedToInvokeTokenGenerationAPI ? "True" : "False") : "")}
-        />
-        <FunctionField
-          label="Beneficiary Mode"
-          render={user => (!isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : "")}
-        />
-        <FunctionField
-          label="Disable dashboard auto refresh"
-          render={user => (!isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : "")}
-        />
-        <FunctionField
-          label="Disable auto sync"
-          render={user => (!isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : "")}
-        />
-        <FunctionField
-          label="Register + Enrol"
-          render={user => (!isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : "")}
-        />
-        <FunctionField
-          label="Enable Call Masking"
-          render={user => (!isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : "")}
-        />
-        <TextField label="Identifier prefix" source="settings.idPrefix" />
-        <FunctionField label="Created" render={audit => createdAudit(audit)} />
-        <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
-      </SimpleShowLayout>
-    </Show>
+    <ShowController {...props}>
+      {controllerProps => (
+        <ShowView
+          title={<UserTitle />}
+          actions={<CustomShowActions hasEditUserPrivilege={hasEditUserPrivilege} user={user} />}
+          {...props}
+          {...controllerProps}
+        >
+          <SimpleShowLayout>
+            <TextField source="username" label="Login ID (username)" />
+            <TextField source="name" label="Name of the Person" />
+            <TextField source="email" label="Email Address" />
+            <TextField source="phoneNumber" label="Phone Number" />
+            <ReferenceField label="Catchment" source="catchmentId" reference="catchment" linkType="show" allowEmpty>
+              <TextField source="name" />
+            </ReferenceField>
+            <ArrayField style={{ maxWidth: "20em" }} label="User Groups" source="userGroupNames">
+              <SingleFieldList linkType={false}>
+                <StringToLabelObject>
+                  <ChipField source="label" />
+                </StringToLabelObject>
+              </SingleFieldList>
+            </ArrayField>
+            <FunctionField label="Operating Scope" render={user => formatOperatingScope(user.operatingIndividualScope)} />
+            <LineBreak />
+            <h4>Sync Settings</h4>
+            <FunctionField
+              label="Below Subject type Sync settings are to be ignored in the Data Entry app: "
+              render={user => (user.ignoreSyncSettingsInDEA ? "Yes" : "No")}
+            />
+            {map(syncAttributesData.subjectTypes, st => (
+              <SubjectTypeSyncAttributeShow
+                subjectType={st}
+                key={get(st, "name")}
+                syncConceptValueMap={syncAttributesData.syncConceptValueMap}
+              />
+            ))}
+            <FunctionField label="Preferred Language" render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")} />
+            <FunctionField label="Date Picker Mode" render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")} />
+            <FunctionField label="Time Picker Mode" render={user => (!isNil(user.settings) ? user.settings.timePickerMode : "Clock")} />
+            <FunctionField
+              label="Track Location"
+              render={user => (!isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : "")}
+            />
+            <FunctionField
+              label="Is Allowed To Invoke Token Generation API"
+              render={user => (!isNil(user.settings) ? (user.settings.isAllowedToInvokeTokenGenerationAPI ? "True" : "False") : "")}
+            />
+            <FunctionField
+              label="Beneficiary Mode"
+              render={user => (!isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : "")}
+            />
+            <FunctionField
+              label="Disable dashboard auto refresh"
+              render={user => (!isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : "")}
+            />
+            <FunctionField
+              label="Disable auto sync"
+              render={user => (!isNil(user.settings) ? (user.settings.disableAutoSync ? "True" : "False") : "")}
+            />
+            <FunctionField
+              label="Register + Enrol"
+              render={user => (!isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : "")}
+            />
+            <FunctionField
+              label="Enable Call Masking"
+              render={user => (!isNil(user.settings) ? (user.settings.enableCallMasking ? "True" : "False") : "")}
+            />
+            <TextField label="Identifier prefix" source="settings.idPrefix" />
+            <FunctionField label="Created" render={user => createdAudit(user)} />
+            {controllerProps.record && controllerProps.record.lastActivatedDateTime && (
+              <FunctionField label="Activated" render={user => activatedAudit(user)} />
+            )}
+            <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
+          </SimpleShowLayout>
+        </ShowView>
+      )}
+    </ShowController>
   );
 };
 
