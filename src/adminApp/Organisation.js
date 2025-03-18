@@ -35,7 +35,6 @@ import httpClient from "../common/utils/httpClient";
 import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { event } from "jquery";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
