@@ -246,7 +246,8 @@ export function* setProgramEncounterDetails(programEncounter, programEnrolmentJs
     programEncounterForm,
     programEncounter,
     false,
-    isEdit
+    isEdit,
+    programEncounter.encounterType.immutable
   );
 
   yield put.resolve(
