@@ -35,6 +35,7 @@ import httpClient from "../common/utils/httpClient";
 import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { event } from "jquery";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -226,7 +227,14 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
   }, [redirect]);
 
   const handleChange = (property, value) => {
-    setData(currentData => ({ ...currentData, [property]: value }));
+    setData(currentData => ({
+      ...currentData,
+      [property]: property === "categoryId" || property === "statusId" ? value : value.trimStart().replace(/\s+/g, " ")
+    }));
+  };
+
+  const handleBlur = (property, value) => {
+    setData(currentData => ({ ...currentData, [property]: value.trim() }));
   };
 
   const handleSubmit = event => {
@@ -310,6 +318,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
               label="Name*"
               value={data.name}
               onChange={event => handleChange("name", event.target.value)}
+              onBlur={event => handleBlur("name", event.target.value)}
               style={classes.textField}
               margin="normal"
               autoComplete="off"
@@ -323,6 +332,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
               label="DB User*"
               value={data.dbUser}
               onChange={event => handleChange("dbUser", event.target.value)}
+              onBlur={event => handleBlur("dbUser", event.target.value)}
               style={classes.textField}
               margin="normal"
               autoComplete="off"
@@ -336,6 +346,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
               label="Schema Name*"
               value={data.schemaName}
               onChange={event => handleChange("schemaName", event.target.value)}
+              onBlur={event => handleBlur("schemaName", event.target.value)}
               style={classes.textField}
               margin="normal"
               autoComplete="off"
@@ -349,6 +360,7 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
               label="Media Directory*"
               value={data.mediaDirectory}
               onChange={event => handleChange("mediaDirectory", event.target.value)}
+              onBlur={event => handleBlur("mediaDirectory", event.target.value)}
               style={classes.textField}
               margin="normal"
               autoComplete="off"
@@ -359,9 +371,10 @@ export const OrganisationCreateComponent = ({ showNotification }) => {
           <Grid item xs={6}>
             <AvniTextField
               id="usernameSuffix"
-              label="Ussername Suffix*"
+              label="Username Suffix*"
               value={data.usernameSuffix}
               onChange={event => handleChange("usernameSuffix", event.target.value)}
+              onBlur={event => handleBlur("usernameSuffix", event.target.value)}
               style={classes.textField}
               margin="normal"
               autoComplete="off"
