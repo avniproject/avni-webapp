@@ -25,6 +25,10 @@ import { TitleChip } from "./components/TitleChip";
 import { Title } from "./components/Title";
 import ToggleAnalyticsButton from "./ToggleAnalyticsButton";
 
+const normalizeInput = value => {
+  return value ? value.trim().replace(/\s+/g, " ") : value;
+};
+
 export const OrganisationGroupList = props => (
   <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
@@ -32,13 +36,7 @@ export const OrganisationGroupList = props => (
       <TextField label="DB User" source="dbUser" />
       <TextField source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
-      <ReferenceField
-        resource="account"
-        source="accountId"
-        reference="account"
-        label="Account Name"
-        allowEmpty
-      >
+      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">
@@ -57,13 +55,7 @@ export const OrganisationGroupShow = props => (
       <TextField source="dbUser" label="DB User" />
       <TextField source="schemaName" label="Schema name" />
       <BooleanField source="analyticsDataSyncActive" label="Active analytics data sync" />
-      <ReferenceField
-        resource="account"
-        source="accountId"
-        reference="account"
-        label="Account Name"
-        allowEmpty
-      >
+      <ReferenceField resource="account" source="accountId" reference="account" label="Account Name" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
       <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">
@@ -78,9 +70,9 @@ export const OrganisationGroupShow = props => (
 export const organisationGroupCreate = props => (
   <Create title="Add a new Account" {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" validate={required("Name cannot be empty")} />
-      <TextInput source="dbUser" validate={required("db user cannot be empty")} />
-      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} />
+      <TextInput source="name" validate={required("Name cannot be empty")} parse={normalizeInput} />
+      <TextInput source="dbUser" validate={required("DB user cannot be empty")} parse={normalizeInput} />
+      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} parse={normalizeInput} />
       <BooleanInput source="analyticsDataSyncActive" />
       <ReferenceInput
         resource="account"
@@ -108,9 +100,9 @@ export const organisationGroupCreate = props => (
 export const organisationGroupEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" validate={required("Name cannot be empty")} />
+      <TextInput source="name" validate={required("Name cannot be empty")} parse={normalizeInput} />
       <DisabledInput source="dbUser" />
-      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} />
+      <TextInput source="schemaName" validate={required("Schema name cannot be empty")} parse={normalizeInput} />
       <BooleanField source="analyticsDataSyncActive" />
       <ToggleAnalyticsButton />
       <br />
