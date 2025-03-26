@@ -167,8 +167,8 @@ const SelfServiceReports = () => {
   const showSetupButton = statusResponse.canStartSetup() && !isBusyCallingAnyAction;
   const showDisabledSetupButton = isBusyCallingSetup;
 
-  const showDeleteButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
-  const showDisabledDeleteButton = isBusyCallingTearDown;
+  const showDeleteButton = false;
+  const showDisabledDeleteButton = false;
 
   const showRefreshButton = statusResponse.isSetupComplete() && !isBusyCallingAnyAction;
   const showDisabledRefreshButton = isBusyCallingCreateQuestionOnly;
