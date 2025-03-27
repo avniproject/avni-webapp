@@ -26,9 +26,7 @@ function matchingProgramEncounterType(a, b) {
 class GroupPrivilegesModel {
   static getSubjectTypeDependencies(groupPrivileges, groupPrivilege) {
     return groupPrivileges.filter(
-      x =>
-        x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
-        matchingSubjectType(x, groupPrivilege)
+      x => x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject && matchingSubjectType(x, groupPrivilege)
     );
   }
 
@@ -38,8 +36,7 @@ class GroupPrivilegesModel {
         (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewEnrolmentDetails &&
           matchingSubjectType(x, groupPrivilege) &&
           matchingProgram(x, groupPrivilege)) ||
-        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
-          matchingSubjectType(x, groupPrivilege))
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject && matchingSubjectType(x, groupPrivilege))
     );
   }
 
@@ -51,8 +48,7 @@ class GroupPrivilegesModel {
           matchingEncounterType(x, groupPrivilege) &&
           matchingProgramEncounterType(x, groupPrivilege) &&
           matchingProgram(x, groupPrivilege)) ||
-        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
-          matchingSubjectType(x, groupPrivilege))
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject && matchingSubjectType(x, groupPrivilege))
     );
   }
 
@@ -62,15 +58,12 @@ class GroupPrivilegesModel {
         (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewChecklist &&
           matchingSubjectType(x, groupPrivilege) &&
           matchingId(x, groupPrivilege, "checklistDetail")) ||
-        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject &&
-          matchingSubjectType(x, groupPrivilege))
+        (x["privilegeTypeName"] === Privilege.PrivilegeType.ViewSubject && matchingSubjectType(x, groupPrivilege))
     );
   }
 
   static getEditUserGroupDependencies(groupPrivilegeList) {
-    return groupPrivilegeList.filter(
-      x => x["privilegeTypeName"] === Privilege.PrivilegeType.EditUserConfiguration
-    );
+    return groupPrivilegeList.filter(x => x["privilegeTypeName"] === Privilege.PrivilegeType.EditUserConfiguration);
   }
 }
 

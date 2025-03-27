@@ -106,9 +106,7 @@ const GroupSubjectMemberCardView = ({
         )}
         <CardActions className={classes.cardActions}>
           <EditButton color="primary">
-            <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>
-              {t("edit")}
-            </InternalLink>
+            <InternalLink to={`/app/subject/editGroupMembership?uuid=${uuid}`}>{t("edit")}</InternalLink>
           </EditButton>
           <Modal
             content={removeGroupMemberDialogContent}
@@ -125,9 +123,7 @@ const GroupSubjectMemberCardView = ({
                 redirectTo: ``,
                 classes: classes.btnCustom,
                 click: () => {
-                  api
-                    .deleteGroupSubject(uuid)
-                    .then(() => setTimeout(() => setMembersChanged(true), 250));
+                  api.deleteGroupSubject(uuid).then(() => setTimeout(() => setMembersChanged(true), 250));
                 }
               },
               {

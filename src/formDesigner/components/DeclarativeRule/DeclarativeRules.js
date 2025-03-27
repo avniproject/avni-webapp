@@ -87,11 +87,7 @@ const DeclarativeRules = ({
             {"Summary"}
           </Typography>
           {map(summaries, (summary, index) => (
-            <RuleSummaryComponent
-              summary={summary}
-              ruleNumber={index + 1}
-              displayRuleCounts={size(summaries) > 1}
-            />
+            <RuleSummaryComponent summary={summary} ruleNumber={index + 1} displayRuleCounts={size(summaries) > 1} />
           ))}
         </Box>
       )}

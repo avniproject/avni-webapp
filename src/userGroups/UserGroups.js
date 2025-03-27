@@ -83,8 +83,8 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
           <AvniAlert severity={"info"} variant={"outlined"}>
             It appears you would like to use fine grained access control.
             <br />
-            Since privileges are cumulative across groups, you will need to turn off 'All
-            privileges' in the Everyone group for your custom configuration to work.
+            Since privileges are cumulative across groups, you will need to turn off 'All privileges' in the Everyone group for your custom
+            configuration to work.
           </AvniAlert>
         ) : null}
         <br />
@@ -110,24 +110,14 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
               </FormControl>
             </Grid>
             <Box mt={3}>
-              <Button
-                mt={10}
-                variant="contained"
-                color="primary"
-                onClick={() => groupCreationHandler()}
-              >
+              <Button mt={10} variant="contained" color="primary" onClick={() => groupCreationHandler()}>
                 {"Create New Group"}
               </Button>
             </Box>
           </div>
         </Modal>
         <Grid container justify="flex-start">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setOpenModal(true)}
-            style={{ marginLeft: 20 }}
-          >
+          <Button variant="contained" color="primary" onClick={() => setOpenModal(true)} style={{ marginLeft: 20 }}>
             {"Create Group"}
           </Button>
         </Grid>

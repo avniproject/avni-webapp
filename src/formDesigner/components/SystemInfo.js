@@ -4,15 +4,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { createdAudit, modifiedAudit } from "../../adminApp/components/AuditUtil";
 import _ from "lodash";
 
-export const SystemInfo = ({
-  uuid,
-  createdBy,
-  lastModifiedBy,
-  createdDateTime,
-  modifiedDateTime,
-  lastModifiedDateTime,
-  direction
-}) => {
+export const SystemInfo = ({ uuid, createdBy, lastModifiedBy, createdDateTime, modifiedDateTime, lastModifiedDateTime, direction }) => {
   return (
     <Grid container direction={direction || "column"} justify={"space-between"} spacing={2}>
       <Grid item container direction={"column"} spacing={1} xs={6}>
@@ -23,14 +15,7 @@ export const SystemInfo = ({
           <span style={{ fontSize: "15px" }}>{createdAudit({ createdBy, createdDateTime })}</span>
         </Grid>
       </Grid>
-      <Grid
-        item
-        container
-        direction={"column"}
-        spacing={1}
-        xs={6}
-        alignContent={direction ? "flex-end" : "flex-start"}
-      >
+      <Grid item container direction={"column"} spacing={1} xs={6} alignContent={direction ? "flex-end" : "flex-start"}>
         <Grid item>
           <FormLabel style={{ fontSize: "13px" }}>Modified </FormLabel>
         </Grid>

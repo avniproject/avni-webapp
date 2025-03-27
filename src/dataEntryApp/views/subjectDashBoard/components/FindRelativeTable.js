@@ -12,14 +12,7 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
     sessionStorage.setItem("selectedRelative", JSON.stringify(row));
   };
 
-  return (
-    <SelectSubject
-      t={t}
-      errormsg={errormsg}
-      subjectData={subjectData}
-      onSelectedItem={onSelectedItem}
-    />
-  );
+  return <SelectSubject t={t} errormsg={errormsg} subjectData={subjectData} onSelectedItem={onSelectedItem} />;
 };
 
 const mapStateToProps = state => ({

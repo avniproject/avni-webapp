@@ -4,15 +4,7 @@ import ConceptSearch from "./ConceptSearch";
 import Select from "react-select";
 import { ConceptScope } from "rules-config";
 
-const ConceptAndScope = ({
-  conceptValue,
-  onConceptChange,
-  defaultOptions = [],
-  displayScope,
-  getScopeValue,
-  formType,
-  onScopeChange
-}) => {
+const ConceptAndScope = ({ conceptValue, onConceptChange, defaultOptions = [], displayScope, getScopeValue, formType, onScopeChange }) => {
   const scopeOptions = ConceptScope.getScopeOptionsByFormType(formType);
 
   return (

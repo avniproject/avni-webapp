@@ -10,15 +10,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SelectFilter = ({
-  label,
-  options,
-  filter,
-  isMulti = false,
-  filterCriteria,
-  onFilterChange,
-  isClearable = true
-}) => {
+const SelectFilter = ({ label, options, filter, isMulti = false, filterCriteria, onFilterChange, isClearable = true }) => {
   const classes = useStyle();
   return (
     <FormControl fullWidth className={classes.filter}>

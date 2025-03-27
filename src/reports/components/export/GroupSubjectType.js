@@ -3,14 +3,7 @@ import { filter } from "lodash";
 import { ExportOptions } from "./ExportOptions";
 import { DateOptions } from "./DateOptions";
 
-export const GroupSubjectType = ({
-  subjectTypes,
-  subjectType,
-  startDate,
-  endDate,
-  dispatch,
-  setEnableExport
-}) => {
+export const GroupSubjectType = ({ subjectTypes, subjectType, startDate, endDate, dispatch, setEnableExport }) => {
   const onSubjectTypeChange = st => {
     dispatch("subjectType", st);
     setEnableExport(true);

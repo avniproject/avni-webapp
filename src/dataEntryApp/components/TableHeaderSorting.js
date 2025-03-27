@@ -14,9 +14,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 export const getComparator = (order, orderBy) => {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+  return order === "desc" ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
 };
 
 export const stableSort = (array, comparator) => {
@@ -56,9 +54,7 @@ export const EnhancedTableHead = props => {
             >
               {t(headCell.label)}
               {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {/*/!* {order === 'desc' ? 'sorted descending' : 'sorted ascending'} *!/*/}
-                </span>
+                <span className={classes.visuallyHidden}>{/*/!* {order === 'desc' ? 'sorted descending' : 'sorted ascending'} *!/*/}</span>
               ) : null}
             </TableSortLabel>
           </TableCell>

@@ -24,23 +24,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Breadcrumbs = ({
-  path,
-  match,
-  programEncounter,
-  subjectProfile,
-  encounter,
-  viewVisit,
-  ...props
-}) => {
+const Breadcrumbs = ({ path, match, programEncounter, subjectProfile, encounter, viewVisit, ...props }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const parts = path.split(/\/+/g).filter(Boolean);
   const subjectName = subjectProfile && subjectProfile.nameString;
   const subjectUuid = subjectProfile && subjectProfile.uuid;
   const viewVisitName = viewVisit && defaultTo(viewVisit.name, viewVisit.encounterType.name);
-  const programEncounterName =
-    programEncounter && defaultTo(programEncounter.name, programEncounter.encounterType.name);
+  const programEncounterName = programEncounter && defaultTo(programEncounter.name, programEncounter.encounterType.name);
   const encounterName = encounter && defaultTo(encounter.name, encounter.encounterType.name);
   const urlPartLabels = {
     APP: "app",

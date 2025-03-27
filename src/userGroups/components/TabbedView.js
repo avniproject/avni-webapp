@@ -54,12 +54,7 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...pro
         <GroupUsers groupId={groupId} {...props} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <GroupPrivileges
-          groupId={groupId}
-          groupName={groupName}
-          hasAllPrivileges={hasAllPrivileges}
-          {...props}
-        />
+        <GroupPrivileges groupId={groupId} groupName={groupName} hasAllPrivileges={hasAllPrivileges} {...props} />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <GroupDashboards groupId={groupId} {...props} />

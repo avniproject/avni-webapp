@@ -40,8 +40,7 @@ export const AudioPlayer = ({ url }) => {
   const [signedURL, setSignedURL] = useState();
   const [openModal, setOpenModal] = useState(false);
 
-  const updateSignedURL = () =>
-    http.get(`/media/signedUrl?url=${url}`).then(signedURL => setSignedURL(signedURL.data));
+  const updateSignedURL = () => http.get(`/media/signedUrl?url=${url}`).then(signedURL => setSignedURL(signedURL.data));
 
   useEffect(() => {
     updateSignedURL();

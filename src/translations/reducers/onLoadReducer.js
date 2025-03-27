@@ -22,14 +22,14 @@ export const getDashboardData = (platform, emptyValue) => ({
   emptyValue
 });
 
-export const setDashboardData = (data) => ({
+export const setDashboardData = data => ({
   type: types.SET_DASHBOARD_DATA,
   data
 });
 const initialState = {};
 
 // reducer
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_ORG_CONFIG: {
       return {
@@ -37,11 +37,11 @@ export default function (state = initialState, action) {
         organisationConfig: action.organisationConfig
       };
     }
-    case types.SET_DASHBOARD_DATA : {
+    case types.SET_DASHBOARD_DATA: {
       return {
         ...state,
         dashboardData: action.data
-      }
+      };
     }
     default:
       return state;

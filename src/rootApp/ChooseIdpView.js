@@ -26,8 +26,7 @@ function ChooseIdpView({ onIdpChosen }) {
   return (
     <Box style={{ backgroundColor: "darkgray" }}>
       <Typography variant={"h4"} style={{ color: "white", marginBottom: 300 }}>
-        There are multiple IDP types configured and you do not have an active session, please choose
-        the one is used by your organisation
+        There are multiple IDP types configured and you do not have an active session, please choose the one is used by your organisation
       </Typography>
       <Box
         style={{

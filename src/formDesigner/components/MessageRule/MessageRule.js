@@ -25,11 +25,7 @@ const MessageRule = ({
 
   return (
     <BorderBox>
-      <Button
-        style={{ float: "right", color: "red" }}
-        onClick={() => onDelete()}
-        disabled={readOnly}
-      >
+      <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()} disabled={readOnly}>
         <DeleteIcon />
       </Button>
       <AvniTextField
@@ -41,10 +37,7 @@ const MessageRule = ({
         onChange={event => onChange({ name: event.target.value })}
         toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
       />
-      <AvniFormLabel
-        label={"Select Template"}
-        toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"}
-      />
+      <AvniFormLabel label={"Select Template"} toolTipKey={"APP_DESIGNER_SELECT_MESSAGE_TEMPLATE"} />
       <Select
         placeholder={"Message template"}
         value={template}
@@ -61,17 +54,9 @@ const MessageRule = ({
         toolTipKey={"APP_DESIGNER_SELECT_RECEIVER_TYPE"}
       />
       <AvniFormLabel label={"Schedule"} toolTipKey={"APP_DESIGNER_MESSAGE_SCHEDULE_RULE"} />
-      <JSEditor
-        readOnly={readOnly}
-        value={scheduleRule}
-        onValueChange={newRule => onChange({ scheduleRule: newRule })}
-      />
+      <JSEditor readOnly={readOnly} value={scheduleRule} onValueChange={newRule => onChange({ scheduleRule: newRule })} />
       <AvniFormLabel label={"Message"} toolTipKey={"APP_DESIGNER_MESSAGE_RULE"} />
-      <JSEditor
-        readOnly={readOnly}
-        value={messageRule}
-        onValueChange={newRule => onChange({ messageRule: newRule })}
-      />
+      <JSEditor readOnly={readOnly} value={messageRule} onValueChange={newRule => onChange({ messageRule: newRule })} />
     </BorderBox>
   );
 };

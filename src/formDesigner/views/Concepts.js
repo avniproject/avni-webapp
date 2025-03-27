@@ -34,8 +34,7 @@ const Concepts = ({ history, userInfo }) => {
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
-      if (!_.isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      if (!_.isEmpty(query.orderBy.field)) apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
         .then(response => response.data)

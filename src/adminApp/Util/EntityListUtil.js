@@ -15,9 +15,7 @@ class EntityListUtil {
       icon: () => <Delete />,
       tooltip: `Delete ${entityDisplayName.toLowerCase()}}`,
       onClick: (event, rowData) => {
-        const voidedMessage = `Do you really want to delete the ${entityDisplayName.toLowerCase()} ${
-          rowData[entityFieldName]
-        }?`;
+        const voidedMessage = `Do you really want to delete the ${entityDisplayName.toLowerCase()} ${rowData[entityFieldName]}?`;
         if (window.confirm(voidedMessage)) {
           http.delete(`/web/${resourceName}/${rowData.id}`).then(response => {
             if (response.status === 200) {

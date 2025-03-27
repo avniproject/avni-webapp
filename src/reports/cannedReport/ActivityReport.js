@@ -13,11 +13,7 @@ const ActivityReport = ({ activityReport, getActivityReport }) => {
 
   const renderActivityCard = (title, propertyName) => {
     return activityReport[propertyName].total > 0 ? (
-      <ActivityCard
-        title={title}
-        total={activityReport[propertyName].total}
-        data={activityReport[propertyName].data}
-      />
+      <ActivityCard title={title} total={activityReport[propertyName].total} data={activityReport[propertyName].data} />
     ) : (
       <div />
     );

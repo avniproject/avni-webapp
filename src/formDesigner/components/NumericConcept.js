@@ -21,12 +21,7 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "lowAbsolute",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "lowAbsolute", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
@@ -43,12 +38,7 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "highAbsolute",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "highAbsolute", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
@@ -70,12 +60,7 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "lowNormal",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "lowNormal", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
@@ -92,12 +77,7 @@ export default function NumericConcept(props) {
               style={classes}
               onChange={event =>
                 props.inlineConcept
-                  ? props.onNumericConceptAttributeAssignment(
-                      props.groupIndex,
-                      "highNormal",
-                      event.target.value,
-                      props.index
-                    )
+                  ? props.onNumericConceptAttributeAssignment(props.groupIndex, "highNormal", event.target.value, props.index)
                   : props.onNumericConceptAttributeAssignment(event)
               }
               InputProps={{ inputProps: { min: 0 } }}
@@ -117,12 +97,7 @@ export default function NumericConcept(props) {
             margin="normal"
             onChange={event =>
               props.inlineConcept
-                ? props.onNumericConceptAttributeAssignment(
-                    props.groupIndex,
-                    "unit",
-                    event.target.value,
-                    props.index
-                  )
+                ? props.onNumericConceptAttributeAssignment(props.groupIndex, "unit", event.target.value, props.index)
                 : props.onNumericConceptAttributeAssignment(event)
             }
             defaultValue={props.numericDataTypeAttributes.unit}

@@ -21,19 +21,9 @@ export const ConceptSelect = ({ concepts, setConcepts }) => {
   const loadConcepts = async value => {
     const inputValue = deburr(value.trim()).toLowerCase();
     const response = await http.get("/search/concept?name=" + encodeURIComponent(inputValue));
-    const filteredConcepts = response.data.filter(
-      concept => concept.dataType !== "NA" && concept.dataType !== "Duration"
-    );
+    const filteredConcepts = response.data.filter(concept => concept.dataType !== "NA" && concept.dataType !== "Duration");
     return buildConceptOptions(filteredConcepts);
   };
 
-  return (
-    <AsyncSelect
-      isMulti
-      cacheOptions
-      defaultValue={buildConceptOptions(concepts)}
-      loadOptions={loadConcepts}
-      onChange={onChange}
-    />
-  );
+  return <AsyncSelect isMulti cacheOptions defaultValue={buildConceptOptions(concepts)} loadOptions={loadConcepts} onChange={onChange} />;
 };

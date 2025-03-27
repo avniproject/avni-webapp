@@ -91,15 +91,7 @@ const applyListIcon = (open, icon, listTextName) => {
   }
 };
 
-const applyLeftMenu = (
-  classes,
-  open,
-  handleDrawer,
-  selectedIndex,
-  handleListItemClick,
-  children,
-  sidebarOptions
-) => {
+const applyLeftMenu = (classes, open, handleDrawer, selectedIndex, handleListItemClick, children, sidebarOptions) => {
   return (
     <>
       <Drawer
@@ -159,9 +151,7 @@ const getSelectedListItem = sidebarOptions => {
 const ScreenWithAppBar = props => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [selectedIndex, setSelectedIndex] = React.useState(
-    getSelectedListItem(props.sidebarOptions)
-  );
+  const [selectedIndex, setSelectedIndex] = React.useState(getSelectedListItem(props.sidebarOptions));
 
   function handleListItemClick(event, index) {
     setSelectedIndex(index);
@@ -173,21 +163,9 @@ const ScreenWithAppBar = props => {
 
   return (
     <div className={classes.container}>
-      <AppBar
-        title={props.appbarTitle}
-        handleDrawer={handleDrawer}
-        enableLeftMenuButton={props.enableLeftMenuButton}
-      />
+      <AppBar title={props.appbarTitle} handleDrawer={handleDrawer} enableLeftMenuButton={props.enableLeftMenuButton} />
       {props.enableLeftMenuButton &&
-        applyLeftMenu(
-          classes,
-          open,
-          handleDrawer,
-          selectedIndex,
-          handleListItemClick,
-          props.children,
-          props.sidebarOptions
-        )}
+        applyLeftMenu(classes, open, handleDrawer, selectedIndex, handleListItemClick, props.children, props.sidebarOptions)}
 
       {!props.enableLeftMenuButton && <Body>{props.children}</Body>}
     </div>

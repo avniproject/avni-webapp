@@ -16,20 +16,13 @@ it("when not both", function() {
 });
 
 it("when both but with local storage having keycloak only item", function() {
-  LocalStorageLocator.setLocalStorage(
-    new StubbedLocalStorage(new Map([[IdpDetails.AuthTokenName, "foo"]]))
-  );
+  LocalStorageLocator.setLocalStorage(new StubbedLocalStorage(new Map([[IdpDetails.AuthTokenName, "foo"]])));
   assert.isTrue(IdpFactory.createIdp(IdpDetails.both, {}) instanceof KeycloakWebClient);
 });
 
 it("when both but with local storage having cognito item", function() {
   LocalStorageLocator.setLocalStorage(
-    new StubbedLocalStorage(
-      new Map([
-        [CognitoWebClient.AuthStateLocalStorageKey, "foo"],
-        [IdpDetails.AuthTokenName, "bar"]
-      ])
-    )
+    new StubbedLocalStorage(new Map([[CognitoWebClient.AuthStateLocalStorageKey, "foo"], [IdpDetails.AuthTokenName, "bar"]]))
   );
   assert.isTrue(IdpFactory.createIdp(IdpDetails.both, {}) instanceof CognitoWebClient);
 });

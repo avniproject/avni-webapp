@@ -95,14 +95,10 @@ export const fetchProgramSummary = enrolmentUUID => {
 };
 
 export const selectRulesResponse = state => state.dataEntry.serverSideRulesReducer.rulesResponse;
-export const selectVisitSchedules = state =>
-  state.dataEntry.serverSideRulesReducer.rulesResponse.visitSchedules;
-export const selectDecisions = state =>
-  state.dataEntry.serverSideRulesReducer.rulesResponse.decisions;
-export const selectChecklists = state =>
-  state.dataEntry.serverSideRulesReducer.rulesResponse.checklists;
-export const selectFetchingRulesResponse = state =>
-  state.dataEntry.serverSideRulesReducer.isFetching;
+export const selectVisitSchedules = state => state.dataEntry.serverSideRulesReducer.rulesResponse.visitSchedules;
+export const selectDecisions = state => state.dataEntry.serverSideRulesReducer.rulesResponse.decisions;
+export const selectChecklists = state => state.dataEntry.serverSideRulesReducer.rulesResponse.checklists;
+export const selectFetchingRulesResponse = state => state.dataEntry.serverSideRulesReducer.isFetching;
 export const selectError = state => state.dataEntry.serverSideRulesReducer.error;
 export const selectSubjectSummary = state => state.dataEntry.serverSideRulesReducer.subjectSummary;
 export const selectProgramSummary = state => state.dataEntry.serverSideRulesReducer.programSummary;

@@ -9,9 +9,7 @@ export function* onLoadWatcher() {
 }
 
 export function* onLoadWorker() {
-  const valueFromState = yield select(
-    ({ translations: { organisationConfig } }) => organisationConfig
-  );
+  const valueFromState = yield select(({ translations: { organisationConfig } }) => organisationConfig);
   if (!isEmpty(valueFromState)) {
     return;
   }

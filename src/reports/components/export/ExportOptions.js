@@ -14,13 +14,7 @@ export const ExportOptions = ({ options, label, selectedOption, onChange }) => {
           {options.map(option => (
             <FormControlLabel
               key={option.uuid}
-              control={
-                <Radio
-                  checked={option.uuid === selectedOption.uuid}
-                  onChange={() => onChange(option)}
-                  value={option.name}
-                />
-              }
+              control={<Radio checked={option.uuid === selectedOption.uuid} onChange={() => onChange(option)} value={option.name} />}
               label={option.name}
             />
           ))}

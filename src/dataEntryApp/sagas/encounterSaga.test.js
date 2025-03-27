@@ -1,10 +1,7 @@
 import { expectSaga } from "redux-saga-test-plan";
 import mockData from "dataEntryApp/sagas/subjectSaga.mock";
 import encounterReducer from "dataEntryApp/reducers/encounterReducer";
-import {
-  updateEncounterObsWorker,
-  updateCancelEncounterObsWorker
-} from "dataEntryApp/sagas/encounterSaga";
+import { updateEncounterObsWorker, updateCancelEncounterObsWorker } from "dataEntryApp/sagas/encounterSaga";
 import { map } from "lodash";
 
 describe("encounterSaga", () => {
@@ -19,16 +16,10 @@ describe("encounterSaga", () => {
       .withReducer(encounterReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.encounter.observations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.encounter.observations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });
@@ -44,16 +35,10 @@ describe("encounterSaga", () => {
       .withReducer(encounterReducer, initialState)
       .run();
 
-    const matchingObservation = storeState.encounter.cancelObservations.find(
-      obs => obs.concept.name === "a1"
-    ).valueJSON.value;
+    const matchingObservation = storeState.encounter.cancelObservations.find(obs => obs.concept.name === "a1").valueJSON.value;
 
-    expect(storeState.filteredFormElements.length).toEqual(
-      formElementGroup1.getFormElements().length
-    );
-    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(
-      map(formElementGroup1.getFormElements(), ({ uuid }) => uuid)
-    );
+    expect(storeState.filteredFormElements.length).toEqual(formElementGroup1.getFormElements().length);
+    expect(map(storeState.filteredFormElements, ({ uuid }) => uuid)).toEqual(map(formElementGroup1.getFormElements(), ({ uuid }) => uuid));
     expect(matchingObservation).toBe(5);
     expect(storeState.validationResults).toEqual([]);
   });

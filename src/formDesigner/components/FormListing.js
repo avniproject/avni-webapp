@@ -107,13 +107,7 @@ const FormListing = ({ history, userInfo }) => {
 
   const showCloneForm = () => {
     return (
-      <Dialog
-        fullWidth
-        maxWidth="xs"
-        onClose={onCloseEvent}
-        aria-labelledby="customized-dialog-title"
-        open={cloneFormIndicator}
-      >
+      <Dialog fullWidth maxWidth="xs" onClose={onCloseEvent} aria-labelledby="customized-dialog-title" open={cloneFormIndicator}>
         <DialogTitle id="customized-dialog-title" onClose={onCloseEvent}>
           Clone Form
           <IconButton style={{ float: "right" }} onClick={onCloseEvent}>

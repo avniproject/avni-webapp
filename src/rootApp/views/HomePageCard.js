@@ -31,13 +31,7 @@ export const HomePageCard = ({ href, name, customIconComponent }) => (
         <Grid container direction="column" justifyContent="center" alignItems="center">
           <Grid item>{customIconComponent}</Grid>
           <Grid item>
-            <Typography
-              variant="h5"
-              component="h2"
-              align="center"
-              color="secondary"
-              style={{ marginTop: 5 }}
-            >
+            <Typography variant="h5" component="h2" align="center" color="secondary" style={{ marginTop: 5 }}>
               {name}
             </Typography>
           </Grid>

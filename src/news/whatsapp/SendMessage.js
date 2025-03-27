@@ -23,7 +23,7 @@ const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
   const onSchedulingAttempted = status => {
     setSendingMessage(false);
     setScheduled(status);
-    if(status) onComposedMessage();
+    if (status) onComposedMessage();
   };
 
   return (
@@ -40,9 +40,7 @@ const SendMessage = ({ receiverId, receiverType, onComposedMessage }) => {
       {scheduled && (
         <CustomizedSnackbar
           variant={scheduled}
-          message={
-            "success" === scheduled ? "Message scheduling successful" : "Message scheduling failed"
-          }
+          message={"success" === scheduled ? "Message scheduling successful" : "Message scheduling failed"}
           getDefaultSnackbarStatus={snackbarStatus => setScheduled(snackbarStatus)}
           defaultSnackbarStatus={scheduled}
         />

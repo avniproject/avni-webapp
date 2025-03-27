@@ -67,10 +67,7 @@ export default function PasswordDialog({ username, open, onClose, onConfirm, ser
           autoComplete={"new-password"}
           endAdornment={
             <InputAdornment position="end">
-              <IconButton
-                onClick={() => handleClickShowPassword(state, handler)}
-                onMouseDown={handleMouseDownPassword}
-              >
+              <IconButton onClick={() => handleClickShowPassword(state, handler)} onMouseDown={handleMouseDownPassword}>
                 {state.showPassword ? <Visibility /> : <VisibilityOff />}
               </IconButton>
             </InputAdornment>
@@ -84,11 +81,7 @@ export default function PasswordDialog({ username, open, onClose, onConfirm, ser
   const content = `Enter the new password.`;
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={MuiComponentHelper.getDialogClosingHandler(onClose)}
-        aria-labelledby="form-dialog-title"
-      >
+      <Dialog open={open} onClose={MuiComponentHelper.getDialogClosingHandler(onClose)} aria-labelledby="form-dialog-title">
         <DialogTitle id="password-reset-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText>{content}</DialogContentText>

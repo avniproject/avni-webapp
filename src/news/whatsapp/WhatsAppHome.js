@@ -14,11 +14,7 @@ import WhatsAppUsersTab from "./WhatsAppUsersTab";
 import ReceiverType from "./ReceiverType";
 
 function ContactGroupLink({ rowData, column }) {
-  return (
-    <a href={getHref(`${BroadcastPath.ContactGroupFullPath}/${rowData["id"]}`)}>
-      {rowData[column]}
-    </a>
-  );
+  return <a href={getHref(`${BroadcastPath.ContactGroupFullPath}/${rowData["id"]}`)}>{rowData[column]}</a>;
 }
 
 const columns = [
@@ -49,11 +45,7 @@ const columns = [
 function getDataFetcher(errorHandler) {
   return query => {
     return new Promise(resolve =>
-      ContactService.getContactGroups(
-        !!query.search ? query.search : "",
-        query.page,
-        query.pageSize
-      )
+      ContactService.getContactGroups(!!query.search ? query.search : "", query.page, query.pageSize)
         .then(data => resolve(data))
         .catch(errorHandler)
     );
@@ -87,9 +79,7 @@ const WhatsAppHome = function() {
       <ErrorMessage
         error={error}
         additionalStyle={{ marginBottom: 2000 }}
-        customErrorMessage={
-          "Please set up a Glific Account and configure it correctly for this page to show up."
-        }
+        customErrorMessage={"Please set up a Glific Account and configure it correctly for this page to show up."}
       />
       <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex" }}>
         <Tabs

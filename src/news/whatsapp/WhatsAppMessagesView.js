@@ -27,8 +27,7 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
     if (receiverType === ReceiverType.Subject) {
       MessageService.getSubjectMessages(receiverId)
         .then(response => {
-          if (response.status === 204)
-            setUserError("Subject doesn't have phone number or has incorrect phone number.");
+          if (response.status === 204) setUserError("Subject doesn't have phone number or has incorrect phone number.");
           else setMessages(response.data);
         })
         .catch(setError);
@@ -39,8 +38,7 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
     } else if (receiverType === ReceiverType.User) {
       MessageService.getUserMessages(receiverId)
         .then(response => {
-          if (response.status === 204)
-            setUserError("User doesn't have phone number or has incorrect phone number.");
+          if (response.status === 204) setUserError("User doesn't have phone number or has incorrect phone number.");
           else setMessages(response.data);
         })
         .catch(setError);
@@ -53,22 +51,13 @@ function WhatsAppMessagesView({ receiverId, receiverType, receiverName }) {
 
   return (
     <div>
-      <SendMessage
-        receiverId={receiverId}
-        receiverType={receiverType}
-        onComposedMessage={onComposedMessage}
-      />
+      <SendMessage receiverId={receiverId} receiverType={receiverType} onComposedMessage={onComposedMessage} />
       <Typography variant={"h6"} style={{ paddingBottom: 10 }}>
         Messages for: {receiverName}
       </Typography>
       <ErrorMessage error={error} additionalStyle={{ marginBottom: 20 }} />
       <UserError error={userError} />
-      <MessagesView
-        sentMessages={messages}
-        msgsYetToBeSent={unsentMessages}
-        isMsgsSentAvailable={true}
-        isMsgsNotYetSentAvailable={true}
-      />
+      <MessagesView sentMessages={messages} msgsYetToBeSent={unsentMessages} isMsgsSentAvailable={true} isMsgsNotYetSentAvailable={true} />
     </div>
   );
 }

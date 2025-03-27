@@ -19,9 +19,7 @@ export const AvniPasswordInput = ({ toolTipKey, initiallyVisible = false, ...pro
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={handleClick}>
-                {visible ? <Visibility /> : <VisibilityOff />}
-              </IconButton>
+              <IconButton onClick={handleClick}>{visible ? <Visibility /> : <VisibilityOff />}</IconButton>
             </InputAdornment>
           ),
           autoComplete: "new-password"

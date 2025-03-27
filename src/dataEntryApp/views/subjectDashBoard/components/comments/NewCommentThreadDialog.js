@@ -18,14 +18,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function NewCommentThreadDialog({
-  open,
-  setOpen,
-  newCommentText,
-  onCommentChange,
-  dispatch,
-  subjectUUID
-}) {
+export default function NewCommentThreadDialog({ open, setOpen, newCommentText, onCommentChange, dispatch, subjectUUID }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
@@ -38,12 +31,7 @@ export default function NewCommentThreadDialog({
 
   return (
     <div>
-      <Dialog
-        classes={{ paper: classes.dialogPosition }}
-        fullScreen={fullScreen}
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Dialog classes={{ paper: classes.dialogPosition }} fullScreen={fullScreen} open={open} onClose={() => setOpen(false)}>
         <DialogTitle id="new-comment-thread">{t("createNewCommentThread")}</DialogTitle>
         <DialogContent>
           <TextField

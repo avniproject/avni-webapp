@@ -28,11 +28,7 @@ const RulePanel = ({ title, details }) => {
 
   return (
     <ExpansionPanel expanded={expanded}>
-      <ExpansionPanelSummary
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-        style={{ marginTop: "3%" }}
-      >
+      <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header" style={{ marginTop: "3%" }}>
         <Grid container item sm={12} onClick={onToggleExpand}>
           <span>{expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
           <Typography>{title}</Typography>
@@ -98,10 +94,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         title={"Edit Form Rule"}
         details={
           <Fragment>
-            <JSEditor
-              value={form.editFormRule || sampleEditFormRule()}
-              onValueChange={x => props.onRuleUpdate("editFormRule", x)}
-            />
+            <JSEditor value={form.editFormRule || sampleEditFormRule()} onValueChange={x => props.onRuleUpdate("editFormRule", x)} />
           </Fragment>
         }
       />
@@ -111,10 +104,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         onValueChange={jsonData => onDeclarativeRuleUpdate("decisionDeclarativeRule", jsonData)}
         rulesJson={form.decisionDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "decisionRule",
-            declarativeRuleHolder.generateDecisionRule(props.entityName)
-          )
+          props.onRuleUpdate("decisionRule", declarativeRuleHolder.generateDecisionRule(props.entityName))
         }
         jsCode={form.decisionRule}
         error={get(form, "ruleError.decisionRule")}
@@ -131,8 +121,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
       >
         <Box mt={5}>
           <Typography gutterBottom variant="body1" component="div">
-            Select decision concepts that you want as columns in the reporting views. You will have
-            to refresh the{" "}
+            Select decision concepts that you want as columns in the reporting views. You will have to refresh the{" "}
             <a href={"#/appdesigner/reportingViews"} target="_blank" rel="noopener noreferrer">
               reporting views
             </a>{" "}
@@ -151,10 +140,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         onValueChange={jsonData => onDeclarativeRuleUpdate("taskScheduleDeclarativeRule", jsonData)}
         rulesJson={form.taskScheduleDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "taskScheduleRule",
-            declarativeRuleHolder.generateTaskScheduleRule(props.entityName)
-          )
+          props.onRuleUpdate("taskScheduleRule", declarativeRuleHolder.generateTaskScheduleRule(props.entityName))
         }
         jsCode={form.taskScheduleRule}
         error={get(form, "ruleError.taskScheduleRule")}
@@ -171,15 +157,10 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
       />
       <DeclarativeFormRule
         title={"Visit Schedule Rule"}
-        onValueChange={jsonData =>
-          onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", jsonData)
-        }
+        onValueChange={jsonData => onDeclarativeRuleUpdate("visitScheduleDeclarativeRule", jsonData)}
         rulesJson={form.visitScheduleDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "visitScheduleRule",
-            declarativeRuleHolder.generateVisitScheduleRule(props.entityName)
-          )
+          props.onRuleUpdate("visitScheduleRule", declarativeRuleHolder.generateVisitScheduleRule(props.entityName))
         }
         jsCode={form.visitScheduleRule}
         error={get(form, "ruleError.visitScheduleRule")}
@@ -199,10 +180,7 @@ const FormLevelRules = ({ form, disabled, onDeclarativeRuleUpdate, encounterType
         onValueChange={jsonData => onDeclarativeRuleUpdate("validationDeclarativeRule", jsonData)}
         rulesJson={form.validationDeclarativeRule}
         updateJsCode={declarativeRuleHolder =>
-          props.onRuleUpdate(
-            "validationRule",
-            declarativeRuleHolder.generateFormValidationRule(props.entityName)
-          )
+          props.onRuleUpdate("validationRule", declarativeRuleHolder.generateFormValidationRule(props.entityName))
         }
         jsCode={form.validationRule}
         error={get(form, "ruleError.validationRule")}

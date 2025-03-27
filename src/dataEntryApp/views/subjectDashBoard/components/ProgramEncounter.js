@@ -16,10 +16,7 @@ import {
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
-import {
-  fetchProgramEncounterRulesResponse,
-  setEncounterDate
-} from "dataEntryApp/reducers/programEncounterReducer";
+import { fetchProgramEncounterRulesResponse, setEncounterDate } from "dataEntryApp/reducers/programEncounterReducer";
 import { AbstractEncounter } from "openchs-models";
 import StaticFormElement from "dataEntryApp/views/viewmodel/StaticFormElement";
 import { DateFormElement } from "dataEntryApp/components/DateFormElement";
@@ -34,13 +31,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEncounter = ({
-  match,
-  programEncounter,
-  validationResults,
-  setEncounterDate,
-  ...props
-}) => {
+const ProgramEncounter = ({ match, programEncounter, validationResults, setEncounterDate, ...props }) => {
   const classes = useStyles();
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
   const encounterUuid = match.queryParams.encounterUuid;

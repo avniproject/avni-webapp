@@ -11,11 +11,7 @@ export const ExportRequestBody = ({ customRequest, exportRequest, dispatch }) =>
         {"Request body"}
       </Typography>
       <JsonEditor
-        value={
-          isUndefined(customRequest) || exportRequest === customRequest
-            ? JSON.stringify(exportRequest, null, 2)
-            : customRequest
-        }
+        value={isUndefined(customRequest) || exportRequest === customRequest ? JSON.stringify(exportRequest, null, 2) : customRequest}
         onChange={event => dispatch(event)}
       />
     </Box>

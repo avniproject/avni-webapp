@@ -35,16 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const styles = useStyles();
-  const {
-    organisation,
-    authSession,
-    history,
-    staticContext,
-    dispatch,
-    organisations,
-    userInfo,
-    ...rest
-  } = props;
+  const { organisation, authSession, history, staticContext, dispatch, organisations, userInfo, ...rest } = props;
   return (
     <AppBar {...rest}>
       <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />

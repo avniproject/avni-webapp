@@ -24,21 +24,16 @@ export const GroupRoleShow = ({ groupRoles }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {nonVoidedRoles.map(
-              (
-                { role, subjectMemberName, maximumNumberOfMembers, minimumNumberOfMembers },
-                index
-              ) => (
-                <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    {role}
-                  </TableCell>
-                  <TableCell align="right">{subjectMemberName}</TableCell>
-                  <TableCell align="right">{maximumNumberOfMembers}</TableCell>
-                  <TableCell align="right">{minimumNumberOfMembers}</TableCell>
-                </TableRow>
-              )
-            )}
+            {nonVoidedRoles.map(({ role, subjectMemberName, maximumNumberOfMembers, minimumNumberOfMembers }, index) => (
+              <TableRow key={index}>
+                <TableCell component="th" scope="row">
+                  {role}
+                </TableCell>
+                <TableCell align="right">{subjectMemberName}</TableCell>
+                <TableCell align="right">{maximumNumberOfMembers}</TableCell>
+                <TableCell align="right">{minimumNumberOfMembers}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </Box>

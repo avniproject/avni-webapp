@@ -37,8 +37,7 @@ const useStyles = makeStyles(theme => ({
   expansionPanel: {
     marginBottom: "11px",
     borderRadius: "5px",
-    boxShadow:
-      "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   card: {
     boxShadow: "0px 0px 0px 0px rgba(0,0,0,0.12)",
@@ -77,12 +76,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function MessagesView({
-  sentMessages,
-  isMsgsSentAvailable,
-  msgsYetToBeSent,
-  isMsgsNotYetSentAvailable
-}) {
+function MessagesView({ sentMessages, isMsgsSentAvailable, msgsYetToBeSent, isMsgsNotYetSentAvailable }) {
   const { t } = useTranslation();
   const classes = useStyles();
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -91,10 +85,7 @@ function MessagesView({
     <div>
       <Paper elevation={0} className={classes.outlinedInfo}>
         <div>
-          {<InfoIcon />}{" "}
-          {
-            "Group scheduled messages are not included in either of the messages sections listed below"
-          }
+          {<InfoIcon />} {"Group scheduled messages are not included in either of the messages sections listed below"}
         </div>
       </Paper>
       <ExpansionPanel className={classes.expansionPanel} onChange={() => setIsExpanded(p => !p)}>
@@ -108,12 +99,7 @@ function MessagesView({
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
-          {isExpanded && (
-            <SentMessagesTable
-              sentMessages={sentMessages || []}
-              isMsgsSentAvailable={isMsgsSentAvailable}
-            />
-          )}
+          {isExpanded && <SentMessagesTable sentMessages={sentMessages || []} isMsgsSentAvailable={isMsgsSentAvailable} />}
         </ExpansionPanelDetails>
       </ExpansionPanel>
       <ExpansionPanel className={classes.expansionPanel}>
@@ -127,10 +113,7 @@ function MessagesView({
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ padding: 0, display: "block" }}>
-          <YetToBeSentMessagesTable
-            msgsYetToBeSent={msgsYetToBeSent || []}
-            isMsgsNotYetSentAvailable={isMsgsNotYetSentAvailable}
-          />
+          <YetToBeSentMessagesTable msgsYetToBeSent={msgsYetToBeSent || []} isMsgsNotYetSentAvailable={isMsgsNotYetSentAvailable} />
         </ExpansionPanelDetails>
       </ExpansionPanel>
     </div>

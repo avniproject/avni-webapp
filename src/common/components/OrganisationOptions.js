@@ -24,13 +24,10 @@ export const OrganisationOptions = ({ getUserInfo, history, organisations, userI
 
   const options = [
     { name: "", value: "" },
-    ...map(
-      sortBy(organisations, organisation => trim(organisation.name).toLowerCase()),
-      ({ name, uuid }) => ({
-        name: name,
-        value: uuid
-      })
-    )
+    ...map(sortBy(organisations, organisation => trim(organisation.name).toLowerCase()), ({ name, uuid }) => ({
+      name: name,
+      value: uuid
+    }))
   ];
 
   const handleChange = event => {

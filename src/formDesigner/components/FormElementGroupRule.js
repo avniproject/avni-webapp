@@ -27,10 +27,7 @@ export const FormElementGroupRule = ({
         rulesJson={groupData.declarativeRule}
         onValueChange={jsonData => updateFormElementGroupRuleJSON(index, jsonData)}
         updateJsCode={declarativeRuleHolder =>
-          updateFormElementGroupRule(
-            index,
-            declarativeRuleHolder.generateFormElementGroupRule(props.entityName)
-          )
+          updateFormElementGroupRule(index, declarativeRuleHolder.generateFormElementGroupRule(props.entityName))
         }
         jsCode={groupData.rule}
         error={get(groupData, "errorMessage.ruleError")}

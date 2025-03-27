@@ -13,10 +13,7 @@ class UserInfo {
   }
 
   static hasPrivilege(userInfo, privilegeType) {
-    return (
-      userInfo.hasAllPrivileges ||
-      _.some(userInfo.privileges, x => x.privilegeType === privilegeType)
-    );
+    return userInfo.hasAllPrivileges || _.some(userInfo.privileges, x => x.privilegeType === privilegeType);
   }
 
   static hasMultiplePrivileges(userInfo, privilegeTypes = []) {

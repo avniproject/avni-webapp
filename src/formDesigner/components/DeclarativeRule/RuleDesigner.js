@@ -31,11 +31,7 @@ const RuleDesigner = ({
         form={form}
         parentConceptUuid={parentConceptUuid}
       />
-      <JSEditor
-        value={jsCode || sampleRule}
-        disabled={disableEditor}
-        onValueChange={onJsCodeChange}
-      />
+      <JSEditor value={jsCode || sampleRule} disabled={disableEditor} onValueChange={onJsCodeChange} />
     </Fragment>
   );
 };

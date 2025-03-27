@@ -12,9 +12,7 @@ const UserGroupDetails = ({ ...props }) => {
   let parsedProps = queryString.parse(props.location.search);
   let groupName = parsedProps.groupName;
 
-  const [hasAllPrivileges, setHasAllPrivileges] = React.useState(
-    parsedProps.hasAllPrivileges === "true"
-  );
+  const [hasAllPrivileges, setHasAllPrivileges] = React.useState(parsedProps.hasAllPrivileges === "true");
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">

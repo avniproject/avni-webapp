@@ -10,12 +10,7 @@ import Colors from "../../../dataEntryApp/Colors";
 import Button from "@material-ui/core/Button";
 import { useDeclarativeRuleDispatch } from "./DeclarativeRuleContext";
 
-const DeclarativeRuleComponent = ({
-  declarativeRule,
-  declarativeRuleIndex,
-  getApplicableActions,
-  ...props
-}) => {
+const DeclarativeRuleComponent = ({ declarativeRule, declarativeRuleIndex, getApplicableActions, ...props }) => {
   const dispatch = useDeclarativeRuleDispatch();
 
   return (
@@ -23,21 +18,14 @@ const DeclarativeRuleComponent = ({
       <Grid container item justify={"flex-end"}>
         <Button
           size="small"
-          onClick={() =>
-            dispatch({ type: "deleteDeclarativeRule", payload: { declarativeRuleIndex } })
-          }
+          onClick={() => dispatch({ type: "deleteDeclarativeRule", payload: { declarativeRuleIndex } })}
           disabled={size(declarativeRule.conditions) > 1}
         >
           <DeleteIcon style={{ color: Colors.ValidationError }} />
         </Button>
       </Grid>
       {map(declarativeRule.conditions, (condition, index) => (
-        <ConditionComponent
-          key={index}
-          condition={condition}
-          index={index}
-          declarativeRuleIndex={declarativeRuleIndex}
-        />
+        <ConditionComponent key={index} condition={condition} index={index} declarativeRuleIndex={declarativeRuleIndex} />
       ))}
       <IconButton
         Icon={AddCircleIcon}

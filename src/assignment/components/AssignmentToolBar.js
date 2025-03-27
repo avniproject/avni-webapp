@@ -19,12 +19,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-export const AssignmentToolBar = ({
-  assignmentCriteria,
-  dispatch,
-  showSelect1000 = true,
-  ...props
-}) => {
+export const AssignmentToolBar = ({ assignmentCriteria, dispatch, showSelect1000 = true, ...props }) => {
   const classes = useStyle();
   const { data, selectedRows } = props;
   const selectedRowSize = size(selectedRows);
@@ -45,8 +40,7 @@ export const AssignmentToolBar = ({
     });
   };
 
-  const on1000Selected = () =>
-    dispatch({ type: "setAction", payload: { key: "allSelected", value: true } });
+  const on1000Selected = () => dispatch({ type: "setAction", payload: { key: "allSelected", value: true } });
 
   return (
     <div className={classes.root}>
@@ -60,12 +54,7 @@ export const AssignmentToolBar = ({
           {"Click here to select first 1000 tasks"}
         </Button>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => onActionPress(selectedIds)}
-        disabled={isEmpty(selectedIds)}
-      >
+      <Button variant="contained" color="primary" onClick={() => onActionPress(selectedIds)} disabled={isEmpty(selectedIds)}>
         {"Actions"}
       </Button>
     </div>

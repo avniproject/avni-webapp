@@ -174,11 +174,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-        >
+        <IconButton aria-label="account of current user" aria-controls="primary-search-account-menu" aria-haspopup="true">
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
@@ -231,14 +227,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
                   {t("register")}
                   <ExpandMoreIcon />
                 </Button>
-                <Popper
-                  style={{ zIndex: 100 }}
-                  open={open}
-                  anchorEl={anchorRef.current}
-                  role={undefined}
-                  transition
-                  disablePortal
-                >
+                <Popper style={{ zIndex: 100 }} open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
                   {({ TransitionProps, placement }) => (
                     <Grow
                       {...TransitionProps}
@@ -279,12 +268,7 @@ const PrimarySearchAppBar = ({ user, history }) => {
             </IconButton>
           </div>
           <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-            >
+            <IconButton aria-label="show more" aria-controls={mobileMenuId} aria-haspopup="true" onClick={handleMobileMenuOpen}>
               <MoreIcon />
             </IconButton>
           </div>

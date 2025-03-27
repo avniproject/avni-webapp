@@ -97,18 +97,9 @@ export const SubjectAssignmentReducer = (state, action) => {
 };
 
 export const getSyncAttributes = (metaData, filterCriteria) => {
-  const selectedSubjectType = find(
-    metaData.subjectTypes,
-    ({ uuid }) => uuid === filterCriteria.subjectType.value
-  );
-  const syncAttribute1 = find(
-    metaData.syncAttributes,
-    ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept1")
-  );
-  const syncAttribute2 = find(
-    metaData.syncAttributes,
-    ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept2")
-  );
+  const selectedSubjectType = find(metaData.subjectTypes, ({ uuid }) => uuid === filterCriteria.subjectType.value);
+  const syncAttribute1 = find(metaData.syncAttributes, ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept1"));
+  const syncAttribute2 = find(metaData.syncAttributes, ({ uuid }) => uuid === get(selectedSubjectType, "syncRegistrationConcept2"));
   return { syncAttribute1, syncAttribute2 };
 };
 export const getMetadataOptions = (metadata, filterCriteria) => {

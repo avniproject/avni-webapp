@@ -4,11 +4,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import React from "react";
 import { getFormattedDateTime } from "../../../../../adminApp/components/AuditUtil";
 import { useSelector } from "react-redux";
-import {
-  onCommentDelete,
-  selectDisplayUsername,
-  setNewCommentText
-} from "../../../../reducers/CommentReducer";
+import { onCommentDelete, selectDisplayUsername, setNewCommentText } from "../../../../reducers/CommentReducer";
 import Chip from "@material-ui/core/Chip";
 import Colors from "../../../../Colors";
 import IconButton from "@material-ui/core/IconButton";
@@ -64,13 +60,7 @@ export const CommentCard = ({ comment, displayMenu, status, dispatch, setComment
         <IconButton onClick={event => setAnchorEl(event.currentTarget)}>
           <MoreVertIcon />
         </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={() => setAnchorEl(null)}
-          TransitionComponent={Fade}
-        >
+        <Menu anchorEl={anchorEl} keepMounted open={open} onClose={() => setAnchorEl(null)} TransitionComponent={Fade}>
           {options.map(({ label, onPress }) => (
             <MenuItem key={label} onClick={onPress}>
               {label}

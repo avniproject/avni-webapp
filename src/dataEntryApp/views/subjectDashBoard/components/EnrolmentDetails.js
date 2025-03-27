@@ -21,8 +21,7 @@ const useStyles = makeStyles(theme => ({
   expansionPanel: {
     marginBottom: "11px",
     borderRadius: "5px",
-    boxShadow:
-      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   expansionHeading: {
     fontSize: theme.typography.pxToRem(16),
@@ -53,9 +52,7 @@ export const EnrolmentDetails = ({
   const getURLOfFormType = formType =>
     `/app/subject/enrol?uuid=${subjectUuid}&programName=${
       programData.program.operationalProgramName
-    }&formType=${formType}&programEnrolmentUuid=${programData.uuid}&subjectTypeName=${
-      subjectProfile.subjectType.name
-    }`;
+    }&formType=${formType}&programEnrolmentUuid=${programData.uuid}&subjectTypeName=${subjectProfile.subjectType.name}`;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -92,13 +89,7 @@ export const EnrolmentDetails = ({
   const renderObservations = () => {
     const obs = isExit ? programData.exitObservations : programData.observations;
     const additionalRows = isExit ? getExitInfo() : getEnrolmentInfo();
-    return (
-      <Observations
-        observations={obs}
-        additionalRows={additionalRows}
-        form={programEnrolmentForm}
-      />
-    );
+    return <Observations observations={obs} additionalRows={additionalRows} form={programEnrolmentForm} />;
   };
 
   const ActionButton = ({ to, label, id }) => {
@@ -113,10 +104,7 @@ export const EnrolmentDetails = ({
 
   return (
     <ExpansionPanel className={classes.expansionPanel}>
-      <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-        id="enrolment-details"
-      >
+      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />} id="enrolment-details">
         <Typography component={"span"} className={classes.expansionHeading}>
           {t(label)}
         </Typography>
@@ -126,24 +114,12 @@ export const EnrolmentDetails = ({
           {renderObservations()}
           {!isExit ? (
             <Fragment>
-              <ActionButton
-                to={getURLOfFormType("ProgramExit")}
-                label={"Exit"}
-                id={"exit-program"}
-              />
-              <ActionButton
-                to={getURLOfFormType("ProgramEnrolment")}
-                label={"Edit"}
-                id={"edit-program"}
-              />
+              <ActionButton to={getURLOfFormType("ProgramExit")} label={"Exit"} id={"exit-program"} />
+              <ActionButton to={getURLOfFormType("ProgramEnrolment")} label={"Edit"} id={"edit-program"} />
             </Fragment>
           ) : (
             <Fragment>
-              <ActionButton
-                to={getURLOfFormType("ProgramExit")}
-                label={"Edit Exit"}
-                id={"edit-exit"}
-              />
+              <ActionButton to={getURLOfFormType("ProgramExit")} label={"Edit Exit"} id={"edit-exit"} />
               <Button id={"undo-exit"} color="primary" onClick={handleClickOpen}>
                 {t("Undo Exit")}
               </Button>
@@ -151,12 +127,7 @@ export const EnrolmentDetails = ({
           )}
           {!isExit && <DeleteButton onDelete={() => setVoidConfirmation(true)} />}
         </Grid>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
+        <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
           <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
@@ -168,11 +139,7 @@ export const EnrolmentDetails = ({
               Cancel
             </Button>
             <Button
-              onClick={handleUndoExit.bind(
-                this,
-                programData.uuid,
-                `/app/subject?uuid=${subjectUuid}&undo=true`
-              )}
+              onClick={handleUndoExit.bind(this, programData.uuid, `/app/subject?uuid=${subjectUuid}&undo=true`)}
               color="primary"
               autoFocus
             >

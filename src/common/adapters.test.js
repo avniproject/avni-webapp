@@ -1,20 +1,6 @@
-import {
-  mapConcept,
-  mapConceptAnswer,
-  mapForm,
-  mapFormElement,
-  mapFormElementGroup,
-  mapOperationalModules
-} from "./adapters";
+import { mapConcept, mapConceptAnswer, mapForm, mapFormElement, mapFormElementGroup, mapOperationalModules } from "./adapters";
 import { assert } from "chai";
-import {
-  Concept,
-  ConceptAnswer,
-  EncounterType,
-  FormElementGroup,
-  Program,
-  SubjectType
-} from "avni-models";
+import { Concept, ConceptAnswer, EncounterType, FormElementGroup, Program, SubjectType } from "avni-models";
 import WebFormElementGroup from "./model/WebFormElementGroup";
 
 describe("adapters", () => {

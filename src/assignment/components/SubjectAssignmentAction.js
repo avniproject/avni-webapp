@@ -16,14 +16,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SelectAction = function({
-  dispatch,
-  label,
-  options,
-  assignmentKeyName,
-  isMulti,
-  assignmentCriteria
-}) {
+const SelectAction = function({ dispatch, label, options, assignmentKeyName, isMulti, assignmentCriteria }) {
   const onActionChange = (key, value) => dispatch({ type: "setAction", payload: { key, value } });
 
   return (
@@ -70,13 +63,7 @@ export const SubjectAssignmentAction = ({
         }
       }}
     >
-      <Grid
-        container
-        direction={"column"}
-        spacing={3}
-        className={classes.paper}
-        style={{ top: "25%", left: "30%" }}
-      >
+      <Grid container direction={"column"} spacing={3} className={classes.paper} style={{ top: "25%", left: "30%" }}>
         <Typography variant={"h6"}>{"Bulk action"}</Typography>
         <Grid item container spacing={3}>
           <Grid item>

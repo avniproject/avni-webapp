@@ -20,17 +20,13 @@ export const ConceptSyncAttributesShow = ({ subjectType, concept1Name, concept2N
           {syncRegistrationConcept1 && (
             <TableRow>
               <TableCell align="left">{concept1Name}</TableCell>
-              <TableCell align="left">
-                {subjectType.syncRegistrationConcept1Usable ? "Yes" : "No"}
-              </TableCell>
+              <TableCell align="left">{subjectType.syncRegistrationConcept1Usable ? "Yes" : "No"}</TableCell>
             </TableRow>
           )}
           {syncRegistrationConcept2 && (
             <TableRow>
               <TableCell align="left">{concept2Name}</TableCell>
-              <TableCell align="left">
-                {subjectType.syncRegistrationConcept2Usable ? "Yes" : "No"}
-              </TableCell>
+              <TableCell align="left">{subjectType.syncRegistrationConcept2Usable ? "Yes" : "No"}</TableCell>
             </TableRow>
           )}
         </TableBody>

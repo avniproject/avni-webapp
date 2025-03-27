@@ -3,9 +3,7 @@ import { Concept, FormElement, ObservationsHolder } from "openchs-models";
 
 const getIdentifierByIdAndSource = (id, idSourceUuid, identifierAssignments) => {
   return identifierAssignments.find(
-    identifierAssignment =>
-      identifierAssignment.identifier === id &&
-      identifierAssignment.identifierSource.uuid === idSourceUuid
+    identifierAssignment => identifierAssignment.identifier === id && identifierAssignment.identifierSource.uuid === idSourceUuid
   );
 };
 
@@ -13,14 +11,9 @@ export default {
   addIdentifiersToObservations(form, observations, identifierAssignments) {
     if (!isNil(form)) {
       const observationHolder = new ObservationsHolder(observations);
-      filter(form.getFormElementsOfType(Concept.dataType.Id), fe =>
-        isNil(observationHolder.findObservation(fe.concept))
-      ).forEach(fe => {
+      filter(form.getFormElementsOfType(Concept.dataType.Id), fe => isNil(observationHolder.findObservation(fe.concept))).forEach(fe => {
         const idSourceUuid = fe.recordValueByKey(FormElement.keys.IdSourceUUID);
-        const identifierAssignment = find(
-          identifierAssignments,
-          assignment => assignment.identifierSource.uuid === idSourceUuid
-        );
+        const identifierAssignment = find(identifierAssignments, assignment => assignment.identifierSource.uuid === idSourceUuid);
         if (!isNil(identifierAssignment)) {
           observationHolder.addOrUpdateObservation(fe.concept, {
             uuid: identifierAssignment.uuid,
@@ -39,11 +32,7 @@ export default {
       if (observation) {
         const id = observation.getValue();
         const idSourceUuid = formElement.recordValueByKey(FormElement.keys.IdSourceUUID);
-        const identifierAssignment = getIdentifierByIdAndSource(
-          id,
-          idSourceUuid,
-          identifierAssignments
-        );
+        const identifierAssignment = getIdentifierByIdAndSource(id, idSourceUuid, identifierAssignments);
 
         if (!isNil(identifierAssignment)) {
           identifierAssignmentUuids.push(identifierAssignment.uuid);

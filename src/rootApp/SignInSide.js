@@ -35,8 +35,7 @@ const useStyles = makeStyles(theme => ({
     // backgroundImage: 'url(https://source.unsplash.com/random)',
     backgroundImage: `url(${SideImage})`,
     backgroundRepeat: "no-repeat",
-    backgroundColor:
-      theme.palette.type === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
+    backgroundColor: theme.palette.type === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: "cover",
     backgroundPosition: "center"
   },
@@ -97,17 +96,8 @@ export default function SignInSide() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
+            <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+            <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
               Sign In
             </Button>
             <Grid container>

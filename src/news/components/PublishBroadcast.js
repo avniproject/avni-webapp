@@ -14,13 +14,7 @@ export const PublishBroadcast = ({ open, setOpen, setRedirect, news }) => {
 
   const actions = [];
   actions.push(
-    <DialogActionButton
-      key={"broadcast"}
-      color={"#008b8a"}
-      onClick={publishNews}
-      textColor={"#ffffff"}
-      text={"Publish news"}
-    />
+    <DialogActionButton key={"broadcast"} color={"#008b8a"} onClick={publishNews} textColor={"#ffffff"} text={"Publish news"} />
   );
 
   return (

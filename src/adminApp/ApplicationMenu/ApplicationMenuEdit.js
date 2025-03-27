@@ -15,10 +15,7 @@ import _ from "lodash";
 import FormLabel from "@material-ui/core/FormLabel";
 
 const ApplicationMenuEdit = props => {
-  const [state, dispatch] = useReducer(
-    ApplicationMenuReducer.execute,
-    ApplicationMenuReducer.createApplicationMenuInitialState()
-  );
+  const [state, dispatch] = useReducer(ApplicationMenuReducer.execute, ApplicationMenuReducer.createApplicationMenuInitialState());
   const [redirectShow, setRedirectShow] = useState(false);
   const [deleteAlert, setDeleteAlert] = useState(false);
 
@@ -38,9 +35,7 @@ const ApplicationMenuEdit = props => {
       type: ApplicationMenuReducer.SUBMITTED,
       payload: {
         cb: () => {
-          const savePromise = isCreate()
-            ? ApplicationMenuService.post(state.menuItem)
-            : ApplicationMenuService.put(state.menuItem);
+          const savePromise = isCreate() ? ApplicationMenuService.post(state.menuItem) : ApplicationMenuService.put(state.menuItem);
           savePromise
             .then(response => {
               if (response.status === 200) {
@@ -65,11 +60,7 @@ const ApplicationMenuEdit = props => {
           </Grid>
         )}
         <div className="container" style={{ float: "left" }}>
-          <ApplicationMenuEditFields
-            menuItem={state.menuItem}
-            dispatch={dispatch}
-            errors={state.errors}
-          />
+          <ApplicationMenuEditFields menuItem={state.menuItem} dispatch={dispatch} errors={state.errors} />
           <p />
         </div>
         {state.errors.size > 0 &&
@@ -93,14 +84,7 @@ const ApplicationMenuEdit = props => {
                   float: "right",
                   color: "red"
                 }}
-                onClick={() =>
-                  EntityEditUtil.onDelete(
-                    "menuItem",
-                    props.match.params.id,
-                    "application menu",
-                    () => setDeleteAlert(true)
-                  )
-                }
+                onClick={() => EntityEditUtil.onDelete("menuItem", props.match.params.id, "application menu", () => setDeleteAlert(true))}
               >
                 <DeleteIcon /> Delete
               </Button>
@@ -109,13 +93,7 @@ const ApplicationMenuEdit = props => {
         </Grid>
       </Box>
       {(redirectShow || state.saved) && (
-        <Redirect
-          to={
-            isCreate()
-              ? "/appDesigner/applicationMenu"
-              : `/appDesigner/applicationMenu/${props.match.params.id}/show`
-          }
-        />
+        <Redirect to={isCreate() ? "/appDesigner/applicationMenu" : `/appDesigner/applicationMenu/${props.match.params.id}/show`} />
       )}
       {deleteAlert && <Redirect to="/appDesigner/applicationMenu" />}
     </>

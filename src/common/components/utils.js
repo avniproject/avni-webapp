@@ -44,16 +44,14 @@ export const InternalLink = ({ children, noUnderline, ...props }) => {
   );
 };
 
-export const RelativeLink = withRouter(
-  ({ location, children, to = "./", params, noParams, ...props }) => {
-    const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
-    return (
-      <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
-        {children}
-      </InternalLink>
-    );
-  }
-);
+export const RelativeLink = withRouter(({ location, children, to = "./", params, noParams, ...props }) => {
+  const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
+  return (
+    <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
+      {children}
+    </InternalLink>
+  );
+});
 
 export const Home = () => (
   <div>

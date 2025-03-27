@@ -5,15 +5,7 @@ import { selectEnrolSubjectTypeFromName } from "../sagas/enrolmentSelectors";
 import MediaService from "../../adminApp/service/MediaService";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 
-const SubjectProfilePicture = ({
-  allowEnlargementOnClick,
-  firstName,
-  profilePicture,
-  subjectType,
-  subjectTypeName,
-  size,
-  style
-}) => {
+const SubjectProfilePicture = ({ allowEnlargementOnClick, firstName, profilePicture, subjectType, subjectTypeName, size, style }) => {
   if (subjectType == null) {
     subjectType = useSelector(selectEnrolSubjectTypeFromName(subjectTypeName));
   }
@@ -46,26 +38,10 @@ const SubjectProfilePicture = ({
           message="Profile image URL is not correct or couldn't be loaded."
           onClose={() => setErrorLoadingProfileImage(false)}
         />
-        <img
-          className="circular_image"
-          onClick={handleShowDialog}
-          src={url}
-          height={size}
-          width={size}
-          alt={label}
-          style={style}
-        />
+        <img className="circular_image" onClick={handleShowDialog} src={url} height={size} width={size} alt={label} style={style} />
         {allowEnlargementOnClick && modalState && isSubjectProfileIconSetup && (
           <dialog className="modal_dialog" open onClick={handleShowDialog}>
-            <img
-              className="modal_dialog_image"
-              onClick={handleShowDialog}
-              src={url}
-              height={300}
-              width={300}
-              alt={label}
-              style={style}
-            />
+            <img className="modal_dialog_image" onClick={handleShowDialog} src={url} height={300} width={300} alt={label} style={style} />
           </dialog>
         )}
       </div>

@@ -19,10 +19,7 @@ function renderDocumentItem(value, index, selectedDocumentation, locale) {
     <div key={index} role="tabpanel" hidden={value !== index} id={`doc-tab-${index}`}>
       {value === index && (
         <DocumentationItem
-          documentationItem={find(
-            selectedDocumentation.documentationItems,
-            ({ language }) => locale === language
-          )}
+          documentationItem={find(selectedDocumentation.documentationItems, ({ language }) => locale === language)}
           language={locale}
         />
       )}
@@ -37,14 +34,7 @@ const Documentation = ({ userInfo }) => {
 
   if (isEmpty(selectedDocumentation)) return null;
 
-  const {
-    name,
-    uuid,
-    createdBy,
-    createdDateTime,
-    lastModifiedBy,
-    lastModifiedDateTime
-  } = selectedDocumentation;
+  const { name, uuid, createdBy, createdDateTime, lastModifiedBy, lastModifiedDateTime } = selectedDocumentation;
 
   const onDocumentationNameChange = event => {
     dispatch({
@@ -85,9 +75,7 @@ const Documentation = ({ userInfo }) => {
           <Tab key={locale} label={locale} />
         ))}
       </Tabs>
-      {map(languages, (locale, index) =>
-        renderDocumentItem(value, index, selectedDocumentation, locale)
-      )}
+      {map(languages, (locale, index) => renderDocumentItem(value, index, selectedDocumentation, locale))}
       <SaveComponent
         name="save"
         onSubmit={onSave}

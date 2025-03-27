@@ -28,13 +28,7 @@ import { Privilege } from "openchs-models";
 const RestrictedRoute = ({ component: C, requiredPrivileges = [], userInfo, ...rest }) => (
   <Route
     {...rest}
-    render={routerProps =>
-      CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? (
-        <C {...routerProps} />
-      ) : (
-        <AccessDenied />
-      )
-    }
+    render={routerProps => (CurrentUserService.isAllowedToAccess(userInfo, requiredPrivileges) ? <C {...routerProps} /> : <AccessDenied />)}
   />
 );
 
@@ -70,85 +64,31 @@ const Routes = ({ logout, user, userInfo, organisation, genericConfig }) => {
       <Route exact path="/">
         <Redirect to={AvniRouter.getRedirectRouteFromRoot(userInfo)} />
       </Route>
-      <RestrictedRoute
-        exact
-        path="/home"
-        userInfo={userInfo}
-        requiredPrivileges={[]}
-        component={WithProps({ user }, Homepage)}
-      />
+      <RestrictedRoute exact path="/home" userInfo={userInfo} requiredPrivileges={[]} component={WithProps({ user }, Homepage)} />
       <Route path="/appdesigner">
-        <RestrictedRoute
-          path="/"
-          userInfo={userInfo}
-          component={WithProps({ user, organisation }, OrgManagerAppDesigner)}
-        />
+        <RestrictedRoute path="/" userInfo={userInfo} component={WithProps({ user, organisation }, OrgManagerAppDesigner)} />
       </Route>
-      <RestrictedRoute
-        exact
-        path="/documentation"
-        user={userInfo}
-        component={WithProps({ user, organisation }, DocumentationRoutes)}
-      />
-      <RestrictedRoute
-        exact
-        path="/assignment"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, Assignment)}
-      />
-      <RestrictedRoute
-        exact
-        path="/assignment/task"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, TaskAssignment)}
-      />
+      <RestrictedRoute exact path="/documentation" user={userInfo} component={WithProps({ user, organisation }, DocumentationRoutes)} />
+      <RestrictedRoute exact path="/assignment" userInfo={userInfo} component={WithProps({ user, organisation }, Assignment)} />
+      <RestrictedRoute exact path="/assignment/task" userInfo={userInfo} component={WithProps({ user, organisation }, TaskAssignment)} />
       <RestrictedRoute
         exact
         path="/assignment/subject"
         userInfo={userInfo}
         component={WithProps({ user, organisation }, SubjectAssignment)}
       />
-      <RestrictedRoute
-        exact
-        path="/translations"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, Translations)}
-      />
-      <RestrictedRoute
-        exact
-        path="/export"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, Export)}
-      />
-      <RestrictedRoute
-        exact
-        path="/newExport"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, NewExport)}
-      />
+      <RestrictedRoute exact path="/translations" userInfo={userInfo} component={WithProps({ user, organisation }, Translations)} />
+      <RestrictedRoute exact path="/export" userInfo={userInfo} component={WithProps({ user, organisation }, Export)} />
+      <RestrictedRoute exact path="/newExport" userInfo={userInfo} component={WithProps({ user, organisation }, NewExport)} />
       <RestrictedRoute
         exact
         path="/selfservicereports"
         userInfo={userInfo}
         component={WithProps({ user, organisation }, SelfServiceReports)}
       />
-      <RestrictedRoute
-        exact
-        path="/cannedreports"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, CannedReport)}
-      />
-      <RestrictedRoute
-        exact
-        path="/help"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, Tutorials)}
-      />
-      <RestrictedRoute
-        path="/broadcast"
-        userInfo={userInfo}
-        component={WithProps({ user, organisation }, Broadcast)}
-      />
+      <RestrictedRoute exact path="/cannedreports" userInfo={userInfo} component={WithProps({ user, organisation }, CannedReport)} />
+      <RestrictedRoute exact path="/help" userInfo={userInfo} component={WithProps({ user, organisation }, Tutorials)} />
+      <RestrictedRoute path="/broadcast" userInfo={userInfo} component={WithProps({ user, organisation }, Broadcast)} />
       <Route
         component={() => (
           <div>

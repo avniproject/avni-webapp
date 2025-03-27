@@ -74,9 +74,7 @@ class NewFormModal extends Component {
                   oldParentToNewParentUUIDsMap.set(element.uuid, newUuid);
                   element["uuid"] = newUuid;
                   if (element.parentFormElementUuid) {
-                    element.parentFormElementUuid = oldParentToNewParentUUIDsMap.get(
-                      element.parentFormElementUuid
-                    );
+                    element.parentFormElementUuid = oldParentToNewParentUUIDsMap.get(element.parentFormElementUuid);
                   }
                 });
               });
@@ -116,9 +114,7 @@ class NewFormModal extends Component {
 
   formTypes() {
     return _.map(
-      _.filter(FormTypeEntities.getAllFormTypeInfo(), x =>
-        UserInfo.hasFormEditPrivilege(this.props.userInfo, x.formType)
-      ),
+      _.filter(FormTypeEntities.getAllFormTypeInfo(), x => UserInfo.hasFormEditPrivilege(this.props.userInfo, x.formType)),
       formTypeInfo => {
         return (
           <MenuItem key={formTypeInfo} value={formTypeInfo}>
@@ -144,18 +140,10 @@ class NewFormModal extends Component {
 
           <FormControl fullWidth margin="dense">
             <InputLabel htmlFor="formType">Form Type</InputLabel>
-            <Select
-              id="formTypeInfo"
-              name="formTypeInfo"
-              value={this.state.formTypeInfo}
-              onChange={this.onChangeField.bind(this)}
-              required
-            >
+            <Select id="formTypeInfo" name="formTypeInfo" value={this.state.formTypeInfo} onChange={this.onChangeField.bind(this)} required>
               {this.formTypes()}
             </Select>
-            {this.state.errors.formTypeInfo && (
-              <FormHelperText error>{this.state.errors.formTypeInfo}</FormHelperText>
-            )}
+            {this.state.errors.formTypeInfo && <FormHelperText error>{this.state.errors.formTypeInfo}</FormHelperText>}
           </FormControl>
           <FormControl fullWidth margin="dense">
             <InputLabel htmlFor="name">Name</InputLabel>
@@ -168,17 +156,10 @@ class NewFormModal extends Component {
               autoComplete="off"
               fullWidth
             />
-            {this.state.errors.name && (
-              <FormHelperText error>{this.state.errors.name}</FormHelperText>
-            )}
+            {this.state.errors.name && <FormHelperText error>{this.state.errors.name}</FormHelperText>}
           </FormControl>
         </form>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.onSubmitForm.bind(this)}
-          style={{ marginTop: 10 }}
-        >
+        <Button variant="contained" color="primary" onClick={this.onSubmitForm.bind(this)} style={{ marginTop: 10 }}>
           Add
         </Button>
         {this.state.showUpdateAlert && (

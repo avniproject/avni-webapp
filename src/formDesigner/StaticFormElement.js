@@ -43,11 +43,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
   const panel = "panel" + groupIndex.toString + index.toString();
 
   return (
-    <ExpansionPanel
-      TransitionProps={{ mountOnEnter: false, unmountOnExit: false }}
-      expanded={false}
-      className={classes.root}
-    >
+    <ExpansionPanel TransitionProps={{ mountOnEnter: false, unmountOnExit: false }} expanded={false} className={classes.root}>
       <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
         <div className={classes.iconlay}>
           <Typography component={"div"} className={classes.secondaryHeading}>
@@ -58,9 +54,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
             )}
             {dataType === "Coded" && (
               <div className={classes.iconDataType}>
-                <Tooltip title={dataType + " : SingleSelect"}>
-                  {dataTypeIcons["concept"]["SingleSelect"]}
-                </Tooltip>
+                <Tooltip title={dataType + " : SingleSelect"}>{dataTypeIcons["concept"]["SingleSelect"]}</Tooltip>
               </div>
             )}
           </Typography>
@@ -79,11 +73,7 @@ const StaticFormElement = ({ groupIndex, index, dataType, name, ...props }) => {
             </Typography>
           </Grid>
           <Grid item sm={1} direction={"row"}>
-            <ToolTip
-              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"}
-              onHover
-              displayPosition={"bottom"}
-            />
+            <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} onHover displayPosition={"bottom"} />
           </Grid>
         </Grid>
       </ExpansionPanelSummary>

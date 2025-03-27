@@ -16,17 +16,8 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
   const [userError, setUserError] = useState(null);
 
   return (
-    <Dialog
-      onClose={onCloseHandler}
-      aria-labelledby="customized-dialog-title"
-      open={true}
-      fullScreen
-    >
-      <DialogTitle
-        id="customized-dialog-title"
-        onClose={onCloseHandler}
-        style={{ backgroundColor: "black", color: "white" }}
-      >
+    <Dialog onClose={onCloseHandler} aria-labelledby="customized-dialog-title" open={true} fullScreen>
+      <DialogTitle id="customized-dialog-title" onClose={onCloseHandler} style={{ backgroundColor: "black", color: "white" }}>
         Search subject to add
       </DialogTitle>
       <DialogActions>
@@ -37,13 +28,7 @@ const AddContactGroupSubject = ({ contactGroupId, onClose, onSubjectAdd }) => {
       {(!!userError || !!error) && (
         <CustomizedSnackbar
           variant={"error"}
-          message={
-            !!userError
-              ? userError
-              : error.response.data
-              ? error.response.data
-              : "Unexpected error occurred"
-          }
+          message={!!userError ? userError : error.response.data ? error.response.data : "Unexpected error occurred"}
           getDefaultSnackbarStatus={snackbarStatus => {
             setError(snackbarStatus);
             setUserError(snackbarStatus);

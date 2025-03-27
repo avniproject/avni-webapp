@@ -23,9 +23,7 @@ class ToggleAnalyticsButton extends Component {
 
     // As we want to know when the new post has been created in order to close the modal, we use the
     // dataProvider directly
-    const toggleFn = record.analyticsDataSyncActive
-      ? EtlJobService.disableJob
-      : EtlJobService.createOrEnableJob;
+    const toggleFn = record.analyticsDataSyncActive ? EtlJobService.disableJob : EtlJobService.createOrEnableJob;
     toggleFn(record.uuid, resource)
       .catch(error => {
         showNotification(error.message, "error");
@@ -48,12 +46,7 @@ class ToggleAnalyticsButton extends Component {
 
     return (
       <Fragment>
-        <Button
-          disabled={busy}
-          onClick={() => this.handleClick()}
-          label={`${label} - Analytics Data Sync`}
-          variant={"contained"}
-        >
+        <Button disabled={busy} onClick={() => this.handleClick()} label={`${label} - Analytics Data Sync`} variant={"contained"}>
           {busy && <CircularProgress />}
         </Button>
       </Fragment>

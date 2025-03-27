@@ -69,14 +69,7 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
-const CustomizedDialog = ({
-  title,
-  showSuccessIcon,
-  message,
-  showOkbtn,
-  openDialogContainer,
-  onOk
-}) => {
+const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn, openDialogContainer, onOk }) => {
   const [open, setOpen] = React.useState(openDialogContainer || false);
   const classes = useStyles();
 
@@ -101,13 +94,7 @@ const CustomizedDialog = ({
           </DialogTitle>
         )}
         <DialogContent>
-          <Box
-            display="flex"
-            flexDirection={"column"}
-            flexWrap="wrap"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Box display="flex" flexDirection={"column"} flexWrap="wrap" justifyContent="space-between" alignItems="center">
             {showSuccessIcon && <CheckCircleOutlineRoundedIcon className={classes.iconstyle} />}
             <LineBreak num={2} />
             {message && <Typography gutterBottom>{message}</Typography>}
@@ -115,13 +102,7 @@ const CustomizedDialog = ({
         </DialogContent>
         <DialogActions>
           {showOkbtn && (
-            <Box
-              display="flex"
-              flexDirection={"row"}
-              flexWrap="wrap"
-              justifyContent="space-start"
-              alignItems="center"
-            >
+            <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-start" alignItems="center">
               <Button className={classes.okbuttonStyle} onClick={handleOk} color="primary">
                 Ok
               </Button>

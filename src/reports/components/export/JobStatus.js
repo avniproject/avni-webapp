@@ -38,11 +38,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const JobStatus = ({
-  exportJobStatuses,
-  getUploadStatuses,
-  operationalModules: { subjectTypes, programs, encounterTypes }
-}) => {
+const JobStatus = ({ exportJobStatuses, getUploadStatuses, operationalModules: { subjectTypes, programs, encounterTypes } }) => {
   React.useEffect(() => {
     getUploadStatuses(0);
   }, []);
@@ -53,26 +49,16 @@ const JobStatus = ({
   const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
   const IsoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
   const getDateParams = ({ startDate, endDate }) =>
-    isNil(startDate) || isNil(endDate)
-      ? ""
-      : `${IsoDateFormat(startDate)} to ${IsoDateFormat(endDate)}`;
+    isNil(startDate) || isNil(endDate) ? "" : `${IsoDateFormat(startDate)} to ${IsoDateFormat(endDate)}`;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     getUploadStatuses(newPage);
   };
 
-  const findEntityByUUID = (entities, statusEntityTypeUUID) =>
-    find(entities, ({ uuid }) => uuid === statusEntityTypeUUID) || {};
+  const findEntityByUUID = (entities, statusEntityTypeUUID) => find(entities, ({ uuid }) => uuid === statusEntityTypeUUID) || {};
 
-  const onDownloadHandler = ({
-    fileName,
-    subjectTypeUUID,
-    programUUID,
-    encounterTypeUUID,
-    startDate,
-    endDate
-  }) => {
+  const onDownloadHandler = ({ fileName, subjectTypeUUID, programUUID, encounterTypeUUID, startDate, endDate }) => {
     const outFileName = [
       findEntityByUUID(subjectTypes, subjectTypeUUID).name,
       findEntityByUUID(programs, programUUID).operationalProgramName,
@@ -118,28 +104,17 @@ const JobStatus = ({
           {map(get(exportJobStatuses, "content"), status => (
             <TableRow key={status.uuid}>
               <TableCell className={classes.tableRow}>{status.reportType}</TableCell>
+              <TableCell className={classes.tableRow}>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</TableCell>
+              <TableCell className={classes.tableRow}>{findEntityByUUID(programs, status.programUUID).operationalProgramName}</TableCell>
               <TableCell className={classes.tableRow}>
-                {findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}
-              </TableCell>
-              <TableCell className={classes.tableRow}>
-                {findEntityByUUID(programs, status.programUUID).operationalProgramName}
-              </TableCell>
-              <TableCell className={classes.tableRow}>
-                {
-                  findEntityByUUID(encounterTypes, status.encounterTypeUUID)
-                    .operationalEncounterTypeName
-                }
+                {findEntityByUUID(encounterTypes, status.encounterTypeUUID).operationalEncounterTypeName}
               </TableCell>
               <TableCell className={classes.tableRow}>{getDateParams(status)}</TableCell>
               <TableCell className={classes.tableRow}>{formatDate(status.startTime)}</TableCell>
               <TableCell className={classes.tableRow}>{formatDate(status.endTime)}</TableCell>
               <TableCell className={classes.tableRow}>{status.status}</TableCell>
               <TableCell className={classes.tableRow}>
-                <Button
-                  color="primary"
-                  onClick={() => onDownloadHandler(status)}
-                  disabled={status.status !== "COMPLETED"}
-                >
+                <Button color="primary" onClick={() => onDownloadHandler(status)} disabled={status.status !== "COMPLETED"}>
                   <CloudDownload disabled={status.status !== "COMPLETED"} />
                   {" Download"}
                 </Button>

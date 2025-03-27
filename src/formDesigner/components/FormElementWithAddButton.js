@@ -37,11 +37,7 @@ function FormElementWithAddButton(props) {
   };
 
   return (
-    <div
-      className={classes.parent}
-      onMouseEnter={hoverDisplayAddGroup}
-      onMouseLeave={hoverHideAddGroup}
-    >
+    <div className={classes.parent} onMouseEnter={hoverDisplayAddGroup} onMouseLeave={hoverHideAddGroup}>
       <FormElement {...props} />
       <div className={classes.absolute}>
         {hover && (

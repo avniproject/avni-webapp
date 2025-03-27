@@ -25,14 +25,7 @@ class EnableDisableButton extends Component {
   handleConfirm = () => {
     const { basePath, crudUpdate, record, resource, disabled } = this.props;
     // HACK: passing request param appended in id.
-    crudUpdate(
-      `${resource}`,
-      `${record.id}/disable?disable=${!disabled}`,
-      record,
-      record,
-      basePath,
-      basePath
-    );
+    crudUpdate(`${resource}`, `${record.id}/disable?disable=${!disabled}`, record, record, basePath, basePath);
     this.setState({ isOpen: true });
   };
 

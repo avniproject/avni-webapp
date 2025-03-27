@@ -52,10 +52,7 @@ function WhatsAppSubjectsTab({ receiverId }) {
             receiverName={workflowState.subject.fullName}
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button
-              onClick={() => history.push(`${BroadcastPath.SubjectFullPath}`)}
-              variant="outlined"
-            >
+            <Button onClick={() => history.push(`${BroadcastPath.SubjectFullPath}`)} variant="outlined">
               Back to search
             </Button>
           </Box>

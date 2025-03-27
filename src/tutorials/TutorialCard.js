@@ -18,11 +18,7 @@ const TutorialCard = ({ href, title, content, footer, iconComponent }) => {
 
   return (
     <Card className={classes.root}>
-      <CardActionArea
-        href={href}
-        target={"_blank"}
-        style={{ color: "inherit", textDecoration: "inherit" }}
-      >
+      <CardActionArea href={href} target={"_blank"} style={{ color: "inherit", textDecoration: "inherit" }}>
         <CardContent>
           <Grid container wrap={"wrap"}>
             <Grid item container direction={"row"} spacing={1}>

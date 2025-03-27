@@ -36,10 +36,7 @@ function WhatsAppUsersTab({ receiverId }) {
     <div className="container">
       {workflowState.name === WorkflowStateNames.Searching && <LinearProgress />}
       {workflowState.name === WorkflowStateNames.ChooseUser && (
-        <SearchUserAndConfirm
-          onUserSelected={user => routeToMessages(user)}
-          confirmButtonText={"View Messages"}
-        />
+        <SearchUserAndConfirm onUserSelected={user => routeToMessages(user)} confirmButtonText={"View Messages"} />
       )}
       {workflowState.name === WorkflowStateNames.ViewUserMessages && (
         <div>
@@ -49,10 +46,7 @@ function WhatsAppUsersTab({ receiverId }) {
             receiverName={workflowState.user.name}
           />
           <Box style={{ display: "flex", flexDirection: "row-reverse", marginTop: 10 }}>
-            <Button
-              onClick={() => history.push(`${BroadcastPath.UserFullPath}`)}
-              variant="outlined"
-            >
+            <Button onClick={() => history.push(`${BroadcastPath.UserFullPath}`)} variant="outlined">
               Back to search
             </Button>
           </Box>

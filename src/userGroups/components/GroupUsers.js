@@ -23,16 +23,12 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
 
   React.useEffect(() => {
     if (allUsers && groupUsers) {
-      setOtherUsers(
-        allUsers.filter(user => !groupUsers.map(groupUser => groupUser.userId).includes(user.id))
-      );
+      setOtherUsers(allUsers.filter(user => !groupUsers.map(groupUser => groupUser.userId).includes(user.id)));
     }
   }, [allUsers, groupUsers]);
 
   React.useEffect(() => {
-    setOtherUsersOptions(
-      otherUsers.map(otherUser => ({ label: otherUser.username, value: otherUser.id }))
-    );
+    setOtherUsersOptions(otherUsers.map(otherUser => ({ label: otherUser.username, value: otherUser.id })));
   }, [otherUsers]);
 
   const [usersToBeAdded, setUsersToBeAdded] = React.useState([]);
@@ -47,16 +43,14 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
     event.preventDefault();
     otherUsersOptionsRef.current.select.clearValue();
 
-    api
-      .addUsersToGroup(usersToBeAdded.map(user => ({ userId: user.value, groupId })))
-      .then(response => {
-        const [response_data, error] = response;
-        if (!response_data && error) {
-          alert(error);
-        } else if (response_data) {
-          getGroupUsers(groupId);
-        }
-      });
+    api.addUsersToGroup(usersToBeAdded.map(user => ({ userId: user.value, groupId }))).then(response => {
+      const [response_data, error] = response;
+      if (!response_data && error) {
+        alert(error);
+      } else if (response_data) {
+        getGroupUsers(groupId);
+      }
+    });
   };
 
   const removeUserFromGroupHandler = (event, rowData) => {

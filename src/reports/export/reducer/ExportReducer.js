@@ -47,50 +47,20 @@ export function ExportReducer(exportRequest, action) {
   }
 }
 
-export const applicableOptions = (
-  { programs, formMappings, encounterTypes },
-  { subjectType, program }
-) => {
-  const validFormMappings = filter(
-    formMappings,
-    ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid
-  );
-  const programOptions = intersectionWith(
-    programs,
-    validFormMappings,
-    (a, b) => a.uuid === b.programUUID
-  );
+export const applicableOptions = ({ programs, formMappings, encounterTypes }, { subjectType, program }) => {
+  const validFormMappings = filter(formMappings, ({ subjectTypeUUID }) => subjectTypeUUID === subjectType.uuid);
+  const programOptions = intersectionWith(programs, validFormMappings, (a, b) => a.uuid === b.programUUID);
   if (isEmpty(programOptions)) {
-    const encounterTypeOptions = intersectionWith(
-      encounterTypes,
-      validFormMappings,
-      (a, b) => a.uuid === b.encounterTypeUUID
-    );
+    const encounterTypeOptions = intersectionWith(encounterTypes, validFormMappings, (a, b) => a.uuid === b.encounterTypeUUID);
     return { programOptions, encounterTypeOptions };
   } else {
-    const validFMForSelectedProgram = filter(
-      formMappings,
-      ({ programUUID }) => programUUID === program.uuid
-    );
-    const encounterTypeOptions = intersectionWith(
-      encounterTypes,
-      validFMForSelectedProgram,
-      (a, b) => a.uuid === b.encounterTypeUUID
-    );
+    const validFMForSelectedProgram = filter(formMappings, ({ programUUID }) => programUUID === program.uuid);
+    const encounterTypeOptions = intersectionWith(encounterTypes, validFMForSelectedProgram, (a, b) => a.uuid === b.encounterTypeUUID);
     return { programOptions, encounterTypeOptions };
   }
 };
 
-export const getRequestBody = ({
-  reportType,
-  subjectType,
-  program,
-  encounterType,
-  startDate,
-  endDate,
-  addressLevelIds,
-  includeVoided
-}) => {
+export const getRequestBody = ({ reportType, subjectType, program, encounterType, startDate, endDate, addressLevelIds, includeVoided }) => {
   return {
     subjectTypeUUID: subjectType.uuid,
     programUUID: program.uuid,

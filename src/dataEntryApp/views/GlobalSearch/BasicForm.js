@@ -106,9 +106,7 @@ function BasicForm({
         )}
 
         {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "SearchAll"
-            ? renderSearchAll(index, searchFilterForm.titleKey)
-            : ""
+          searchFilterForm.type === "SearchAll" ? renderSearchAll(index, searchFilterForm.titleKey) : ""
         )}
       </Grid>
       <Grid container spacing={3} className={classes.componentSpacing}>

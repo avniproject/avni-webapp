@@ -8,10 +8,7 @@ import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Paper, Typography } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import {
-  getEligibleProgramEncounters,
-  resetState
-} from "../../../reducers/programEncounterReducer";
+import { getEligibleProgramEncounters, resetState } from "../../../reducers/programEncounterReducer";
 import NewVisitMenuView from "./NewVisitMenuView";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { getNewEligibleProgramEncounters } from "../../../../common/mapper/ProgramEncounterMapper";
@@ -60,11 +57,7 @@ const NewProgramVisit = ({ match, ...props }) => {
               {t("newProgramVisit")}
             </Typography>
             <LineBreak num={1} />
-            <NewVisitMenuView
-              sections={sections}
-              uuid={enrolmentUuid}
-              isForProgramEncounters={true}
-            />
+            <NewVisitMenuView sections={sections} uuid={enrolmentUuid} isForProgramEncounters={true} />
           </>
         ) : (
           <Typography variant="caption" gutterBottom>

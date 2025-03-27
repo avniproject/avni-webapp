@@ -118,11 +118,7 @@ const FindRelative = ({
   const searchContent = (
     <div style={{ margin: "30px" }}>
       {props.subjects && props.subjects.listOfRecords ? (
-        <FindRelativeTable
-          subjectData={props.subjects.listOfRecords.filter(
-            subject => subjectProfile.uuid !== subject.uuid
-          )}
-        />
+        <FindRelativeTable subjectData={props.subjects.listOfRecords.filter(subject => subjectProfile.uuid !== subject.uuid)} />
       ) : (
         <SearchForm
           operationalModules={operationalModules}

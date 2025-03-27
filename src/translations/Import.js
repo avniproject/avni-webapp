@@ -70,13 +70,7 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
     <Grid container direction="row" spacing={2}>
       <Grid container item direction="row" justify="space-between" alignItems="center">
         <Grid item xs={12} sm={4}>
-          <DropDown
-            name="Language"
-            style={{ width: 120 }}
-            value={language}
-            onChange={setLanguage}
-            options={locales}
-          />
+          <DropDown name="Language" style={{ width: 120 }} value={language} onChange={setLanguage} options={locales} />
         </Grid>
         <Grid item xs={12} sm={8}>
           <FileUpload
@@ -84,9 +78,7 @@ const ImportTranslations = ({ locales = [], userInfo, onSuccessfulImport }) => {
             onUpload={onUploadPressedHandler}
             canSelect={!isEmpty(language)}
             canUpload={
-              noOfKeysWithoutValues(file) === 0 &&
-              isEmpty(error) &&
-              UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
+              noOfKeysWithoutValues(file) === 0 && isEmpty(error) && UserInfo.hasPrivilege(userInfo, Privilege.PrivilegeType.EditLanguage)
             }
           />
         </Grid>

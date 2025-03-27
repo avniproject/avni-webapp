@@ -3,9 +3,7 @@ import { find, get, isNil, filter } from "lodash";
 export const selectFormMappingsForSubjectType = subjectTypeUuid => state =>
   filter(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
-    fm =>
-      isNil(fm.programUUID) &&
-      (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
+    fm => isNil(fm.programUUID) && (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
   );
 
 export const selectFormMappingForEncounter = (encounterTypeUuid, subjectTypeUuid) => state =>
@@ -13,9 +11,7 @@ export const selectFormMappingForEncounter = (encounterTypeUuid, subjectTypeUuid
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
       !isNil(encounterTypeUuid) &&
-      (fm.subjectTypeUUID === subjectTypeUuid &&
-        fm.encounterTypeUUID === encounterTypeUuid &&
-        fm.formType === "Encounter")
+      (fm.subjectTypeUUID === subjectTypeUuid && fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "Encounter")
   );
 
 export const selectFormMappingForCancelEncounter = (encounterTypeUuid, subjectTypeUuid) => state =>

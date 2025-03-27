@@ -62,17 +62,11 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
 
   return (
     <Grid item className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>
-      <label
-        className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}
-      >
+      <label className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}>
         {t(type === "active" ? "activeprograms" : "exitedProgram")}
       </label>
 
-      <AppBar
-        style={type === "active" ? { minHeight: "35px" } : {}}
-        position="static"
-        color="default"
-      >
+      <AppBar style={type === "active" ? { minHeight: "35px" } : {}} position="static" color="default">
         <AntTabs
           onChange={handleTabChange}
           value={selectedTab}
@@ -84,8 +78,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
         >
           {program && program.enrolments
             ? program.enrolments.map((element, index) =>
-                (element.programExitDateTime == null && type === "active") ||
-                (element.programExitDateTime != null && type === "exited") ? (
+                (element.programExitDateTime == null && type === "active") || (element.programExitDateTime != null && type === "exited") ? (
                   <AntTab
                     id={element.program.operationalProgramName.replaceAll(" ", "-")}
                     key={index}

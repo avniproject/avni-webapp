@@ -29,9 +29,7 @@ class LocationSaveButtonView extends Component {
   render() {
     const { handleSubmitWithRedirect, saveLocation, ...props } = this.props;
 
-    return (
-      <SaveButton handleSubmitWithRedirect={this.handleClick} {...props} />
-    );
+    return <SaveButton handleSubmitWithRedirect={this.handleClick} {...props} />;
   }
 }
 

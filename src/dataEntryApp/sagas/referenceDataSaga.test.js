@@ -9,9 +9,6 @@ describe("dataEntryLoadOperationalModulesWorker", () => {
     saga.next();
     saga.next();
     let mappedOperationalModules = {};
-    assert.deepEqual(
-      saga.next(mappedOperationalModules).value,
-      put(setOperationalModules(mappedOperationalModules))
-    );
+    assert.deepEqual(saga.next(mappedOperationalModules).value, put(setOperationalModules(mappedOperationalModules)));
   });
 });

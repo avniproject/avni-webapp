@@ -100,15 +100,9 @@ function FormElementTabs(props) {
         > */}
         <RuleDesigner
           rulesJson={props.formElementData.declarativeRule}
-          onValueChange={jsonData =>
-            props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)
-          }
+          onValueChange={jsonData => props.updateSkipLogicJSON(props.groupIndex, props.index, jsonData)}
           updateJsCode={declarativeRuleHolder =>
-            props.updateSkipLogicRule(
-              props.groupIndex,
-              props.index,
-              declarativeRuleHolder.generateViewFilterRule(props.entityName)
-            )
+            props.updateSkipLogicRule(props.groupIndex, props.index, declarativeRuleHolder.generateViewFilterRule(props.entityName))
           }
           jsCode={props.formElementData.rule}
           error={get(props.formElementData, "errorMessage.ruleError")}

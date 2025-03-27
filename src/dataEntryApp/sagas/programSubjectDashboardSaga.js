@@ -1,10 +1,5 @@
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
-import {
-  setEncounterForm,
-  setProgramEnrolmentForm,
-  setSubjectProgram,
-  types
-} from "../reducers/programSubjectDashboardReducer";
+import { setEncounterForm, setProgramEnrolmentForm, setSubjectProgram, types } from "../reducers/programSubjectDashboardReducer";
 import api from "../api";
 import { mapProgram } from "../../common/subjectModelMapper";
 import { setLoad } from "../reducers/loadReducer";
@@ -12,9 +7,7 @@ import { selectEnrolmentFormMappingForSubjectType } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 
 export default function*() {
-  yield all(
-    [subjectProgramFetchWatcher, programEnrolmentFormWatcher, programEncounterFormWatcher].map(fork)
-  );
+  yield all([subjectProgramFetchWatcher, programEnrolmentFormWatcher, programEncounterFormWatcher].map(fork));
 }
 
 export function* subjectProgramFetchWatcher() {
@@ -34,9 +27,7 @@ export function* programEnrolmentFormWatcher() {
 
 export function* programEnrolmentFormWorker({ subjectTypeName, programName, formType }) {
   yield put.resolve(setProgramEnrolmentForm());
-  const formMapping = yield select(
-    selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
-  );
+  const formMapping = yield select(selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType));
   const programEnrolmentForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put.resolve(setProgramEnrolmentForm(mapForm(programEnrolmentForm)));
 }

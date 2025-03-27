@@ -10,10 +10,7 @@ function QuestionGroup(props) {
   const { groupIndex, index, formElementData } = props;
   const setState = useSetFormState();
   const state = getFormState();
-  const allFormElementsWithIndex = map(
-    state.form.formElementGroups[groupIndex].formElements,
-    (fe, index) => [fe, index]
-  );
+  const allFormElementsWithIndex = map(state.form.formElementGroups[groupIndex].formElements, (fe, index) => [fe, index]);
   const childFormElementsWithIndex = filter(
     allFormElementsWithIndex,
     ([fe, index]) => get(fe, "parentFormElementUuid") === formElementData.uuid && !fe.voided

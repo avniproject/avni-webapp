@@ -9,10 +9,7 @@ import MuiComponentHelper from "../../common/utils/MuiComponentHelper";
 
 export const AlertModal = ({ message, showAlert, setShowAlert, className }) => {
   return (
-    <Dialog
-      open={showAlert}
-      onClose={MuiComponentHelper.getDialogClosingHandler(() => setShowAlert(false))}
-    >
+    <Dialog open={showAlert} onClose={MuiComponentHelper.getDialogClosingHandler(() => setShowAlert(false))}>
       <DialogTitle>{message.title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message.content}</DialogContentText>

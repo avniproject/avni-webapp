@@ -54,11 +54,7 @@ class SecureApp extends Component {
     if (idpType === IdpDetails.cognito) {
       return (
         <div className="centerContainer">
-          <Authenticator
-            hide={[Greetings, SignUp, SignIn]}
-            onStateChange={this.setAuthState}
-            errorMessage={customAmplifyErrorMsgs}
-          >
+          <Authenticator hide={[Greetings, SignUp, SignIn]} onStateChange={this.setAuthState} errorMessage={customAmplifyErrorMsgs}>
             <CognitoSignIn />
           </Authenticator>
         </div>

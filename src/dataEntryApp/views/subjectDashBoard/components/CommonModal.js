@@ -146,12 +146,8 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
   const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
   const findButton = buttonsSet.filter(element => element.buttonType === "findButton").shift();
-  const modifySearchFloating = buttonsSet
-    .filter(element => element.buttonType === "modifySearchFloating")
-    .shift();
-  const applyFloating = buttonsSet
-    .filter(element => element.buttonType === "applyFloating")
-    .shift();
+  const modifySearchFloating = buttonsSet.filter(element => element.buttonType === "modifySearchFloating").shift();
+  const applyFloating = buttonsSet.filter(element => element.buttonType === "applyFloating").shift();
 
   return (
     <React.Fragment>
@@ -188,17 +184,8 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose, 
         ""
       )}
 
-      <Dialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-        {...props}
-      >
-        <DialogTitle
-          id="customized-dialog-title"
-          onClose={handleClose}
-          styles={{ backgroundColor: "black" }}
-        >
+      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} {...props}>
+        <DialogTitle id="customized-dialog-title" onClose={handleClose} styles={{ backgroundColor: "black" }}>
           {title}
         </DialogTitle>
         {content}

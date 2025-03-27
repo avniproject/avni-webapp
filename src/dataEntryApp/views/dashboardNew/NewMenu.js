@@ -43,11 +43,7 @@ function NewMenu({ operationalModules, handleClose }) {
         {sortBy(operationalModules.subjectTypes, ({ name }) => t(name)).map((element, index) => {
           return (
             <React.Fragment key={index}>
-              <InternalLink
-                key={index}
-                to={`/app/register?type=${element.name}`}
-                style={{ color: "blue" }}
-              >
+              <InternalLink key={index} to={`/app/register?type=${element.name}`} style={{ color: "blue" }}>
                 <ListItem button onClick={handleClose}>
                   <ListItemIcon>
                     <SubjectTypeIcon subjectType={element} size={25} />

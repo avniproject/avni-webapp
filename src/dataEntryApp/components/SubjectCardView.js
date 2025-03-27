@@ -21,16 +21,7 @@ const useStyles = () =>
     }
   }));
 
-const SubjectCardView = ({
-  uuid,
-  name,
-  gender,
-  age,
-  location,
-  profilePicture,
-  subjectTypeName,
-  ...props
-}) => {
+const SubjectCardView = ({ uuid, name, gender, age, location, profilePicture, subjectTypeName, ...props }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -56,13 +47,7 @@ const SubjectCardView = ({
         {[gender, age, location].map((element, index) => {
           return (
             element && (
-              <Typography
-                component={"div"}
-                className={classes[element]}
-                gutterBottom
-                align={"center"}
-                key={index}
-              >
+              <Typography component={"div"} className={classes[element]} gutterBottom align={"center"} key={index}>
                 {t(element)}
               </Typography>
             )

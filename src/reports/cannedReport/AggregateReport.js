@@ -23,10 +23,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
 
   const generateReport = () => {
     setLoading(true);
-    const selectedFormMapping = find(
-      operationalModules.formMappings,
-      ({ formUUID }) => selectedForm.value === formUUID
-    );
+    const selectedFormMapping = find(operationalModules.formMappings, ({ formUUID }) => selectedForm.value === formUUID);
     if (isEmpty(selectedFormMapping)) {
       setLoading(false);
       return;
@@ -41,9 +38,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
       })
       .catch(error => {
         setLoading(false);
-        const errorMessage = `${get(error, "response.data") ||
-          get(error, "message") ||
-          "unknown error"}`;
+        const errorMessage = `${get(error, "response.data") || get(error, "message") || "unknown error"}`;
         alert(`Error occurred while generating report ${errorMessage}`);
       });
   };
@@ -85,12 +80,7 @@ const AggregateReport = ({ operationalModules, getOperationalModules }) => {
               />
             </Grid>
             <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={isEmpty(selectedForm)}
-                onClick={generateReport}
-              >
+              <Button variant="contained" color="primary" disabled={isEmpty(selectedForm)} onClick={generateReport}>
                 Generate Report
               </Button>
             </Grid>
